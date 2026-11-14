@@ -42,7 +42,11 @@ Review references: the third-party [apple-design-skill](https://github.com/dickw
 
 The backend used here runs locally on Java 21.0.3; this batch does not claim a local Java 8 build. Java 8 compatibility remains covered by the previously recorded backend CI gate.
 
-Playwright emitted a harmless Node environment warning that `NO_COLOR` is ignored when `FORCE_COLOR` is set. The final full run passed 3/3 tests. Fixed dialog captures use viewport screenshots to avoid full-page Chromium stitching artifacts. The committed evidence pack contains six compressed JPEG sheets under `evidence/O8-O10/screenshots/`; raw PNG intermediates are disposable test output.
+Playwright emitted a harmless Node environment warning that `NO_COLOR` is ignored when `FORCE_COLOR` is set. The final full run passed 3/3 tests. Fixed dialog captures use viewport screenshots to avoid full-page Chromium stitching artifacts. The committed evidence pack contains six compressed JPEG sheets under `evidence/O8-O10/screenshots/`; full-resolution raw PNG captures remain ignored local intermediates.
+
+## Git status
+
+Implementation commit `5af97a5` was pushed to `feat/o8-o10-academic-glass-ui-2026-11-15`. PR [#5](https://github.com/newonathe/OrgResource/pull/5) targets the open O6–O7 branch and is intentionally unmerged. Its Java 8/MySQL and React verification jobs passed on this implementation commit. No deployment or Canvas submission was performed.
 
 ## Boundaries and remaining gates
 
