@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Isolation;
 import app.dto.ApiDtos.ResourceAvailabilityView;
 import app.dto.ApiDtos.MessageView;
 import app.dto.ApiDtos.ResourceView;
@@ -54,7 +55,7 @@ public class ResourceComponent {
         return new ResourceAvailabilityView(resource.id, view.availableQuantity);
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public ResourceView update(Long id, String rawName, Integer totalQuantity, Integer expectedTotalQuantity) {
         requirePositiveId(id);
         validateQuantity(totalQuantity, true);
@@ -92,7 +93,7 @@ public class ResourceComponent {
         return view(saved, holds, issued);
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public MessageView delete(Long id) {
         requirePositiveId(id);
         Resource resource = resources.lockById(id)

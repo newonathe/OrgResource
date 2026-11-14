@@ -16,6 +16,7 @@ import app.components.RequestValidation;
 import app.dto.ApiDtos.AllocationView;
 import app.dto.ApiDtos.CreateAllocation;
 import app.entities.AllocationStatus;
+import app.dto.ApiDtos.MessageView;
 
 @Component
 @Path("/allocations")
@@ -36,5 +37,48 @@ public class AllocationController {
     public List<AllocationView> list(@QueryParam("requirementId") Long requirementId,
                                      @QueryParam("status") AllocationStatus status) {
         return component.list(requirementId, status);
+    }
+
+    @POST
+    @Path("/{id}/approve")
+    public Response approve(@javax.ws.rs.PathParam("id") Long id) {
+        return Response.ok(component.approve(id)).build();
+    }
+
+    @POST
+    @Path("/{id}/issue")
+    public Response issue(@javax.ws.rs.PathParam("id") Long id) {
+        return Response.ok(component.issue(id)).build();
+    }
+
+    @POST
+    @Path("/{id}/return")
+    public Response returnItems(@javax.ws.rs.PathParam("id") Long id) {
+        return Response.ok(component.returnItems(id)).build();
+    }
+
+    @POST
+    @Path("/{id}/consume")
+    public Response consume(@javax.ws.rs.PathParam("id") Long id) {
+        return Response.ok(component.consume(id)).build();
+    }
+
+    @POST
+    @Path("/{id}/cancel")
+    public Response cancel(@javax.ws.rs.PathParam("id") Long id) {
+        return Response.ok(component.cancel(id)).build();
+    }
+
+    @POST
+    @Path("/{id}/delete")
+    public Response delete(@javax.ws.rs.PathParam("id") Long id) {
+        MessageView result = component.delete(id);
+        return Response.ok(result).build();
+    }
+
+    @POST
+    @Path("/{id}/revoke-sms-consent")
+    public Response revokeSmsConsent(@javax.ws.rs.PathParam("id") Long id) {
+        return Response.ok(component.revokeSmsConsent(id)).build();
     }
 }

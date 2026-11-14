@@ -44,6 +44,7 @@ public class Project {
 
     public Long getId() { return id; }
     public Department getDepartment() { return department; }
+    public LocalDateTime getStartAt() { return startAt; }
     public LocalDateTime getEndAt() { return endAt; }
 
     public Project(Department department, String name, LocalDateTime startAt, LocalDateTime endAt) {

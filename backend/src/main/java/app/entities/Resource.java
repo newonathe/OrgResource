@@ -44,6 +44,9 @@ public class Resource {
     protected Resource() { }
 
     public Long getId() { return id; }
+    public ResourceType getType() { return type; }
+    public Integer getTotalQuantity() { return totalQuantity; }
+    public void setTotalQuantity(Integer totalQuantity) { this.totalQuantity = totalQuantity; }
 
     public Resource(String name, String nameKey, ResourceType type, Integer totalQuantity) {
         this.name = name;

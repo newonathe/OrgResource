@@ -76,4 +76,16 @@ public class ApiExceptionMapperTest {
         assertEquals("VALIDATION_FAILED", body.code);
     }
 
+    @Test
+    public void mapsRecognizedMySqlDeadlockToSafeRetryResponse() {
+        SQLException deadlock = new SQLException("private database detail", "40001", 1213);
+
+        Response response = mapper.toResponse(new RuntimeException(deadlock));
+
+        assertEquals(503, response.getStatus());
+        ErrorView body = (ErrorView) response.getEntity();
+        assertEquals("RETRY_REQUIRED", body.code);
+        org.junit.Assert.assertFalse(body.message.contains("private database detail"));
+    }
+
 }

@@ -123,9 +123,9 @@ public final class ApiDtos {
             this.id = requirement.id;
             this.projectId = requirement.project.getId();
             this.resourceId = requirement.resource.getId();
-            this.quantity = requirement.quantity;
+            this.quantity = requirement.getQuantity();
             this.allocatedQuantity = allocatedQuantity;
-            this.shortageQuantity = Math.max(0, requirement.quantity - allocatedQuantity);
+            this.shortageQuantity = Math.max(0, requirement.getQuantity() - allocatedQuantity);
         }
     }
 
