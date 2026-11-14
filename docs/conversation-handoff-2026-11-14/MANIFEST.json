@@ -1,0 +1,99 @@
+{
+  "generated_at_note": "2026-11-14 Asia/Manila handoff snapshot; update via fresh GitHub audit in next conversation",
+  "repository": "newonathe/OrgResource",
+  "branch": "docs/conversation-continuity-2026-11-14",
+  "base_main_sha": "16e781c837dd7e1f0481fb7a01e49c27d80a91e8",
+  "master_file": "docs/conversation-handoff-2026-11-14/MASTER_CONTINUITY_UNABRIDGED.md",
+  "master_blob_sha": "c7a5f969da9f1adc3856a9f169adb9d71f79ee93",
+  "master_characters": 319799,
+  "master_word_count_approx": 37051,
+  "source_components": [
+    {
+      "file": "00_READ_THIS_FIRST.md",
+      "includedExactText": true,
+      "charLength": 6129,
+      "gitBlobSha": "13df4d619b40e7a3106accc3bf515bb49a9ac036"
+    },
+    {
+      "file": "01_CONVERSATION_DECISIONS_AND_HISTORY.md",
+      "includedExactText": true,
+      "charLength": 11302,
+      "gitBlobSha": "553c3e3e323a385eb1d0e7cde9220da47893dc23"
+    },
+    {
+      "file": "02_GITHUB_SNAPSHOT_AND_EVIDENCE.md",
+      "includedExactText": true,
+      "charLength": 9819,
+      "gitBlobSha": "99d9fb7465c7f21bc75cb423cff4be6364c244bd"
+    },
+    {
+      "file": "03_COURSE_DOMAIN_API_CONTRACT.md",
+      "includedExactText": true,
+      "charLength": 17959,
+      "gitBlobSha": "b69793b49dfa9aa6ec0a884061afd8622cce176f"
+    },
+    {
+      "file": "04_PHASES_TESTS_RELEASE.md",
+      "includedExactText": true,
+      "charLength": 14373,
+      "gitBlobSha": "6363e0623e4fad4f3dfef5ea4fe703d69c76d6cb"
+    },
+    {
+      "file": "05_O3_ACTIVE_BUILD_COMPLETION_GATE.md",
+      "includedExactText": true,
+      "charLength": 10928,
+      "gitBlobSha": "f26270b93b6a07d03b3b4554db3fd79be82b02da"
+    },
+    {
+      "file": "06_TOKEN_PERFORMANCE_PUSH_POLICY.md",
+      "includedExactText": true,
+      "charLength": 9461,
+      "gitBlobSha": "159189fee1e9621cbe518e2d2e5a2d6f05764b9b"
+    },
+    {
+      "file": "07_NEW_CHAT_COPY_READY_PROMPT.md",
+      "includedExactText": true,
+      "charLength": 8880,
+      "gitBlobSha": "59a165d41525a0389e80200740953ce33d3ee438"
+    },
+    {
+      "file": "08_SOURCE_DIRECTORY_EVIDENCE_REGISTER.md",
+      "includedExactText": true,
+      "charLength": 9499,
+      "gitBlobSha": "08068e0912637c067e4ae96fe3c0daa279f884d1"
+    },
+    {
+      "file": "09_CONTINUATION_CHECKLIST_AND_DECISION_LOG.md",
+      "includedExactText": true,
+      "charLength": 10116,
+      "gitBlobSha": "3c0e1339a52e3d31da92bdc6c643938f50e27642"
+    },
+    {
+      "file": "10_O4_O5_COMBINED_CYCLE_SEED.md",
+      "includedExactText": true,
+      "charLength": 11316,
+      "gitBlobSha": "b366caec2be99c7e3f4e8c2f9e94dd07d31cb349"
+    },
+    {
+      "file": "11_O2_VIDEO_DEMO_RUNBOOK_HISTORY.md",
+      "includedExactText": true,
+      "charLength": 9046,
+      "gitBlobSha": "4be190ca55565cefda2ea3fb5f23afccb1a41daf"
+    }
+  ],
+  "all_twelve_included": true,
+  "preexisting_canonical_master": {
+    "path": "docs/ORGRESOURCE_MASTER_HANDOFF.md",
+    "gitBlobSha": "18d58d3e306b1ef24d188f455b2983365dac6af6",
+    "characters": 188796,
+    "appendedExactAtEnd": true
+  },
+  "evidence_status": "Document source-text inclusion verified by connected GitHub reads. No local Java/MySQL/Browser/Canvas execution performed here. O3 running at snapshot, user reported O2 video done.",
+  "not_included_as_original_binary_bytes": [
+    "Course original ZIP archives",
+    "Original raw video frames",
+    "Original course PDF/DOCX binary files (remain in repository / ChatGPT Project)",
+    "Local credentials",
+    "Uncommitted Codex workspace changes"
+  ]
+}
