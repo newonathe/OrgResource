@@ -1,0 +1,409 @@
+{
+  "info": {
+    "name": "OrgResource O2 ACTUAL Skeleton Video Demo — 12 Requests",
+    "description": "Standards-compliant Postman v2.1 collection for the implemented five-entity O1 skeleton. UNEXECUTED BY CHATGPT. Targets only localhost. Designed for run order 01–12. Requires existing fictional Resource row for request 06 (saved O1 DB had four). Creates/deletes one uniquely named temporary Department; uses no SMS or destructive DB reset. Do NOT use historical 68-route Postman collection.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 — Departments (actual GET)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/departments"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Actual HTTP 200\",()=>pm.response.to.have.status(200));",
+              "const list=pm.response.json(); pm.test(\"Real JSON array\",()=>pm.expect(list).to.be.an(\"array\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 — Create one unique fictional Department",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/departments"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"{{demoName}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.collectionVariables.set(\"demoName\",\"O2 Video Demo \"+Date.now());"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Actual HTTP 201\",()=>pm.response.to.have.status(201));",
+              "const b=pm.response.json(); pm.test(\"Database-generated positive ID\",()=>pm.expect(b.id).to.be.a(\"number\").above(0));",
+              "pm.collectionVariables.set(\"demoDepartmentId\",String(b.id));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 — Verify created Department is in the DB-backed list",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/departments"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Actual HTTP 200\",()=>pm.response.to.have.status(200));",
+              "const list=pm.response.json(); pm.test(\"Real JSON array\",()=>pm.expect(list).to.be.an(\"array\"));",
+              "pm.test(\"New Department retrieved\",()=>pm.expect(list.some(x=>String(x.id)===pm.collectionVariables.get(\"demoDepartmentId\"))).to.eql(true));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 — Projects (actual GET)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/projects"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Actual HTTP 200\",()=>pm.response.to.have.status(200));",
+              "const list=pm.response.json(); pm.test(\"Real JSON array\",()=>pm.expect(list).to.be.an(\"array\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 — Resources (actual GET; capture existing ID)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/resources"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Actual HTTP 200\",()=>pm.response.to.have.status(200));",
+              "const list=pm.response.json(); pm.test(\"Real JSON array\",()=>pm.expect(list).to.be.an(\"array\"));",
+              "pm.test(\"Existing fictional Resource available for availability demo\",()=>pm.expect(list.length).to.be.above(0));",
+              "if(list.length>0)pm.collectionVariables.set(\"demoResourceId\",String(list[0].id));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 — Current Resource availability (real GET)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/resources/{{demoResourceId}}/availability"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Actual HTTP 200\",()=>pm.response.to.have.status(200));",
+              "const b=pm.response.json(); pm.test(\"Real availability JSON\",()=>{pm.expect(b.resourceId).to.eql(Number(pm.collectionVariables.get(\"demoResourceId\"))); pm.expect(b.availableQuantity).to.be.a(\"number\").at.least(0);});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 — Requirements (actual GET)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/requirements"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Actual HTTP 200\",()=>pm.response.to.have.status(200));",
+              "const list=pm.response.json(); pm.test(\"Real JSON array\",()=>pm.expect(list).to.be.an(\"array\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 — Allocations (redacted JSON GET)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/allocations"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Actual HTTP 200\",()=>pm.response.to.have.status(200));",
+              "const list=pm.response.json(); pm.test(\"Real JSON array\",()=>pm.expect(list).to.be.an(\"array\"));",
+              "pm.test(\"Phone numbers not returned in public JSON\",()=>{for(const a of list)pm.expect(a).not.to.have.property(\"phoneNumber\");});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 — Invalid negative Resource quantity is rejected",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/resources"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"O2 Invalid Resource {{demoName}}\",\n  \"type\": \"CONSUMABLE\",\n  \"totalQuantity\": -1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Actual HTTP 400\",()=>pm.response.to.have.status(400));",
+              "pm.test(\"Error JSON message\",()=>pm.expect(pm.response.json().message).to.be.a(\"string\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 — Duplicate normalized Department is rejected",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/departments"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"  {{demoName}}  \"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Actual HTTP 409\",()=>pm.response.to.have.status(409));",
+              "pm.test(\"Duplicate-name error code\",()=>pm.expect(pm.response.json().code).to.eql(\"DUPLICATE_NAME\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 — Delete only our temporary unreferenced Department",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/departments/{{demoDepartmentId}}/delete"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Actual HTTP 200\",()=>pm.response.to.have.status(200));",
+              "pm.test(\"Deletion confirmed\",()=>pm.expect(pm.response.json().message).to.eql(\"Record deleted.\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "12 — Confirm our temporary Department was removed",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/departments"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Actual HTTP 200\",()=>pm.response.to.have.status(200));",
+              "const list=pm.response.json(); pm.test(\"Real JSON array\",()=>pm.expect(list).to.be.an(\"array\"));",
+              "pm.test(\"Deleted record no longer appears\",()=>pm.expect(list.some(x=>String(x.id)===pm.collectionVariables.get(\"demoDepartmentId\"))).to.eql(false));"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8080/api",
+      "type": "string"
+    },
+    {
+      "key": "demoName",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "demoDepartmentId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "demoResourceId",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
