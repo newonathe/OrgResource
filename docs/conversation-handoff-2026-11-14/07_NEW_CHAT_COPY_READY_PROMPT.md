@@ -5,10 +5,10 @@ You are continuing the **OrgResource CSCI 180.05** project from a previous long 
 I deliberately waited for an existing Codex O3 coding prompt to finish before moving to this new conversation. The previous ChatGPT conversation produced a comprehensive continuity pack and committed it to a SEPARATE documentation branch of my private GitHub repo:
 
 Repository: https://github.com/newonathe/OrgResource
-Continuity branch: \`docs/conversation-continuity-2026-11-14\`
-Continuity directory: \`docs/conversation-handoff-2026-11-14/\`
+Continuity branch: `docs/conversation-continuity-2026-11-14`
+Continuity directory: `docs/conversation-handoff-2026-11-14/`
 
-Read ALL twelve numbered continuity files under that directory (00–11), OR read the losslessly concatenated `MASTER_CONTINUITY_UNABRIDGED.md` plus the live repository sources, including their detailed chronology, technical contracts, domain and API, repo/evidence status, current O3 build scope, standing performance/token/push policy, source index, and checklists. The directory is committed to the GitHub feature branch, not necessarily merged to main. Use the connected GitHub account \`newonathe\` to read files by explicit branch ref. The files are:
+Read ALL twelve numbered continuity files under that directory (00–11), OR read the losslessly concatenated `MASTER_CONTINUITY_UNABRIDGED.md` plus the live repository sources, including their detailed chronology, technical contracts, domain and API, repo/evidence status, current O3 build scope, standing performance/token/push policy, source index, and checklists. The directory is committed to the GitHub feature branch, not necessarily merged to main. Use the connected GitHub account `newonathe` to read files by explicit branch ref. The files are:
 - 00_READ_THIS_FIRST.md
 - 01_CONVERSATION_DECISIONS_AND_HISTORY.md
 - 02_GITHUB_SNAPSHOT_AND_EVIDENCE.md
@@ -25,16 +25,16 @@ Read ALL twelve numbered continuity files under that directory (00–11), OR rea
 These files preserve the previous conversation's substantive intent. **Do not assume the dated GitHub snapshot is current.**
 
 Then read the current repository's actual source of truth and controlling files, using the most recent appropriate ref:
-\`AGENTS.md\`;
-\`ChatGPT-Project-Pack/UPLOAD/09_ESP_PROJECT_ASSIGNMENT.pdf\`;
-\`ChatGPT-Project-Pack/UPLOAD/08_CSCI180_SYLLABUS.pdf\`;
-\`ChatGPT-Project-Pack/UPLOAD/10_ORGRESOURCE_CONCISE_PROPOSAL.docx\`;
-\`docs/ORGRESOURCE_MASTER_HANDOFF.md\` (the full 188,934-byte canonical planning packet; do NOT unnecessarily reread the byte-duplicate \`docs/complete-handoff/ORGRESOURCE_COMPLETE_MASTER_HANDOFF.md\`);
-focused \`docs/complete-handoff/04_DATA_MODEL_AND_INVARIANTS.md\`, \`05_API_26_ROUTES_AND_RESPONSES.md\`, \`06_PERSISTENCE_TRANSACTIONS_JPQL.md\`, \`07_RETROFIT_SCHEDULING_SECURITY.md\`, \`08_UI_REACT_TYPESCRIPT.md\`, \`09_TEST_POSTMAN_DEMO_ACCEPTANCE.md\`, \`10_GITHUB_DEVOPS_BACKLOG_RELEASE.md\`, and the actual backend source, Postman collections, and latest evidence.
+`AGENTS.md`;
+`ChatGPT-Project-Pack/UPLOAD/09_ESP_PROJECT_ASSIGNMENT.pdf`;
+`ChatGPT-Project-Pack/UPLOAD/08_CSCI180_SYLLABUS.pdf`;
+`ChatGPT-Project-Pack/UPLOAD/10_ORGRESOURCE_CONCISE_PROPOSAL.docx`;
+`docs/ORGRESOURCE_MASTER_HANDOFF.md` (the full 188,934-byte canonical planning packet; do NOT unnecessarily reread the byte-duplicate `docs/complete-handoff/ORGRESOURCE_COMPLETE_MASTER_HANDOFF.md`);
+focused `docs/complete-handoff/04_DATA_MODEL_AND_INVARIANTS.md`, `05_API_26_ROUTES_AND_RESPONSES.md`, `06_PERSISTENCE_TRANSACTIONS_JPQL.md`, `07_RETROFIT_SCHEDULING_SECURITY.md`, `08_UI_REACT_TYPESCRIPT.md`, `09_TEST_POSTMAN_DEMO_ACCEPTANCE.md`, `10_GITHUB_DEVOPS_BACKLOG_RELEASE.md`, and the actual backend source, Postman collections, and latest evidence.
 
-**MANDATORY FIRST ACTION:** Freshly audit my **live** connected private GitHub \`newonathe/OrgResource\`: latest main commit, all relevant feature branches (including the in-progress O3 Codex output), recent commit history, open PRs (including stale O2 draft PR #1), CI/workflow results, exact changed files, route parity, latest evidence, test outputs, and any unmerged code. Do not only look at main; Codex was required to push feature branches. Distinguish GitHub remote code from local uncommitted work, which you cannot see from GitHub. If a local Codex task completed but did not push, explain what evidence is missing and give a targeted push/inspection instruction.
+**MANDATORY FIRST ACTION:** Freshly audit my **live** connected private GitHub `newonathe/OrgResource`: latest main commit, all relevant feature branches (including the in-progress O3 Codex output), recent commit history, open PRs (including stale O2 draft PR #1), CI/workflow results, exact changed files, route parity, latest evidence, test outputs, and any unmerged code. Do not only look at main; Codex was required to push feature branches. Distinguish GitHub remote code from local uncommitted work, which you cannot see from GitHub. If a local Codex task completed but did not push, explain what evidence is missing and give a targeted push/inspection instruction.
 
-**WHAT HAPPENED BEFORE THIS CHAT:** The initial Java8 SpringBoot2.1/Jersey/Javax/JPA/Hibernate/MySQL backend skeleton genuinely existed with five JPA entity types and 12 original routes. O3 D03 Department update was added, making 13/25; saved evidence showed eight Java unit tests, actual MySQL and Newman successes (15/29 O1 regression, 11/19 D03). A code defect was identified: expired APPROVED allocations counted by Requirement coverage though no longer stock holds. Latest independently audited main at handoff time was \`16e781c837dd7e1f0481fb7a01e49c27d80a91e8\`. The user recorded the Nov14 skeleton demo using OBS/VSCode and explicitly reported **VIDEO DONE**; don't treat older \`VIDEO_NOT_CREATED.md\` as current truth and do not claim Canvas submission without receipt.
+**WHAT HAPPENED BEFORE THIS CHAT:** The initial Java8 SpringBoot2.1/Jersey/Javax/JPA/Hibernate/MySQL backend skeleton genuinely existed with five JPA entity types and 12 original routes. O3 D03 Department update was added, making 13/25; saved evidence showed eight Java unit tests, actual MySQL and Newman successes (15/29 O1 regression, 11/19 D03). A code defect was identified: expired APPROVED allocations counted by Requirement coverage though no longer stock holds. Latest independently audited main at handoff time was `16e781c837dd7e1f0481fb7a01e49c27d80a91e8`. The user recorded the Nov14 skeleton demo using OBS/VSCode and explicitly reported **VIDEO DONE**; don't treat older `VIDEO_NOT_CREATED.md` as current truth and do not claim Canvas submission without receipt.
 
 **THE CURRENT IN-PROGRESS TASK THAT MUST BE REVIEWED:** I was running the optimized O3 Codex master prompt to implement Project P03/P04 update/delete, Resource R03/R04 update/delete (with expectedTotalQuantity), Requirement Q03/Q04 update/delete (coverage and largest individual pending guard), and fix expired APPROVED requirement coverage JPQL/time semantics, with real tests, regression, safe data changes and a feature-branch push. Expected original route count on success: 19/25, but this is a TARGET, not a verified result. Use the actual latest commits and results to decide whether it passed. Review code at method/query/transaction/test level, not merely README claims. Identify remaining defects or unrun checks honestly.
 
