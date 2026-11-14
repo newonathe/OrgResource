@@ -18,14 +18,14 @@ Optimize TOTAL COST, not only shortest prompt length. A 200-word prompt causing 
 Select the **largest dependency-coherent implementation batch** that can be coded, tested and debugged with bounded context in the current coding session. Preferred after O3: O4+O5 as one cycle; O6+O7 coordinated; O8–O10 functional UI; O11–O14 QA/release. Internally checkpoint real tests after logical subcomponents but do not stop after one route/page and force expensive new prompts unless necessary. Isolate high-risk concurrency and external-provider steps within same batch with acceptance gates; don't merge unrelated infrastructure. Agent can make multiple local commits as needed but one pushed remote branch/PR per coherent cycle (or sensible stable subcommits).
 
 ## Required beginning of EVERY future coding prompt — audit
-1. GitHub connected remote repo \`newonathe/OrgResource\` recent main/feature commits, branches, open/merged PRs, CI runs, files/diff, issues if relevant. **Fresh** audit, not earlier snapshot.
+1. GitHub connected remote repo `newonathe/OrgResource` recent main/feature commits, branches, open/merged PRs, CI runs, files/diff, issues if relevant. **Fresh** audit, not earlier snapshot.
 2. Local agent git status, HEAD, current branch, working tree, remotes, uncommitted work, merge bases. Do not lose local user changes.
 3. Identify latest implemented route count, exact code and reports; previous phase status, failing tests, missing source/DB setup.
 4. Read relevant source/primary authority and latest phase report, not all 188k+ files repeatedly.
 5. One short precise scoped plan, then write actual code. Do not stop at planning.
 
 ## Token-saving engineering protocol
-- Read \`AGENTS.md\`, latest relevant evidence/route parity, compact source sections once per session. Read duplicated master only one location, targeted headings only after initial complete architecture grounding. Inspect actual file being changed.
+- Read `AGENTS.md`, latest relevant evidence/route parity, compact source sections once per session. Read duplicated master only one location, targeted headings only after initial complete architecture grounding. Inspect actual file being changed.
 - Avoid repeated full repo scans unless Git changed, repeated full Maven/npm builds on every edit, duplicate files, duplicate docs, reprinting huge logs or rewriting successful modules.
 - Batch similar endpoints/tests/validation while sharing setup and fixtures. Targeted unit/integration tests during development; one appropriate full regression at cycle gate.
 - No generic "give me permission" checks for safe routine local changes; no fictional background execution. Complete unblocked work in this response/session. Stop for real blocker or unsafe destructive action only.
@@ -51,7 +51,7 @@ User explicitly requested “push everything always” and the assistant interpr
 3. Execute appropriate checks; label failed/unrun honestly.
 4. Commit descriptively; push to remote feature branch, verify actual remote SHA and branch, open/update PR if available.
 5. For partial/blocking work, push safe WIP to clearly labeled feature branch with truthful status; no fake acceptance.
-6. Do NOT auto-merge into \`main\`, force-push, reset/discard existing work, publish repo, change Git history destructively, delete/reset MySQL, submit Canvas, or send real SMS without separate authorization.
+6. Do NOT auto-merge into `main`, force-push, reset/discard existing work, publish repo, change Git history destructively, delete/reset MySQL, submit Canvas, or send real SMS without separate authorization.
 7. If remote auth fails, report actual failure and preserved local state, not “pushed successfully”.
 8. Initial GitHub remote audit in ChatGPT planning and in Codex coding environment separately; the first does not replace the second.
 
