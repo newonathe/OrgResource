@@ -23,6 +23,29 @@ afterEach(() => {
 });
 
 describe("OrgResource screens", () => {
+  it("routes through all eight real pages and persists only presentation settings", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => jsonResponse([])));
+    render(<App />);
+    const navigation = within(screen.getByRole("navigation", { name: "Main navigation" }));
+    const routes = [
+      ["Overview", "Overview"], ["Allocations", "Allocations"], ["Resource Library", "Resource Library"],
+      ["Projects", "Projects"], ["Requirements", "Requirements"], ["Departments", "Departments"],
+      ["Reminders", "Reminder Activity"], ["About", "About OrgResource"],
+    ] as const;
+    for (const [link, heading] of routes) {
+      if (link !== "Overview") fireEvent.click(navigation.getByRole("link", { name: new RegExp(`^${link}$`) }));
+      expect(await screen.findByRole("heading", { name: heading, level: 1 })).toBeInTheDocument();
+    }
+
+    fireEvent.click(screen.getByRole("button", { name: "Switch to dark theme" }));
+    expect(document.querySelector(".app-shell")).toHaveAttribute("data-theme", "dark");
+    expect(window.localStorage.getItem("orgresource-theme")).toBe("dark");
+    fireEvent.click(screen.getByRole("button", { name: "Motion on" }));
+    expect(document.querySelector(".app-shell")).toHaveAttribute("data-motion", "off");
+    expect(window.localStorage.getItem("orgresource-motion")).toBe("off");
+    expect(window.localStorage.getItem("allocations")).toBeNull();
+  });
+
   it("creates and lists a Department using the real API contract", async () => {
     const departments: Array<{ id: number; name: string }> = [];
     const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
@@ -40,6 +63,7 @@ describe("OrgResource screens", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     render(<App />);
+    fireEvent.click(screen.getByRole("link", { name: "Departments" }));
     await screen.findByText("No departments yet");
     fireEvent.change(screen.getByLabelText("Department name"), { target: { value: "Field Operations" } });
     fireEvent.click(screen.getByRole("button", { name: "Add department" }));
@@ -75,14 +99,14 @@ describe("OrgResource screens", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     const { container } = render(<App />);
-    fireEvent.click(screen.getByRole("link", { name: "Resources" }));
+    fireEvent.click(screen.getByRole("link", { name: "Resource Library" }));
     const row = await screen.findByRole("row", { name: /Projector/ });
     fireEvent.click(within(row).getByRole("button", { name: "Edit Projector" }));
     fireEvent.change(screen.getByLabelText("Name"), { target: { value: "Projector for hall" } });
     fireEvent.change(screen.getByLabelText("Total quantity"), { target: { value: "8" } });
     fireEvent.click(screen.getByRole("button", { name: "Save changes" }));
 
-    expect(await screen.findByText(/server quantity changed/i)).toBeInTheDocument();
+    expect(await screen.findByText("The server quantity changed. Review the refreshed values before saving again.")).toBeInTheDocument();
     await waitFor(() => expect(container.querySelector(".review-guard")).toHaveTextContent("Current server total: 12"));
     expect(screen.getByLabelText("Name")).toHaveValue("Projector for hall");
     expect(screen.getByLabelText("Total quantity")).toHaveValue(8);

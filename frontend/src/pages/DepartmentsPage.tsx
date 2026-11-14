@@ -1,178 +1,120 @@
-import { FormEvent, useEffect, useMemo, useState } from "react";
-import { ApiError, api } from "../api/client";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { api } from "../api/client";
 import type { Department } from "../api/types";
+import { explainError } from "../domain";
+import { Button, GlassPanel, LoadState, Modal, Notice, PageHeader, PanelHeading } from "../ui";
 
 export function DepartmentsPage() {
   const [departments, setDepartments] = useState<Department[]>([]);
-  const [loadState, setLoadState] = useState<"loading" | "ready" | "error">("loading");
+  const [loadState, setLoadState] = useState<"loading" | "error" | "ready">("loading");
   const [loadError, setLoadError] = useState("");
-  const [reloadToken, setReloadToken] = useState(0);
   const [search, setSearch] = useState("");
-  const [newName, setNewName] = useState("");
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [name, setName] = useState("");
+  const [editing, setEditing] = useState<Department | null>(null);
   const [editName, setEditName] = useState("");
-  const [formError, setFormError] = useState("");
+  const [deleting, setDeleting] = useState<Department | null>(null);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
-
-  function refreshDepartments() {
-    setLoadState("loading");
-    setReloadToken((value) => value + 1);
-  }
+  const [reload, setReload] = useState(0);
 
   useEffect(() => {
     const controller = new AbortController();
-    api.departments(controller.signal)
-      .then((rows) => {
-        setDepartments(rows);
-        setLoadState("ready");
-      })
-      .catch((error: unknown) => {
-        if (error instanceof DOMException && error.name === "AbortError") return;
-        setLoadError(errorMessage(error));
-        setLoadState("error");
-      });
+    api.departments(controller.signal).then((rows) => {
+      setDepartments(rows);
+      setLoadState("ready");
+      setLoadError("");
+    }).catch((reason: unknown) => {
+      if (reason instanceof DOMException && reason.name === "AbortError") return;
+      setLoadError(explainError(reason));
+      setLoadState("error");
+    });
     return () => controller.abort();
-  }, [reloadToken]);
+  }, [reload]);
 
-  const visibleDepartments = useMemo(() => departments
-    .filter((department) => department.name.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()))
-    .sort((left, right) => left.name.localeCompare(right.name) || left.id - right.id), [departments, search]);
+  const refresh = () => { setLoadState("loading"); setReload((value) => value + 1); };
 
-  async function createDepartment(event: FormEvent<HTMLFormElement>) {
+  const ordered = useMemo(() => departments.filter((item) => item.name.toLowerCase().includes(search.trim().toLowerCase()))
+    .sort((a, b) => a.name.localeCompare(b.name) || a.id - b.id), [departments, search]);
+
+  async function submitCreate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setBusy(true);
-    setFormError("");
-    setNotice("");
+    if (busy || !name.trim()) return;
+    setBusy(true); setError(""); setNotice("");
     try {
-      await api.createDepartment(newName);
-      setNewName("");
-      setNotice("Department saved.");
-      refreshDepartments();
-    } catch (error) {
-      setFormError(errorMessage(error));
-    } finally {
-      setBusy(false);
-    }
+      await api.createDepartment(name.trim());
+      setName(""); setNotice("Department saved."); refresh();
+    } catch (reason) { setError(explainError(reason)); }
+    finally { setBusy(false); }
   }
 
-  async function saveEdit(event: FormEvent<HTMLFormElement>, id: number) {
+  async function submitUpdate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setBusy(true);
-    setFormError("");
-    setNotice("");
+    if (busy || !editing || !editName.trim()) return;
+    setBusy(true); setError(""); setNotice("");
     try {
-      await api.updateDepartment(id, editName);
-      setEditingId(null);
-      setNotice("Department updated.");
-      refreshDepartments();
-    } catch (error) {
-      setFormError(errorMessage(error));
-    } finally {
-      setBusy(false);
-    }
+      await api.updateDepartment(editing.id, editName.trim());
+      setEditing(null); setNotice("Department updated."); refresh();
+    } catch (reason) { setError(explainError(reason)); }
+    finally { setBusy(false); }
   }
 
-  async function removeDepartment(department: Department) {
-    if (!window.confirm(`Delete “${department.name}”? Departments with linked projects cannot be deleted.`)) return;
-    setBusy(true);
-    setFormError("");
-    setNotice("");
+  async function confirmDelete() {
+    if (busy || !deleting) return;
+    setBusy(true); setError(""); setNotice("");
     try {
-      await api.deleteDepartment(department.id);
-      setNotice("Department deleted.");
-      refreshDepartments();
-    } catch (error) {
-      setFormError(errorMessage(error));
-    } finally {
-      setBusy(false);
-    }
+      await api.deleteDepartment(deleting.id);
+      setDeleting(null); setNotice("Department deleted."); refresh();
+    } catch (reason) { setError(explainError(reason)); setDeleting(null); }
+    finally { setBusy(false); }
   }
 
   return (
     <section className="page-shell" aria-labelledby="departments-title">
-      <div className="page-heading">
-        <div>
-          <p className="eyebrow">Your organization</p>
-          <h1 id="departments-title">Departments</h1>
-          <p className="lede">Set up the groups that plan and share resources.</p>
-        </div>
-        <div className="count-card"><span>{loadState === "ready" ? departments.length : "—"}</span><small>departments</small></div>
-      </div>
-
-      {notice && <p className="notice success" role="status">{notice}</p>}
-      {formError && <p className="notice error" role="alert">{formError}</p>}
-
-      <div className="two-column-layout">
-        <section className="panel create-panel" aria-labelledby="new-department-title">
-          <p className="section-kicker">Add a group</p>
-          <h2 id="new-department-title">New department</h2>
-          <p className="panel-copy">Use a name people in your organization will recognize.</p>
-          <form onSubmit={createDepartment} className="stack-form">
+      <PageHeader eyebrow="Organization · structure" title="Departments" description="Keep the organization’s working groups clear and ready for project planning."
+        action={<div className="header-stat"><span>{loadState === "ready" ? departments.length : "—"}</span><small>departments</small></div>} />
+      {notice && <Notice tone="success">{notice}</Notice>}
+      {error && <Notice tone="danger">{error}</Notice>}
+      <div className="content-grid departments-grid">
+        <GlassPanel className="form-panel" tilt={false}>
+          <PanelHeading kicker="Organization" title="Add a department" />
+          <p className="panel-copy">Use the name your organization recognizes. Duplicate names are checked by the server.</p>
+          <form className="stack-form" onSubmit={submitCreate}>
             <label htmlFor="department-name">Department name</label>
-            <input id="department-name" maxLength={100} value={newName}
-              onChange={(event) => setNewName(event.target.value)} required />
-            <button className="button primary" disabled={busy || !newName.trim()} type="submit">
-              {busy ? "Saving…" : "Add department"}
-            </button>
+            <input id="department-name" value={name} maxLength={100} onChange={(event) => setName(event.target.value)} required />
+            <Button type="submit" variant="primary" magnetic disabled={busy || !name.trim()}>{busy ? "Saving…" : "Add department"}</Button>
           </form>
-        </section>
+          <div className="form-footnote"><span className="small-seal" aria-hidden="true">i</span><span>Projects remain linked to their original department.</span></div>
+        </GlassPanel>
 
-        <section className="panel list-panel" aria-labelledby="department-list-title">
-          <div className="list-heading">
-            <div>
-              <p className="section-kicker">Organization list</p>
-              <h2 id="department-list-title">All departments</h2>
-            </div>
-            <button className="button quiet-button" type="button" onClick={refreshDepartments}
-              disabled={loadState === "loading"} aria-label="Refresh departments">Refresh</button>
-          </div>
-          <label className="search-label" htmlFor="department-search">Find a department</label>
-          <input id="department-search" className="search-input" type="search" placeholder="Search by name"
-            value={search} onChange={(event) => setSearch(event.target.value)} />
-          {loadState === "loading" && <p className="state-message" role="status">Loading departments…</p>}
-          {loadState === "error" && <div className="empty-state error-state" role="alert">
-            <h3>Could not load departments</h3><p>{loadError}</p>
-            <button className="button secondary" type="button" onClick={refreshDepartments}>Retry</button>
-          </div>}
-          {loadState === "ready" && departments.length === 0 && <div className="empty-state">
-            <span className="empty-icon" aria-hidden="true">＋</span><h3>No departments yet</h3>
-            <p>Add the first department to begin organizing project work.</p>
-          </div>}
-          {loadState === "ready" && departments.length > 0 && visibleDepartments.length === 0 &&
-            <p className="state-message">No departments match “{search}”.</p>}
-          {loadState === "ready" && visibleDepartments.length > 0 && <ul className="record-list">
-            {visibleDepartments.map((department) => <li className="record-row" key={department.id}>
-              {editingId === department.id ? <form className="edit-form" onSubmit={(event) => saveEdit(event, department.id)}>
-                <label htmlFor={`edit-department-${department.id}`}>Department name</label>
-                <input id={`edit-department-${department.id}`} maxLength={100} value={editName}
-                  onChange={(event) => setEditName(event.target.value)} required autoFocus />
-                <div className="row-actions">
-                  <button className="button primary small-button" disabled={busy || !editName.trim()} type="submit">Save</button>
-                  <button className="button quiet-button small-button" disabled={busy} type="button" onClick={() => setEditingId(null)}>Cancel</button>
-                </div>
-              </form> : <>
-                <div className="record-icon" aria-hidden="true">{department.name.slice(0, 1).toLocaleUpperCase()}</div>
-                <div className="record-main"><strong>{department.name}</strong><span>Department #{department.id}</span></div>
-                <div className="row-actions">
-                  <button className="text-button" disabled={busy} type="button" onClick={() => {
-                    setEditingId(department.id); setEditName(department.name); setFormError(""); setNotice("");
-                  }}>Edit <span className="sr-only">{department.name}</span></button>
-                  <button className="text-button destructive" disabled={busy} type="button" onClick={() => void removeDepartment(department)}>
-                    Delete <span className="sr-only">{department.name}</span>
-                  </button>
-                </div>
-              </>}
-            </li>)}
-          </ul>}
-          <p className="list-footnote">A department with one or more projects must stay in place.</p>
-        </section>
+        <GlassPanel className="list-panel" tilt={false}>
+          <PanelHeading kicker="Organization directory" title="Department list">
+            <Button variant="quiet" onClick={refresh} disabled={loadState === "loading"}>Refresh</Button>
+          </PanelHeading>
+          <div className="search-filter-bar"><label htmlFor="department-search">Search departments</label><input id="department-search" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search by name" /></div>
+          <LoadState state={loadState} error={loadError} onRetry={refresh}>
+            {departments.length === 0 ? <div className="state-block state-empty"><span className="empty-symbol" aria-hidden="true">⌘</span><h3>No departments yet</h3><p>Add the first group to start organizing project work.</p></div>
+              : ordered.length === 0 ? <div className="state-block state-empty"><h3>No matching departments</h3><p>Try a different search term.</p></div>
+                : <div className="table-scroll"><table className="data-table"><thead><tr><th scope="col">Department</th><th scope="col">Record</th><th scope="col"><span className="sr-only">Actions</span></th></tr></thead>
+                  <tbody>{ordered.map((department) => <tr key={department.id}>
+                    <td>{editing?.id === department.id ? <form className="inline-edit" onSubmit={submitUpdate}>
+                      <label htmlFor="edit-department-name">Department name</label><input id="edit-department-name" value={editName} maxLength={100} onChange={(event) => setEditName(event.target.value)} autoFocus required />
+                      <Button type="submit" variant="primary" disabled={busy || !editName.trim()}>Save changes</Button>
+                      <Button type="button" variant="quiet" disabled={busy} onClick={() => setEditing(null)}>Cancel</Button>
+                    </form> : <div className="record-cell"><span className="record-symbol" aria-hidden="true">⌘</span><span><strong>{department.name}</strong><small>Organization group</small></span></div>}</td>
+                    {editing?.id !== department.id && <><td><span className="mono-id">D{String(department.id).padStart(3, "0")}</span></td><td><div className="row-actions">
+                      <Button variant="quiet" disabled={busy} aria-label={`Edit ${department.name}`} onClick={() => { setEditing(department); setEditName(department.name); setError(""); }}>Edit</Button>
+                      <Button variant="quiet" className="button-text-danger" disabled={busy} aria-label={`Delete ${department.name}`} onClick={() => { setDeleting(department); setError(""); }}>Delete</Button>
+                    </div></td></>}
+                  </tr>)}</tbody></table></div>}
+          </LoadState>
+        </GlassPanel>
       </div>
+
+      {deleting && <Modal title="Delete department?" onClose={() => setDeleting(null)}>
+        <p className="modal-copy">Delete <strong>{deleting.name}</strong>? The server will refuse if Projects still reference this department.</p>
+        <div className="modal-actions"><Button variant="quiet" disabled={busy} onClick={() => setDeleting(null)}>Keep department</Button><Button variant="danger" disabled={busy} onClick={() => void confirmDelete()}>{busy ? "Checking…" : "Confirm delete"}</Button></div>
+      </Modal>}
     </section>
   );
-}
-
-function errorMessage(error: unknown): string {
-  if (error instanceof ApiError) return `${error.message} (${error.code})`;
-  return "Something went wrong. Review the form and try again.";
 }

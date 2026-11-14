@@ -5,6 +5,8 @@
 **/coverage/
 **/playwright-report/
 **/test-results/
+# Full-resolution Playwright captures are local intermediates; compressed review sheets are tracked.
+/evidence/O8-O10/screenshots/raw/
 **/.idea/
 *.log
 
