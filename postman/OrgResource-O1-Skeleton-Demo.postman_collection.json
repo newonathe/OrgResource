@@ -1,0 +1,95 @@
+{
+  "info": {
+    "_postman_id": "a4b0174a-3c6b-40c7-a220-3df52153c532",
+    "name": "OrgResource O1 Skeleton Demo",
+    "description": "Focused two-request O1 skeleton demonstration. Creates one uniquely named fictional Department and verifies it appears in the persisted Department list. It does not delete data or use credentials.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://127.0.0.1:8080/api", "type": "string" },
+    { "key": "demoDepartmentName", "value": "", "type": "string" },
+    { "key": "demoDepartmentId", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "1. Create a unique fictional demo Department",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const suffix = new Date().toISOString().replace(/[-:.TZ]/g, '').slice(0, 14) + '-' + Math.random().toString(36).slice(2, 8);",
+              "pm.collectionVariables.set('demoDepartmentName', 'Skeleton Demo Department ' + suffix);",
+              "pm.collectionVariables.unset('demoDepartmentId');"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Department creation returns HTTP 201', function () { pm.response.to.have.status(201); });",
+              "const body = pm.response.json();",
+              "pm.test('Response contains the unique fictional name and a generated ID', function () {",
+              "  pm.expect(body).to.have.property('id');",
+              "  pm.expect(Number(body.id)).to.be.above(0);",
+              "  pm.expect(body.name).to.eql(pm.collectionVariables.get('demoDepartmentName'));",
+              "});",
+              "if (body && body.id) { pm.collectionVariables.set('demoDepartmentId', String(body.id)); }"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"{{demoDepartmentName}}\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/departments",
+          "host": [ "{{baseUrl}}" ],
+          "path": [ "departments" ]
+        },
+        "description": "Creates one fictional row using a timestamp plus random suffix so reruns do not reuse the previous name."
+      },
+      "response": []
+    },
+    {
+      "name": "2. Confirm the Department is persisted",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Department list returns HTTP 200', function () { pm.response.to.have.status(200); });",
+              "const rows = pm.response.json();",
+              "const expectedId = String(pm.collectionVariables.get('demoDepartmentId'));",
+              "const expectedName = pm.collectionVariables.get('demoDepartmentName');",
+              "pm.test('The created ID and exact name appear in the persisted Department list', function () {",
+              "  pm.expect(rows).to.be.an('array');",
+              "  pm.expect(rows.some(function (row) { return String(row.id) === expectedId && row.name === expectedName; })).to.eql(true);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/departments",
+          "host": [ "{{baseUrl}}" ],
+          "path": [ "departments" ]
+        },
+        "description": "Reads Departments back from the API and asserts that both the newly returned ID and unique name are present."
+      },
+      "response": []
+    }
+  ]
+}
