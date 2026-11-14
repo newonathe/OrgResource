@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import app.entities.AllocationStatus;
 import app.repositories.AllocationRepository;
 
 @Component
+@ConditionalOnProperty(name = "orgresource.expiry.scheduler-enabled", havingValue = "true", matchIfMissing = true)
 public class ExpiryScheduler {
     private static final Logger LOG = LoggerFactory.getLogger(ExpiryScheduler.class);
     private static final List<AllocationStatus> OPEN_STATUSES = Arrays.asList(

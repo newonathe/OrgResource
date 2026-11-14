@@ -1,8 +1,8 @@
-# OrgResource Java backend (O1–O5)
+# OrgResource Java backend (O1–O6)
 
 This backend is the first, deliberately bounded implementation slice for the CSCI 180.05 OrgResource project. It uses the supplied course-era stack: Java 8, Spring Boot 2.1.0, Jersey/JAX-RS `javax`, Spring Data JPA, Javax Validation, and MySQL. The Eclipse metadata supports Java 8 and m2e; day-to-day editing can remain in VS Code.
 
-## Implemented and verified through O5
+## Implemented and verified through O6
 
 - Exactly five JPA entity types: `Department`, `Project`, `Resource`, `ResourceRequirement`, and `Allocation`.
 - Five Spring Data repositories, five Spring components, and five Jersey controller families.
@@ -11,6 +11,10 @@ This backend is the first, deliberately bounded implementation slice for the CSC
 - DTOs separate the public API from the persistence graph. Allocation responses never contain `phoneNumber`.
 - Javax Validator checks JSON request DTOs. Project date-times are local Philippine wall times in `YYYY-MM-DDTHH:mm:ss` format.
 - The local MySQL connection is environment-configured. No password is stored in source or this project folder.
+- Upcoming reusable return reminders use actual Retrofit/Gson HTTP to the supplied FakeTwilio contract. `DISABLED` is the default; `FAKE_TWILIO` is loopback-only with dummy Authorization and records `SIMULATED`, never message delivery.
+- Reminder claims commit before HTTP. Eligibility is rechecked before send, results are saved under a fresh Allocation lock, and stale or uncertain claims become `UNKNOWN` without automatic resend. External HTTP is outside database transactions.
+- Resource listing uses one grouped commitments query and one Asia/Manila Clock sample instead of per-resource aggregate queries.
+- Integration tests use a guarded, separately configured `orgresource_test` database and cannot initialize the regular development schema.
 
 Implemented routes:
 
@@ -44,13 +48,17 @@ The O3 project/resource/requirement CRUD routes are covered by `../postman/OrgRe
 
 Allocation lifecycle routes A03–A08 and the separate A09 consent revocation route are exercised by `../postman/OrgResource-O4-O5-Allocation-Expiry.postman_collection.json`. It generates unique fictional fixture names; returned and consumed history remains because A08 protects historically approved Allocations.
 
-## Not part of this skeleton
+## Not part of this implementation slice
 
-All 25 original API operations are implemented. The allocation lifecycle uses Project → Resource → Requirement → Allocation pessimistic locks, READ_COMMITTED transactions, database-derived stock/coverage, and atomic consumable deductions. Expired PENDING and APPROVED requests are processed in bounded scheduled batches; ISSUED custody is preserved. A09 consent revocation is implemented separately from the original 25 routes. See `../evidence/O4-O5/ROUTE_PARITY.md` for the current route map and `../evidence/O4-O5/PHASE_REPORT.md` for test evidence. Retrofit/Gson SMS delivery, React UI, image upload/serve behavior, reviewed production migrations, and hosted deployment are not implemented. CLO9 image scope remains unresolved.
+All 25 original API operations are implemented. A09 consent revocation is implemented separately; O6 adds no API route or JPA entity. See `../evidence/O4-O5/ROUTE_PARITY.md` for the route map and `../evidence/O6-O7/PHASE_REPORT.md` for this phase's evidence. The current React UI covers Department and Resource workflows only; later screens remain future scope. Real Twilio provider integration, image upload/serve behavior, reviewed production migrations, and hosted deployment are not implemented. CLO9 image scope remains unresolved.
 
 The syllabus maps the final project to CLO9 (receiving and serving images over HTTP), while the concise proposal's 25-route API does not specify image endpoints. The instructor/Canvas requirement remains unresolved. The image feature is therefore not silently added to this O1 skeleton; resolve the scope before final-project acceptance.
 
-`spring.jpa.hibernate.ddl-auto=update` is used only to generate this local skeleton schema. Replace it with reviewed migrations before broader development/release.
+`spring.jpa.hibernate.ddl-auto=update` is used for the local academic prototype schema. Replace it with reviewed migrations before broader development/release.
+
+## Test-only database setup
+
+For local MySQL integration tests, set `ORG_TEST_DB_URL`, `ORG_TEST_DB_USER`, and `ORG_TEST_DB_PASSWORD` from a protected local credential store, then run `.\mvnw.cmd clean verify` from this folder. The workstation helper `%LOCALAPPDATA%\OrgResourceDev\Set-OrgResourceTestEnvironment.ps1` loads the dedicated test-schema credentials into the current PowerShell process without printing them. A startup guard refuses schemas other than `orgresource_test`. Never substitute `ORG_DB_*` for tests.
 
 ## Local build and run
 
@@ -69,6 +77,10 @@ java -jar target\orgresource-0.1.0-SNAPSHOT.jar
 ```
 
 The HTTP server binds to `127.0.0.1:8080`. For this workstation, the database and password are provisioned separately under `%LOCALAPPDATA%\OrgResourceDev`; its DPAPI-protected credential file is not portable and is intentionally excluded from source archives. The O1 report records the actual schema, HTTP responses, build result, and restart check.
+
+## Reminder modes
+
+`ORGRESOURCE_REMINDERS_MODE` defaults to `DISABLED`. To exercise only the course simulator, run the supplied FakeTwilio app bound to `127.0.0.1:9997` and set `ORGRESOURCE_REMINDERS_MODE=FAKE_TWILIO` before starting the backend. The adapter uses dummy Authorization and refuses non-loopback HTTP targets. The course simulator prints its request header, destination, and body to its own console; use only fictional test data and never configure real provider credentials here. `TWILIO_VIRTUAL` fails closed because a live-provider adapter is outside this phase.
 
 ## Source constraints
 

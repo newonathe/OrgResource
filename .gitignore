@@ -1,6 +1,10 @@
 # Java/Maven build output and local tools
 **/target/
 **/node_modules/
+**/dist/
+**/coverage/
+**/playwright-report/
+**/test-results/
 **/.idea/
 *.log
 

@@ -4,6 +4,12 @@ The reference pack contributed engineering and documentation practices. Its comm
 
 # OrgResource Specification Package
 
+## Current implementation status
+
+The current application scope is the five-entity OrgResource backend with 25 original routes plus the proposed A09 consent-revocation route. Start with [the current route contract](docs/complete-handoff/05_API_26_ROUTES_AND_RESPONSES.md), [the current Postman reference](postman/OrgResource-Current-26-Routes.postman_collection.json), and the phase evidence under `evidence/`. The current implementation is in `backend/`; the React/TypeScript app and its startup/check commands are in [frontend/README.md](frontend/README.md).
+
+The original nine-entity, 68-operation contract and its Postman collection are historical planning material. They are retained for provenance and are not current implementation scope. This README's package and proposal inventory below describes that earlier specification handoff; it should not be used to infer current entity or route counts.
+
 Version 1.0 was prepared 3 November 2026 as the complete specification and proposal handoff. A Java 8 / Spring Boot / Jersey O1 backend skeleton has since been implemented under `backend/`. Its build, local MySQL schema, HTTP checks and restart persistence are recorded in `evidence/O1/PHASE_REPORT.md`. The skeleton is not the complete application.
 
 Start with OrgResource-Formal-Proposal.docx for a self-contained Word proposal and technical appendices. Replace the group-member/date placeholders and review the flagged course confirmations before submission. OrgResource-Specification-Package.zip is the transferable source package. The Markdown files remain easier to search and update than the long Word compilation.
