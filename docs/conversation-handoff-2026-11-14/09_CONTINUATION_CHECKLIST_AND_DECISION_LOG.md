@@ -4,24 +4,24 @@
 - **COURSE REQUIREMENT:** Assignment dated 2026 course project, 5 entities, Jersey+Spring+JPA+Javax+Retrofit/Twilio+Scheduling, GET/POST, controller injection, Postman, Part II export/video, final project due printed Dec5. Current Canvas may supersede.
 - **SYLLABUS FACT:** Eclipse/Java, Jersey, JPA/Hibernate/MySQL, JPQL, validation, Retrofit/GSON, image receive/serve CLO9, authorship/assistance obligation.
 - **USER DECISION:** Current O3 prompt still running at handoff request. O2 video DONE by user report (not independently opened or submitted). VS Code, Codex coding, private newonathe repo, final working React UI, exact five entities, efficient grouped builds, mandatory fresh GitHub audits and feature-branch push of all legitimate changes.
-- **OBSERVED CONNECTED GITHUB:** Main \`16e781c\`, 13/25 original routes, O3 D03 tested, eight Java tests saved, 0 CI runs, draft PR #1 old O2 branch, no implemented frontend. This is a point-in-time snapshot.
+- **OBSERVED CONNECTED GITHUB:** Main `16e781c`, 13/25 original routes, O3 D03 tested, eight Java tests saved, 0 CI runs, draft PR #1 old O2 branch, no implemented frontend. This is a point-in-time snapshot.
 - **SAVED EXECUTION EVIDENCE:** O1 Maven/MySQL/Newman/restart, O3 Maven/8 tests/newman tests and clean source export, current demo preflight real startup; saved records not equal to fresh independent rerun by new ChatGPT conversation.
 - **WORK IN PROGRESS:** O3 six CRUD routes + coverage correction, completed/pushed status unknown.
 - **NOT YET OBSERVED/OPEN:** full Allocation lifecycle, actual @Scheduled jobs and FakeTwilio HTTP, React app, live MySQL concurrency, final Eclipse GUI import, final bundled UI/JAR, CLI/CD, image obligation, current Canvas, user-authored original O2 video file/Canvas receipt, final Dec5 academic deliverables.
 
 ## 2. First 15-minute remote inspection in new conversation
-1. Check GitHub account \`newonathe\` selected (other connected GitHub accounts exist; don't use wrong account).
-2. Fetch repo metadata and \`main\` HEAD, recent commits (date + subject), branch list and HEADs, open PRs including draft #1, workflows/checks.
+1. Check GitHub account `newonathe` selected (other connected GitHub accounts exist; don't use wrong account).
+2. Fetch repo metadata and `main` HEAD, recent commits (date + subject), branch list and HEADs, open PRs including draft #1, workflows/checks.
 3. Find O3 feature branches with recent commit and compare diff from old head. Do not use old branch as merged unless Git actually shows it.
-4. Read exact updated \`evidence/O3/PHASE_REPORT.md\`, \`evidence/O3/ROUTE_PARITY.md\` from its branch; if not updated search for \`evidence/O3*\` new files or Codex response.
-5. Enumerate actual \`@POST\` and \`@GET\` paths across five controller Java files. Count 25 original paths; separately A09 (and conditional image routes). Show implemented/untested/missing.
-6. Read actual modified code: Project/Resource/Requirement components/repositories/DTO/controller and JPQL, tests, Postman; pay special attention to \`expectedTotalQuantity\` and effective COVERED query.
+4. Read exact updated `evidence/O3/PHASE_REPORT.md`, `evidence/O3/ROUTE_PARITY.md` from its branch; if not updated search for `evidence/O3*` new files or Codex response.
+5. Enumerate actual `@POST` and `@GET` paths across five controller Java files. Count 25 original paths; separately A09 (and conditional image routes). Show implemented/untested/missing.
+6. Read actual modified code: Project/Resource/Requirement components/repositories/DTO/controller and JPQL, tests, Postman; pay special attention to `expectedTotalQuantity` and effective COVERED query.
 7. Inspect test types and saved outputs to distinguish Java unit, MySQL integration, HTTP Newman, concurrency, clean packaging. If changes not pushed despite local Codex output, request push/commit and don't treat repo stale as code failure.
 8. Check PR status and branch protection; no automatic merges.
 9. Return succinct acceptance verdict with critical issues and exact next step. If current O3 STILL actively running, don't interfere or send overlapping new coding prompt until user is ready.
 
 ## 3. O3 audit verdict format
-\`\`\`
+```
 GitHub audit time (PHT):
 Repository / visibility:
 Remote main SHA:
@@ -38,7 +38,7 @@ Current unresolved P0/P1 defects:
 Remote push verified SHA:
 Decision: PASS / CONDITIONALLY_READY / FAIL / BLOCKED.
 Next batch: O4+O5 or one coherent O3 repair.
-\`\`\`
+```
 
 ## 4. Working decision register
 ADR-01 Exact 5 entities, no StockMovement. [USER DECISION]
@@ -90,10 +90,10 @@ R19 Lossless continuity request: primary source files and actual code must be re
 **PLAN/SPECIFIED** = design only; **IMPLEMENTED** = actual source present; **TEST REPORTED** = saved result evidence inspected but not independently rerun in this chat; **VERIFIED EXECUTION** = appropriate test actually executed under tool-observed environment; **USER REPORTED** = explicit user's action claim; **FAILED** = executed and failed; **BLOCKED** = dependency unavailable; **NOT_RUN** = no execution attempted; **OPEN QUESTION** = source conflict/decision. Do not compress these into a generic “working”.
 
 ## 7. Git branch and merge practice
-A feature branch push is authorized as a **coding-cycle** end action. Main merge and release remain separate review gates. PR #1 is OLD O2 demo kit (main is newer); don't merge by default. This continuity pack itself is on \`docs/conversation-continuity-2026-11-14\` specifically to avoid interference with active Codex O3 edits; it does not contain Java implementation changes and doesn't assert application tests passed. User can use its links in a new ChatGPT conversation in the same Project.
+A feature branch push is authorized as a **coding-cycle** end action. Main merge and release remain separate review gates. PR #1 is OLD O2 demo kit (main is newer); don't merge by default. This continuity pack itself is on `docs/conversation-continuity-2026-11-14` specifically to avoid interference with active Codex O3 edits; it does not contain Java implementation changes and doesn't assert application tests passed. User can use its links in a new ChatGPT conversation in the same Project.
 
 ## 8. What the new chat should DO immediately, not do
 DO audit actual changed GitHub branch and source, review O3 code-level behavior/test evidence, then draft grouped O4+O5 prompt if ready. DO call connected GitHub tool as necessary. DO preserve separate primary source authority. DO optimize for actual verified software per token, performance and storage, and automatic push. DON'T start editing code from ChatGPT without user ask, DON'T re-explain O2 video by default, DON'T make plans as if 13/25 still current after Codex push, DON'T claim O3 checks passed from old reports, DON'T merge or release without explicit instruction.
 
 ## 9. User handoff UX
-Simplest new conversation starter: copy file \`07_NEW_CHAT_COPY_READY_PROMPT.md\` into new chat, or point new chat directly to private GitHub repo branch/directory and ask it to read \`MASTER_CONTINUITY_UNABRIDGED.md\` plus fresh GitHub audit. This is the smallest repeated context input; detailed evidence remains in committed files. If a GitHub connector isn't connected in the new chat, attaching downloaded master markdown also works. Never guess sandbox download path.
+Simplest new conversation starter: copy file `07_NEW_CHAT_COPY_READY_PROMPT.md` into new chat, or point new chat directly to private GitHub repo branch/directory and ask it to read `MASTER_CONTINUITY_UNABRIDGED.md` plus fresh GitHub audit. This is the smallest repeated context input; detailed evidence remains in committed files. If a GitHub connector isn't connected in the new chat, attaching downloaded master markdown also works. Never guess sandbox download path.
