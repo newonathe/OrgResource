@@ -8,7 +8,7 @@ Repository: https://github.com/newonathe/OrgResource
 Continuity branch: \`docs/conversation-continuity-2026-11-14\`
 Continuity directory: \`docs/conversation-handoff-2026-11-14/\`
 
-Read ALL ten numbered continuity files under that directory (00–09), including their detailed chronology, technical contracts, domain and API, repo/evidence status, current O3 build scope, standing performance/token/push policy, source index, and checklists. The directory is committed to the GitHub feature branch, not necessarily merged to main. Use the connected GitHub account \`newonathe\` to read files by explicit branch ref. The files are:
+Read ALL twelve numbered continuity files under that directory (00–11), OR read the losslessly concatenated `MASTER_CONTINUITY_UNABRIDGED.md` plus the live repository sources, including their detailed chronology, technical contracts, domain and API, repo/evidence status, current O3 build scope, standing performance/token/push policy, source index, and checklists. The directory is committed to the GitHub feature branch, not necessarily merged to main. Use the connected GitHub account \`newonathe\` to read files by explicit branch ref. The files are:
 - 00_READ_THIS_FIRST.md
 - 01_CONVERSATION_DECISIONS_AND_HISTORY.md
 - 02_GITHUB_SNAPSHOT_AND_EVIDENCE.md
@@ -19,6 +19,8 @@ Read ALL ten numbered continuity files under that directory (00–09), including
 - 07_NEW_CHAT_COPY_READY_PROMPT.md (this prompt)
 - 08_SOURCE_DIRECTORY_EVIDENCE_REGISTER.md
 - 09_CONTINUATION_CHECKLIST_AND_DECISION_LOG.md
+- 10_O4_O5_COMBINED_CYCLE_SEED.md
+- 11_O2_VIDEO_DEMO_RUNBOOK_HISTORY.md
 
 These files preserve the previous conversation's substantive intent. **Do not assume the dated GitHub snapshot is current.**
 
