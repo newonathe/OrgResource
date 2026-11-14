@@ -1,17 +1,30 @@
-# OrgResource web interface (O7)
+# OrgResource React frontend (O7–O10)
 
-The React/TypeScript/Vite app is a local same-origin client for the Java API. It currently implements real Department and Resource list, create, update, and delete workflows. DTOs for the other API areas are defined in the shared typed client for later UI phases; those screens are not presented as complete.
+The React, TypeScript, and Vite application is a local same-origin client for the existing Java API. Its eight routes provide the project workspace:
+
+| Route | Screen | Main work |
+| --- | --- | --- |
+| `#/` | Overview | Server-derived project, requirement, stock, and allocation snapshot |
+| `#/allocations` | Allocations | Request, approve, issue, return, consume, cancel, delete, and withdraw reminder consent |
+| `#/resources` | Resource Library | Create, list, edit with stale-total review, inspect server availability, and guarded delete |
+| `#/projects` | Projects | Create, filter, inspect history, rename, and guarded delete |
+| `#/requirements` | Requirements | Create, view server coverage/shortage, update quantity, and guarded delete |
+| `#/departments` | Departments | Create, list/search, rename, and guarded delete |
+| `#/reminders` | Reminder Activity | Read upcoming/overdue Projects and server-recorded reminder outcomes |
+| `#/about` | About | Explain the five records, whole-batch lifecycle, and prototype boundaries |
+
+Business records always come from the API. Only the light/dark theme and motion preference are stored in browser `localStorage`. The UI does not claim production authentication, institutional integration, delivered SMS, or CLO9 image handling. The SMS consent input accepts only the reserved fictional range `+12025550100`–`+12025550199`; the allocation read DTO never exposes the saved phone number.
 
 ## Local development
 
-Use Node.js 24 or another version supported by Vite 8. From this folder:
+Use Node.js 20.19+ and the same locally configured Java/MySQL backend described in [`../backend/README.md`](../backend/README.md). From this folder:
 
 ```powershell
 npm ci
 npm run dev
 ```
 
-The Java API must be running at `http://127.0.0.1:8080`. Vite binds to `127.0.0.1:5173` and proxies `/api` to that backend. The browser does not hold inventory data or use fabricated records.
+Vite binds to `http://127.0.0.1:5173` and proxies `/api` to `http://127.0.0.1:8080`. The backend remains the authority for validation, lifecycle transitions, coverage, stock availability, and persistence.
 
 ## Checks
 
@@ -23,6 +36,6 @@ npm run build
 npm run e2e
 ```
 
-The Playwright test uses the real API and writes fictional fixtures. Run it only against the isolated disposable `orgresource_test` database/profile. On success it removes the Department and Resource fixtures it creates. If interrupted, inspect and clean only its unique `E2E <timestamp>` fixtures in that test schema.
+The Playwright suite runs headless Chromium from the command line. Its connected workflow writes uniquely named fictional data through the real API. Run it only while the backend is configured for the isolated `orgresource_test` schema; never point it at the regular `orgresource` database. The suite does not reset schemas. It removes only unreferenced temporary records; Allocation history intentionally persists according to backend deletion rules. If a run is interrupted, inspect only rows beginning with that run's unique `O8...` fixture prefix in `orgresource_test`.
 
-The E2E runner uses headless Playwright Chromium from the command line and does not open an in-app browser window.
+The visual matrix saves full-page light/dark desktop and mobile captures, one tablet allocation view, record detail and confirmation views, and representative loading/empty/error states under [`../evidence/O8-O10/screenshots/`](../evidence/O8-O10/screenshots/). The compact JPEG contact sheets are the review artifacts; raw Playwright captures are generated locally and are not part of the deliverable.

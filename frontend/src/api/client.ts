@@ -77,7 +77,13 @@ export const api = {
   updateDepartment: (id: number, name: string) => post<Department>(`/departments/${id}/update`, { name }),
   deleteDepartment: (id: number) => post<DeleteResponse>(`/departments/${id}/delete`),
 
-  projects: (signal?: AbortSignal) => get<Project[]>("/projects", signal),
+  projects: (departmentId?: number, signal?: AbortSignal) =>
+    get<Project[]>(`/projects${departmentId ? `?departmentId=${encodeURIComponent(departmentId)}` : ""}`, signal),
+  createProject: (body: { departmentId: number; name: string; startAt: string; endAt: string }) =>
+    post<Project>("/projects", body),
+  updateProject: (id: number, body: { name: string; startAt: string; endAt: string }) =>
+    post<Project>(`/projects/${id}/update`, body),
+  deleteProject: (id: number) => post<DeleteResponse>(`/projects/${id}/delete`),
   resources: (type?: ResourceType, signal?: AbortSignal) =>
     get<Resource[]>(`/resources${type ? `?type=${encodeURIComponent(type)}` : ""}`, signal),
   createResource: (body: { name: string; type: ResourceType; totalQuantity: number }) =>
@@ -88,6 +94,33 @@ export const api = {
   resourceAvailability: (id: number, signal?: AbortSignal) =>
     get<ResourceAvailability>(`/resources/${id}/availability`, signal),
 
-  requirements: (signal?: AbortSignal) => get<ResourceRequirement[]>("/requirements", signal),
-  allocations: (signal?: AbortSignal) => get<Allocation[]>("/allocations", signal),
+  requirements: (projectId?: number, signal?: AbortSignal) =>
+    get<ResourceRequirement[]>(`/requirements${projectId ? `?projectId=${encodeURIComponent(projectId)}` : ""}`, signal),
+  createRequirement: (body: { projectId: number; resourceId: number; quantity: number }) =>
+    post<ResourceRequirement>("/requirements", body),
+  updateRequirement: (id: number, quantity: number) =>
+    post<ResourceRequirement>(`/requirements/${id}/update`, { quantity }),
+  deleteRequirement: (id: number) => post<DeleteResponse>(`/requirements/${id}/delete`),
+
+  allocations: (filters: { requirementId?: number; status?: Allocation["status"] } = {}, signal?: AbortSignal) => {
+    const query = new URLSearchParams();
+    if (filters.requirementId) query.set("requirementId", String(filters.requirementId));
+    if (filters.status) query.set("status", filters.status);
+    const suffix = query.size ? `?${query.toString()}` : "";
+    return get<Allocation[]>(`/allocations${suffix}`, signal);
+  },
+  createAllocation: (body: {
+    requirementId: number;
+    quantity: number;
+    borrowerName: string;
+    phoneNumber?: string | null;
+    smsConsent?: boolean;
+  }) => post<Allocation>("/allocations", body),
+  approveAllocation: (id: number) => post<Allocation>(`/allocations/${id}/approve`),
+  issueAllocation: (id: number) => post<Allocation>(`/allocations/${id}/issue`),
+  returnAllocation: (id: number) => post<Allocation>(`/allocations/${id}/return`),
+  consumeAllocation: (id: number) => post<Allocation>(`/allocations/${id}/consume`),
+  cancelAllocation: (id: number) => post<Allocation>(`/allocations/${id}/cancel`),
+  deleteAllocation: (id: number) => post<DeleteResponse>(`/allocations/${id}/delete`),
+  revokeSmsConsent: (id: number) => post<Allocation>(`/allocations/${id}/revoke-sms-consent`),
 };
