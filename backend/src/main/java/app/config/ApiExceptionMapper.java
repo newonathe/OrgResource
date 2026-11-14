@@ -24,9 +24,25 @@ public class ApiExceptionMapper implements ExceptionMapper<Exception> {
             return Response.status(api.status).type(MediaType.APPLICATION_JSON_TYPE)
                     .entity(new ErrorView(api.code, api.getMessage())).build();
         }
-        if (isDepartmentNameKeyViolation(error)) {
+        if (isConstraintViolation(error, "uk_department_name_key")) {
             return Response.status(Response.Status.CONFLICT).type(MediaType.APPLICATION_JSON_TYPE)
                     .entity(new ErrorView("DUPLICATE_NAME", "A department with this name already exists.")).build();
+        }
+        if (isConstraintViolation(error, "uk_resource_name_key")) {
+            return Response.status(Response.Status.CONFLICT).type(MediaType.APPLICATION_JSON_TYPE)
+                    .entity(new ErrorView("DUPLICATE_NAME", "A Resource with this name already exists.")).build();
+        }
+        if (isConstraintViolation(error, "uk_requirement_project_resource")) {
+            return Response.status(Response.Status.CONFLICT).type(MediaType.APPLICATION_JSON_TYPE)
+                    .entity(new ErrorView("DUPLICATE_REQUIREMENT",
+                            "This Project already has a Requirement for that Resource.")).build();
+        }
+        if (isConstraintViolation(error, "fk_project_department")
+                || isConstraintViolation(error, "fk_requirement_project")
+                || isConstraintViolation(error, "fk_requirement_resource")
+                || isConstraintViolation(error, "fk_allocation_requirement")) {
+            return Response.status(Response.Status.CONFLICT).type(MediaType.APPLICATION_JSON_TYPE)
+                    .entity(new ErrorView("DEPENDENCY_EXISTS", "The record is still referenced by another record.")).build();
         }
         if (error instanceof NotFoundException) {
             return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON_TYPE)
@@ -45,12 +61,13 @@ public class ApiExceptionMapper implements ExceptionMapper<Exception> {
                 .entity(new ErrorView("INTERNAL_ERROR", "An unexpected server error occurred.")).build();
     }
 
-    private boolean isDepartmentNameKeyViolation(Throwable error) {
+    private boolean isConstraintViolation(Throwable error, String expectedConstraint) {
         for (Throwable cause = error; cause != null; cause = cause.getCause()) {
             if (cause instanceof org.hibernate.exception.ConstraintViolationException) {
                 String constraint = ((org.hibernate.exception.ConstraintViolationException) cause).getConstraintName();
-                return constraint != null && ("uk_department_name_key".equalsIgnoreCase(constraint)
-                        || constraint.toLowerCase(java.util.Locale.ROOT).endsWith(".uk_department_name_key"));
+                return constraint != null && (expectedConstraint.equalsIgnoreCase(constraint)
+                        || constraint.toLowerCase(java.util.Locale.ROOT)
+                                .endsWith("." + expectedConstraint.toLowerCase(java.util.Locale.ROOT)));
             }
         }
         return false;

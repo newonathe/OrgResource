@@ -10,14 +10,20 @@ import org.springframework.transaction.annotation.Transactional;
 import app.dto.ApiDtos.AllocationView;
 import app.entities.Allocation;
 import app.entities.AllocationStatus;
+import app.entities.Project;
+import app.entities.Resource;
 import app.entities.ResourceRequirement;
 import app.repositories.AllocationRepository;
+import app.repositories.ProjectRepository;
+import app.repositories.ResourceRepository;
 import app.repositories.ResourceRequirementRepository;
 
 @Component
 public class AllocationComponent {
     @Autowired private AllocationRepository allocations;
     @Autowired private ResourceRequirementRepository requirements;
+    @Autowired private ProjectRepository projects;
+    @Autowired private ResourceRepository resources;
     @Autowired private Clock philippineClock;
 
     @Transactional
@@ -31,10 +37,18 @@ public class AllocationComponent {
         if (consent && (phoneNumber == null || !phoneNumber.matches("^\\+[1-9][0-9]{7,14}$"))) {
             throw new ApiException(400, "VALIDATION_FAILED", "smsConsent requires a valid fictional E.164 destination.");
         }
-        ResourceRequirement requirement = requirements.findById(requirementId)
+        ResourceRequirement initial = requirements.findById(requirementId)
+                .orElseThrow(() -> new ApiException(404, "NOT_FOUND", "Requirement not found."));
+        Long projectId = initial.project.getId();
+        Long resourceId = initial.resource.getId();
+        Project project = projects.lockById(projectId)
+                .orElseThrow(() -> new ApiException(404, "NOT_FOUND", "Project not found."));
+        Resource resource = resources.lockById(resourceId)
+                .orElseThrow(() -> new ApiException(404, "NOT_FOUND", "Resource not found."));
+        ResourceRequirement requirement = requirements.lockById(requirementId)
                 .orElseThrow(() -> new ApiException(404, "NOT_FOUND", "Requirement not found."));
         LocalDateTime now = LocalDateTime.now(philippineClock);
-        if (!requirement.project.getEndAt().isAfter(now)) {
+        if (!project.getEndAt().isAfter(now)) {
             throw new ApiException(409, "PROJECT_ENDED", "Allocations cannot be created for an ended Project.");
         }
         if (quantity > requirement.quantity) {
