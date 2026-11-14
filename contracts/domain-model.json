@@ -1,0 +1,1462 @@
+{
+  "version": "1.0",
+  "entities": {
+    "Department": {
+      "name": "Department",
+      "path": "departments",
+      "component": "DepartmentComponent",
+      "purpose": "Flat accountable unit inside the one organization.",
+      "why": "Needed to consolidate demand and assign responsibility without tenancy or hierarchy.",
+      "fields": [
+        {
+          "name": "id",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Generated IDENTITY; positive; immutable",
+          "description": "Surrogate primary key"
+        },
+        {
+          "name": "createdAt",
+          "java": "Instant",
+          "nullable": false,
+          "constraint": "UTC millisecond; server assigned",
+          "description": "Creation instant"
+        },
+        {
+          "name": "createdBy",
+          "java": "AppUser",
+          "nullable": true,
+          "constraint": "FK RESTRICT; null only SYSTEM bootstrap/jobs",
+          "description": "Creator actor; null never means an unauthenticated public request"
+        },
+        {
+          "name": "version",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Version; nonnegative; server managed",
+          "description": "Expected version checked on updates"
+        },
+        {
+          "name": "updatedAt",
+          "java": "Instant",
+          "nullable": false,
+          "constraint": "UTC millisecond; server assigned",
+          "description": "Last changed instant"
+        },
+        {
+          "name": "updatedBy",
+          "java": "AppUser",
+          "nullable": true,
+          "constraint": "FK RESTRICT; null only SYSTEM",
+          "description": "Last actor"
+        },
+        {
+          "name": "code",
+          "java": "String",
+          "nullable": false,
+          "constraint": "3..20 uppercase A-Z0-9_ unique",
+          "description": "Permanent human reference"
+        },
+        {
+          "name": "name",
+          "java": "String",
+          "nullable": false,
+          "constraint": "NotBlank; max100",
+          "description": "Display name"
+        },
+        {
+          "name": "description",
+          "java": "String",
+          "nullable": true,
+          "constraint": "max1000",
+          "description": "Optional purpose"
+        },
+        {
+          "name": "active",
+          "java": "Boolean",
+          "nullable": false,
+          "constraint": "Default true",
+          "description": "New references require active department"
+        }
+      ],
+      "create": {
+        "code": "LOG",
+        "name": "Logistics",
+        "description": "Fictional demonstration department"
+      },
+      "delete": "Hard delete only when no user, project or resource references exist. Otherwise409 DEPENDENCY_EXISTS; update active=false only when no active operational dependency.",
+      "edit": {
+        "name": "Logistics Team",
+        "description": "Fictional team",
+        "active": true
+      }
+    },
+    "AppUser": {
+      "name": "AppUser",
+      "path": "users",
+      "component": "UserComponent",
+      "purpose": "Member identity and access/contact preferences.",
+      "why": "Provides accountable requesters, approvers, recipients and actors.",
+      "fields": [
+        {
+          "name": "id",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Generated IDENTITY; positive; immutable",
+          "description": "Surrogate primary key"
+        },
+        {
+          "name": "createdAt",
+          "java": "Instant",
+          "nullable": false,
+          "constraint": "UTC millisecond; server assigned",
+          "description": "Creation instant"
+        },
+        {
+          "name": "createdBy",
+          "java": "AppUser",
+          "nullable": true,
+          "constraint": "FK RESTRICT; null only SYSTEM bootstrap/jobs",
+          "description": "Creator actor; null never means an unauthenticated public request"
+        },
+        {
+          "name": "version",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Version; nonnegative; server managed",
+          "description": "Expected version checked on updates"
+        },
+        {
+          "name": "updatedAt",
+          "java": "Instant",
+          "nullable": false,
+          "constraint": "UTC millisecond; server assigned",
+          "description": "Last changed instant"
+        },
+        {
+          "name": "updatedBy",
+          "java": "AppUser",
+          "nullable": true,
+          "constraint": "FK RESTRICT; null only SYSTEM",
+          "description": "Last actor"
+        },
+        {
+          "name": "username",
+          "java": "String",
+          "nullable": false,
+          "constraint": "3..50 lowercase a-z0-9._- unique",
+          "description": "Stable local reference; not a password"
+        },
+        {
+          "name": "displayName",
+          "java": "String",
+          "nullable": false,
+          "constraint": "NotBlank max100",
+          "description": "Person label; fictional in demo"
+        },
+        {
+          "name": "role",
+          "java": "Role",
+          "nullable": false,
+          "constraint": "ADMIN OFFICER HEAD CUSTODIAN MEMBER",
+          "description": "One fixed role"
+        },
+        {
+          "name": "department",
+          "java": "Department",
+          "nullable": true,
+          "constraint": "FK RESTRICT; required except ADMIN/OFFICER",
+          "description": "Home department"
+        },
+        {
+          "name": "active",
+          "java": "Boolean",
+          "nullable": false,
+          "constraint": "Default true",
+          "description": "Inactive cannot act or receive new responsibility"
+        },
+        {
+          "name": "phoneE164",
+          "java": "String",
+          "nullable": true,
+          "constraint": "Pattern plus followed by8..15 digits; max16",
+          "description": "Optional normalized contact; self/admin only"
+        },
+        {
+          "name": "smsConsent",
+          "java": "Boolean",
+          "nullable": false,
+          "constraint": "Default false",
+          "description": "Operational SMS opt in"
+        },
+        {
+          "name": "consentAt",
+          "java": "Instant",
+          "nullable": true,
+          "constraint": "Required when consent true; server timestamp",
+          "description": "Most recent affirmative consent"
+        },
+        {
+          "name": "consentVersion",
+          "java": "String",
+          "nullable": true,
+          "constraint": "max30; required when consent true",
+          "description": "Notice version such as OP_SMS_V1"
+        }
+      ],
+      "create": {
+        "username": "demo.custodian",
+        "displayName": "Demo Custodian",
+        "role": "CUSTODIAN",
+        "departmentId": "{{departmentId}}"
+      },
+      "delete": "Hard delete only if no operational or actor references anywhere. Otherwise deactivate using update; deny deactivation if assigned unresolved custody or sole active custodian, until reassigned. Never delete last active ADMIN.",
+      "edit": {
+        "displayName": "Demo Custodian",
+        "role": "CUSTODIAN",
+        "departmentId": "{{departmentId}}",
+        "active": true,
+        "phoneE164": null,
+        "smsConsent": false
+      }
+    },
+    "Project": {
+      "name": "Project",
+      "path": "projects",
+      "component": "ProjectComponent",
+      "purpose": "Dated departmental activity with internal planning approval.",
+      "why": "Requirements need one accountable owner and bounded schedule.",
+      "fields": [
+        {
+          "name": "id",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Generated IDENTITY; positive; immutable",
+          "description": "Surrogate primary key"
+        },
+        {
+          "name": "createdAt",
+          "java": "Instant",
+          "nullable": false,
+          "constraint": "UTC millisecond; server assigned",
+          "description": "Creation instant"
+        },
+        {
+          "name": "createdBy",
+          "java": "AppUser",
+          "nullable": true,
+          "constraint": "FK RESTRICT; null only SYSTEM bootstrap/jobs",
+          "description": "Creator actor; null never means an unauthenticated public request"
+        },
+        {
+          "name": "version",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Version; nonnegative; server managed",
+          "description": "Expected version checked on updates"
+        },
+        {
+          "name": "updatedAt",
+          "java": "Instant",
+          "nullable": false,
+          "constraint": "UTC millisecond; server assigned",
+          "description": "Last changed instant"
+        },
+        {
+          "name": "updatedBy",
+          "java": "AppUser",
+          "nullable": true,
+          "constraint": "FK RESTRICT; null only SYSTEM",
+          "description": "Last actor"
+        },
+        {
+          "name": "code",
+          "java": "String",
+          "nullable": false,
+          "constraint": "3..30 uppercase A-Z0-9_- unique",
+          "description": "Stable project reference"
+        },
+        {
+          "name": "name",
+          "java": "String",
+          "nullable": false,
+          "constraint": "NotBlank max150",
+          "description": "Project name"
+        },
+        {
+          "name": "description",
+          "java": "String",
+          "nullable": true,
+          "constraint": "max2000",
+          "description": "Scope description"
+        },
+        {
+          "name": "department",
+          "java": "Department",
+          "nullable": false,
+          "constraint": "FK RESTRICT; active at create",
+          "description": "Accountable unit"
+        },
+        {
+          "name": "owner",
+          "java": "AppUser",
+          "nullable": false,
+          "constraint": "FK RESTRICT; active same department",
+          "description": "Project lead"
+        },
+        {
+          "name": "startAt",
+          "java": "Instant",
+          "nullable": false,
+          "constraint": "Strictly less than endAt",
+          "description": "Planning start"
+        },
+        {
+          "name": "endAt",
+          "java": "Instant",
+          "nullable": false,
+          "constraint": "After startAt; max90-day project duration",
+          "description": "Planning end"
+        },
+        {
+          "name": "status",
+          "java": "ProjectStatus",
+          "nullable": false,
+          "constraint": "DRAFT SUBMITTED APPROVED IN_PROGRESS COMPLETED CANCELLED",
+          "description": "Internal lifecycle"
+        },
+        {
+          "name": "statusReason",
+          "java": "String",
+          "nullable": true,
+          "constraint": "max1000; required for return/cancel/waiver",
+          "description": "Latest decision reason; full changes in audit"
+        }
+      ],
+      "create": {
+        "code": "WELCOME_26",
+        "name": "Welcome Workshop",
+        "description": "Fictional scenario",
+        "departmentId": "{{departmentId}}",
+        "ownerId": "{{memberId}}",
+        "startAt": "{{startA}}",
+        "endAt": "{{endA}}"
+      },
+      "delete": "Hard delete only DRAFT with no requirements/allocations. Historical project uses cancel or completed archival; no cascading delete.",
+      "edit": {
+        "name": "Welcome Workshop Revised",
+        "description": "Fictional revised description"
+      }
+    },
+    "Resource": {
+      "name": "Resource",
+      "path": "resources",
+      "component": "ResourceComponent",
+      "purpose": "Pool of interchangeable whole units under organizational control.",
+      "why": "Defines the identity, type, unit and accountable custodian shared by all requirements.",
+      "fields": [
+        {
+          "name": "id",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Generated IDENTITY; positive; immutable",
+          "description": "Surrogate primary key"
+        },
+        {
+          "name": "createdAt",
+          "java": "Instant",
+          "nullable": false,
+          "constraint": "UTC millisecond; server assigned",
+          "description": "Creation instant"
+        },
+        {
+          "name": "createdBy",
+          "java": "AppUser",
+          "nullable": true,
+          "constraint": "FK RESTRICT; null only SYSTEM bootstrap/jobs",
+          "description": "Creator actor; null never means an unauthenticated public request"
+        },
+        {
+          "name": "version",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Version; nonnegative; server managed",
+          "description": "Expected version checked on updates"
+        },
+        {
+          "name": "updatedAt",
+          "java": "Instant",
+          "nullable": false,
+          "constraint": "UTC millisecond; server assigned",
+          "description": "Last changed instant"
+        },
+        {
+          "name": "updatedBy",
+          "java": "AppUser",
+          "nullable": true,
+          "constraint": "FK RESTRICT; null only SYSTEM",
+          "description": "Last actor"
+        },
+        {
+          "name": "code",
+          "java": "String",
+          "nullable": false,
+          "constraint": "3..30 uppercase A-Z0-9_- unique",
+          "description": "Stable resource reference"
+        },
+        {
+          "name": "name",
+          "java": "String",
+          "nullable": false,
+          "constraint": "NotBlank max150",
+          "description": "Resource display name"
+        },
+        {
+          "name": "description",
+          "java": "String",
+          "nullable": true,
+          "constraint": "max2000",
+          "description": "Handling notes"
+        },
+        {
+          "name": "type",
+          "java": "ResourceType",
+          "nullable": false,
+          "constraint": "REUSABLE CONSUMABLE; locked after reference",
+          "description": "Allocation arithmetic class"
+        },
+        {
+          "name": "category",
+          "java": "String",
+          "nullable": false,
+          "constraint": "NotBlank max50",
+          "description": "Simple organization vocabulary"
+        },
+        {
+          "name": "unit",
+          "java": "String",
+          "nullable": false,
+          "constraint": "NotBlank max20; fixed after reference",
+          "description": "Whole base unit such as piece sheet roll"
+        },
+        {
+          "name": "storageLocation",
+          "java": "String",
+          "nullable": false,
+          "constraint": "NotBlank max200",
+          "description": "Normal store description; one pool location"
+        },
+        {
+          "name": "controlBasis",
+          "java": "ControlBasis",
+          "nullable": false,
+          "constraint": "OWNED AUTHORIZED",
+          "description": "Who may manage the resource"
+        },
+        {
+          "name": "authorizationNote",
+          "java": "String",
+          "nullable": true,
+          "constraint": "max1000; required for AUTHORIZED",
+          "description": "Authority description without claiming university permission"
+        },
+        {
+          "name": "department",
+          "java": "Department",
+          "nullable": false,
+          "constraint": "FK RESTRICT active",
+          "description": "Responsible department"
+        },
+        {
+          "name": "custodian",
+          "java": "AppUser",
+          "nullable": false,
+          "constraint": "FK RESTRICT active CUSTODIAN",
+          "description": "Designated stock/approval operator"
+        },
+        {
+          "name": "revision",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Nonnegative server counter;increment under resource lock for every pool command",
+          "description": "Dependency fence independent of JPA flush timing;not a stock quantity"
+        },
+        {
+          "name": "active",
+          "java": "Boolean",
+          "nullable": false,
+          "constraint": "Default true",
+          "description": "Archive rather than erase history"
+        }
+      ],
+      "create": {
+        "code": "CORD_POOL",
+        "name": "Extension Cords",
+        "description": "Interchangeable fictional cords",
+        "type": "REUSABLE",
+        "category": "Equipment",
+        "unit": "piece",
+        "storageLocation": "Demo cabinet",
+        "controlBasis": "OWNED",
+        "authorizationNote": null,
+        "departmentId": "{{departmentId}}",
+        "custodianId": "{{custodianId}}"
+      },
+      "delete": "Hard delete only with no requirements, allocations or transactions. Archive requires no pending/active unissued commitment or outstanding custody; keep ledger forever in demo.",
+      "edit": {
+        "name": "Extension Cords",
+        "description": "Checked pool",
+        "category": "Equipment",
+        "storageLocation": "Demo cabinet B",
+        "departmentId": "{{departmentId}}",
+        "custodianId": "{{custodianId}}",
+        "active": true,
+        "reason": "Cabinet label changed"
+      }
+    },
+    "ResourceRequirement": {
+      "name": "ResourceRequirement",
+      "path": "requirements",
+      "component": "RequirementComponent",
+      "purpose": "Demand for one resource during one project window.",
+      "why": "Separates desired supply from an approved promise and permits partial allocations.",
+      "fields": [
+        {
+          "name": "id",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Generated IDENTITY; positive; immutable",
+          "description": "Surrogate primary key"
+        },
+        {
+          "name": "createdAt",
+          "java": "Instant",
+          "nullable": false,
+          "constraint": "UTC millisecond; server assigned",
+          "description": "Creation instant"
+        },
+        {
+          "name": "createdBy",
+          "java": "AppUser",
+          "nullable": true,
+          "constraint": "FK RESTRICT; null only SYSTEM bootstrap/jobs",
+          "description": "Creator actor; null never means an unauthenticated public request"
+        },
+        {
+          "name": "version",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Version; nonnegative; server managed",
+          "description": "Expected version checked on updates"
+        },
+        {
+          "name": "updatedAt",
+          "java": "Instant",
+          "nullable": false,
+          "constraint": "UTC millisecond; server assigned",
+          "description": "Last changed instant"
+        },
+        {
+          "name": "updatedBy",
+          "java": "AppUser",
+          "nullable": true,
+          "constraint": "FK RESTRICT; null only SYSTEM",
+          "description": "Last actor"
+        },
+        {
+          "name": "project",
+          "java": "Project",
+          "nullable": false,
+          "constraint": "FK RESTRICT; active planning project",
+          "description": "Demanding activity"
+        },
+        {
+          "name": "resource",
+          "java": "Resource",
+          "nullable": false,
+          "constraint": "FK RESTRICT active",
+          "description": "Requested pool"
+        },
+        {
+          "name": "quantity",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Min1 Max1000000",
+          "description": "Total desired whole base units"
+        },
+        {
+          "name": "startAt",
+          "java": "Instant",
+          "nullable": false,
+          "constraint": "Within project; start less than end",
+          "description": "Required beginning"
+        },
+        {
+          "name": "endAt",
+          "java": "Instant",
+          "nullable": false,
+          "constraint": "Within project",
+          "description": "Required end even for demand-timing of consumables"
+        },
+        {
+          "name": "priority",
+          "java": "Priority",
+          "nullable": false,
+          "constraint": "LOW NORMAL HIGH",
+          "description": "Display/sort priority only"
+        },
+        {
+          "name": "notes",
+          "java": "String",
+          "nullable": true,
+          "constraint": "max2000",
+          "description": "Justification"
+        },
+        {
+          "name": "status",
+          "java": "RequirementStatus",
+          "nullable": false,
+          "constraint": "ACTIVE WITHDRAWN",
+          "description": "Demand visibility; not fulfillment status"
+        }
+      ],
+      "create": {
+        "projectId": "{{projectId}}",
+        "resourceId": "{{resourceId}}",
+        "quantity": 6,
+        "startAt": "{{startA}}",
+        "endAt": "{{endA}}",
+        "priority": "NORMAL",
+        "notes": "Fictional planning requirement"
+      },
+      "delete": "Hard delete only when no allocation or movement references. Otherwise withdrawal through update with reason, only after all operational obligations are resolved.",
+      "edit": {
+        "quantity": 6,
+        "startAt": "{{startA}}",
+        "endAt": "{{endA}}",
+        "priority": "HIGH",
+        "notes": "Updated need",
+        "status": "ACTIVE",
+        "reason": "Priority clarified"
+      }
+    },
+    "Allocation": {
+      "name": "Allocation",
+      "path": "allocations",
+      "component": "AllocationComponent",
+      "purpose": "One requested quantity and its immutable approved schedule/recipient.",
+      "why": "Allows a requirement to be satisfied in several separately auditable commitments.",
+      "fields": [
+        {
+          "name": "id",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Generated IDENTITY; positive; immutable",
+          "description": "Surrogate primary key"
+        },
+        {
+          "name": "createdAt",
+          "java": "Instant",
+          "nullable": false,
+          "constraint": "UTC millisecond; server assigned",
+          "description": "Creation instant"
+        },
+        {
+          "name": "createdBy",
+          "java": "AppUser",
+          "nullable": true,
+          "constraint": "FK RESTRICT; null only SYSTEM bootstrap/jobs",
+          "description": "Creator actor; null never means an unauthenticated public request"
+        },
+        {
+          "name": "version",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Version; nonnegative; server managed",
+          "description": "Expected version checked on updates"
+        },
+        {
+          "name": "updatedAt",
+          "java": "Instant",
+          "nullable": false,
+          "constraint": "UTC millisecond; server assigned",
+          "description": "Last changed instant"
+        },
+        {
+          "name": "updatedBy",
+          "java": "AppUser",
+          "nullable": true,
+          "constraint": "FK RESTRICT; null only SYSTEM",
+          "description": "Last actor"
+        },
+        {
+          "name": "requirement",
+          "java": "ResourceRequirement",
+          "nullable": false,
+          "constraint": "FK RESTRICT ACTIVE",
+          "description": "Links demand to pool/project"
+        },
+        {
+          "name": "quantity",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Min1 Max1000000",
+          "description": "Requested and if approved committed quantity"
+        },
+        {
+          "name": "releasedUnissued",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Default0;0..quantity;cannot reduce issued coverage",
+          "description": "Explicitly released portion"
+        },
+        {
+          "name": "startAt",
+          "java": "Instant",
+          "nullable": false,
+          "constraint": "Snapshot requirement.startAt",
+          "description": "Committed start"
+        },
+        {
+          "name": "endAt",
+          "java": "Instant",
+          "nullable": false,
+          "constraint": "Snapshot requirement.endAt",
+          "description": "Committed end and reusable due time"
+        },
+        {
+          "name": "requestedBy",
+          "java": "AppUser",
+          "nullable": false,
+          "constraint": "FK RESTRICT active at create",
+          "description": "Actual actor requester"
+        },
+        {
+          "name": "recipient",
+          "java": "AppUser",
+          "nullable": false,
+          "constraint": "FK RESTRICT active same project department",
+          "description": "Fixed custody holder / consumption recipient"
+        },
+        {
+          "name": "decisionStatus",
+          "java": "AllocationDecision",
+          "nullable": false,
+          "constraint": "REQUESTED APPROVED REJECTED CANCELLED",
+          "description": "Approval decision separate from ledger progress"
+        },
+        {
+          "name": "decidedBy",
+          "java": "AppUser",
+          "nullable": true,
+          "constraint": "FK RESTRICT; required on approve/reject",
+          "description": "Designated custodian decision actor"
+        },
+        {
+          "name": "decidedAt",
+          "java": "Instant",
+          "nullable": true,
+          "constraint": "Required on approve/reject",
+          "description": "Decision timestamp"
+        },
+        {
+          "name": "decisionReason",
+          "java": "String",
+          "nullable": true,
+          "constraint": "max1000; required rejection/cancellation",
+          "description": "Decision/release reason; full history in audit"
+        },
+        {
+          "name": "requestKey",
+          "java": "String",
+          "nullable": false,
+          "constraint": "UUID canonical36;global unique",
+          "description": "Create replay guard"
+        },
+        {
+          "name": "payloadHash",
+          "java": "String",
+          "nullable": false,
+          "constraint": "SHA256 char64 server derived",
+          "description": "Detect key reuse with changed input"
+        }
+      ],
+      "create": {
+        "requirementId": "{{requirementId}}",
+        "quantity": 6,
+        "recipientId": "{{memberId}}",
+        "requestKey": "{{requestKey}}"
+      },
+      "delete": "Hard delete only REQUESTED by requester or HEAD/OFFICER, with no movements or notifications; append audit. Approved/rejected/cancelled history retained;409 directs cancel/release.",
+      "edit": null
+    },
+    "InventoryTransaction": {
+      "name": "InventoryTransaction",
+      "path": "inventory-transactions",
+      "component": "InventoryTransactionComponent",
+      "purpose": "Immutable physical/custody delta and correction event.",
+      "why": "Only authority for physical stock; original observations must remain traceable.",
+      "fields": [
+        {
+          "name": "id",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Generated IDENTITY; positive; immutable",
+          "description": "Surrogate primary key"
+        },
+        {
+          "name": "createdAt",
+          "java": "Instant",
+          "nullable": false,
+          "constraint": "UTC millisecond; server assigned",
+          "description": "Creation instant"
+        },
+        {
+          "name": "createdBy",
+          "java": "AppUser",
+          "nullable": true,
+          "constraint": "FK RESTRICT; null only SYSTEM bootstrap/jobs",
+          "description": "Creator actor; null never means an unauthenticated public request"
+        },
+        {
+          "name": "resource",
+          "java": "Resource",
+          "nullable": false,
+          "constraint": "FK RESTRICT",
+          "description": "Affected pool"
+        },
+        {
+          "name": "allocation",
+          "java": "Allocation",
+          "nullable": true,
+          "constraint": "FK RESTRICT;required ISSUE RETURN CONSUMPTION and custody LOSS",
+          "description": "Operational custody/consumption reference"
+        },
+        {
+          "name": "type",
+          "java": "TransactionType",
+          "nullable": false,
+          "constraint": "RECEIPT ISSUE RETURN CONSUMPTION DAMAGE LOSS ADJUSTMENT_INCREASE ADJUSTMENT_DECREASE REVERSAL",
+          "description": "Movement meaning"
+        },
+        {
+          "name": "quantity",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Min1 Max1000000",
+          "description": "Magnitude; not signed client delta"
+        },
+        {
+          "name": "inspection",
+          "java": "Inspection",
+          "nullable": true,
+          "constraint": "USABLE DAMAGED;required RETURN only",
+          "description": "Return condition split across separate transactions"
+        },
+        {
+          "name": "reason",
+          "java": "String",
+          "nullable": false,
+          "constraint": "NotBlank max1000",
+          "description": "Physical/correction explanation"
+        },
+        {
+          "name": "occurredAt",
+          "java": "Instant",
+          "nullable": false,
+          "constraint": "Server Clock, no client backdating",
+          "description": "Observed recording time"
+        },
+        {
+          "name": "deltaStored",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Derived signed;for consumables same as physical delta",
+          "description": "Usable storage delta"
+        },
+        {
+          "name": "deltaOutstanding",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Derived signed;zero for consumables",
+          "description": "Reusable custody delta"
+        },
+        {
+          "name": "deltaDamaged",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Derived signed;zero for consumables",
+          "description": "Quarantine delta"
+        },
+        {
+          "name": "deltaIssued",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Derived signed for linked allocation",
+          "description": "Net issued/consumed counter delta"
+        },
+        {
+          "name": "deltaResolved",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Derived signed for linked allocation",
+          "description": "Reusable returned/lost resolution delta"
+        },
+        {
+          "name": "deltaGoodReturned",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Derived signed",
+          "description": "Usable return count delta"
+        },
+        {
+          "name": "deltaDamagedReturned",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Derived signed",
+          "description": "Damaged return count delta"
+        },
+        {
+          "name": "deltaLost",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Derived signed",
+          "description": "Custody lost count delta"
+        },
+        {
+          "name": "commandKey",
+          "java": "String",
+          "nullable": false,
+          "constraint": "UUID36 unique together with resource",
+          "description": "Replay identity"
+        },
+        {
+          "name": "payloadHash",
+          "java": "String",
+          "nullable": false,
+          "constraint": "SHA256 char64 server derived",
+          "description": "Canonical command fingerprint"
+        },
+        {
+          "name": "reversalOf",
+          "java": "InventoryTransaction",
+          "nullable": true,
+          "constraint": "FK RESTRICT unique;non-reversal original only",
+          "description": "Exactly one correction of original"
+        },
+        {
+          "name": "correctionReference",
+          "java": "InventoryTransaction",
+          "nullable": true,
+          "constraint": "FK RESTRICT;informational only",
+          "description": "Present correction after old event cannot be reversed"
+        },
+        {
+          "name": "resourceRevisionAfter",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Positive;captured after resource revision flush",
+          "description": "Dependency fence for latest-event reversal"
+        }
+      ],
+      "create": {
+        "resourceId": "{{resourceId}}",
+        "allocationId": null,
+        "type": "RECEIPT",
+        "quantity": 10,
+        "inspection": null,
+        "reason": "OPENING_COUNT fictional stock",
+        "commandKey": "{{commandKey}}",
+        "reversalOfId": null,
+        "correctionReferenceId": null
+      },
+      "delete": "Never physically delete a posted movement. Delete endpoint returns409 IMMUTABLE_HISTORY with reversal route. No permission to clear the ledger through REST.",
+      "edit": null
+    },
+    "NotificationLog": {
+      "name": "NotificationLog",
+      "path": "notifications",
+      "component": "NotificationComponent",
+      "purpose": "Durable return reminder event/outbox and provider outcome.",
+      "why": "Decouples SMS from stock commits and suppresses repeated reminders.",
+      "fields": [
+        {
+          "name": "id",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Generated IDENTITY; positive; immutable",
+          "description": "Surrogate primary key"
+        },
+        {
+          "name": "createdAt",
+          "java": "Instant",
+          "nullable": false,
+          "constraint": "UTC millisecond; server assigned",
+          "description": "Creation instant"
+        },
+        {
+          "name": "createdBy",
+          "java": "AppUser",
+          "nullable": true,
+          "constraint": "FK RESTRICT; null only SYSTEM bootstrap/jobs",
+          "description": "Creator actor; null never means an unauthenticated public request"
+        },
+        {
+          "name": "version",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Version; nonnegative; server managed",
+          "description": "Expected version checked on updates"
+        },
+        {
+          "name": "updatedAt",
+          "java": "Instant",
+          "nullable": false,
+          "constraint": "UTC millisecond; server assigned",
+          "description": "Last changed instant"
+        },
+        {
+          "name": "updatedBy",
+          "java": "AppUser",
+          "nullable": true,
+          "constraint": "FK RESTRICT; null only SYSTEM",
+          "description": "Last actor"
+        },
+        {
+          "name": "allocation",
+          "java": "Allocation",
+          "nullable": false,
+          "constraint": "FK RESTRICT reusable APPROVED with outstanding custody",
+          "description": "Reminder target"
+        },
+        {
+          "name": "recipient",
+          "java": "AppUser",
+          "nullable": false,
+          "constraint": "FK RESTRICT;allocation recipient",
+          "description": "Operational recipient"
+        },
+        {
+          "name": "kind",
+          "java": "NotificationKind",
+          "nullable": false,
+          "constraint": "RETURN_DUE OVERDUE",
+          "description": "Only two V1 event types"
+        },
+        {
+          "name": "eventKey",
+          "java": "String",
+          "nullable": false,
+          "constraint": "max160 unique;server derived",
+          "description": "kind:allocationId:endAt:recipientId"
+        },
+        {
+          "name": "status",
+          "java": "NotificationStatus",
+          "nullable": false,
+          "constraint": "QUEUED SENDING ACCEPTED DELIVERED UNDELIVERED FAILED UNKNOWN SKIPPED CANCELLED",
+          "description": "Dispatch/provider outcome"
+        },
+        {
+          "name": "dueAt",
+          "java": "Instant",
+          "nullable": false,
+          "constraint": "Server derived",
+          "description": "First eligible delivery time"
+        },
+        {
+          "name": "nextAttemptAt",
+          "java": "Instant",
+          "nullable": true,
+          "constraint": "Required QUEUED",
+          "description": "Bounded retry time"
+        },
+        {
+          "name": "attemptCount",
+          "java": "Integer",
+          "nullable": false,
+          "constraint": "0..3",
+          "description": "Transport attempts;zero when skipped"
+        },
+        {
+          "name": "destinationMasked",
+          "java": "String",
+          "nullable": true,
+          "constraint": "max30",
+          "description": "No full number snapshot"
+        },
+        {
+          "name": "providerSid",
+          "java": "String",
+          "nullable": true,
+          "constraint": "max64 unique when present",
+          "description": "Accepted external message identity"
+        },
+        {
+          "name": "providerStatus",
+          "java": "String",
+          "nullable": true,
+          "constraint": "max40",
+          "description": "Raw safe provider status"
+        },
+        {
+          "name": "lastErrorCode",
+          "java": "String",
+          "nullable": true,
+          "constraint": "max80",
+          "description": "Sanitized category/code;no credentials"
+        },
+        {
+          "name": "lastAttemptAt",
+          "java": "Instant",
+          "nullable": true,
+          "constraint": "Set when attempt starts",
+          "description": "Recovery and diagnostics"
+        },
+        {
+          "name": "cancelReason",
+          "java": "String",
+          "nullable": true,
+          "constraint": "max1000",
+          "description": "Staleness/consent/manual cancellation reason"
+        },
+        {
+          "name": "attempts",
+          "java": "List<NotificationAttempt>",
+          "nullable": false,
+          "constraint": "ElementCollection append only;max3",
+          "description": "Each embedded attempt records instant outcome error SID"
+        }
+      ],
+      "create": {
+        "allocationId": "{{allocationId}}",
+        "kind": "RETURN_DUE"
+      },
+      "delete": "Hard delete only unattempted QUEUED/SKIPPED/CANCELLED rows with attemptCount0, by OFFICER/ADMIN; record AuditEvent. Otherwise409 IMMUTABLE_HISTORY. Cancellation of queued reminder is explicit and prevents sending.",
+      "edit": null
+    },
+    "AuditEvent": {
+      "name": "AuditEvent",
+      "path": "audit-events",
+      "component": "AuditComponent",
+      "purpose": "Append-only actor/action/change record including non-stock decisions.",
+      "why": "Stock history alone cannot explain approvals, edits, cancellations, or deletions.",
+      "fields": [
+        {
+          "name": "id",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Generated IDENTITY; positive; immutable",
+          "description": "Surrogate primary key"
+        },
+        {
+          "name": "createdAt",
+          "java": "Instant",
+          "nullable": false,
+          "constraint": "UTC millisecond; server assigned",
+          "description": "Creation instant"
+        },
+        {
+          "name": "createdBy",
+          "java": "AppUser",
+          "nullable": true,
+          "constraint": "FK RESTRICT; null only SYSTEM bootstrap/jobs",
+          "description": "Creator actor; null never means an unauthenticated public request"
+        },
+        {
+          "name": "action",
+          "java": "String",
+          "nullable": false,
+          "constraint": "max80 fixed allowlist or NOTE",
+          "description": "Server command action"
+        },
+        {
+          "name": "targetType",
+          "java": "String",
+          "nullable": false,
+          "constraint": "One of nine entity names;NOTE allows Project/Resource/Department",
+          "description": "Historical typed reference"
+        },
+        {
+          "name": "targetId",
+          "java": "Long",
+          "nullable": false,
+          "constraint": "Positive;real target at creation",
+          "description": "May survive a permitted target deletion"
+        },
+        {
+          "name": "targetSummary",
+          "java": "String",
+          "nullable": false,
+          "constraint": "max300 server generated",
+          "description": "Historical code/name identity"
+        },
+        {
+          "name": "beforeJson",
+          "java": "String",
+          "nullable": true,
+          "constraint": "TEXT max16000;server redacted",
+          "description": "Prior public business values"
+        },
+        {
+          "name": "afterJson",
+          "java": "String",
+          "nullable": true,
+          "constraint": "TEXT max16000;server redacted",
+          "description": "Resulting public business values"
+        },
+        {
+          "name": "reason",
+          "java": "String",
+          "nullable": true,
+          "constraint": "max1000;required NOTE and corrective actions",
+          "description": "Human explanation"
+        },
+        {
+          "name": "requestId",
+          "java": "String",
+          "nullable": false,
+          "constraint": "UUID36 server assigned",
+          "description": "Diagnostic request correlation"
+        }
+      ],
+      "create": {
+        "targetType": "Project",
+        "targetId": "{{projectId}}",
+        "reason": "Fictional planning note"
+      },
+      "delete": "Never physically delete audit history. Delete endpoint returns409 IMMUTABLE_HISTORY. A correction is a new NOTE referencing the original id in its reason, not editing the original.",
+      "edit": null
+    }
+  },
+  "enums": {
+    "Role": [
+      "ADMIN",
+      "OFFICER",
+      "HEAD",
+      "CUSTODIAN",
+      "MEMBER"
+    ],
+    "ResourceType": [
+      "REUSABLE",
+      "CONSUMABLE"
+    ],
+    "ControlBasis": [
+      "OWNED",
+      "AUTHORIZED"
+    ],
+    "ProjectStatus": [
+      "DRAFT",
+      "SUBMITTED",
+      "APPROVED",
+      "IN_PROGRESS",
+      "COMPLETED",
+      "CANCELLED"
+    ],
+    "RequirementStatus": [
+      "ACTIVE",
+      "WITHDRAWN"
+    ],
+    "Priority": [
+      "LOW",
+      "NORMAL",
+      "HIGH"
+    ],
+    "AllocationDecision": [
+      "REQUESTED",
+      "APPROVED",
+      "REJECTED",
+      "CANCELLED"
+    ],
+    "TransactionType": [
+      "RECEIPT",
+      "ISSUE",
+      "RETURN",
+      "CONSUMPTION",
+      "DAMAGE",
+      "LOSS",
+      "ADJUSTMENT_INCREASE",
+      "ADJUSTMENT_DECREASE",
+      "REVERSAL"
+    ],
+    "Inspection": [
+      "USABLE",
+      "DAMAGED"
+    ],
+    "NotificationKind": [
+      "RETURN_DUE",
+      "OVERDUE"
+    ],
+    "NotificationStatus": [
+      "QUEUED",
+      "SENDING",
+      "ACCEPTED",
+      "DELIVERED",
+      "UNDELIVERED",
+      "FAILED",
+      "UNKNOWN",
+      "SKIPPED",
+      "CANCELLED"
+    ]
+  },
+  "repositories": {
+    "Department": [
+      {
+        "name": "findByCode",
+        "params": "String code",
+        "returns": "Optional<Department>",
+        "query": "Derived code equality",
+        "purpose": "Detect duplicate normalized code."
+      }
+    ],
+    "AppUser": [
+      {
+        "name": "findByUsername",
+        "params": "String username",
+        "returns": "Optional<AppUser>",
+        "query": "Derived username equality",
+        "purpose": "Resolve known username and detect duplicate."
+      }
+    ],
+    "Project": [
+      {
+        "name": "findByCode",
+        "params": "String code",
+        "returns": "Optional<Project>",
+        "query": "Derived code equality",
+        "purpose": "Detect duplicate project reference."
+      }
+    ],
+    "Resource": [
+      {
+        "name": "findByCode",
+        "params": "String code",
+        "returns": "Optional<Resource>",
+        "query": "Derived code equality",
+        "purpose": "Detect duplicate pool reference."
+      },
+      {
+        "name": "lockById",
+        "params": "Long id",
+        "returns": "Optional<Resource>",
+        "query": "JPQL select r from Resource r where r.id = :id; @Lock(PESSIMISTIC_WRITE)",
+        "purpose": "Serialize all commands affecting this pool; write transaction required."
+      }
+    ],
+    "ResourceRequirement": [
+      {
+        "name": "findByProject_IdOrderByIdAsc",
+        "params": "Long projectId",
+        "returns": "List<ResourceRequirement>",
+        "query": "Derived project.id predicate sorted id",
+        "purpose": "Load complete project requirement set."
+      },
+      {
+        "name": "findByResource_IdAndStatus",
+        "params": "Long resourceId, RequirementStatus status",
+        "returns": "List<ResourceRequirement>",
+        "query": "Derived resource.id and status equality",
+        "purpose": "Load active demand for consolidation; project-status filter in component."
+      }
+    ],
+    "Allocation": [
+      {
+        "name": "findByRequestKey",
+        "params": "String requestKey",
+        "returns": "Optional<Allocation>",
+        "query": "Derived unique requestKey equality",
+        "purpose": "Replay original create or reject changed payload."
+      },
+      {
+        "name": "findByRequirement_Resource_IdAndDecisionStatus",
+        "params": "Long resourceId, AllocationDecision status",
+        "returns": "List<Allocation>",
+        "query": "Derived requirement.resource.id and decisionStatus equality",
+        "purpose": "Current approved pool commitments; cannot filter only finite overlap because overdue holds extend."
+      },
+      {
+        "name": "findByRequirement_Project_Id",
+        "params": "Long projectId",
+        "returns": "List<Allocation>",
+        "query": "Derived requirement.project.id equality",
+        "purpose": "Cancel/reschedule/complete entire project safely."
+      },
+      {
+        "name": "findByRequirement_Id",
+        "params": "Long requirementId",
+        "returns": "List<Allocation>",
+        "query": "Derived requirement.id equality",
+        "purpose": "Coverage and dependent-row checks."
+      },
+      {
+        "name": "findOverlappingApproved",
+        "params": "Long resourceId, Instant start, Instant end, AllocationDecision approved",
+        "returns": "List<Allocation>",
+        "query": "JPQL select a from Allocation a where a.requirement.resource.id = :resourceId and a.decisionStatus = :approved and a.startAt < :end and a.endAt > :start; bind AllocationDecision.APPROVED as extra enum parameter approved",
+        "purpose": "Finite scheduled overlap inspection only; merge overdue custody found through approved pool scan, never use alone for safe approval."
+      }
+    ],
+    "InventoryTransaction": [
+      {
+        "name": "findByResource_IdOrderByIdAsc",
+        "params": "Long resourceId",
+        "returns": "List<InventoryTransaction>",
+        "query": "Derived resource.id equality sorted id",
+        "purpose": "Reconstruct balances/effects in stable order under resource lock."
+      },
+      {
+        "name": "findByResource_IdAndCommandKey",
+        "params": "Long resourceId, String commandKey",
+        "returns": "Optional<InventoryTransaction>",
+        "query": "Derived equality on both fields",
+        "purpose": "Stock command replay guard."
+      },
+      {
+        "name": "findByReversalOf_Id",
+        "params": "Long originalId",
+        "returns": "Optional<InventoryTransaction>",
+        "query": "Derived reversalOf.id equality",
+        "purpose": "Reject second reversal of same original."
+      },
+      {
+        "name": "findByAllocation_IdOrderByIdAsc",
+        "params": "Long allocationId",
+        "returns": "List<InventoryTransaction>",
+        "query": "Derived allocation.id equality sorted id",
+        "purpose": "Derive issued/resolved counters and custody history."
+      }
+    ],
+    "NotificationLog": [
+      {
+        "name": "findByEventKey",
+        "params": "String eventKey",
+        "returns": "Optional<NotificationLog>",
+        "query": "Derived eventKey equality",
+        "purpose": "Deduplicate reminder generation across restarts/scans."
+      },
+      {
+        "name": "findDue",
+        "params": "NotificationStatus status, Instant now, Pageable page",
+        "returns": "List<NotificationLog>",
+        "query": "JPQL select n from NotificationLog n where n.status = :status and n.nextAttemptAt <= :now order by n.id",
+        "purpose": "Fetch bounded QUEUED candidates; lock each before claim."
+      },
+      {
+        "name": "lockById",
+        "params": "Long id",
+        "returns": "Optional<NotificationLog>",
+        "query": "JPQL select n from NotificationLog n where n.id = :id; @Lock(PESSIMISTIC_WRITE)",
+        "purpose": "Claim reminder or serialize completion/cancellation."
+      }
+    ],
+    "AuditEvent": [
+      {
+        "name": "findByTargetTypeAndTargetIdOrderByIdAsc",
+        "params": "String targetType, Long targetId",
+        "returns": "List<AuditEvent>",
+        "query": "Derived targetType and targetId equality sorted id",
+        "purpose": "Audit history for one referenced record."
+      }
+    ]
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "scope": "Current simplified proposal coverage and JSON formatting only; no application execution",
+  "operations": 25,
+  "entities": 5,
+  "checks": 75,
+  "passed": 75,
+  "failed": []
+}

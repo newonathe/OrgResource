@@ -1,0 +1,13 @@
+# TEMPLATE ONLY. Copy into actual backend after confirming JDK/DB/settings.
+server.address=127.0.0.1
+server.port=8080
+spring.datasource.url=${ORG_DB_URL}
+spring.datasource.username=${ORG_DB_USER}
+spring.datasource.password=${ORG_DB_PASSWORD}
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=false
+orgresource.sms.mode=DISABLED
+orgresource.reminder.scan-ms=3600000
+orgresource.expiry.scan-ms=3600000
+# Do not use destructive DDL modes for normal demo or store secrets here.

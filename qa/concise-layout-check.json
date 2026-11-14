@@ -1,0 +1,81 @@
+{
+  "pages": 12,
+  "wordCounts": [
+    347,
+    159,
+    202,
+    190,
+    213,
+    271,
+    287,
+    344,
+    344,
+    299,
+    287,
+    167
+  ],
+  "blankPages": [],
+  "pageSizes": [
+    {
+      "page": 1,
+      "width": 918,
+      "height": 1188
+    },
+    {
+      "page": 2,
+      "width": 918,
+      "height": 1188
+    },
+    {
+      "page": 3,
+      "width": 918,
+      "height": 1188
+    },
+    {
+      "page": 4,
+      "width": 918,
+      "height": 1188
+    },
+    {
+      "page": 5,
+      "width": 918,
+      "height": 1188
+    },
+    {
+      "page": 6,
+      "width": 918,
+      "height": 1188
+    },
+    {
+      "page": 7,
+      "width": 918,
+      "height": 1188
+    },
+    {
+      "page": 8,
+      "width": 918,
+      "height": 1188
+    },
+    {
+      "page": 9,
+      "width": 918,
+      "height": 1188
+    },
+    {
+      "page": 10,
+      "width": 918,
+      "height": 1188
+    },
+    {
+      "page": 11,
+      "width": 918,
+      "height": 1188
+    },
+    {
+      "page": 12,
+      "width": 918,
+      "height": 1188
+    }
+  ],
+  "renderMethod": "Microsoft Word native PDF export, bundled pypdfium2 rasterization; packaged LibreOffice renderer unavailable on this Windows host"
+}

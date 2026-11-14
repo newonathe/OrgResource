@@ -1,0 +1,44 @@
+[INFO] Scanning for projects...
+[INFO] Loaded 24472 auto-discovered prefixes for remote repository central (prefixes-central.txt)
+[INFO] 
+[INFO] -------------------< edu.ateneo.csci180:orgresource >-------------------
+[INFO] Building OrgResource 0.1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] Loaded 64 auto-discovered prefixes for remote repository apache.snapshots (prefixes-apache.snapshots.txt)
+[WARNING] Could not transfer metadata /.meta/prefixes.txt from/to jvnet-nexus-releases (https://maven.java.net/content/repositories/releases/): PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+[WARNING] Could not transfer metadata /.meta/prefixes.txt from/to spring-libs-release (https://repo.spring.io/libs-release): HTTP Status: 401
+[WARNING] Could not transfer metadata /.meta/prefixes.txt from/to spring-libs-snapshot (https://repo.spring.io/libs-snapshot): HTTP Status: 401
+[INFO] 
+[INFO] --- clean:3.1.0:clean (default-clean) @ orgresource ---
+[INFO] 
+[INFO] --- resources:3.1.0:resources (default-resources) @ orgresource ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] Copying 0 resource
+[INFO] 
+[INFO] --- compiler:3.8.0:compile (default-compile) @ orgresource ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 32 source files to C:\Users\ethan\AppData\Local\Temp\OrgResource-O1-Zip-Validation-f8c1180c9a184a268d8f29bf40d46919\backend\target\classes
+[INFO] 
+[INFO] --- resources:3.1.0:testResources (default-testResources) @ orgresource ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory C:\Users\ethan\AppData\Local\Temp\OrgResource-O1-Zip-Validation-f8c1180c9a184a268d8f29bf40d46919\backend\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.8.0:testCompile (default-testCompile) @ orgresource ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:2.22.1:test (default-test) @ orgresource ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.1.0:jar (default-jar) @ orgresource ---
+[INFO] Building jar: C:\Users\ethan\AppData\Local\Temp\OrgResource-O1-Zip-Validation-f8c1180c9a184a268d8f29bf40d46919\backend\target\orgresource-0.1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- spring-boot:2.1.0.RELEASE:repackage (repackage) @ orgresource ---
+[INFO] Replacing main artifact C:\Users\ethan\AppData\Local\Temp\OrgResource-O1-Zip-Validation-f8c1180c9a184a268d8f29bf40d46919\backend\target\orgresource-0.1.0-SNAPSHOT.jar
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  12.373 s
+[INFO] Finished at: 2026-11-13T23:44:47+08:00
+[INFO] ------------------------------------------------------------------------

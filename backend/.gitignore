@@ -1,0 +1,5 @@
+/target/
+/.project.local
+/.classpath.local
+/.settings/org.eclipse.core.resources.prefs
+*.log

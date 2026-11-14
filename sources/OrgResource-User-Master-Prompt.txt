@@ -1,0 +1,2003 @@
+# MASTER PROMPT: COMPLETE PROJECT SPECIFICATION FOR ORGRESOURCE
+
+## 1. Your assignment
+
+I want you to develop a complete, comprehensive, technically precise, internally consistent, implementation-ready project specification for a software application called:
+
+**OrgResource: Student Organization Resource Planning and Allocation System**
+
+This is an academic software engineering project intended to provide a useful service to the Ateneo de Manila University community.
+
+You must produce a specification detailed enough that:
+1. I can use it as the foundation of my formal ESP project proposal.
+2. My professor can understand the application's purpose, architecture, operations, database design, and implementation.
+3. A developer or another AI coding agent can implement the application without having to invent missing business rules.
+4. The project can satisfy the explicit requirements in the attached ESP Project Proposal 2026 document.
+5. The application has meaningful functionality and is not merely a CRUD demonstration.
+
+Your work must be comprehensive, careful, realistic, technically grounded, and detailed. Do not give me a superficial project overview.
+
+Do not begin implementation or write application source code unless I explicitly request it. Your immediate assignment is to create the complete system specification and proposal documentation.
+
+---
+
+# 2. Mandatory attachments and how to use them
+
+I am providing two attachments.
+
+## Attachment A: ESP Project Proposal 2026.pdf
+
+This document contains the professor's official requirements for the final project.
+
+**Treat this as the authoritative source for academic and technical requirements.**
+
+Read the entire document carefully. Extract every requirement and create a compliance checklist.
+
+Do not overlook any requirement, even if it seems minor.
+
+The following requirements are explicitly stated in the document:
+
+### Technology requirements
+
+The application must use the technologies covered in class:
+
+- Jersey REST
+- JSON
+- Spring-based annotations
+- JPA / Spring Data Repositories
+- Javax Validation
+- RetroJit for connecting to external services, with at least Twilio
+- Scheduling
+
+Do not silently replace these technologies with different frameworks or technologies.
+
+In particular:
+- Use Jersey REST for the REST API.
+- Use JSON for request and response payloads.
+- Use Spring annotations where required.
+- Use JPA entities and Spring Data repositories for persistence.
+- Use Javax Validation for field and request validation.
+- Integrate with an external service through RetroJit, with Twilio as the minimum external integration.
+- Implement meaningful scheduling functionality.
+
+If you believe a particular implementation detail is ambiguous, explain the ambiguity and propose a conservative approach consistent with the course requirements.
+
+Do not assume that a newer framework or library is acceptable simply because it is more modern.
+
+### Database requirements
+
+The database must contain at least five distinct entity types.
+
+Every entity must have a justified purpose.
+
+Do not create unnecessary entities just to satisfy the minimum.
+
+The proposal must describe:
+- What each entity represents.
+- Its fields.
+- Each field's data type.
+- Whether each field can be null.
+- Validation requirements.
+- Allowed values and constraints.
+- Relationships between entities.
+- Its corresponding repository.
+- Custom repository methods, their parameters, and their purposes.
+
+The application may use `@PostConstruct` to initialize the database with an initial state.
+
+### REST controller requirements
+
+The application must have one or more web controllers with several web-triggered operations.
+
+The professor specifies:
+- GET for retrieval.
+- POST for submissions.
+- Basic create and read operations for ALL entities.
+- Runtime endpoints for creating and deleting rows.
+- The application must not depend solely on an initializer to create data.
+
+Most importantly:
+
+**Controllers must forward requests to components using `@Autowired`.**
+
+Controllers should handle incoming and outgoing data, while actual application logic belongs in components.
+
+Do not put business logic directly in controller methods.
+
+### Required API documentation
+
+For EACH controller operation, document:
+
+1. REST URL.
+2. HTTP method.
+3. Purpose.
+4. Path parameters.
+5. Query parameters, if any.
+6. JSON request body, if any.
+7. JSON response format.
+8. HTTP status code.
+9. Possible error responses and messages.
+10. The component receiving the request.
+11. The exact component method called.
+12. A description of what that method does.
+
+Do not document only the main happy path. Include realistic failure cases.
+
+### Component requirements
+
+Describe all application components and their responsibilities.
+
+For every important component method, document:
+- Method name and signature.
+- Purpose.
+- Input parameters.
+- Return value.
+- Validation and business rules.
+- Processing steps in order.
+- Repository methods called.
+- Other components called.
+- Exceptions or errors that can occur.
+- Whether it uses a transaction.
+- Important edge cases.
+
+Include important methods invoked by controllers and any `@PostConstruct` initialization methods.
+
+### Proposal submission
+
+The proposal must be a Word document containing:
+
+- Group members.
+- Prose description of the application.
+- Description of every controller operation.
+- Description of all components and their jobs.
+- Descriptions of entities and repositories.
+- Entity fields and data types.
+- Validation rules.
+- Custom repository methods, parameters, and purposes.
+
+Each member must also email peer reviews of the other members, with a rating from 1 to 100 and comments.
+
+### Project skeleton and partial implementation
+
+The professor requires:
+- Database connectivity.
+- Entity tables successfully generated.
+- Test data loaded.
+- Repositories correctly defined.
+- Controllers and components accessible.
+- No 404 errors for intended endpoints.
+- Correct responses from the endpoints, even if initial responses use test data.
+
+The skeleton submission requires the exported project and a video demonstrating that:
+- The application runs without errors.
+- Database tables are created.
+- Test data is loaded.
+- URLs work.
+- JSON responses can be demonstrated through Postman.
+
+### Final implementation
+
+The final implementation requires:
+- Actual application logic.
+- Finalized project.
+- A recorded group discussion video.
+- Peer reviews.
+
+A user interface is optional for bonus credit. If proposed, it must interact with the REST application and be demonstrated.
+
+**Do not forget these requirements when designing the system.**
+
+---
+
+## Attachment B: erp-template-pack.zip
+
+This is a separate, extensive reference pack originally created for research and specification of a configurable ERP and business-operations platform.
+
+It is NOT the domain specification for OrgResource.
+
+I want you to inspect it carefully and extract reusable practices, not blindly copy its application design.
+
+### Required inspection
+
+Start with:
+- `00-READ-ME-FIRST.md`
+- `01-MASTER-PROMPT.md`
+- `02-SYSTEM-CONTEXT.md`
+- `03-SOCRATIC-CRITIQUE.md`
+- `04-RESEARCH-FINDINGS.md`
+- `05-ARCHITECTURE-AND-MODULES.md`
+- `06-DESIGN-SYSTEM-AND-UX.md`
+- `07-ENGINEERING-SECURITY-OPS.md`
+- `08-GAPS-AND-ADDITIONS.md`
+- `09-OPEN-QUESTIONS-AND-CLIENT-DISCOVERY.md`
+- `10-APPENDIX-DATA-MODEL.md`
+- `11-APPENDIX-SERVER-FUNCTIONS.md`
+- `12-APPENDIX-SETTINGS-AND-COPY.md`
+- `13-DECISION-LOG.md`
+- `14-FIELD-EVIDENCE.md`
+- `ALL-CONTEXT-02-to-14.md`
+
+You may inspect additional files if they provide relevant information.
+
+### How to use the template pack
+
+Extract and adapt useful practices concerning:
+
+- System decomposition.
+- Requirements traceability.
+- Clear module boundaries.
+- Domain modeling.
+- Database integrity.
+- Entity relationships.
+- Business-rule documentation.
+- Data validation.
+- Transaction safety.
+- Audit trails.
+- Error handling.
+- Authorization and security.
+- API design.
+- Notification workflows.
+- Scheduling and background tasks.
+- Testing and acceptance criteria.
+- User interface consistency.
+- Operational edge cases.
+- Decision records.
+- Assumption tracking.
+- Risk analysis.
+- Socratic criticism.
+- Documentation quality.
+
+The template pack's research methodology is especially important.
+
+For each major design decision:
+1. Identify the problem.
+2. Identify at least two or three plausible approaches.
+3. Explain their advantages and disadvantages.
+4. Identify risks and trade-offs.
+5. Select the most appropriate approach.
+6. Explain why it wins.
+7. Explain the conditions under which another approach would be better.
+
+### Important restrictions
+
+Do NOT copy food-and-beverage-specific concepts into OrgResource unless they are genuinely applicable.
+
+Examples of concepts that must not be blindly transferred:
+- Recipes.
+- Food production.
+- Sales orders.
+- POS operations.
+- Restaurant menus.
+- Ingredient costing.
+- Food preparation.
+- Manufacturing.
+- Restaurant accounting.
+- Supplier purchasing workflows designed for commercial businesses.
+
+OrgResource is an application for student organizations, their departments, projects, and resources.
+
+The ERP pack is a reference for engineering and specification quality, not a requirement to turn this project into an ERP.
+
+At the beginning of your output, include a section called **Template Pack Applicability Assessment**. Explain:
+- What you extracted.
+- What is relevant.
+- What is irrelevant.
+- What you adapted.
+- What you deliberately did not transfer.
+
+---
+
+# 3. Project identity and fixed direction
+
+The project has already been selected.
+
+**Do not reopen the comparison between ProjectClose, ProjectStock, and OrgStock.**
+
+The selected project is ProjectStock, refined and named:
+
+**OrgResource: Student Organization Resource Planning and Allocation System**
+
+The product's purpose is to help student organizations plan projects using resources they already own or are authorized to manage, coordinate resource requirements across departments, identify allocation conflicts, and determine genuine shortages before purchasing or sourcing additional materials.
+
+Its primary focus is not simple inventory recording.
+
+Its defining capability is:
+
+**Connecting project-level resource requirements with actual inventory, existing commitments, resource availability, and allocation decisions across departments.**
+
+The system should help an organization answer:
+
+- What resources do we own or control?
+- What resources are usable?
+- Where are they stored?
+- Which department is responsible for them?
+- What does each upcoming project require?
+- When does each project need those resources?
+- How much stock is already committed?
+- Are two projects competing for the same resources?
+- Can resources be shared or reallocated?
+- What is the actual shortage after accounting for available inventory?
+- Which resources need to be purchased or sourced?
+- Who currently has custody of a reusable item?
+- Was the resource returned?
+- Was it damaged, lost, consumed, or adjusted?
+- What resources are frequently used?
+- What resources are underutilized?
+- What recurring demand patterns should influence future planning?
+
+The system should be useful for a multi-department student organization.
+
+The initial implementation should be scoped to ONE organization with multiple departments, not a university-wide platform.
+
+It should be configurable enough to support different organization structures and resource categories without introducing unnecessary multi-tenant complexity.
+
+---
+
+# 4. Background and problem rationale
+
+The project is motivated by publicly reported organizational resource-coordination issues at Ateneo.
+
+A particularly relevant public case was reported by The GUIDON in its May 2025 article, *Following the funds: The gaps in the Sanggunian's financial processes*.
+
+The report described interdepartmental coordination problems, including different departments requesting similar materials separately rather than coordinating and sharing resources.
+
+This provides a documented example of a resource-coordination problem.
+
+However, do not overstate the evidence.
+
+The public report does not establish:
+- The exact materials involved.
+- Whether they were reusable.
+- Whether they were already owned.
+- Whether they were available at the same time.
+- The exact financial loss.
+- The frequency of the problem.
+- Whether all Ateneo organizations experience it.
+
+Another relevant example is MEA's public description of its MEA Room as an inventory hub with digital tracking and physical audits.
+
+This is important counterevidence: basic inventory tracking is not sufficiently differentiated.
+
+The application must therefore be designed around project-based resource planning, demand consolidation, date-aware availability, allocation management, and shortage analysis.
+
+### Existing university systems and boundaries
+
+The project must not replace:
+
+- OSA official project proposal submissions.
+- OSA financial processes.
+- SAPS.
+- Official OSA document tracking.
+- CFMO facility reservations.
+- University-owned asset management.
+- Official university procurement.
+- Official payment and accounting systems.
+
+The application should manage only resources that the student organization owns or is explicitly authorized to control.
+
+The product is an internal organizational planning and resource-coordination tool.
+
+Its natural place in the process is BEFORE an organization finalizes resource requirements and proceeds with official university project and financial processes.
+
+Do not claim that OrgResource integrates with OSA, SAPS, or CFMO unless a real, documented integration is designed and permitted. For this academic project, assume no such integration.
+
+---
+
+# 5. Core domain model and business concepts
+
+You must establish a precise domain vocabulary before designing entities, APIs, or components.
+
+Define the following concepts clearly and consistently.
+
+## 5.1 Organization
+
+The student organization using the system.
+
+Initial scope: one organization per deployment.
+
+Do not build complicated multi-organization tenancy unless you can justify it and keep it optional.
+
+## 5.2 Department
+
+An internal unit, committee, team, or department within the organization.
+
+Departments:
+- Have names and descriptions.
+- Can have assigned members.
+- Can create or manage projects.
+- Can submit resource requirements.
+- May be responsible for resources.
+- May request or receive allocations.
+
+Explain whether departments can have parent departments. Do not add hierarchical organization management unless it is useful.
+
+## 5.3 User
+
+A person using the application.
+
+Potential roles:
+- Administrator.
+- Organization officer.
+- Department head.
+- Resource manager or custodian.
+- Department member.
+
+Define the responsibilities and permissions of each role.
+
+Do not introduce a complicated permission engine if a simple role-based approach is sufficient.
+
+Do not assume an authentication provider that the course has not required. Propose an implementation consistent with the course technologies and clearly identify any authentication assumptions.
+
+## 5.4 Project
+
+An activity, event, initiative, or internal project conducted by a department or organization.
+
+A project may:
+- Have a name.
+- Have a description.
+- Have a responsible department.
+- Have a project owner.
+- Have a start and end date.
+- Have a planning status.
+- Have multiple resource requirements.
+- Have multiple allocations.
+
+Define a sensible project lifecycle.
+
+Possible statuses:
+- DRAFT.
+- SUBMITTED.
+- APPROVED.
+- IN_PROGRESS.
+- COMPLETED.
+- CANCELLED.
+
+Do not use statuses without defining the transitions and permissions.
+
+## 5.5 Resource
+
+An item or supply that the organization owns or is authorized to manage.
+
+Resources must be classified into at least two fundamentally different types.
+
+### Reusable resources
+
+Examples:
+- Extension cords.
+- Tables.
+- Tripods.
+- Projectors owned by the organization.
+- Sound equipment owned by the organization.
+- Storage containers.
+- Reusable decorations.
+
+These are not normally consumed when used.
+
+They may be reserved for a date range, issued to a person or department, returned, inspected, and made available again.
+
+### Consumable resources
+
+Examples:
+- Paper.
+- Tape.
+- Markers.
+- Disposable decorations.
+- Packaging materials.
+- Other supplies consumed during projects.
+
+These are depleted when consumed.
+
+They should not be treated like reusable assets.
+
+Define the implications of each resource type for:
+- Quantity.
+- Availability.
+- Reservation.
+- Allocation.
+- Issuance.
+- Return.
+- Consumption.
+- Inventory transactions.
+- Shortage calculation.
+- Reporting.
+
+Do not serialize every low-value consumable as an individual asset.
+
+## 5.6 Resource requirement
+
+A project's requirement for a particular resource.
+
+A requirement should identify:
+- Project.
+- Resource.
+- Requested quantity.
+- Unit of measurement.
+- Required start date and time.
+- Required end date and time, where applicable.
+- Priority.
+- Notes.
+- Requirement status.
+
+One project can require multiple resources.
+
+One resource can be required by multiple projects.
+
+A requirement can be partially fulfilled.
+
+Explain how the system represents partial fulfillment and remaining shortage.
+
+## 5.7 Allocation
+
+An allocation is a reservation or commitment of a quantity of a resource to a project requirement.
+
+An allocation must be distinct from a requirement.
+
+A requirement expresses what the project needs.
+
+An allocation expresses what the organization has approved or committed to provide.
+
+A requirement may have multiple allocations.
+
+An allocation may be:
+- Requested.
+- Approved.
+- Rejected.
+- Cancelled.
+- Issued.
+- Returned, for reusable resources.
+- Consumed, for consumables.
+- Partially fulfilled, if the model supports it.
+
+Define a coherent lifecycle and do not mix unrelated statuses.
+
+## 5.8 Inventory transaction
+
+A record of a change in inventory or resource custody.
+
+Potential transaction types:
+- RECEIPT.
+- ISSUE.
+- RETURN.
+- CONSUMPTION.
+- DAMAGE.
+- LOSS.
+- ADJUSTMENT_INCREASE.
+- ADJUSTMENT_DECREASE.
+
+Explain how each transaction affects inventory.
+
+Maintain an auditable transaction history.
+
+Do not allow ordinary users to silently overwrite historical transactions.
+
+For corrections, define whether the system uses reversal transactions, correction records, or another defensible mechanism.
+
+## 5.9 Notification
+
+A record of a notification sent or scheduled by the system.
+
+Possible notification purposes:
+- Allocation approval.
+- Allocation rejection.
+- Upcoming reservation.
+- Resource return reminder.
+- Overdue resource reminder.
+- Low-stock or shortage notification.
+- Project requirement update.
+
+Define which notifications are actually necessary for the first version.
+
+---
+
+# 6. Critical business rules and calculations
+
+This section is central to the project.
+
+Do not simply describe the application conceptually. Define the actual rules the software must enforce.
+
+## 6.1 Date-aware availability for reusable resources
+
+The application must account for overlapping reservations.
+
+A simple total-stock calculation is insufficient.
+
+For a reusable resource, define availability at time t as:
+
+A(t) = U - SUM(Qi for approved or issued allocations overlapping t)
+
+Where:
+- A(t) = quantity available at time t.
+- U = usable physical stock.
+- Qi = quantity committed by an allocation.
+- Only allocations whose date ranges overlap the evaluated time are counted.
+
+Define date-range overlap precisely.
+
+For two intervals [startA, endA] and [startB, endB], define whether they overlap, including whether boundaries are inclusive or exclusive.
+
+Choose one consistent interval convention and apply it throughout the database, API, and service logic.
+
+Explain:
+- What happens when a project is rescheduled.
+- What happens when an allocation is cancelled.
+- What happens when an item is damaged.
+- What happens when an item is returned late.
+- What happens when an allocation is partially issued.
+- What happens when a resource's usable quantity decreases.
+- What happens when a new project requests already committed resources.
+
+The system must prevent over-allocation.
+
+## 6.2 Consumable inventory
+
+For consumables, define:
+
+Remaining stock = Opening stock + Receipts - Consumption +/- Adjustments
+
+Also account for approved reservations that have not yet been consumed.
+
+Define how the system prevents two projects from reserving the same consumable quantity.
+
+Explain the distinction between:
+- Physical on-hand quantity.
+- Reserved quantity.
+- Available-to-promise quantity.
+- Consumed quantity.
+- Damaged or lost quantity.
+
+Do not subtract the same quantity twice.
+
+## 6.3 Shortage calculation
+
+Define how the system calculates actual unmet demand.
+
+At minimum, distinguish:
+- Total project demand.
+- Existing usable inventory.
+- Existing allocations.
+- Available stock for the required period.
+- Approved allocations.
+- Remaining unfulfilled requirements.
+- Additional quantity that must be sourced.
+
+A shortage must not be calculated using a naive formula that ignores scheduling or allocation overlap.
+
+Explain how reusable and consumable shortages differ.
+
+## 6.4 Allocation approval
+
+Define:
+- Who can submit an allocation request.
+- Who can approve it.
+- Whether the resource custodian must approve.
+- Whether administrators can override a conflict.
+- Whether an override requires a reason.
+- Whether rejected and cancelled allocations remain in history.
+- Whether an approved allocation can be edited.
+- How rescheduling is handled.
+
+Do not assume every department can approve its own requests.
+
+## 6.5 Resource custody
+
+For reusable resources, track:
+- Current custodian or responsible department.
+- Current location, if relevant.
+- Current condition.
+- Whether the item is issued.
+- Expected return date.
+- Actual return date.
+- Inspection result.
+
+Distinguish physical inventory from custody.
+
+An item that has been issued is still owned by the organization, but it is not available for another allocation.
+
+## 6.6 Inventory integrity
+
+Define the source of truth for inventory.
+
+Avoid inconsistent designs where both a transaction ledger and freely editable quantity fields can disagree.
+
+If maintaining a current quantity as a performance optimization, explain how it is updated atomically and reconciled against transactions.
+
+Define how inventory adjustments are authorized and audited.
+
+---
+
+# 7. Required functional modules
+
+Design a coherent system with clearly defined modules.
+
+At minimum, consider the following.
+
+## Module A: Organization and department management
+
+- Department creation.
+- Department viewing.
+- Department updates.
+- Department deletion where safe.
+- User assignment to departments.
+- Role assignment.
+- Department responsibility.
+
+## Module B: User and access management
+
+- User registration or creation by an administrator.
+- User retrieval.
+- Role assignment.
+- Department association.
+- Active/inactive status.
+- Permission checks.
+
+Keep authentication implementation realistic and aligned with course requirements.
+
+## Module C: Resource registry
+
+- Create resource.
+- Read resource.
+- Update resource details.
+- Delete or archive resource where safe.
+- Classify resource as reusable or consumable.
+- Record category and unit.
+- Record ownership or authorized control.
+- Record usable quantity.
+- Record location.
+- Record condition.
+- Record responsible department or custodian.
+- Search and filter resources.
+
+## Module D: Project management
+
+- Create project.
+- Read project.
+- Update project.
+- Change project status.
+- Assign responsible department.
+- Set project schedule.
+- Cancel project.
+- View project resource requirements.
+
+## Module E: Project resource requirements
+
+- Add a resource requirement to a project.
+- Read requirements.
+- Update requirements.
+- Remove requirements where safe.
+- Set quantity and dates.
+- Check current fulfillment.
+- Calculate remaining demand.
+- Support partial fulfillment.
+
+## Module F: Demand consolidation and availability
+
+This is the defining module.
+
+- Consolidate requirements across departments.
+- Calculate available quantities.
+- Identify overlapping allocations.
+- Identify allocation conflicts.
+- Identify shortages.
+- Show which departments or projects are competing for a resource.
+- Support reallocation where appropriate.
+
+Do not turn this into an opaque automatic decision engine. The organization should be able to understand why a resource is or is not available.
+
+## Module G: Allocation management
+
+- Request allocation.
+- Approve allocation.
+- Reject allocation.
+- Cancel allocation.
+- Issue reusable resources.
+- Record returns.
+- Record partial fulfillment if supported.
+- Handle overdue returns.
+- Enforce availability constraints.
+
+## Module H: Inventory transaction management
+
+- Record receipts.
+- Record issuance.
+- Record returns.
+- Record consumption.
+- Record damage.
+- Record loss.
+- Record adjustments.
+- View transaction history.
+- Audit corrections.
+
+## Module I: Shortage and purchasing-gap analysis
+
+- Identify actual shortages.
+- Calculate quantities still needed.
+- Distinguish stock shortage from scheduling conflict.
+- Identify resources requiring sourcing.
+- Produce a project resource summary.
+
+This module must not become an official procurement or payment system.
+
+## Module J: Notifications and scheduling
+
+Use Twilio through RetroJit for the required external service integration.
+
+Use scheduling for meaningful automated tasks.
+
+Possible tasks:
+- Upcoming allocation reminders.
+- Return reminders.
+- Overdue notifications.
+- Periodic inventory checks or low-stock alerts.
+- Scheduled summaries.
+
+Choose a small, defensible set for the initial implementation.
+
+Do not send SMS repeatedly or unnecessarily.
+
+Define:
+- Notification triggers.
+- Recipient selection.
+- Scheduled execution.
+- Retry behavior.
+- Failure handling.
+- Notification logs.
+- Duplicate prevention.
+- User consent and phone-number validation.
+
+## Module K: Reports and analytics
+
+Potential reports:
+- Current inventory.
+- Available resources.
+- Resource utilization.
+- Upcoming allocations.
+- Allocation conflicts.
+- Shortage report.
+- Department resource demand.
+- Transaction history.
+- Overdue items.
+- Consumable stock levels.
+
+Distinguish operational reports from analytics that require historical data.
+
+Do not invent savings, utilization rates, or performance improvements.
+
+---
+
+# 8. Scope and exclusions
+
+Keep the project achievable within the academic schedule.
+
+## In scope
+
+- One organization.
+- Multiple departments.
+- Internal projects.
+- Organization-owned or explicitly authorized resources.
+- Reusable and consumable resources.
+- Date-aware resource planning.
+- Demand consolidation.
+- Allocation requests and approvals.
+- Inventory transactions.
+- Shortage analysis.
+- Notifications.
+- Scheduled reminders.
+- Basic reports.
+
+## Out of scope
+
+Do not build:
+- A university-wide inventory system.
+- An OSA replacement.
+- A CFMO reservation replacement.
+- University facilities management.
+- Official procurement.
+- Supplier marketplace.
+- Payment processing.
+- Accounting software.
+- Financial statement generation.
+- Official project proposal submission.
+- Official SAPS integration.
+- Student attendance management.
+- General project-management software unrelated to resource planning.
+- Full ERP functionality.
+- Complex multi-tenant SaaS architecture.
+- Unnecessary AI features.
+
+If you recommend any additional feature, explain why it is essential and whether it belongs in the first version or a later version.
+
+---
+
+# 9. Proposed technology and architecture
+
+The professor's specified technology stack takes priority.
+
+Design the application around:
+
+- Jersey REST controllers/resources.
+- JSON request and response payloads.
+- Spring-based dependency injection and annotations.
+- JPA entities.
+- Spring Data repositories.
+- Javax Validation.
+- RetroJit for external service access.
+- Twilio as the required external service.
+- Scheduling through an appropriate Spring scheduling mechanism.
+
+The system should follow a layered structure:
+
+REST Controller / Resource
+→ Application Component / Service
+→ Spring Data Repository
+→ JPA Entity
+→ Database
+
+External notification flow:
+
+Scheduled Task or Business Event
+→ Notification Component
+→ RetroJit Integration
+→ Twilio
+→ Notification Result
+→ Notification Log
+
+### Controller design
+
+Controllers must:
+- Accept HTTP requests.
+- Validate or delegate validation of incoming data.
+- Call the appropriate component through `@Autowired`.
+- Return appropriate JSON responses.
+- Map errors to appropriate HTTP responses.
+
+Controllers must not contain:
+- Availability calculations.
+- Allocation decisions.
+- Inventory arithmetic.
+- Transaction logic.
+- Notification scheduling logic.
+- Complex database operations.
+
+### Component design
+
+Components should contain the business logic.
+
+Use clear separation of responsibility.
+
+Avoid one enormous service class.
+
+Potential components:
+- DepartmentComponent.
+- UserComponent.
+- ResourceComponent.
+- ProjectComponent.
+- RequirementComponent.
+- AvailabilityComponent.
+- AllocationComponent.
+- InventoryTransactionComponent.
+- ShortageComponent.
+- NotificationComponent.
+- TwilioIntegrationComponent.
+- SchedulingComponent.
+- ReportingComponent.
+
+You may combine or divide these if you justify the design.
+
+### Transaction boundaries
+
+Identify which operations require database transactions.
+
+Examples:
+- Approving an allocation must check availability and create the commitment atomically.
+- Issuing a reusable item must update custody and transaction history consistently.
+- Consuming a consumable must update inventory and allocation status consistently.
+- Returning an item must update custody and the allocation lifecycle.
+- Cancelling an allocation must release its commitment.
+
+Explain how concurrent requests are handled.
+
+Consider JPA locking or optimistic versioning if appropriate.
+
+Do not claim that checking availability in one query and inserting an allocation later is safe without concurrency protection.
+
+### Database
+
+Recommend a database consistent with the course environment.
+
+If the professor or class materials specify a particular database, follow that.
+
+Do not introduce unnecessary infrastructure.
+
+---
+
+# 10. Database design: entities and relationships
+
+Design a normalized, understandable database.
+
+At least five distinct entity types are mandatory.
+
+I expect you to evaluate a model that includes the following potential entities:
+
+1. Department.
+2. AppUser.
+3. Project.
+4. Resource.
+5. ResourceRequirement.
+6. Allocation.
+7. InventoryTransaction.
+8. NotificationLog.
+
+You may add or remove entities only with a clear justification.
+
+Do not force all concepts into one table.
+
+Do not create an entity simply to increase the count.
+
+For every selected entity, provide:
+
+### Entity documentation template
+
+**Entity name:**
+
+**Purpose:**
+
+**Why it must exist:**
+
+**Relationships:**
+
+**Fields:**
+
+| Field | Java type | Database type | Nullable? | Constraints | Description |
+|---|---|---|---|---|---|
+
+**Validation:**
+- Required fields.
+- Maximum lengths.
+- Numeric minimums and maximums.
+- Enum restrictions.
+- Date restrictions.
+- Uniqueness constraints.
+- Foreign-key constraints.
+- Cross-field validation.
+
+**JPA mapping:**
+- `@Entity`.
+- `@Id`.
+- ID generation strategy.
+- `@ManyToOne`, `@OneToMany`, `@OneToOne`, or `@ManyToMany`, where justified.
+- Join columns.
+- Cascade behavior.
+- Fetch strategy.
+- Orphan removal, if applicable.
+- `@Version`, if concurrency control is used.
+
+**Repository:**
+- Repository interface.
+- Standard inherited methods.
+- Every custom method.
+- Method parameters.
+- Return type.
+- Purpose.
+- Query derivation or explicit query.
+
+**Lifecycle and deletion:**
+- Can it be deleted?
+- When should it be archived instead?
+- What happens if related records exist?
+- What should the API return?
+
+### Critical database decisions
+
+Explain:
+- Why each entity is necessary.
+- How many-to-one and one-to-many relationships work.
+- Whether a project belongs to one department or can involve multiple departments.
+- Whether a resource has one responsible department or multiple custodians.
+- Whether resource requirements can be partially allocated.
+- Whether allocations can cover only part of a requirement.
+- Whether transactions are immutable.
+- How resource type changes are handled.
+- How historical records remain understandable.
+
+Do not leave these questions unresolved.
+
+---
+
+# 11. REST API specification
+
+Create a complete API catalogue.
+
+Organize endpoints by domain.
+
+At minimum, consider:
+
+- `/api/departments`
+- `/api/users`
+- `/api/projects`
+- `/api/resources`
+- `/api/requirements`
+- `/api/allocations`
+- `/api/inventory-transactions`
+- `/api/notifications`
+- `/api/availability`
+- `/api/shortages`
+- `/api/reports`
+
+You may revise endpoint naming to produce a more coherent REST design.
+
+For EVERY entity, provide:
+- Create endpoint.
+- List/read endpoint.
+- Read-by-ID endpoint.
+- Runtime delete endpoint.
+- Update endpoint if appropriate.
+
+The professor explicitly requires basic create and read operations for all entities and runtime creation/deletion.
+
+If an entity should not support ordinary deletion, explain the safe alternative and how the academic requirement is still satisfied through a defensible endpoint or lifecycle operation.
+
+Do not omit endpoints merely because an entity is created indirectly by another operation.
+
+### API documentation format
+
+For every endpoint, provide:
+
+**Endpoint ID:**
+
+**Purpose:**
+
+**HTTP method:**
+
+**URL:**
+
+**Path parameters:**
+
+**Query parameters:**
+
+**Request headers:**
+
+**Request JSON:**
+
+**Success status:**
+
+**Success JSON:**
+
+**Possible error statuses:**
+
+**Error JSON:**
+
+**Controller method:**
+
+**Autowired component:**
+
+**Component method:**
+
+**Repository methods involved:**
+
+**Business rules enforced:**
+
+**Transaction behavior:**
+
+**Example request:**
+
+**Example response:**
+
+**Example failure response:**
+
+Use consistent JSON structures.
+
+For example, define a standard error response:
+
+{
+  "timestamp": "2026-11-03T10:00:00",
+  "status": 409,
+  "error": "Conflict",
+  "code": "RESOURCE_OVERALLOCATION",
+  "message": "The requested quantity exceeds the available quantity for the selected period.",
+  "path": "/api/allocations"
+}
+
+Treat this as an illustrative format. Adapt it to the final design.
+
+Define a consistent approach for:
+- 200 OK.
+- 201 Created.
+- 204 No Content.
+- 400 Bad Request.
+- 401 Unauthorized, if authentication is implemented.
+- 403 Forbidden, if authorization is implemented.
+- 404 Not Found.
+- 409 Conflict.
+- 422 Unprocessable Entity, if used.
+- 500 Internal Server Error.
+
+Do not return HTTP 200 for failed operations.
+
+Do not expose database stack traces or sensitive implementation details in error responses.
+
+### API consistency
+
+Ensure:
+- Resource IDs use one consistent type.
+- Dates use one consistent representation.
+- Date-times include timezone information where necessary.
+- Quantities use suitable numeric types.
+- Enum values are consistent.
+- Null handling is explicit.
+- Pagination and filtering are consistent where implemented.
+- Duplicate creation is handled.
+- Invalid references are handled.
+- Deletion conflicts are handled.
+
+---
+
+# 12. Component and method specifications
+
+This section must be implementation-ready.
+
+For every component, provide:
+
+1. Component name.
+2. Responsibility.
+3. Dependencies.
+4. Methods.
+5. Method signatures.
+6. Input parameters.
+7. Return types.
+8. Processing steps.
+9. Validation rules.
+10. Business rules.
+11. Repository calls.
+12. Other component calls.
+13. Transaction requirements.
+14. Exceptions.
+15. Edge cases.
+
+Example format:
+
+### AllocationComponent
+
+**Responsibility:** Manage allocation requests, approval, rejection, cancellation, issuance, and return workflows.
+
+**Potential methods:**
+
+- `requestAllocation(...)`
+- `getAllocationById(...)`
+- `getAllocations(...)`
+- `approveAllocation(...)`
+- `rejectAllocation(...)`
+- `cancelAllocation(...)`
+- `issueAllocation(...)`
+- `returnAllocation(...)`
+- `deleteAllocation(...)`, if safe and permitted.
+
+For every method, explain the exact ordered steps.
+
+For example, approval must:
+1. Retrieve the allocation.
+2. Verify it exists.
+3. Verify the current status permits approval.
+4. Retrieve the associated resource requirement.
+5. Retrieve the resource.
+6. Validate the requested date range.
+7. Recalculate availability.
+8. Detect conflicts.
+9. Prevent over-allocation.
+10. Record approval.
+11. Persist the change atomically.
+12. Trigger or schedule the appropriate notification.
+13. Return the updated allocation.
+
+Do not simply write "check availability and approve." Explain the actual logic.
+
+---
+
+# 13. Repository specifications
+
+For every entity, define its Spring Data repository.
+
+Provide:
+- Interface name.
+- Entity type.
+- ID type.
+- Inherited CRUD methods used.
+- Custom query methods.
+- Parameters.
+- Return types.
+- Purpose.
+- Query logic where necessary.
+
+Examples of repository functionality to evaluate:
+
+- Find resources by department.
+- Find resources by type.
+- Find active projects within a date range.
+- Find requirements by project.
+- Find requirements by resource.
+- Find allocations overlapping a time range.
+- Find allocations by status.
+- Find overdue allocations.
+- Find transactions by resource.
+- Find notifications awaiting delivery.
+- Find resources with low available quantities.
+
+Do not invent method names without checking whether Spring Data can derive the intended query.
+
+For complex overlap queries, use an explicit JPQL query or another justified approach.
+
+Ensure repository methods match the entity field names and relationships exactly.
+
+---
+
+# 14. Twilio and RetroJit integration
+
+The professor explicitly requires an external service integration through RetroJit, with at least Twilio.
+
+Make this meaningful.
+
+Use Twilio for selected SMS notifications, such as:
+- Upcoming resource return.
+- Overdue reusable resource.
+- Allocation approval or rejection.
+- Important allocation schedule changes.
+
+Do not send SMS for every minor database change.
+
+Define:
+- What triggers an SMS.
+- Which user receives it.
+- How the recipient's phone number is obtained.
+- How phone numbers are validated and normalized.
+- How user consent is represented.
+- What happens if the phone number is missing.
+- What happens if Twilio fails.
+- Whether retries are used.
+- How duplicate SMS messages are prevented.
+- How notification attempts are logged.
+- How API credentials are configured securely.
+
+**RetroJit must be used for the external integration as specified by the professor.**
+
+Do not invent RetroJit method names or configuration syntax.
+
+If its exact interface is not established by the supplied materials, identify what must be verified against the course examples and provide an interface-level design without pretending that unverified code is confirmed.
+
+Keep external integration logic separate from core allocation and inventory logic.
+
+A Twilio outage must not corrupt an allocation or inventory transaction.
+
+---
+
+# 15. Scheduling requirements
+
+The project must include meaningful scheduled functionality.
+
+Use an appropriate scheduling mechanism consistent with Spring-based annotations and course requirements.
+
+Define the scheduled jobs.
+
+Potential jobs:
+
+### Upcoming return reminders
+
+Periodically find approved or issued reusable-resource allocations whose return dates are approaching.
+
+Send one reminder within a defined reminder window.
+
+### Overdue resource reminders
+
+Find reusable resources whose expected return dates have passed and whose allocations have not been returned.
+
+Notify the responsible user or custodian.
+
+### Low-stock and shortage alerts
+
+Periodically identify consumables below configured thresholds, or use project demand to identify upcoming shortages.
+
+Avoid unnecessary repeated notifications.
+
+For every scheduled job, specify:
+- Job name.
+- Schedule or interval.
+- Timezone.
+- Trigger conditions.
+- Repository queries.
+- Component methods.
+- Notification behavior.
+- Duplicate prevention.
+- Retry behavior.
+- Error handling.
+- Logging.
+- Whether it can run concurrently.
+- How overlapping executions are prevented.
+
+Explain the difference between:
+- A scheduled notification.
+- A scheduled business operation.
+- A user-triggered operation.
+
+Do not create jobs that are unrelated to the application's purpose.
+
+---
+
+# 16. Validation and error handling
+
+Use Javax Validation in a meaningful way.
+
+Specify field-level and request-level validation.
+
+Examples:
+- Resource name cannot be blank.
+- Quantity cannot be negative.
+- Required dates must be valid.
+- End date cannot precede start date.
+- Resource type must be an allowed enum.
+- A project must reference an existing department.
+- An allocation must reference an existing requirement.
+- A requested allocation quantity must be positive.
+- A phone number must be valid if SMS notifications are enabled.
+- A project cannot be allocated resources if it is cancelled.
+- A reusable resource cannot be consumed as if it were a consumable.
+- A consumable cannot be returned as a reusable asset.
+- An allocation cannot be approved if it creates an over-allocation.
+- A returned allocation cannot be issued again without a new valid workflow.
+
+Distinguish:
+1. Field-level validation.
+2. Request DTO validation.
+3. Cross-field validation.
+4. Business-rule validation.
+5. Database constraints.
+6. Authorization validation.
+
+Explain which layer enforces each rule.
+
+---
+
+# 17. Auditability and data integrity
+
+The system manages shared organizational resources, so trust and traceability matter.
+
+Define:
+- Who created a record.
+- Who approved an allocation.
+- Who issued a resource.
+- Who returned a resource.
+- Who recorded consumption.
+- Who adjusted inventory.
+- When the action occurred.
+- What changed.
+- Why an adjustment was made.
+
+Consider created and updated timestamps, actor references, and transaction history.
+
+Define how records are archived.
+
+Do not allow destructive deletion of historical transactions that would make inventory calculations unreliable.
+
+Explain how the system detects or prevents:
+- Duplicate receipts.
+- Duplicate returns.
+- Duplicate consumption.
+- Overlapping allocations.
+- Negative inventory.
+- Unauthorized adjustments.
+- Invalid state transitions.
+- Race conditions.
+
+---
+
+# 18. Security and access control
+
+Design an appropriate access model without making the project unnecessarily complicated.
+
+Define permissions for:
+- Administrators.
+- Organization officers.
+- Department heads.
+- Resource custodians.
+- Department members.
+
+Consider:
+- Who can create resources.
+- Who can update resources.
+- Who can approve requirements.
+- Who can approve allocations.
+- Who can issue resources.
+- Who can record returns.
+- Who can adjust inventory.
+- Who can view reports.
+- Who can manage users.
+
+Explain how the application identifies the acting user.
+
+Do not assume a specific login provider without evidence that it is permitted or taught.
+
+If full authentication is beyond the mandatory project scope, clearly separate the academic demonstration approach from production-ready authentication.
+
+Do not claim the system is secure merely because it has role fields in the database.
+
+---
+
+# 19. User interface and demonstration
+
+A UI is optional under the professor's instructions, but it may earn bonus credit.
+
+Design a practical UI if it can be implemented without compromising the mandatory REST backend.
+
+Potential screens:
+1. Dashboard.
+2. Department management.
+3. User management.
+4. Resource inventory.
+5. Resource details.
+6. Project list.
+7. Project details.
+8. Resource requirements.
+9. Availability calendar.
+10. Allocation requests.
+11. Allocation approval.
+12. Issuance and return.
+13. Inventory transaction history.
+14. Shortage analysis.
+15. Notifications.
+16. Reports.
+
+For each screen, define:
+- Primary user.
+- Purpose.
+- Information displayed.
+- Main actions.
+- Data retrieved.
+- API endpoints used.
+- Validation and error states.
+
+Prioritize clarity over visual complexity.
+
+The REST backend must remain independently testable through Postman even if no UI is built.
+
+---
+
+# 20. Seed data and initialization
+
+Define a realistic initial database state for demonstration.
+
+Use `@PostConstruct` only if appropriate and consistent with the course requirements.
+
+Seed data should include:
+- Several departments.
+- A few users with different roles.
+- Several projects.
+- Reusable resources.
+- Consumable resources.
+- Project resource requirements.
+- Approved and pending allocations.
+- Some inventory transactions.
+- Notification records if appropriate.
+
+Construct a scenario that demonstrates the system's central value:
+
+Three departments are planning projects with overlapping dates. They request some of the same resources. The system consolidates demand, checks availability, detects a conflict, allows an allocation decision, and calculates the actual shortage.
+
+Use clearly fictional sample data.
+
+Do not present sample values as real Ateneo inventory or financial records.
+
+Explain how seed data can be disabled or isolated for final production-like operation.
+
+Ensure the database can still be populated through runtime endpoints.
+
+---
+
+# 21. Postman documentation
+
+The professor explicitly requires Postman definitions for all REST calls.
+
+Produce a complete Postman collection plan.
+
+For every endpoint, include:
+- Request method.
+- URL.
+- Headers.
+- JSON body.
+- Expected response.
+- Error scenario.
+
+Organize requests into folders by domain.
+
+Include a demonstration sequence that creates the required records in dependency order.
+
+For example:
+1. Create departments.
+2. Create users.
+3. Create resources.
+4. Create projects.
+5. Create project requirements.
+6. Check availability.
+7. Request allocations.
+8. Approve allocations.
+9. Issue reusable resources.
+10. Record returns.
+11. Record consumable usage.
+12. View shortages.
+13. View reports.
+14. Trigger or inspect notifications.
+
+Explain which IDs are generated and reused in later requests.
+
+The Postman sequence must actually be executable in principle. Do not leave placeholder IDs unexplained.
+
+---
+
+# 22. Testing and acceptance criteria
+
+Create a thorough testing strategy.
+
+Include:
+
+### Entity and repository tests
+- Valid entity creation.
+- Invalid field values.
+- Null handling.
+- Relationship integrity.
+- Custom repository queries.
+
+### API tests
+- Successful creation.
+- Successful retrieval.
+- Missing records.
+- Invalid request bodies.
+- Invalid IDs.
+- Duplicate data.
+- Runtime deletion.
+- Dependency conflicts.
+- Correct HTTP status codes.
+
+### Business logic tests
+- Availability calculation.
+- Date overlap.
+- Partial allocation.
+- Over-allocation prevention.
+- Allocation cancellation.
+- Resource issuance.
+- Resource return.
+- Consumable consumption.
+- Inventory adjustments.
+- Shortage calculation.
+- Project cancellation.
+
+### Concurrency tests
+- Two departments requesting the same final available resource.
+- Two approvals occurring simultaneously.
+- Concurrent consumption of limited stock.
+
+### Scheduling tests
+- Upcoming reminders.
+- Overdue reminders.
+- Duplicate prevention.
+- Failed Twilio delivery.
+- Retry behavior.
+
+### Integration tests
+- Database connectivity.
+- Entity table generation.
+- Controller-to-component flow.
+- Component-to-repository flow.
+- RetroJit-to-Twilio integration, using a safe test setup.
+
+For every major feature, write testable acceptance criteria.
+
+---
+
+# 23. Architecture diagrams and sequence diagrams
+
+Provide diagrams using Mermaid syntax where helpful.
+
+At minimum:
+1. High-level architecture.
+2. Entity relationship diagram.
+3. Request flow from REST controller to component to repository.
+4. Resource allocation sequence.
+5. Availability calculation flow.
+6. Reusable resource issuance and return lifecycle.
+7. Consumable resource reservation and consumption lifecycle.
+8. Twilio notification flow.
+9. Scheduled reminder flow.
+
+Diagrams must match the written specification exactly.
+
+Do not produce diagrams that introduce entities or methods not defined elsewhere.
+
+---
+
+# 24. Academic project feasibility and prioritization
+
+This is a student project with a fixed academic deadline.
+
+Do not design an enterprise ERP that cannot reasonably be completed.
+
+Separate features into:
+
+### Mandatory core
+Features necessary to demonstrate the central purpose and satisfy the professor's requirements.
+
+### Important supporting features
+Features that improve completeness and reliability but can be simplified.
+
+### Optional enhancements
+Features that should only be implemented if time permits.
+
+The project must satisfy:
+- Five or more justified entities.
+- Runtime CRUD capabilities required by the professor.
+- Working database.
+- Working REST endpoints.
+- Working components.
+- Spring/JPA repository integration.
+- Javax Validation.
+- RetroJit and Twilio integration.
+- Scheduling.
+- Postman documentation.
+
+Prioritize a fully working core over many incomplete modules.
+
+Do not remove a mandatory academic requirement merely because it is inconvenient.
+
+---
+
+# 25. Required output structure
+
+Your final output must be organized into the following deliverables.
+
+## Deliverable 1: Source and requirement analysis
+
+1. ESP proposal requirements extraction.
+2. Academic compliance checklist.
+3. Template Pack Applicability Assessment.
+4. Project identity and scope.
+5. Assumptions and unresolved matters.
+
+## Deliverable 2: Complete project specification
+
+1. Project title.
+2. Abstract.
+3. Background and rationale.
+4. Problem statement.
+5. General objective.
+6. Specific objectives.
+7. Target users.
+8. Stakeholders.
+9. Scope and limitations.
+10. Functional requirements.
+11. Non-functional requirements.
+12. User roles and permissions.
+13. End-to-end workflows.
+14. Business rules.
+15. Calculations.
+16. Error and exception behavior.
+17. Security.
+18. Auditability.
+
+## Deliverable 3: Technical architecture
+
+1. Technology stack.
+2. Layered architecture.
+3. Package structure.
+4. Controller responsibilities.
+5. Component responsibilities.
+6. Repository responsibilities.
+7. Database design.
+8. External integration.
+9. Scheduling.
+10. Transaction boundaries.
+11. Concurrency handling.
+
+## Deliverable 4: Complete database specification
+
+For every entity:
+- Purpose.
+- Justification.
+- Fields.
+- Data types.
+- Nullability.
+- Constraints.
+- Validation.
+- Relationships.
+- JPA annotations.
+- Repository.
+- Custom methods.
+- Deletion and archival behavior.
+
+Include a complete entity relationship diagram.
+
+## Deliverable 5: Complete REST API catalogue
+
+For every operation:
+- Method.
+- URL.
+- Parameters.
+- Request JSON.
+- Response JSON.
+- Status codes.
+- Error messages.
+- Controller method.
+- Autowired component.
+- Component method.
+- Repository methods.
+- Business rules.
+- Transaction behavior.
+
+Do not omit CRUD operations for any entity.
+
+## Deliverable 6: Component specification
+
+For every component:
+- Responsibility.
+- Dependencies.
+- Methods.
+- Method signatures.
+- Processing steps.
+- Validation.
+- Business rules.
+- Repository calls.
+- Exceptions.
+- Transaction boundaries.
+- Edge cases.
+
+## Deliverable 7: External integration and scheduled tasks
+
+Fully specify:
+- RetroJit usage.
+- Twilio integration.
+- Notification events.
+- Notification records.
+- Scheduled jobs.
+- Duplicate prevention.
+- Retry behavior.
+- Failure handling.
+
+## Deliverable 8: Postman and testing
+
+- Full Postman collection plan.
+- Executable request order.
+- Sample payloads.
+- Sample responses.
+- Test scenarios.
+- Acceptance criteria.
+- Skeleton demonstration plan.
+- Final demonstration plan.
+
+## Deliverable 9: Formal proposal draft
+
+Produce a polished, Word-ready proposal that follows the professor's exact requested structure.
+
+Include group-member placeholders rather than inventing names.
+
+The proposal must contain all required controller, component, entity, and repository information.
+
+Do not replace technical details with generic summaries.
+
+## Deliverable 10: Implementation handoff
+
+End with:
+- Recommended development order.
+- Dependencies between modules.
+- Minimum viable implementation.
+- Skeleton milestone checklist.
+- Final implementation checklist.
+- Risks and mitigations.
+- Decisions that must be confirmed against class examples.
+- A clear handoff specification for a coding agent.
+
+---
+
+# 26. Quality-control requirements
+
+This is a specification task, not a brainstorming exercise.
+
+You must review your own output critically.
+
+## Consistency audit
+
+Check that:
+- Every API operation calls a defined controller method.
+- Every controller method calls a defined component method.
+- Every component method uses existing repositories or defined dependencies.
+- Every repository method refers to real entity fields.
+- Every entity relationship exists in the data model.
+- Every field has a consistent type.
+- Every enum is defined.
+- Every business rule has an implementation location.
+- Every important state transition is valid.
+- Every error response is documented.
+- Every scheduled task has a defined trigger and recipient.
+- Every Twilio event has a defined notification workflow.
+- Every CRUD requirement is satisfied.
+- The minimum entity count is satisfied with justified entities.
+- The required technologies are actually used.
+
+## Socratic criticism
+
+Challenge the design.
+
+Ask:
+- Is every entity necessary?
+- Is any module redundant?
+- Is the system unnecessarily complicated?
+- Is the availability calculation correct?
+- Can inventory become negative?
+- Can two users allocate the same item simultaneously?
+- Can a consumable accidentally be returned?
+- Can a reusable resource be counted as available while issued?
+- Can a cancelled project retain active allocations?
+- Can an overdue item be allocated again?
+- Can notifications be duplicated?
+- Can failed Twilio delivery corrupt the main transaction?
+- Can users delete records that historical reports depend on?
+- Can the database and the transaction ledger disagree?
+- Are any requirements impossible to implement with the required class technologies?
+- Are any proposed features beyond the academic schedule?
+
+For every problem found, propose a correction and update the specification.
+
+## Do not fabricate
+
+Never invent:
+- Ateneo policies.
+- Actual organization inventory.
+- Real adoption statistics.
+- Financial savings.
+- Existing integrations.
+- Class library methods.
+- Professor expectations beyond the attached document.
+- Authentication infrastructure.
+- External API behavior.
+
+Distinguish:
+- Explicit requirements from the professor.
+- Facts from supplied materials.
+- Publicly verified facts.
+- Design decisions.
+- Assumptions.
+- Unresolved questions.
+
+If a detail cannot be verified, say so.
+
+## No unnecessary questions
+
+Do not stop to ask me numerous questions.
+
+Where information is missing:
+1. State the missing information.
+2. Make a reasonable provisional assumption.
+3. Explain why it is reasonable.
+4. Mark it for confirmation.
+5. Continue producing the specification.
+
+Only stop if a genuinely essential decision makes further work impossible.
+
+---
+
+# 27. Final instruction
+
+I want the complete OrgResource specification, not a short proposal outline.
+
+Be exhaustive, technically precise, realistic, and internally consistent.
+
+The application should be substantial enough to demonstrate real software engineering, but achievable within the academic requirements.
+
+The most important feature is the coordination of project resource demand against actual inventory and date-specific availability across departments.
+
+Do not reduce the application to basic inventory CRUD.
+
+Do not turn it into a full ERP.
+
+Do not replace the professor's technology requirements.
+
+Do not invent unverified Ateneo systems or policies.
+
+Do not ask me to pilot the concept. I do not have time to pilot it.
+
+Make defensible design decisions, document the assumptions, criticize your own design, and deliver one coherent final specification that a developer can follow.
+
+**Your final deliverable must be detailed enough that I can transfer it directly to a separate coding agent after reviewing the proposal.**

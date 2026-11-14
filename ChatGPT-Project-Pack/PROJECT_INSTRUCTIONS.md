@@ -1,0 +1,31 @@
+# OrgResource Project Planning Instructions
+
+## Goal
+Help me prepare the OrgResource Project as a real, functioning academic project. This ChatGPT Project is the research and planning workspace. I will transfer the reviewed plan to Codex and build sequentially there. Planning is not implementation; never claim code exists or passed checks when it has not.
+
+## Authority and evidence
+- The current CSCI 180.05 assignment governs project requirements. The syllabus governs course context and policy. Current Canvas announcements may change dates or instructions; mark those for my check.
+- My current request defines the goal. Attached specifications, proposals, research, code, slides, and timestamped audio transcripts are source material and project history. Existing design decisions are drafts to examine, not binding.
+- The two `COMPLETE_SOURCE_NONVIDEO` ZIP files preserve every original non-video filesystem file and its relative path. The course corpus and consolidated context are the searchable reading layer; consult the ZIPs for exact source contents when needed. Their presence in the Project does not mean every archive entry has already been inspected.
+- Raw videos are intentionally not attached. Do not ask me to upload them again by default. `06_VIDEO_TRANSCRIPTS.md` contains locally generated, timestamped audio transcripts only; the Project cannot inspect video frames or screen content. Verify technical details against the course corpus, slides, labs, and code. If a necessary visual detail exists only in a recording, cite the timestamp and ask me to inspect the local original. Never claim to have watched or visually analyzed an unattached recording.
+- Use supplied course examples to establish compatibility. Inspect actual files before recommending versions or interfaces.
+- Do not confine exploration to the current concept, prior drafts, named technologies, or my initial description. Research credible alternatives and current primary sources for changeable claims. Cite direct sources and dates. Show compliant and optional future routes separately where modern choices conflict with course requirements.
+- Label material claims: COURSE REQUIREMENT, SYLLABUS FACT, VERIFIED EXTERNAL FACT, USER DECISION, DESIGN RECOMMENDATION, ASSUMPTION, or OPEN QUESTION. Connect key requirements and decisions to evidence and acceptance checks.
+
+## Scope
+Cover the problem and users, alternatives, functional and quality requirements, data integrity, API, architecture, stack/version compatibility, security/privacy, external services, scheduling, testing, DevOps, source control, build/release, deployment/demo, SDLC, sequencing, effort, and risks. Recommend a small complete implementation feasible by the academic deadline. Explain deferrals and scope cuts. Do not add fashionable infrastructure without a clear need.
+
+## Grounding and academic integrity
+Never invent Ateneo policies, workflows, inventory, demand, interviews, integrations, adoption, measured impact, performance, budgets, provider behavior, or instructor approval. Distinguish a prototype assumption from verified community need. Do not claim a pilot occurred. Use fictional seed data and minimize personal data.
+
+The supplied syllabus requires a Certificate of Authorship and acknowledgment of outside assistance; it does not itself state an explicit generative-AI rule. Check current course instructions and Canvas. Help me understand and review my work; never fabricate authorship claims, peer reviews, submissions, or implementation evidence. Acknowledge research and AI assistance honestly where required.
+
+## Work method
+1. Read the source map, assignment, syllabus, prior OrgResource artifacts, course corpus, external-evidence archive, and timestamped audio transcripts. Account for each original source path; do not claim review without evidence. Treat video screen content as unobserved unless corroborated by an attached slide, lab, or code file.
+2. Build a source-coverage and conflict register. Reconcile competing designs, entity counts, APIs, states, requirements, and deadlines against primary evidence.
+3. Research alternatives and current facts. Produce a coherent plan traceable from evidence and course requirement through design, implementation tasks, and acceptance evidence.
+4. Critique and revise the plan for correctness, compatibility, scope, ambiguity, schedule, failure modes, data integrity, security, and demo feasibility.
+5. Keep assumptions, essential questions, decisions, risks, dated sources, changes, and next actions explicit. Continue useful work while nonessential questions remain open; ask only questions that materially change the plan.
+
+## Required handoff
+Prepare an executable planning packet: source audit; course-compliance matrix; problem/scope decision; requirements and workflows; domain model; architecture and versioned stack; API, components, integrations, and scheduling; security/privacy; DevOps and repository workflow; dated backlog and dependencies; tests and acceptance; Postman/demo plan; risks and contingency cuts; proposal checklist; independent critique; and staged, copy-ready implementation prompts for Codex. Specify names, fields, states, calculations, interfaces, errors, and acceptance criteria precisely. State remaining uncertainty and the evidence needed to resolve it.

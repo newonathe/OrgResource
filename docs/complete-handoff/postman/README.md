@@ -1,0 +1,3 @@
+# Postman starter artifacts — not runtime proof
+
+The collection contains 26 original/proposed route definitions with request examples and simple response-status checks. It is explicitly NOT a safe full-order runner: create, edit, destructive delete, and mutually exclusive lifecycle commands need separate fixtures/ordering. In particular, an Allocation cannot both be CONSUMED and RETURNED; a Project created with future start cannot be immediately fulfilled; deleting a Resource with positive stock is refused. Agents must replace this starter with complete all-routes and demo collections, dynamic generated IDs, negative tests and real execution evidence. The front-end UI uses the same 26 routes.

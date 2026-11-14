@@ -1,0 +1,5491 @@
+{
+  "collection": {
+    "_": {
+      "postman_id": "9fb8cb28-37b9-4b2a-a975-7a564247cc70"
+    },
+    "item": [
+      {
+        "id": "bf9464f9-032d-4cd4-a26f-b85cd76995b9",
+        "name": "1. Create Department",
+        "request": {
+          "url": {
+            "path": [
+              "departments"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"Postman Logistics {{runSuffix}}\"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "22715e19-c450-47b0-844b-ddc50cec80a1",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Department create returns 201', function () { pm.response.to.have.status(201); });",
+                "const body = pm.response.json();",
+                "pm.environment.set('departmentId', body.id);",
+                "pm.environment.set('departmentName', body.name);",
+                "pm.test('Department has generated positive ID and normalized name', function () { pm.expect(body.id).to.be.above(0); pm.expect(body.name).to.eql('Postman Logistics ' + pm.environment.get('runSuffix')); });"
+              ],
+              "_lastExecutionId": "9c12db28-8d86-436f-99ec-06874ef11546"
+            }
+          }
+        ]
+      },
+      {
+        "id": "f7faa304-593f-4cfa-acf1-7d9aba568d55",
+        "name": "2. List Departments",
+        "request": {
+          "url": {
+            "path": [
+              "departments"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "9f5ff935-16ee-4df1-bb75-d942167970fb",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Department list returns 200', function () { pm.response.to.have.status(200); });",
+                "const rows = pm.response.json();",
+                "pm.test('Created Department is visible', function () { pm.expect(rows.some(function (row) { return row.id == pm.environment.get('departmentId'); })).to.eql(true); });"
+              ],
+              "_lastExecutionId": "01946a98-0463-488b-ab14-e5ce04f9254e"
+            }
+          }
+        ]
+      },
+      {
+        "id": "9464e06e-a8f9-4302-9da3-323ee0238355",
+        "name": "3. Create Project",
+        "request": {
+          "url": {
+            "path": [
+              "projects"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"departmentId\": {{departmentId}},\n  \"name\": \"Postman Orientation {{runSuffix}}\",\n  \"startAt\": \"{{projectStartAt}}\",\n  \"endAt\": \"{{projectEndAt}}\"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "prerequest",
+            "script": {
+              "id": "e6486220-f111-48f4-a88c-f0476a6fde84",
+              "type": "text/javascript",
+              "exec": [
+                "const target = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 8 * 60 * 60 * 1000);",
+                "const pad = function (value) { return String(value).padStart(2, '0'); };",
+                "const day = target.getUTCFullYear() + '-' + pad(target.getUTCMonth() + 1) + '-' + pad(target.getUTCDate());",
+                "pm.environment.set('projectStartAt', day + 'T09:00:00');",
+                "pm.environment.set('projectEndAt', day + 'T12:00:00');"
+              ],
+              "_lastExecutionId": "6f7c592e-d114-4d60-9faf-417e09422ed3"
+            }
+          },
+          {
+            "listen": "test",
+            "script": {
+              "id": "ef53cca7-d357-468d-9954-64e0c0364f5d",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Project create returns 201', function () { pm.response.to.have.status(201); });",
+                "const body = pm.response.json();",
+                "pm.environment.set('projectId', body.id);",
+                "pm.test('Project response preserves Department ID and local date strings', function () { pm.expect(body.departmentId).to.eql(Number(pm.environment.get('departmentId'))); pm.expect(body.startAt).to.eql(pm.environment.get('projectStartAt')); pm.expect(body.endAt).to.eql(pm.environment.get('projectEndAt')); });"
+              ],
+              "_lastExecutionId": "6edda308-e918-47c2-b69c-b3c5b31444ad"
+            }
+          }
+        ]
+      },
+      {
+        "id": "2dd575d3-a374-4536-87f3-fdb0668473fd",
+        "name": "4. List Projects by Department",
+        "request": {
+          "url": {
+            "path": [
+              "projects"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [
+              {
+                "key": "departmentId",
+                "value": "{{departmentId}}"
+              }
+            ],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "0b829d3f-230f-487b-be60-1ce70c5e2487",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Filtered Project list returns 200', function () { pm.response.to.have.status(200); });",
+                "const rows = pm.response.json();",
+                "pm.test('Created Project is visible with the correct parent ID', function () { pm.expect(rows.some(function (row) { return row.id == pm.environment.get('projectId') && row.departmentId == pm.environment.get('departmentId'); })).to.eql(true); });"
+              ],
+              "_lastExecutionId": "2ff47289-0a89-494e-9f0a-dc926b6e986f"
+            }
+          }
+        ]
+      },
+      {
+        "id": "fb59c8fe-3d2f-48ed-bc0c-4576c9204745",
+        "name": "5. Create Resource",
+        "request": {
+          "url": {
+            "path": [
+              "resources"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"Postman A4 paper sheets {{runSuffix}}\",\n  \"type\": \"CONSUMABLE\",\n  \"totalQuantity\": 9\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "48e2e5e2-77d8-4b56-babf-cd28613b377e",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Resource create returns 201', function () { pm.response.to.have.status(201); });",
+                "const body = pm.response.json();",
+                "pm.environment.set('resourceId', body.id);",
+                "pm.test('Resource has generated ID and derived availability', function () { pm.expect(body.id).to.be.above(0); pm.expect(body.availableQuantity).to.eql(body.totalQuantity); });",
+                "pm.test('No mandatory unit field was added', function () { pm.expect(body).not.to.have.property('unit'); });"
+              ],
+              "_lastExecutionId": "ab1046b3-5be9-4d84-a9bf-de58adca119e"
+            }
+          }
+        ]
+      },
+      {
+        "id": "75f99100-fec4-4616-99ac-deca1f23df12",
+        "name": "6. List Resources by Type",
+        "request": {
+          "url": {
+            "path": [
+              "resources"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [
+              {
+                "key": "type",
+                "value": "CONSUMABLE"
+              }
+            ],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "4f0877ad-521b-48a0-b95b-73fe673b9ee6",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Filtered Resource list returns 200', function () { pm.response.to.have.status(200); });",
+                "const rows = pm.response.json();",
+                "pm.test('Created Resource is visible', function () { pm.expect(rows.some(function (row) { return row.id == pm.environment.get('resourceId'); })).to.eql(true); });"
+              ],
+              "_lastExecutionId": "2d6286a5-3c13-438f-8471-9942ca0e7ca9"
+            }
+          }
+        ]
+      },
+      {
+        "id": "222401a6-4f7f-4c6c-a5ee-10768e29b70d",
+        "name": "7. Get Resource Availability",
+        "request": {
+          "url": {
+            "path": [
+              "resources",
+              "{{resourceId}}",
+              "availability"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "6fa15993-c68b-460b-9c81-26db6be1399a",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Availability returns 200', function () { pm.response.to.have.status(200); });",
+                "const body = pm.response.json();",
+                "pm.test('Availability response preserves exactly the two original fields', function () { pm.expect(Object.keys(body).sort()).to.eql(['availableQuantity', 'resourceId']); pm.expect(body.resourceId).to.eql(Number(pm.environment.get('resourceId'))); });"
+              ],
+              "_lastExecutionId": "7c6398af-79f1-4e69-a064-88bd782a7520"
+            }
+          }
+        ]
+      },
+      {
+        "id": "6c16f47c-ce77-44f4-a667-fda55ef9cddd",
+        "name": "8. Create Requirement",
+        "request": {
+          "url": {
+            "path": [
+              "requirements"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"projectId\": {{projectId}},\n  \"resourceId\": {{resourceId}},\n  \"quantity\": 7\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "b755dbaf-01ca-4e61-a7d0-364a9c1de555",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Requirement create returns 201', function () { pm.response.to.have.status(201); });",
+                "const body = pm.response.json();",
+                "pm.environment.set('requirementId', body.id);",
+                "pm.test('Requirement parent IDs and custom computed query values are correct', function () { pm.expect(body.projectId).to.eql(Number(pm.environment.get('projectId'))); pm.expect(body.resourceId).to.eql(Number(pm.environment.get('resourceId'))); pm.expect(body.allocatedQuantity).to.eql(0); pm.expect(body.shortageQuantity).to.eql(body.quantity); });"
+              ],
+              "_lastExecutionId": "602a2d08-6998-45a6-90a6-7c9cac25ea3b"
+            }
+          }
+        ]
+      },
+      {
+        "id": "be8be511-d54e-4aeb-9665-0e80d155ee75",
+        "name": "9. List Requirements by Project",
+        "request": {
+          "url": {
+            "path": [
+              "requirements"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [
+              {
+                "key": "projectId",
+                "value": "{{projectId}}"
+              }
+            ],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "bf2af209-9749-49f9-9585-44bad5f3c2d2",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Filtered Requirement list returns 200', function () { pm.response.to.have.status(200); });",
+                "const rows = pm.response.json();",
+                "pm.test('Created Requirement is visible', function () { pm.expect(rows.some(function (row) { return row.id == pm.environment.get('requirementId'); })).to.eql(true); });"
+              ],
+              "_lastExecutionId": "0338b940-b2d0-4bc0-92f5-4caaf25a5736"
+            }
+          }
+        ]
+      },
+      {
+        "id": "8e68f390-5917-4888-bf66-1f4f27ae7279",
+        "name": "10. Create Allocation",
+        "request": {
+          "url": {
+            "path": [
+              "allocations"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"requirementId\": {{requirementId}},\n  \"quantity\": 2,\n  \"borrowerName\": \"Postman Fictional Representative\",\n  \"smsConsent\": false\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "d9e51369-754a-4029-ba90-74f2f841c561",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Allocation create returns 201', function () { pm.response.to.have.status(201); });",
+                "const body = pm.response.json();",
+                "pm.environment.set('allocationId', body.id);",
+                "pm.test('Allocation is pending and redacts phoneNumber', function () { pm.expect(body.requirementId).to.eql(Number(pm.environment.get('requirementId'))); pm.expect(body.status).to.eql('PENDING'); pm.expect(body).not.to.have.property('phoneNumber'); pm.expect(body.contactPresent).to.eql(false); });"
+              ],
+              "_lastExecutionId": "a23399ec-f42b-47fd-b9bb-fe1e7346977a"
+            }
+          }
+        ]
+      },
+      {
+        "id": "8b64c0f6-a731-4388-ac31-d22066b39333",
+        "name": "11. List Allocations by Requirement and Status",
+        "request": {
+          "url": {
+            "path": [
+              "allocations"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [
+              {
+                "key": "requirementId",
+                "value": "{{requirementId}}"
+              },
+              {
+                "key": "status",
+                "value": "PENDING"
+              }
+            ],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "f056b5dd-99e1-4708-ac23-8fda0320ac21",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Filtered Allocation list returns 200', function () { pm.response.to.have.status(200); });",
+                "const rows = pm.response.json();",
+                "pm.test('Created Allocation persists and remains redacted', function () { const row = rows.find(function (item) { return item.id == pm.environment.get('allocationId'); }); pm.expect(row).to.exist; pm.expect(row).not.to.have.property('phoneNumber'); });"
+              ],
+              "_lastExecutionId": "49c1effc-ee64-47b9-9328-2f88e479a910"
+            }
+          }
+        ]
+      },
+      {
+        "id": "8292fb15-98e3-4c32-83ce-d8d121bd32c3",
+        "name": "12. Reject Normalized Duplicate Department",
+        "request": {
+          "url": {
+            "path": [
+              "departments"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"  {{departmentName}}  \"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "8ba3e089-10fe-41a7-a00d-ee4324fc26bd",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Duplicate name returns 409', function () { pm.response.to.have.status(409); });",
+                "pm.test('Duplicate error is JSON and uses the expected code', function () { pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'); pm.expect(pm.response.json().code).to.eql('DUPLICATE_NAME'); });"
+              ],
+              "_lastExecutionId": "dfaa5796-c692-4a72-ba20-6e978365c8b2"
+            }
+          }
+        ]
+      },
+      {
+        "id": "20a267ca-843b-469f-bc7f-567eddb9805f",
+        "name": "13. Reject Negative Resource Quantity",
+        "request": {
+          "url": {
+            "path": [
+              "resources"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"Invalid Postman Resource {{runSuffix}}\",\n  \"type\": \"CONSUMABLE\",\n  \"totalQuantity\": -1\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "8c2aa4f7-337a-4cc9-930c-33bf22a80de6",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Invalid quantity returns JSON 400', function () { pm.response.to.have.status(400); pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'); pm.expect(pm.response.json().code).to.eql('VALIDATION_FAILED'); });"
+              ],
+              "_lastExecutionId": "a22581a6-efbc-4962-a015-a5a087a96fd5"
+            }
+          }
+        ]
+      },
+      {
+        "id": "0f527bbb-3e14-4119-8265-5452fa2184b8",
+        "name": "14. Create Department for Safe Delete",
+        "request": {
+          "url": {
+            "path": [
+              "departments"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"Postman Temporary {{runSuffix}}\"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "08d44399-2050-47b8-a093-a68ba940b55a",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Delete fixture Department create returns 201', function () { pm.response.to.have.status(201); });",
+                "pm.environment.set('deleteDepartmentId', pm.response.json().id);"
+              ],
+              "_lastExecutionId": "92c4731b-2a4c-4ace-9f3f-97cd54c32648"
+            }
+          }
+        ]
+      },
+      {
+        "id": "6af101cc-7407-4565-a8ee-781ba7198612",
+        "name": "15. Delete Unreferenced Department",
+        "request": {
+          "url": {
+            "path": [
+              "departments",
+              "{{deleteDepartmentId}}",
+              "delete"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "POST"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "ba855ae6-4491-4fe9-b5f1-6a9962a25611",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Safe Department delete returns 200', function () { pm.response.to.have.status(200); });",
+                "pm.test('Delete success message is JSON', function () { pm.expect(pm.response.json().message).to.eql('Record deleted.'); });"
+              ],
+              "_lastExecutionId": "eb277c99-4bbf-490d-aaad-405ecd3aa324"
+            }
+          }
+        ]
+      }
+    ],
+    "event": [
+      {
+        "listen": "prerequest",
+        "script": {
+          "id": "fca4e96a-f66e-4219-b895-c40a56d5b852",
+          "type": "text/javascript",
+          "exec": [
+            "if (!pm.environment.get('runSuffix')) { pm.environment.set('runSuffix', String(Date.now())); }"
+          ],
+          "_lastExecutionId": "02bf159f-86b1-4be2-9aab-64e7d49f9abc"
+        }
+      }
+    ],
+    "variable": [
+      {
+        "type": "any",
+        "value": "http://127.0.0.1:8080/api",
+        "key": "baseUrl"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "runSuffix"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "departmentId"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "departmentName"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "projectId"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "resourceId"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "requirementId"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "allocationId"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "deleteDepartmentId"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "projectStartAt"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "projectEndAt"
+      }
+    ],
+    "info": {
+      "_postman_id": "9fb8cb28-37b9-4b2a-a975-7a564247cc70",
+      "name": "OrgResource O1 Java Skeleton",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+      "description": {
+        "content": "Executable local requests for the O1 five-entity skeleton only. This collection does not claim full lifecycle or all original routes are implemented.",
+        "type": "text/plain"
+      }
+    }
+  },
+  "environment": {
+    "_": {
+      "postman_variable_scope": "environment",
+      "postman_exported_at": "2026-11-13T15:30:00.000Z",
+      "postman_exported_using": "Codex"
+    },
+    "id": "a6269db7-cb59-4a4a-a3e6-8435b4158e2f",
+    "name": "OrgResource O1 Local",
+    "values": [
+      {
+        "type": "any",
+        "value": "http://127.0.0.1:8080/api",
+        "key": "baseUrl"
+      },
+      {
+        "type": "any",
+        "value": "1794584432324",
+        "key": "runSuffix"
+      },
+      {
+        "type": "any",
+        "value": 8,
+        "key": "departmentId"
+      },
+      {
+        "type": "any",
+        "value": "Postman Logistics 1794584432324",
+        "key": "departmentName"
+      },
+      {
+        "type": "any",
+        "value": 4,
+        "key": "projectId"
+      },
+      {
+        "type": "any",
+        "value": 4,
+        "key": "resourceId"
+      },
+      {
+        "type": "any",
+        "value": 4,
+        "key": "requirementId"
+      },
+      {
+        "type": "any",
+        "value": 4,
+        "key": "allocationId"
+      },
+      {
+        "type": "any",
+        "value": 9,
+        "key": "deleteDepartmentId"
+      },
+      {
+        "type": "any",
+        "value": "2026-11-16T09:00:00",
+        "key": "projectStartAt"
+      },
+      {
+        "type": "any",
+        "value": "2026-11-16T12:00:00",
+        "key": "projectEndAt"
+      }
+    ]
+  },
+  "globals": {
+    "id": "f4ad39dc-59b4-470f-b848-e7cabda3b137",
+    "values": []
+  },
+  "run": {
+    "stats": {
+      "iterations": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "items": {
+        "total": 15,
+        "pending": 0,
+        "failed": 0
+      },
+      "scripts": {
+        "total": 31,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequests": {
+        "total": 15,
+        "pending": 0,
+        "failed": 0
+      },
+      "requests": {
+        "total": 15,
+        "pending": 0,
+        "failed": 0
+      },
+      "tests": {
+        "total": 15,
+        "pending": 0,
+        "failed": 0
+      },
+      "assertions": {
+        "total": 29,
+        "pending": 0,
+        "failed": 0
+      },
+      "testScripts": {
+        "total": 15,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequestScripts": {
+        "total": 16,
+        "pending": 0,
+        "failed": 0
+      }
+    },
+    "timings": {
+      "responseAverage": 137.40000000000003,
+      "responseMin": 19,
+      "responseMax": 1473,
+      "responseSd": 357.5078180963319,
+      "dnsAverage": 0,
+      "dnsMin": 0,
+      "dnsMax": 0,
+      "dnsSd": 0,
+      "firstByteAverage": 0,
+      "firstByteMin": 0,
+      "firstByteMax": 0,
+      "firstByteSd": 0,
+      "started": 1794584432297,
+      "completed": 1794584435696
+    },
+    "executions": [
+      {
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 15,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "61a4fe2c-7b90-428b-abf2-a244a9c43559",
+          "httpRequestId": "64751613-ac33-4ca5-8511-42654bd4f5dc"
+        },
+        "item": {
+          "id": "bf9464f9-032d-4cd4-a26f-b85cd76995b9",
+          "name": "1. Create Department",
+          "request": {
+            "url": {
+              "path": [
+                "departments"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Logistics {{runSuffix}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "22715e19-c450-47b0-844b-ddc50cec80a1",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Department create returns 201', function () { pm.response.to.have.status(201); });",
+                  "const body = pm.response.json();",
+                  "pm.environment.set('departmentId', body.id);",
+                  "pm.environment.set('departmentName', body.name);",
+                  "pm.test('Department has generated positive ID and normalized name', function () { pm.expect(body.id).to.be.above(0); pm.expect(body.name).to.eql('Postman Logistics ' + pm.environment.get('runSuffix')); });"
+                ],
+                "_lastExecutionId": "9c12db28-8d86-436f-99ec-06874ef11546"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "departments"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "ae16dccb-7a0f-4ef5-94e8-5bfc37d38b22",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "47",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"Postman Logistics 1794584432324\"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "e5566878-a174-4c1f-b6c7-e7dc1d127c5b",
+          "status": "Created",
+          "code": 201,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "49"
+            },
+            {
+              "key": "Date",
+              "value": "Fri, 13 Nov 2026 15:40:33 GMT"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              56,
+              44,
+              34,
+              110,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              80,
+              111,
+              115,
+              116,
+              109,
+              97,
+              110,
+              32,
+              76,
+              111,
+              103,
+              105,
+              115,
+              116,
+              105,
+              99,
+              115,
+              32,
+              49,
+              55,
+              57,
+              52,
+              53,
+              56,
+              52,
+              52,
+              51,
+              50,
+              51,
+              50,
+              52,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 1473,
+          "responseSize": 49
+        },
+        "id": "bf9464f9-032d-4cd4-a26f-b85cd76995b9",
+        "assertions": [
+          {
+            "assertion": "Department create returns 201",
+            "skipped": false
+          },
+          {
+            "assertion": "Department has generated positive ID and normalized name",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "26129755-852f-4495-83ce-4f5bb460b910",
+          "length": 15,
+          "cycles": 1,
+          "position": 1,
+          "iteration": 0,
+          "httpRequestId": "1630ba34-6e5f-4cee-bfb5-92eed2f35817"
+        },
+        "item": {
+          "id": "f7faa304-593f-4cfa-acf1-7d9aba568d55",
+          "name": "2. List Departments",
+          "request": {
+            "url": {
+              "path": [
+                "departments"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "9f5ff935-16ee-4df1-bb75-d942167970fb",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Department list returns 200', function () { pm.response.to.have.status(200); });",
+                  "const rows = pm.response.json();",
+                  "pm.test('Created Department is visible', function () { pm.expect(rows.some(function (row) { return row.id == pm.environment.get('departmentId'); })).to.eql(true); });"
+                ],
+                "_lastExecutionId": "01946a98-0463-488b-ab14-e5ce04f9254e"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "departments"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "c61f2b2b-f284-40eb-8991-a89a646772d1",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "a6b3732b-e949-4d95-bece-66ff3abcb43e",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "208"
+            },
+            {
+              "key": "Date",
+              "value": "Fri, 13 Nov 2026 15:40:33 GMT"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              91,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              49,
+              44,
+              34,
+              110,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              76,
+              111,
+              103,
+              105,
+              115,
+              116,
+              105,
+              99,
+              115,
+              34,
+              125,
+              44,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              51,
+              44,
+              34,
+              110,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              79,
+              112,
+              101,
+              114,
+              97,
+              116,
+              105,
+              111,
+              110,
+              115,
+              34,
+              125,
+              44,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              53,
+              44,
+              34,
+              110,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              80,
+              111,
+              115,
+              116,
+              109,
+              97,
+              110,
+              32,
+              76,
+              111,
+              103,
+              105,
+              115,
+              116,
+              105,
+              99,
+              115,
+              32,
+              49,
+              55,
+              57,
+              52,
+              53,
+              56,
+              52,
+              48,
+              56,
+              52,
+              48,
+              51,
+              51,
+              34,
+              125,
+              44,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              54,
+              44,
+              34,
+              110,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              80,
+              111,
+              115,
+              116,
+              109,
+              97,
+              110,
+              32,
+              76,
+              111,
+              103,
+              105,
+              115,
+              116,
+              105,
+              99,
+              115,
+              32,
+              49,
+              55,
+              57,
+              52,
+              53,
+              56,
+              52,
+              49,
+              50,
+              49,
+              54,
+              49,
+              56,
+              34,
+              125,
+              44,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              56,
+              44,
+              34,
+              110,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              80,
+              111,
+              115,
+              116,
+              109,
+              97,
+              110,
+              32,
+              76,
+              111,
+              103,
+              105,
+              115,
+              116,
+              105,
+              99,
+              115,
+              32,
+              49,
+              55,
+              57,
+              52,
+              53,
+              56,
+              52,
+              52,
+              51,
+              50,
+              51,
+              50,
+              52,
+              34,
+              125,
+              93
+            ]
+          },
+          "cookie": [],
+          "responseTime": 43,
+          "responseSize": 208
+        },
+        "id": "f7faa304-593f-4cfa-acf1-7d9aba568d55",
+        "assertions": [
+          {
+            "assertion": "Department list returns 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Created Department is visible",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "31ed2320-c3bb-4d78-9d63-3a67a6a5f4e0",
+          "length": 15,
+          "cycles": 1,
+          "position": 2,
+          "iteration": 0,
+          "httpRequestId": "ce41b7fe-9e2c-4bbe-9607-e3bba2a8a21e"
+        },
+        "item": {
+          "id": "9464e06e-a8f9-4302-9da3-323ee0238355",
+          "name": "3. Create Project",
+          "request": {
+            "url": {
+              "path": [
+                "projects"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"departmentId\": {{departmentId}},\n  \"name\": \"Postman Orientation {{runSuffix}}\",\n  \"startAt\": \"{{projectStartAt}}\",\n  \"endAt\": \"{{projectEndAt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "e6486220-f111-48f4-a88c-f0476a6fde84",
+                "type": "text/javascript",
+                "exec": [
+                  "const target = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 8 * 60 * 60 * 1000);",
+                  "const pad = function (value) { return String(value).padStart(2, '0'); };",
+                  "const day = target.getUTCFullYear() + '-' + pad(target.getUTCMonth() + 1) + '-' + pad(target.getUTCDate());",
+                  "pm.environment.set('projectStartAt', day + 'T09:00:00');",
+                  "pm.environment.set('projectEndAt', day + 'T12:00:00');"
+                ],
+                "_lastExecutionId": "6f7c592e-d114-4d60-9faf-417e09422ed3"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "ef53cca7-d357-468d-9954-64e0c0364f5d",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Project create returns 201', function () { pm.response.to.have.status(201); });",
+                  "const body = pm.response.json();",
+                  "pm.environment.set('projectId', body.id);",
+                  "pm.test('Project response preserves Department ID and local date strings', function () { pm.expect(body.departmentId).to.eql(Number(pm.environment.get('departmentId'))); pm.expect(body.startAt).to.eql(pm.environment.get('projectStartAt')); pm.expect(body.endAt).to.eql(pm.environment.get('projectEndAt')); });"
+                ],
+                "_lastExecutionId": "6edda308-e918-47c2-b69c-b3c5b31444ad"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "projects"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "b4490eb9-c5ee-4fd5-9d46-32d3b7feac96",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "140",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"departmentId\": 8,\n  \"name\": \"Postman Orientation 1794584432324\",\n  \"startAt\": \"2026-11-16T09:00:00\",\n  \"endAt\": \"2026-11-16T12:00:00\"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "3fc0caa2-c849-473e-bc7d-213a43077d88",
+          "status": "Created",
+          "code": 201,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "130"
+            },
+            {
+              "key": "Date",
+              "value": "Fri, 13 Nov 2026 15:40:33 GMT"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              52,
+              44,
+              34,
+              100,
+              101,
+              112,
+              97,
+              114,
+              116,
+              109,
+              101,
+              110,
+              116,
+              73,
+              100,
+              34,
+              58,
+              56,
+              44,
+              34,
+              110,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              80,
+              111,
+              115,
+              116,
+              109,
+              97,
+              110,
+              32,
+              79,
+              114,
+              105,
+              101,
+              110,
+              116,
+              97,
+              116,
+              105,
+              111,
+              110,
+              32,
+              49,
+              55,
+              57,
+              52,
+              53,
+              56,
+              52,
+              52,
+              51,
+              50,
+              51,
+              50,
+              52,
+              34,
+              44,
+              34,
+              115,
+              116,
+              97,
+              114,
+              116,
+              65,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              49,
+              45,
+              49,
+              54,
+              84,
+              48,
+              57,
+              58,
+              48,
+              48,
+              58,
+              48,
+              48,
+              34,
+              44,
+              34,
+              101,
+              110,
+              100,
+              65,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              49,
+              45,
+              49,
+              54,
+              84,
+              49,
+              50,
+              58,
+              48,
+              48,
+              58,
+              48,
+              48,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 82,
+          "responseSize": 130
+        },
+        "id": "9464e06e-a8f9-4302-9da3-323ee0238355",
+        "assertions": [
+          {
+            "assertion": "Project create returns 201",
+            "skipped": false
+          },
+          {
+            "assertion": "Project response preserves Department ID and local date strings",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "db7e520c-4c14-49f6-a533-5e4b56aa406e",
+          "length": 15,
+          "cycles": 1,
+          "position": 3,
+          "iteration": 0,
+          "httpRequestId": "6aef597b-7d57-4dca-b57c-d5ae3b04d8be"
+        },
+        "item": {
+          "id": "2dd575d3-a374-4536-87f3-fdb0668473fd",
+          "name": "4. List Projects by Department",
+          "request": {
+            "url": {
+              "path": [
+                "projects"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "key": "departmentId",
+                  "value": "{{departmentId}}"
+                }
+              ],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "0b829d3f-230f-487b-be60-1ce70c5e2487",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Filtered Project list returns 200', function () { pm.response.to.have.status(200); });",
+                  "const rows = pm.response.json();",
+                  "pm.test('Created Project is visible with the correct parent ID', function () { pm.expect(rows.some(function (row) { return row.id == pm.environment.get('projectId') && row.departmentId == pm.environment.get('departmentId'); })).to.eql(true); });"
+                ],
+                "_lastExecutionId": "2ff47289-0a89-494e-9f0a-dc926b6e986f"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "projects"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [
+              {
+                "key": "departmentId",
+                "value": "8"
+              }
+            ],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "61de5fee-dee6-46fb-a2d6-8a894ff0de06",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "34205f92-bd13-4229-8f2a-3d422e416309",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "132"
+            },
+            {
+              "key": "Date",
+              "value": "Fri, 13 Nov 2026 15:40:33 GMT"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              91,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              52,
+              44,
+              34,
+              100,
+              101,
+              112,
+              97,
+              114,
+              116,
+              109,
+              101,
+              110,
+              116,
+              73,
+              100,
+              34,
+              58,
+              56,
+              44,
+              34,
+              110,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              80,
+              111,
+              115,
+              116,
+              109,
+              97,
+              110,
+              32,
+              79,
+              114,
+              105,
+              101,
+              110,
+              116,
+              97,
+              116,
+              105,
+              111,
+              110,
+              32,
+              49,
+              55,
+              57,
+              52,
+              53,
+              56,
+              52,
+              52,
+              51,
+              50,
+              51,
+              50,
+              52,
+              34,
+              44,
+              34,
+              115,
+              116,
+              97,
+              114,
+              116,
+              65,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              49,
+              45,
+              49,
+              54,
+              84,
+              48,
+              57,
+              58,
+              48,
+              48,
+              58,
+              48,
+              48,
+              34,
+              44,
+              34,
+              101,
+              110,
+              100,
+              65,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              49,
+              45,
+              49,
+              54,
+              84,
+              49,
+              50,
+              58,
+              48,
+              48,
+              58,
+              48,
+              48,
+              34,
+              125,
+              93
+            ]
+          },
+          "cookie": [],
+          "responseTime": 26,
+          "responseSize": 132
+        },
+        "id": "2dd575d3-a374-4536-87f3-fdb0668473fd",
+        "assertions": [
+          {
+            "assertion": "Filtered Project list returns 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Created Project is visible with the correct parent ID",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "3a518390-bb0f-447a-ae27-3fbe4a2286e8",
+          "length": 15,
+          "cycles": 1,
+          "position": 4,
+          "iteration": 0,
+          "httpRequestId": "92ebd5ce-4a9e-4b2c-9c00-6de3d9d6bbe4"
+        },
+        "item": {
+          "id": "fb59c8fe-3d2f-48ed-bc0c-4576c9204745",
+          "name": "5. Create Resource",
+          "request": {
+            "url": {
+              "path": [
+                "resources"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman A4 paper sheets {{runSuffix}}\",\n  \"type\": \"CONSUMABLE\",\n  \"totalQuantity\": 9\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "48e2e5e2-77d8-4b56-babf-cd28613b377e",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Resource create returns 201', function () { pm.response.to.have.status(201); });",
+                  "const body = pm.response.json();",
+                  "pm.environment.set('resourceId', body.id);",
+                  "pm.test('Resource has generated ID and derived availability', function () { pm.expect(body.id).to.be.above(0); pm.expect(body.availableQuantity).to.eql(body.totalQuantity); });",
+                  "pm.test('No mandatory unit field was added', function () { pm.expect(body).not.to.have.property('unit'); });"
+                ],
+                "_lastExecutionId": "ab1046b3-5be9-4d84-a9bf-de58adca119e"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "resources"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "b2f65a4f-a67c-4b20-8b0c-df36e19cc17d",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "99",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"Postman A4 paper sheets 1794584432324\",\n  \"type\": \"CONSUMABLE\",\n  \"totalQuantity\": 9\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "6e2e4980-4b4f-4674-9f69-7e2eece3c6c0",
+          "status": "Created",
+          "code": 201,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "115"
+            },
+            {
+              "key": "Date",
+              "value": "Fri, 13 Nov 2026 15:40:33 GMT"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              52,
+              44,
+              34,
+              110,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              80,
+              111,
+              115,
+              116,
+              109,
+              97,
+              110,
+              32,
+              65,
+              52,
+              32,
+              112,
+              97,
+              112,
+              101,
+              114,
+              32,
+              115,
+              104,
+              101,
+              101,
+              116,
+              115,
+              32,
+              49,
+              55,
+              57,
+              52,
+              53,
+              56,
+              52,
+              52,
+              51,
+              50,
+              51,
+              50,
+              52,
+              34,
+              44,
+              34,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              67,
+              79,
+              78,
+              83,
+              85,
+              77,
+              65,
+              66,
+              76,
+              69,
+              34,
+              44,
+              34,
+              116,
+              111,
+              116,
+              97,
+              108,
+              81,
+              117,
+              97,
+              110,
+              116,
+              105,
+              116,
+              121,
+              34,
+              58,
+              57,
+              44,
+              34,
+              97,
+              118,
+              97,
+              105,
+              108,
+              97,
+              98,
+              108,
+              101,
+              81,
+              117,
+              97,
+              110,
+              116,
+              105,
+              116,
+              121,
+              34,
+              58,
+              57,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 78,
+          "responseSize": 115
+        },
+        "id": "fb59c8fe-3d2f-48ed-bc0c-4576c9204745",
+        "assertions": [
+          {
+            "assertion": "Resource create returns 201",
+            "skipped": false
+          },
+          {
+            "assertion": "Resource has generated ID and derived availability",
+            "skipped": false
+          },
+          {
+            "assertion": "No mandatory unit field was added",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "db99aead-87a8-4eb6-aaec-c89e671153fa",
+          "length": 15,
+          "cycles": 1,
+          "position": 5,
+          "iteration": 0,
+          "httpRequestId": "df20198f-5bb8-42ae-993a-ac0f71e43086"
+        },
+        "item": {
+          "id": "75f99100-fec4-4616-99ac-deca1f23df12",
+          "name": "6. List Resources by Type",
+          "request": {
+            "url": {
+              "path": [
+                "resources"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "CONSUMABLE"
+                }
+              ],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "4f0877ad-521b-48a0-b95b-73fe673b9ee6",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Filtered Resource list returns 200', function () { pm.response.to.have.status(200); });",
+                  "const rows = pm.response.json();",
+                  "pm.test('Created Resource is visible', function () { pm.expect(rows.some(function (row) { return row.id == pm.environment.get('resourceId'); })).to.eql(true); });"
+                ],
+                "_lastExecutionId": "2d6286a5-3c13-438f-8471-9942ca0e7ca9"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "resources"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [
+              {
+                "key": "type",
+                "value": "CONSUMABLE"
+              }
+            ],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "2bf8fcf8-eca7-45b1-a402-daae6ba5e03f",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "edeff45e-f3b4-46ec-8109-b05781a0d91b",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "331"
+            },
+            {
+              "key": "Date",
+              "value": "Fri, 13 Nov 2026 15:40:33 GMT"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              91,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              50,
+              44,
+              34,
+              110,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              65,
+              52,
+              32,
+              112,
+              97,
+              112,
+              101,
+              114,
+              32,
+              115,
+              104,
+              101,
+              101,
+              116,
+              115,
+              34,
+              44,
+              34,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              67,
+              79,
+              78,
+              83,
+              85,
+              77,
+              65,
+              66,
+              76,
+              69,
+              34,
+              44,
+              34,
+              116,
+              111,
+              116,
+              97,
+              108,
+              81,
+              117,
+              97,
+              110,
+              116,
+              105,
+              116,
+              121,
+              34,
+              58,
+              49,
+              50,
+              48,
+              44,
+              34,
+              97,
+              118,
+              97,
+              105,
+              108,
+              97,
+              98,
+              108,
+              101,
+              81,
+              117,
+              97,
+              110,
+              116,
+              105,
+              116,
+              121,
+              34,
+              58,
+              49,
+              50,
+              48,
+              125,
+              44,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              51,
+              44,
+              34,
+              110,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              80,
+              111,
+              115,
+              116,
+              109,
+              97,
+              110,
+              32,
+              65,
+              52,
+              32,
+              112,
+              97,
+              112,
+              101,
+              114,
+              32,
+              115,
+              104,
+              101,
+              101,
+              116,
+              115,
+              32,
+              49,
+              55,
+              57,
+              52,
+              53,
+              56,
+              52,
+              49,
+              50,
+              49,
+              54,
+              49,
+              56,
+              34,
+              44,
+              34,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              67,
+              79,
+              78,
+              83,
+              85,
+              77,
+              65,
+              66,
+              76,
+              69,
+              34,
+              44,
+              34,
+              116,
+              111,
+              116,
+              97,
+              108,
+              81,
+              117,
+              97,
+              110,
+              116,
+              105,
+              116,
+              121,
+              34,
+              58,
+              57,
+              44,
+              34,
+              97,
+              118,
+              97,
+              105,
+              108,
+              97,
+              98,
+              108,
+              101,
+              81,
+              117,
+              97,
+              110,
+              116,
+              105,
+              116,
+              121,
+              34,
+              58,
+              57,
+              125,
+              44,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              52,
+              44,
+              34,
+              110,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              80,
+              111,
+              115,
+              116,
+              109,
+              97,
+              110,
+              32,
+              65,
+              52,
+              32,
+              112,
+              97,
+              112,
+              101,
+              114,
+              32,
+              115,
+              104,
+              101,
+              101,
+              116,
+              115,
+              32,
+              49,
+              55,
+              57,
+              52,
+              53,
+              56,
+              52,
+              52,
+              51,
+              50,
+              51,
+              50,
+              52,
+              34,
+              44,
+              34,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              67,
+              79,
+              78,
+              83,
+              85,
+              77,
+              65,
+              66,
+              76,
+              69,
+              34,
+              44,
+              34,
+              116,
+              111,
+              116,
+              97,
+              108,
+              81,
+              117,
+              97,
+              110,
+              116,
+              105,
+              116,
+              121,
+              34,
+              58,
+              57,
+              44,
+              34,
+              97,
+              118,
+              97,
+              105,
+              108,
+              97,
+              98,
+              108,
+              101,
+              81,
+              117,
+              97,
+              110,
+              116,
+              105,
+              116,
+              121,
+              34,
+              58,
+              57,
+              125,
+              93
+            ]
+          },
+          "cookie": [],
+          "responseTime": 38,
+          "responseSize": 331
+        },
+        "id": "75f99100-fec4-4616-99ac-deca1f23df12",
+        "assertions": [
+          {
+            "assertion": "Filtered Resource list returns 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Created Resource is visible",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "38043c78-2f42-433e-a9f0-269dbf5d5572",
+          "length": 15,
+          "cycles": 1,
+          "position": 6,
+          "iteration": 0,
+          "httpRequestId": "855ad2b8-cd50-43b4-bc90-8908b933e0b9"
+        },
+        "item": {
+          "id": "222401a6-4f7f-4c6c-a5ee-10768e29b70d",
+          "name": "7. Get Resource Availability",
+          "request": {
+            "url": {
+              "path": [
+                "resources",
+                "{{resourceId}}",
+                "availability"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "6fa15993-c68b-460b-9c81-26db6be1399a",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Availability returns 200', function () { pm.response.to.have.status(200); });",
+                  "const body = pm.response.json();",
+                  "pm.test('Availability response preserves exactly the two original fields', function () { pm.expect(Object.keys(body).sort()).to.eql(['availableQuantity', 'resourceId']); pm.expect(body.resourceId).to.eql(Number(pm.environment.get('resourceId'))); });"
+                ],
+                "_lastExecutionId": "7c6398af-79f1-4e69-a064-88bd782a7520"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "resources",
+              "4",
+              "availability"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "4eb2b3a3-4b10-4219-ba92-13129671b73a",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "63798a10-80fc-497c-99b7-3606692f2c2b",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "38"
+            },
+            {
+              "key": "Date",
+              "value": "Fri, 13 Nov 2026 15:40:33 GMT"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              114,
+              101,
+              115,
+              111,
+              117,
+              114,
+              99,
+              101,
+              73,
+              100,
+              34,
+              58,
+              52,
+              44,
+              34,
+              97,
+              118,
+              97,
+              105,
+              108,
+              97,
+              98,
+              108,
+              101,
+              81,
+              117,
+              97,
+              110,
+              116,
+              105,
+              116,
+              121,
+              34,
+              58,
+              57,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 22,
+          "responseSize": 38
+        },
+        "id": "222401a6-4f7f-4c6c-a5ee-10768e29b70d",
+        "assertions": [
+          {
+            "assertion": "Availability returns 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Availability response preserves exactly the two original fields",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "e3d59956-b76a-4e46-8d3c-c23713c314e6",
+          "length": 15,
+          "cycles": 1,
+          "position": 7,
+          "iteration": 0,
+          "httpRequestId": "5d2494d5-2e23-422e-9bc4-498b2131e1f9"
+        },
+        "item": {
+          "id": "6c16f47c-ce77-44f4-a667-fda55ef9cddd",
+          "name": "8. Create Requirement",
+          "request": {
+            "url": {
+              "path": [
+                "requirements"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"projectId\": {{projectId}},\n  \"resourceId\": {{resourceId}},\n  \"quantity\": 7\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "b755dbaf-01ca-4e61-a7d0-364a9c1de555",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Requirement create returns 201', function () { pm.response.to.have.status(201); });",
+                  "const body = pm.response.json();",
+                  "pm.environment.set('requirementId', body.id);",
+                  "pm.test('Requirement parent IDs and custom computed query values are correct', function () { pm.expect(body.projectId).to.eql(Number(pm.environment.get('projectId'))); pm.expect(body.resourceId).to.eql(Number(pm.environment.get('resourceId'))); pm.expect(body.allocatedQuantity).to.eql(0); pm.expect(body.shortageQuantity).to.eql(body.quantity); });"
+                ],
+                "_lastExecutionId": "602a2d08-6998-45a6-90a6-7c9cac25ea3b"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "requirements"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "17c2ff7a-ebe3-42d2-a62f-1a3adcb545f5",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "56",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"projectId\": 4,\n  \"resourceId\": 4,\n  \"quantity\": 7\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "58caaccc-3f56-410d-9e5a-ecc570cdef3b",
+          "status": "Created",
+          "code": 201,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "93"
+            },
+            {
+              "key": "Date",
+              "value": "Fri, 13 Nov 2026 15:40:33 GMT"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              52,
+              44,
+              34,
+              112,
+              114,
+              111,
+              106,
+              101,
+              99,
+              116,
+              73,
+              100,
+              34,
+              58,
+              52,
+              44,
+              34,
+              114,
+              101,
+              115,
+              111,
+              117,
+              114,
+              99,
+              101,
+              73,
+              100,
+              34,
+              58,
+              52,
+              44,
+              34,
+              113,
+              117,
+              97,
+              110,
+              116,
+              105,
+              116,
+              121,
+              34,
+              58,
+              55,
+              44,
+              34,
+              97,
+              108,
+              108,
+              111,
+              99,
+              97,
+              116,
+              101,
+              100,
+              81,
+              117,
+              97,
+              110,
+              116,
+              105,
+              116,
+              121,
+              34,
+              58,
+              48,
+              44,
+              34,
+              115,
+              104,
+              111,
+              114,
+              116,
+              97,
+              103,
+              101,
+              81,
+              117,
+              97,
+              110,
+              116,
+              105,
+              116,
+              121,
+              34,
+              58,
+              55,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 58,
+          "responseSize": 93
+        },
+        "id": "6c16f47c-ce77-44f4-a667-fda55ef9cddd",
+        "assertions": [
+          {
+            "assertion": "Requirement create returns 201",
+            "skipped": false
+          },
+          {
+            "assertion": "Requirement parent IDs and custom computed query values are correct",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "6b02b5a7-bbb8-4276-938b-6a6f0fbab1bb",
+          "length": 15,
+          "cycles": 1,
+          "position": 8,
+          "iteration": 0,
+          "httpRequestId": "f4244e92-c1a8-4a05-ade5-bf1bd832c337"
+        },
+        "item": {
+          "id": "be8be511-d54e-4aeb-9665-0e80d155ee75",
+          "name": "9. List Requirements by Project",
+          "request": {
+            "url": {
+              "path": [
+                "requirements"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "key": "projectId",
+                  "value": "{{projectId}}"
+                }
+              ],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "bf2af209-9749-49f9-9585-44bad5f3c2d2",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Filtered Requirement list returns 200', function () { pm.response.to.have.status(200); });",
+                  "const rows = pm.response.json();",
+                  "pm.test('Created Requirement is visible', function () { pm.expect(rows.some(function (row) { return row.id == pm.environment.get('requirementId'); })).to.eql(true); });"
+                ],
+                "_lastExecutionId": "0338b940-b2d0-4bc0-92f5-4caaf25a5736"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "requirements"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [
+              {
+                "key": "projectId",
+                "value": "4"
+              }
+            ],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "f2d2e507-c454-4674-a97b-dfa0546c5d1b",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "9f9326ee-dbf6-4025-98df-38c61238a051",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "95"
+            },
+            {
+              "key": "Date",
+              "value": "Fri, 13 Nov 2026 15:40:34 GMT"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              91,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              52,
+              44,
+              34,
+              112,
+              114,
+              111,
+              106,
+              101,
+              99,
+              116,
+              73,
+              100,
+              34,
+              58,
+              52,
+              44,
+              34,
+              114,
+              101,
+              115,
+              111,
+              117,
+              114,
+              99,
+              101,
+              73,
+              100,
+              34,
+              58,
+              52,
+              44,
+              34,
+              113,
+              117,
+              97,
+              110,
+              116,
+              105,
+              116,
+              121,
+              34,
+              58,
+              55,
+              44,
+              34,
+              97,
+              108,
+              108,
+              111,
+              99,
+              97,
+              116,
+              101,
+              100,
+              81,
+              117,
+              97,
+              110,
+              116,
+              105,
+              116,
+              121,
+              34,
+              58,
+              48,
+              44,
+              34,
+              115,
+              104,
+              111,
+              114,
+              116,
+              97,
+              103,
+              101,
+              81,
+              117,
+              97,
+              110,
+              116,
+              105,
+              116,
+              121,
+              34,
+              58,
+              55,
+              125,
+              93
+            ]
+          },
+          "cookie": [],
+          "responseTime": 19,
+          "responseSize": 95
+        },
+        "id": "be8be511-d54e-4aeb-9665-0e80d155ee75",
+        "assertions": [
+          {
+            "assertion": "Filtered Requirement list returns 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Created Requirement is visible",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "764819ad-cb73-4f3c-902a-3258ecdbbdd8",
+          "length": 15,
+          "cycles": 1,
+          "position": 9,
+          "iteration": 0,
+          "httpRequestId": "7a670911-2d37-4c5f-81f8-48f0c4092fe3"
+        },
+        "item": {
+          "id": "8e68f390-5917-4888-bf66-1f4f27ae7279",
+          "name": "10. Create Allocation",
+          "request": {
+            "url": {
+              "path": [
+                "allocations"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requirementId\": {{requirementId}},\n  \"quantity\": 2,\n  \"borrowerName\": \"Postman Fictional Representative\",\n  \"smsConsent\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "d9e51369-754a-4029-ba90-74f2f841c561",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Allocation create returns 201', function () { pm.response.to.have.status(201); });",
+                  "const body = pm.response.json();",
+                  "pm.environment.set('allocationId', body.id);",
+                  "pm.test('Allocation is pending and redacts phoneNumber', function () { pm.expect(body.requirementId).to.eql(Number(pm.environment.get('requirementId'))); pm.expect(body.status).to.eql('PENDING'); pm.expect(body).not.to.have.property('phoneNumber'); pm.expect(body.contactPresent).to.eql(false); });"
+                ],
+                "_lastExecutionId": "a23399ec-f42b-47fd-b9bb-fe1e7346977a"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "allocations"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "769d3a4a-a645-4031-9032-567d6fc9621b",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "118",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"requirementId\": 4,\n  \"quantity\": 2,\n  \"borrowerName\": \"Postman Fictional Representative\",\n  \"smsConsent\": false\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "0f39af00-0df7-4106-a216-5105464a6459",
+          "status": "Created",
+          "code": 201,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "384"
+            },
+            {
+              "key": "Date",
+              "value": "Fri, 13 Nov 2026 15:40:34 GMT"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              52,
+              44,
+              34,
+              114,
+              101,
+              113,
+              117,
+              105,
+              114,
+              101,
+              109,
+              101,
+              110,
+              116,
+              73,
+              100,
+              34,
+              58,
+              52,
+              44,
+              34,
+              113,
+              117,
+              97,
+              110,
+              116,
+              105,
+              116,
+              121,
+              34,
+              58,
+              50,
+              44,
+              34,
+              98,
+              111,
+              114,
+              114,
+              111,
+              119,
+              101,
+              114,
+              78,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              80,
+              111,
+              115,
+              116,
+              109,
+              97,
+              110,
+              32,
+              70,
+              105,
+              99,
+              116,
+              105,
+              111,
+              110,
+              97,
+              108,
+              32,
+              82,
+              101,
+              112,
+              114,
+              101,
+              115,
+              101,
+              110,
+              116,
+              97,
+              116,
+              105,
+              118,
+              101,
+              34,
+              44,
+              34,
+              99,
+              111,
+              110,
+              116,
+              97,
+              99,
+              116,
+              80,
+              114,
+              101,
+              115,
+              101,
+              110,
+              116,
+              34,
+              58,
+              102,
+              97,
+              108,
+              115,
+              101,
+              44,
+              34,
+              115,
+              109,
+              115,
+              67,
+              111,
+              110,
+              115,
+              101,
+              110,
+              116,
+              34,
+              58,
+              102,
+              97,
+              108,
+              115,
+              101,
+              44,
+              34,
+              115,
+              116,
+              97,
+              116,
+              117,
+              115,
+              34,
+              58,
+              34,
+              80,
+              69,
+              78,
+              68,
+              73,
+              78,
+              71,
+              34,
+              44,
+              34,
+              99,
+              114,
+              101,
+              97,
+              116,
+              101,
+              100,
+              65,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              49,
+              45,
+              49,
+              51,
+              84,
+              50,
+              51,
+              58,
+              52,
+              48,
+              58,
+              51,
+              53,
+              46,
+              48,
+              52,
+              51,
+              34,
+              44,
+              34,
+              97,
+              112,
+              112,
+              114,
+              111,
+              118,
+              101,
+              100,
+              65,
+              116,
+              34,
+              58,
+              110,
+              117,
+              108,
+              108,
+              44,
+              34,
+              105,
+              115,
+              115,
+              117,
+              101,
+              100,
+              65,
+              116,
+              34,
+              58,
+              110,
+              117,
+              108,
+              108,
+              44,
+              34,
+              114,
+              101,
+              116,
+              117,
+              114,
+              110,
+              101,
+              100,
+              65,
+              116,
+              34,
+              58,
+              110,
+              117,
+              108,
+              108,
+              44,
+              34,
+              99,
+              111,
+              110,
+              115,
+              117,
+              109,
+              101,
+              100,
+              65,
+              116,
+              34,
+              58,
+              110,
+              117,
+              108,
+              108,
+              44,
+              34,
+              99,
+              97,
+              110,
+              99,
+              101,
+              108,
+              108,
+              101,
+              100,
+              65,
+              116,
+              34,
+              58,
+              110,
+              117,
+              108,
+              108,
+              44,
+              34,
+              99,
+              97,
+              110,
+              99,
+              101,
+              108,
+              108,
+              97,
+              116,
+              105,
+              111,
+              110,
+              82,
+              101,
+              97,
+              115,
+              111,
+              110,
+              34,
+              58,
+              110,
+              117,
+              108,
+              108,
+              44,
+              34,
+              101,
+              120,
+              112,
+              105,
+              114,
+              101,
+              100,
+              80,
+              101,
+              110,
+              100,
+              105,
+              110,
+              103,
+              67,
+              108,
+              101,
+              97,
+              110,
+              117,
+              112,
+              34,
+              58,
+              102,
+              97,
+              108,
+              115,
+              101,
+              44,
+              34,
+              114,
+              101,
+              109,
+              105,
+              110,
+              100,
+              101,
+              114,
+              65,
+              116,
+              116,
+              101,
+              109,
+              112,
+              116,
+              101,
+              100,
+              34,
+              58,
+              102,
+              97,
+              108,
+              115,
+              101,
+              44,
+              34,
+              114,
+              101,
+              109,
+              105,
+              110,
+              100,
+              101,
+              114,
+              79,
+              117,
+              116,
+              99,
+              111,
+              109,
+              101,
+              34,
+              58,
+              34,
+              78,
+              79,
+              78,
+              69,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 55,
+          "responseSize": 384
+        },
+        "id": "8e68f390-5917-4888-bf66-1f4f27ae7279",
+        "assertions": [
+          {
+            "assertion": "Allocation create returns 201",
+            "skipped": false
+          },
+          {
+            "assertion": "Allocation is pending and redacts phoneNumber",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "41bd2979-7ec4-4aaf-b64e-026f27371ac5",
+          "length": 15,
+          "cycles": 1,
+          "position": 10,
+          "iteration": 0,
+          "httpRequestId": "c6e799e3-8d06-4e8f-a7e7-e14c47bb15e6"
+        },
+        "item": {
+          "id": "8b64c0f6-a731-4388-ac31-d22066b39333",
+          "name": "11. List Allocations by Requirement and Status",
+          "request": {
+            "url": {
+              "path": [
+                "allocations"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "key": "requirementId",
+                  "value": "{{requirementId}}"
+                },
+                {
+                  "key": "status",
+                  "value": "PENDING"
+                }
+              ],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "f056b5dd-99e1-4708-ac23-8fda0320ac21",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Filtered Allocation list returns 200', function () { pm.response.to.have.status(200); });",
+                  "const rows = pm.response.json();",
+                  "pm.test('Created Allocation persists and remains redacted', function () { const row = rows.find(function (item) { return item.id == pm.environment.get('allocationId'); }); pm.expect(row).to.exist; pm.expect(row).not.to.have.property('phoneNumber'); });"
+                ],
+                "_lastExecutionId": "49c1effc-ee64-47b9-9328-2f88e479a910"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "allocations"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [
+              {
+                "key": "requirementId",
+                "value": "4"
+              },
+              {
+                "key": "status",
+                "value": "PENDING"
+              }
+            ],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "ce0c86a8-f5e9-4a96-9913-c05e602d6581",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "a30ec32f-5b9d-4cc5-931f-04e48442c6aa",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "386"
+            },
+            {
+              "key": "Date",
+              "value": "Fri, 13 Nov 2026 15:40:34 GMT"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              91,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              52,
+              44,
+              34,
+              114,
+              101,
+              113,
+              117,
+              105,
+              114,
+              101,
+              109,
+              101,
+              110,
+              116,
+              73,
+              100,
+              34,
+              58,
+              52,
+              44,
+              34,
+              113,
+              117,
+              97,
+              110,
+              116,
+              105,
+              116,
+              121,
+              34,
+              58,
+              50,
+              44,
+              34,
+              98,
+              111,
+              114,
+              114,
+              111,
+              119,
+              101,
+              114,
+              78,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              80,
+              111,
+              115,
+              116,
+              109,
+              97,
+              110,
+              32,
+              70,
+              105,
+              99,
+              116,
+              105,
+              111,
+              110,
+              97,
+              108,
+              32,
+              82,
+              101,
+              112,
+              114,
+              101,
+              115,
+              101,
+              110,
+              116,
+              97,
+              116,
+              105,
+              118,
+              101,
+              34,
+              44,
+              34,
+              99,
+              111,
+              110,
+              116,
+              97,
+              99,
+              116,
+              80,
+              114,
+              101,
+              115,
+              101,
+              110,
+              116,
+              34,
+              58,
+              102,
+              97,
+              108,
+              115,
+              101,
+              44,
+              34,
+              115,
+              109,
+              115,
+              67,
+              111,
+              110,
+              115,
+              101,
+              110,
+              116,
+              34,
+              58,
+              102,
+              97,
+              108,
+              115,
+              101,
+              44,
+              34,
+              115,
+              116,
+              97,
+              116,
+              117,
+              115,
+              34,
+              58,
+              34,
+              80,
+              69,
+              78,
+              68,
+              73,
+              78,
+              71,
+              34,
+              44,
+              34,
+              99,
+              114,
+              101,
+              97,
+              116,
+              101,
+              100,
+              65,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              49,
+              45,
+              49,
+              51,
+              84,
+              50,
+              51,
+              58,
+              52,
+              48,
+              58,
+              51,
+              53,
+              46,
+              48,
+              52,
+              51,
+              34,
+              44,
+              34,
+              97,
+              112,
+              112,
+              114,
+              111,
+              118,
+              101,
+              100,
+              65,
+              116,
+              34,
+              58,
+              110,
+              117,
+              108,
+              108,
+              44,
+              34,
+              105,
+              115,
+              115,
+              117,
+              101,
+              100,
+              65,
+              116,
+              34,
+              58,
+              110,
+              117,
+              108,
+              108,
+              44,
+              34,
+              114,
+              101,
+              116,
+              117,
+              114,
+              110,
+              101,
+              100,
+              65,
+              116,
+              34,
+              58,
+              110,
+              117,
+              108,
+              108,
+              44,
+              34,
+              99,
+              111,
+              110,
+              115,
+              117,
+              109,
+              101,
+              100,
+              65,
+              116,
+              34,
+              58,
+              110,
+              117,
+              108,
+              108,
+              44,
+              34,
+              99,
+              97,
+              110,
+              99,
+              101,
+              108,
+              108,
+              101,
+              100,
+              65,
+              116,
+              34,
+              58,
+              110,
+              117,
+              108,
+              108,
+              44,
+              34,
+              99,
+              97,
+              110,
+              99,
+              101,
+              108,
+              108,
+              97,
+              116,
+              105,
+              111,
+              110,
+              82,
+              101,
+              97,
+              115,
+              111,
+              110,
+              34,
+              58,
+              110,
+              117,
+              108,
+              108,
+              44,
+              34,
+              101,
+              120,
+              112,
+              105,
+              114,
+              101,
+              100,
+              80,
+              101,
+              110,
+              100,
+              105,
+              110,
+              103,
+              67,
+              108,
+              101,
+              97,
+              110,
+              117,
+              112,
+              34,
+              58,
+              102,
+              97,
+              108,
+              115,
+              101,
+              44,
+              34,
+              114,
+              101,
+              109,
+              105,
+              110,
+              100,
+              101,
+              114,
+              65,
+              116,
+              116,
+              101,
+              109,
+              112,
+              116,
+              101,
+              100,
+              34,
+              58,
+              102,
+              97,
+              108,
+              115,
+              101,
+              44,
+              34,
+              114,
+              101,
+              109,
+              105,
+              110,
+              100,
+              101,
+              114,
+              79,
+              117,
+              116,
+              99,
+              111,
+              109,
+              101,
+              34,
+              58,
+              34,
+              78,
+              79,
+              78,
+              69,
+              34,
+              125,
+              93
+            ]
+          },
+          "cookie": [],
+          "responseTime": 23,
+          "responseSize": 386
+        },
+        "id": "8b64c0f6-a731-4388-ac31-d22066b39333",
+        "assertions": [
+          {
+            "assertion": "Filtered Allocation list returns 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Created Allocation persists and remains redacted",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "edb2b1c9-011c-4d3b-9159-aa00dc0080a6",
+          "length": 15,
+          "cycles": 1,
+          "position": 11,
+          "iteration": 0,
+          "httpRequestId": "c710b20e-a689-4332-8da0-ae42ac145a2b"
+        },
+        "item": {
+          "id": "8292fb15-98e3-4c32-83ce-d8d121bd32c3",
+          "name": "12. Reject Normalized Duplicate Department",
+          "request": {
+            "url": {
+              "path": [
+                "departments"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"  {{departmentName}}  \"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "8ba3e089-10fe-41a7-a00d-ee4324fc26bd",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Duplicate name returns 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('Duplicate error is JSON and uses the expected code', function () { pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'); pm.expect(pm.response.json().code).to.eql('DUPLICATE_NAME'); });"
+                ],
+                "_lastExecutionId": "dfaa5796-c692-4a72-ba20-6e978365c8b2"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "departments"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "48102227-7add-4800-ac58-bb7ff069ce24",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "51",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"  Postman Logistics 1794584432324  \"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "b061f842-0977-430c-b2f0-3892355dae39",
+          "status": "Conflict",
+          "code": 409,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "81"
+            },
+            {
+              "key": "Date",
+              "value": "Fri, 13 Nov 2026 15:40:34 GMT"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              99,
+              111,
+              100,
+              101,
+              34,
+              58,
+              34,
+              68,
+              85,
+              80,
+              76,
+              73,
+              67,
+              65,
+              84,
+              69,
+              95,
+              78,
+              65,
+              77,
+              69,
+              34,
+              44,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              65,
+              32,
+              100,
+              101,
+              112,
+              97,
+              114,
+              116,
+              109,
+              101,
+              110,
+              116,
+              32,
+              119,
+              105,
+              116,
+              104,
+              32,
+              116,
+              104,
+              105,
+              115,
+              32,
+              110,
+              97,
+              109,
+              101,
+              32,
+              97,
+              108,
+              114,
+              101,
+              97,
+              100,
+              121,
+              32,
+              101,
+              120,
+              105,
+              115,
+              116,
+              115,
+              46,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 20,
+          "responseSize": 81
+        },
+        "id": "8292fb15-98e3-4c32-83ce-d8d121bd32c3",
+        "assertions": [
+          {
+            "assertion": "Duplicate name returns 409",
+            "skipped": false
+          },
+          {
+            "assertion": "Duplicate error is JSON and uses the expected code",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "38f33494-5e87-4457-b899-b35c2ca9e939",
+          "length": 15,
+          "cycles": 1,
+          "position": 12,
+          "iteration": 0,
+          "httpRequestId": "918fc14a-e1a3-4efc-91be-300b2b3cf504"
+        },
+        "item": {
+          "id": "20a267ca-843b-469f-bc7f-567eddb9805f",
+          "name": "13. Reject Negative Resource Quantity",
+          "request": {
+            "url": {
+              "path": [
+                "resources"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Invalid Postman Resource {{runSuffix}}\",\n  \"type\": \"CONSUMABLE\",\n  \"totalQuantity\": -1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "8c2aa4f7-337a-4cc9-930c-33bf22a80de6",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Invalid quantity returns JSON 400', function () { pm.response.to.have.status(400); pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'); pm.expect(pm.response.json().code).to.eql('VALIDATION_FAILED'); });"
+                ],
+                "_lastExecutionId": "a22581a6-efbc-4962-a015-a5a087a96fd5"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "resources"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "0717b52d-3204-46ce-814e-6b0c71b5a322",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "101",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"Invalid Postman Resource 1794584432324\",\n  \"type\": \"CONSUMABLE\",\n  \"totalQuantity\": -1\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "6fd38e17-4b71-4dd6-b8a2-8762421c5c62",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "80"
+            },
+            {
+              "key": "Date",
+              "value": "Fri, 13 Nov 2026 15:40:34 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "close"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              99,
+              111,
+              100,
+              101,
+              34,
+              58,
+              34,
+              86,
+              65,
+              76,
+              73,
+              68,
+              65,
+              84,
+              73,
+              79,
+              78,
+              95,
+              70,
+              65,
+              73,
+              76,
+              69,
+              68,
+              34,
+              44,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              79,
+              110,
+              101,
+              32,
+              111,
+              114,
+              32,
+              109,
+              111,
+              114,
+              101,
+              32,
+              114,
+              101,
+              113,
+              117,
+              101,
+              115,
+              116,
+              32,
+              102,
+              105,
+              101,
+              108,
+              100,
+              115,
+              32,
+              97,
+              114,
+              101,
+              32,
+              105,
+              110,
+              118,
+              97,
+              108,
+              105,
+              100,
+              46,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 56,
+          "responseSize": 80
+        },
+        "id": "20a267ca-843b-469f-bc7f-567eddb9805f",
+        "assertions": [
+          {
+            "assertion": "Invalid quantity returns JSON 400",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "e42472ad-2598-45af-9405-4fd73b4fd18a",
+          "length": 15,
+          "cycles": 1,
+          "position": 13,
+          "iteration": 0,
+          "httpRequestId": "47ac1b50-59de-47cb-8746-29b167aed6e8"
+        },
+        "item": {
+          "id": "0f527bbb-3e14-4119-8265-5452fa2184b8",
+          "name": "14. Create Department for Safe Delete",
+          "request": {
+            "url": {
+              "path": [
+                "departments"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Temporary {{runSuffix}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "08d44399-2050-47b8-a093-a68ba940b55a",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Delete fixture Department create returns 201', function () { pm.response.to.have.status(201); });",
+                  "pm.environment.set('deleteDepartmentId', pm.response.json().id);"
+                ],
+                "_lastExecutionId": "92c4731b-2a4c-4ace-9f3f-97cd54c32648"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "departments"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "e6db8eec-b487-4197-a9f8-a505edc5f117",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "47",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"Postman Temporary 1794584432324\"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "c24db99f-4d5d-4b30-8d2e-0ec1b3151da2",
+          "status": "Created",
+          "code": 201,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "49"
+            },
+            {
+              "key": "Date",
+              "value": "Fri, 13 Nov 2026 15:40:34 GMT"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              57,
+              44,
+              34,
+              110,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              80,
+              111,
+              115,
+              116,
+              109,
+              97,
+              110,
+              32,
+              84,
+              101,
+              109,
+              112,
+              111,
+              114,
+              97,
+              114,
+              121,
+              32,
+              49,
+              55,
+              57,
+              52,
+              53,
+              56,
+              52,
+              52,
+              51,
+              50,
+              51,
+              50,
+              52,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 23,
+          "responseSize": 49
+        },
+        "id": "0f527bbb-3e14-4119-8265-5452fa2184b8",
+        "assertions": [
+          {
+            "assertion": "Delete fixture Department create returns 201",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "fb0fdca6-2be8-4325-93eb-6c714c8c7384",
+          "length": 15,
+          "cycles": 1,
+          "position": 14,
+          "iteration": 0,
+          "httpRequestId": "6c164918-88db-408a-a487-283b82478dcb"
+        },
+        "item": {
+          "id": "6af101cc-7407-4565-a8ee-781ba7198612",
+          "name": "15. Delete Unreferenced Department",
+          "request": {
+            "url": {
+              "path": [
+                "departments",
+                "{{deleteDepartmentId}}",
+                "delete"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "POST"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "ba855ae6-4491-4fe9-b5f1-6a9962a25611",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Safe Department delete returns 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Delete success message is JSON', function () { pm.expect(pm.response.json().message).to.eql('Record deleted.'); });"
+                ],
+                "_lastExecutionId": "eb277c99-4bbf-490d-aaad-405ecd3aa324"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "departments",
+              "9",
+              "delete"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "2d17dc3a-7fd8-4845-8d72-362506541a8a",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "0",
+              "system": true
+            }
+          ],
+          "method": "POST"
+        },
+        "response": {
+          "id": "7d2cfb64-2f46-4dc4-bea4-7575286ca273",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "29"
+            },
+            {
+              "key": "Date",
+              "value": "Fri, 13 Nov 2026 15:40:34 GMT"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              82,
+              101,
+              99,
+              111,
+              114,
+              100,
+              32,
+              100,
+              101,
+              108,
+              101,
+              116,
+              101,
+              100,
+              46,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 45,
+          "responseSize": 29
+        },
+        "id": "6af101cc-7407-4565-a8ee-781ba7198612",
+        "assertions": [
+          {
+            "assertion": "Safe Department delete returns 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Delete success message is JSON",
+            "skipped": false
+          }
+        ]
+      }
+    ],
+    "transfers": {
+      "responseTotal": 2200
+    },
+    "failures": [],
+    "error": null
+  }
+}

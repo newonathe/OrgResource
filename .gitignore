@@ -1,0 +1,25 @@
+# Java/Maven build output and local tools
+**/target/
+**/node_modules/
+**/.idea/
+*.log
+
+# Local credentials and environment files
+**/.env
+**/.env.*
+**/*credential*.xml
+**/local.properties
+
+# Original video assets are kept in the course folder; the transcript pack is tracked.
+/ChatGPT-Project-Pack/REFERENCE/
+*.mp4
+*.mov
+*.mkv
+
+# Large original source bundles exceed GitHub's regular file limits.
+/ChatGPT-Project-Pack/UPLOAD/11_COMPLETE_SOURCE_NONVIDEO_PART1.zip
+/ChatGPT-Project-Pack/UPLOAD/12_COMPLETE_SOURCE_NONVIDEO_PART2.zip
+
+# Operating-system metadata
+Thumbs.db
+.DS_Store

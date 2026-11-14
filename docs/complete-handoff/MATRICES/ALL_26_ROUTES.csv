@@ -1,0 +1,59 @@
+route_id,group,http_method,path,success_status,body_example,template_unexecuted
+D01,Departments,POST,/api/departments,201,"{
+  ""name"": ""Fictional Logistics {{runTag}}""
+}",True
+D02,Departments,GET,/api/departments,200,,True
+D03,Departments,POST,/api/departments/{{departmentId}}/update,200,"{
+  ""name"": ""Fictional Operations {{runTag}}""
+}",True
+D04,Departments,POST,/api/departments/{{departmentId}}/delete,200,,True
+P01,Projects,POST,/api/projects,201,"{
+  ""departmentId"": {{departmentId}},
+  ""name"": ""Fictional Workshop {{runTag}}"",
+  ""startAt"": ""{{projectStartAt}}"",
+  ""endAt"": ""{{projectEndAt}}""
+}",True
+P02,Projects,GET,/api/projects?departmentId={{departmentId}},200,,True
+P03,Projects,POST,/api/projects/{{projectId}}/update,200,"{
+  ""name"": ""Workshop Updated {{runTag}}"",
+  ""startAt"": ""{{projectStartAt}}"",
+  ""endAt"": ""{{projectEndAt}}""
+}",True
+P04,Projects,POST,/api/projects/{{projectId}}/delete,200,,True
+R01,Resources,POST,/api/resources,201,"{
+  ""name"": ""Extension cords {{runTag}}"",
+  ""type"": ""REUSABLE"",
+  ""totalQuantity"": 10
+}",True
+R02,Resources,GET,/api/resources?type=REUSABLE,200,,True
+R03,Resources,POST,/api/resources/{{resourceId}}/update,200,"{
+  ""name"": ""Extension cords {{runTag}}"",
+  ""totalQuantity"": 10,
+  ""expectedTotalQuantity"": 10
+}",True
+R04,Resources,POST,/api/resources/{{resourceId}}/delete,200,,True
+R05,Resources,GET,/api/resources/{{resourceId}}/availability,200,,True
+Q01,Requirements,POST,/api/requirements,201,"{
+  ""projectId"": {{projectId}},
+  ""resourceId"": {{resourceId}},
+  ""quantity"": 6
+}",True
+Q02,Requirements,GET,/api/requirements?projectId={{projectId}},200,,True
+Q03,Requirements,POST,/api/requirements/{{requirementId}}/update,200,"{
+  ""quantity"": 8
+}",True
+Q04,Requirements,POST,/api/requirements/{{requirementId}}/delete,200,,True
+A01,Allocations,POST,/api/allocations,201,"{
+  ""requirementId"": {{requirementId}},
+  ""quantity"": 4,
+  ""borrowerName"": ""Fictional Representative"",
+  ""smsConsent"": false
+}",True
+A02,Allocations,GET,/api/allocations?requirementId={{requirementId}},200,,True
+A03,Allocations,POST,/api/allocations/{{allocationId}}/approve,200,,True
+A04,Allocations,POST,/api/allocations/{{allocationId}}/issue,200,,True
+A05,Allocations,POST,/api/allocations/{{allocationId}}/return,200,,True
+A06,Allocations,POST,/api/allocations/{{allocationId}}/consume,200,,True
+A07,Allocations,POST,/api/allocations/{{allocationId}}/cancel,200,,True
+A08,Allocations,POST,/api/allocations/{{allocationId}}/delete,200,,True
+A09,Allocations,POST,/api/allocations/{{allocationId}}/revoke-sms-consent,200,,True

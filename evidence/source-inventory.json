@@ -1,0 +1,132 @@
+[
+  {
+    "path": "C:\\Users\\ethan\\Projects\\Template Pack\\erp-template-pack\\00-READ-ME-FIRST.md",
+    "bytes": 8477,
+    "sha256": "b8692c83d1194714c18f79f887109c90f191e054206507104ce1291b4f338977",
+    "headings": 5,
+    "inspection": "full text read"
+  },
+  {
+    "path": "C:\\Users\\ethan\\Projects\\Template Pack\\erp-template-pack\\01-MASTER-PROMPT.md",
+    "bytes": 123598,
+    "sha256": "22f47e36107a21a3d98bda15461d797810cec6b0d00ed151900e41be3180d36c",
+    "headings": 1,
+    "inspection": "structure and applicable sections inspected; unrelated business detail not exhaustively read"
+  },
+  {
+    "path": "C:\\Users\\ethan\\Projects\\Template Pack\\erp-template-pack\\02-SYSTEM-CONTEXT.md",
+    "bytes": 79966,
+    "sha256": "1f55dd107d873d5a644f64d222d4378e2a5fb4c4185ddae925dba6f528cd80b4",
+    "headings": 43,
+    "inspection": "structure and applicable sections inspected; unrelated business detail not exhaustively read"
+  },
+  {
+    "path": "C:\\Users\\ethan\\Projects\\Template Pack\\erp-template-pack\\03-SOCRATIC-CRITIQUE.md",
+    "bytes": 28246,
+    "sha256": "bfc02d33dc4378347789cce4482a37226a6e3c6e7a98f8a5f561e1dd6c7a02d4",
+    "headings": 14,
+    "inspection": "structure and applicable sections inspected; unrelated business detail not exhaustively read"
+  },
+  {
+    "path": "C:\\Users\\ethan\\Projects\\Template Pack\\erp-template-pack\\04-RESEARCH-FINDINGS.md",
+    "bytes": 32647,
+    "sha256": "f79d2a28d755eeb81d02a6a192faff5ed6b099926fa41feb6d974be3a0023ed6",
+    "headings": 16,
+    "inspection": "structure and applicable sections inspected; unrelated business detail not exhaustively read"
+  },
+  {
+    "path": "C:\\Users\\ethan\\Projects\\Template Pack\\erp-template-pack\\05-ARCHITECTURE-AND-MODULES.md",
+    "bytes": 55643,
+    "sha256": "c2a60f9b8b6c4a43d20fdcf7ab93fb6b73b38925f7c8e609e8cd3b5b97260e13",
+    "headings": 34,
+    "inspection": "structure and applicable sections inspected; unrelated business detail not exhaustively read"
+  },
+  {
+    "path": "C:\\Users\\ethan\\Projects\\Template Pack\\erp-template-pack\\06-DESIGN-SYSTEM-AND-UX.md",
+    "bytes": 23889,
+    "sha256": "42dec12d2f4b5fb8432ef25cef8ac6e5ab1df3132048a08ca59f3140e5efcb47",
+    "headings": 24,
+    "inspection": "structure and applicable sections inspected; unrelated business detail not exhaustively read"
+  },
+  {
+    "path": "C:\\Users\\ethan\\Projects\\Template Pack\\erp-template-pack\\07-ENGINEERING-SECURITY-OPS.md",
+    "bytes": 26251,
+    "sha256": "42ba58eccb76fdce281461adfae8195963b3a22615d4973e05ce78968105cd75",
+    "headings": 19,
+    "inspection": "structure and applicable sections inspected; unrelated business detail not exhaustively read"
+  },
+  {
+    "path": "C:\\Users\\ethan\\Projects\\Template Pack\\erp-template-pack\\08-GAPS-AND-ADDITIONS.md",
+    "bytes": 8332,
+    "sha256": "596c2aae4df691afc0ba1642471c808f29ad49dfc959f06151d2cce4080adf2b",
+    "headings": 5,
+    "inspection": "structure and applicable sections inspected; unrelated business detail not exhaustively read"
+  },
+  {
+    "path": "C:\\Users\\ethan\\Projects\\Template Pack\\erp-template-pack\\09-OPEN-QUESTIONS-AND-CLIENT-DISCOVERY.md",
+    "bytes": 4115,
+    "sha256": "35404038ec6cf84039b5620eaf43c505ebd0919207ed3e97c4dff6792a0e5b30",
+    "headings": 3,
+    "inspection": "full text read"
+  },
+  {
+    "path": "C:\\Users\\ethan\\Projects\\Template Pack\\erp-template-pack\\10-APPENDIX-DATA-MODEL.md",
+    "bytes": 55626,
+    "sha256": "bf07697e04458e4f9005d24cc4b1287fc8eaafc89a50ed2a1063471a308f0c0f",
+    "headings": 40,
+    "inspection": "structure and applicable sections inspected; unrelated business detail not exhaustively read"
+  },
+  {
+    "path": "C:\\Users\\ethan\\Projects\\Template Pack\\erp-template-pack\\11-APPENDIX-SERVER-FUNCTIONS.md",
+    "bytes": 95508,
+    "sha256": "54e3ad11efeb4f3f31b2f67c413f5a6f68ffdc81039b7009b4415923567bed28",
+    "headings": 117,
+    "inspection": "structure and applicable sections inspected; unrelated business detail not exhaustively read"
+  },
+  {
+    "path": "C:\\Users\\ethan\\Projects\\Template Pack\\erp-template-pack\\12-APPENDIX-SETTINGS-AND-COPY.md",
+    "bytes": 36932,
+    "sha256": "ed2fb32def1c282b9d83e369f794ba4a466a348ec55015cc69f3012e24c41aff",
+    "headings": 32,
+    "inspection": "structure and applicable sections inspected; unrelated business detail not exhaustively read"
+  },
+  {
+    "path": "C:\\Users\\ethan\\Projects\\Template Pack\\erp-template-pack\\13-DECISION-LOG.md",
+    "bytes": 24877,
+    "sha256": "7b6206e4a276a872f8e7061e0a02aad0b415c1d422d059f2b872f075c8a863fa",
+    "headings": 24,
+    "inspection": "structure and applicable sections inspected; unrelated business detail not exhaustively read"
+  },
+  {
+    "path": "C:\\Users\\ethan\\Projects\\Template Pack\\erp-template-pack\\14-FIELD-EVIDENCE.md",
+    "bytes": 49516,
+    "sha256": "4e684297fdef443dd235dc01647c43713b879a060811ebb309d22e4b2b716150",
+    "headings": 40,
+    "inspection": "structure and applicable sections inspected; unrelated business detail not exhaustively read"
+  },
+  {
+    "path": "C:\\Users\\ethan\\Projects\\Template Pack\\erp-template-pack\\ALL-CONTEXT-02-to-14.md",
+    "bytes": 730473,
+    "sha256": "9d813fb00b63eeaf259d65464780a73d28c54a2d6d0ed2e986ec8439460a0d6b",
+    "headings": 412,
+    "inspection": "redundant compilation structural inspection"
+  },
+  {
+    "path": "C:\\Users\\ethan\\Downloads\\Academic\\4th Year\\CSCI 180.05\\ESP Project Proposal 2026.pdf",
+    "bytes": 78227,
+    "sha256": "187446f0dd8c6cd8b8ac93d346dc79b2713ae5975a7fa1a556bb888e7c476bb8",
+    "inspection": "full text read; PDF render inspected in preceding audit where applicable"
+  },
+  {
+    "path": "C:\\Users\\ethan\\Downloads\\Academic\\4th Year\\CSCI 180.05\\CS-DISCS-CSCI180.05-JONGKO_J-O-2026-1.pdf",
+    "bytes": 191618,
+    "sha256": "b65b381f0f7aedca04443de007cc5aae56ea6d4c20b6fde7b4719330401689df",
+    "inspection": "full text read; PDF render inspected in preceding audit where applicable"
+  },
+  {
+    "path": "C:\\Users\\ethan\\.codex\\attachments\\ee07c5ae-188b-4d8e-92bd-fe128511620a\\Pasted text.txt",
+    "bytes": 58078,
+    "sha256": "75ac34efa780eca258b0b9fa3c4673a43fff86f0c2263daa1df96662e6112ea5",
+    "inspection": "full text read; PDF render inspected in preceding audit where applicable"
+  }
+]

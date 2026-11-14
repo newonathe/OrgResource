@@ -1,0 +1,323 @@
+{
+  "DepartmentView": {
+    "id": 1,
+    "createdAt": "2026-11-03T02:00:00Z",
+    "createdById": null,
+    "version": 1,
+    "updatedAt": "2026-11-03T02:00:00Z",
+    "updatedById": null,
+    "code": "LOG",
+    "name": "Logistics",
+    "description": "Fictional demonstration department",
+    "active": true
+  },
+  "AppUserView": {
+    "id": 1,
+    "createdAt": "2026-11-03T02:00:00Z",
+    "createdById": null,
+    "version": 1,
+    "updatedAt": "2026-11-03T02:00:00Z",
+    "updatedById": null,
+    "username": "demo.custodian",
+    "displayName": "Demo Custodian",
+    "role": "CUSTODIAN",
+    "departmentId": 1,
+    "active": true,
+    "phoneE164": null,
+    "smsConsent": false,
+    "consentAt": null,
+    "consentVersion": null
+  },
+  "ProjectView": {
+    "id": 1,
+    "createdAt": "2026-11-03T02:00:00Z",
+    "createdById": null,
+    "version": 1,
+    "updatedAt": "2026-11-03T02:00:00Z",
+    "updatedById": null,
+    "code": "WELCOME_26",
+    "name": "Welcome Workshop",
+    "description": "Fictional scenario",
+    "departmentId": 1,
+    "ownerId": 1,
+    "startAt": "2026-11-10T01:00:00Z",
+    "endAt": "2026-11-10T04:00:00Z",
+    "status": "DRAFT",
+    "statusReason": null
+  },
+  "ResourceView": {
+    "id": 1,
+    "createdAt": "2026-11-03T02:00:00Z",
+    "createdById": null,
+    "version": 1,
+    "updatedAt": "2026-11-03T02:00:00Z",
+    "updatedById": null,
+    "code": "CORD_POOL",
+    "name": "Extension Cords",
+    "description": "Interchangeable fictional cords",
+    "type": "REUSABLE",
+    "category": "Equipment",
+    "unit": "piece",
+    "storageLocation": "Demo cabinet",
+    "controlBasis": "OWNED",
+    "authorizationNote": null,
+    "departmentId": 1,
+    "custodianId": 1,
+    "revision": 1,
+    "active": true,
+    "physicalInStore": 10,
+    "outstanding": 0,
+    "damagedInStore": 0,
+    "usableOwned": 10,
+    "reservedConsumable": 0,
+    "availableConsumable": null
+  },
+  "ResourceRequirementView": {
+    "id": 1,
+    "createdAt": "2026-11-03T02:00:00Z",
+    "createdById": null,
+    "version": 1,
+    "updatedAt": "2026-11-03T02:00:00Z",
+    "updatedById": null,
+    "projectId": 1,
+    "resourceId": 1,
+    "quantity": 6,
+    "startAt": "2026-11-10T01:00:00Z",
+    "endAt": "2026-11-10T04:00:00Z",
+    "priority": "NORMAL",
+    "notes": "Fictional planning requirement",
+    "status": "ACTIVE",
+    "coveredQuantity": 0,
+    "suppliedQuantity": 0,
+    "outstandingQuantity": 0,
+    "unallocatedQuantity": 6
+  },
+  "AllocationView": {
+    "id": 1,
+    "createdAt": "2026-11-03T02:00:00Z",
+    "createdById": null,
+    "version": 1,
+    "updatedAt": "2026-11-03T02:00:00Z",
+    "updatedById": null,
+    "requirementId": 1,
+    "quantity": 6,
+    "releasedUnissued": 0,
+    "startAt": "2026-11-03T02:00:00Z",
+    "endAt": "2026-11-03T02:00:00Z",
+    "requestedById": 1,
+    "recipientId": 1,
+    "decisionStatus": "REQUESTED",
+    "decidedById": null,
+    "decidedAt": null,
+    "decisionReason": null,
+    "requestKey": "00000000-0000-4000-8000-000000000001",
+    "issuedQuantity": 0,
+    "resolvedQuantity": 0,
+    "outstandingQuantity": 0,
+    "unissuedQuantity": 0,
+    "fulfillment": "NONE",
+    "overdue": false,
+    "replay": false
+  },
+  "InventoryTransactionView": {
+    "id": 1,
+    "createdAt": "2026-11-03T02:00:00Z",
+    "createdById": null,
+    "resourceId": 1,
+    "allocationId": null,
+    "type": "RECEIPT",
+    "quantity": 10,
+    "inspection": null,
+    "reason": "OPENING_COUNT fictional stock",
+    "occurredAt": "2026-11-03T02:00:00Z",
+    "deltaStored": 10,
+    "deltaOutstanding": 0,
+    "deltaDamaged": 0,
+    "deltaIssued": 0,
+    "deltaResolved": 0,
+    "deltaGoodReturned": 0,
+    "deltaDamagedReturned": 0,
+    "deltaLost": 0,
+    "commandKey": "00000000-0000-4000-8000-000000000001",
+    "reversalOfId": null,
+    "correctionReferenceId": null,
+    "resourceRevisionAfter": 1,
+    "replay": false,
+    "impactedAllocationIds": []
+  },
+  "NotificationLogView": {
+    "id": 1,
+    "createdAt": "2026-11-03T02:00:00Z",
+    "createdById": null,
+    "version": 1,
+    "updatedAt": "2026-11-03T02:00:00Z",
+    "updatedById": null,
+    "allocationId": 1,
+    "recipientId": 1,
+    "kind": "RETURN_DUE",
+    "eventKey": "RETURN_DUE:1:2026-11-10T04:00:00Z:1",
+    "status": "SKIPPED",
+    "dueAt": "2026-11-03T02:00:00Z",
+    "nextAttemptAt": null,
+    "attemptCount": 0,
+    "destinationMasked": null,
+    "providerSid": null,
+    "providerStatus": null,
+    "lastErrorCode": "NO_CONSENT",
+    "lastAttemptAt": null,
+    "cancelReason": null,
+    "attempts": []
+  },
+  "AuditEventView": {
+    "id": 1,
+    "createdAt": "2026-11-03T02:00:00Z",
+    "createdById": null,
+    "action": "NOTE",
+    "targetType": "Project",
+    "targetId": 1,
+    "targetSummary": "WELCOME_26",
+    "beforeJson": null,
+    "afterJson": null,
+    "reason": "Fictional planning note",
+    "requestId": "00000000-0000-4000-8000-000000000002"
+  },
+  "AvailabilityView": {
+    "resourceId": 1,
+    "asOf": "2026-11-10T00:00:00Z",
+    "startAt": "2026-11-10T02:00:00Z",
+    "endAt": "2026-11-10T05:00:00Z",
+    "unit": "piece",
+    "physicalInStore": 10,
+    "outstanding": 0,
+    "usableOwned": 10,
+    "reservedConsumable": null,
+    "rawMinimumFree": 4,
+    "allocatableQuantity": 4,
+    "overdueOutstanding": 0,
+    "returnDependentQuantity": 0,
+    "segments": [
+      {
+        "startAt": "2026-11-10T02:00:00Z",
+        "endAt": "2026-11-10T04:00:00Z",
+        "committed": 6,
+        "rawFree": 4,
+        "allocationIds": [
+          1
+        ]
+      }
+    ],
+    "warnings": []
+  },
+  "ShortageView": {
+    "projectId": 1,
+    "asOf": "2026-11-10T00:00:00Z",
+    "requirements": [
+      {
+        "requirementId": 1,
+        "resourceId": 1,
+        "unit": "piece",
+        "demand": 6,
+        "approvedCoverage": 0,
+        "supplied": 0,
+        "outstanding": 0,
+        "unallocated": 6,
+        "freeIfConsideredAlone": 10,
+        "sourcingGapIfConsideredAlone": 0,
+        "atRisk": false
+      }
+    ],
+    "warning": "Individual candidate gaps are not additive."
+  },
+  "DemandView": {
+    "resourceId": 1,
+    "asOf": "2026-11-10T00:00:00Z",
+    "to": "2026-11-10T06:00:00Z",
+    "includeDraft": false,
+    "unit": "piece",
+    "minimumAdditionalUnits": 1,
+    "segments": [
+      {
+        "startAt": "2026-11-10T02:00:00Z",
+        "endAt": "2026-11-10T04:00:00Z",
+        "usableCapacity": 10,
+        "approvedCommitted": 6,
+        "unallocatedDemand": 5,
+        "deficit": 1,
+        "requirementIds": [
+          1,
+          2
+        ],
+        "projectIds": [
+          1,
+          2
+        ],
+        "departmentIds": [
+          1,
+          2
+        ]
+      }
+    ],
+    "reasons": [
+      "TIME_CONFLICT"
+    ],
+    "warning": "Capacity scenario with fixed dates; not purchasing authorization.",
+    "from": "2026-11-10T01:00:00Z"
+  },
+  "InventoryReport": {
+    "asOf": "2026-11-10T00:00:00Z",
+    "items": [
+      {
+        "resourceId": 1,
+        "type": "REUSABLE",
+        "unit": "piece",
+        "physicalInStore": 10,
+        "outstanding": 0,
+        "damaged": 0,
+        "usableOwned": 10,
+        "ledgerConsistent": true
+      }
+    ]
+  },
+  "AllocationReport": {
+    "asOf": "2026-11-10T00:00:00Z",
+    "items": [
+      {
+        "allocationId": 1,
+        "projectId": 1,
+        "resourceId": 1,
+        "recipientId": 1,
+        "startAt": "2026-11-10T01:00:00Z",
+        "endAt": "2026-11-10T04:00:00Z",
+        "unissued": 0,
+        "outstanding": 2,
+        "overdue": true,
+        "atRisk": false
+      }
+    ]
+  },
+  "DepartmentReport": {
+    "asOf": "2026-11-10T00:00:00Z",
+    "departmentId": 1,
+    "to": "2026-11-11T01:00:00Z",
+    "items": [
+      {
+        "resourceId": 1,
+        "unit": "piece",
+        "requested": 6,
+        "approvedCoverage": 4,
+        "supplied": 0,
+        "unallocated": 2
+      }
+    ],
+    "warning": "Different units are never summed.",
+    "from": "2026-11-10T01:00:00Z"
+  },
+  "JobRunView": {
+    "asOf": "2026-11-10T00:00:00Z",
+    "created": 1,
+    "skipped": 0,
+    "existing": 0,
+    "errors": 0,
+    "providerMode": "FAKE"
+  }
+}

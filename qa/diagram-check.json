@@ -1,0 +1,92 @@
+[
+  {
+    "number": 1,
+    "parsed": true,
+    "size": {
+      "x": 0,
+      "y": 0,
+      "width": 788.03125,
+      "height": 677.890625
+    }
+  },
+  {
+    "number": 2,
+    "parsed": true,
+    "size": {
+      "x": 0,
+      "y": 0,
+      "width": 1193.21875,
+      "height": 1038
+    }
+  },
+  {
+    "number": 3,
+    "parsed": true,
+    "size": {
+      "x": 0,
+      "y": 0,
+      "width": 1186,
+      "height": 713
+    }
+  },
+  {
+    "number": 4,
+    "parsed": true,
+    "size": {
+      "x": 0,
+      "y": 0,
+      "width": 999,
+      "height": 810
+    }
+  },
+  {
+    "number": 5,
+    "parsed": true,
+    "size": {
+      "x": 0,
+      "y": 0,
+      "width": 1193.96875,
+      "height": 810.859375
+    }
+  },
+  {
+    "number": 6,
+    "parsed": true,
+    "size": {
+      "x": 0,
+      "y": 0,
+      "width": 1222.453125,
+      "height": 531
+    }
+  },
+  {
+    "number": 7,
+    "parsed": true,
+    "size": {
+      "x": 0,
+      "y": 0,
+      "width": 918.296875,
+      "height": 318
+    }
+  },
+  {
+    "number": 8,
+    "parsed": true,
+    "size": {
+      "x": 0,
+      "y": 0,
+      "width": 823,
+      "height": 672
+    }
+  },
+  {
+    "number": 9,
+    "parsed": true,
+    "size": {
+      "x": 0,
+      "y": 0,
+      "width": 662.46875,
+      "height": 979.40625
+    }
+  }
+]

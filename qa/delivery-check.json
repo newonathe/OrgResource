@@ -1,0 +1,29 @@
+{
+  "documents": [
+    {
+      "file": "OrgResource-Formal-Proposal.docx",
+      "bytes": 591314,
+      "pages": 156,
+      "operationsCovered": 68,
+      "entitiesCovered": 9,
+      "titleBorder": false
+    },
+    {
+      "file": "OrgResource-Concise-Submission-Proposal.docx",
+      "bytes": 65027,
+      "pages": 22,
+      "operationsCovered": 68,
+      "entitiesCovered": 9,
+      "titleBorder": false
+    }
+  ],
+  "assignmentPartISectionOrder": true,
+  "documentationChecks": {
+    "passed": 276,
+    "checks": 276
+  },
+  "applicationImplemented": false,
+  "applicationTestsRun": false,
+  "liveSmsSent": false,
+  "scope": "Final artifact structure, coverage, ZIP integrity and documentation/fixture checks only"
+}

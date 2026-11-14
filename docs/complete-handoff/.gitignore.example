@@ -1,0 +1,19 @@
+# EXAMPLE — review with actual repository before using
+.env
+.env.*
+!.env.example
+*.log
+*.tmp
+node_modules/
+frontend/dist/
+backend/target/
+target/
+.vscode/settings.json
+.idea/
+.DS_Store
+Thumbs.db
+*.class
+*.jar
+# Do not blindly ignore required Maven wrappers, source .project/.classpath/.settings,
+# frontend package-lock.json or documented portable dependencies.
+# Avoid committing SQL dumps with actual people/private data.

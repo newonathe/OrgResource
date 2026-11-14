@@ -1,0 +1,3037 @@
+[
+  {
+    "id": "01C",
+    "domain": "Department",
+    "http": "POST",
+    "path": "/api/departments",
+    "controller": "DepartmentController",
+    "controllerMethod": "create",
+    "component": "DepartmentComponent",
+    "method": "create",
+    "body": {
+      "code": "LOG",
+      "name": "Logistics",
+      "description": "Fictional demonstration department"
+    },
+    "view": "DepartmentView",
+    "purpose": "Flat accountable unit inside the one organization.",
+    "permission": "ADMIN",
+    "steps": [
+      "Normalize code/name; validate unique code, ADMIN and nonblank fields.",
+      "Persist active department and append CREATE audit; no stock or hierarchy exists."
+    ],
+    "repositories": [
+      "DepartmentRepository.save",
+      "DepartmentRepository.findById",
+      "DepartmentRepository.findByCode",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "DUPLICATE_RECORD",
+      "INVALID_STATE",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 201,
+    "query": {},
+    "requestDto": "Op01CRequest",
+    "queryDto": "Op01CQuery"
+  },
+  {
+    "id": "01L",
+    "domain": "Department",
+    "http": "GET",
+    "path": "/api/departments",
+    "controller": "DepartmentController",
+    "controllerMethod": "list",
+    "component": "DepartmentComponent",
+    "method": "list",
+    "body": null,
+    "view": "Page<DepartmentView>",
+    "purpose": "List visible departments with bounded filters.",
+    "permission": "authorized organization read; contact/audit/notification scope rules apply",
+    "steps": [
+      "Validate pagination and whitelist filter names/types; apply visibility restrictions in the query.",
+      "Run parameterized Specification query with stable id ascending sort; map within read transaction and redact contacts."
+    ],
+    "repositories": [
+      "DepartmentRepository.findAll"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {
+      "active": "optional exact/range filter",
+      "page": "integer>=0 default0",
+      "size": "1..100 default20"
+    },
+    "requestDto": "Op01LRequest",
+    "queryDto": "Op01LQuery"
+  },
+  {
+    "id": "01R",
+    "domain": "Department",
+    "http": "GET",
+    "path": "/api/departments/{id}",
+    "controller": "DepartmentController",
+    "controllerMethod": "get",
+    "component": "DepartmentComponent",
+    "method": "get",
+    "body": null,
+    "view": "DepartmentView",
+    "purpose": "Retrieve one Department with its derived public fields.",
+    "permission": "same read scope as list",
+    "steps": [
+      "Validate positive id and active actor; retrieve or404.",
+      "Check object visibility, load required relationships/counters, map a detached DTO and redact sensitive fields."
+    ],
+    "repositories": [
+      "DepartmentRepository.findById"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {},
+    "requestDto": "Op01RRequest",
+    "queryDto": "Op01RQuery"
+  },
+  {
+    "id": "01D",
+    "domain": "Department",
+    "http": "POST",
+    "path": "/api/departments/{id}/delete",
+    "controller": "DepartmentController",
+    "controllerMethod": "delete",
+    "component": "DepartmentComponent",
+    "method": "delete",
+    "body": {
+      "expectedVersion": 0,
+      "reason": "Remove unused fictional setup record"
+    },
+    "view": "NoContent",
+    "purpose": "Hard delete only when no user, project or resource references exist. Otherwise409 DEPENDENCY_EXISTS; update active=false only when no active operational dependency.",
+    "permission": "ADMIN for setup; owner/HEAD for unused drafts; OFFICER for notification removal; immutable history never deletable",
+    "steps": [
+      "Resolve target and authorize; require expectedVersion for versioned rows.",
+      "Apply the exact entity deletion predicate in04; foreign-key references are checked with Specifications and constrained by database RESTRICT.",
+      "If allowed append a deletion audit containing original code and id, then physically delete; otherwise409 with allowed alternative.",
+      "For InventoryTransaction and AuditEvent always return409 IMMUTABLE_HISTORY without mutating data; no pretend successful deletion."
+    ],
+    "repositories": [
+      "DepartmentRepository.findById",
+      "DepartmentRepository.delete",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "DEPENDENCY_EXISTS",
+      "INVALID_STATE",
+      "VERSION_CONFLICT",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 204,
+    "query": {},
+    "requestDto": "Op01DRequest",
+    "queryDto": "Op01DQuery"
+  },
+  {
+    "id": "01U",
+    "domain": "Department",
+    "http": "POST",
+    "path": "/api/departments/{id}/update",
+    "controller": "DepartmentController",
+    "controllerMethod": "update",
+    "component": "DepartmentComponent",
+    "method": "update",
+    "body": {
+      "expectedVersion": 0,
+      "name": "Logistics Team",
+      "description": "Fictional team",
+      "active": true
+    },
+    "view": "DepartmentView",
+    "purpose": "Versioned update of permitted Department fields.",
+    "permission": "ADMIN setup/user role; self contact; owner/HEAD project/requirement; assigned CUSTODIAN resource metadata",
+    "steps": [
+      "Retrieve target, verify object-specific editor, expectedVersion and permitted lifecycle.",
+      "Setting active=false requires no active AppUser, active Resource or project outside COMPLETED/CANCELLED referencing this department; otherwise409 DEPENDENCY_EXISTS.",
+      "Validate only the explicit mutable DTO fields; existing code/type/unit/owner are not implicitly replaced.",
+      "Check active relationships and referential/deactivation constraints in02/04; requirement changes cancel pending requests and invalidate submitted planning approval.",
+      "Apply metadata change and append before/after audit atomically; return updated version."
+    ],
+    "repositories": [
+      "DepartmentRepository.findById",
+      "DepartmentRepository.save",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "VERSION_CONFLICT",
+      "DUPLICATE_RECORD",
+      "DEPENDENCY_EXISTS",
+      "INVALID_STATE",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 200,
+    "query": {},
+    "requestDto": "Op01URequest",
+    "queryDto": "Op01UQuery"
+  },
+  {
+    "id": "02C",
+    "domain": "User",
+    "http": "POST",
+    "path": "/api/users",
+    "controller": "UserController",
+    "controllerMethod": "create",
+    "component": "UserComponent",
+    "method": "create",
+    "body": {
+      "username": "demo.custodian",
+      "displayName": "Demo Custodian",
+      "role": "CUSTODIAN",
+      "departmentId": "{{departmentId}}"
+    },
+    "view": "AppUserView",
+    "purpose": "Member identity and access/contact preferences.",
+    "permission": "ADMIN",
+    "steps": [
+      "Validate ADMIN, unique normalized username and allowed role; check active department unless organization-wide role.",
+      "Ignore no security fields: reject actor/password/consent timestamps; initial SMS consent false unless a separate self consent update is made after creation.",
+      "Save user and append redacted CREATE audit without phone."
+    ],
+    "repositories": [
+      "AppUserRepository.save",
+      "AppUserRepository.findById",
+      "AppUserRepository.findByUsername",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "DUPLICATE_RECORD",
+      "INVALID_STATE",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 201,
+    "query": {},
+    "requestDto": "Op02CRequest",
+    "queryDto": "Op02CQuery"
+  },
+  {
+    "id": "02L",
+    "domain": "User",
+    "http": "GET",
+    "path": "/api/users",
+    "controller": "UserController",
+    "controllerMethod": "list",
+    "component": "UserComponent",
+    "method": "list",
+    "body": null,
+    "view": "Page<AppUserView>",
+    "purpose": "List visible users with bounded filters.",
+    "permission": "authorized organization read; contact/audit/notification scope rules apply",
+    "steps": [
+      "Validate pagination and whitelist filter names/types; apply visibility restrictions in the query.",
+      "Run parameterized Specification query with stable id ascending sort; map within read transaction and redact contacts."
+    ],
+    "repositories": [
+      "AppUserRepository.findAll"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {
+      "departmentId": "optional exact/range filter",
+      "role": "optional exact/range filter",
+      "active": "optional exact/range filter",
+      "page": "integer>=0 default0",
+      "size": "1..100 default20"
+    },
+    "requestDto": "Op02LRequest",
+    "queryDto": "Op02LQuery"
+  },
+  {
+    "id": "02R",
+    "domain": "User",
+    "http": "GET",
+    "path": "/api/users/{id}",
+    "controller": "UserController",
+    "controllerMethod": "get",
+    "component": "UserComponent",
+    "method": "get",
+    "body": null,
+    "view": "AppUserView",
+    "purpose": "Retrieve one AppUser with its derived public fields.",
+    "permission": "same read scope as list",
+    "steps": [
+      "Validate positive id and active actor; retrieve or404.",
+      "Check object visibility, load required relationships/counters, map a detached DTO and redact sensitive fields."
+    ],
+    "repositories": [
+      "AppUserRepository.findById"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {},
+    "requestDto": "Op02RRequest",
+    "queryDto": "Op02RQuery"
+  },
+  {
+    "id": "02D",
+    "domain": "User",
+    "http": "POST",
+    "path": "/api/users/{id}/delete",
+    "controller": "UserController",
+    "controllerMethod": "delete",
+    "component": "UserComponent",
+    "method": "delete",
+    "body": {
+      "expectedVersion": 0,
+      "reason": "Remove unused fictional setup record"
+    },
+    "view": "NoContent",
+    "purpose": "Hard delete only if no operational or actor references anywhere. Otherwise deactivate using update; deny deactivation if assigned unresolved custody or sole active custodian, until reassigned. Never delete last active ADMIN.",
+    "permission": "ADMIN for setup; owner/HEAD for unused drafts; OFFICER for notification removal; immutable history never deletable",
+    "steps": [
+      "Resolve target and authorize; require expectedVersion for versioned rows.",
+      "Apply the exact entity deletion predicate in04; foreign-key references are checked with Specifications and constrained by database RESTRICT.",
+      "If allowed append a deletion audit containing original code and id, then physically delete; otherwise409 with allowed alternative.",
+      "For InventoryTransaction and AuditEvent always return409 IMMUTABLE_HISTORY without mutating data; no pretend successful deletion."
+    ],
+    "repositories": [
+      "AppUserRepository.findById",
+      "AppUserRepository.delete",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "DEPENDENCY_EXISTS",
+      "INVALID_STATE",
+      "VERSION_CONFLICT",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 204,
+    "query": {},
+    "requestDto": "Op02DRequest",
+    "queryDto": "Op02DQuery"
+  },
+  {
+    "id": "02U",
+    "domain": "User",
+    "http": "POST",
+    "path": "/api/users/{id}/update",
+    "controller": "UserController",
+    "controllerMethod": "update",
+    "component": "UserComponent",
+    "method": "update",
+    "body": {
+      "expectedVersion": 0,
+      "displayName": "Demo Custodian",
+      "role": "CUSTODIAN",
+      "departmentId": "{{departmentId}}",
+      "active": true,
+      "phoneE164": null,
+      "smsConsent": false
+    },
+    "view": "AppUserView",
+    "purpose": "Versioned update of permitted AppUser fields.",
+    "permission": "ADMIN setup/user role; self contact; owner/HEAD project/requirement; assigned CUSTODIAN resource metadata",
+    "steps": [
+      "Retrieve target, verify object-specific editor, expectedVersion and permitted lifecycle.",
+      "Prevent deleting/deactivating/demoting last active ADMIN. Role/department transfer is refused while user owns a nonterminal project, is a resource custodian or has unresolved allocation custody; reassign resource custody through its own officer command first.",
+      "Validate only the explicit mutable DTO fields; existing code/type/unit/owner are not implicitly replaced.",
+      "Only self or ADMIN may change contact; only self can grant consent, notice version OP_SMS_V1 and consentAt are server recorded. Role/department/active edits require ADMIN; never trust a role change from the ordinary self-contact DTO. Revocation clears consent flag/metadata and cancels queued sends at dispatch recheck.",
+      "Check active relationships and referential/deactivation constraints in02/04; requirement changes cancel pending requests and invalidate submitted planning approval.",
+      "Apply metadata change and append before/after audit atomically; return updated version."
+    ],
+    "repositories": [
+      "AppUserRepository.findById",
+      "AppUserRepository.save",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "VERSION_CONFLICT",
+      "DUPLICATE_RECORD",
+      "DEPENDENCY_EXISTS",
+      "INVALID_STATE",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 200,
+    "query": {},
+    "requestDto": "Op02URequest",
+    "queryDto": "Op02UQuery"
+  },
+  {
+    "id": "03C",
+    "domain": "Project",
+    "http": "POST",
+    "path": "/api/projects",
+    "controller": "ProjectController",
+    "controllerMethod": "create",
+    "component": "ProjectComponent",
+    "method": "create",
+    "body": {
+      "code": "WELCOME_26",
+      "name": "Welcome Workshop",
+      "description": "Fictional scenario",
+      "departmentId": "{{departmentId}}",
+      "ownerId": "{{memberId}}",
+      "startAt": "{{startA}}",
+      "endAt": "{{endA}}"
+    },
+    "view": "ProjectView",
+    "purpose": "Dated departmental activity with internal planning approval.",
+    "permission": "MEMBER owner or HEAD in own department",
+    "steps": [
+      "Resolve active department and owner, require owner in department and authorized actor.",
+      "Validate offset schedule, duration and unique code; force DRAFT, no client state override.",
+      "Save and audit the planning record."
+    ],
+    "repositories": [
+      "ProjectRepository.save",
+      "ProjectRepository.findById",
+      "ProjectRepository.findByCode",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "DUPLICATE_RECORD",
+      "INVALID_STATE",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 201,
+    "query": {},
+    "requestDto": "Op03CRequest",
+    "queryDto": "Op03CQuery"
+  },
+  {
+    "id": "03L",
+    "domain": "Project",
+    "http": "GET",
+    "path": "/api/projects",
+    "controller": "ProjectController",
+    "controllerMethod": "list",
+    "component": "ProjectComponent",
+    "method": "list",
+    "body": null,
+    "view": "Page<ProjectView>",
+    "purpose": "List visible projects with bounded filters.",
+    "permission": "authorized organization read; contact/audit/notification scope rules apply",
+    "steps": [
+      "Validate pagination and whitelist filter names/types; apply visibility restrictions in the query.",
+      "Run parameterized Specification query with stable id ascending sort; map within read transaction and redact contacts."
+    ],
+    "repositories": [
+      "ProjectRepository.findAll"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {
+      "departmentId": "optional exact/range filter",
+      "ownerId": "optional exact/range filter",
+      "status": "optional exact/range filter",
+      "from": "optional exact/range filter",
+      "to": "optional exact/range filter",
+      "page": "integer>=0 default0",
+      "size": "1..100 default20"
+    },
+    "requestDto": "Op03LRequest",
+    "queryDto": "Op03LQuery"
+  },
+  {
+    "id": "03R",
+    "domain": "Project",
+    "http": "GET",
+    "path": "/api/projects/{id}",
+    "controller": "ProjectController",
+    "controllerMethod": "get",
+    "component": "ProjectComponent",
+    "method": "get",
+    "body": null,
+    "view": "ProjectView",
+    "purpose": "Retrieve one Project with its derived public fields.",
+    "permission": "same read scope as list",
+    "steps": [
+      "Validate positive id and active actor; retrieve or404.",
+      "Check object visibility, load required relationships/counters, map a detached DTO and redact sensitive fields."
+    ],
+    "repositories": [
+      "ProjectRepository.findById"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {},
+    "requestDto": "Op03RRequest",
+    "queryDto": "Op03RQuery"
+  },
+  {
+    "id": "03D",
+    "domain": "Project",
+    "http": "POST",
+    "path": "/api/projects/{id}/delete",
+    "controller": "ProjectController",
+    "controllerMethod": "delete",
+    "component": "ProjectComponent",
+    "method": "delete",
+    "body": {
+      "expectedVersion": 0,
+      "reason": "Remove unused fictional setup record"
+    },
+    "view": "NoContent",
+    "purpose": "Hard delete only DRAFT with no requirements/allocations. Historical project uses cancel or completed archival; no cascading delete.",
+    "permission": "ADMIN for setup; owner/HEAD for unused drafts; OFFICER for notification removal; immutable history never deletable",
+    "steps": [
+      "Resolve target and authorize; require expectedVersion for versioned rows.",
+      "Apply the exact entity deletion predicate in04; foreign-key references are checked with Specifications and constrained by database RESTRICT.",
+      "If allowed append a deletion audit containing original code and id, then physically delete; otherwise409 with allowed alternative.",
+      "For InventoryTransaction and AuditEvent always return409 IMMUTABLE_HISTORY without mutating data; no pretend successful deletion."
+    ],
+    "repositories": [
+      "ProjectRepository.findById",
+      "ProjectRepository.delete",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "DEPENDENCY_EXISTS",
+      "INVALID_STATE",
+      "VERSION_CONFLICT",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 204,
+    "query": {},
+    "requestDto": "Op03DRequest",
+    "queryDto": "Op03DQuery"
+  },
+  {
+    "id": "03U",
+    "domain": "Project",
+    "http": "POST",
+    "path": "/api/projects/{id}/update",
+    "controller": "ProjectController",
+    "controllerMethod": "update",
+    "component": "ProjectComponent",
+    "method": "update",
+    "body": {
+      "expectedVersion": 0,
+      "name": "Welcome Workshop Revised",
+      "description": "Fictional revised description"
+    },
+    "view": "ProjectView",
+    "purpose": "Versioned update of permitted Project fields.",
+    "permission": "ADMIN setup/user role; self contact; owner/HEAD project/requirement; assigned CUSTODIAN resource metadata",
+    "steps": [
+      "Retrieve target, verify object-specific editor, expectedVersion and permitted lifecycle.",
+      "Validate only the explicit mutable DTO fields; existing code/type/unit/owner are not implicitly replaced.",
+      "Check active relationships and referential/deactivation constraints in02/04; requirement changes cancel pending requests and invalidate submitted planning approval.",
+      "Apply metadata change and append before/after audit atomically; return updated version."
+    ],
+    "repositories": [
+      "ProjectRepository.findById",
+      "ProjectRepository.save",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "VERSION_CONFLICT",
+      "DUPLICATE_RECORD",
+      "DEPENDENCY_EXISTS",
+      "INVALID_STATE",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 200,
+    "query": {},
+    "requestDto": "Op03URequest",
+    "queryDto": "Op03UQuery"
+  },
+  {
+    "id": "04C",
+    "domain": "Resource",
+    "http": "POST",
+    "path": "/api/resources",
+    "controller": "ResourceController",
+    "controllerMethod": "create",
+    "component": "ResourceComponent",
+    "method": "create",
+    "body": {
+      "code": "CORD_POOL",
+      "name": "Extension Cords",
+      "description": "Interchangeable fictional cords",
+      "type": "REUSABLE",
+      "category": "Equipment",
+      "unit": "piece",
+      "storageLocation": "Demo cabinet",
+      "controlBasis": "OWNED",
+      "authorizationNote": null,
+      "departmentId": "{{departmentId}}",
+      "custodianId": "{{custodianId}}"
+    },
+    "view": "ResourceView",
+    "purpose": "Pool of interchangeable whole units under organizational control.",
+    "permission": "assigned CUSTODIAN or OFFICER assigning an active custodian",
+    "steps": [
+      "Check resource control basis and authorization note, active department and active CUSTODIAN.",
+      "Create metadata with zero ledger stock; reject supplied quantity, writable condition totals or stock deltas.",
+      "Save and audit; actual opening stock requires RECEIPT."
+    ],
+    "repositories": [
+      "ResourceRepository.save",
+      "ResourceRepository.findById",
+      "ResourceRepository.findByCode",
+      "ResourceRepository.lockById",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "DUPLICATE_RECORD",
+      "INVALID_STATE",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 201,
+    "query": {},
+    "requestDto": "Op04CRequest",
+    "queryDto": "Op04CQuery"
+  },
+  {
+    "id": "04L",
+    "domain": "Resource",
+    "http": "GET",
+    "path": "/api/resources",
+    "controller": "ResourceController",
+    "controllerMethod": "list",
+    "component": "ResourceComponent",
+    "method": "list",
+    "body": null,
+    "view": "Page<ResourceView>",
+    "purpose": "List visible resources with bounded filters.",
+    "permission": "authorized organization read; contact/audit/notification scope rules apply",
+    "steps": [
+      "Validate pagination and whitelist filter names/types; apply visibility restrictions in the query.",
+      "Run parameterized Specification query with stable id ascending sort; map within read transaction and redact contacts."
+    ],
+    "repositories": [
+      "ResourceRepository.findAll",
+      "InventoryTransactionRepository.findByResource_IdOrderByIdAsc",
+      "AllocationRepository.findByRequirement_Resource_IdAndDecisionStatus"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {
+      "departmentId": "optional exact/range filter",
+      "custodianId": "optional exact/range filter",
+      "type": "optional exact/range filter",
+      "active": "optional exact/range filter",
+      "category": "optional exact/range filter",
+      "q": "optional exact/range filter",
+      "page": "integer>=0 default0",
+      "size": "1..100 default20"
+    },
+    "requestDto": "Op04LRequest",
+    "queryDto": "Op04LQuery"
+  },
+  {
+    "id": "04R",
+    "domain": "Resource",
+    "http": "GET",
+    "path": "/api/resources/{id}",
+    "controller": "ResourceController",
+    "controllerMethod": "get",
+    "component": "ResourceComponent",
+    "method": "get",
+    "body": null,
+    "view": "ResourceView",
+    "purpose": "Retrieve one Resource with its derived public fields.",
+    "permission": "same read scope as list",
+    "steps": [
+      "Validate positive id and active actor; retrieve or404.",
+      "Check object visibility, load required relationships/counters, map a detached DTO and redact sensitive fields."
+    ],
+    "repositories": [
+      "ResourceRepository.findById",
+      "InventoryTransactionRepository.findByResource_IdOrderByIdAsc",
+      "AllocationRepository.findByRequirement_Resource_IdAndDecisionStatus"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {},
+    "requestDto": "Op04RRequest",
+    "queryDto": "Op04RQuery"
+  },
+  {
+    "id": "04D",
+    "domain": "Resource",
+    "http": "POST",
+    "path": "/api/resources/{id}/delete",
+    "controller": "ResourceController",
+    "controllerMethod": "delete",
+    "component": "ResourceComponent",
+    "method": "delete",
+    "body": {
+      "expectedVersion": 0,
+      "reason": "Remove unused fictional setup record"
+    },
+    "view": "NoContent",
+    "purpose": "Hard delete only with no requirements, allocations or transactions. Archive requires no pending/active unissued commitment or outstanding custody; keep ledger forever in demo.",
+    "permission": "ADMIN for setup; owner/HEAD for unused drafts; OFFICER for notification removal; immutable history never deletable",
+    "steps": [
+      "Resolve target and authorize; require expectedVersion for versioned rows.",
+      "Apply the exact entity deletion predicate in04; foreign-key references are checked with Specifications and constrained by database RESTRICT.",
+      "If allowed append a deletion audit containing original code and id, then physically delete; otherwise409 with allowed alternative.",
+      "For InventoryTransaction and AuditEvent always return409 IMMUTABLE_HISTORY without mutating data; no pretend successful deletion."
+    ],
+    "repositories": [
+      "ResourceRepository.findById",
+      "ResourceRepository.delete",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "DEPENDENCY_EXISTS",
+      "INVALID_STATE",
+      "VERSION_CONFLICT",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 204,
+    "query": {},
+    "requestDto": "Op04DRequest",
+    "queryDto": "Op04DQuery"
+  },
+  {
+    "id": "04U",
+    "domain": "Resource",
+    "http": "POST",
+    "path": "/api/resources/{id}/update",
+    "controller": "ResourceController",
+    "controllerMethod": "update",
+    "component": "ResourceComponent",
+    "method": "update",
+    "body": {
+      "expectedVersion": 0,
+      "name": "Extension Cords",
+      "description": "Checked pool",
+      "category": "Equipment",
+      "storageLocation": "Demo cabinet B",
+      "departmentId": "{{departmentId}}",
+      "custodianId": "{{custodianId}}",
+      "active": true,
+      "reason": "Cabinet label changed"
+    },
+    "view": "ResourceView",
+    "purpose": "Versioned update of permitted Resource fields.",
+    "permission": "ADMIN setup/user role; self contact; owner/HEAD project/requirement; assigned CUSTODIAN resource metadata",
+    "steps": [
+      "Retrieve target, verify object-specific editor, expectedVersion and permitted lifecycle.",
+      "Acquire resource lock; custodian reassignment is OFFICER only with reason, and cannot rewrite existing allocation recipients.",
+      "Validate only the explicit mutable DTO fields; existing code/type/unit/owner are not implicitly replaced.",
+      "Check active relationships and referential/deactivation constraints in02/04; requirement changes cancel pending requests and invalidate submitted planning approval.",
+      "Apply metadata change and append before/after audit atomically; return updated version."
+    ],
+    "repositories": [
+      "ResourceRepository.findById",
+      "ResourceRepository.save",
+      "AuditEventRepository.save",
+      "ResourceRepository.lockById"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "VERSION_CONFLICT",
+      "DUPLICATE_RECORD",
+      "DEPENDENCY_EXISTS",
+      "INVALID_STATE",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 200,
+    "query": {},
+    "requestDto": "Op04URequest",
+    "queryDto": "Op04UQuery"
+  },
+  {
+    "id": "05C",
+    "domain": "Requirement",
+    "http": "POST",
+    "path": "/api/requirements",
+    "controller": "RequirementController",
+    "controllerMethod": "create",
+    "component": "RequirementComponent",
+    "method": "create",
+    "body": {
+      "projectId": "{{projectId}}",
+      "resourceId": "{{resourceId}}",
+      "quantity": 6,
+      "startAt": "{{startA}}",
+      "endAt": "{{endA}}",
+      "priority": "NORMAL",
+      "notes": "Fictional planning requirement"
+    },
+    "view": "ResourceRequirementView",
+    "purpose": "Demand for one resource during one project window.",
+    "permission": "project owner or HEAD in own department",
+    "steps": [
+      "Read project/resource IDs, lock resource then re-read project; validate owner/head and DRAFT/SUBMITTED project.",
+      "Require active resource, one project-resource pair, quantity cap and interval within project.",
+      "Persist ACTIVE demand; if project was SUBMITTED return it to DRAFT and audit both changes."
+    ],
+    "repositories": [
+      "ResourceRequirementRepository.save",
+      "ResourceRequirementRepository.findById",
+      "ResourceRequirementRepository.findByProject_IdOrderByIdAsc",
+      "ResourceRequirementRepository.findByResource_IdAndStatus",
+      "ResourceRepository.lockById",
+      "InventoryTransactionRepository.findByResource_IdOrderByIdAsc",
+      "AllocationRepository.findByRequirement_Resource_IdAndDecisionStatus",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "DUPLICATE_RECORD",
+      "INVALID_STATE",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 201,
+    "query": {},
+    "requestDto": "Op05CRequest",
+    "queryDto": "Op05CQuery"
+  },
+  {
+    "id": "05L",
+    "domain": "Requirement",
+    "http": "GET",
+    "path": "/api/requirements",
+    "controller": "RequirementController",
+    "controllerMethod": "list",
+    "component": "RequirementComponent",
+    "method": "list",
+    "body": null,
+    "view": "Page<ResourceRequirementView>",
+    "purpose": "List visible requirements with bounded filters.",
+    "permission": "authorized organization read; contact/audit/notification scope rules apply",
+    "steps": [
+      "Validate pagination and whitelist filter names/types; apply visibility restrictions in the query.",
+      "Run parameterized Specification query with stable id ascending sort; map within read transaction and redact contacts."
+    ],
+    "repositories": [
+      "ResourceRequirementRepository.findAll",
+      "InventoryTransactionRepository.findByResource_IdOrderByIdAsc",
+      "AllocationRepository.findByRequirement_Resource_IdAndDecisionStatus"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {
+      "projectId": "optional exact/range filter",
+      "resourceId": "optional exact/range filter",
+      "status": "optional exact/range filter",
+      "page": "integer>=0 default0",
+      "size": "1..100 default20"
+    },
+    "requestDto": "Op05LRequest",
+    "queryDto": "Op05LQuery"
+  },
+  {
+    "id": "05R",
+    "domain": "Requirement",
+    "http": "GET",
+    "path": "/api/requirements/{id}",
+    "controller": "RequirementController",
+    "controllerMethod": "get",
+    "component": "RequirementComponent",
+    "method": "get",
+    "body": null,
+    "view": "ResourceRequirementView",
+    "purpose": "Retrieve one ResourceRequirement with its derived public fields.",
+    "permission": "same read scope as list",
+    "steps": [
+      "Validate positive id and active actor; retrieve or404.",
+      "Check object visibility, load required relationships/counters, map a detached DTO and redact sensitive fields."
+    ],
+    "repositories": [
+      "ResourceRequirementRepository.findById",
+      "InventoryTransactionRepository.findByResource_IdOrderByIdAsc",
+      "AllocationRepository.findByRequirement_Resource_IdAndDecisionStatus"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {},
+    "requestDto": "Op05RRequest",
+    "queryDto": "Op05RQuery"
+  },
+  {
+    "id": "05D",
+    "domain": "Requirement",
+    "http": "POST",
+    "path": "/api/requirements/{id}/delete",
+    "controller": "RequirementController",
+    "controllerMethod": "delete",
+    "component": "RequirementComponent",
+    "method": "delete",
+    "body": {
+      "expectedVersion": 0,
+      "reason": "Remove unused fictional setup record"
+    },
+    "view": "NoContent",
+    "purpose": "Hard delete only when no allocation or movement references. Otherwise withdrawal through update with reason, only after all operational obligations are resolved.",
+    "permission": "ADMIN for setup; owner/HEAD for unused drafts; OFFICER for notification removal; immutable history never deletable",
+    "steps": [
+      "Resolve target and authorize; require expectedVersion for versioned rows.",
+      "Apply the exact entity deletion predicate in04; foreign-key references are checked with Specifications and constrained by database RESTRICT.",
+      "If allowed append a deletion audit containing original code and id, then physically delete; otherwise409 with allowed alternative.",
+      "For InventoryTransaction and AuditEvent always return409 IMMUTABLE_HISTORY without mutating data; no pretend successful deletion."
+    ],
+    "repositories": [
+      "ResourceRequirementRepository.findById",
+      "ResourceRequirementRepository.delete",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "DEPENDENCY_EXISTS",
+      "INVALID_STATE",
+      "VERSION_CONFLICT",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 204,
+    "query": {},
+    "requestDto": "Op05DRequest",
+    "queryDto": "Op05DQuery"
+  },
+  {
+    "id": "05U",
+    "domain": "Requirement",
+    "http": "POST",
+    "path": "/api/requirements/{id}/update",
+    "controller": "RequirementController",
+    "controllerMethod": "update",
+    "component": "RequirementComponent",
+    "method": "update",
+    "body": {
+      "expectedVersion": 0,
+      "quantity": 6,
+      "startAt": "{{startA}}",
+      "endAt": "{{endA}}",
+      "priority": "HIGH",
+      "notes": "Updated need",
+      "status": "ACTIVE",
+      "reason": "Priority clarified"
+    },
+    "view": "ResourceRequirementView",
+    "purpose": "Versioned update of permitted ResourceRequirement fields.",
+    "permission": "ADMIN setup/user role; self contact; owner/HEAD project/requirement; assigned CUSTODIAN resource metadata",
+    "steps": [
+      "Retrieve target, verify object-specific editor, expectedVersion and permitted lifecycle.",
+      "Distinguish withdrawal from demand edits: quantity/window/priority/notes edits require DRAFT/SUBMITTED project and no approved allocation or movement; WITHDRAWN is allowed after all history is operationally resolved, without deleting it. Cancel REQUESTED rows and release no stock implicitly. projectId/resourceId cannot change after creation.",
+      "Validate only the explicit mutable DTO fields; existing code/type/unit/owner are not implicitly replaced.",
+      "Check active relationships and referential/deactivation constraints in02/04; requirement changes cancel pending requests and invalidate submitted planning approval.",
+      "Apply metadata change and append before/after audit atomically; return updated version."
+    ],
+    "repositories": [
+      "ResourceRequirementRepository.findById",
+      "ResourceRequirementRepository.save",
+      "AuditEventRepository.save",
+      "ResourceRepository.lockById"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "VERSION_CONFLICT",
+      "DUPLICATE_RECORD",
+      "DEPENDENCY_EXISTS",
+      "INVALID_STATE",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 200,
+    "query": {},
+    "requestDto": "Op05URequest",
+    "queryDto": "Op05UQuery"
+  },
+  {
+    "id": "06C",
+    "domain": "Allocation",
+    "http": "POST",
+    "path": "/api/allocations",
+    "controller": "AllocationController",
+    "controllerMethod": "request",
+    "component": "AllocationComponent",
+    "method": "request",
+    "body": {
+      "requirementId": "{{requirementId}}",
+      "quantity": 6,
+      "recipientId": "{{memberId}}",
+      "requestKey": "{{requestKey}}"
+    },
+    "view": "AllocationView",
+    "purpose": "One requested quantity and its immutable approved schedule/recipient.",
+    "permission": "project owner or HEAD in own department; recipient active in that department",
+    "steps": [
+      "Canonicalize requestKey payload; resolve requirement/project/resource and lock resource then requirement.",
+      "Check identical-key replay first; different hash409. Verify active demand and APPROVED/IN_PROGRESS project, authorized requester and same-department recipient.",
+      "Require endAt > Clock.instant(); a current interval is allowed, a wholly past commitment is not.",
+      "Require quantity <= unallocated requirement demand; REQUESTED allocations do not reserve stock or count as approved coverage.",
+      "Copy requirement interval, fix requester/recipient, set REQUESTED, save and audit; do not autoapprove."
+    ],
+    "repositories": [
+      "AllocationRepository.save",
+      "AllocationRepository.findById",
+      "AllocationRepository.findByRequestKey",
+      "AllocationRepository.findByRequirement_Resource_IdAndDecisionStatus",
+      "AllocationRepository.findByRequirement_Project_Id",
+      "AllocationRepository.findByRequirement_Id",
+      "AllocationRepository.findOverlappingApproved",
+      "ResourceRepository.lockById",
+      "InventoryTransactionRepository.findByResource_IdOrderByIdAsc",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "DUPLICATE_RECORD",
+      "INVALID_STATE",
+      "RETRY_REQUIRED",
+      "IDEMPOTENCY_KEY_REUSED",
+      "RESOURCE_TYPE_MISMATCH",
+      "RESOURCE_OVERALLOCATION",
+      "REQUIREMENT_COVERAGE_EXCEEDED",
+      "INSUFFICIENT_PHYSICAL_STOCK",
+      "REVERSAL_DEPENDENCY_CONFLICT"
+    ],
+    "transaction": "WRITE",
+    "success": 201,
+    "query": {},
+    "requestDto": "Op06CRequest",
+    "queryDto": "Op06CQuery"
+  },
+  {
+    "id": "06L",
+    "domain": "Allocation",
+    "http": "GET",
+    "path": "/api/allocations",
+    "controller": "AllocationController",
+    "controllerMethod": "list",
+    "component": "AllocationComponent",
+    "method": "list",
+    "body": null,
+    "view": "Page<AllocationView>",
+    "purpose": "List visible allocations with bounded filters.",
+    "permission": "authorized organization read; contact/audit/notification scope rules apply",
+    "steps": [
+      "Validate pagination and whitelist filter names/types; apply visibility restrictions in the query.",
+      "Run parameterized Specification query with stable id ascending sort; map within read transaction and redact contacts."
+    ],
+    "repositories": [
+      "AllocationRepository.findAll",
+      "InventoryTransactionRepository.findByResource_IdOrderByIdAsc",
+      "AllocationRepository.findByRequirement_Resource_IdAndDecisionStatus"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {
+      "projectId": "optional exact/range filter",
+      "resourceId": "optional exact/range filter",
+      "recipientId": "optional exact/range filter",
+      "decisionStatus": "optional exact/range filter",
+      "page": "integer>=0 default0",
+      "size": "1..100 default20"
+    },
+    "requestDto": "Op06LRequest",
+    "queryDto": "Op06LQuery"
+  },
+  {
+    "id": "06R",
+    "domain": "Allocation",
+    "http": "GET",
+    "path": "/api/allocations/{id}",
+    "controller": "AllocationController",
+    "controllerMethod": "get",
+    "component": "AllocationComponent",
+    "method": "get",
+    "body": null,
+    "view": "AllocationView",
+    "purpose": "Retrieve one Allocation with its derived public fields.",
+    "permission": "same read scope as list",
+    "steps": [
+      "Validate positive id and active actor; retrieve or404.",
+      "Check object visibility, load required relationships/counters, map a detached DTO and redact sensitive fields."
+    ],
+    "repositories": [
+      "AllocationRepository.findById",
+      "InventoryTransactionRepository.findByResource_IdOrderByIdAsc",
+      "AllocationRepository.findByRequirement_Resource_IdAndDecisionStatus"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {},
+    "requestDto": "Op06RRequest",
+    "queryDto": "Op06RQuery"
+  },
+  {
+    "id": "06D",
+    "domain": "Allocation",
+    "http": "POST",
+    "path": "/api/allocations/{id}/delete",
+    "controller": "AllocationController",
+    "controllerMethod": "delete",
+    "component": "AllocationComponent",
+    "method": "delete",
+    "body": {
+      "expectedVersion": 0,
+      "reason": "Remove unused fictional setup record"
+    },
+    "view": "NoContent",
+    "purpose": "Hard delete only REQUESTED by requester or HEAD/OFFICER, with no movements or notifications; append audit. Approved/rejected/cancelled history retained;409 directs cancel/release.",
+    "permission": "ADMIN for setup; owner/HEAD for unused drafts; OFFICER for notification removal; immutable history never deletable",
+    "steps": [
+      "Resolve target and authorize; require expectedVersion for versioned rows.",
+      "Apply the exact entity deletion predicate in04; foreign-key references are checked with Specifications and constrained by database RESTRICT.",
+      "If allowed append a deletion audit containing original code and id, then physically delete; otherwise409 with allowed alternative.",
+      "For InventoryTransaction and AuditEvent always return409 IMMUTABLE_HISTORY without mutating data; no pretend successful deletion."
+    ],
+    "repositories": [
+      "AllocationRepository.findById",
+      "AllocationRepository.delete",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "DEPENDENCY_EXISTS",
+      "INVALID_STATE",
+      "VERSION_CONFLICT",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 204,
+    "query": {},
+    "requestDto": "Op06DRequest",
+    "queryDto": "Op06DQuery"
+  },
+  {
+    "id": "07C",
+    "domain": "InventoryTransaction",
+    "http": "POST",
+    "path": "/api/inventory-transactions",
+    "controller": "InventoryTransactionController",
+    "controllerMethod": "record",
+    "component": "InventoryTransactionComponent",
+    "method": "record",
+    "body": {
+      "resourceId": "{{resourceId}}",
+      "allocationId": null,
+      "type": "RECEIPT",
+      "quantity": 10,
+      "inspection": null,
+      "reason": "OPENING_COUNT fictional stock",
+      "commandKey": "{{commandKey}}",
+      "reversalOfId": null,
+      "correctionReferenceId": null
+    },
+    "view": "InventoryTransactionView",
+    "purpose": "Immutable physical/custody delta and correction event.",
+    "permission": "assigned CUSTODIAN; OFFICER for recount/reversal",
+    "steps": [
+      "Resolve pool and optional allocation; take resource lock, canonicalize commandKey/hash and return identical replay before effect application.",
+      "Dispatch the declared type through the exact typed movement rules in02; verify operator and required/forbidden references and inspection.",
+      "Rebuild ledger balances and allocation counters; check nonnegative physical/custody balances, eligible interval/state and type-specific reservation rules.",
+      "Derive signed effect vector, increment resource revision, flush and capture resourceRevisionAfter; insert immutable transaction and append audit in the same transaction.",
+      "Return derived balances and impacted commitment IDs; observed damage/loss may create a reported future planning deficit."
+    ],
+    "repositories": [
+      "InventoryTransactionRepository.save",
+      "InventoryTransactionRepository.findById",
+      "InventoryTransactionRepository.findByResource_IdOrderByIdAsc",
+      "InventoryTransactionRepository.findByResource_IdAndCommandKey",
+      "InventoryTransactionRepository.findByReversalOf_Id",
+      "InventoryTransactionRepository.findByAllocation_IdOrderByIdAsc",
+      "ResourceRepository.lockById",
+      "AllocationRepository.findByRequirement_Resource_IdAndDecisionStatus",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "DUPLICATE_RECORD",
+      "INVALID_STATE",
+      "RETRY_REQUIRED",
+      "IDEMPOTENCY_KEY_REUSED",
+      "RESOURCE_TYPE_MISMATCH",
+      "RESOURCE_OVERALLOCATION",
+      "REQUIREMENT_COVERAGE_EXCEEDED",
+      "INSUFFICIENT_PHYSICAL_STOCK",
+      "REVERSAL_DEPENDENCY_CONFLICT"
+    ],
+    "transaction": "WRITE",
+    "success": 201,
+    "query": {},
+    "requestDto": "Op07CRequest",
+    "queryDto": "Op07CQuery"
+  },
+  {
+    "id": "07L",
+    "domain": "InventoryTransaction",
+    "http": "GET",
+    "path": "/api/inventory-transactions",
+    "controller": "InventoryTransactionController",
+    "controllerMethod": "list",
+    "component": "InventoryTransactionComponent",
+    "method": "list",
+    "body": null,
+    "view": "Page<InventoryTransactionView>",
+    "purpose": "List visible inventory-transactions with bounded filters.",
+    "permission": "authorized organization read; contact/audit/notification scope rules apply",
+    "steps": [
+      "Validate pagination and whitelist filter names/types; apply visibility restrictions in the query.",
+      "Run parameterized Specification query with stable id ascending sort; map within read transaction and redact contacts."
+    ],
+    "repositories": [
+      "InventoryTransactionRepository.findAll"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {
+      "resourceId": "optional exact/range filter",
+      "allocationId": "optional exact/range filter",
+      "type": "optional exact/range filter",
+      "from": "optional exact/range filter",
+      "to": "optional exact/range filter",
+      "page": "integer>=0 default0",
+      "size": "1..100 default20"
+    },
+    "requestDto": "Op07LRequest",
+    "queryDto": "Op07LQuery"
+  },
+  {
+    "id": "07R",
+    "domain": "InventoryTransaction",
+    "http": "GET",
+    "path": "/api/inventory-transactions/{id}",
+    "controller": "InventoryTransactionController",
+    "controllerMethod": "get",
+    "component": "InventoryTransactionComponent",
+    "method": "get",
+    "body": null,
+    "view": "InventoryTransactionView",
+    "purpose": "Retrieve one InventoryTransaction with its derived public fields.",
+    "permission": "same read scope as list",
+    "steps": [
+      "Validate positive id and active actor; retrieve or404.",
+      "Check object visibility, load required relationships/counters, map a detached DTO and redact sensitive fields."
+    ],
+    "repositories": [
+      "InventoryTransactionRepository.findById"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {},
+    "requestDto": "Op07RRequest",
+    "queryDto": "Op07RQuery"
+  },
+  {
+    "id": "07D",
+    "domain": "InventoryTransaction",
+    "http": "POST",
+    "path": "/api/inventory-transactions/{id}/delete",
+    "controller": "InventoryTransactionController",
+    "controllerMethod": "delete",
+    "component": "InventoryTransactionComponent",
+    "method": "delete",
+    "body": {
+      "expectedVersion": 0,
+      "reason": "Remove unused fictional setup record"
+    },
+    "view": "NoContent",
+    "purpose": "Never physically delete a posted movement. Delete endpoint returns409 IMMUTABLE_HISTORY with reversal route. No permission to clear the ledger through REST.",
+    "permission": "ADMIN for setup; owner/HEAD for unused drafts; OFFICER for notification removal; immutable history never deletable",
+    "steps": [
+      "Resolve target and authorize; require expectedVersion for versioned rows.",
+      "Apply the exact entity deletion predicate in04; foreign-key references are checked with Specifications and constrained by database RESTRICT.",
+      "If allowed append a deletion audit containing original code and id, then physically delete; otherwise409 with allowed alternative.",
+      "For InventoryTransaction and AuditEvent always return409 IMMUTABLE_HISTORY without mutating data; no pretend successful deletion."
+    ],
+    "repositories": [
+      "InventoryTransactionRepository.findById",
+      "InventoryTransactionRepository.delete",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "DEPENDENCY_EXISTS",
+      "INVALID_STATE",
+      "VERSION_CONFLICT",
+      "RETRY_REQUIRED",
+      "IMMUTABLE_HISTORY"
+    ],
+    "transaction": "WRITE",
+    "success": 204,
+    "query": {},
+    "requestDto": "Op07DRequest",
+    "queryDto": "Op07DQuery",
+    "alwaysRefuses": true
+  },
+  {
+    "id": "08C",
+    "domain": "Notification",
+    "http": "POST",
+    "path": "/api/notifications",
+    "controller": "NotificationController",
+    "controllerMethod": "enqueueManual",
+    "component": "NotificationComponent",
+    "method": "enqueueManual",
+    "body": {
+      "allocationId": "{{allocationId}}",
+      "kind": "RETURN_DUE"
+    },
+    "view": "NotificationLogView",
+    "purpose": "Durable return reminder event/outbox and provider outcome.",
+    "permission": "assigned CUSTODIAN or OFFICER; server recomputes due eligibility",
+    "steps": [
+      "Resolve allocation and recipient; require authorized actor, reusable outstanding custody and requested kind currently in reminder window.",
+      "Compute unique eventKey from kind/allocation/endAt/recipient. Existing key returns existing view200, never a second event.",
+      "Read current consent/contact; create QUEUED with nextAttemptAt now or SKIPPED with reason, append audit, never call Twilio here."
+    ],
+    "repositories": [
+      "NotificationLogRepository.save",
+      "NotificationLogRepository.findById",
+      "NotificationLogRepository.findByEventKey",
+      "NotificationLogRepository.findDue",
+      "NotificationLogRepository.lockById",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "DUPLICATE_RECORD",
+      "INVALID_STATE",
+      "RETRY_REQUIRED",
+      "NOTIFICATION_NOT_ELIGIBLE"
+    ],
+    "transaction": "WRITE",
+    "success": 201,
+    "query": {},
+    "requestDto": "Op08CRequest",
+    "queryDto": "Op08CQuery"
+  },
+  {
+    "id": "08L",
+    "domain": "Notification",
+    "http": "GET",
+    "path": "/api/notifications",
+    "controller": "NotificationController",
+    "controllerMethod": "list",
+    "component": "NotificationComponent",
+    "method": "list",
+    "body": null,
+    "view": "Page<NotificationLogView>",
+    "purpose": "List visible notifications with bounded filters.",
+    "permission": "authorized organization read; contact/audit/notification scope rules apply",
+    "steps": [
+      "Validate pagination and whitelist filter names/types; apply visibility restrictions in the query.",
+      "Run parameterized Specification query with stable id ascending sort; map within read transaction and redact contacts."
+    ],
+    "repositories": [
+      "NotificationLogRepository.findAll"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {
+      "allocationId": "optional exact/range filter",
+      "recipientId": "optional exact/range filter",
+      "status": "optional exact/range filter",
+      "kind": "optional exact/range filter",
+      "page": "integer>=0 default0",
+      "size": "1..100 default20"
+    },
+    "requestDto": "Op08LRequest",
+    "queryDto": "Op08LQuery"
+  },
+  {
+    "id": "08R",
+    "domain": "Notification",
+    "http": "GET",
+    "path": "/api/notifications/{id}",
+    "controller": "NotificationController",
+    "controllerMethod": "get",
+    "component": "NotificationComponent",
+    "method": "get",
+    "body": null,
+    "view": "NotificationLogView",
+    "purpose": "Retrieve one NotificationLog with its derived public fields.",
+    "permission": "same read scope as list",
+    "steps": [
+      "Validate positive id and active actor; retrieve or404.",
+      "Check object visibility, load required relationships/counters, map a detached DTO and redact sensitive fields."
+    ],
+    "repositories": [
+      "NotificationLogRepository.findById"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {},
+    "requestDto": "Op08RRequest",
+    "queryDto": "Op08RQuery"
+  },
+  {
+    "id": "08D",
+    "domain": "Notification",
+    "http": "POST",
+    "path": "/api/notifications/{id}/delete",
+    "controller": "NotificationController",
+    "controllerMethod": "delete",
+    "component": "NotificationComponent",
+    "method": "delete",
+    "body": {
+      "expectedVersion": 0,
+      "reason": "Remove unused fictional setup record"
+    },
+    "view": "NoContent",
+    "purpose": "Hard delete only unattempted QUEUED/SKIPPED/CANCELLED rows with attemptCount0, by OFFICER/ADMIN; record AuditEvent. Otherwise409 IMMUTABLE_HISTORY. Cancellation of queued reminder is explicit and prevents sending.",
+    "permission": "ADMIN for setup; owner/HEAD for unused drafts; OFFICER for notification removal; immutable history never deletable",
+    "steps": [
+      "Resolve target and authorize; require expectedVersion for versioned rows.",
+      "Apply the exact entity deletion predicate in04; foreign-key references are checked with Specifications and constrained by database RESTRICT.",
+      "If allowed append a deletion audit containing original code and id, then physically delete; otherwise409 with allowed alternative.",
+      "For InventoryTransaction and AuditEvent always return409 IMMUTABLE_HISTORY without mutating data; no pretend successful deletion."
+    ],
+    "repositories": [
+      "NotificationLogRepository.findById",
+      "NotificationLogRepository.delete",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "DEPENDENCY_EXISTS",
+      "INVALID_STATE",
+      "VERSION_CONFLICT",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 204,
+    "query": {},
+    "requestDto": "Op08DRequest",
+    "queryDto": "Op08DQuery"
+  },
+  {
+    "id": "09C",
+    "domain": "Audit",
+    "http": "POST",
+    "path": "/api/audit-events",
+    "controller": "AuditController",
+    "controllerMethod": "appendNote",
+    "component": "AuditComponent",
+    "method": "appendNote",
+    "body": {
+      "targetType": "Project",
+      "targetId": "{{projectId}}",
+      "reason": "Fictional planning note"
+    },
+    "view": "AuditEventView",
+    "purpose": "Append-only actor/action/change record including non-stock decisions.",
+    "permission": "OFFICER/ADMIN; NOTE only through public create",
+    "steps": [
+      "Check OFFICER/ADMIN and restrict public action to NOTE.",
+      "Resolve allowlisted target, generate targetSummary/requestId and reject supplied before/after/actor/time fields.",
+      "Persist immutable note with reason; do not recursively audit the AuditEvent insertion."
+    ],
+    "repositories": [
+      "AuditEventRepository.save",
+      "AuditEventRepository.findById",
+      "AuditEventRepository.findByTargetTypeAndTargetIdOrderByIdAsc"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "DUPLICATE_RECORD",
+      "INVALID_STATE",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 201,
+    "query": {},
+    "requestDto": "Op09CRequest",
+    "queryDto": "Op09CQuery"
+  },
+  {
+    "id": "09L",
+    "domain": "Audit",
+    "http": "GET",
+    "path": "/api/audit-events",
+    "controller": "AuditController",
+    "controllerMethod": "list",
+    "component": "AuditComponent",
+    "method": "list",
+    "body": null,
+    "view": "Page<AuditEventView>",
+    "purpose": "List visible audit-events with bounded filters.",
+    "permission": "authorized organization read; contact/audit/notification scope rules apply",
+    "steps": [
+      "Validate pagination and whitelist filter names/types; apply visibility restrictions in the query.",
+      "Run parameterized Specification query with stable id ascending sort; map within read transaction and redact contacts."
+    ],
+    "repositories": [
+      "AuditEventRepository.findAll"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {
+      "targetType": "optional exact/range filter",
+      "targetId": "optional exact/range filter",
+      "from": "optional exact/range filter",
+      "to": "optional exact/range filter",
+      "page": "integer>=0 default0",
+      "size": "1..100 default20"
+    },
+    "requestDto": "Op09LRequest",
+    "queryDto": "Op09LQuery"
+  },
+  {
+    "id": "09R",
+    "domain": "Audit",
+    "http": "GET",
+    "path": "/api/audit-events/{id}",
+    "controller": "AuditController",
+    "controllerMethod": "get",
+    "component": "AuditComponent",
+    "method": "get",
+    "body": null,
+    "view": "AuditEventView",
+    "purpose": "Retrieve one AuditEvent with its derived public fields.",
+    "permission": "same read scope as list",
+    "steps": [
+      "Validate positive id and active actor; retrieve or404.",
+      "Check object visibility, load required relationships/counters, map a detached DTO and redact sensitive fields."
+    ],
+    "repositories": [
+      "AuditEventRepository.findById"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {},
+    "requestDto": "Op09RRequest",
+    "queryDto": "Op09RQuery"
+  },
+  {
+    "id": "09D",
+    "domain": "Audit",
+    "http": "POST",
+    "path": "/api/audit-events/{id}/delete",
+    "controller": "AuditController",
+    "controllerMethod": "delete",
+    "component": "AuditComponent",
+    "method": "delete",
+    "body": {
+      "expectedVersion": 0,
+      "reason": "Remove unused fictional setup record"
+    },
+    "view": "NoContent",
+    "purpose": "Never physically delete audit history. Delete endpoint returns409 IMMUTABLE_HISTORY. A correction is a new NOTE referencing the original id in its reason, not editing the original.",
+    "permission": "ADMIN for setup; owner/HEAD for unused drafts; OFFICER for notification removal; immutable history never deletable",
+    "steps": [
+      "Resolve target and authorize; require expectedVersion for versioned rows.",
+      "Apply the exact entity deletion predicate in04; foreign-key references are checked with Specifications and constrained by database RESTRICT.",
+      "If allowed append a deletion audit containing original code and id, then physically delete; otherwise409 with allowed alternative.",
+      "For InventoryTransaction and AuditEvent always return409 IMMUTABLE_HISTORY without mutating data; no pretend successful deletion."
+    ],
+    "repositories": [
+      "AuditEventRepository.findById",
+      "AuditEventRepository.delete"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "DEPENDENCY_EXISTS",
+      "INVALID_STATE",
+      "VERSION_CONFLICT",
+      "RETRY_REQUIRED",
+      "IMMUTABLE_HISTORY"
+    ],
+    "transaction": "WRITE",
+    "success": 204,
+    "query": {},
+    "requestDto": "Op09DRequest",
+    "queryDto": "Op09DQuery",
+    "alwaysRefuses": true
+  },
+  {
+    "id": "P01",
+    "domain": "Project",
+    "http": "POST",
+    "path": "/api/projects/{id}/submit",
+    "controller": "ProjectController",
+    "controllerMethod": "submit",
+    "component": "ProjectComponent",
+    "method": "submit",
+    "body": {
+      "expectedVersion": 0,
+      "reason": "Fictional internal planning decision"
+    },
+    "view": "ProjectView",
+    "purpose": "Move internal project to SUBMITTED.",
+    "permission": "owner/HEAD",
+    "steps": [
+      "Resolve actor/project and relevant resource set; acquire locks in prescribed order and re-read version/state.",
+      "Require DRAFT, at least one active valid requirement and all schedules within project.",
+      "Set target state, save project and related release decisions, increment affected resource revisions, append audits; commit all changes together."
+    ],
+    "repositories": [
+      "ProjectRepository.findById",
+      "ProjectRepository.save",
+      "ResourceRequirementRepository.findByProject_IdOrderByIdAsc",
+      "AllocationRepository.findByRequirement_Project_Id",
+      "ResourceRepository.lockById",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "INVALID_STATE",
+      "VERSION_CONFLICT",
+      "RESOURCE_OVERALLOCATION",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 200,
+    "query": {},
+    "requestDto": "OpP01Request",
+    "queryDto": "OpP01Query"
+  },
+  {
+    "id": "P02",
+    "domain": "Project",
+    "http": "POST",
+    "path": "/api/projects/{id}/approve",
+    "controller": "ProjectController",
+    "controllerMethod": "approve",
+    "component": "ProjectComponent",
+    "method": "approve",
+    "body": {
+      "expectedVersion": 0,
+      "reason": "Fictional internal planning decision"
+    },
+    "view": "ProjectView",
+    "purpose": "Move internal project to APPROVED.",
+    "permission": "OFFICER",
+    "steps": [
+      "Resolve actor/project and relevant resource set; acquire locks in prescribed order and re-read version/state.",
+      "Require SUBMITTED; internal planning approval does not approve university funding or allocate inventory.",
+      "Set target state, save project and related release decisions, increment affected resource revisions, append audits; commit all changes together."
+    ],
+    "repositories": [
+      "ProjectRepository.findById",
+      "ProjectRepository.save",
+      "ResourceRequirementRepository.findByProject_IdOrderByIdAsc",
+      "AllocationRepository.findByRequirement_Project_Id",
+      "ResourceRepository.lockById",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "INVALID_STATE",
+      "VERSION_CONFLICT",
+      "RESOURCE_OVERALLOCATION",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 200,
+    "query": {},
+    "requestDto": "OpP02Request",
+    "queryDto": "OpP02Query"
+  },
+  {
+    "id": "P03",
+    "domain": "Project",
+    "http": "POST",
+    "path": "/api/projects/{id}/return-draft",
+    "controller": "ProjectController",
+    "controllerMethod": "returnDraft",
+    "component": "ProjectComponent",
+    "method": "returnDraft",
+    "body": {
+      "expectedVersion": 0,
+      "reason": "Fictional internal planning decision"
+    },
+    "view": "ProjectView",
+    "purpose": "Move internal project to DRAFT.",
+    "permission": "OFFICER",
+    "steps": [
+      "Resolve actor/project and relevant resource set; acquire locks in prescribed order and re-read version/state.",
+      "Require SUBMITTED, reason, and no approved allocations; draft return is an internal decision.",
+      "Set target state, save project and related release decisions, increment affected resource revisions, append audits; commit all changes together."
+    ],
+    "repositories": [
+      "ProjectRepository.findById",
+      "ProjectRepository.save",
+      "ResourceRequirementRepository.findByProject_IdOrderByIdAsc",
+      "AllocationRepository.findByRequirement_Project_Id",
+      "ResourceRepository.lockById",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "INVALID_STATE",
+      "VERSION_CONFLICT",
+      "RESOURCE_OVERALLOCATION",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 200,
+    "query": {},
+    "requestDto": "OpP03Request",
+    "queryDto": "OpP03Query"
+  },
+  {
+    "id": "P04",
+    "domain": "Project",
+    "http": "POST",
+    "path": "/api/projects/{id}/start",
+    "controller": "ProjectController",
+    "controllerMethod": "start",
+    "component": "ProjectComponent",
+    "method": "start",
+    "body": {
+      "expectedVersion": 0,
+      "reason": "Fictional internal planning decision"
+    },
+    "view": "ProjectView",
+    "purpose": "Move internal project to IN_PROGRESS.",
+    "permission": "owner/HEAD or OFFICER",
+    "steps": [
+      "Resolve actor/project and relevant resource set; acquire locks in prescribed order and re-read version/state.",
+      "Require APPROVED and startAt <= now < endAt.",
+      "Set target state, save project and related release decisions, increment affected resource revisions, append audits; commit all changes together."
+    ],
+    "repositories": [
+      "ProjectRepository.findById",
+      "ProjectRepository.save",
+      "ResourceRequirementRepository.findByProject_IdOrderByIdAsc",
+      "AllocationRepository.findByRequirement_Project_Id",
+      "ResourceRepository.lockById",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "INVALID_STATE",
+      "VERSION_CONFLICT",
+      "RESOURCE_OVERALLOCATION",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 200,
+    "query": {},
+    "requestDto": "OpP04Request",
+    "queryDto": "OpP04Query"
+  },
+  {
+    "id": "P05",
+    "domain": "Project",
+    "http": "POST",
+    "path": "/api/projects/{id}/complete",
+    "controller": "ProjectController",
+    "controllerMethod": "complete",
+    "component": "ProjectComponent",
+    "method": "complete",
+    "body": {
+      "expectedVersion": 0,
+      "reason": "Fictional internal planning decision",
+      "waiveUnfulfilled": false
+    },
+    "view": "ProjectView",
+    "purpose": "Move internal project to COMPLETED.",
+    "permission": "OFFICER",
+    "steps": [
+      "Resolve actor/project and relevant resource set; acquire locks in prescribed order and re-read version/state.",
+      "Require IN_PROGRESS or APPROVED; no REQUESTED allocation, no unissued approved remainder or outstanding custody.",
+      "For unfulfilled demand require waiveUnfulfilled=true plus a reason; write waived quantities in audit, not stock.",
+      "Set target state, save project and related release decisions, increment affected resource revisions, append audits; commit all changes together."
+    ],
+    "repositories": [
+      "ProjectRepository.findById",
+      "ProjectRepository.save",
+      "ResourceRequirementRepository.findByProject_IdOrderByIdAsc",
+      "AllocationRepository.findByRequirement_Project_Id",
+      "ResourceRepository.lockById",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "INVALID_STATE",
+      "VERSION_CONFLICT",
+      "RESOURCE_OVERALLOCATION",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 200,
+    "query": {},
+    "requestDto": "OpP05Request",
+    "queryDto": "OpP05Query"
+  },
+  {
+    "id": "P06",
+    "domain": "Project",
+    "http": "POST",
+    "path": "/api/projects/{id}/cancel",
+    "controller": "ProjectController",
+    "controllerMethod": "cancel",
+    "component": "ProjectComponent",
+    "method": "cancel",
+    "body": {
+      "expectedVersion": 0,
+      "reason": "Fictional internal planning decision"
+    },
+    "view": "ProjectView",
+    "purpose": "Move internal project to CANCELLED.",
+    "permission": "owner/HEAD for DRAFT/SUBMITTED; OFFICER for APPROVED/IN_PROGRESS",
+    "steps": [
+      "Resolve actor/project and relevant resource set; acquire locks in prescribed order and re-read version/state.",
+      "Require not COMPLETED/CANCELLED and reason; lock complete affected resource set in ascending order.",
+      "Set REQUESTED allocations CANCELLED; approved with no supply become CANCELLED, partially supplied approvals release their remaining R. Preserve reusable custody and allow return/loss afterward.",
+      "Set target state, save project and related release decisions, increment affected resource revisions, append audits; commit all changes together."
+    ],
+    "repositories": [
+      "ProjectRepository.findById",
+      "ProjectRepository.save",
+      "ResourceRequirementRepository.findByProject_IdOrderByIdAsc",
+      "AllocationRepository.findByRequirement_Project_Id",
+      "ResourceRepository.lockById",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "INVALID_STATE",
+      "VERSION_CONFLICT",
+      "RESOURCE_OVERALLOCATION",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 200,
+    "query": {},
+    "requestDto": "OpP06Request",
+    "queryDto": "OpP06Query"
+  },
+  {
+    "id": "P07",
+    "domain": "Project",
+    "http": "POST",
+    "path": "/api/projects/{id}/reschedule",
+    "controller": "ProjectController",
+    "controllerMethod": "reschedule",
+    "component": "ProjectComponent",
+    "method": "reschedule",
+    "body": {
+      "expectedVersion": 0,
+      "startAt": "{{startA}}",
+      "endAt": "{{endA}}",
+      "requirements": [
+        {
+          "requirementId": "{{requirementId}}",
+          "startAt": "{{startA}}",
+          "endAt": "{{endA}}"
+        }
+      ],
+      "reason": "Fictional schedule change"
+    },
+    "view": "ProjectView",
+    "purpose": "Atomically replace full unissued project schedule.",
+    "permission": "OFFICER",
+    "steps": [
+      "Read affected requirements/resources; sort IDs and lock all parents before rows. Re-read complete graph and versions.",
+      "Require no issue/consumption ever recorded for any allocation of this project (including reversed events); reject incomplete/extra requirement-window IDs.",
+      "Validate new project/requirement intervals and construct proposed snapshots for every requested/approved allocation.",
+      "Exclude exactly the old affected commitments, then sweep all proposed replacements together with all unaffected and overdue holds; reject any deficit.",
+      "Save all schedules and audit old/new windows, bump resource revisions; entire command rolls back on any conflict."
+    ],
+    "repositories": [
+      "ProjectRepository.findById",
+      "ProjectRepository.save",
+      "ResourceRequirementRepository.findByProject_IdOrderByIdAsc",
+      "AllocationRepository.findByRequirement_Project_Id",
+      "ResourceRepository.lockById",
+      "AuditEventRepository.save",
+      "AllocationRepository.save",
+      "InventoryTransactionRepository.findByResource_IdOrderByIdAsc"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "SCHEDULE_LOCKED",
+      "VERSION_CONFLICT",
+      "RESOURCE_OVERALLOCATION",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 200,
+    "query": {},
+    "requestDto": "OpP07Request",
+    "queryDto": "OpP07Query"
+  },
+  {
+    "id": "A01",
+    "domain": "Allocation",
+    "http": "POST",
+    "path": "/api/allocations/{id}/approve",
+    "controller": "AllocationController",
+    "controllerMethod": "approve",
+    "component": "AllocationComponent",
+    "method": "approve",
+    "body": {
+      "expectedVersion": 0,
+      "reason": "Custodian checked capacity"
+    },
+    "view": "AllocationView",
+    "purpose": "Commit requested quantity without moving stock.",
+    "permission": "assigned CUSTODIAN different from requester",
+    "steps": [
+      "Resolve pool; acquire resource then requirement/allocation locks and re-read actor, expectedVersion and REQUESTED state.",
+      "Verify active requirement/resource and approved/in-progress project; requester/recipient references remain active.",
+      "Require endAt > Clock.instant(); a current interval is allowed, a wholly past commitment is not.",
+      "Sum existing approved effective quantities for this requirement; reject if adding quantity exceeds demand.",
+      "Rebuild balances and current pool commitments including overdue outstanding. Sweep reusable interval or compute global consumable ATP.",
+      "Require the whole requested quantity fits; no silent partial approval. If not, keep REQUESTED and return409 with available/competing IDs.",
+      "Set APPROVED, decidedBy/At/reason; increment resource revision and audit. No SMS is sent for every approval."
+    ],
+    "repositories": [
+      "AllocationRepository.findById",
+      "AllocationRepository.save",
+      "AllocationRepository.findByRequirement_Id",
+      "AllocationRepository.findByRequirement_Resource_IdAndDecisionStatus",
+      "ResourceRepository.lockById",
+      "InventoryTransactionRepository.findByResource_IdOrderByIdAsc",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "VERSION_CONFLICT",
+      "INVALID_STATE",
+      "RESOURCE_OVERALLOCATION",
+      "REQUIREMENT_COVERAGE_EXCEEDED",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 200,
+    "query": {},
+    "requestDto": "OpA01Request",
+    "queryDto": "OpA01Query"
+  },
+  {
+    "id": "A02",
+    "domain": "Allocation",
+    "http": "POST",
+    "path": "/api/allocations/{id}/reject",
+    "controller": "AllocationController",
+    "controllerMethod": "reject",
+    "component": "AllocationComponent",
+    "method": "reject",
+    "body": {
+      "expectedVersion": 0,
+      "reason": "Request needs a revised quantity"
+    },
+    "view": "AllocationView",
+    "purpose": "Reject a pending request without deleting history.",
+    "permission": "assigned CUSTODIAN different from requester",
+    "steps": [
+      "Lock resource and re-read request; verify actor/version and REQUESTED state.",
+      "Require reason; set REJECTED with decidedBy/At and audit. It held no quantity to release."
+    ],
+    "repositories": [
+      "AllocationRepository.findById",
+      "AllocationRepository.save",
+      "AllocationRepository.findByRequirement_Id",
+      "AllocationRepository.findByRequirement_Resource_IdAndDecisionStatus",
+      "ResourceRepository.lockById",
+      "InventoryTransactionRepository.findByResource_IdOrderByIdAsc",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "VERSION_CONFLICT",
+      "INVALID_STATE",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 200,
+    "query": {},
+    "requestDto": "OpA02Request",
+    "queryDto": "OpA02Query"
+  },
+  {
+    "id": "A03",
+    "domain": "Allocation",
+    "http": "POST",
+    "path": "/api/allocations/{id}/cancel",
+    "controller": "AllocationController",
+    "controllerMethod": "cancel",
+    "component": "AllocationComponent",
+    "method": "cancel",
+    "body": {
+      "expectedVersion": 0,
+      "reason": "Project no longer needs this pending commitment"
+    },
+    "view": "AllocationView",
+    "purpose": "Cancel pending or entirely unissued approved allocation.",
+    "permission": "requester/own HEAD, assigned CUSTODIAN or OFFICER",
+    "steps": [
+      "Lock pool and re-read version/state.",
+      "Allow REQUESTED or APPROVED only; approved cancellation requires issued/consumed net0 and no outstanding.",
+      "Set CANCELLED and reason, releasing effective approved commitment; bump resource revision and audit. Rejected and resolved history is not cancelled."
+    ],
+    "repositories": [
+      "AllocationRepository.findById",
+      "AllocationRepository.save",
+      "AllocationRepository.findByRequirement_Id",
+      "AllocationRepository.findByRequirement_Resource_IdAndDecisionStatus",
+      "ResourceRepository.lockById",
+      "InventoryTransactionRepository.findByResource_IdOrderByIdAsc",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "VERSION_CONFLICT",
+      "INVALID_STATE",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 200,
+    "query": {},
+    "requestDto": "OpA03Request",
+    "queryDto": "OpA03Query"
+  },
+  {
+    "id": "A04",
+    "domain": "Allocation",
+    "http": "POST",
+    "path": "/api/allocations/{id}/release",
+    "controller": "AllocationController",
+    "controllerMethod": "release",
+    "component": "AllocationComponent",
+    "method": "release",
+    "body": {
+      "expectedVersion": 0,
+      "quantity": 1,
+      "reason": "Unused part no longer required"
+    },
+    "view": "AllocationView",
+    "purpose": "Release some or all unissued approved remainder.",
+    "permission": "requester/own HEAD, assigned CUSTODIAN or OFFICER",
+    "steps": [
+      "Lock pool and re-read APPROVED allocation/version and ledger counters.",
+      "Require positive quantity <= R; never release issued or consumed coverage.",
+      "Increase releasedUnissued, retain approved historical supply, bump version and audit exact released amount and reason."
+    ],
+    "repositories": [
+      "AllocationRepository.findById",
+      "AllocationRepository.save",
+      "AllocationRepository.findByRequirement_Id",
+      "AllocationRepository.findByRequirement_Resource_IdAndDecisionStatus",
+      "ResourceRepository.lockById",
+      "InventoryTransactionRepository.findByResource_IdOrderByIdAsc",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "VERSION_CONFLICT",
+      "INVALID_STATE",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 200,
+    "query": {},
+    "requestDto": "OpA04Request",
+    "queryDto": "OpA04Query"
+  },
+  {
+    "id": "A05",
+    "domain": "Allocation",
+    "http": "POST",
+    "path": "/api/allocations/{id}/issue",
+    "controller": "AllocationController",
+    "controllerMethod": "issueResources",
+    "component": "AllocationComponent",
+    "method": "issueResources",
+    "body": {
+      "quantity": 1,
+      "reason": "Fictional issue observation",
+      "commandKey": "{{commandKey}}"
+    },
+    "view": "InventoryTransactionView",
+    "purpose": "Record ISSUE against this allocation.",
+    "permission": "assigned CUSTODIAN",
+    "steps": [
+      "Resolve allocation/pool; call InventoryTransactionComponent.record with server-filled resource/allocation/type fields, preserving the commandKey.",
+      "Acquire resource lock and perform identical-key replay check.",
+      "Require reusable and project APPROVED/IN_PROGRESS; startAt <= now < endAt; q <= unissued R.",
+      "Require physical S >= q plus other active-now unissued commitments; report conflicts if not.",
+      "Derive immutable signed movement, recheck balances/counters, save with new resource revision and append audit in one transaction."
+    ],
+    "repositories": [
+      "AllocationRepository.findById",
+      "AllocationRepository.save",
+      "AllocationRepository.findByRequirement_Id",
+      "AllocationRepository.findByRequirement_Resource_IdAndDecisionStatus",
+      "ResourceRepository.lockById",
+      "InventoryTransactionRepository.findByResource_IdOrderByIdAsc",
+      "AuditEventRepository.save",
+      "InventoryTransactionRepository.save",
+      "InventoryTransactionRepository.findByResource_IdAndCommandKey"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "INVALID_STATE",
+      "RESOURCE_TYPE_MISMATCH",
+      "INSUFFICIENT_PHYSICAL_STOCK",
+      "RESOURCE_OVERALLOCATION",
+      "IDEMPOTENCY_KEY_REUSED",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 201,
+    "query": {},
+    "requestDto": "OpA05Request",
+    "queryDto": "OpA05Query"
+  },
+  {
+    "id": "A06",
+    "domain": "Allocation",
+    "http": "POST",
+    "path": "/api/allocations/{id}/return",
+    "controller": "AllocationController",
+    "controllerMethod": "returnResources",
+    "component": "AllocationComponent",
+    "method": "returnResources",
+    "body": {
+      "quantity": 1,
+      "reason": "Fictional return observation",
+      "commandKey": "{{commandKey}}",
+      "inspection": "USABLE"
+    },
+    "view": "InventoryTransactionView",
+    "purpose": "Record RETURN against this allocation.",
+    "permission": "assigned CUSTODIAN",
+    "steps": [
+      "Resolve allocation/pool; call InventoryTransactionComponent.record with server-filled resource/allocation/type fields, preserving the commandKey.",
+      "Acquire resource lock and perform identical-key replay check.",
+      "Require reusable, outstanding >= q and inspection USABLE or DAMAGED; allow returns after project cancellation/end.",
+      "Apply O-to-S for usable or O-to-B for damaged; update resolution counters and include impacted commitments for damaged stock.",
+      "Derive immutable signed movement, recheck balances/counters, save with new resource revision and append audit in one transaction."
+    ],
+    "repositories": [
+      "AllocationRepository.findById",
+      "AllocationRepository.save",
+      "AllocationRepository.findByRequirement_Id",
+      "AllocationRepository.findByRequirement_Resource_IdAndDecisionStatus",
+      "ResourceRepository.lockById",
+      "InventoryTransactionRepository.findByResource_IdOrderByIdAsc",
+      "AuditEventRepository.save",
+      "InventoryTransactionRepository.save",
+      "InventoryTransactionRepository.findByResource_IdAndCommandKey"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "INVALID_STATE",
+      "RESOURCE_TYPE_MISMATCH",
+      "INSUFFICIENT_PHYSICAL_STOCK",
+      "RESOURCE_OVERALLOCATION",
+      "IDEMPOTENCY_KEY_REUSED",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 201,
+    "query": {},
+    "requestDto": "OpA06Request",
+    "queryDto": "OpA06Query"
+  },
+  {
+    "id": "A07",
+    "domain": "Allocation",
+    "http": "POST",
+    "path": "/api/allocations/{id}/consume",
+    "controller": "AllocationController",
+    "controllerMethod": "consumeResources",
+    "component": "AllocationComponent",
+    "method": "consumeResources",
+    "body": {
+      "quantity": 1,
+      "reason": "Fictional consume observation",
+      "commandKey": "{{commandKey}}"
+    },
+    "view": "InventoryTransactionView",
+    "purpose": "Record CONSUMPTION against this allocation.",
+    "permission": "assigned CUSTODIAN",
+    "steps": [
+      "Resolve allocation/pool; call InventoryTransactionComponent.record with server-filled resource/allocation/type fields, preserving the commandKey.",
+      "Acquire resource lock and perform identical-key replay check.",
+      "Require consumable, project APPROVED/IN_PROGRESS, within its requirement interval and q <= unconsumed R.",
+      "Require physical P >= q plus all other remaining consumable commitments. Reduce P and own reservation equally; no issue-then-consume duplication.",
+      "Derive immutable signed movement, recheck balances/counters, save with new resource revision and append audit in one transaction."
+    ],
+    "repositories": [
+      "AllocationRepository.findById",
+      "AllocationRepository.save",
+      "AllocationRepository.findByRequirement_Id",
+      "AllocationRepository.findByRequirement_Resource_IdAndDecisionStatus",
+      "ResourceRepository.lockById",
+      "InventoryTransactionRepository.findByResource_IdOrderByIdAsc",
+      "AuditEventRepository.save",
+      "InventoryTransactionRepository.save",
+      "InventoryTransactionRepository.findByResource_IdAndCommandKey"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "INVALID_STATE",
+      "RESOURCE_TYPE_MISMATCH",
+      "INSUFFICIENT_PHYSICAL_STOCK",
+      "RESOURCE_OVERALLOCATION",
+      "IDEMPOTENCY_KEY_REUSED",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 201,
+    "query": {},
+    "requestDto": "OpA07Request",
+    "queryDto": "OpA07Query"
+  },
+  {
+    "id": "T01",
+    "domain": "InventoryTransaction",
+    "http": "POST",
+    "path": "/api/inventory-transactions/{id}/reverse",
+    "controller": "InventoryTransactionController",
+    "controllerMethod": "reverse",
+    "component": "InventoryTransactionComponent",
+    "method": "reverse",
+    "body": {
+      "reason": "Correct latest erroneous fictional event",
+      "commandKey": "{{commandKey}}"
+    },
+    "view": "InventoryTransactionView",
+    "purpose": "Append constrained reversal of a latest event.",
+    "permission": "OFFICER",
+    "steps": [
+      "Resolve original and lock its resource; verify original is not REVERSAL and no existing reversal.",
+      "Check commandKey replay; require original.resourceRevisionAfter equals current resource.revision and no later ledger event; otherwise409 dependency conflict.",
+      "Negate all original signed deltas and allocation counter effects; recheck balances, coverage, lifecycle and commitment capacity.",
+      "Insert REVERSAL linked to original, increment resource revision/capture it after flush, append correction audit; never modify original."
+    ],
+    "repositories": [
+      "InventoryTransactionRepository.findById",
+      "InventoryTransactionRepository.findByReversalOf_Id",
+      "InventoryTransactionRepository.findByResource_IdAndCommandKey",
+      "InventoryTransactionRepository.findByResource_IdOrderByIdAsc",
+      "InventoryTransactionRepository.save",
+      "ResourceRepository.lockById",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "REVERSAL_DEPENDENCY_CONFLICT",
+      "IDEMPOTENCY_KEY_REUSED",
+      "RESOURCE_OVERALLOCATION",
+      "INVALID_STATE",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 201,
+    "query": {},
+    "requestDto": "OpT01Request",
+    "queryDto": "OpT01Query"
+  },
+  {
+    "id": "N01",
+    "domain": "Notification",
+    "http": "POST",
+    "path": "/api/notifications/{id}/cancel",
+    "controller": "NotificationController",
+    "controllerMethod": "cancel",
+    "component": "NotificationComponent",
+    "method": "cancel",
+    "body": {
+      "expectedVersion": 0,
+      "reason": "Reminder no longer needed"
+    },
+    "view": "NotificationLogView",
+    "purpose": "Cancel a reminder before any send begins.",
+    "permission": "recipient for own, assigned CUSTODIAN, OFFICER or ADMIN",
+    "steps": [
+      "Lock notification and re-read version; only QUEUED/SKIPPED with attemptCount0 can cancel.",
+      "Set CANCELLED and reason, clear nextAttemptAt, audit; SENDING/accepted/unknown cannot be recalled."
+    ],
+    "repositories": [
+      "NotificationLogRepository.lockById",
+      "NotificationLogRepository.save",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "VERSION_CONFLICT",
+      "INVALID_STATE",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 200,
+    "query": {},
+    "requestDto": "OpN01Request",
+    "queryDto": "OpN01Query"
+  },
+  {
+    "id": "N02",
+    "domain": "Notification",
+    "http": "POST",
+    "path": "/api/notifications/{id}/dispatch",
+    "controller": "NotificationController",
+    "controllerMethod": "dispatch",
+    "component": "NotificationComponent",
+    "method": "dispatch",
+    "body": {},
+    "view": "NotificationLogView",
+    "purpose": "Run one due outbox record through the same dispatcher as scheduler.",
+    "permission": "OFFICER or ADMIN; restricted live allowlist",
+    "steps": [
+      "Call claim(id,asOf) in a short transaction; recheck QUEUED,due,consent,recipient and outstanding custody.",
+      "After committing SENDING and an attempt marker, perform Retrofit send outside any DB transaction.",
+      "Call finish(id,result) in a new transaction; bounded retry only on known not-accepted outcome, unknown outcomes never auto-resend."
+    ],
+    "repositories": [
+      "NotificationLogRepository.lockById",
+      "NotificationLogRepository.save",
+      "AuditEventRepository.save",
+      "AppUserRepository.findById",
+      "AllocationRepository.findById",
+      "InventoryTransactionRepository.findByAllocation_IdOrderByIdAsc"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "INVALID_STATE",
+      "PROVIDER_OUTCOME_UNKNOWN",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "SPLIT",
+    "success": 200,
+    "query": {},
+    "requestDto": "OpN02Request",
+    "queryDto": "OpN02Query"
+  },
+  {
+    "id": "N03",
+    "domain": "Notification",
+    "http": "POST",
+    "path": "/api/notifications/{id}/refresh",
+    "controller": "NotificationController",
+    "controllerMethod": "refresh",
+    "component": "NotificationComponent",
+    "method": "refresh",
+    "body": {},
+    "view": "NotificationLogView",
+    "purpose": "Fetch provider status for a known SID; no new message.",
+    "permission": "recipient for own, OFFICER or ADMIN",
+    "steps": [
+      "Read visible log; require LIVE profile and stored providerSid, or FAKE fixture SID in fake mode.",
+      "Fetch exact SID through TwilioIntegrationComponent.fetchStatus outside DB transaction; require SID matches.",
+      "Lock log and persist mapped status/error in a fresh transaction; never regress terminal delivery or enqueue a new send."
+    ],
+    "repositories": [
+      "NotificationLogRepository.lockById",
+      "NotificationLogRepository.save",
+      "AuditEventRepository.save",
+      "NotificationLogRepository.findById"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "INVALID_STATE",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "SPLIT",
+    "success": 200,
+    "query": {},
+    "requestDto": "OpN03Request",
+    "queryDto": "OpN03Query"
+  },
+  {
+    "id": "N04",
+    "domain": "Notification",
+    "http": "POST",
+    "path": "/api/notifications/{id}/retry",
+    "controller": "NotificationController",
+    "controllerMethod": "retry",
+    "component": "NotificationComponent",
+    "method": "retry",
+    "body": {
+      "expectedVersion": 0,
+      "reason": "Provider definitively rejected without accepting"
+    },
+    "view": "NotificationLogView",
+    "purpose": "Queue a known not-accepted failure within bounded attempts.",
+    "permission": "OFFICER or ADMIN",
+    "steps": [
+      "Lock log/version; allow FAILED only with providerSid null and a stored allowlisted known-not-accepted error; attempts <3.",
+      "Revalidate consent, due kind and outstanding custody; set QUEUED,nextAttemptAt to now plus backoff; audit.",
+      "UNKNOWN, ACCEPTED, DELIVERED and UNDELIVERED cannot be retried as the same event; no blind duplicate SMS."
+    ],
+    "repositories": [
+      "NotificationLogRepository.lockById",
+      "NotificationLogRepository.save",
+      "AuditEventRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND",
+      "VERSION_CONFLICT",
+      "INVALID_STATE",
+      "PROVIDER_OUTCOME_UNKNOWN",
+      "RETRY_REQUIRED"
+    ],
+    "transaction": "WRITE",
+    "success": 200,
+    "query": {},
+    "requestDto": "OpN04Request",
+    "queryDto": "OpN04Query"
+  },
+  {
+    "id": "Q01",
+    "domain": "Planning",
+    "http": "GET",
+    "path": "/api/availability",
+    "controller": "PlanningController",
+    "controllerMethod": "query",
+    "component": "AvailabilityComponent",
+    "method": "query",
+    "body": null,
+    "view": "AvailabilityView",
+    "purpose": "Explain present/future capacity for one resource and interval.",
+    "permission": "organization read",
+    "steps": [
+      "Validate active resource and present/future <=90-day interval; capture asOf once.",
+      "Read ledger plus all approved resource allocations in one repeatable-read snapshot, derive balances and commitment intervals.",
+      "Sweep grouped endpoints or calculate consumable ATP; return raw negative deficit, clamped allocatable capacity, conflicting IDs and return-dependent warning."
+    ],
+    "repositories": [
+      "ResourceRepository.findById",
+      "InventoryTransactionRepository.findByResource_IdOrderByIdAsc",
+      "AllocationRepository.findByRequirement_Resource_IdAndDecisionStatus"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {
+      "resourceId": "required positive Long",
+      "startAt": "required offset instant >=asOf",
+      "endAt": "required offset instant > startAt",
+      "candidateQuantity": "optional positive Long to compute return dependence"
+    },
+    "requestDto": "OpQ01Request",
+    "queryDto": "OpQ01Query"
+  },
+  {
+    "id": "Q02",
+    "domain": "Shortage",
+    "http": "GET",
+    "path": "/api/shortages/projects/{id}",
+    "controller": "ShortageController",
+    "controllerMethod": "projectSummary",
+    "component": "ShortageComponent",
+    "method": "projectSummary",
+    "body": null,
+    "view": "ShortageView",
+    "purpose": "Explain each project requirement coverage and conditional sourcing gap.",
+    "permission": "project read scope",
+    "steps": [
+      "Load project and all active requirements in a consistent read snapshot.",
+      "For each resource calculate remaining demand and available candidate capacity; do not remove existing approved commitments except when measuring already-covered demand.",
+      "Return unallocated quantities, physical supply and risk flags separately; never sum isolated candidate gaps."
+    ],
+    "repositories": [
+      "ProjectRepository.findById",
+      "ResourceRequirementRepository.findByProject_IdOrderByIdAsc",
+      "AllocationRepository.findByRequirement_Id",
+      "InventoryTransactionRepository.findByResource_IdOrderByIdAsc"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {},
+    "requestDto": "OpQ02Request",
+    "queryDto": "OpQ02Query"
+  },
+  {
+    "id": "Q03",
+    "domain": "Shortage",
+    "http": "GET",
+    "path": "/api/shortages/resources/{id}",
+    "controller": "ShortageController",
+    "controllerMethod": "consolidate",
+    "component": "ShortageComponent",
+    "method": "consolidate",
+    "body": null,
+    "view": "DemandView",
+    "purpose": "Consolidate competing departments and peak sourcing capacity.",
+    "permission": "organization read",
+    "steps": [
+      "Validate bounded horizon and resource; load active requirements and eligible project states.",
+      "Compute unapproved N per requirement, existing K commitments and ledger capacity in one snapshot.",
+      "For reusable sweep K plus all N intervals together; for consumable subtract all reserved stock globally and sum selected unallocated demand.",
+      "Return peak units and affected segments/projects/departments with reason flags; no allocation or procurement side effect."
+    ],
+    "repositories": [
+      "ResourceRepository.findById",
+      "ResourceRequirementRepository.findByResource_IdAndStatus",
+      "AllocationRepository.findByRequirement_Resource_IdAndDecisionStatus",
+      "InventoryTransactionRepository.findByResource_IdOrderByIdAsc"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "NOT_FOUND"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {
+      "to": "required offset instant max90days",
+      "includeDraft": "boolean default false",
+      "from": "required offset instant >=asOf; actual query key is from"
+    },
+    "requestDto": "OpQ03Request",
+    "queryDto": "OpQ03Query"
+  },
+  {
+    "id": "R01",
+    "domain": "Report",
+    "http": "GET",
+    "path": "/api/reports/inventory",
+    "controller": "ReportController",
+    "controllerMethod": "inventory",
+    "component": "ReportingComponent",
+    "method": "inventory",
+    "body": null,
+    "view": "InventoryReport",
+    "purpose": "Current explainable ledger stock by resource.",
+    "permission": "organization report read; contact data excluded",
+    "steps": [
+      "Load bounded resource page and ledger rows; reconstruct balances including reversal deltas.",
+      "Return each pool/unit separately and invariant/reconciliation flags; never repair automatically."
+    ],
+    "repositories": [
+      "ResourceRepository.findAll",
+      "InventoryTransactionRepository.findByResource_IdOrderByIdAsc"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {
+      "departmentId": "optional positive Long",
+      "page": "default0",
+      "size": "1..100"
+    },
+    "requestDto": "OpR01Request",
+    "queryDto": "OpR01Query"
+  },
+  {
+    "id": "R02",
+    "domain": "Report",
+    "http": "GET",
+    "path": "/api/reports/upcoming",
+    "controller": "ReportController",
+    "controllerMethod": "upcoming",
+    "component": "ReportingComponent",
+    "method": "upcoming",
+    "body": null,
+    "view": "AllocationReport",
+    "purpose": "Approved allocations due in a selected future window.",
+    "permission": "organization report read; contact data excluded",
+    "steps": [
+      "Validate present/future max90-day window and permitted department filter.",
+      "Load approved allocations through Specification, derive unissued/outstanding and current risk; paginate by id."
+    ],
+    "repositories": [
+      "AllocationRepository.findAll",
+      "InventoryTransactionRepository.findByAllocation_IdOrderByIdAsc"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {
+      "to": "offset instant",
+      "departmentId": "optional Long",
+      "page": "default0",
+      "size": "1..100",
+      "from": "offset instant query key from"
+    },
+    "requestDto": "OpR02Request",
+    "queryDto": "OpR02Query"
+  },
+  {
+    "id": "R03",
+    "domain": "Report",
+    "http": "GET",
+    "path": "/api/reports/overdue",
+    "controller": "ReportController",
+    "controllerMethod": "overdue",
+    "component": "ReportingComponent",
+    "method": "overdue",
+    "body": null,
+    "view": "AllocationReport",
+    "purpose": "Outstanding reusable custody past its expected end.",
+    "permission": "organization report read; contact data excluded",
+    "steps": [
+      "Capture now; query approved reusable allocations with endAt <= now through Specification.",
+      "Derive outstanding from ledger and retain only >0; paginate after filtering so totalElements is accurate."
+    ],
+    "repositories": [
+      "AllocationRepository.findAll",
+      "InventoryTransactionRepository.findByAllocation_IdOrderByIdAsc"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {
+      "resourceId": "optional Long",
+      "departmentId": "optional Long",
+      "page": "default0",
+      "size": "1..100"
+    },
+    "requestDto": "OpR03Request",
+    "queryDto": "OpR03Query"
+  },
+  {
+    "id": "R04",
+    "domain": "Report",
+    "http": "GET",
+    "path": "/api/reports/department-demand",
+    "controller": "ReportController",
+    "controllerMethod": "departmentDemand",
+    "component": "ReportingComponent",
+    "method": "departmentDemand",
+    "body": null,
+    "view": "DepartmentReport",
+    "purpose": "Observed planned demand by resource for one department/horizon.",
+    "permission": "organization report read; contact data excluded",
+    "steps": [
+      "Validate department and max90-day horizon.",
+      "Load eligible requirements/projects, aggregate requested/approved/supplied by resource/unit, with no mixed-unit grand total."
+    ],
+    "repositories": [
+      "DepartmentRepository.findById",
+      "ResourceRequirementRepository.findAll",
+      "AllocationRepository.findByRequirement_Id",
+      "InventoryTransactionRepository.findByAllocation_IdOrderByIdAsc"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR"
+    ],
+    "transaction": "READ",
+    "success": 200,
+    "query": {
+      "departmentId": "required Long",
+      "to": "offset instant",
+      "from": "offset instant query key from"
+    },
+    "requestDto": "OpR04Request",
+    "queryDto": "OpR04Query"
+  },
+  {
+    "id": "J01",
+    "domain": "Scheduling",
+    "http": "POST",
+    "path": "/api/jobs/reminders/run-once",
+    "controller": "SchedulingController",
+    "controllerMethod": "runOnce",
+    "component": "SchedulingComponent",
+    "method": "runOnce",
+    "body": {},
+    "view": "JobRunView",
+    "purpose": "Deterministically run reminder scan once without changing clock.",
+    "permission": "ADMIN/OFFICER, DEMO profile only",
+    "steps": [
+      "Require DEMO profile; capture Clock, invoke NotificationComponent.scanReminders(asOf).",
+      "Return enqueue/skip/existing/error counts; no implicit dispatch or physical stock change.",
+      "LIVE authenticated deployment does not register this demonstration route."
+    ],
+    "repositories": [
+      "AllocationRepository.findAll",
+      "NotificationLogRepository.findByEventKey",
+      "NotificationLogRepository.save"
+    ],
+    "errors": [
+      "BAD_REQUEST",
+      "VALIDATION_FAILED",
+      "UNAUTHENTICATED",
+      "FORBIDDEN",
+      "INTERNAL_ERROR",
+      "INVALID_STATE"
+    ],
+    "transaction": "SPLIT",
+    "success": 200,
+    "query": {},
+    "requestDto": "OpJ01Request",
+    "queryDto": "OpJ01Query"
+  }
+]

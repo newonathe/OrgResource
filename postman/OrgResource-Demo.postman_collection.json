@@ -1,0 +1,3765 @@
+{
+  "info": {
+    "name": "OrgResource Ordered Fictional Demonstration",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Fresh isolated database with bootstrap ADMIN only. No live sends. Creates and captures dependency IDs; positive and expected-conflict assertions. Execute within one hour of generated windows. Backend not yet implemented."
+  },
+  "item": [
+    {
+      "name": "Create department A",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{bootstrapAdminId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/departments",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"code\": \"{{runPrefix}}_A\",\n  \"name\": \"Demo Logistics\",\n  \"description\": \"Fictional department\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if(!pm.environment.get('bootstrapAdminId')) throw new Error('Set bootstrapAdminId from isolated DEMO startup output before running.');",
+              "const stamp=String(Date.now()).slice(-7);pm.environment.set('runPrefix','D'+stamp);pm.environment.set('runLower','d'+stamp);",
+              "const now=Date.now(); const iso=m=>new Date(now+m*60000).toISOString();",
+              "for(const [k,m] of Object.entries({startA:-5,endA:60,startB:-4,endB:120,startC:60,endC:180,windowStart:1}))pm.environment.set(k,iso(m));",
+              "for(const k of [\"receiptcordIdKey\", \"receiptpaperIdKey\", \"allocCordAKey\", \"allocCordBFailedKey\", \"allocCordBKey\", \"allocCordCKey\", \"allocPaperAKey\", \"allocPaperBFailedKey\", \"allocPaperBKey\", \"consumePaperKey\", \"issueAKey\", \"issueBKey\", \"returnAfirstKey\", \"returnArestKey\", \"returnBgoodKey\", \"returnBdamagedKey\"])pm.environment.set(k,pm.variables.replaceIn('{{$guid}}'));"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('depAId',r.id); pm.environment.set('depAIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create department B",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{bootstrapAdminId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/departments",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"code\": \"{{runPrefix}}_B\",\n  \"name\": \"Demo Programs\",\n  \"description\": \"Fictional department\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('depBId',r.id); pm.environment.set('depBIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create department C",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{bootstrapAdminId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/departments",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"code\": \"{{runPrefix}}_C\",\n  \"name\": \"Demo Communications\",\n  \"description\": \"Fictional department\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('depCId',r.id); pm.environment.set('depCIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create officerId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{bootstrapAdminId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/users",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{runLower}}.officerid\",\n  \"displayName\": \"Fictional officerId\",\n  \"role\": \"OFFICER\",\n  \"departmentId\": null\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('officerId',r.id); pm.environment.set('officerIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create custodianId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{bootstrapAdminId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/users",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{runLower}}.custodianid\",\n  \"displayName\": \"Fictional custodianId\",\n  \"role\": \"CUSTODIAN\",\n  \"departmentId\": {{depAId}}\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('custodianId',r.id); pm.environment.set('custodianIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create memberAId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{bootstrapAdminId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/users",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{runLower}}.memberaid\",\n  \"displayName\": \"Fictional memberAId\",\n  \"role\": \"MEMBER\",\n  \"departmentId\": {{depAId}}\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('memberAId',r.id); pm.environment.set('memberAIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create memberBId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{bootstrapAdminId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/users",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{runLower}}.memberbid\",\n  \"displayName\": \"Fictional memberBId\",\n  \"role\": \"MEMBER\",\n  \"departmentId\": {{depBId}}\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('memberBId',r.id); pm.environment.set('memberBIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create memberCId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{bootstrapAdminId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/users",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{runLower}}.membercid\",\n  \"displayName\": \"Fictional memberCId\",\n  \"role\": \"MEMBER\",\n  \"departmentId\": {{depCId}}\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('memberCId',r.id); pm.environment.set('memberCIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create cordId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/resources",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"code\": \"{{runPrefix}}_CORDID\",\n  \"name\": \"Fictional Extension Cords\",\n  \"description\": \"Synthetic demonstration only\",\n  \"type\": \"REUSABLE\",\n  \"category\": \"Demo\",\n  \"unit\": \"piece\",\n  \"storageLocation\": \"Demo cabinet\",\n  \"controlBasis\": \"OWNED\",\n  \"authorizationNote\": null,\n  \"departmentId\": {{depAId}},\n  \"custodianId\": {{custodianId}}\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('cordId',r.id); pm.environment.set('cordIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Opening receipt cordId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/inventory-transactions",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"resourceId\": {{cordId}},\n  \"allocationId\": null,\n  \"type\": \"RECEIPT\",\n  \"quantity\": 10,\n  \"inspection\": null,\n  \"reason\": \"OPENING_COUNT fictional\",\n  \"commandKey\": \"{{receiptcordIdKey}}\",\n  \"reversalOfId\": null,\n  \"correctionReferenceId\": null\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('receiptcordIdId',r.id); pm.environment.set('receiptcordIdIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create paperId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/resources",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"code\": \"{{runPrefix}}_PAPERID\",\n  \"name\": \"Fictional Paper\",\n  \"description\": \"Synthetic demonstration only\",\n  \"type\": \"CONSUMABLE\",\n  \"category\": \"Demo\",\n  \"unit\": \"sheet\",\n  \"storageLocation\": \"Demo cabinet\",\n  \"controlBasis\": \"OWNED\",\n  \"authorizationNote\": null,\n  \"departmentId\": {{depAId}},\n  \"custodianId\": {{custodianId}}\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('paperId',r.id); pm.environment.set('paperIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Opening receipt paperId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/inventory-transactions",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"resourceId\": {{paperId}},\n  \"allocationId\": null,\n  \"type\": \"RECEIPT\",\n  \"quantity\": 100,\n  \"inspection\": null,\n  \"reason\": \"OPENING_COUNT fictional\",\n  \"commandKey\": \"{{receiptpaperIdKey}}\",\n  \"reversalOfId\": null,\n  \"correctionReferenceId\": null\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('receiptpaperIdId',r.id); pm.environment.set('receiptpaperIdIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Identical cord receipt replay",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/inventory-transactions",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"resourceId\": {{cordId}},\n  \"allocationId\": null,\n  \"type\": \"RECEIPT\",\n  \"quantity\": 10,\n  \"inspection\": null,\n  \"reason\": \"OPENING_COUNT fictional\",\n  \"commandKey\": \"{{receiptcordIdKey}}\",\n  \"reversalOfId\": null,\n  \"correctionReferenceId\": null\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Replay true',()=>pm.expect(pm.response.json().replay).to.eql(true));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create project A",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberAId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/projects",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"code\": \"{{runPrefix}}_PA\",\n  \"name\": \"Fictional Project A\",\n  \"description\": \"Synthetic resource scenario\",\n  \"departmentId\": {{depAId}},\n  \"ownerId\": {{memberAId}},\n  \"startAt\": \"{{startA}}\",\n  \"endAt\": \"{{endA}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('projectAId',r.id); pm.environment.set('projectAIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cord requirement A",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberAId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/requirements",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"projectId\": {{projectAId}},\n  \"resourceId\": {{cordId}},\n  \"quantity\": 6,\n  \"startAt\": \"{{startA}}\",\n  \"endAt\": \"{{endA}}\",\n  \"priority\": \"NORMAL\",\n  \"notes\": \"Fictional requirement\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('reqCordAId',r.id); pm.environment.set('reqCordAIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Paper requirement A",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberAId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/requirements",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"projectId\": {{projectAId}},\n  \"resourceId\": {{paperId}},\n  \"quantity\": 60,\n  \"startAt\": \"{{startA}}\",\n  \"endAt\": \"{{endA}}\",\n  \"priority\": \"NORMAL\",\n  \"notes\": \"Fictional paper demand\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('reqPaperAId',r.id); pm.environment.set('reqPaperAIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read current projectAId",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberAId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/projects/{{projectAId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('projectAId',r.id); pm.environment.set('projectAIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "submit projectAId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberAId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/projects/{{projectAId}}/submit",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"expectedVersion\": {{projectAIdVersion}},\n  \"reason\": \"Fictional demonstration\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('projectAId',r.id); pm.environment.set('projectAIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read current projectAId",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/projects/{{projectAId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('projectAId',r.id); pm.environment.set('projectAIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "approve projectAId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/projects/{{projectAId}}/approve",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"expectedVersion\": {{projectAIdVersion}},\n  \"reason\": \"Fictional demonstration\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('projectAId',r.id); pm.environment.set('projectAIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create project B",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberBId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/projects",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"code\": \"{{runPrefix}}_PB\",\n  \"name\": \"Fictional Project B\",\n  \"description\": \"Synthetic resource scenario\",\n  \"departmentId\": {{depBId}},\n  \"ownerId\": {{memberBId}},\n  \"startAt\": \"{{startB}}\",\n  \"endAt\": \"{{endB}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('projectBId',r.id); pm.environment.set('projectBIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cord requirement B",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberBId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/requirements",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"projectId\": {{projectBId}},\n  \"resourceId\": {{cordId}},\n  \"quantity\": 5,\n  \"startAt\": \"{{startB}}\",\n  \"endAt\": \"{{endB}}\",\n  \"priority\": \"NORMAL\",\n  \"notes\": \"Fictional requirement\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('reqCordBId',r.id); pm.environment.set('reqCordBIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Paper requirement B",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberBId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/requirements",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"projectId\": {{projectBId}},\n  \"resourceId\": {{paperId}},\n  \"quantity\": 50,\n  \"startAt\": \"{{startB}}\",\n  \"endAt\": \"{{endB}}\",\n  \"priority\": \"NORMAL\",\n  \"notes\": \"Fictional paper demand\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('reqPaperBId',r.id); pm.environment.set('reqPaperBIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read current projectBId",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberBId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/projects/{{projectBId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('projectBId',r.id); pm.environment.set('projectBIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "submit projectBId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberBId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/projects/{{projectBId}}/submit",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"expectedVersion\": {{projectBIdVersion}},\n  \"reason\": \"Fictional demonstration\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('projectBId',r.id); pm.environment.set('projectBIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read current projectBId",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/projects/{{projectBId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('projectBId',r.id); pm.environment.set('projectBIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "approve projectBId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/projects/{{projectBId}}/approve",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"expectedVersion\": {{projectBIdVersion}},\n  \"reason\": \"Fictional demonstration\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('projectBId',r.id); pm.environment.set('projectBIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create project C",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberCId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/projects",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"code\": \"{{runPrefix}}_PC\",\n  \"name\": \"Fictional Project C\",\n  \"description\": \"Synthetic resource scenario\",\n  \"departmentId\": {{depCId}},\n  \"ownerId\": {{memberCId}},\n  \"startAt\": \"{{startC}}\",\n  \"endAt\": \"{{endC}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('projectCId',r.id); pm.environment.set('projectCIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cord requirement C",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberCId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/requirements",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"projectId\": {{projectCId}},\n  \"resourceId\": {{cordId}},\n  \"quantity\": 4,\n  \"startAt\": \"{{startC}}\",\n  \"endAt\": \"{{endC}}\",\n  \"priority\": \"NORMAL\",\n  \"notes\": \"Fictional requirement\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('reqCordCId',r.id); pm.environment.set('reqCordCIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read current projectCId",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberCId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/projects/{{projectCId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('projectCId',r.id); pm.environment.set('projectCIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "submit projectCId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberCId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/projects/{{projectCId}}/submit",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"expectedVersion\": {{projectCIdVersion}},\n  \"reason\": \"Fictional demonstration\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('projectCId',r.id); pm.environment.set('projectCIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read current projectCId",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/projects/{{projectCId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('projectCId',r.id); pm.environment.set('projectCIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "approve projectCId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/projects/{{projectCId}}/approve",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"expectedVersion\": {{projectCIdVersion}},\n  \"reason\": \"Fictional demonstration\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('projectCId',r.id); pm.environment.set('projectCIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Request allocCordAId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberAId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"requirementId\": {{reqCordAId}},\n  \"quantity\": 6,\n  \"recipientId\": {{memberAId}},\n  \"requestKey\": \"{{allocCordAKey}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('allocCordAId',r.id); pm.environment.set('allocCordAIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read current allocCordAId",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocCordAId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('allocCordAId',r.id); pm.environment.set('allocCordAIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Approve allocCordAId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocCordAId}}/approve",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"expectedVersion\": {{allocCordAIdVersion}},\n  \"reason\": \"Fictional capacity decision\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('allocCordAId',r.id); pm.environment.set('allocCordAIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Request allocCordBFailedId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberBId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"requirementId\": {{reqCordBId}},\n  \"quantity\": 5,\n  \"recipientId\": {{memberBId}},\n  \"requestKey\": \"{{allocCordBFailedKey}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('allocCordBFailedId',r.id); pm.environment.set('allocCordBFailedIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read current allocCordBFailedId",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocCordBFailedId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('allocCordBFailedId',r.id); pm.environment.set('allocCordBFailedIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Approve allocCordBFailedId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocCordBFailedId}}/approve",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"expectedVersion\": {{allocCordBFailedIdVersion}},\n  \"reason\": \"Fictional capacity decision\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 409',()=>pm.response.to.have.status(409));",
+              "pm.test('Quantity conflict',()=>pm.expect(pm.response.json().code).to.eql('RESOURCE_OVERALLOCATION'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read current allocCordBFailedId",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberBId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocCordBFailedId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('allocCordBFailedId',r.id); pm.environment.set('allocCordBFailedIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "cancel allocCordBFailedId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberBId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocCordBFailedId}}/cancel",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"expectedVersion\": {{allocCordBFailedIdVersion}},\n  \"reason\": \"Fictional demonstration\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('allocCordBFailedId',r.id); pm.environment.set('allocCordBFailedIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Request allocCordBId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberBId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"requirementId\": {{reqCordBId}},\n  \"quantity\": 4,\n  \"recipientId\": {{memberBId}},\n  \"requestKey\": \"{{allocCordBKey}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('allocCordBId',r.id); pm.environment.set('allocCordBIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read current allocCordBId",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocCordBId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('allocCordBId',r.id); pm.environment.set('allocCordBIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Approve allocCordBId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocCordBId}}/approve",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"expectedVersion\": {{allocCordBIdVersion}},\n  \"reason\": \"Fictional capacity decision\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('allocCordBId',r.id); pm.environment.set('allocCordBIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Request allocCordCId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberCId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"requirementId\": {{reqCordCId}},\n  \"quantity\": 4,\n  \"recipientId\": {{memberCId}},\n  \"requestKey\": \"{{allocCordCKey}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('allocCordCId',r.id); pm.environment.set('allocCordCIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read current allocCordCId",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocCordCId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('allocCordCId',r.id); pm.environment.set('allocCordCIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Approve allocCordCId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocCordCId}}/approve",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"expectedVersion\": {{allocCordCIdVersion}},\n  \"reason\": \"Fictional capacity decision\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('allocCordCId',r.id); pm.environment.set('allocCordCIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Peak full cord demand shortage one",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/shortages/resources/{{cordId}}?from={{windowStart}}&to={{endC}}"
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.environment.set('windowStart',new Date(Date.now()+60000).toISOString());"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('One extra cord at peak',()=>pm.expect(pm.response.json().minimumAdditionalUnits).to.eql(1));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Request allocPaperAId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberAId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"requirementId\": {{reqPaperAId}},\n  \"quantity\": 60,\n  \"recipientId\": {{memberAId}},\n  \"requestKey\": \"{{allocPaperAKey}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('allocPaperAId',r.id); pm.environment.set('allocPaperAIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read current allocPaperAId",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocPaperAId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('allocPaperAId',r.id); pm.environment.set('allocPaperAIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Approve allocPaperAId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocPaperAId}}/approve",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"expectedVersion\": {{allocPaperAIdVersion}},\n  \"reason\": \"Fictional capacity decision\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('allocPaperAId',r.id); pm.environment.set('allocPaperAIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Consume twenty sheets",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocPaperAId}}/consume",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"quantity\": 20,\n  \"reason\": \"Fictional handover\",\n  \"commandKey\": \"{{consumePaperKey}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('consumePaperId',r.id); pm.environment.set('consumePaperIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Physical80 reserved40 available40",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/resources/{{paperId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "const r=pm.response.json(); pm.test('No double subtraction',()=>{pm.expect(r.physicalInStore).to.eql(80);pm.expect(r.reservedConsumable).to.eql(40);pm.expect(r.availableConsumable).to.eql(40);});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Request allocPaperBFailedId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberBId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"requirementId\": {{reqPaperBId}},\n  \"quantity\": 50,\n  \"recipientId\": {{memberBId}},\n  \"requestKey\": \"{{allocPaperBFailedKey}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('allocPaperBFailedId',r.id); pm.environment.set('allocPaperBFailedIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read current allocPaperBFailedId",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocPaperBFailedId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('allocPaperBFailedId',r.id); pm.environment.set('allocPaperBFailedIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Approve allocPaperBFailedId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocPaperBFailedId}}/approve",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"expectedVersion\": {{allocPaperBFailedIdVersion}},\n  \"reason\": \"Fictional capacity decision\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 409',()=>pm.response.to.have.status(409));",
+              "pm.test('Quantity conflict',()=>pm.expect(pm.response.json().code).to.eql('RESOURCE_OVERALLOCATION'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read current allocPaperBFailedId",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberBId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocPaperBFailedId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('allocPaperBFailedId',r.id); pm.environment.set('allocPaperBFailedIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "cancel allocPaperBFailedId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberBId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocPaperBFailedId}}/cancel",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"expectedVersion\": {{allocPaperBFailedIdVersion}},\n  \"reason\": \"Fictional demonstration\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('allocPaperBFailedId',r.id); pm.environment.set('allocPaperBFailedIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Request allocPaperBId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberBId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"requirementId\": {{reqPaperBId}},\n  \"quantity\": 40,\n  \"recipientId\": {{memberBId}},\n  \"requestKey\": \"{{allocPaperBKey}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('allocPaperBId',r.id); pm.environment.set('allocPaperBIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read current allocPaperBId",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocPaperBId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('allocPaperBId',r.id); pm.environment.set('allocPaperBIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Approve allocPaperBId",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocPaperBId}}/approve",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"expectedVersion\": {{allocPaperBIdVersion}},\n  \"reason\": \"Fictional capacity decision\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('allocPaperBId',r.id); pm.environment.set('allocPaperBIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Issue cords A",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocCordAId}}/issue",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"quantity\": 6,\n  \"reason\": \"Fictional custody handover\",\n  \"commandKey\": \"{{issueAKey}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('issueAId',r.id); pm.environment.set('issueAIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Issue cords B",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocCordBId}}/issue",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"quantity\": 4,\n  \"reason\": \"Fictional custody handover\",\n  \"commandKey\": \"{{issueBKey}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('issueBId',r.id); pm.environment.set('issueBIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Queue due reminder without consent",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/notifications",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"allocationId\": {{allocCordAId}},\n  \"kind\": \"RETURN_DUE\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('notificationId',r.id); pm.environment.set('notificationIdVersion',r.version);",
+              "}",
+              "pm.test('No consent means skipped',()=>pm.expect(pm.response.json().status).to.eql('SKIPPED'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reminder scan 1",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/jobs/reminders/run-once",
+        "body": {
+          "mode": "raw",
+          "raw": "{}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reminder scan 2",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/jobs/reminders/run-once",
+        "body": {
+          "mode": "raw",
+          "raw": "{}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Return Afirst",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocCordAId}}/return",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"quantity\": 2,\n  \"reason\": \"Fictional inspection Afirst\",\n  \"commandKey\": \"{{returnAfirstKey}}\",\n  \"inspection\": \"USABLE\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('returnAfirstId',r.id); pm.environment.set('returnAfirstIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Return Arest",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocCordAId}}/return",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"quantity\": 4,\n  \"reason\": \"Fictional inspection Arest\",\n  \"commandKey\": \"{{returnArestKey}}\",\n  \"inspection\": \"USABLE\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('returnArestId',r.id); pm.environment.set('returnArestIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Return Bgood",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocCordBId}}/return",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"quantity\": 3,\n  \"reason\": \"Fictional inspection Bgood\",\n  \"commandKey\": \"{{returnBgoodKey}}\",\n  \"inspection\": \"USABLE\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('returnBgoodId',r.id); pm.environment.set('returnBgoodIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Return Bdamaged",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocCordBId}}/return",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"quantity\": 1,\n  \"reason\": \"Fictional inspection Bdamaged\",\n  \"commandKey\": \"{{returnBdamagedKey}}\",\n  \"inspection\": \"DAMAGED\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('returnBdamagedId',r.id); pm.environment.set('returnBdamagedIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Inspect final cord condition",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/resources/{{cordId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "const r=pm.response.json();pm.test('Nine usable one damaged',()=>{pm.expect(r.physicalInStore).to.eql(9);pm.expect(r.outstanding).to.eql(0);pm.expect(r.damagedInStore).to.eql(1);});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Unused temporary department",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{bootstrapAdminId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/departments",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"code\": \"{{runPrefix}}_TMP\",\n  \"name\": \"Temporary Demo\",\n  \"description\": \"Deletion test\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('tempDepartmentId',r.id); pm.environment.set('tempDepartmentIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read current tempDepartmentId",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{bootstrapAdminId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/departments/{{tempDepartmentId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('tempDepartmentId',r.id); pm.environment.set('tempDepartmentIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Physical runtime deletion",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{bootstrapAdminId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/departments/{{tempDepartmentId}}/delete",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"expectedVersion\": {{tempDepartmentIdVersion}},\n  \"reason\": \"Unused fictional row\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 204',()=>pm.response.to.have.status(204));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Deleted row now missing",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{bootstrapAdminId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/departments/{{tempDepartmentId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 404',()=>pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create auditable note",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/audit-events",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"targetType\": \"Project\",\n  \"targetId\": {{projectAId}},\n  \"reason\": \"Fictional review note\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "if(pm.response.code>=200 && pm.response.code<300){ const r=pm.response.json();",
+              "pm.environment.set('auditId',r.id); pm.environment.set('auditIdVersion',r.version);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "List departments",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/departments"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read departments by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/departments/{{depAId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "List users",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberAId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/users"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read users by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberAId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/users/{{memberAId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "List projects",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberAId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/projects"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read projects by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberAId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/projects/{{projectAId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "List resources",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/resources"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read resources by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/resources/{{cordId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "List requirements",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberAId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/requirements"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read requirements by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberAId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/requirements/{{reqCordAId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "List allocations",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberAId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read allocations by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{memberAId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/allocations/{{allocCordAId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "List inventory-transactions",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/inventory-transactions"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read inventory-transactions by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{custodianId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/inventory-transactions/{{issueAId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "List notifications",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/notifications"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read notifications by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/notifications/{{notificationId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "List audit-events",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/audit-events"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read audit-events by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/audit-events/{{auditId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read reports/inventory",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/reports/inventory"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read reports/overdue",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/reports/overdue"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read reports/upcoming?from={{windowStart}}&to={{endC}}",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/reports/upcoming?from={{windowStart}}&to={{endC}}"
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.environment.set('windowStart',new Date(Date.now()+60000).toISOString());"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read reports/department-demand?departmentId={{depAId}}&from={{windowStart}}&to={{endC}}",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/reports/department-demand?departmentId={{depAId}}&from={{windowStart}}&to={{endC}}"
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.environment.set('windowStart',new Date(Date.now()+60000).toISOString());"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read shortages/projects/{{projectBId}}",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Demo-User-Id",
+            "value": "{{officerId}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/shortages/projects/{{projectBId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.environment.set('departmentId',pm.environment.get('depAId'));",
+              "pm.environment.set('userId',pm.environment.get('memberAId'));",
+              "pm.environment.set('memberId',pm.environment.get('memberAId'));",
+              "pm.environment.set('projectId',pm.environment.get('projectAId'));",
+              "pm.environment.set('resourceId',pm.environment.get('cordId'));",
+              "pm.environment.set('requirementId',pm.environment.get('reqCordAId'));",
+              "pm.environment.set('allocationId',pm.environment.get('allocCordAId'));",
+              "pm.environment.set('inventoryTransactionId',pm.environment.get('issueAId'));",
+              "pm.environment.set('auditId',pm.environment.get('auditId'));",
+              "pm.environment.set('actingUserId',pm.environment.get('officerId'));",
+              "pm.environment.set('windowEnd',pm.environment.get('endC'));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

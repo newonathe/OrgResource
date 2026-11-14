@@ -1,0 +1,36 @@
+Local MySQL 8.0.46 schema evidence; instance bound to 127.0.0.1:3308; database orgresource
+Captured: 2026-11-13 23:42:34 +08:00
+
+Tables and engines:
+TABLE_NAME	ENGINE
+allocation	InnoDB
+department	InnoDB
+project	InnoDB
+resource	InnoDB
+resource_requirement	InnoDB
+
+Foreign keys:
+TABLE_NAME	COLUMN_NAME	CONSTRAINT_NAME	REFERENCED_TABLE_NAME	REFERENCED_COLUMN_NAME
+allocation	requirement_id	fk_allocation_requirement	resource_requirement	id
+project	department_id	fk_project_department	department	id
+resource_requirement	project_id	fk_requirement_project	project	id
+resource_requirement	resource_id	fk_requirement_resource	resource	id
+
+Unique indexes:
+TABLE_NAME	INDEX_NAME	columns_in_index
+allocation	PRIMARY	id
+department	PRIMARY	id
+department	uk_department_name_key	name_key
+project	PRIMARY	id
+resource	PRIMARY	id
+resource	uk_resource_name_key	name_key
+resource_requirement	PRIMARY	id
+resource_requirement	uk_requirement_project_resource	project_id,resource_id
+
+Current row counts after Newman run:
+allocation	COUNT(*)
+allocation	4
+department	5
+project	4
+resource	4
+resource_requirement	4
