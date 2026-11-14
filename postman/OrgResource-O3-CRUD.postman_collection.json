@@ -1,0 +1,573 @@
+{
+  "info": {
+    "_postman_id": "9d1d8f1c-638c-47d5-b74b-4a82c322f56f",
+    "name": "OrgResource O3 CRUD and Integrity",
+    "description": "O3 live HTTP checks. Creates unique fictional fixtures, checks CRUD behavior and persistence, and removes only its own fixtures.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if(!pm.collectionVariables.get('runTag')){var t=Date.now().toString()+Math.floor(Math.random()*10000);pm.collectionVariables.set('runTag',t);function f(n){return new Date(Date.now()+n*86400000).toISOString().slice(0,19);}pm.collectionVariables.set('startAt',f(3));pm.collectionVariables.set('endAt',f(5));pm.collectionVariables.set('updatedStartAt',f(8));pm.collectionVariables.set('updatedEndAt',f(10));}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "01 Create Department fixture",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('201 created',function(){pm.response.to.have.status(201);});var x=pm.response.json();pm.test('Positive ID',function(){pm.expect(x.id).to.be.above(0);});pm.collectionVariables.set('departmentId',x.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"O3 CRUD Department {{runTag}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/departments"
+      },
+      "response": []
+    },
+    {
+      "name": "02 Create future Project fixture",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('201 created',function(){pm.response.to.have.status(201);});var x=pm.response.json();pm.test('Department link preserved',function(){pm.expect(x.id).to.be.above(0);pm.expect(x.departmentId).to.eql(Number(pm.collectionVariables.get('departmentId')));});pm.collectionVariables.set('projectId',x.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"departmentId\":{{departmentId}},\"name\":\"O3 CRUD Project {{runTag}}\",\"startAt\":\"{{startAt}}\",\"endAt\":\"{{endAt}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/projects"
+      },
+      "response": []
+    },
+    {
+      "name": "03 Create Resource fixture",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('201 created',function(){pm.response.to.have.status(201);});var x=pm.response.json();pm.test('Fictional stock and type',function(){pm.expect(x.id).to.be.above(0);pm.expect(x.totalQuantity).to.eql(120);pm.expect(x.type).to.eql('CONSUMABLE');});pm.collectionVariables.set('resourceId',x.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"O3 CRUD Resource {{runTag}}\",\"type\":\"CONSUMABLE\",\"totalQuantity\":120}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/resources"
+      },
+      "response": []
+    },
+    {
+      "name": "04 Create Requirement fixture",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('201 created',function(){pm.response.to.have.status(201);});var x=pm.response.json();pm.test('Links and shortage',function(){pm.expect(x.id).to.be.above(0);pm.expect(x.projectId).to.eql(Number(pm.collectionVariables.get('projectId')));pm.expect(x.resourceId).to.eql(Number(pm.collectionVariables.get('resourceId')));pm.expect(x.shortageQuantity).to.eql(5);});pm.collectionVariables.set('requirementId',x.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"projectId\":{{projectId}},\"resourceId\":{{resourceId}},\"quantity\":5}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/requirements"
+      },
+      "response": []
+    },
+    {
+      "name": "05 P03 updates Project",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('P03 200',function(){pm.response.to.have.status(200);});var x=pm.response.json();pm.test('P03 updates name and dates, keeps IDs',function(){pm.expect(x.id).to.eql(Number(pm.collectionVariables.get('projectId')));pm.expect(x.departmentId).to.eql(Number(pm.collectionVariables.get('departmentId')));pm.expect(x.name).to.eql('O3 Updated Project '+pm.collectionVariables.get('runTag'));pm.expect(x.startAt).to.eql(pm.collectionVariables.get('updatedStartAt'));pm.expect(x.endAt).to.eql(pm.collectionVariables.get('updatedEndAt'));});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"O3 Updated Project {{runTag}}\",\"startAt\":\"{{updatedStartAt}}\",\"endAt\":\"{{updatedEndAt}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/projects/{{projectId}}/update"
+      },
+      "response": []
+    },
+    {
+      "name": "06 P02 confirms Project persisted",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('P02 200',function(){pm.response.to.have.status(200);});var rows=pm.response.json(),id=Number(pm.collectionVariables.get('projectId'));pm.test('Updated Project persisted',function(){var x=rows.find(function(r){return r.id===id;});pm.expect(x).to.exist;pm.expect(x.name).to.eql('O3 Updated Project '+pm.collectionVariables.get('runTag'));});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/projects?departmentId={{departmentId}}"
+      },
+      "response": []
+    },
+    {
+      "name": "07 P04 protects referenced Project",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('P04 dependency conflict',function(){pm.response.to.have.status(409);pm.expect(pm.response.json().code).to.eql('DEPENDENCY_EXISTS');});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/projects/{{projectId}}/delete"
+      },
+      "response": []
+    },
+    {
+      "name": "08 R03 updates Resource",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('R03 200',function(){pm.response.to.have.status(200);});var x=pm.response.json();pm.test('Type immutable, availability calculated',function(){pm.expect(x.id).to.eql(Number(pm.collectionVariables.get('resourceId')));pm.expect(x.name).to.eql('O3 Updated Resource '+pm.collectionVariables.get('runTag'));pm.expect(x.totalQuantity).to.eql(130);pm.expect(x.availableQuantity).to.eql(130);pm.expect(x.type).to.eql('CONSUMABLE');});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"O3 Updated Resource {{runTag}}\",\"totalQuantity\":130,\"expectedTotalQuantity\":120}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/resources/{{resourceId}}/update"
+      },
+      "response": []
+    },
+    {
+      "name": "09 R03 rejects stale expected total",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Stale total gets 409',function(){pm.response.to.have.status(409);pm.expect(pm.response.json().code).to.eql('STALE_RESOURCE_QUANTITY');});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"Should Not Persist {{runTag}}\",\"totalQuantity\":140,\"expectedTotalQuantity\":120}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/resources/{{resourceId}}/update"
+      },
+      "response": []
+    },
+    {
+      "name": "10 R02 confirms stale request changed nothing",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('R02 200',function(){pm.response.to.have.status(200);});var rows=pm.response.json(),id=Number(pm.collectionVariables.get('resourceId'));pm.test('Successful update persisted; stale update did not',function(){var x=rows.find(function(r){return r.id===id;});pm.expect(x).to.exist;pm.expect(x.name).to.eql('O3 Updated Resource '+pm.collectionVariables.get('runTag'));pm.expect(x.totalQuantity).to.eql(130);});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/resources?type=CONSUMABLE"
+      },
+      "response": []
+    },
+    {
+      "name": "11 R04 protects referenced Resource",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('R04 dependency conflict',function(){pm.response.to.have.status(409);pm.expect(pm.response.json().code).to.eql('DEPENDENCY_EXISTS');});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/resources/{{resourceId}}/delete"
+      },
+      "response": []
+    },
+    {
+      "name": "12 Q03 updates Requirement",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Q03 200',function(){pm.response.to.have.status(200);});var x=pm.response.json();pm.test('Coverage and shortage are returned',function(){pm.expect(x.id).to.eql(Number(pm.collectionVariables.get('requirementId')));pm.expect(x.projectId).to.eql(Number(pm.collectionVariables.get('projectId')));pm.expect(x.resourceId).to.eql(Number(pm.collectionVariables.get('resourceId')));pm.expect(x.quantity).to.eql(8);pm.expect(x.allocatedQuantity).to.eql(0);pm.expect(x.shortageQuantity).to.eql(8);});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"quantity\":8}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/requirements/{{requirementId}}/update"
+      },
+      "response": []
+    },
+    {
+      "name": "13 Q03 rejects invalid quantity",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Invalid Q03 quantity returns 400',function(){pm.response.to.have.status(400);pm.expect(pm.response.json().code).to.eql('VALIDATION_FAILED');});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"quantity\":0}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/requirements/{{requirementId}}/update"
+      },
+      "response": []
+    },
+    {
+      "name": "14 Q04 deletes Requirement",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Q04 deletes unreferenced Requirement',function(){pm.response.to.have.status(200);pm.expect(pm.response.json().message).to.eql('Record deleted.');});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/requirements/{{requirementId}}/delete"
+      },
+      "response": []
+    },
+    {
+      "name": "15 Q02 confirms Requirement absent",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Q02 200',function(){pm.response.to.have.status(200);});var id=Number(pm.collectionVariables.get('requirementId'));pm.test('Deleted Requirement absent',function(){pm.expect(pm.response.json().some(function(r){return r.id===id;})).to.eql(false);});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/requirements?projectId={{projectId}}"
+      },
+      "response": []
+    },
+    {
+      "name": "16 P04 deletes unreferenced Project",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('P04 deletes unreferenced Project',function(){pm.response.to.have.status(200);pm.expect(pm.response.json().message).to.eql('Record deleted.');});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/projects/{{projectId}}/delete"
+      },
+      "response": []
+    },
+    {
+      "name": "17 R04 protects positive stock",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Positive stock returns RESOURCE_NOT_EMPTY',function(){pm.response.to.have.status(409);pm.expect(pm.response.json().code).to.eql('RESOURCE_NOT_EMPTY');});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/resources/{{resourceId}}/delete"
+      },
+      "response": []
+    },
+    {
+      "name": "18 R03 sets stock to zero",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('R03 allows zero without commitments',function(){pm.response.to.have.status(200);var x=pm.response.json();pm.expect(x.totalQuantity).to.eql(0);pm.expect(x.availableQuantity).to.eql(0);});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"O3 Updated Resource {{runTag}}\",\"totalQuantity\":0,\"expectedTotalQuantity\":130}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/resources/{{resourceId}}/update"
+      },
+      "response": []
+    },
+    {
+      "name": "19 R04 deletes eligible Resource",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('R04 deletes zero-stock unreferenced Resource',function(){pm.response.to.have.status(200);pm.expect(pm.response.json().message).to.eql('Record deleted.');});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/resources/{{resourceId}}/delete"
+      },
+      "response": []
+    },
+    {
+      "name": "20 Delete fixture Department",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Department fixture cleanup',function(){pm.response.to.have.status(200);pm.expect(pm.response.json().message).to.eql('Record deleted.');});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/departments/{{departmentId}}/delete"
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8080/api",
+      "type": "string"
+    },
+    {
+      "key": "runTag",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

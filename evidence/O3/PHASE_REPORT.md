@@ -1,5 +1,7 @@
 # OrgResource O3 continuation report
 
+> Historical D03 continuation report captured on 2026-11-14. Current O3 CRUD status and verification are in [O3-CRUD-CONTINUATION-2026-11-15.md](O3-CRUD-CONTINUATION-2026-11-15.md).
+
 Captured: 2026-11-14 (Asia/Manila)
 
 ## Scope and source audit

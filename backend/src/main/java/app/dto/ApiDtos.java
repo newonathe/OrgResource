@@ -41,6 +41,12 @@ public final class ApiDtos {
         @NotNull public LocalDateTime endAt;
     }
 
+    public static class UpdateProject {
+        @NotNull public String name;
+        @NotNull public LocalDateTime startAt;
+        @NotNull public LocalDateTime endAt;
+    }
+
     public static class ProjectView {
         public Long id;
         public Long departmentId;
@@ -61,6 +67,12 @@ public final class ApiDtos {
         @NotBlank @Size(max = 100) public String name;
         @NotNull public ResourceType type;
         @NotNull @Min(0) @Max(1000000) public Integer totalQuantity;
+    }
+
+    public static class UpdateResource {
+        @NotNull public String name;
+        @NotNull @Min(0) @Max(1000000) public Integer totalQuantity;
+        @NotNull @Min(0) @Max(1000000) public Integer expectedTotalQuantity;
     }
 
     public static class ResourceView {
@@ -92,6 +104,10 @@ public final class ApiDtos {
     public static class CreateRequirement {
         @NotNull @Positive public Long projectId;
         @NotNull @Positive public Long resourceId;
+        @NotNull @Min(1) @Max(1000000) public Integer quantity;
+    }
+
+    public static class UpdateRequirement {
         @NotNull @Min(1) @Max(1000000) public Integer quantity;
     }
 

@@ -17,6 +17,7 @@ import app.components.RequestValidation;
 import app.dto.ApiDtos.CreateResource;
 import app.dto.ApiDtos.ResourceAvailabilityView;
 import app.dto.ApiDtos.ResourceView;
+import app.dto.ApiDtos.UpdateResource;
 import app.entities.ResourceType;
 
 @Component
@@ -37,6 +38,21 @@ public class ResourceController {
     @GET
     public List<ResourceView> list(@QueryParam("type") ResourceType type) {
         return component.list(type);
+    }
+
+    @POST
+    @Path("/{id}/update")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response update(@PathParam("id") Long id, UpdateResource request) {
+        requestValidation.validate(request);
+        return Response.ok(component.update(id, request.name, request.totalQuantity,
+                request.expectedTotalQuantity)).build();
+    }
+
+    @POST
+    @Path("/{id}/delete")
+    public Response delete(@PathParam("id") Long id) {
+        return Response.ok(component.delete(id)).build();
     }
 
     @GET

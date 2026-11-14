@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import app.dto.ApiDtos.MessageView;
 import app.dto.ApiDtos.RequirementView;
 import app.entities.AllocationStatus;
 import app.entities.Project;
@@ -20,9 +21,8 @@ import app.repositories.ResourceRequirementRepository;
 
 @Component
 public class RequirementComponent {
-    private static final List<AllocationStatus> COVERED = Arrays.asList(
-            AllocationStatus.APPROVED, AllocationStatus.ISSUED,
-            AllocationStatus.RETURNED, AllocationStatus.CONSUMED);
+    private static final List<AllocationStatus> COMPLETED = Arrays.asList(
+            AllocationStatus.ISSUED, AllocationStatus.RETURNED, AllocationStatus.CONSUMED);
 
     @Autowired private ResourceRequirementRepository requirements;
     @Autowired private ProjectRepository projects;
@@ -35,18 +35,19 @@ public class RequirementComponent {
         if (quantity == null || quantity < 1 || quantity > 1000000) {
             throw new ApiException(400, "VALIDATION_FAILED", "quantity must be from 1 to 1000000.");
         }
-        Project project = projects.findById(projectId)
+        Project project = projects.lockById(projectId)
                 .orElseThrow(() -> new ApiException(404, "NOT_FOUND", "Project not found."));
-        Resource resource = resources.findById(resourceId)
+        Resource resource = resources.lockById(resourceId)
                 .orElseThrow(() -> new ApiException(404, "NOT_FOUND", "Resource not found."));
-        if (!project.endAt.isAfter(LocalDateTime.now(philippineClock))) {
+        LocalDateTime now = LocalDateTime.now(philippineClock);
+        if (!project.getEndAt().isAfter(now)) {
             throw new ApiException(409, "PROJECT_ENDED", "Requirements cannot be added to an ended Project.");
         }
         if (requirements.existsByProject_IdAndResource_Id(projectId, resourceId)) {
             throw new ApiException(409, "DUPLICATE_REQUIREMENT", "This Project already has a Requirement for that Resource.");
         }
         ResourceRequirement saved = requirements.save(new ResourceRequirement(project, resource, quantity));
-        return view(saved);
+        return view(saved, now);
     }
 
     @Transactional(readOnly = true)
@@ -56,11 +57,80 @@ public class RequirementComponent {
         }
         List<ResourceRequirement> rows = projectId == null
                 ? requirements.findAll() : requirements.findByProject_Id(projectId);
-        return rows.stream().map(this::view).collect(Collectors.toList());
+        LocalDateTime now = LocalDateTime.now(philippineClock);
+        return rows.stream().map(requirement -> view(requirement, now)).collect(Collectors.toList());
     }
 
-    private RequirementView view(ResourceRequirement requirement) {
-        Long sum = allocations.sumCoveredQuantity(requirement.id, COVERED);
-        return new RequirementView(requirement, sum == null ? 0 : sum.intValue());
+    @Transactional
+    public RequirementView update(Long id, Integer quantity) {
+        requirePositiveId(id);
+        validateQuantity(quantity);
+        ResourceRequirement initial = requirements.findById(id)
+                .orElseThrow(() -> new ApiException(404, "NOT_FOUND", "Requirement not found."));
+        Long projectId = initial.project.getId();
+        Long resourceId = initial.resource.getId();
+        Project project = projects.lockById(projectId)
+                .orElseThrow(() -> new ApiException(404, "NOT_FOUND", "Project not found."));
+        resources.lockById(resourceId)
+                .orElseThrow(() -> new ApiException(404, "NOT_FOUND", "Resource not found."));
+        ResourceRequirement requirement = requirements.lockById(id)
+                .orElseThrow(() -> new ApiException(404, "NOT_FOUND", "Requirement not found."));
+
+        LocalDateTime now = LocalDateTime.now(philippineClock);
+        if (!project.getEndAt().isAfter(now)) {
+            throw new ApiException(409, "PROJECT_ENDED", "Requirements cannot be changed after the Project ends.");
+        }
+        Long coveredValue = allocations.sumCoveredQuantity(requirement.id, COMPLETED,
+                AllocationStatus.APPROVED, now);
+        long covered = coveredValue == null ? 0L : coveredValue;
+        Integer pendingValue = allocations.maxPendingQuantity(requirement.id, AllocationStatus.PENDING);
+        int largestPending = pendingValue == null ? 0 : pendingValue;
+        if (quantity.longValue() < Math.max(covered, (long) largestPending)) {
+            throw new ApiException(409, "QUANTITY_BELOW_COMMITMENTS",
+                    "quantity cannot be lower than current coverage or the largest live pending Allocation.");
+        }
+
+        requirement.quantity = quantity;
+        ResourceRequirement saved = requirements.saveAndFlush(requirement);
+        return view(saved, now);
+    }
+
+    @Transactional
+    public MessageView delete(Long id) {
+        requirePositiveId(id);
+        ResourceRequirement initial = requirements.findById(id)
+                .orElseThrow(() -> new ApiException(404, "NOT_FOUND", "Requirement not found."));
+        Long projectId = initial.project.getId();
+        Long resourceId = initial.resource.getId();
+        projects.lockById(projectId)
+                .orElseThrow(() -> new ApiException(404, "NOT_FOUND", "Project not found."));
+        resources.lockById(resourceId)
+                .orElseThrow(() -> new ApiException(404, "NOT_FOUND", "Resource not found."));
+        ResourceRequirement requirement = requirements.lockById(id)
+                .orElseThrow(() -> new ApiException(404, "NOT_FOUND", "Requirement not found."));
+        if (allocations.existsByRequirement_Id(id)) {
+            throw new ApiException(409, "DEPENDENCY_EXISTS", "Requirement still has Allocation history.");
+        }
+        requirements.delete(requirement);
+        requirements.flush();
+        return new MessageView("Record deleted.");
+    }
+
+    private RequirementView view(ResourceRequirement requirement, LocalDateTime now) {
+        Long sum = allocations.sumCoveredQuantity(requirement.id, COMPLETED,
+                AllocationStatus.APPROVED, now);
+        return new RequirementView(requirement, sum == null ? 0 : Math.toIntExact(sum));
+    }
+
+    private void validateQuantity(Integer quantity) {
+        if (quantity == null || quantity < 1 || quantity > 1000000) {
+            throw new ApiException(400, "VALIDATION_FAILED", "quantity must be from 1 to 1000000.");
+        }
+    }
+
+    private void requirePositiveId(Long id) {
+        if (id == null || id <= 0) {
+            throw new ApiException(400, "VALIDATION_FAILED", "Requirement ID must be positive.");
+        }
     }
 }

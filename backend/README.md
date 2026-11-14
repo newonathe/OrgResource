@@ -1,4 +1,4 @@
-# OrgResource Java skeleton (O1)
+# OrgResource Java backend (O1–O3)
 
 This backend is the first, deliberately bounded implementation slice for the CSCI 180.05 OrgResource project. It uses the supplied course-era stack: Java 8, Spring Boot 2.1.0, Jersey/JAX-RS `javax`, Spring Data JPA, Javax Validation, and MySQL. The Eclipse metadata supports Java 8 and m2e; day-to-day editing can remain in VS Code.
 
@@ -19,19 +19,25 @@ Implemented routes:
 | POST / GET | `/api/departments` | Create and list |
 | POST | `/api/departments/{id}/update` | Rename; normalized duplicate conflicts return JSON 409 |
 | POST / GET | `/api/projects` | Create; list optionally filtered by `departmentId` |
+| POST | `/api/projects/{id}/update` | Update name and/or valid Project dates |
+| POST | `/api/projects/{id}/delete` | Delete only when no Requirements reference the Project |
 | POST / GET | `/api/resources` | Create; list optionally filtered by `type` |
+| POST | `/api/resources/{id}/update` | Guarded name/total correction with server-derived availability |
+| POST | `/api/resources/{id}/delete` | Delete only when stock is zero and no Requirements reference it |
 | GET | `/api/resources/{id}/availability` | Original two-field availability response |
 | POST / GET | `/api/requirements` | Create; list optionally filtered by `projectId`; computed coverage query |
+| POST | `/api/requirements/{id}/update` | Change quantity only when current commitments remain valid |
+| POST | `/api/requirements/{id}/delete` | Delete only when no Allocation history references it |
 | POST / GET | `/api/allocations` | Create; redacted list optionally filtered by `requirementId` and `status` |
 | POST | `/api/departments/{id}/delete` | Safe example: refuses deletion while Projects reference the Department |
 
 Create responses use HTTP 201; list and delete successes use HTTP 200. Invalid request fields return a JSON 400; duplicate normalized names and known dependency conflicts return JSON 409.
 
-The Department rename route is covered by unit tests and `../postman/OrgResource-O3-Department-Update.postman_collection.json`. The O1 routes are covered by `../postman/OrgResource-O1-Skeleton.postman_collection.json`.
+The O3 project/resource/requirement CRUD routes are covered by `../postman/OrgResource-O3-CRUD.postman_collection.json`; Department rename is covered by `../postman/OrgResource-O3-Department-Update.postman_collection.json`. The O1 routes are covered by `../postman/OrgResource-O1-Skeleton.postman_collection.json`.
 
 ## Not part of this skeleton
 
-The remaining original Project, Resource, Requirement and Allocation update/delete/state-transition routes, complete allocation stock lifecycle, concurrency controls, scheduler work, Retrofit/Gson provider integration, React UI, image upload/serve behavior, production migrations, and hosted deployment are not implemented here. See `../evidence/O3/ROUTE_PARITY.md` for the complete route map. Do not treat this skeleton as the finished project.
+The remaining original routes are Allocation approval, issue, return, consume, cancel and guarded delete (A03–A08). Allocation concurrency controls and expiry scheduling, Retrofit/Gson provider integration, React UI, image upload/serve behavior, production migrations, and hosted deployment are not implemented in O3. Optional consent revocation A09 is tracked separately from the original 25 routes. See `../evidence/O3/ROUTE_PARITY.md` for the O3 route map. Do not treat this backend as the finished project.
 
 The syllabus maps the final project to CLO9 (receiving and serving images over HTTP), while the concise proposal's 25-route API does not specify image endpoints. The instructor/Canvas requirement remains unresolved. The image feature is therefore not silently added to this O1 skeleton; resolve the scope before final-project acceptance.
 
