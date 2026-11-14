@@ -1,10 +1,10 @@
 # OrgResource O1 / O2 handoff report
 
-Captured: 2026-11-13 (Asia/Manila)
+O1 baseline captured: 2026-11-13 (Asia/Manila). See `../O3/PHASE_REPORT.md` for the current continuation and route status.
 
 ## Outcome
 
-O1 Java backend skeleton is implemented and locally verified. O2 handoff artifacts include an Eclipse/m2e-compatible Java source ZIP, the saved Postman collection and local environment, raw Newman results, database schema evidence, restart-persistence evidence, and a video shot list. No video was recorded. This is not the complete OrgResource project and is not a course submission.
+The O1 Java backend skeleton is implemented and locally verified. O2 handoff artifacts include an Eclipse/m2e-compatible Java source ZIP, the saved Postman collection and local environment, raw Newman results, database schema evidence, restart-persistence evidence, and a video shot list. No video was recorded. The initial O1 snapshot implemented 12 of the original 25 proposal routes; D03 Department rename was added in the O3 continuation. This is not the complete OrgResource project and is not a course submission.
 
 ## Source basis and scope boundaries
 
@@ -71,4 +71,3 @@ The app was stopped after the clean package, restarted from the generated JAR ag
 2. Continue with the next bounded implementation phase only after reviewing this O1 boundary; do not infer that O1 satisfies the full proposal or rubric.
 3. Develop the remaining routes and lifecycle with explicit validation, transaction/locking rules, audit/history behavior, tests and migrations, then add the Retrofit/Gson client and scheduling only where supported by the course materials and clarified requirements.
 4. Add a real video only if it is requested and a suitable recorder is available; the present deliverable is explicitly marked `VIDEO_NOT_CREATED`.
-

@@ -1,0 +1,58 @@
+[INFO] Scanning for projects...
+[INFO] Loaded 24474 auto-discovered prefixes for remote repository central (prefixes-central.txt)
+[INFO]
+[INFO] -------------------< edu.ateneo.csci180:orgresource >-------------------
+[INFO] Building OrgResource 0.1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] Loaded 64 auto-discovered prefixes for remote repository apache.snapshots (prefixes-apache.snapshots.txt)
+[INFO]
+[INFO] --- clean:3.1.0:clean (default-clean) @ orgresource ---
+[INFO]
+[INFO] --- resources:3.1.0:resources (default-resources) @ orgresource ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] Copying 0 resource
+[INFO]
+[INFO] --- compiler:3.8.0:compile (default-compile) @ orgresource ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 32 source files to C:\Users\ethan\AppData\Local\Temp\OrgResource-O3-Commit-Zip-e6e7297341f54ab2ba27f9a965b3dc38\backend\target\classes
+[INFO]
+[INFO] --- resources:3.1.0:testResources (default-testResources) @ orgresource ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory C:\Users\ethan\AppData\Local\Temp\OrgResource-O3-Commit-Zip-e6e7297341f54ab2ba27f9a965b3dc38\backend\src\test\resources
+[INFO]
+[INFO] --- compiler:3.8.0:testCompile (default-testCompile) @ orgresource ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 2 source files to C:\Users\ethan\AppData\Local\Temp\OrgResource-O3-Commit-Zip-e6e7297341f54ab2ba27f9a965b3dc38\backend\target\test-classes
+[INFO]
+[INFO] --- surefire:2.22.1:test (default-test) @ orgresource ---
+[INFO]
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running app.components.DepartmentComponentTest
+21:14:30.491 [main] DEBUG org.springframework.test.util.ReflectionTestUtils - Setting field 'departments' of type [null] on target object [app.components.DepartmentComponent@17bffc17] or target class [class app.components.DepartmentComponent] to value [Mock for DepartmentRepository, hashCode: 1795816257]
+21:14:30.556 [main] DEBUG org.springframework.test.util.ReflectionTestUtils - Setting field 'projects' of type [null] on target object [app.components.DepartmentComponent@17bffc17] or target class [class app.components.DepartmentComponent] to value [Mock for ProjectRepository, hashCode: 362827515]
+21:14:30.563 [main] DEBUG org.springframework.test.util.ReflectionTestUtils - Setting field 'departments' of type [null] on target object [app.components.DepartmentComponent@72ef8d15] or target class [class app.components.DepartmentComponent] to value [Mock for DepartmentRepository, hashCode: 1789452565]
+21:14:30.563 [main] DEBUG org.springframework.test.util.ReflectionTestUtils - Setting field 'projects' of type [null] on target object [app.components.DepartmentComponent@72ef8d15] or target class [class app.components.DepartmentComponent] to value [Mock for ProjectRepository, hashCode: 1579280783]
+21:14:30.584 [main] DEBUG org.springframework.test.util.ReflectionTestUtils - Setting field 'departments' of type [null] on target object [app.components.DepartmentComponent@e3c0e40] or target class [class app.components.DepartmentComponent] to value [Mock for DepartmentRepository, hashCode: 849198527]
+21:14:30.585 [main] DEBUG org.springframework.test.util.ReflectionTestUtils - Setting field 'projects' of type [null] on target object [app.components.DepartmentComponent@e3c0e40] or target class [class app.components.DepartmentComponent] to value [Mock for ProjectRepository, hashCode: 1934932165]
+21:14:30.587 [main] DEBUG org.springframework.test.util.ReflectionTestUtils - Setting field 'departments' of type [null] on target object [app.components.DepartmentComponent@11d8ae8b] or target class [class app.components.DepartmentComponent] to value [Mock for DepartmentRepository, hashCode: 1201454821]
+21:14:30.587 [main] DEBUG org.springframework.test.util.ReflectionTestUtils - Setting field 'projects' of type [null] on target object [app.components.DepartmentComponent@11d8ae8b] or target class [class app.components.DepartmentComponent] to value [Mock for ProjectRepository, hashCode: 1508038883]
+21:14:30.588 [main] DEBUG org.springframework.test.util.ReflectionTestUtils - Setting field 'departments' of type [null] on target object [app.components.DepartmentComponent@2b72cb8a] or target class [class app.components.DepartmentComponent] to value [Mock for DepartmentRepository, hashCode: 2139788441]
+21:14:30.590 [main] DEBUG org.springframework.test.util.ReflectionTestUtils - Setting field 'projects' of type [null] on target object [app.components.DepartmentComponent@2b72cb8a] or target class [class app.components.DepartmentComponent] to value [Mock for ProjectRepository, hashCode: 1564698139]
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.097 s - in app.components.DepartmentComponentTest
+[INFO] Running app.config.ApiExceptionMapperTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.065 s - in app.config.ApiExceptionMapperTest
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  8.208 s
+[INFO] Finished at: 2026-11-14T21:14:31+08:00
+[INFO] ------------------------------------------------------------------------

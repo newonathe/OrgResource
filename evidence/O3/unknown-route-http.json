@@ -1,0 +1,11 @@
+{
+  "capturedAt": "2026-11-14 21:03:34 +08:00",
+  "method": "GET",
+  "url": "http://127.0.0.1:8080/api/not-a-route",
+  "status": 404,
+  "contentType": "application/json",
+  "body": {
+    "code": "NOT_FOUND",
+    "message": "The requested route or resource was not found."
+  }
+}

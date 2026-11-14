@@ -23,6 +23,10 @@ public final class ApiDtos {
         @NotBlank @Size(max = 100) public String name;
     }
 
+    public static class UpdateDepartment {
+        @NotBlank @Size(max = 100) public String name;
+    }
+
     public static class DepartmentView {
         public Long id;
         public String name;

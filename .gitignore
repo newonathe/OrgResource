@@ -23,3 +23,7 @@
 # Operating-system metadata
 Thumbs.db
 .DS_Store
+
+# Local IDE workspace settings and an extracted prior handoff archive
+/.vscode/
+/deliverables/OrgResource-Java-Skeleton-2026-11-13/

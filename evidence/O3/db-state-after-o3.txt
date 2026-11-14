@@ -1,0 +1,8 @@
+check_name	remaining
+O3 named Department fixtures	0
+entity	rows_now
+allocation	7
+department	8
+project	7
+resource	7
+resource_requirement	7

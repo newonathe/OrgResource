@@ -1,0 +1,272 @@
+{
+  "info": {
+    "_postman_id": "b78f22d8-a993-4dbe-bcbe-cbfc391bbcf4",
+    "name": "OrgResource D03 Department Update",
+    "description": "Focused runtime verification for POST /api/departments/{id}/update. Uses fictional, uniquely tagged records and removes them at the end.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Create Department update fixture",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.collectionVariables.set('runTag', Date.now().toString());"]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Create fixture returns 201', function () { pm.response.to.have.status(201); });",
+              "var body = pm.response.json();",
+              "pm.test('Fixture has a generated positive ID', function () { pm.expect(body.id).to.be.above(0); });",
+              "pm.collectionVariables.set('o3DepartmentId', body.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"O3 Source Department {{runTag}}\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{baseUrl}}/departments"
+      },
+      "response": []
+    },
+    {
+      "name": "2. Create duplicate-name fixture",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Create duplicate fixture returns 201', function () { pm.response.to.have.status(201); });",
+            "var body = pm.response.json();",
+            "pm.collectionVariables.set('o3DuplicateDepartmentId', body.id);"
+          ]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"O3 Duplicate Department {{runTag}}\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{baseUrl}}/departments"
+      },
+      "response": []
+    },
+    {
+      "name": "3. Rename and normalize display name",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Rename returns 200', function () { pm.response.to.have.status(200); });",
+            "var body = pm.response.json();",
+            "pm.test('Rename preserves ID and normalizes whitespace', function () { pm.expect(body.id).to.eql(Number(pm.collectionVariables.get('o3DepartmentId'))); pm.expect(body.name).to.eql('O3 Updated Department ' + pm.collectionVariables.get('runTag')); });"
+          ]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"  O3   Updated Department {{runTag}}  \"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{baseUrl}}/departments/{{o3DepartmentId}}/update"
+      },
+      "response": []
+    },
+    {
+      "name": "4. Allow case-only rename of the same normalized name",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Case-only rename returns 200', function () { pm.response.to.have.status(200); });",
+            "var body = pm.response.json();",
+            "pm.test('Case-only rename keeps the same department', function () { pm.expect(body.id).to.eql(Number(pm.collectionVariables.get('o3DepartmentId'))); pm.expect(body.name).to.eql(('O3 Updated Department ' + pm.collectionVariables.get('runTag')).toLowerCase()); });"
+          ]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"o3 updated department {{runTag}}\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{baseUrl}}/departments/{{o3DepartmentId}}/update"
+      },
+      "response": []
+    },
+    {
+      "name": "5. Reject normalized duplicate name",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Duplicate rename returns 409', function () { pm.response.to.have.status(409); });",
+            "pm.test('Duplicate error has the documented code', function () { pm.expect(pm.response.json().code).to.eql('DUPLICATE_NAME'); });"
+          ]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"  O3   Duplicate Department {{runTag}}  \"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{baseUrl}}/departments/{{o3DepartmentId}}/update"
+      },
+      "response": []
+    },
+    {
+      "name": "6. Reject unknown Department ID",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Missing target returns 404', function () { pm.response.to.have.status(404); });",
+            "pm.test('Missing target has NOT_FOUND code', function () { pm.expect(pm.response.json().code).to.eql('NOT_FOUND'); });"
+          ]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"No Such Department\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{baseUrl}}/departments/9223372036854775807/update"
+      },
+      "response": []
+    },
+    {
+      "name": "7. Reject blank Department name",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Blank name returns JSON 400', function () { pm.response.to.have.status(400); });",
+            "pm.test('Blank name has VALIDATION_FAILED code', function () { pm.expect(pm.response.json().code).to.eql('VALIDATION_FAILED'); });"
+          ]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"   \"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{baseUrl}}/departments/{{o3DepartmentId}}/update"
+      },
+      "response": []
+    },
+    {
+      "name": "8. Reject nonpositive Department ID",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Nonpositive ID returns JSON 400', function () { pm.response.to.have.status(400); });",
+            "pm.test('Nonpositive ID has VALIDATION_FAILED code', function () { pm.expect(pm.response.json().code).to.eql('VALIDATION_FAILED'); });"
+          ]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"No Such Department\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{baseUrl}}/departments/0/update"
+      },
+      "response": []
+    },
+    {
+      "name": "9. Delete rename fixture",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": ["pm.test('Updated fixture deletes successfully', function () { pm.response.to.have.status(200); });"]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/departments/{{o3DepartmentId}}/delete"
+      },
+      "response": []
+    },
+    {
+      "name": "10. Delete duplicate fixture",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": ["pm.test('Duplicate fixture deletes successfully', function () { pm.response.to.have.status(200); });"]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/departments/{{o3DuplicateDepartmentId}}/delete"
+      },
+      "response": []
+    },
+    {
+      "name": "11. Reject malformed Department ID",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Malformed ID returns JSON 400', function () { pm.response.to.have.status(400); });",
+            "pm.test('Malformed ID has VALIDATION_FAILED code', function () { pm.expect(pm.response.json().code).to.eql('VALIDATION_FAILED'); });"
+          ]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"No Such Department\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{baseUrl}}/departments/not-a-number/update"
+      },
+      "response": []
+    }
+  ],
+  "event": [],
+  "variable": []
+}

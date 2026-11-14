@@ -34,6 +34,24 @@ public class DepartmentComponent {
     }
 
     @Transactional
+    public DepartmentView update(Long id, String rawName) {
+        if (id == null || id.longValue() <= 0L) {
+            throw new ApiException(400, "VALIDATION_FAILED", "Department id must be positive.");
+        }
+        String name = NameNormalizer.display(rawName, "name");
+        String key = NameNormalizer.key(name);
+        Department department = departments.findById(id)
+                .orElseThrow(() -> new ApiException(404, "NOT_FOUND", "Department not found."));
+        if (!key.equals(department.nameKey) && departments.existsByNameKey(key)) {
+            throw new ApiException(409, "DUPLICATE_NAME", "A department with this name already exists.");
+        }
+        department.name = name;
+        department.nameKey = key;
+        Department saved = departments.saveAndFlush(department);
+        return new DepartmentView(saved.id, saved.name);
+    }
+
+    @Transactional
     public MessageView delete(Long id) {
         Department department = departments.findById(id)
                 .orElseThrow(() -> new ApiException(404, "NOT_FOUND", "Department not found."));
