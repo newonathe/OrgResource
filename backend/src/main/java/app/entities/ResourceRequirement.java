@@ -51,6 +51,7 @@ public class ResourceRequirement {
     public Long getId() { return id; }
     public Project getProject() { return project; }
     public Resource getResource() { return resource; }
+    public Integer getQuantity() { return quantity; }
 
     public ResourceRequirement(Project project, Resource resource, Integer quantity) {
         this.project = project;

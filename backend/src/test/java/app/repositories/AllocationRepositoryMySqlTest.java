@@ -14,6 +14,7 @@ import javax.persistence.PersistenceContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -52,12 +53,12 @@ public class AllocationRepositoryMySqlTest {
         ResourceRequirement requirement = requirements.saveAndFlush(
                 new ResourceRequirement(project, resource, 100));
 
-        saveAllocation(requirement, 3, AllocationStatus.APPROVED, projectEnd.minusDays(1));
-        saveAllocation(requirement, 4, AllocationStatus.ISSUED, null);
-        saveAllocation(requirement, 5, AllocationStatus.RETURNED, null);
-        saveAllocation(requirement, 6, AllocationStatus.CONSUMED, null);
-        saveAllocation(requirement, 7, AllocationStatus.PENDING, null);
-        saveAllocation(requirement, 8, AllocationStatus.CANCELLED, projectEnd.minusDays(2));
+        Allocation approved = saveAllocation(requirement, 3, AllocationStatus.APPROVED, projectEnd.minusDays(1));
+        Allocation issued = saveAllocation(requirement, 4, AllocationStatus.ISSUED, null);
+        Allocation returned = saveAllocation(requirement, 5, AllocationStatus.RETURNED, null);
+        Allocation consumed = saveAllocation(requirement, 6, AllocationStatus.CONSUMED, null);
+        Allocation pending = saveAllocation(requirement, 7, AllocationStatus.PENDING, null);
+        Allocation cancelled = saveAllocation(requirement, 8, AllocationStatus.CANCELLED, projectEnd.minusDays(2));
         allocations.flush();
 
         assertEquals(Long.valueOf(18L), allocations.sumCoveredQuantity(requirement.id, COMPLETED,
@@ -70,6 +71,21 @@ public class AllocationRepositoryMySqlTest {
                 AllocationStatus.APPROVED, projectEnd.minusNanos(1)));
         assertEquals(Integer.valueOf(7), allocations.maxPendingQuantity(requirement.id, AllocationStatus.PENDING));
         assertEquals(Long.valueOf(2L), allocations.countHistoricallyApproved(project.id));
+
+        List<Long> beforeProjectEnd = allocations.findExpiredCandidateIds(
+                Arrays.asList(AllocationStatus.PENDING, AllocationStatus.APPROVED),
+                projectEnd.minusSeconds(1), PageRequest.of(0, 100));
+        org.junit.Assert.assertFalse(beforeProjectEnd.contains(approved.id));
+        org.junit.Assert.assertFalse(beforeProjectEnd.contains(pending.id));
+        List<Long> expiryIds = allocations.findExpiredCandidateIds(
+                Arrays.asList(AllocationStatus.PENDING, AllocationStatus.APPROVED),
+                projectEnd, PageRequest.of(0, 100));
+        org.junit.Assert.assertTrue(expiryIds.contains(approved.id));
+        org.junit.Assert.assertTrue(expiryIds.contains(pending.id));
+        org.junit.Assert.assertFalse(expiryIds.contains(issued.id));
+        org.junit.Assert.assertFalse(expiryIds.contains(returned.id));
+        org.junit.Assert.assertFalse(expiryIds.contains(consumed.id));
+        org.junit.Assert.assertFalse(expiryIds.contains(cancelled.id));
 
         assertNotNull(projects.lockById(project.id).orElse(null));
         assertNotNull(resources.lockById(resource.id).orElse(null));
@@ -84,12 +100,12 @@ public class AllocationRepositoryMySqlTest {
                 lockedProject.getEndAt());
     }
 
-    private void saveAllocation(ResourceRequirement requirement, int quantity,
-                                AllocationStatus status, LocalDateTime approvedAt) {
+    private Allocation saveAllocation(ResourceRequirement requirement, int quantity,
+                                      AllocationStatus status, LocalDateTime approvedAt) {
         Allocation allocation = new Allocation(requirement, quantity, "Fictional O3 test", null,
                 false, LocalDateTime.of(2026, 11, 19, 9, 0));
         allocation.status = status;
         allocation.approvedAt = approvedAt;
-        allocations.save(allocation);
+        return allocations.save(allocation);
     }
 }

@@ -1,8 +1,8 @@
-# OrgResource Java backend (O1–O3)
+# OrgResource Java backend (O1–O5)
 
 This backend is the first, deliberately bounded implementation slice for the CSCI 180.05 OrgResource project. It uses the supplied course-era stack: Java 8, Spring Boot 2.1.0, Jersey/JAX-RS `javax`, Spring Data JPA, Javax Validation, and MySQL. The Eclipse metadata supports Java 8 and m2e; day-to-day editing can remain in VS Code.
 
-## Implemented and verified in O1 and O3
+## Implemented and verified through O5
 
 - Exactly five JPA entity types: `Department`, `Project`, `Resource`, `ResourceRequirement`, and `Allocation`.
 - Five Spring Data repositories, five Spring components, and five Jersey controller families.
@@ -29,15 +29,24 @@ Implemented routes:
 | POST | `/api/requirements/{id}/update` | Change quantity only when current commitments remain valid |
 | POST | `/api/requirements/{id}/delete` | Delete only when no Allocation history references it |
 | POST / GET | `/api/allocations` | Create; redacted list optionally filtered by `requirementId` and `status` |
+| POST | `/api/allocations/{id}/approve` | Approve only when live Resource stock and Requirement demand permit |
+| POST | `/api/allocations/{id}/issue` | Issue approved reusable stock during the Project interval |
+| POST | `/api/allocations/{id}/return` | Record a complete usable return, including after Project end |
+| POST | `/api/allocations/{id}/consume` | Atomically consume approved consumable stock once |
+| POST | `/api/allocations/{id}/cancel` | Cancel a live request or approval with the correct reason |
+| POST | `/api/allocations/{id}/delete` | Physically delete only never-approved pending/cancelled records |
+| POST | `/api/allocations/{id}/revoke-sms-consent` | Clear consent/contact; optional A09 amendment outside original route count |
 | POST | `/api/departments/{id}/delete` | Safe example: refuses deletion while Projects reference the Department |
 
 Create responses use HTTP 201; list and delete successes use HTTP 200. Invalid request fields return a JSON 400; duplicate normalized names and known dependency conflicts return JSON 409.
 
 The O3 project/resource/requirement CRUD routes are covered by `../postman/OrgResource-O3-CRUD.postman_collection.json`; Department rename is covered by `../postman/OrgResource-O3-Department-Update.postman_collection.json`. The O1 routes are covered by `../postman/OrgResource-O1-Skeleton.postman_collection.json`.
 
+Allocation lifecycle routes A03–A08 and the separate A09 consent revocation route are exercised by `../postman/OrgResource-O4-O5-Allocation-Expiry.postman_collection.json`. It generates unique fictional fixture names; returned and consumed history remains because A08 protects historically approved Allocations.
+
 ## Not part of this skeleton
 
-The remaining original routes are Allocation approval, issue, return, consume, cancel and guarded delete (A03–A08). Allocation concurrency controls and expiry scheduling, Retrofit/Gson provider integration, React UI, image upload/serve behavior, production migrations, and hosted deployment are not implemented in O3. Optional consent revocation A09 is tracked separately from the original 25 routes. See `../evidence/O3/ROUTE_PARITY.md` for the O3 route map. Do not treat this backend as the finished project.
+All 25 original API operations are implemented. The allocation lifecycle uses Project → Resource → Requirement → Allocation pessimistic locks, READ_COMMITTED transactions, database-derived stock/coverage, and atomic consumable deductions. Expired PENDING and APPROVED requests are processed in bounded scheduled batches; ISSUED custody is preserved. A09 consent revocation is implemented separately from the original 25 routes. See `../evidence/O4-O5/ROUTE_PARITY.md` for the current route map and `../evidence/O4-O5/PHASE_REPORT.md` for test evidence. Retrofit/Gson SMS delivery, React UI, image upload/serve behavior, reviewed production migrations, and hosted deployment are not implemented. CLO9 image scope remains unresolved.
 
 The syllabus maps the final project to CLO9 (receiving and serving images over HTTP), while the concise proposal's 25-route API does not specify image endpoints. The instructor/Canvas requirement remains unresolved. The image feature is therefore not silently added to this O1 skeleton; resolve the scope before final-project acceptance.
 

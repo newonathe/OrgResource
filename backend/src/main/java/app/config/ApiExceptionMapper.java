@@ -10,6 +10,10 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.CannotAcquireLockException;
+import org.springframework.dao.CannotSerializeTransactionException;
+import org.springframework.dao.DeadlockLoserDataAccessException;
+import org.springframework.dao.PessimisticLockingFailureException;
 import app.components.ApiException;
 import app.dto.ApiDtos.ErrorView;
 
@@ -23,6 +27,10 @@ public class ApiExceptionMapper implements ExceptionMapper<Exception> {
             ApiException api = (ApiException) error;
             return Response.status(api.status).type(MediaType.APPLICATION_JSON_TYPE)
                     .entity(new ErrorView(api.code, api.getMessage())).build();
+        }
+        if (isRecognizedLockContention(error)) {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).type(MediaType.APPLICATION_JSON_TYPE)
+                    .entity(new ErrorView("RETRY_REQUIRED", "The operation encountered temporary database contention; reload and retry deliberately.")).build();
         }
         if (isConstraintViolation(error, "uk_department_name_key")) {
             return Response.status(Response.Status.CONFLICT).type(MediaType.APPLICATION_JSON_TYPE)
@@ -68,6 +76,25 @@ public class ApiExceptionMapper implements ExceptionMapper<Exception> {
                 return constraint != null && (expectedConstraint.equalsIgnoreCase(constraint)
                         || constraint.toLowerCase(java.util.Locale.ROOT)
                                 .endsWith("." + expectedConstraint.toLowerCase(java.util.Locale.ROOT)));
+            }
+        }
+        return false;
+    }
+
+    private boolean isRecognizedLockContention(Throwable error) {
+        for (Throwable cause = error; cause != null; cause = cause.getCause()) {
+            if (cause instanceof PessimisticLockingFailureException
+                    || cause instanceof CannotAcquireLockException
+                    || cause instanceof DeadlockLoserDataAccessException
+                    || cause instanceof CannotSerializeTransactionException
+                    || cause instanceof org.hibernate.exception.LockAcquisitionException) {
+                return true;
+            }
+            if (cause instanceof java.sql.SQLException) {
+                java.sql.SQLException sql = (java.sql.SQLException) cause;
+                if ("40001".equals(sql.getSQLState()) || sql.getErrorCode() == 1205 || sql.getErrorCode() == 1213) {
+                    return true;
+                }
             }
         }
         return false;

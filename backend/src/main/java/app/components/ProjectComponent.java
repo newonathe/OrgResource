@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Isolation;
 import app.dto.ApiDtos.ProjectView;
 import app.dto.ApiDtos.MessageView;
 import app.entities.Department;
@@ -46,7 +47,7 @@ public class ProjectComponent {
         return rows.stream().map(ProjectView::new).collect(Collectors.toList());
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public ProjectView update(Long id, String rawName, LocalDateTime startAt, LocalDateTime endAt) {
         requirePositiveId(id);
         Project project = projects.lockById(id)
@@ -72,7 +73,7 @@ public class ProjectComponent {
         return new ProjectView(projects.saveAndFlush(project));
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public MessageView delete(Long id) {
         requirePositiveId(id);
         Project project = projects.lockById(id)

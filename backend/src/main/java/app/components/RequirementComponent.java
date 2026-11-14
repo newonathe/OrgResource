@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Isolation;
 import app.dto.ApiDtos.MessageView;
 import app.dto.ApiDtos.RequirementView;
 import app.entities.AllocationStatus;
@@ -30,7 +31,7 @@ public class RequirementComponent {
     @Autowired private AllocationRepository allocations;
     @Autowired private Clock philippineClock;
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public RequirementView create(Long projectId, Long resourceId, Integer quantity) {
         if (quantity == null || quantity < 1 || quantity > 1000000) {
             throw new ApiException(400, "VALIDATION_FAILED", "quantity must be from 1 to 1000000.");
@@ -61,7 +62,7 @@ public class RequirementComponent {
         return rows.stream().map(requirement -> view(requirement, now)).collect(Collectors.toList());
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public RequirementView update(Long id, Integer quantity) {
         requirePositiveId(id);
         validateQuantity(quantity);
@@ -95,7 +96,7 @@ public class RequirementComponent {
         return view(saved, now);
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public MessageView delete(Long id) {
         requirePositiveId(id);
         ResourceRequirement initial = requirements.findById(id)
