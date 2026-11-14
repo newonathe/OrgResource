@@ -64,7 +64,14 @@ try {
         $javaCandidate = Join-Path $candidate 'bin\java.exe'
         $javacCandidate = Join-Path $candidate 'bin\javac.exe'
         if ((Test-Path -LiteralPath $javaCandidate) -and (Test-Path -LiteralPath $javacCandidate)) {
-            $versionOutput = (& $javaCandidate -version 2>&1 | Out-String)
+            $savedErrorPreference = $ErrorActionPreference
+            try {
+                # Java writes its version banner to stderr; PowerShell 5 must not treat that as a script failure.
+                $ErrorActionPreference = 'Continue'
+                $versionOutput = (& $javaCandidate -version 2>&1 | Out-String)
+            } finally {
+                $ErrorActionPreference = $savedErrorPreference
+            }
             if ($versionOutput -match 'version "1\.8\.') {
                 $jdkHome = $candidate
                 break

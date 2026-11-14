@@ -32,6 +32,14 @@
 
 The script selected the configured Java 8 toolchain, loaded the existing protected environment, ran the offline Maven Wrapper build, and started the real backend at `http://127.0.0.1:8080/api`. It checks MySQL port 3308 and refuses to take over port 8080. It never hardcodes a password and never deletes or resets a database.
 
+The exact Windows PowerShell launch command was also run after fixing PowerShell 5 handling of Java's stderr version banner:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-skeleton-demo.ps1
+```
+
+That run built and started the app; the five GET endpoints returned HTTP 200 with 9, 7, 7, 7, and 7 rows respectively. `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\run-skeleton-demo-sql.ps1` also passed. The app was stopped again after these checks.
+
 ```powershell
 .\scripts\run-skeleton-demo-sql.ps1
 ```
