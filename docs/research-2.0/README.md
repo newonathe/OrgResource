@@ -1,5 +1,8 @@
 # OrgResource 2.0 research documentation
 
+> **CP34–CP38 NEW REVIEW MATERIAL (2026-11-16):** The source-grounded [CP34 physical schema + clean-install/cutover plan](61_CP34_CANONICAL_SCHEMA_AND_CUTOVER_BLUEPRINT.md), [CP35 complete public v2 API, account/roles and connected UI](62_CP35_API_AUTH_UI_WORKFLOW_FREEZE_CANDIDATE.md), [CP36 true legacy no-body POST/CAS atomicity](63_CP36_LEGACY_COMPATIBILITY_ATOMICITY_AND_CUTOVER_GATES.md), [CP37 SEALED copy-ready Codex stages](64_CP37_SEALED_STAGE_BY_STAGE_CODEX_PROMPTS.md), and [CP38 independent pre-Codex sign-off review and open evidence](65_CP38_INDEPENDENT_PRE_CODEX_FREEZE_REVIEW_AND_OPEN_EVIDENCE.md) extend CP31–CP33. **One reviewed design candidate, not a Codex handoff or runtime acceptance.** Current paper read order: CP31→CP32→CP33→CP34→CP35→CP36→CP37→CP38. Later facts and explicit supersession rules within those documents control conflicting older research proposals.
+
+
 > **CP32–CP33 PRE-CODEX REVIEW (2026-11-16):** The CP31 packet is now supplemented by [CP32 independent conflict adjudication and contract corrections](59_CP32_FINAL_CONFLICT_ADJUDICATION_AND_CONTRACT_FREEZE.md) and [CP33 complete route/test traceability and final review gate](60_CP33_ACCEPTANCE_TRACEABILITY_RISK_AND_REVIEW_GATE.md). These correct future-vs-active project approval, account invitation bootstrap, public JSON/CSRF/idempotency, zero-initial-stock/ledger, R04 history and original A09 distinctions. **Research documentation only:** no Codex handoff, code change, merge, provider account, real SMS, runtime feasibility pass, Canvas or owner sign-off. Read CP32 and CP33 after CP31; where they explicitly differ, CP32 controls the proposed design.
 
 
