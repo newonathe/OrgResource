@@ -72,3 +72,6 @@ R7 public supported Java+genuine **MySQL** now has TWO stronger primary-source c
 
 ## CP12 R2/R5/R7/R8 narrow research closure and remaining gates (2026-11-15)
 [39](39_MYSQL_84_VS_FREE_97_VERSION_CLIENT_AND_RESTORE_COMPATIBILITY.md) resolves at documentation level Oracle MySQL **8.4 selfhost** package, general HeatWave **9.7.4** new default (not Sep9.7.2), distinct MySQL.Free **highest version unselectable** and automatic upgrade; Boot4.1.2 Connector/J9.7.0/Hibernate7.4.13 minimum MySQLDialect8.0 but no actual tests. Free backup1day, optional final on deletion7days and same-tenancy Free restore; true off-OCI encrypted clean recovery not done. New MV-01..12 specs are NOT RUN. Path A version-controlled MySQL8.4 remains **provisional preference**; managed Path B not banned but high version/recovery risk. Full research gate still **BLOCKED**, estimate **5–9** remaining focused passes, no user-authorized provider account or code changes.
+
+## CP13 R4/R5/R9 consistency audit
+[CP13 canonical conflict register](40_CP13_CANONICAL_SRS_EERD_API_CONFLICT_REGISTER.md) documents 21 contradictions and 18 acceptance test specs ALL NOT RUN; original/user stack unchanged. Research NOT ACCEPTED, architecture BLOCKED, **~4–8 focused research passes** estimated.

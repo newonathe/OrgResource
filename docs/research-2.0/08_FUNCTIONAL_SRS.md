@@ -1,4 +1,8 @@
 # V2 functional software requirements specification (SRS)
+
+**CP13 PRECEDENCE:** Early tables below are HISTORICAL, NOT APPROVED implementation contracts. Read [CP13 canonical conflict register](40_CP13_CANONICAL_SRS_EERD_API_CONFLICT_REGISTER.md). Preserve genuine course Java/Spring Boot/Jersey/@Autowired/JPA-Hibernate-MySQL/JPQL/Javax DTO+entity/Retrofit-Gson-Twilio/scheduler/five original entities and 26 operations. Recommended global/whole/Department/fictional bootstrap P0 remains UNAPPROVED.
+**Especially superseded:** F02 public org creation, F03/04 verified email, F15/16 temporal reservations, F19 partial return, F26 in-app-only Twilio replacement.
+
 **Status:** PROVISIONAL RECOMMENDATION — NOT IMPLEMENTED, TESTED OR USER APPROVED. **Date:** 2026-11-15. Evidence: C01–C03; A01–A07; E01–E05; G05–G10. Contracts are for **future V2**, not replacement of the five-entity V1 academic artifact.
 
 ## Interpretive conventions

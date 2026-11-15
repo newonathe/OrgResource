@@ -1,4 +1,8 @@
 # V2 HTTP API and authorization contract
+
+**CP13 PRECEDENCE:** Early tables below are HISTORICAL, NOT APPROVED implementation contracts. Read [CP13 canonical conflict register](40_CP13_CANONICAL_SRS_EERD_API_CONFLICT_REGISTER.md). Preserve genuine course Java/Spring Boot/Jersey/@Autowired/JPA-Hibernate-MySQL/JPQL/Javax DTO+entity/Retrofit-Gson-Twilio/scheduler/five original entities and 26 operations. Recommended global/whole/Department/fictional bootstrap P0 remains UNAPPROVED.
+Historical `/api/v2` API list is NOT 26-route parity. Browser cookie travels in `Cookie` header, not `Authorization`; CSRF must be handled separately.
+
 **Status:** PROVISIONAL RECOMMENDATION — NO ROUTES IMPLEMENTED. **Date:** 2026-11-15. Sources C01–C03/G05–G09 and proposed F01–F26.
 
 ## Route conventions

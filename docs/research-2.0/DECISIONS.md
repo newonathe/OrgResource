@@ -119,3 +119,13 @@ Details and dates: [28](28_STRICT_COURSE_STACK_COMPATIBILITY_AND_CP2_CONFLICTS.m
 | D-080 | **CROSS-LTS/DR MATERIAL UNCERTAINTY** | Oracle MySQL9.7 docs permit qualified rollback-only previous LTS logical dump/load when no new functionality used, but do **not** guarantee any future MySQL.Free latest→8.4 restoration; MySQL Shell export can write locally/off-provider. | Test source version and exact 9.7→8.4 schema/tenant/ledger/roles before DR claim |
 | D-081 | **PROVISIONAL RECOMMENDATION NOT USER DECISION** | Prefer controlled self-managed MySQL8.4 LTS Path A over unpinnable version Path B for first small course-compatible hosted P0, at cost of operator patch/DR burden; no code/provider selected. | User-approved comparison after supported literal Javax/Jersey runtime and $0 account/restore proof |
 | D-082 | **SUBJECTIVE RESEARCH ESTIMATE** | CP12 closes paper-level driver/server/restore issue but account/provider runtime unknown; **~5–9 focused research passes remain**. | Not days or guarantee of gapless E2E proof |
+
+## CP13 reconciliation decisions (2026-11-15)
+| D-083 | **SOURCE PRECEDENCE** | [CP13 canonical conflict register](40_CP13_CANONICAL_SRS_EERD_API_CONFLICT_REGISTER.md) identifies 21 source-versus-design conflicts, not owner approval. | R4/R5/R9 OPEN |
+| D-084 | **P0 RECOMMENDATION** | Fictional offline bootstrap, Department, global holds, whole-batch return. | USER APPROVAL OPEN |
+| D-085 | **PHYSICAL SQL OPEN** | UUID CHAR36 vs BINARY16; UTC DATETIME6 for new V2. | NOT RUN |
+| D-086 | **OFFICIAL MySQL FK RULE** | Explicit MATCH may cause ON DELETE/UPDATE ignored. | Omit MATCH, verify restrict |
+| D-087 | **API AND TECHNOLOGY NONPARITY** | 26 original vs 10 missing/15 changed/1 archive; Javax JPA and Twilio actual execution not proven in supported public runtime. | BLOCKED |
+| D-088 | **TABLE COUNT** | Conditional local auth+JDBC+Department has at least 17 physical tables, not original eleven. | DESIGN OPEN |
+| D-089 | **GOVERNANCE OPEN** | Owner transfer/durable recovery and no real institution authority. | DESIGN OPEN |
+| D-090 | **ESTIMATE** | ~4–8 further research passes after CP13, no actual E2E proof. | BLOCKED |

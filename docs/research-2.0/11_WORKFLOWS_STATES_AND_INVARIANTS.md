@@ -1,4 +1,8 @@
 # V2 workflows, reservation windows, custody states and concurrency invariants
+
+**CP13 PRECEDENCE:** Early tables below are HISTORICAL, NOT APPROVED implementation contracts. Read [CP13 canonical conflict register](40_CP13_CANONICAL_SRS_EERD_API_CONFLICT_REGISTER.md). Preserve genuine course Java/Spring Boot/Jersey/@Autowired/JPA-Hibernate-MySQL/JPQL/Javax DTO+entity/Retrofit-Gson-Twilio/scheduler/five original entities and 26 operations. Recommended global/whole/Department/fictional bootstrap P0 remains UNAPPROVED.
+Historical temporal overlap sum and PARTIALLY_RETURNED are NOT recommended global/whole-batch P0; see CP6 [33](33_TENANT_MYSQL_RESERVATIONS_LEDGER_AND_GLOBAL_COMPATIBILITY.md).
+
 **Status:** PROVISIONAL RECOMMENDATION — algorithm specification; no implementation/tests. **Date:** 2026-11-15. Sources C03/G06–G09 (academic V1), design F08–F23.
 
 ## Time semantics and capacity truth

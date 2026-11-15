@@ -1,4 +1,8 @@
 # Proposed V2 logical EERD, field dictionary and data integrity
+
+**CP13 PRECEDENCE:** Early tables below are HISTORICAL, NOT APPROVED implementation contracts. Read [CP13 canonical conflict register](40_CP13_CANONICAL_SRS_EERD_API_CONFLICT_REGISTER.md). Preserve genuine course Java/Spring Boot/Jersey/@Autowired/JPA-Hibernate-MySQL/JPQL/Javax DTO+entity/Retrofit-Gson-Twilio/scheduler/five original entities and 26 operations. Recommended global/whole/Department/fictional bootstrap P0 remains UNAPPROVED.
+Initial eleven-table/UUID/TIMESTAMP type list is LOGICAL/HISTORICAL, not valid final MySQL DDL. Conditional local+JDBC+Department requires ≥17 tables. Omit FK MATCH and choose UUID physical type.
+
 **Status:** PROVISIONAL RECOMMENDATION, NO MIGRATION OR TABLES IMPLEMENTED. **Date:** 2026-11-15. Sources C03/G06–G09 (V1 limits), E02–E05 (privacy/security).
 
 ## Core architecture and multi-tenancy
