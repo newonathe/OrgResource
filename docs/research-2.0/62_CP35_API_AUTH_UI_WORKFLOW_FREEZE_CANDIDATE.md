@@ -81,8 +81,9 @@ All paths start `/api/v2`. Under `/orgs/{orgId}`, active membership/org status m
 | POST `/members/{id}/suspend` | If-Match → MemberView | OWNER/ADMIN non-OWNER; cannot orphan last OWNER; current sessions lose org access |
 | POST `/transfer-ownership` | toMembershipId → pending transfer | ONLY current effective OWNER, recipient ACTIVE ADMIN, one pending/org, reauth recent |
 | POST `/accept-transfer` | transferId + If-Match → accepted transfer | EXACT target ACTIVE ADMIN, still ACTIVE owner, atomic OWNER→ADMIN swap, no owner gap |
+| POST `/transfers/{id}/revoke` | If-Match → REVOKED transfer | initiating OWNER, same org, only PENDING; expired also cannot be revived |
 
-**No unsupported functionality inferred:** public self-serve organization creation, official Ateneo title validation, verified email, impersonation, permanent org close and automatic sole-owner replacement are explicitly deferred.
+**Transfer lifecycle:** pending transfer may be explicitly revoked by initiating OWNER using `POST /transfers/{id}/revoke` and automatically marked EXPIRED after `expiresAt` by a bounded scheduler/transaction. Reissue uses a new transfer after previous terminal state; no duplicate ACTIVE owners during transfer. **No unsupported functionality inferred:** public self-serve organization creation, official Ateneo title validation, verified email, impersonation, permanent org close and automatic sole-owner replacement are explicitly deferred.
 
 ### 3.3 Original five domain families with modern data shapes
 
@@ -102,6 +103,7 @@ All paths start `/api/v2`. Under `/orgs/{orgId}`, active membership/org status m
 | POST `/resources/{id}/update` | name+If-Match →200 | OWNER/CUSTODIAN | stale 412 |
 | POST `/resources/{id}/delete` | If-Match → physical delete receipt | OWNER/CUSTODIAN | any movement/requirements/positive stock 409 |
 | POST `/resources/{id}/archive` | If-Match →status ARCHIVED | OWNER/CUSTODIAN | T>0 or H>0 or I>0 =>409 |
+| POST `/resources/{id}/unarchive` | If-Match →status ACTIVE | OWNER/CUSTODIAN | name key conflict or org frozen =>409 |
 | GET `/resources/{id}/availability` | → availability,holds,issued sampled at | ACTIVE member | foreign 404 |
 | POST `/resources/{id}/receive` | quantity,reason,operationId+If-Match →200 + MovementReceipt | OWNER/CUSTODIAN | replay fingerprint mismatch 409 |
 | POST `/resources/{id}/adjust` | newTotal,reason,operationId+If-Match →200 + MovementReceipt | OWNER/CUSTODIAN | below commitments 409; same total 422 |
@@ -134,7 +136,7 @@ All paths start `/api/v2`. Under `/orgs/{orgId}`, active membership/org status m
 | GET `/orgs/{orgId}/resources/{id}/image` | actual image bytes with correct MIME, private cache/nosniff | ACTIVE member allowed resource visibility; no public hotlink |
 | POST `/orgs/{orgId}/resources/{id}/image/delete` | If-Match →200 delete receipt | OWNER/CUSTODIAN; no image -> 404, org-scope |
   
-**Image is a conservative planning route for syllabus CLO9, NOT a retroactive original O14 operation or a confirmed instructor requirement.** Do not name original image controller as present; it isn't in O14. Prevent path traversal, upload bombs, HTML/SVG and external URL fetching. Avoid personal images in seed.
+**Image is a conservative planning route for syllabus CLO9, NOT a retroactive original O14 operation or a confirmed instructor requirement.** Resource image POST/delete `If-Match` refers to **Resource.version**, and successful change increments Resource.version atomically with image.version, preventing an ambiguous resource-versus-image ETag. **Capacity candidate:** maximum 2MiB bytes/file, at most one image per Resource and 20MiB total current image bytes per fictional organization; check quota under organization lock. Do not claim quota is a law or a measured hosting limit. Do not name original image controller as present; it isn't in O14. Prevent path traversal, upload bombs, HTML/SVG and external URL fetching. Avoid personal images in seed.
 
 **GET details:** the new v2 ID-detail endpoints are **additional public routes** needed by a connected UI; O14's original list-only GET handlers remain unchanged and are not falsely counted as separate academic routes.
 
