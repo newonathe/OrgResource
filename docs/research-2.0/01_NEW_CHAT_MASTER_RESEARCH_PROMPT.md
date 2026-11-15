@@ -218,3 +218,8 @@ Return:
 - No implementation or deployment changes.
 
 **REMEMBER:** The user's original academic objective continues here only after validated O14; this new chat is responsible for researching the post-O14 product, preserving exact course requirement traceability, and putting all verified findings in GitHub—not for rewriting the course application without permission.
+
+
+## POST-PROMPT LIVE REPOSITORY UPDATE (2026-11-15)
+
+**PR #6 appeared while this context packet was being saved.** Branch \`feat/o11-o13-system-acceptance-release-2026-11-15\` is now at \`6693c58a1d3f3e731296a1a27896e6211e9cf77d\`, targets O8/O10, and has two successful CI runs. Read its actual release scripts, Postman collections, \`docs/RELEASE_AND_DEMO.md\`, \`docs/compliance/CLO9_IMAGE_DECISION.md\`, and \`evidence/O11-O13/PHASE_REPORT.md\`. The report contains earlier PENDING release-gate language despite later push/CI success; verify each acceptance claim from current code/evidence. The academic package is not thereby deemed O14 complete. The docs research branch/PR #7 is separate from code PR #6. This update supersedes the prompt's previously stated “last known O8 HEAD”; always refresh GitHub before treating any state as true.
