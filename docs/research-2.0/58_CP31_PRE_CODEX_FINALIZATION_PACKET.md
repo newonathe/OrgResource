@@ -248,3 +248,68 @@ These are reference acceptance scopes, not permission to invoke Codex:
 **Cannot be truthfully finalized without actual external/runtime evidence:** current Canvas or instructor interpretations; supported one-runtime Javax/Jakarta JPA compatibility; exact effective dependency security; original O14 flaky-test cause; personal GitHub/OCI free quota and usable host; actual IP TLS renew/reload, Twilio authorized test, independent restore; clean runnable integrated software; source ZIP one-path diff; actual student artifacts and approval. These are formal STOP/ACCEPTANCE gates, not tasks silently marked completed.
 
 **Pre-Codex handoff verdict:** comprehensive review candidate prepared; **REVIEW GATE OPEN**. Do not transfer to Codex or describe the final product as built until explicit owner review and decisions. Preserve all source/provenance truth.
+
+## 18. Source-coverage and conflict-audit evidence register
+
+| Corpus/source | What is substantiated | Explicit limitation/recheck |
+|---|---|---|
+| 09_ESP_PROJECT_ASSIGNMENT.pdf, 3 pages | Read exact final-project tools, 1–3 group, >=5 entities, all runtime CRUD, thin @Autowired controller, complete Postman; Oct30, Nov13/14 and Dec5 printed milestones | Current Canvas unseen; it is the authority for live amendments |
+| 08_CSCI180_SYLLABUS.pdf, 9 pages | Read CLO1–10 incl image receive/serve, p4 contradictory assessment CLO mapping, p6 authorship and outside assistance | Image applicability to final unresolved; no explicit blanket GenAI ban/permission claimed |
+| 10_ORGRESOURCE_CONCISE_PROPOSAL.docx, 12 pages | Current five entities, 25 original routes, global holds, whole return, component/repository fields and JSONs | Word submitted/accepted status unknown; historical nine-entity/68-route draft superseded |
+| 01_KICKOFF_PROMPT.md / 02_MASTER_CONTEXT_DOSSIER.md | Historical scope, source-map priorities and decisions referenced via research ledger | Historic dated drafts do not trump CP30 |
+| 03_COURSE_REFERENCE_CORPUS.txt | Searchable course slides/labs/code corpus, including Javax/Jersey/JPA/Retrofit samples | Text extraction may omit visual details and does not show full original binary behavior |
+| 04_ORGRESOURCE_PRIOR_WORK_RESEARCH_AND_MANIFEST.md | Earlier specs, artifacts, conflicts, source path inventory and provenance | Old code-not-yet-built claims are historically true only at their writing date |
+| 06_VIDEO_TRANSCRIPTS.md | Timestamped, locally generated audio transcript search layer | No raw video frames/screen demonstrations observed; check original local recording only for genuinely necessary visual evidence |
+| 11_COMPLETE_SOURCE_NONVIDEO_PART1.zip / 12_COMPLETE_SOURCE_NONVIDEO_PART2.zip | Earlier independent report records CRC/SHA of 1,227 outer entries, 1,370 nested files and 184 nested dirs | Raw ZIP audit NOT rerun in CP31; path-set count discrepancy (dossier count 1,226 vs audited 1,227 excluding video) OPEN |
+| Actual O14 source at 2dd336ed | Five entities/controllers, 26 real handlers, DTOs, repo methods, Java8 dependency graph and key scheduler code directly inspected | Not all repo files/line-level tests reexecuted; old public security absent |
+| GitHub CI, PR #8 | Observed successful Java8/MySQL/frontend CI at pinned SHA; report has 55 Java/15 frontend tests | 96 Newman /142 assertions and five browser passes are **recorded local claims**, not the whole CI workflow |
+| O14 intermittent failed push test | One 55-test push run failed expected availability 5, observed 8; same-SHA PR run passed | SQL/clock/isolation root cause unknown; no patch can be declared fixed |
+| CP29 docs 51–53 | Proposed full DTO/role/error routes, 17-table schema and missing decisions | Draft only; not production migration/code |
+| CP30 docs 54–57 | One-product user decision, course/production matrix, official-provider research and compatibility road map | No unified runtime, host or paid/real Twilio proof |
+| External official primary docs (Spring, Hibernate Validator, OCI, Twilio, GitHub, Let's Encrypt) | Dated version/support/quotas/trial/TLS conditional facts traced in CP30 56 | Version/time-dependent; official terms do not prove this user's account eligibility |
+
+**Source-audit verdict:** broad authoritative source coverage and targeted code/API review are complete enough for this **candidate specification**. An assertion of *all 2,597 original archive file-instance paths semantically inspected* would be false. Preserve per-path inventory and mark not individually reviewed. A full byte-level reproducibility/path-set reconciliation remains a pre-acceptance evidence item. No reading of raw video frames is possible from the supplied audio transcript.
+
+## 19. Actual proposal/submission checklist
+
+**COURSE REQUIREMENT** Part I Word proposal should contain: actual group membership; clear useful independent-Ateneo-community proposal description without fake adoption; ALL original controller operation URLs/verbs and parameters/request bodies; concrete JSON success and error examples; forwarded Component/method; responsibilities and ordered steps for important Component methods including any initialization; each Entity's meaning, fields, types, nullability and validations; each custom repository query name, input and purpose. The selected concise 12-page proposal is the authoritative **proposal artifact**, not the historical 156-page nine-entity proposal. Amendments made after proposal, including A09 and stock/guard changes, must be separately identified and reviewed; never retroactively call them submitted proposal text.
+
+**Part II skeleton:** verify genuine MySQL startup and five tables; test fixture; repository findBy correctness; controller accessibility and real GET JSON; Java/Eclipse export; a real student-recorded video and actual Canvas skeleton receipt (printed Nov14). Existing script instructions alone are not a recording.
+
+**Part III final:** technical completion against the source rubric, genuine student/group video (or actually authorized early presentation), accessible link permission to course instructor as instructed, full source and correct Postman, optional functional UI demo, truthful Certificate of Authorship and explicit AI/research outside-assistance acknowledgment, actual group-member peer evaluations and real Canvas receipt (printed Dec5). **No peer evaluation, authorship signature, student video or submission can be certified by a planning document.**
+
+**Design appendix to accompany any proposal amendment:** current O14 26-route mapping and why amendment A09 was added; project-end hold clarification; R03 expectedTotalQuantity; Resource deletion zero-stock safeguard; largest pending Requirement protection; A08 historical approval protection; all additional v2 authentication/tenant/public API differences described as later development rather than false original submission.
+
+## 20. Dependency-ordered dated backlog and contingency decision
+
+This schedule is a **risk-constrained planning scenario**, not a promise and not an instruction to send prompts to Codex. It depends on immediate owner review, actual supported runtime test and current Canvas. Do not start successor stages while paper review is requested.
+
+| Target window (PHT) | Owner/work gate | Deliverable and hard exit | Contingency |
+|---|---|---|---|
+| Nov 16–17 | Research/owner PAPER FREEZE | CP31 plan, scoped 26-route source crosswalk, stated default decisions, independent critique and Canvas-check owner action | If owner challenges a material rule, update only that decision/affected acceptance |
+| Nov 17–19 | Separately authorized compatibility feasibility only | Pinned isolated UNIFIED-COMPAT-01 UC01–UC12, effective POM/provider evidence | If fail, stop full build, propose vetted single-product internal compatibility alternatives |
+| Nov 19–20 | Contract review | Final version-specific architecture ADR, complete normalized DDL and migrations, indexed/typed API and auth contract | No feature coding until hard compatibility and schema contradictions closed |
+| Nov 20–25 | Code phases S3–S5 | Real identity, original five domain types, scoped transactions, ledger, protected 26, scheduler/Retrofit, image, test receipts | Strict core-first ordering, no deferral of stock/security/course |
+| Nov 25–28 | Connected UI and release S6–S7 | 8 connected role-aware pages, source/ZIP, CI/CD guarded release, actual candidate host/TLS | If zero-fee host inaccessible or finance-risky, fail P-ACCEPT and escalate deadline |
+| Nov 28–Dec 2 | P-ACCEPT | Independently reproducible server, authentication/tenant, race, live Postman, clean off-provider restore and cost gates | Never label local simulator as live service |
+| Dec 2–4 | A-FINAL | Same final product complete classroom proof, real student operated course demo, COA and group review | If product-first order makes Dec5 impossible, owner must explicitly reconsider sequencing |
+| Dec 5 printed | Student only | Exact Canvas receipt and final access links; no assumed extension | Canvas/instructor instructions override printed schedule |
+
+**Critical path:** supported Javax/Jakarta coexistence → canonical schema/API and auth → account/domain/ledger correctness → 26-route technical parity → UI/host/DR → production acceptance → independent course acceptance → actual student submission. The critical path is extremely tight for 19 calendar days. No additional research pass can manufacture execution evidence. **Cut hierarchy** reduces optional UX bells/whistles, future booking/partial returns and institutional integrations first; do not silently cut safety, original executable course requirements, data integrity, correct Postman, or explicit failure reporting.
+
+## 21. Independent go/no-go checklist for final plan owner review
+
+Mark a line approved only after actual review; this file does not imply consent.
+
+- [ ] Scope: one user-facing, self-hostable, independently operated product; original 26 protected handlers preserved; no claims of official Ateneo adoption
+- [ ] Workflow: original global stock holds, whole-batch return, effective project-end cleanup and 6 allocation statuses; no unexplained public Project state machine
+- [ ] Roles: OWNER/ADMIN/CUSTODIAN/LEAD/MEMBER; explicit activeOrg session context; no legacy tenant bypass
+- [ ] Data: five original entities + justified identity/session/ledger/image tables; private fictional contacts; physical Resource delete/ledger conflict documented and testable
+- [ ] API: exact old DTOs and errors via secure compat; public v2 UUID/UTC/version/session contract; A09 functional; per-route positive/negative tests
+- [ ] Integration: true javax Validator + actual entity persistence proof; real Retrofit/Gson HTTP; distinct FakeTwilio/Twilio-provider/handset claims
+- [ ] Operations: private CI, free-quota fail-closed, no paid fallback; TLS, backup/restoration, security and cost acceptance
+- [ ] Sources: original ZIP reconciliation, historical/context precedence, current Canvas decisions and original student submission evidence tracked honestly
+- [ ] Release: production-before-academic acceptance sequencing knowingly accepted with Dec5 risk, or an explicit revised user instruction recorded
+- [ ] Codex: no handoff or implementation work occurs from this packet alone
+
+**Final paper verdict:** candidate consolidated, internally reviewed, and linked to source evidence; **NOT a signed frozen product specification** until owner review. The architecture *can only be proven by execution*; no amount of unexecuted design should be misrepresented as a proven, fully built system.
