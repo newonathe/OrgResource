@@ -91,3 +91,10 @@ These severities/likelihoods are qualitative expert estimates only, not incident
 | R62 | 4×4 | B2 free 10GB presumed unlimited free; Class D uncapped and caps may lag; R2 checkout/free usage conflated | Account-specific billing/caps rules, no card/overage, encryption and external key, backup quota measured H-08/10 | Zero-mandatory-cost unproved |
 | R63 | 5×4 | OCI same-tenancy object/block backups falsely count as independent disaster recovery | Off-account provider or offline copy, separate key and clean restore after simulated OCI account loss H-12 | DR gate fails until tested |
 | R64 | 4×4 | A1 official 1500/9000 vs ARM page 3000/18000 quoted as guaranteed 4CPU/24GB; card hold/capacity ignored | Lower 2CPU/12GB bound, actual account quota/limits, no paid upgrade H-01/02 | No assured free compute |
+
+## CP12 database managed-version and cross-version DR failure modes (2026-11-15)
+| R65 | 5×4 | Treating Oracle general 9.7.4 default as actual MySQL.Free version, although free always picks highest, unpinnable | Authorized account VERSION()/maintenance evidence MV-01, version-specific SQL/JPA tests; do not promise 8.4 or 9.7.4 | Managed path unresolved |
+| R66 | 5×4 | Boot4.1.2 Connector/J9.7 and Hibernate7.4 MySQL min8.0 claim misread as tested full OrgResource SQL/Javax/MySQL9.7/26.10 compatibility | Real DDL/JPQL/FK/locking/metadata/validator MV-02..06, no silent driver override | Full stack blocked |
+| R67 | 5×4 | Same-tenancy one-day OCI snapshot mistaken for independent backup or seven-day regular backup | Final deletion backup up to7d only if configured; external client encrypted export and lost-tenancy MV-07..10 | No DR claim |
+| R68 | 5×4 | Untested logical migration from managed newer MySQL to pinned 8.4 fails on unsupported new features/collation/privileges | Clean cross-version load, schema/checksum/roles/ledger and explicit approved fallback | Recovery GO blocked |
+| R69 | 4×4 | Private OCI VCN DB connection assumed TLS enforced and no outbound/inbound security exposure | Least privilege NSG, port3306 restricted, actual TLS and invalid certificate negative test MV-05 | No public host pass |
