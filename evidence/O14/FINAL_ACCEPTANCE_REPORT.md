@@ -1,10 +1,12 @@
 # O14 Interim Academic Baseline Acceptance Report
 
-**Status:** Acceptance work in progress; final artifact, clean-extraction, and remote PR evidence will be appended after verification.
+**Status:** Technical evidence passed; academic sign-off remains pending.
 **Date:** 2026-11-15 (Asia/Manila)
 **Starting source commit:** `fd34a8a66242f795dda758d45f220f2c331472db`
+**O14 implementation/test commit:** `286c5560d3b69dec11b47fbeea73d659507e8154`
 **Branch:** `feat/o14-academic-final-acceptance-2026-11-15`
 **Implementation parent:** O11/O13 feature branch, PR #6.
+**O14 PR:** [#8](https://github.com/newonathe/OrgResource/pull/8), stacked on the O11/O13 branch.
 **Scope:** Interim academic baseline only. This is not final product acceptance or production readiness.
 
 ## 1. Direction and source authority
@@ -47,37 +49,44 @@ The API acceptance matrix maps all 26 operations (25 original proposal operation
 
 The full requirement-by-requirement source locators and remaining actions are in `docs/compliance/FINAL_COURSE_COMPLIANCE_MATRIX.md`.
 
-## 5. Pre-package verification observed
+## 5. Java 8 and frontend verification
 
-These local checks were executed against the O11/O13 implementation source whose backend and frontend feature code O14 preserves. The exact committed O14 release gates will be rerun below after the report and source are committed.
+The O14 packaging script ran on source commit `286c5560d3b69dec11b47fbeea73d659507e8154`, using Temurin 8u512 and the protected local `orgresource_test` settings. Maven resolved the course dependencies despite non-blocking metadata TLS/401 warnings.
 
 | Gate | Command or action | Result |
 |---|---|---|
-| Java 8 backend | `backend\\mvnw.cmd -B -Pbundle-react-ui clean verify` with protected local test environment | **PASS** — 55 tests, 0 failures, 0 errors, 0 skipped; Java 8u512. Non-blocking dependency-repository warnings were observed. |
+| Java 8 backend | `scripts/package-release.ps1` ran `backend\mvnw.cmd -B -Pbundle-react-ui clean verify` with protected local test environment | **PASS** — 55 tests, 0 failures, 0 errors, 0 skipped; Java 8u512. Non-blocking dependency-repository warnings were observed. |
 | Frontend | `npm ci`, `npm run typecheck`, `npm test`, `npm run lint`, `npm run build` | **PASS** — 15 tests across 3 test files; typecheck, lint, and build passed. `npm ci` reported 7 moderate advisories; dependencies were not upgraded. |
-| Browser acceptance | `npm run e2e` with actual local Java/MySQL service | **PASS** — 5 Playwright journeys passed, including connected persistence, ambiguous POST response handling, browser-history filters, responsive light/dark screenshots, and motion controls. |
-| Visual screenshot review | Inspected all six generated O8–O10 contact sheets: desktop/mobile light and dark, detail/error states, and tablet allocations | **PASS with ordinary density** — no obvious clipping or overlap was visible; compact mobile navigation and responsive forms/lists rendered. This is visual evidence from captured local pages, not hosted or physical-device acceptance. |
-| Postman/Newman | O1, O3, D3, O4/O5/A09, and O14 dependency-integrity collections | **PASS** — 96 requests and 142 assertions, zero failures. O14 suite: 23 requests/37 assertions. Re-run on the final O14 JAR remains required. |
-| MySQL schema | Read-only inspection of protected `orgresource_test` | **PASS** — exactly five tables, all InnoDB; rows observed: department 32, project 26, resource 50, resource_requirement 36, allocation 33. FK counts: 1 allocation, 1 project, 2 resource_requirement. No phone/contact fields or row values were displayed. |
+| Browser acceptance | `npm run e2e`; Vite frontend connected to the packaged JAR's local Java/MySQL API | **PASS** — 5 Playwright journeys passed, including connected persistence, ambiguous POST response handling, browser-history filters, responsive light/dark screenshots, and motion controls. |
+| Visual screenshot review | Inspected all six generated O8–O10 contact sheets: desktop/mobile light and dark, detail/error states, and tablet allocations | **PASS** — no obvious clipping or overlap was visible; long mobile lists are naturally dense. This is visual evidence from captured local pages, not hosted or physical-device acceptance. |
+| Postman/Newman | O1, O3, D3, O4/O5/A09, and O14 dependency-integrity collections against the packaged JAR | **PASS** — 96 requests and 142 assertions, zero failures. O14 suite: 23 requests/37 assertions. |
+| MySQL schema | Read-only inspection of protected `orgresource_test` after Newman and browser acceptance | **PASS** — exactly five tables, all InnoDB; rows observed: department 36, project 30, resource 55, resource_requirement 41, allocation 38. FK counts: 1 allocation, 1 project, 2 resource_requirement. No phone/contact fields or row values were displayed. |
 | Local UI screenshots | `evidence/O8-O10/screenshots/*.jpg` | **PASS** — actual Playwright captures were reviewed. The screenshots show synthetic fictional records only. |
 
 The O14 dependency suite confirmed guarded deletes return conflict and preserve referenced records before deleting only the eligible fixtures. These tests used the isolated fictional test schema; no existing non-test database was reset or dropped.
 
-## 6. Final package and independent extraction gates
+Within the Java suite, `FakeTwilioTransportTest` exercised a loopback HTTP endpoint, dummy authorization, expected form fields, response parsing, rejection, and ambiguous failure without retry. The MySQL lifecycle tests also exercised the Spring expiry scheduler. The reminder dispatcher test is a controlled simulator test; this did not send real SMS or prove handset delivery.
 
-**PENDING at this report revision.** The following results must be appended after running the final scripts on the committed O14 source:
+## 6. Release, runtime, and clean-extraction acceptance
 
-- Exact committed HEAD and remote branch SHA.
-- Final `scripts/package-release.ps1` result, Java 8 toolchain, test count, generated artifact names, sizes, SHA-256, and external `RELEASE-MANIFEST.json`.
-- Clean extraction checks for both archives, including the Java source ZIP's Maven Wrapper and Eclipse metadata; source rebuild result; independent-machine/Eclipse status.
-- Actual bundled-JAR root, JS/CSS asset, HashRouter refresh, JSON API, Postman, fictional create/GET persistence across restart, and safe cleanup smoke results.
-- Final O14 pull request URL/base and CI status.
+| Gate | Actual check | Result |
+|---|---|---|
+| Release package | `scripts/package-release.ps1` on the O14 branch with Java 8; built executable JAR, complete-source ZIP, Java/Eclipse source ZIP, SHA-256 list, and JSON manifest | **PASS**. Exact artifact names, sizes, SHA-256 values, tool versions, branch, and source commit are recorded in the adjacent `deliverables/O14/RELEASE-MANIFEST.json` and `SHA256SUMS.txt`. Those files are generated from the final committed O14 source. |
+| Complete-source ZIP | Extracted to a new temporary directory; verified tracked React/Java source, lockfile, Maven Wrapper, and tests; ran `npm ci`, typecheck, 15 frontend tests, lint, build, and Maven verify | **PASS** — 55 Java tests, 0 failures/errors/skips. Private environment/credential file paths were absent. |
+| Java/Eclipse source ZIP | Extracted to a separate new temporary directory; checked `.project`, `.classpath`, `.settings`, Maven Wrapper, POM, main and test source; ran `mvnw -B verify` on Java 8 | **PASS** — 55 Java tests, 0 failures/errors/skips. Independent Eclipse UI import/debug remains **NOT_RUN**. |
+| Packaged JAR static/UI assets | `GET /` and the referenced bundled JavaScript and CSS | **PASS** — HTTP 200 for HTML, JS, and CSS. Observed bundles were 350,974-byte JS and 39,713-byte CSS. |
+| Packaged JAR API | `GET /api/departments`, `/projects`, `/resources`, `/requirements`, and `/allocations` | **PASS** — HTTP 200 JSON arrays; before acceptance suites added their fixtures, observed counts were 32, 26, 50, 36, and 33. |
+| Packaged JAR browser routing | Headless Playwright opened `http://127.0.0.1:8080/#/projects`, confirmed the Projects heading, refreshed, and confirmed it again | **PASS** — HashRouter deep link and refresh work when served by the bundled JAR. No in-app browser plugin was used. |
+| Packaged JAR persistence | Created a fictional Department (ID 420), confirmed by GET, stopped Java, restarted the same JAR, confirmed the same record, then deleted and verified absence | **PASS** — data survived restart; only the O14-created fixture was removed. MySQL remained available. |
+| O14 portable launcher guard | Ran the launcher with the isolated `orgresource_test` URL | **PASS** — rejected the test schema before startup; no database mutation occurred. |
+| Empty-schema first run | New `orgresource` schema/account on a separate computer | **NOT_RUN** — the safe procedure is documented; no administrator account or independent machine was available. |
+| GitHub | O14 branch pushed; draft [PR #8](https://github.com/newonathe/OrgResource/pull/8) opened against the O11/O13 feature branch | **PASS** for branch/PR existence. The exact final source commit, remote SHA, and artifact hashes are in the adjacent manifest after final repackaging. No merge, tag, Canvas submission, or deployment occurred. |
 
 The portable setup guide documents a separate empty `orgresource` schema and a least-privileged local account. A separate computer and newly provisioned schema were not claimed as verified at this revision. Never point the portable first-run instructions at `orgresource_test` or any shared/personal database.
 
 ## 7. Privacy, safety, and non-production boundary
 
-- The O14 test data is fictional. No private database password or personal contact was printed or committed.
+- The O14 test data is fictional. No private database password or real personal contact was printed or committed.
 - The portable script prompts for a password without echo, restricts the URL to local `orgresource`, binds to loopback, disables reminders, and does not delete/reset data.
 - FakeTwilio is a simulator. No live SMS, real Twilio delivery, or actual mobile receipt is claimed.
 - The Java 8/Spring Boot 2.1 academic runtime is not a supported public service and must not be exposed publicly.
@@ -95,4 +104,4 @@ The portable setup guide documents a separate empty `orgresource` schema and a l
 
 ## 9. Verdict
 
-**Not yet issued.** Until the pending exact-commit release gates pass, this report does not designate the baseline ready. Even after technical gates pass, the appropriate designation is **ACADEMIC BASELINE CONDITIONALLY READY** while CLO9, Twilio acceptance, Canvas directions, and student-only obligations remain unresolved. This is not “FINAL PRODUCT ACCEPTED.”
+**ACADEMIC BASELINE CONDITIONALLY READY.** The current course-aligned implementation, source exports, local tests, API acceptance, and packaged-JAR runtime checks passed. CLO9 image scope and whether the FakeTwilio simulator satisfies the assignment's Twilio wording remain **UNRESOLVED** pending current Canvas or instructor direction. Independent first-run provisioning, current Canvas instructions, recording, group obligations, and student academic actions remain open. This is not **FINAL PRODUCT ACCEPTED** and does not authorize the production rewrite.
