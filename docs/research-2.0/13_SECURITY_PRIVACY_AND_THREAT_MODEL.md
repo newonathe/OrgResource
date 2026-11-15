@@ -47,3 +47,10 @@ NPC E04 describes **conditional** mandatory personal-data-breach reporting invol
 7. Written go/no-go record; lack of a qualifying free host/maintainer/role authority means **DO NOT ACCEPT REAL USERS**.
 
 **Status of all checks: NOT RUN for V2.**
+
+## CP2 security and ownership evidence boundaries — 2026-11-15
+**Verified current state:** no V2 public identity provider, verified-email service, tenant authentication, protected recovery or organization ownership validation has been demonstrated. O14 course backend is unauthenticated and MUST remain local/private, never directly published merely because Jersey2.x has a newer patch.
+**Proposed synthetic technical demo only:** fictional scoped test accounts and controlled opaque one-time invitations may verify authorization code when implemented. This does NOT establish real email verification, official campus affiliation, identity recovery, a stakeholder pilot or privacy approval. Real users require actual governance and personal-data safeguards.
+**Production acceptance must verify:** Jersey filter protection on every route; login/logout/session rotation/CSRF; account enumeration and invite abuse controls; suspension stops requests immediately; cross-tenant read/write/exports/operation receipts always refuse; ADMIN cannot self-promote, last owner preserved under racing changes. Authentication and DB composite FKs both required, not substitutes.
+**Stock/race risk:** choose actual MySQL transaction isolation and lock order, validate 100-way capacity races and retries past expired receipt. Do not treat SHA-chained movements as immutable absent DB grants, trusted checkpoints and independently restorable encrypted backups.
+**Material stack boundary:** Boot4/Jersey4 with Jakarta cannot automatically execute old `javax.validation` annotations. No supported fully literal same-public-runtime combination has been proven. [CP2 compatibility report](28_STRICT_COURSE_STACK_COMPATIBILITY_AND_CP2_CONFLICTS.md) = architecture BLOCKED pending explicit approval and tests. All V2 security tests currently NOT RUN.
