@@ -59,3 +59,6 @@ New first-party namespace proof: Jakarta EE8 still uses Javax, and EE9 migrated;
 
 ## CP8 latest validated version security and remaining research
 Original Boot2.1.0 BOM specifies HV6.0.13; O14 source does not override. IBM Oct21 2026 CVE-2026-93879 affected through6.2.5, fixes6.2.6. This is a sourced dependency inference; O14 effective Maven dependency tree/exploitability not run. HV6.2.6 Javax still limited-support, supported Boot2.4–2.7 table not Boot4; BVal2 old. [35](35_VALIDATOR_PROVIDER_SECURITY_AND_SUPPORTED_RUNTIME_GATES.md) identifies security+provider options and VA-01..12 future proof. **~8–12 research passes remain after CP8** conditional on source availability; architecture/Canvas/host still BLOCKED. No course code/deploy modified.
+
+## CP9 ongoing research verdict, November 15
+Separate old/current validation API jars are documentable by distinct GAV but real provider/service loader, security and Boot/Jersey4 compatibility remain unexecuted; IBM Nov3 CVE shows Liberty 26.0.0.11 Bean Validation candidate not automatically secure. Both original ZIP raw bytes could not be rechecked, 04 manifest intro and 02 dossier opened; no fresh all-path hash/semantic claim. [36](36_VALIDATION_DUAL_API_AND_LIBERTY_CVE_SOURCE_COVERAGE.md). **~7–11 additional focused passes**, architecture/CLO9/Twilio/OCI still BLOCKED.

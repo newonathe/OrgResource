@@ -70,3 +70,9 @@ These severities/likelihoods are qualitative expert estimates only, not incident
 | R47 | 4×5 | Patched HV6.2.6 wrongly deemed current supported Boot4 javax solution despite vendor Boot2.4–2.7 table and limited maintenance | Review provider versions, future CVE response, active manual Javax validation and real build before GO | Architecture BLOCKED |
 | R48 | 4×4 | Maven `jakarta.validation-api:2.0.2` artifact naming mistaken for `jakarta.*` package or bundled dual providers assumed compatible | Inspect API class and dependency graph, explicit validator factory, old DTO 400 tests, fail on silent bypass | Not a build pass |
 | R49 | 3×4 | Old BVal2 provider selected without current maintenance or dependency scan | Review Apache release, SBOM and provider security/EL behavior; keep fictional data and private staging until accepted | Provider unresolved |
+
+## CP9 newly found integration/security and source coverage risks
+| R50 | 5×5 | HV6.2 transitive old Jakarta2 API could shadow current Jakarta3 although separate Javax2 artifact exists | Exact dependency/version exclusions and bytecode classes, explicit factory/HTTP proof | No product GO |
+| R51 | 5×5 | Liberty's supported EE8 BeanValidation feature assumed secure despite IBM Nov3 2026 CVE through26.0.0.11 | Exact distribution+patch/entitlement and feature-aware security scan | Liberty candidate BLOCKED |
+| R52 | 4×4 | Source manifest mistaken for direct all-path ZIP hash/semantic audit | Direct raw ZIP path/file/hash verification with healthy runtime, note video frames unattached | Source coverage still OPEN |
+| R53 | 4×3 | Different API jars taken as complete active provider/security compatibility | Run true Javax provider and Jersey4/Spring security and full SBOM tests | Architecture BLOCKED |
