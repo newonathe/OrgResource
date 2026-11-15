@@ -1,5 +1,5 @@
 # OrgResource 2.0 research documentation
-**Status:** RESEARCH IN PROGRESS — EVIDENCE VERIFIED where stated, V2 DESIGN RECOMMENDATIONS NOT APPROVED. **As of:** 2026-11-15 Asia/Manila. [Live draft PR #7](https://github.com/newonathe/OrgResource/pull/7).
+**Status:** USER-APPROVED NEW PRE-CANVAS RELEASE ORDER; V2 architecture and implementation still provisional/unbuilt. **As of:** 2026-11-15 Asia/Manila. [Live draft PR #7](https://github.com/newonathe/OrgResource/pull/7).
 
 This directory is a **research and planning layer**, not a production application, completed O14, official Ateneo product, field study, deployment, live user trial, or verified indefinite-free hosting. Do not use the historical documents as a substitute for the actual 2026 code or the course PDF. No real students/organizations have been onboarded.
 
@@ -34,8 +34,13 @@ This directory is a **research and planning layer**, not a production applicatio
 | [22_PRIMARY_ARCHIVE_VERIFICATION.md](22_PRIMARY_ARCHIVE_VERIFICATION.md) | Independent SHA-256/CRC of original 1,227 outer +1,370 nested source entries, exact original Java provenance |
 | [23_GITHUB_IMPLEMENTATION_AUDIT.md](23_GITHUB_IMPLEMENTATION_AUDIT.md) | Current Java/React source inspection, CI scope, route status and unverified O14 |
 | [24_HISTORICAL_MASTER_COMPLETE_INSPECTION.md](24_HISTORICAL_MASTER_COMPLETE_INSPECTION.md) | All 4,174 lines of 319,799-character historical master read and reconciled against live source |
+| [25_ROADMAP_CHANGE_LOG_AND_PRE_SUBMISSION_ACCEPTANCE.md](25_ROADMAP_CHANGE_LOG_AND_PRE_SUBMISSION_ACCEPTANCE.md) | Dated decision reversal, current private GitHub audit and production-before-Canvas release criteria |
 
 All documents listed are included in this research branch after the verified third batch. The original transferred 00/01 files remain unchanged; no unapproved code changes or main merges.
 
 ## Git/review record
 2026-11-15: Rechecked private GitHub repo, PR #1–#7 and newer O11 report SHA `fd34a8a...`; read course primary extracted sources and dated 2026 primary public evidence. The research documentation is versioned on draft PR #7; inspect the latest remote SHA to confirm actual file history. V2 implementation/hosting/testing is explicitly NOT completed. Audit limitations remain in 02. No production source, merges, SMS, emails, financial commitments, institutional contacts or deployment occurred.
+
+
+## 2026-11-15 user-authoritative sequence update
+**O14 academic baseline → pre-Canvas supported V2 engineering → REAL production technical acceptance → independent literal-course academic final acceptance → student's manual Canvas submission (printed Dec 5, check Canvas).** Prior post-academic V2 planning is superseded; earlier decisions preserved in [25](25_ROADMAP_CHANGE_LOG_AND_PRE_SUBMISSION_ACCEPTANCE.md). No production code/test/deploy created by research docs.

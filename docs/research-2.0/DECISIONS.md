@@ -19,3 +19,16 @@
 | D-015 | PROVISIONAL | Public demo either read-only snapshot or per-session isolated expiring sandbox; **vs** single mutable shared test account | Isolation/reset abuse tests |
 | D-016 | OPEN QUESTION | Present Canvas deadlines, peer reviews, AI policy, O14 completion | Human checks Canvas; no fabricated submission |
 | D-017 | PROVISIONAL | Hold course V1 preserved indefinitely in repo tag/source export, V2 separately versioned and mapped; **vs** modifying prior submitted artifact | Reproducible build and SHA documentation |
+
+
+## 2026-11-15 authoritative user decision update — earlier records retained unchanged
+| ID | Authority | New decision and before/after | Gate |
+|---|---|---|---|
+| D-018 | USER DECISION | Supersedes former post-academic V2 timing in 07/18. **O14 academic baseline → production engineering → P-ACCEPT → A-FINAL → student manual Canvas**, before printed Dec 5 deadline. | [18](18_SDLC_BACKLOG_DEPENDENCIES_AND_ROADMAP.md), [25](25_ROADMAP_CHANGE_LOG_AND_PRE_SUBMISSION_ACCEPTANCE.md) |
+| D-019 | USER DECISION | Keep original **runnable** Jersey/Javax/JPA/Retrofit/Gson/FakeTwilio/scheduling five-entity academic executable alongside supported V2. Modern Jakarta work is separate, never a substitute. | Academic rerun after P-ACCEPT |
+| D-020 | USER DECISION | Real technical production acceptance includes auth/tenancy, transactional/race, security, real DB/API/UI, off-host restore, actual no-mandatory-spend provider/HTTPS feasibility; old CI and local demo do not count. | Real T1–T11 evidence, no NO-GO |
+| D-021 | USER DECISION | Academic compliance acceptance is **after** technical production acceptance and **before** only the student's manual Canvas submission. | Current Canvas, CLO9, video, authorship and original course code |
+| D-022 | USER DECISION | No silent feasibility, test, deployment or lifetime-free claims; schedule 20 calendar days is very high risk. If production blocked, state NO-GO rather than submit-first or buy. | Explicit new user decision required to change order |
+| D-023 | USER DECISION | Real org interview/institutional permission/adoption may be later; **fictional technical acceptance** may precede these stakeholder gates. | No invented campus pilot/endorsement |
+| D-024 | USER DECISION | Research docs branch/PR only now; no code changes, merge, deploy, enroll/purchase, Canvas or outreach. | Remote SHA and PR verified |
+**D-001–D-017 are left as dated history.** D-018 supersedes *only sequence interpretations*, not ongoing preservation, v5 design, $0 mandatory spending or provisional technical choices.
