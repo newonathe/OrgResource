@@ -1,5 +1,8 @@
 # OrgResource — CP27 canonical pre-coding handoff (DRAFT 1)
 
+> **CP29 precision overlay (2026-11-16, PROPOSED/NOT APPROVED):** The exact public route/DTO/role/error proposal in [52](52_CP29_PUBLIC_ROUTE_DTO_ROLE_ERROR_CONTRACT_CANDIDATE.md), candidate MySQL/history/DR model in [53](53_CP29_MYSQL_IDENTITY_HISTORY_DR_CONTRACT_CANDIDATE.md), and owner decision sheet [51](51_CP29_OWNER_DECISIONS_AND_CONTRACT_FREEZE_GATE.md) clarify this earlier draft. They supersede conflicting *provisional* CP27 public sketches only. **No user sign-off, implemented public API, DDL or Codex authorization.**
+
+
 **Date:** November 16, 2026 Asia/Manila.  
 **STATUS:** RESEARCH CONSOLIDATED, NOT OWNER-APPROVED; no Codex implementation authorized.  
 **Academic source SHA:** `2dd336ed39cecd417a8bce3388b303e688e95dee` (draft PR #8).  
