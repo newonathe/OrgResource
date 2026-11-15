@@ -52,3 +52,10 @@ These severities/likelihoods are qualitative expert estimates only, not incident
 
 ## Additional CP5 failure mode
 | R37 | 5×5 | Disabling one globally registered account silently orphans several tenant organizations, bypassing last-owner membership-only check | Define effective active-owner count over account+membership; globally ordered org locks and ID-16 race test; emergency freeze policy still OPEN | Architecture cannot pass tenant-owner acceptance without proof |
+
+## CP6 newly identified domain integrity and scope risks (2026-11-15)
+| R38 | 3×4 | Draft time-window overlap SUM falsely rejects feasible bookings whose previous holds do not overlap one another | Prefer global P0 or peak-concurrent event sweep with DB-08 boundary tests | No temporal booking GO until decided |
+| R39 | 5×4 | Same-org stock movement attached to unrelated resource's allocation despite tenant FKs | Resource-consistent composite FKs with required kind/nullable constraints, DB-04..05 | Integrity BLOCKED without DDL proof |
+| R40 | 5×4 | 24-hour receipt purge permits repeated RECEIVE/ADJUST if backend regenerates operation ID | Client-reused durable business ID and immutable unique movement, body hash, DB-09 | No irreversible mutation GO without replay proof |
+| R41 | 5×3 | Org closure/membership revocation races stock approval due incompatible lock ordering | Org-first consistent transaction, DB-10/12, deadlock timeout rollback, throughput benchmark | No tenant isolation claim without proof |
+| R42 | 4×3 | O14 source auto-excludes already-ended APPROVED while proposal says hold remains until explicit transition | Course A-FINAL examine legitimate amendment and tests without changing existing source unrequested | Do not claim original behavioral identity without review |
