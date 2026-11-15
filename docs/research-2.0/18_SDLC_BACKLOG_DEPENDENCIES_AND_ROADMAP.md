@@ -68,3 +68,6 @@ Required by P6: supported secure runtime, authenticated multi-org permissions, r
 5. The new required gate order is a user instruction. Any intentional submission before production PASS would need a **new explicit user decision** and current academic policy check; never silently reverse it.
 
 Research-document-only task now: no code, merges, deployment, accounts, outreach, purchase or Canvas.
+
+## CP0 source status update after earlier snapshot — 2026-11-15
+O14 implementation branch and draft PR #8 now exist (head 2dd336ed39cecd417a8bce3388b303e688e95dee); CI passed. CP0 task has changed from locating/implementing O14 to **validating the existing interim academic baseline** and resolving real manual/test/source-deliverable gaps, see [26](26_CP0_O14_BASELINE_AUDIT_AND_CODEX_HANDOFF.md). Sequence remains O14 baseline → V2 production engineering and P-ACCEPT → A-FINAL → student manual Canvas. Dec 5 printed deadline remains at high risk. No product implementation/host acceptance is implied.

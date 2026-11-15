@@ -44,3 +44,6 @@ All documents listed are included in this research branch after the verified thi
 
 ## 2026-11-15 user-authoritative sequence update
 **O14 academic baseline → pre-Canvas supported V2 engineering → REAL production technical acceptance → independent literal-course academic final acceptance → student's manual Canvas submission (printed Dec 5, check Canvas).** Prior post-academic V2 planning is superseded; earlier decisions preserved in [25](25_ROADMAP_CHANGE_LOG_AND_PRE_SUBMISSION_ACCEPTANCE.md). No production code/test/deploy created by research docs.
+
+## Later live CP0 O14 audit (2026-11-15)
+New draft PR #8 now exists at 2dd336ed39cecd417a8bce3388b303e688e95dee and is the actual conditional academic baseline candidate. Earlier no-O14 statements are dated historical snapshots, not current. See [26](26_CP0_O14_BASELINE_AUDIT_AND_CODEX_HANDOFF.md).

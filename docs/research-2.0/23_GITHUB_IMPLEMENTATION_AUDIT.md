@@ -52,3 +52,6 @@ Private GitHub rechecked **before** applying research docs:
 - The attached original assignment PDF prints final Dec5. Syllabus lists CLO9 receive/serve images and authorship/outside help; instructor/Canvas interpretations unverified.
 - **No evidence O14 complete**, no V2 tenant/secure auth product code, hosted release, free account, tested off-host DR or V2 acceptance. A CI green commit is not production engineering PASS.
 **Change:** this latest audit now feeds O14 baseline → pre-Canvas P-ACCEPT → A-FINAL → student's manual submission. [18](18_SDLC_BACKLOG_DEPENDENCIES_AND_ROADMAP.md) and [25](25_ROADMAP_CHANGE_LOG_AND_PRE_SUBMISSION_ACCEPTANCE.md). No implementation activity performed.
+
+## Correction to initial same-day GitHub snapshot
+New PR #8 'O14: interim academic baseline and release handoff' is now present, head 2dd336ed39cecd417a8bce3388b303e688e95dee, draft and unmerged, base PR #6. CI Verify runs 43691405530 and 43691401787 succeeded. O14 author-reported local tests 55 Java,15 UI,5 Playwright and 96 Newman requests/142 assertions; not independently rerun; actual local generated release ZIP/manifest bytes unavailable. CLO9/instructor Twilio/Canvas unresolved and O14 explicitly interim, not production nor final academic acceptance. Earlier no-O14 status retained as dated history. Read [26](26_CP0_O14_BASELINE_AUDIT_AND_CODEX_HANDOFF.md).
