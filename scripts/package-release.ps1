@@ -96,6 +96,9 @@ Copy-Item -LiteralPath (Join-Path $backendRoot '.settings') -Destination (Join-P
 Copy-Item -LiteralPath (Join-Path $backendRoot 'src\main') -Destination (Join-Path $javaRoot 'src\main') -Recurse
 Copy-Item -LiteralPath (Join-Path $backendRoot 'src\test') -Destination (Join-Path $javaRoot 'src\test') -Recurse
 $zipType = [IO.Compression.CompressionLevel]::Optimal
+if (Test-Path -LiteralPath $javaSourceZip -PathType Leaf) {
+    Remove-Item -LiteralPath $javaSourceZip -Force
+}
 [IO.Compression.ZipFile]::CreateFromDirectory($javaRoot, $javaSourceZip, $zipType, $false)
 $stagingResolved = (Resolve-Path -LiteralPath $stagingParent).Path
 if (-not $stagingResolved.StartsWith($tempRoot, [StringComparison]::OrdinalIgnoreCase)) {
