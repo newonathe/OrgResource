@@ -68,3 +68,6 @@ New draft PR #8 now exists at 2dd336ed39cecd417a8bce3388b303e688e95dee and is th
 
 ## CP6 course-preserving MySQL and booking research (2026-11-15)
 [33_TENANT_MYSQL_RESERVATIONS_LEDGER_AND_GLOBAL_COMPATIBILITY.md](33_TENANT_MYSQL_RESERVATIONS_LEDGER_AND_GLOBAL_COMPATIBILITY.md) finds a mathematical **overconservative** V2 overlap-sum bug (must use peak concurrent holds if future-window booking approved), source nuance about ended O14 holds, missing same-resource ledger/allocation FK, expiring idempotency receipt vs durable operator-supplied operation ID, and org-root lock sequencing. Proposes **global reservations, Department and whole-batch P0** pending user approval. DB-01..14 acceptance specified, none executed. Original course stack/DB untouched, architecture BLOCKED.
+
+## CP7 remaining work estimate and literal Javax integration gate
+New [34](34_JAVAX_JAKARTA_VALIDATION_SEAM_AND_RESEARCH_ESTIMATE.md): Jakarta EE8 still used `javax`; Boot4 Spring7/Jersey4 native validation uses `jakarta`, original O14 explicitly executes `javax.validation.Validator`. Java17 + explicit true Javax provider remains a high-risk unbuilt candidate, not automatically compliant. **Estimated 10–14 remaining research passes from CP6** (CP7 counted first; ~9–13 from now), including final independent critique. No proof of live E2E before executable checks; architecture BLOCKED.

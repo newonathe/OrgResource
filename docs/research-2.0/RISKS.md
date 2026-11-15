@@ -59,3 +59,8 @@ These severities/likelihoods are qualitative expert estimates only, not incident
 | R40 | 5×4 | 24-hour receipt purge permits repeated RECEIVE/ADJUST if backend regenerates operation ID | Client-reused durable business ID and immutable unique movement, body hash, DB-09 | No irreversible mutation GO without replay proof |
 | R41 | 5×3 | Org closure/membership revocation races stock approval due incompatible lock ordering | Org-first consistent transaction, DB-10/12, deadlock timeout rollback, throughput benchmark | No tenant isolation claim without proof |
 | R42 | 4×3 | O14 source auto-excludes already-ended APPROVED while proposal says hold remains until explicit transition | Course A-FINAL examine legitimate amendment and tests without changing existing source unrequested | Do not claim original behavioral identity without review |
+
+## CP7 new material risks (2026-11-15)
+| R43 | 5×5 | Native Boot4/Jersey4 Jakarta validation wrongly counted as real `javax.validation` execution | Explicit provider proof on old-style DTO and HTTP400 before product architecture approval | BLOCKED |
+| R44 | 4×4 | HV6.2 October2026 patch misread as guaranteed sustained security support; BVal2 old | Vendor limited-support and CVE/classloader review, Java17 proof | No public app claim |
+| R45 | 4×3 | 10–14 passes misread as deadline or promised gapless pre-code E2E | Research gate records material design closure vs impossible-before-code runtime evidence separately | Do not claim unrun tests passed |

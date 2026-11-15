@@ -1,5 +1,5 @@
 # Research completion inventory and unresolved evidence
-**Status:** RESEARCH COMPLETE AS A PROVISIONAL DOCUMENTATION PACKET; SOURCE COVERAGE and IMPLEMENTATION VALIDATION remain PARTIAL. **Date:** 2026-11-15. Updated when remote commit verified. Source: [SOURCES](SOURCES.md), [02](02_AUDIT_AND_SOURCE_COVERAGE.md).
+**Status:** RESEARCH NOT ACCEPTED; older provisional packet exists but critical source coverage, supported literal tech and execution evidence remain PARTIAL/BLOCKED. **Date:** 2026-11-15. Updated when remote commit verified. Source: [SOURCES](SOURCES.md), [02](02_AUDIT_AND_SOURCE_COVERAGE.md).
 
 ## What is actually accomplished vs not
 | Area | Current status | Precise evidence and limitation |
@@ -53,3 +53,6 @@ VERIFIED EXTERNAL: official Boot4.1.2 manages Jersey4.0.3 and documents Jackson2
 
 ## CP4 independent technical sources and unapproved identity option (2026-11-15)
 Maintained Open Liberty JavaEE8 can run actual `javax.validation` on Java21, so JDK21 alone is not the blocker; Boot4/Jersey4 autowiring/integration still NOT proven and source compliance is BLOCKED. O14 uses a real `@Autowired javax.validation.Validator`, not cosmetic imports. HV6.2.6 javax limited support (Java8/11/17); Apache BVal2.0.6 javax provider last released June2022; neither has a proven secure integration into public Boot4. NIST/OWASP support saved recovery codes and no-security-question recovery. A **synthetic-only invite/local-password/recovery-code** option could avoid paid mail/SMS, but its exact credential/transfer/session tables are missing and no real-org ownership verified. No build/test/deploy/account occurred; [31](31_JAVAX_RUNTIME_AND_EMAIL_FREE_IDENTITY_RESEARCH.md).
+
+## CP7 effective status and remaining estimate
+New first-party namespace proof: Jakarta EE8 still uses Javax, and EE9 migrated; [Spring7](https://docs.spring.io/spring-framework/reference/core/validation/beanvalidation.html)/[Jersey4](https://eclipse-ee4j.github.io/jersey.github.io/documentation/latest4x/user-guide.html) native Bean Validation uses Jakarta; O14 `RequestValidation` genuinely uses Javax. No approved supported public runtime proven. [34](34_JAVAX_JAKARTA_VALIDATION_SEAM_AND_RESEARCH_ESTIMATE.md) documents **10–14 researched passes from CP6**, CP7 the first (9–13 estimated remaining) and the explicitly NOT RUN actual compatibility/hosting evidence. The old heading claiming provisional research complete is **superseded**.
