@@ -53,3 +53,6 @@ New draft PR #8 now exists at 2dd336ed39cecd417a8bce3388b303e688e95dee and is th
 
 ## Strict course-technology priority and CP2 findings (2026-11-15)
 **USER DECISION:** all original technologies fully preserved as runnable and evidenced; research only here, another chat master prompts, Codex tests/implementation. **ARCHITECTURE BLOCKED**, because supported Boot4/Jersey4 uses Jakarta rather than literal javax.validation and no supported one-public-runtime literal replacement is verified. No production rewrite authorized; earlier [27](27_CP1_PRODUCTION_STACK_AND_ZERO_COST_FEASIBILITY.md) is conditional research. Exact conflict/acceptance register: [28_STRICT_COURSE_STACK_COMPATIBILITY_AND_CP2_CONFLICTS.md](28_STRICT_COURSE_STACK_COMPATIBILITY_AND_CP2_CONFLICTS.md).
+
+## Pre-build research gate (2026-11-15)
+**NOT RESEARCH-ACCEPTED / architecture BLOCKED.** The user requires thorough pre-build review and proof of course stack compatibility, but actual software E2E results cannot exist before executing an implementation. [29_PRE_BUILD_RESEARCH_ACCEPTANCE_GATE.md](29_PRE_BUILD_RESEARCH_ACCEPTANCE_GATE.md) enumerates R0–R10 source/decision/acceptance checks and separates feasible research proofs from future Codex runtime/host evidence. No code or accounts authorized.

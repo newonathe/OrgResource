@@ -32,3 +32,8 @@
 | R24 | 4×4 | CLO9, video, authorship or Canvas instructions left until after rushed production | CP0 asks student to inspect current Canvas and notes exceptions; Dec4 academic acceptance reserved | A-FINAL FAIL; no invented waiver/submission |
 | R25 | 4×3 | Synthetic technical deployment falsely portrayed as approved Ateneo pilot | Independent demo/non-affiliation label, no real contacts; opt-in gate | Withdraw claim; real adoption deferred |
 These severities/likelihoods are qualitative expert estimates only, not incident rates. R13 changed specifically because **final** academic acceptance comes **after** P-ACCEPT; early course preservation still happens first.
+
+## 2026-11-15 research gate and feasibility risks
+| R26 | 5×5 | Unsupported Jakarta modernization is misrepresented as fully preserving literal javax Validation | Architecture BLOCKED, active course path test and user-reviewed namespace execution boundary [28] | No Codex product rewrite without approved compliance resolution |
+| R27 | 5×4 | Research design is called “E2E proven” even though code/cloud never run | Separate [R0–R10 research gate](29_PRE_BUILD_RESEARCH_ACCEPTANCE_GATE.md) and future runtime test receipts | Report NOT RUN; never infer PASS |
+| R28 | 5×5 | Exhaustive research consumes available Dec 5 time but does not establish host/free account | Dated critical path and no-spend provider conditional evidence; student checks Canvas and support policies | Disclose likely deadline conflict, do not invent waiver/buy/swap order |

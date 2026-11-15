@@ -43,3 +43,7 @@
 | D-029 | **RESEARCH FINDING** | MySQL tenant nullable FK, stale snapshot, late idempotency replay, undefined active name index, unverified owner and session flow are specification blockers. | Revised 08/10/11/12/13 and actual negative/concurrency tests. |
 | D-030 | **OPEN QUESTION** | Canvas/CLO9 and Twilio instructor acceptance inaccessible; actual free host/backup not verified. | No academic completion, $0 guarantee or production GO assumed. |
 Details and dates: [28](28_STRICT_COURSE_STACK_COMPATIBILITY_AND_CP2_CONFLICTS.md).
+
+## 2026-11-15 explicit research-first acceptance control
+| D-031 | **USER PREFERENCE / RESEARCH GOVERNANCE** | Complete and verify a coherent pre-build research packet and ask for user sign-off before Codex produces product features. **Technical end-to-end behavior cannot be claimed proven before any code exists**; only support/contract/design can be checked without actual execution. | [R0–R10 checklist](29_PRE_BUILD_RESEARCH_ACCEPTANCE_GATE.md), then narrow authorized feasibility tests, not fabricated production pass. |
+| D-032 | **RESEARCH STATUS / OPEN** | The strengthened literal `javax.validation` and public supported Boot/Jersey namespace constraint is not resolved. Identity/governance, relational exact design, eligible zero-cost infrastructure and original Canvas interpretation remain open. | Architecture **BLOCKED**; no “research done” statement yet. |
