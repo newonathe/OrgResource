@@ -1,5 +1,8 @@
 # OrgResource — Pre-Codex Finalization Packet (CP31, review candidate)
 
+> **2026-11-16 independent revision notice:** This 22-section CP31 packet is **supplemented and materially corrected** by [CP32 conflict adjudication](59_CP32_FINAL_CONFLICT_ADJUDICATION_AND_CONTRACT_FREEZE.md) and [CP33 route-by-route acceptance/review gate](60_CP33_ACCEPTANCE_TRACEABILITY_RISK_AND_REVIEW_GATE.md). In particular APPROVE may occur before Project.startAt, anonymous invitation bootstrap must be specified, public v2 success responses use the CP32 envelope, and initialQuantity=0 creates no INITIAL movement. These are design recommendations, not runtime evidence. When CP31 differs from CP32 on those matters, CP32 is authoritative for this review candidate.
+
+
 **Prepared:** 2026-11-16, Asia/Manila. **Repository:** private newonathe/OrgResource. **Status:** COMPLETE PAPER-LEVEL CONSOLIDATION CANDIDATE; **NOT owner-signed, NOT implemented, NOT production-tested, NOT a Codex instruction to execute**. This packet supersedes *planning interpretations* that conflict with the latest CP30 one-product decision. It does not modify O14 academic source, guarantee runtime compatibility, grant a deployment permission, or rewrite the actual course assignment.
 
 ## 0. Read order, authority, and evidence levels
