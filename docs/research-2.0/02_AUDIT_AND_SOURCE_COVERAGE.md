@@ -35,7 +35,7 @@ At the newest O11/O13 phase report, the coding agent reports 55 Maven/JDK8 tests
 | `11_COMPLETE_SOURCE_NONVIDEO_PART1.zip` and `12_COMPLETE_SOURCE_NONVIDEO_PART2.zip` | **Both opened in the file runtime**; 1,227 outer entries and all 1,370 nested file entries streamed through SHA-256/CRC; all 21 nested ZIPs opened, no read errors; see [22](22_PRIMARY_ARCHIVE_VERIFICATION.md) | Byte/path integrity VERIFIED; not every original source semantically read; downloadable complete CSV manifests generated outside GitHub |
 | Course slides/prof examples | Extracted Jersey/annotations/JPA/JPQL/Retrofit/validation examples and supplied source references | Every slide frame/code package not exhaustively opened; 2020 teaching versions not production guidance |
 | Github `00`, `01`, standing policy | Both transfer texts and 9,461-char policy read | These are instructions/history, not current runtime |
-| Historical unabridged master | Entire 319,799-char file fetched; SHA and 4,174 lines structurally verified; historical 12-component continuity and major contract sections examined; remaining long legacy master portions have not all received individual semantic review | **FULL SEMANTIC INSPECTION NOT YET CLAIMED** |
+| Historical unabridged master | **Full 319,799-character/4,174-line historical file retrieved and read consecutively in 18 non-overlapping line segments**; exact blob SHA and decisions reconciled in [24](24_HISTORICAL_MASTER_COMPLETE_INSPECTION.md) | HISTORICAL TEXT FULLY READ; not a claim that all original archive entries were semantically inspected |
 
 No evidence of live Ateneo org enrollment, interviews, surveys, official partnership, real-stock testing, production auth, tenant isolation or external SMS delivery.
 

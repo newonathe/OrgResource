@@ -33,6 +33,7 @@ This directory is a **research and planning layer**, not a production applicatio
 | [21_RESEARCH_STATUS_AND_OPEN_QUESTIONS.md](21_RESEARCH_STATUS_AND_OPEN_QUESTIONS.md) | Precise documentation, tested/code/deployed status |
 | [22_PRIMARY_ARCHIVE_VERIFICATION.md](22_PRIMARY_ARCHIVE_VERIFICATION.md) | Independent SHA-256/CRC of original 1,227 outer +1,370 nested source entries, exact original Java provenance |
 | [23_GITHUB_IMPLEMENTATION_AUDIT.md](23_GITHUB_IMPLEMENTATION_AUDIT.md) | Current Java/React source inspection, CI scope, route status and unverified O14 |
+| [24_HISTORICAL_MASTER_COMPLETE_INSPECTION.md](24_HISTORICAL_MASTER_COMPLETE_INSPECTION.md) | All 4,174 lines of 319,799-character historical master read and reconciled against live source |
 
 All documents listed are included in this research branch after the verified third batch. The original transferred 00/01 files remain unchanged; no unapproved code changes or main merges.
 

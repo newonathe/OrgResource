@@ -4,7 +4,7 @@
 ## What is actually accomplished vs not
 | Area | Current status | Precise evidence and limitation |
 |---|---|---|
-| Context / private GitHub read | ORIGINAL ZIP BYTE/HASH AUDIT VERIFIED; SEMANTIC SOURCE AUDIT PARTIAL; LIVE REPO VERIFIED | Connected repo main/PR#1–#7, current PR#6 `fd34a8...`, reviewed key files, original course text; full 319,799-char historical master fetched, partly read semantically, not complete line-by-line |
+| Context / private GitHub read | ORIGINAL ZIP BYTE/HASH AUDIT VERIFIED; SEMANTIC SOURCE AUDIT PARTIAL; LIVE REPO VERIFIED | Connected repo main/PR#1–#7, current PR#6 `fd34a8...`, reviewed key files, original course text; full 319,799-char historical master retrieved and read in 18 non-overlapping contiguous sections; see 24 |
 | Course requirements | RESEARCHED & MAPPED, NOT course-final acceptance | Assignment/syllabus parsed, CLO9 still unresolved; Canvas not accessed; actual source compile not independently rerun |
 | Ateneo landscape | SECONDARY PUBLIC RESEARCH VERIFIED, no stakeholder primary data | Public OSA/RecWeek/CFMO/MEA/GUIDON sources and dated caveats |
 | Alternatives | DOCUMENTED, not benchmarked or product-switched | Spreadsheet baseline, Snipe-IT, provider and FOSS directions; no hands-on Snipe-IT pilot |
@@ -33,7 +33,7 @@
 | P1-ops | What is realistic dataset growth, and where do off-host encrypted backups live for $0? | Synthetic benchmark then actual free service eligibility |
 | P2-later | Do actual Ateneo orgs want it? Who owns their equipment and what current tools exist? | Optional **future** authorized representative discussion/pilot, not required for research |
 | P2-later | OSA/CFMO/IT/privacy and organizational policy for actual campus data or integrations? | Authorized university/legal channels only if later official integration |
-| Source gap | Original ZIPs **opened and fully byte-hashed** (1,227 original +1,370 nested files), but semantic reading of every entry and final legacy master complete reading remain unfulfilled | Read prioritized course-critical originals, full 319,799-character master semantic sections; 22 has procedure and hash results |
+| Source gap | Original ZIPs **opened and fully byte-hashed** (1,227 original +1,370 nested files), but semantic reading of every archived entry remains unfulfilled; the 4,174-line historical master has now been fully read | Read prioritized course-critical originals, maintain per-source semantic statuses; 22–24 have the exact archive and historical review evidence |
 
 ## Immediate independent critique status
 The independent critique in [20](20_INDEPENDENT_CRITIQUE_AND_REVISED_DECISIONS.md) identifies stale counts, false adoption/lifetime-free premises, hidden tenant security, booking risk, auth role capture, backups, unsupported javax runtime, limited maintenance and the actual no-GO boundaries. Decisions in [DECISIONS](DECISIONS.md) remain recommendations until user review.
