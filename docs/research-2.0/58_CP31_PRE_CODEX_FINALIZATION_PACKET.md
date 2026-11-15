@@ -1,5 +1,8 @@
 # OrgResource — Pre-Codex Finalization Packet (CP31, review candidate)
 
+> **LATEST PAPER REVIEW ADDENDA (2026-11-16):** In addition to CP32/CP33, see [CP34 schema and clean historical-data cutover](61_CP34_CANONICAL_SCHEMA_AND_CUTOVER_BLUEPRINT.md), [CP35 exact public API/identity/UI journeys](62_CP35_API_AUTH_UI_WORKFLOW_FREEZE_CANDIDATE.md), [CP36 original course API retry/ledger compatibility](63_CP36_LEGACY_COMPATIBILITY_ATOMICITY_AND_CUTOVER_GATES.md), [CP37 SEALED stage-by-stage Codex prompts](64_CP37_SEALED_STAGE_BY_STAGE_CODEX_PROMPTS.md), and [CP38 independent owner review/no-go register](65_CP38_INDEPENDENT_PRE_CODEX_FREEZE_REVIEW_AND_OPEN_EVIDENCE.md). These are the reviewed **candidate** contract refinements; none proves build execution or constitutes owner signoff or deployment authorization.
+
+
 > **2026-11-16 independent revision notice:** This 22-section CP31 packet is **supplemented and materially corrected** by [CP32 conflict adjudication](59_CP32_FINAL_CONFLICT_ADJUDICATION_AND_CONTRACT_FREEZE.md) and [CP33 route-by-route acceptance/review gate](60_CP33_ACCEPTANCE_TRACEABILITY_RISK_AND_REVIEW_GATE.md). In particular APPROVE may occur before Project.startAt, anonymous invitation bootstrap must be specified, public v2 success responses use the CP32 envelope, and initialQuantity=0 creates no INITIAL movement. These are design recommendations, not runtime evidence. When CP31 differs from CP32 on those matters, CP32 is authoritative for this review candidate.
 
 
