@@ -56,3 +56,6 @@ New draft PR #8 now exists at 2dd336ed39cecd417a8bce3388b303e688e95dee and is th
 
 ## Pre-build research gate (2026-11-15)
 **NOT RESEARCH-ACCEPTED / architecture BLOCKED.** The user requires thorough pre-build review and proof of course stack compatibility, but actual software E2E results cannot exist before executing an implementation. [29_PRE_BUILD_RESEARCH_ACCEPTANCE_GATE.md](29_PRE_BUILD_RESEARCH_ACCEPTANCE_GATE.md) enumerates R0–R10 source/decision/acceptance checks and separates feasible research proofs from future Codex runtime/host evidence. No code or accounts authorized.
+
+## Course execution and exact 26-route compatibility crosswalk (2026-11-15)
+[30_ORIGINAL_26_ROUTE_CROSSWALK_AND_RUNTIME_CORRECTIONS.md](30_ORIGINAL_26_ROUTE_CROSSWALK_AND_RUNTIME_CORRECTIONS.md) directly traces **all 26** academic O14 routes against provisional V2; identifies ten without endpoint counterparts, fifteen with changed contracts and one archive-vs-delete replacement. Department and original stock reservation semantics are not preserved by the draft V2 data model. Updated vendor facts: Jersey4.0.3 includes Jackson3/Gson modules, so prior Jackson2-only bridge recommendation is outdated; javax-validation conflict remains BLOCKED. **Not an implementation approval or test result.**
