@@ -160,6 +160,12 @@ export function Notice({ children, tone = "info", role }: { children: ReactNode;
   return <div className={`notice notice-${tone}`} role={role ?? (tone === "danger" ? "alert" : "status")}>{children}</div>;
 }
 
+export function MutationReviewNotice({ required, ready, onReviewed }: { required: boolean; ready: boolean; onReviewed: () => void }) {
+  if (!required) return null;
+  return <Notice tone="warning"><div className="mutation-review"><span><strong>Change outcome uncertain.</strong> The server may have saved the last request, and it was not retried. Review the refreshed records before submitting another change.</span>
+    <Button variant="secondary" disabled={!ready} onClick={onReviewed}>I reviewed the current records</Button></div></Notice>;
+}
+
 export function StatusBadge({ children, tone = "neutral" }: { children: ReactNode; tone?: "neutral" | "success" | "warning" | "danger" | "blue" | "gold" }) {
   return <span className={`status-badge badge-${tone}`}>{children}</span>;
 }

@@ -16,9 +16,16 @@ function manilaWallTime(offsetMs: number): string {
 
 async function confirm(page: Page, actionButtonName: RegExp, confirmationName: string) {
   const dialog = page.getByRole("dialog");
-  if (await dialog.count() === 0) await page.getByRole("button", { name: actionButtonName }).click();
+  const confirmation = page.getByRole("button", { name: confirmationName, exact: true });
+  if (!(await confirmation.isVisible())) {
+    await expect(dialog).toHaveCount(0);
+    await page.getByRole("button", { name: actionButtonName }).click();
+  }
   await expect(dialog).toBeVisible();
-  await page.getByRole("button", { name: confirmationName, exact: true }).click();
+  const dialogConfirmation = dialog.getByRole("button", { name: confirmationName, exact: true });
+  await expect(dialogConfirmation).toBeVisible();
+  await dialogConfirmation.click();
+  await expect(dialog).toHaveCount(0);
 }
 
 async function getJson<T>(page: Page, route: string): Promise<T> {
@@ -26,6 +33,46 @@ async function getJson<T>(page: Page, route: string): Promise<T> {
   expect(response.ok(), `${route} returned ${response.status()}`).toBeTruthy();
   return await response.json() as T;
 }
+
+test("a lost create confirmation keeps its draft, refreshes the saved row, and never retries automatically", async ({ page }) => {
+  const name = `O11 uncertain ${Date.now().toString(36)}`;
+  let postCount = 0;
+  await page.route("**/api/departments", async (route) => {
+    if (route.request().method() !== "POST") return route.continue();
+    postCount += 1;
+    const committedResponse = await route.fetch();
+    expect(committedResponse.ok()).toBeTruthy();
+    await route.fulfill({ status: committedResponse.status(), contentType: "application/json", body: "not-json" });
+  });
+
+  await page.goto("/#/departments");
+  await page.getByLabel("Department name", { exact: true }).fill(name);
+  await page.getByRole("button", { name: "Add department" }).click();
+  await expect(page.getByText("Change outcome uncertain.")).toBeVisible();
+  await expect(page.getByRole("button", { name: `Edit ${name}` })).toBeVisible();
+  await expect(page.getByLabel("Department name", { exact: true })).toHaveValue(name);
+  await expect(page.getByRole("button", { name: "Add department" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "I reviewed the current records" })).toBeEnabled();
+  expect(postCount).toBe(1);
+  await page.getByRole("button", { name: "I reviewed the current records" }).click();
+  await expect(page.getByRole("button", { name: "Add department" })).toBeEnabled();
+  expect(postCount).toBe(1);
+});
+
+test("Allocation status filters follow browser back and forward navigation", async ({ page }) => {
+  await page.goto("/#/allocations");
+  const status = page.getByLabel("Status", { exact: true });
+  await expect(status).toHaveValue("ALL");
+  await status.selectOption("PENDING");
+  await expect(status).toHaveValue("PENDING");
+  await expect.poll(() => page.evaluate(() => window.location.hash)).toContain("status=PENDING");
+  await status.selectOption("APPROVED");
+  await expect(status).toHaveValue("APPROVED");
+  await page.goBack();
+  await expect(status).toHaveValue("PENDING");
+  await page.goForward();
+  await expect(status).toHaveValue("APPROVED");
+});
 
 test("connected O8–O10 workflows persist through the isolated Java/MySQL backend", async ({ page }) => {
   test.setTimeout(240_000);
@@ -282,6 +329,8 @@ test("captures the all-page responsive light/dark screenshot matrix", async ({ p
   ] as const;
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
+  await expect(page.getByText("Local academic prototype", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("CSCI 180.05", { exact: true })).toHaveCount(0);
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "Skip to main content" })).toBeFocused();
   await page.keyboard.press("Enter");

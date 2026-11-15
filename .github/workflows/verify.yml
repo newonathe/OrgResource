@@ -42,8 +42,41 @@ jobs:
           java-version: '8'
           cache: maven
           cache-dependency-path: backend/pom.xml
-      - name: Verify backend against isolated MySQL
-        run: bash mvnw -B clean verify
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Build React application
+        run: |
+          npm --prefix ../frontend ci
+          npm --prefix ../frontend run typecheck
+          npm --prefix ../frontend test
+          npm --prefix ../frontend run lint
+          npm --prefix ../frontend run build
+      - name: Verify backend and bundle React application against isolated MySQL
+        run: bash mvnw -B -Pbundle-react-ui clean verify
+      - name: Smoke test executable JAR on Java 8
+        run: |
+          set -euo pipefail
+          java -jar target/orgresource-0.1.0-SNAPSHOT.jar --spring.profiles.active=test > /tmp/orgresource-jar.log 2>&1 &
+          app_pid=$!
+          trap 'kill "$app_pid" 2>/dev/null || true; wait "$app_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 60); do
+            if curl --silent --fail http://127.0.0.1:8080/ > /tmp/orgresource-index.html; then break; fi
+            sleep 2
+          done
+          grep -Eq 'assets/index-[^" ]+\.js' /tmp/orgresource-index.html
+          asset_path=$(grep -oE 'assets/index-[^" ]+\.js' /tmp/orgresource-index.html | head -n 1)
+          curl --silent --fail "http://127.0.0.1:8080/$asset_path" > /dev/null
+          for route in departments projects resources requirements allocations; do
+            curl --silent --fail "http://127.0.0.1:8080/api/$route" > /dev/null
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: orgresource-executable-java8
+          path: backend/target/orgresource-0.1.0-SNAPSHOT.jar
+          if-no-files-found: error
 
   frontend:
     name: React typecheck, tests, lint, and build

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { api } from "../api/client";
 import type { Allocation, Department, Project, Resource, ResourceRequirement } from "../api/types";
-import { explainError, formatManila, inputDateTime, projectPeriod, toDateTimeInput } from "../domain";
-import { Button, DetailSheet, GlassPanel, LoadState, Modal, Notice, PageHeader, PanelHeading, StatusBadge } from "../ui";
+import { explainError, formatManila, inputDateTime, isUncertain, projectPeriod, toDateTimeInput } from "../domain";
+import { Button, DetailSheet, GlassPanel, LoadState, Modal, MutationReviewNotice, Notice, PageHeader, PanelHeading, StatusBadge } from "../ui";
 
 function defaultStart(): string {
   const d = new Date(Date.now() + 48 * 60 * 60 * 1000);
@@ -38,6 +38,7 @@ export function ProjectsPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [postReviewRequired, setPostReviewRequired] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -79,12 +80,12 @@ export function ProjectsPage() {
 
   async function createProject(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (busy || !selectedDepartmentId || !name.trim() || !startAt || !endAt) return;
+    if (busy || postReviewRequired || !selectedDepartmentId || !name.trim() || !startAt || !endAt) return;
     setBusy(true); setError(""); setNotice("");
     try {
       await api.createProject({ departmentId: Number(selectedDepartmentId), name: name.trim(), startAt: inputDateTime(startAt), endAt: inputDateTime(endAt) });
       setName(""); setEndAt(""); setNotice("Project saved."); refresh();
-    } catch (reason) { setError(explainError(reason)); }
+    } catch (reason) { if (isUncertain(reason)) { setPostReviewRequired(true); refresh(); } else setError(explainError(reason)); }
     finally { setBusy(false); }
   }
 
@@ -94,20 +95,23 @@ export function ProjectsPage() {
 
   async function updateProject(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (busy || !editing || !editName.trim() || !editStart || !editEnd) return;
+    if (busy || postReviewRequired || !editing || !editName.trim() || !editStart || !editEnd) return;
     setBusy(true); setError(""); setNotice("");
     try {
       await api.updateProject(editing.id, { name: editName.trim(), startAt: inputDateTime(editStart), endAt: inputDateTime(editEnd) });
       setEditing(null); setNotice("Project updated."); refresh();
-    } catch (reason) { setError(explainError(reason)); }
+    } catch (reason) { if (isUncertain(reason)) { setPostReviewRequired(true); refresh(); } else setError(explainError(reason)); }
     finally { setBusy(false); }
   }
 
   async function confirmDelete() {
-    if (busy || !deleting) return;
+    if (busy || postReviewRequired || !deleting) return;
     setBusy(true); setError(""); setNotice("");
     try { await api.deleteProject(deleting.id); setDeleting(null); setNotice("Project deleted."); refresh(); }
-    catch (reason) { setError(explainError(reason)); setDeleting(null); }
+    catch (reason) {
+      if (isUncertain(reason)) { setPostReviewRequired(true); refresh(); }
+      else { setError(explainError(reason)); setDeleting(null); }
+    }
     finally { setBusy(false); }
   }
 
@@ -122,6 +126,7 @@ export function ProjectsPage() {
       <PageHeader eyebrow="Workspace · activity planning" title="Projects" description="Plan each activity in Philippine time and keep its linked needs and history together."
         action={<div className="header-stat"><span>{loadState === "ready" ? projects.length : "—"}</span><small>projects in view</small></div>} />
       {notice && <Notice tone="success">{notice}</Notice>}{error && <Notice tone="danger">{error}</Notice>}
+      <MutationReviewNotice required={postReviewRequired} ready={loadState === "ready"} onReviewed={() => setPostReviewRequired(false)} />
       <div className="content-grid project-grid">
         <GlassPanel className="form-panel" tilt={false}>
           <PanelHeading kicker="Planning desk" title="Create a project" />
@@ -134,7 +139,7 @@ export function ProjectsPage() {
             <label htmlFor="project-start">Starts · Philippine time</label><input id="project-start" type="datetime-local" step="1" value={startAt} onChange={(event) => setStartAt(event.target.value)} required />
             <label htmlFor="project-end">Ends · Philippine time</label><input id="project-end" type="datetime-local" step="1" value={endAt} onChange={(event) => setEndAt(event.target.value)} required />
             <p className="field-hint">Date-times are sent as Asia/Manila wall time (YYYY-MM-DDTHH:mm:ss).</p>
-            <Button variant="primary" magnetic type="submit" disabled={busy || !selectedDepartmentId || !name.trim() || !startAt || !endAt}>{busy ? "Saving…" : "Create project"}</Button>
+            <Button variant="primary" magnetic type="submit" disabled={busy || postReviewRequired || !selectedDepartmentId || !name.trim() || !startAt || !endAt}>{busy ? "Saving…" : "Create project"}</Button>
           </form>
         </GlassPanel>
 
@@ -153,7 +158,7 @@ export function ProjectsPage() {
                     <div className="project-card-mark" aria-hidden="true">▤</div>
                     <div className="project-card-main"><div className="project-card-heading"><h3>{project.name}</h3><StatusBadge tone={status === "ACTIVE" ? "success" : status === "UPCOMING" ? "blue" : "neutral"}>{status.toLowerCase()}</StatusBadge></div>
                       <p>{department}</p><div className="project-dates"><span><small>Starts</small>{formatManila(project.startAt)}</span><span><small>Ends</small>{formatManila(project.endAt)}</span></div></div>
-                    <div className="project-actions"><Button variant="quiet" aria-label={`View ${project.name}`} onClick={() => { setSelected(project); setDetailState("loading"); }}>Details</Button><Button variant="quiet" aria-label={`Edit ${project.name}`} onClick={() => beginEdit(project)}>Edit</Button><Button variant="quiet" className="button-text-danger" aria-label={`Delete ${project.name}`} onClick={() => setDeleting(project)}>Delete</Button></div>
+                    <div className="project-actions"><Button variant="quiet" aria-label={`View ${project.name}`} onClick={() => { setSelected(project); setDetailState("loading"); }}>Details</Button><Button variant="quiet" disabled={postReviewRequired} aria-label={`Edit ${project.name}`} onClick={() => beginEdit(project)}>Edit</Button><Button variant="quiet" disabled={postReviewRequired} className="button-text-danger" aria-label={`Delete ${project.name}`} onClick={() => setDeleting(project)}>Delete</Button></div>
                   </article>;
                 })}</div>}
           </LoadState>
@@ -166,11 +171,11 @@ export function ProjectsPage() {
           <label htmlFor="edit-project-start">Starts · Philippine time</label><input id="edit-project-start" type="datetime-local" step="1" value={editStart} onChange={(event) => setEditStart(event.target.value)} required />
           <label htmlFor="edit-project-end">Ends · Philippine time</label><input id="edit-project-end" type="datetime-local" step="1" value={editEnd} onChange={(event) => setEditEnd(event.target.value)} required />
           <p className="field-hint">Department stays linked. If only the name changes, leave the existing dates as shown.</p>
-          <div className="modal-actions"><Button variant="quiet" type="button" disabled={busy} onClick={() => setEditing(null)}>Cancel</Button><Button variant="primary" type="submit" disabled={busy || !editName.trim()}>{busy ? "Saving…" : "Save changes"}</Button></div>
+          <div className="modal-actions"><Button variant="quiet" type="button" disabled={busy} onClick={() => setEditing(null)}>Cancel</Button><Button variant="primary" type="submit" disabled={busy || postReviewRequired || !editName.trim()}>{busy ? "Saving…" : "Save changes"}</Button></div>
         </form>
       </Modal>}
       {deleting && <Modal title="Delete project?" onClose={() => setDeleting(null)}><p className="modal-copy">Delete <strong>{deleting.name}</strong>? The server will refuse while any Requirements reference this Project.</p>
-        <div className="modal-actions"><Button variant="quiet" disabled={busy} onClick={() => setDeleting(null)}>Keep project</Button><Button variant="danger" disabled={busy} onClick={() => void confirmDelete()}>{busy ? "Checking…" : "Confirm delete"}</Button></div></Modal>}
+        <div className="modal-actions"><Button variant="quiet" disabled={busy} onClick={() => setDeleting(null)}>Keep project</Button><Button variant="danger" disabled={busy || postReviewRequired} onClick={() => void confirmDelete()}>{busy ? "Checking…" : "Confirm delete"}</Button></div></Modal>}
       {selected && <DetailSheet title={selected.name} onClose={() => setSelected(null)}>
         <div className="detail-grid"><div><span>Department</span><strong>{departments.find((item) => item.id === selected.departmentId)?.name ?? `Department ${selected.departmentId}`}</strong></div><div><span>Period</span><strong>{projectPeriod(selected).toLowerCase()}</strong></div><div><span>Starts</span><strong>{formatManila(selected.startAt)}</strong></div><div><span>Ends</span><strong>{formatManila(selected.endAt)}</strong></div></div>
         <section className="sheet-section"><h3>Requirements and allocation history</h3>

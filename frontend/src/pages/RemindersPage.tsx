@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { api } from "../api/client";
 import type { Allocation, Project, Resource, ResourceRequirement } from "../api/types";
-import { explainError, formatManila, manilaWallTime, reminderLabel } from "../domain";
+import { explainError, formatManila, manilaWallTime, reminderLabel, reminderWindow } from "../domain";
 import { Button, GlassPanel, LoadState, Notice, PageHeader, PanelHeading, StatusBadge } from "../ui";
 
 export function RemindersPage() {
@@ -47,8 +47,8 @@ export function RemindersPage() {
     const resource = resourceMap.get(requirement?.resourceId ?? -1);
     return { allocation, project, resource };
   });
-  const dueSoon = issued.filter(({ project }) => !!project && project.endAt > now && project.endAt <= plus24h);
-  const overdue = issued.filter(({ project }) => !!project && project.endAt <= now);
+  const dueSoon = issued.filter(({ project }) => !!project && reminderWindow(project.endAt, now, plus24h) === "DUE_SOON");
+  const overdue = issued.filter(({ project }) => !!project && reminderWindow(project.endAt, now, plus24h) === "OVERDUE");
   const unavailableCount = issued.filter(({ project }) => !project).length;
 
   return (
