@@ -50,3 +50,6 @@ New draft PR #8 now exists at 2dd336ed39cecd417a8bce3388b303e688e95dee and is th
 
 ## CP1 research (2026-11-15)
 [27_CP1_PRODUCTION_STACK_AND_ZERO_COST_FEASIBILITY.md](27_CP1_PRODUCTION_STACK_AND_ZERO_COST_FEASIBILITY.md) documents primary-source verified Boot4.1.2/Jersey4.0.3/JSON and auth caveats; conservative OCI A1 quota conflict, free-IP TLS certificate route, verified storage/host alternatives and unproven account/DR feasibility. This is a **research report, not an implemented production stack or a Codex prompt**.
+
+## Strict course-technology priority and CP2 findings (2026-11-15)
+**USER DECISION:** all original technologies fully preserved as runnable and evidenced; research only here, another chat master prompts, Codex tests/implementation. **ARCHITECTURE BLOCKED**, because supported Boot4/Jersey4 uses Jakarta rather than literal javax.validation and no supported one-public-runtime literal replacement is verified. No production rewrite authorized; earlier [27](27_CP1_PRODUCTION_STACK_AND_ZERO_COST_FEASIBILITY.md) is conditional research. Exact conflict/acceptance register: [28_STRICT_COURSE_STACK_COMPATIBILITY_AND_CP2_CONFLICTS.md](28_STRICT_COURSE_STACK_COMPATIBILITY_AND_CP2_CONFLICTS.md).

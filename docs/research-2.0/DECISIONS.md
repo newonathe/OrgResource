@@ -32,3 +32,14 @@
 | D-023 | USER DECISION | Real org interview/institutional permission/adoption may be later; **fictional technical acceptance** may precede these stakeholder gates. | No invented campus pilot/endorsement |
 | D-024 | USER DECISION | Research docs branch/PR only now; no code changes, merge, deploy, enroll/purchase, Canvas or outreach. | Remote SHA and PR verified |
 **D-001–D-017 are left as dated history.** D-018 supersedes *only sequence interpretations*, not ongoing preservation, v5 design, $0 mandatory spending or provisional technical choices.
+
+## 2026-11-15 strict research mandate (original D-001..D-024 preserved)
+| ID | Classification | Decision/finding | Condition |
+|---|---|---|---|
+| D-025 | **USER DECISION** | This chat is only research and independent verification; another chat writes Codex master prompts, Codex builds/tests; research docs branch/PR only. | No production implementation, cloud/service accounts, outgoing contacts. |
+| D-026 | **USER DECISION** | Fully preserve and exercise all course stack including actual javax.validation, Jersey, @Autowired, JPA/MySQL, Retrofit/Gson/Twilio, scheduling, 5 entities/26 routes and Postman; old archived code alone does not approve a different public backend. | Explicit active execution evidence and signed architecture boundary. |
+| D-027 | **VERIFIED EXTERNAL FACT; MATERIAL CONFLICT** | Spring Boot 4/Jersey4 standard Jakarta runtime does NOT directly execute original javax validation annotations; Hibernate Validator6.2 retains javax limited support on declared Java8/11/17; Spring Boot2/Spring5 OSS unsupported. | **Architecture BLOCKED** until credible fully compliant resolution. |
+| D-028 | **PROVISIONAL RECOMMENDATION, UNAPPROVED** | Possible dual executable + supported public Jersey requires genuine 26-route mapping and separate runtime tests, but user may reject javax only being active in course build. | Specific user approval before implementation/stack rewrite. |
+| D-029 | **RESEARCH FINDING** | MySQL tenant nullable FK, stale snapshot, late idempotency replay, undefined active name index, unverified owner and session flow are specification blockers. | Revised 08/10/11/12/13 and actual negative/concurrency tests. |
+| D-030 | **OPEN QUESTION** | Canvas/CLO9 and Twilio instructor acceptance inaccessible; actual free host/backup not verified. | No academic completion, $0 guarantee or production GO assumed. |
+Details and dates: [28](28_STRICT_COURSE_STACK_COMPATIBILITY_AND_CP2_CONFLICTS.md).
