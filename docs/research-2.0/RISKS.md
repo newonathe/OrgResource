@@ -14,9 +14,21 @@
 | R10 | 4×4 | Shared demo writes persist or disclose other's sandbox | Read-only/demo-expiring tenant + rate limits, no real endpoints | Reset demo and invalidate public session; ENG |
 | R11 | 4×3 | False assertion of school approval or validated demand | Prominent independent fictional disclosure, source strength labels | Withdraw claim; PO |
 | R12 | 4×3 | Provider free status requires card/costs after limit | Cost ledger, no paid upgrades, quota-fail closed | Stop host and use local demo; OPS |
-| R13 | 3×4 | O14/Canvas deadline incorrectly marked complete | Check current Canvas; completion evidence and certificate | Prioritize course before V2; student |
+| R13 | 5×5 | The new production-before-Canvas critical path overruns Dec 5 or Canvas changes | Student verifies Canvas/CLO9 early, Nov18 host kill switch, daily evidence gates | Report NO-GO and genuine choices; student; no silent submit-first |
 | R14 | 4×3 | Maintenance stops after graduation | Named maintainer, documented runbook, test restores, export portability | Archive safely or migrate, notify users if any; PO |
 | R15 | 3×3 | Visual glass background compromises contrast | Token+rendered composite contrast checks, solid fallback, reduced motion | Switch accessibility mode, no aesthetic rollback; QA |
 | R16 | 4×3 | Stale provider price/availability claims | Source dates and eligibility test/quarterly recheck | Defer live hosting; research owner |
 | R17 | 4×2 | SMS messages sent without consent or billed | Disable live adapter, no phone in public demo, Twilio course simulator only | Revoke credential, disable provider; PO |
 | R18 | 4×3 | Source archive entries wrongly marked inspected | Per-file SHA manifest/status and ZIP entry verification | Label gap; no proof assertion; research owner |
+
+## 2026-11-15 added deadline and production-acceptance risks (before/after R13 in [25](25_ROADMAP_CHANGE_LOG_AND_PRE_SUBMISSION_ACCEPTANCE.md))
+| ID | Sev×Lik | Failure trigger | Early detection and control | Honest contingency |
+|---|---|---|---|---|
+| R19 | 5×5 | 37–75 expert person-days V2 prior bands with 20 calendar days left and unknown team velocity | Tight optional-scope freeze, daily CP receipt, early O14 baseline/Canvas check | No schedule guarantee; disclose deadline conflict |
+| R20 | 5×4 | Free Java host/DNS/TLS/card/region/backup cannot be provisioned | Actual account eligibility + supported JVM/DB + off-host DR feasibility before Nov18 target | P-ACCEPT BLOCKED, no paid upgrade/local false pass |
+| R21 | 5×4 | Jakarta-supported V2 replaces/breaks Javax/Jersey/Retrofit course executable | Independent snapshot+SHA+two builds+post-V2 course rerun | A-FINAL FAIL until original requirements proven |
+| R22 | 5×4 | Successful CI or local demo is misrepresented as real security/restore/live acceptance | Per-gate T1–T11 evidence on target DB, HTTPS, full clean restore, threat checks | P-ACCEPT NO-GO, source evidence retained |
+| R23 | 4×4 | New version/host causes DB locking/scheduler/state inconsistency | Early supported BOM, 100-way real DB race, bounded scheduler and reboot test | Reject architecture or remediate before release |
+| R24 | 4×4 | CLO9, video, authorship or Canvas instructions left until after rushed production | CP0 asks student to inspect current Canvas and notes exceptions; Dec4 academic acceptance reserved | A-FINAL FAIL; no invented waiver/submission |
+| R25 | 4×3 | Synthetic technical deployment falsely portrayed as approved Ateneo pilot | Independent demo/non-affiliation label, no real contacts; opt-in gate | Withdraw claim; real adoption deferred |
+These severities/likelihoods are qualitative expert estimates only, not incident rates. R13 changed specifically because **final** academic acceptance comes **after** P-ACCEPT; early course preservation still happens first.

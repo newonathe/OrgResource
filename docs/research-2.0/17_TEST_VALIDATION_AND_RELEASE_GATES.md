@@ -47,3 +47,25 @@
 
 ## CI versus local test distinction
 Github workflow checks from PR #6 are **real remotely reported successful CI**. Playwright/local packaged-JAR and MySQL/Newman runs in G08 are **recorded local evidence**, not independently rerun here. V2 tests are **all planned/unrun**. This distinction must be replicated in phase reports and release notes.
+
+## 2026-11-15 binding final gate order and evidence schema (USER DECISION)
+**T0 academic source preservation at O14 is only the early baseline, NOT final academic acceptance.** Run V2 `T1..T11` against the actual supported binary, target relational DB and (if publicly claiming production) actual zero-fee HTTPS host, then independently perform the final original-stack A-FINAL. The mandated exact order is:
+```
+O14 BASELINE + preserved course artifact → production engineering
+→ real T1..T11 evidence → P-ACCEPT PASS
+→ A-FINAL literal academic re-verification AC01..AC17 PASS
+→ STUDENT manual Canvas submission
+```
+
+| Release gate | Hard PASS evidence, not merely a plan or old CI |
+|---|---|
+| **P-01 source/runtime** | Commit+build SHA, supported BOM/Java/Jersey/JPA/Security, clean reproducible release and resolved critical advisories |
+| **P-02 auth/tenant** | Real sessions/CSRF (if cookie), owner/revocation, every route wrong-org negative, direct FK database rejection, sensitive-log/secret scan |
+| **P-03 correctness** | Generated stock invariant tests, 100 conflicting real DB race attempts, booking/custody edge cases, lost-response idempotency, scheduler two-worker/restart protection |
+| **P-04 API/UI** | Real HTTP Postman positive/negative for all in-scope V2 APIs, integrated v5 Playwright, keyboard/contrast/360–1440px/failure states, no frontend mock-only pass |
+| **P-05 live operations** | Verified account free/eligible, actual public TLS certificate and host smoke when hosted, quotas and fail-closed no charge, off-host encrypted backup **and clean restore**, RPO/RTO measured, secrets/keys and incident rollback demonstrated |
+| **P-06 human review** | Student/technical reviewer signs dated PASS with full receipts for all gates; all critical/high risks closed or fail |
+| **A-FINAL after P-ACCEPT** | Clean rebuild and actual real 5-entity CRUD, Jersey2, Javax, JPA, Retrofit/Gson FakeTwilio simulation, Spring scheduling, Postman collection, original video/source export, CLO9 decision, Certificate of Authorship and assistance; verify student-only Canvas |
+| **CANVAS last** | Student alone uploads after P-ACCEPT and A-FINAL; no fabricated confirmation |
+
+Record each test as `gateId, sourceSha, artifactSha, env, command, timestampUTC, outcome(PASS|FAIL|BLOCKED|NOT_RUN), evidenceLink, reviewer, residualRisk`. FAIL/BLOCKED/NOT RUN are **not** PASS; no exception from December deadline. Dec3 P-ACCEPT/Dec4 A-FINAL/Dec5 Canvas are aggressive **risk checkpoints**, not completion guarantees. A local-only functional demo is not live technical production acceptance if live deployment is required. [18](18_SDLC_BACKLOG_DEPENDENCIES_AND_ROADMAP.md), [25](25_ROADMAP_CHANGE_LOG_AND_PRE_SUBMISSION_ACCEPTANCE.md).
