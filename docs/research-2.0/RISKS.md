@@ -64,3 +64,9 @@ These severities/likelihoods are qualitative expert estimates only, not incident
 | R43 | 5×5 | Native Boot4/Jersey4 Jakarta validation wrongly counted as real `javax.validation` execution | Explicit provider proof on old-style DTO and HTTP400 before product architecture approval | BLOCKED |
 | R44 | 4×4 | HV6.2 October2026 patch misread as guaranteed sustained security support; BVal2 old | Vendor limited-support and CVE/classloader review, Java17 proof | No public app claim |
 | R45 | 4×3 | 10–14 passes misread as deadline or promised gapless pre-code E2E | Research gate records material design closure vs impossible-before-code runtime evidence separately | Do not claim unrun tests passed |
+
+## CP8 versioned validation security risks (2026-11-15)
+| R46 | 5×5 | Expected inherited O14 HV6.0.13 falls within IBM 2026 EL/DoS advisory CVE-2026-93879; effective tree/runtime risk not independently observed | Treat course executable LOCAL/PRIVATE; verify Maven tree/advisory and avoid public legacy exposure; no source modification here | No public O14 |
+| R47 | 4×5 | Patched HV6.2.6 wrongly deemed current supported Boot4 javax solution despite vendor Boot2.4–2.7 table and limited maintenance | Review provider versions, future CVE response, active manual Javax validation and real build before GO | Architecture BLOCKED |
+| R48 | 4×4 | Maven `jakarta.validation-api:2.0.2` artifact naming mistaken for `jakarta.*` package or bundled dual providers assumed compatible | Inspect API class and dependency graph, explicit validator factory, old DTO 400 tests, fail on silent bypass | Not a build pass |
+| R49 | 3×4 | Old BVal2 provider selected without current maintenance or dependency scan | Review Apache release, SBOM and provider security/EL behavior; keep fictional data and private staging until accepted | Provider unresolved |
