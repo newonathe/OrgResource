@@ -59,3 +59,6 @@ F19 partial **usable** returns are **proposed** in V2 while academic V1 remains 
 - ARCHIVE/CLOSE never erases active issued custody.
 - Workspace role change immediately denies old permissions; email suffix alone never grants access.
 - Named page interactions, end-to-end Postman, concurrency, restore and security tests in [17](17_TEST_VALIDATION_AND_RELEASE_GATES.md) are NOT RUN.
+
+## 2026-11-15 pre-Canvas production-scope interpretation
+F01–F26 are **proposals**, not implemented. The technically required approved P0 subset must be completed and accepted before the final academic/Canvas gate, per [18](18_SDLC_BACKLOG_DEPENDENCIES_AND_ROADMAP.md). F02's authenticated self-created workspace is **fictional/unverified** only; creating an official Ateneo org representation requires separate later authority, not an email suffix. F19 partial usable returns remain proposed; if schedule forces explicit whole-batch contract, approval and coordinated edits across 10/11/12/17 are required, without silent credit of partial custody. Core auth/tenant, stock/race safety, audit/backup and actual technical evidence are NOT valid scope cuts. No product code or V2 tests are changed here.

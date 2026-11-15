@@ -61,3 +61,14 @@ Use these IDs in all other research documents. `C` = local original course prima
 
 ## Evidence still missing
 No current Canvas enrollment/announcements; no authenticated OSA/CFMO views; no organizational primary interviews; no real cloud account eligibility, region capacity, quotas or costs test; no actual data; no independent code/CI rerun; no independent ZIP entry-by-entry audit. All diagrams, capacity assumptions, counts and SLOs in V2 specs are **proposed test fixtures or targets**, not measured facts.
+
+## 2026-11-15 revalidation of deadline/production-gate evidence (research amendment)
+| Evidence | Direct source, date, conclusion and limit |
+|---|---|
+| C01 verified again | Local original `09_ESP_PROJECT_ASSIGNMENT.pdf` extracted directly; Part III prints **Dec 5, 2026**, Jersey/JSON/Javax/JPA/`@Autowired`/Retrofit-Twilio/scheduling/5-entity CRUD/Postman, recorded final video. Canvas remains unobserved. |
+| C02 verified again | Local `08_CSCI180_SYLLABUS.pdf` extracted directly; CLO9 receive+serve images, certificate of authorship and outside-source assistance; current instructor interpretation not independently provided. |
+| G-live 2026-11-15 | Connected private GitHub API PRs/branches/Actions: main `16e781c...`, PR#6 `fd34a8a...` successful Verify run 43683241632; research PR#7 `fb29c38...` initial DRAFT; no O14 branch observed. CI success alone doesn't establish P-ACCEPT. |
+| E-live Boot (2026-11-15) | [Official Spring Boot system requirements](https://docs.spring.io/spring-boot/system-requirements.html), Boot4.1.2 needs Java17+; candidate supported V2 stack but exact Jersey/DB combination **not tested**. |
+| E-live OCI (2026-11-15) | [Official Always Free resources](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm): A1 free 1,500 OCPU-hours/9,000 GB-hours/month in home region, capacity restriction, no guarantee actual eligible account. |
+| E-live Workers (2026-11-15) | [Cloudflare Workers Free limits](https://developers.cloudflare.com/workers/platform/limits/) 100k requests/day and 10ms CPU/request; incompatible with preserving original Javax/Jersey runtime as sole product, host/DB transaction feasibility untested. |
+These are **primary-source facts** and externally dated terms, NOT local production tests, user interview evidence, billing-free-account proof or perpetual provider guarantees. The release-sequence change itself is **USER DECISION** and is traced in [DECISIONS](DECISIONS.md), [25](25_ROADMAP_CHANGE_LOG_AND_PRE_SUBMISSION_ACCEPTANCE.md).

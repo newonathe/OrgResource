@@ -40,3 +40,10 @@
 
 ## Outstanding technical research challenge
 Formal proof and independent real DB test that time-window reservation and partial physical custody meet all invariants for both MySQL/InnoDB and optional D1 transaction engine; a production-supported dependency BOM that runs on eligible $0 host with TLS/auth and recovery; and security ownership without actual org approvals. These are actionable gates, not excuses to invent pass results.
+
+## New independent schedule critique — user precedence 2026-11-15
+Earlier critique #6/#7 and 18 allowed V2 *after* the academic project and safe local-only fallback. **Those are dated historical recommendations superseded for acceptance order.** The user now requires genuinely production-ready engineering/technical acceptance before A-FINAL and Canvas. A local executable is honest recovery evidence but **NOT production acceptance** if a publicly hosted secure release and free operational feasibility is claimed.
+
+**RED feasibility finding:** The original B02–B09 37–75 expert person-day estimates are not velocity observations and outnumber 20 calendar days Nov15→Dec5 before O14 baseline, host eligibility, video and academic checks. Codex and green CI cannot substitute for target DB race/tenant testing, external HTTPS, offhost clean restore, supported Java dependency matrix or current course rubric. Nov18 host/BOM spike is the earliest essential kill-switch. Do not claim an instructor deadline extension or $0 provider guarantee.
+
+**Honest mitigation:** strip institutional integrations, real SMS, nonessential recurrence/media/barcodes/forecasting, not course executable/security/state correctness/backup/QA. Handle F19 contract explicitly. If no verified safe zero-fee deployment, P-ACCEPT FAIL/BLOCKED, not “local production”; surface printed deadline conflict to user without silently reversing decision. Real Ateneo organization interviews/approval/pilot are still optional future adoption, not prerequisites to technical acceptance using fictional tenants.

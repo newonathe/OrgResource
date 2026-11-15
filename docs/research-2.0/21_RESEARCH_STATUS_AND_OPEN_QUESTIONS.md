@@ -38,5 +38,9 @@
 ## Immediate independent critique status
 The independent critique in [20](20_INDEPENDENT_CRITIQUE_AND_REVISED_DECISIONS.md) identifies stale counts, false adoption/lifetime-free premises, hidden tenant security, booking risk, auth role capture, backups, unsupported javax runtime, limited maintenance and the actual no-GO boundaries. Decisions in [DECISIONS](DECISIONS.md) remain recommendations until user review.
 
-## Research release handoff for user's separate planning/Codex-prompt chat
+## Research continuation in current project and later Codex implementation handoff
 Read this INDEX then SOURCES, 02/03, 06–07, 08–13, 14–15, 17–20. Select (not assume) tenant/auth, stock partial, supported stack, backup and free provider. Use exact F/N/T gates to author sequential implementation prompts in separate chat after academic O14 review. Require fresh remote+local Git audits and no unapproved main merge/public deployment. All production specs are proposed, not “existing” application behavior.
+
+
+## 2026-11-15 authoritative user roadmap update
+O14 academic **baseline** (not yet verified) → real supported V2 production engineering and T1–T11 → **P-ACCEPT** (not started) → distinct original course **A-FINAL** (not started) → **student manual Canvas** (not done), printed Dec5. Prior post-academic V2 handoff wording is superseded. GitHub audit: #6 head `fd34a8a...`, successful CI and author-reported local QA only, research #7 draft, all PRs open/unmerged, `main` O1; no O14 branch observed, no live host, no actual V2 integration tests, no verified account/backup, no Canvas access. The user does not need another chat. Immediate critical questions: O14 source evidence, CLO9/current Canvas, qualified free Java/Jersey/JPA host and TLS+auth, offsite restore, exact F19 business rule. Real-org interviews, outreach, campus recognition/adoption remain future and **do not block fictional technical testing**. Date 20 calendar days to printed Dec5 is high-risk and not an outcome promise. [18](18_SDLC_BACKLOG_DEPENDENCIES_AND_ROADMAP.md); [25](25_ROADMAP_CHANGE_LOG_AND_PRE_SUBMISSION_ACCEPTANCE.md).

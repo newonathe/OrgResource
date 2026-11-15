@@ -43,3 +43,12 @@ The original system is loopback, local trusted operator, single organization, fi
 
 ## Precise next acceptance checks without implementation
 Reconfirm current PR#2–#7 bases/heads after any new coding commits; compare route definitions from actual controllers and Swagger/Postman contracts, inspect migration strategy and asset-build manifests; when user authorizes, independently run clean Java8 JAR + MySQL + Postman+Playwright and targeted concurrency/privacy test on exact commit; verify O14/Canvas separately. Until then course build evidence status = CI SUCCESS, local detailed test = REPORTED, product-wide compliance = PARTIAL/UNRESOLVED.
+
+## 2026-11-15 fresh live repo recheck for changed pre-Canvas mandate
+Private GitHub rechecked **before** applying research docs:
+- `main` `16e781c837dd7e1f0481fb7a01e49c27d80a91e8`; branch listing returned O3, O2, O4–O13 academic branches, old continuity, research docs and main; **no O14 branch**. No release records observed from GitHub API query.
+- PR #2–#7 all OPEN/unmerged; PR#6 O11/O13 head `fd34a8a66242f795dda758d45f220f2c331472db`, PR#7 DRAFT docs head `fb29c38ceded8ffd69d389b9bb18bd648f8e86c1` at audit start. PR#7 base is #5's O8/O10 branch, not #6, hence no assumption all code is included in research PR.
+- GitHub `Verify` run 43683241632 for academic PR#6 and 43686833986 for research PR#7 had `success` conclusion. Directly reopened O11/O13 local phase report: **author reports** Java55, UI15, Playwright5, Newman73 requests/105 assertions; these have NOT been independently rerun by researcher.
+- The attached original assignment PDF prints final Dec5. Syllabus lists CLO9 receive/serve images and authorship/outside help; instructor/Canvas interpretations unverified.
+- **No evidence O14 complete**, no V2 tenant/secure auth product code, hosted release, free account, tested off-host DR or V2 acceptance. A CI green commit is not production engineering PASS.
+**Change:** this latest audit now feeds O14 baseline → pre-Canvas P-ACCEPT → A-FINAL → student's manual submission. [18](18_SDLC_BACKLOG_DEPENDENCIES_AND_ROADMAP.md) and [25](25_ROADMAP_CHANGE_LOG_AND_PRE_SUBMISSION_ACCEPTANCE.md). No implementation activity performed.
