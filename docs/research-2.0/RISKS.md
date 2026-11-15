@@ -49,3 +49,6 @@ These severities/likelihoods are qualitative expert estimates only, not incident
 | R34 | 5×4 | DB-only CHECK falsely used to ensure >=1 ACTIVE OWNER | Serialize every owner-changing path via org row lock and verify 2-way demotion race/transfer | NO-GO if zero owner possible |
 | R35 | 5×3 | Identity code incorrectly counts 11 tables or uses one invented session table instead of Spring Session JDBC 2 tables | Final MySQL vendor schema/accounting and reset/restart tests, owner-approved local auth option | Research blocked |
 | R36 | 5×4 | Unverified invite bearer assumed to verify a real student or school org | Synthetic labels, manual token with stated limitations, no domain-based ownership; later real identity proof process | No real signup/adoption claim |
+
+## Additional CP5 failure mode
+| R37 | 5×5 | Disabling one globally registered account silently orphans several tenant organizations, bypassing last-owner membership-only check | Define effective active-owner count over account+membership; globally ordered org locks and ID-16 race test; emergency freeze policy still OPEN | Architecture cannot pass tenant-owner acceptance without proof |
