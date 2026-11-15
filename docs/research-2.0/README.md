@@ -1,5 +1,8 @@
 # OrgResource 2.0 research documentation
 
+> **CP32–CP33 PRE-CODEX REVIEW (2026-11-16):** The CP31 packet is now supplemented by [CP32 independent conflict adjudication and contract corrections](59_CP32_FINAL_CONFLICT_ADJUDICATION_AND_CONTRACT_FREEZE.md) and [CP33 complete route/test traceability and final review gate](60_CP33_ACCEPTANCE_TRACEABILITY_RISK_AND_REVIEW_GATE.md). These correct future-vs-active project approval, account invitation bootstrap, public JSON/CSRF/idempotency, zero-initial-stock/ledger, R04 history and original A09 distinctions. **Research documentation only:** no Codex handoff, code change, merge, provider account, real SMS, runtime feasibility pass, Canvas or owner sign-off. Read CP32 and CP33 after CP31; where they explicitly differ, CP32 controls the proposed design.
+
+
 > **CP31 PRE-CODEX FINALIZATION REVIEW (2026-11-16):** [Read the consolidated 22-section paper-level planning packet first](58_CP31_PRE_CODEX_FINALIZATION_PACKET.md). It traces all 26 original/O14 handlers, reconciles CP30's ONE-product decision with the original course, recommends a single auth/tenant/domain/API/SQL/DevOps/test design, logs source coverage, proposal checklist, dated backlog, independent critiques and SEALED future Codex stages. **Status: REVIEW CANDIDATE; NOT owner-signed, NOT Codex-authorized, NOT a proven unified runtime, NOT a deployment or submission.** Earlier two-product proposals remain historical. The unresolved Javax/Jakarta runtime, current Canvas, hosted/free-provider, O14 intermittent MySQL test and raw source path gates are explicit rather than claimed complete.
 
 
