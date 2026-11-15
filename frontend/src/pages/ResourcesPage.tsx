@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { api, ApiError } from "../api/client";
 import type { Resource, ResourceAvailability, ResourceType } from "../api/types";
-import { explainError } from "../domain";
-import { Button, DetailSheet, GlassPanel, LoadState, Modal, Notice, PageHeader, PanelHeading, StatusBadge } from "../ui";
+import { explainError, isUncertain } from "../domain";
+import { Button, DetailSheet, GlassPanel, LoadState, Modal, MutationReviewNotice, Notice, PageHeader, PanelHeading, StatusBadge } from "../ui";
 
 type AvailabilityResult =
   | { resourceId: number; status: "ready"; value: ResourceAvailability }
@@ -29,6 +29,7 @@ export function ResourcesPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [postReviewRequired, setPostReviewRequired] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -64,12 +65,12 @@ export function ResourcesPage() {
   async function createResource(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const quantity = Number(newQuantity);
-    if (busy || !newName.trim() || !Number.isInteger(quantity) || quantity < 0 || quantity > 1_000_000) return;
+    if (busy || postReviewRequired || !newName.trim() || !Number.isInteger(quantity) || quantity < 0 || quantity > 1_000_000) return;
     setBusy(true); setError(""); setNotice("");
     try {
       await api.createResource({ name: newName.trim(), type: newType, totalQuantity: quantity });
       setNewName(""); setNewQuantity("0"); setNotice("Resource saved."); refresh();
-    } catch (reason) { setError(explainError(reason)); }
+    } catch (reason) { if (isUncertain(reason)) { setPostReviewRequired(true); refresh(); } else setError(explainError(reason)); }
     finally { setBusy(false); }
   }
 
@@ -81,14 +82,15 @@ export function ResourcesPage() {
   async function saveEdit(event: FormEvent<HTMLFormElement>, resource: Resource) {
     event.preventDefault();
     const quantity = Number(editQuantity);
-    if (busy || !editName.trim() || !Number.isInteger(quantity) || quantity < 0 || quantity > 1_000_000 || reviewRequiredId === resource.id) return;
+    if (busy || postReviewRequired || !editName.trim() || !Number.isInteger(quantity) || quantity < 0 || quantity > 1_000_000 || reviewRequiredId === resource.id) return;
     setBusy(true); setError(""); setNotice("");
     try {
       await api.updateResource(resource.id, { name: editName.trim(), totalQuantity: quantity, expectedTotalQuantity: resource.totalQuantity });
       setEditingId(null); setReviewRequiredId(null); setNotice("Resource updated."); refresh();
     } catch (reason) {
-      setError(explainError(reason));
-      if (reason instanceof ApiError && reason.code === "STALE_RESOURCE_QUANTITY") {
+      if (isUncertain(reason)) { setPostReviewRequired(true); refresh(); }
+      else setError(explainError(reason));
+      if (!isUncertain(reason) && reason instanceof ApiError && reason.code === "STALE_RESOURCE_QUANTITY") {
         setNotice("The server quantity changed after this row loaded. Fresh values were fetched; review them before retrying.");
         setReviewRequiredId(resource.id); refresh();
       }
@@ -96,10 +98,13 @@ export function ResourcesPage() {
   }
 
   async function confirmDelete() {
-    if (busy || !deleting || deleting.totalQuantity > 0) return;
+    if (busy || postReviewRequired || !deleting || deleting.totalQuantity > 0) return;
     setBusy(true); setError(""); setNotice("");
     try { await api.deleteResource(deleting.id); setDeleting(null); setNotice("Resource deleted."); refresh(); }
-    catch (reason) { setError(explainError(reason)); setDeleting(null); }
+    catch (reason) {
+      if (isUncertain(reason)) { setPostReviewRequired(true); refresh(); }
+      else { setError(explainError(reason)); setDeleting(null); }
+    }
     finally { setBusy(false); }
   }
 
@@ -109,6 +114,7 @@ export function ResourcesPage() {
         action={<div className="header-stat"><span>{loadState === "ready" ? resources.length : "—"}</span><small>resources in view</small></div>} />
       {notice && <Notice tone="success">{notice}</Notice>}
       {error && <Notice tone="danger">{error}</Notice>}
+      <MutationReviewNotice required={postReviewRequired} ready={loadState === "ready"} onReviewed={() => setPostReviewRequired(false)} />
       <div className="content-grid resource-grid">
         <GlassPanel className="form-panel" tilt={false}>
           <PanelHeading kicker="Add to inventory" title="New resource" />
@@ -119,7 +125,7 @@ export function ResourcesPage() {
               <option value="REUSABLE">Reusable · returned after use</option><option value="CONSUMABLE">Consumable · used up</option>
             </select>
             <label htmlFor="resource-quantity">Initial total quantity</label><input id="resource-quantity" type="number" min="0" max="1000000" step="1" value={newQuantity} onChange={(event) => setNewQuantity(event.target.value)} required />
-            <Button variant="primary" magnetic type="submit" disabled={busy || !newName.trim()}>{busy ? "Saving…" : "Add resource"}</Button>
+            <Button variant="primary" magnetic type="submit" disabled={busy || postReviewRequired || !newName.trim()}>{busy ? "Saving…" : "Add resource"}</Button>
           </form>
           <div className="inventory-legend"><p><StatusBadge tone="blue">Reusable</StatusBadge> Borrowed items return to stock only after a usable return.</p><p><StatusBadge tone="gold">Consumable</StatusBadge> Consumption reduces the physical total.</p></div>
         </GlassPanel>
@@ -145,7 +151,7 @@ export function ResourcesPage() {
                       <p className="edit-context">Expected current total: {resource.totalQuantity}. Type stays {resource.type.toLowerCase()}.</p>
                       {reviewRequiredId === resource.id && <div className="review-guard" role="status"><p>Current server total: <strong>{resource.totalQuantity}</strong> · Available: <strong>{resource.availableQuantity}</strong></p>
                         <Button variant="secondary" disabled={busy} type="button" onClick={() => setReviewRequiredId(null)}>I reviewed these current values</Button></div>}
-                      <div className="row-actions"><Button variant="primary" type="submit" disabled={busy || !editName.trim() || reviewRequiredId === resource.id}>Save changes</Button>
+                      <div className="row-actions"><Button variant="primary" type="submit" disabled={busy || postReviewRequired || !editName.trim() || reviewRequiredId === resource.id}>Save changes</Button>
                         <Button variant="quiet" disabled={busy} type="button" onClick={() => { setEditingId(null); setReviewRequiredId(null); }}>Cancel</Button></div>
                     </form> : <button className="record-cell record-detail-button" type="button" onClick={() => setSelected(resource)}>
                       <span className="record-symbol" aria-hidden="true">{resource.type === "REUSABLE" ? "↻" : "◇"}</span><span><strong>{resource.name}</strong><small>R{String(resource.id).padStart(3, "0")}</small></span>
@@ -153,8 +159,8 @@ export function ResourcesPage() {
                     {editingId !== resource.id && <><td><StatusBadge tone={resource.type === "REUSABLE" ? "blue" : "gold"}>{resource.type === "REUSABLE" ? "Reusable" : "Consumable"}</StatusBadge></td>
                       <td><strong className="numeric-value">{resource.totalQuantity.toLocaleString()}</strong><small className="cell-unit">units</small></td>
                       <td><strong className="numeric-value available-value">{resource.availableQuantity.toLocaleString()}</strong><small className="cell-unit">available</small></td>
-                      <td><div className="row-actions"><Button variant="quiet" disabled={busy} aria-label={`Edit ${resource.name}`} onClick={() => beginEdit(resource)}>Edit</Button>
-                        <Button variant="quiet" className="button-text-danger" disabled={busy || resource.totalQuantity > 0} title={resource.totalQuantity > 0 ? "Set physical stock to zero before deletion." : undefined} aria-label={`Delete ${resource.name}`} onClick={() => setDeleting(resource)}>Delete</Button></div></td>
+                      <td><div className="row-actions"><Button variant="quiet" disabled={busy || postReviewRequired} aria-label={`Edit ${resource.name}`} onClick={() => beginEdit(resource)}>Edit</Button>
+                        <Button variant="quiet" className="button-text-danger" disabled={busy || postReviewRequired || resource.totalQuantity > 0} title={resource.totalQuantity > 0 ? "Set physical stock to zero before deletion." : undefined} aria-label={`Delete ${resource.name}`} onClick={() => setDeleting(resource)}>Delete</Button></div></td>
                     </>}
                   </tr>)}</tbody></table></div>}
           </LoadState>
@@ -171,7 +177,7 @@ export function ResourcesPage() {
       </DetailSheet>}
       {deleting && <Modal title="Delete resource?" onClose={() => setDeleting(null)}>
         <p className="modal-copy">Delete <strong>{deleting.name}</strong>? It must have zero physical stock and no Requirement references. The server checks both conditions.</p>
-        <div className="modal-actions"><Button variant="quiet" disabled={busy} onClick={() => setDeleting(null)}>Keep resource</Button><Button variant="danger" disabled={busy || deleting.totalQuantity > 0} onClick={() => void confirmDelete()}>{busy ? "Checking…" : "Confirm delete"}</Button></div>
+        <div className="modal-actions"><Button variant="quiet" disabled={busy} onClick={() => setDeleting(null)}>Keep resource</Button><Button variant="danger" disabled={busy || postReviewRequired || deleting.totalQuantity > 0} onClick={() => void confirmDelete()}>{busy ? "Checking…" : "Confirm delete"}</Button></div>
       </Modal>}
     </section>
   );

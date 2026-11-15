@@ -46,10 +46,17 @@ export function projectPeriod(project: Project, now = manilaWallTime()): "UPCOMI
   return "ENDED";
 }
 
+export function reminderWindow(endAt: string, now: string, plus24h: string): "DUE_SOON" | "OVERDUE" | "LATER" {
+  if (endAt < now) return "OVERDUE";
+  if (endAt < plus24h) return "DUE_SOON";
+  return "LATER";
+}
+
 export type AllocationAction = "approve" | "issue" | "return" | "consume" | "cancel" | "delete" | "revoke";
 
 export function allocationActions(allocation: Allocation, type: "REUSABLE" | "CONSUMABLE" | undefined): AllocationAction[] {
   if (allocation.status === "PENDING") return ["approve", "cancel", ...(allocation.approvedAt === null ? ["delete"] : [])] as AllocationAction[];
+  if (!type) return [];
   if (allocation.status === "APPROVED") return type === "REUSABLE" ? ["issue", "cancel"] : ["consume", "cancel"];
   if (allocation.status === "ISSUED" && type === "REUSABLE") return ["return"];
   if (allocation.status === "CANCELLED" && allocation.approvedAt === null) return ["delete"];
@@ -97,5 +104,5 @@ export function explainError(error: unknown): string {
 }
 
 export function isUncertain(error: unknown): boolean {
-  return error instanceof ApiError && error.status === 0;
+  return error instanceof ApiError && error.code === "POST_OUTCOME_UNCERTAIN";
 }

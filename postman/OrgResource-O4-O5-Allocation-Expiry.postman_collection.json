@@ -175,7 +175,7 @@
         "url": "{{baseUrl}}/allocations",
         "body": {
           "mode": "raw",
-          "raw": "{\"requirementId\":{{reusableRequirementId}},\"quantity\":4,\"borrowerName\":\"O4 Fictional Representative\",\"phoneNumber\":\"+15550001111\",\"smsConsent\":true}",
+          "raw": "{\"requirementId\":{{reusableRequirementId}},\"quantity\":4,\"borrowerName\":\"O4 Fictional Representative\",\"phoneNumber\":\"+12025550100\",\"smsConsent\":true}",
           "options": {
             "raw": {
               "language": "json"

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { api } from "../api/client";
 import type { Project, Resource, ResourceRequirement } from "../api/types";
-import { explainError, formatManila, projectPeriod } from "../domain";
-import { Button, GlassPanel, LoadState, Modal, Notice, PageHeader, PanelHeading, StatusBadge } from "../ui";
+import { explainError, formatManila, isUncertain, projectPeriod } from "../domain";
+import { Button, GlassPanel, LoadState, Modal, MutationReviewNotice, Notice, PageHeader, PanelHeading, StatusBadge } from "../ui";
 
 export function RequirementsPage() {
   const [requirements, setRequirements] = useState<ResourceRequirement[]>([]);
@@ -22,6 +22,7 @@ export function RequirementsPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [postReviewRequired, setPostReviewRequired] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -51,30 +52,33 @@ export function RequirementsPage() {
   async function createRequirement(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const amount = Number(quantity);
-    if (busy || !selectedProjectId || !selectedResourceId || !Number.isInteger(amount) || amount < 1 || amount > 1_000_000) return;
+    if (busy || postReviewRequired || !selectedProjectId || !selectedResourceId || !Number.isInteger(amount) || amount < 1 || amount > 1_000_000) return;
     setBusy(true); setError(""); setNotice("");
     try {
       await api.createRequirement({ projectId: Number(selectedProjectId), resourceId: Number(selectedResourceId), quantity: amount });
       setQuantity("1"); setNotice("Requirement saved. Coverage and shortage were read from the server."); refresh();
-    } catch (reason) { setError(explainError(reason)); }
+    } catch (reason) { if (isUncertain(reason)) { setPostReviewRequired(true); refresh(); } else setError(explainError(reason)); }
     finally { setBusy(false); }
   }
 
   async function updateRequirement(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const amount = Number(editQuantity);
-    if (busy || !editing || !Number.isInteger(amount) || amount < 1 || amount > 1_000_000) return;
+    if (busy || postReviewRequired || !editing || !Number.isInteger(amount) || amount < 1 || amount > 1_000_000) return;
     setBusy(true); setError(""); setNotice("");
     try { await api.updateRequirement(editing.id, amount); setEditing(null); setNotice("Requirement quantity updated."); refresh(); }
-    catch (reason) { setError(explainError(reason)); }
+    catch (reason) { if (isUncertain(reason)) { setPostReviewRequired(true); refresh(); } else setError(explainError(reason)); }
     finally { setBusy(false); }
   }
 
   async function confirmDelete() {
-    if (busy || !deleting) return;
+    if (busy || postReviewRequired || !deleting) return;
     setBusy(true); setError(""); setNotice("");
     try { await api.deleteRequirement(deleting.id); setDeleting(null); setNotice("Requirement deleted."); refresh(); }
-    catch (reason) { setError(explainError(reason)); setDeleting(null); }
+    catch (reason) {
+      if (isUncertain(reason)) { setPostReviewRequired(true); refresh(); }
+      else { setError(explainError(reason)); setDeleting(null); }
+    }
     finally { setBusy(false); }
   }
 
@@ -83,6 +87,7 @@ export function RequirementsPage() {
       <PageHeader eyebrow="Organization · project needs" title="Requirements" description="Connect each Project to one Resource and follow server-calculated coverage and shortage."
         action={<div className="header-stat"><span>{loadState === "ready" ? requirements.length : "—"}</span><small>requirements in view</small></div>} />
       {notice && <Notice tone="success">{notice}</Notice>}{error && <Notice tone="danger">{error}</Notice>}
+      <MutationReviewNotice required={postReviewRequired} ready={loadState === "ready"} onReviewed={() => setPostReviewRequired(false)} />
       <div className="content-grid requirement-grid">
         <GlassPanel className="form-panel" tilt={false}>
           <PanelHeading kicker="Demand planning" title="Add a requirement" />
@@ -95,7 +100,7 @@ export function RequirementsPage() {
             </select>
             <label htmlFor="requirement-quantity">Quantity required</label><input id="requirement-quantity" type="number" min="1" max="1000000" step="1" value={quantity} onChange={(event) => setQuantity(event.target.value)} required />
             <p className="field-hint">Each Project and Resource pair can have one Requirement. The server enforces that rule.</p>
-            <Button variant="primary" magnetic type="submit" disabled={busy || !selectedProjectId || !selectedResourceId}>{busy ? "Saving…" : "Add requirement"}</Button>
+            <Button variant="primary" magnetic type="submit" disabled={busy || postReviewRequired || !selectedProjectId || !selectedResourceId}>{busy ? "Saving…" : "Add requirement"}</Button>
           </form>
         </GlassPanel>
         <GlassPanel className="list-panel" tilt={false}>
@@ -113,8 +118,8 @@ export function RequirementsPage() {
                     <div className="coverage-metrics"><div><span>Required</span><strong>{requirement.quantity.toLocaleString()}</strong></div><div><span>Covered</span><strong>{requirement.allocatedQuantity.toLocaleString()}</strong></div><div><span>Shortage</span><strong className={requirement.shortageQuantity > 0 ? "warning-value" : "success-value"}>{requirement.shortageQuantity.toLocaleString()}</strong></div></div>
                     <div className="coverage-bar" role="img" aria-label={`${requirement.allocatedQuantity} of ${requirement.quantity} covered`}><span style={{ width: `${requirement.quantity ? Math.min(100, requirement.allocatedQuantity / requirement.quantity * 100) : 0}%` }} /></div>
                     <p className="requirement-meta">{project ? `${projectPeriod(project).toLowerCase()} · ends ${formatManila(project.endAt)}` : "Project details unavailable"}</p>
-                    <div className="row-actions"><Button variant="quiet" aria-label={`Edit requirement for ${resource?.name ?? requirement.resourceId}`} onClick={() => { setEditing(requirement); setEditQuantity(String(requirement.quantity)); setError(""); }}>Change quantity</Button>
-                      <Button variant="quiet" className="button-text-danger" aria-label={`Delete requirement for ${resource?.name ?? requirement.resourceId}`} onClick={() => setDeleting(requirement)}>Delete</Button></div>
+                    <div className="row-actions"><Button variant="quiet" disabled={postReviewRequired} aria-label={`Edit requirement for ${resource?.name ?? requirement.resourceId}`} onClick={() => { setEditing(requirement); setEditQuantity(String(requirement.quantity)); setError(""); }}>Change quantity</Button>
+                      <Button variant="quiet" disabled={postReviewRequired} className="button-text-danger" aria-label={`Delete requirement for ${resource?.name ?? requirement.resourceId}`} onClick={() => setDeleting(requirement)}>Delete</Button></div>
                   </article>;
                 })}</div>}
           </LoadState>
@@ -123,9 +128,9 @@ export function RequirementsPage() {
       </div>
       {editing && <Modal title="Change Requirement quantity" onClose={() => setEditing(null)}><p className="modal-copy">Project and Resource links stay fixed. The server will refuse a quantity below covered stock or the largest live pending request.</p>
         <form className="stack-form" onSubmit={updateRequirement}><label htmlFor="edit-requirement-quantity">New quantity</label><input id="edit-requirement-quantity" type="number" min="1" max="1000000" step="1" value={editQuantity} onChange={(event) => setEditQuantity(event.target.value)} required />
-          <div className="modal-actions"><Button variant="quiet" type="button" disabled={busy} onClick={() => setEditing(null)}>Cancel</Button><Button variant="primary" type="submit" disabled={busy}>{busy ? "Saving…" : "Save quantity"}</Button></div></form></Modal>}
+          <div className="modal-actions"><Button variant="quiet" type="button" disabled={busy} onClick={() => setEditing(null)}>Cancel</Button><Button variant="primary" type="submit" disabled={busy || postReviewRequired}>{busy ? "Saving…" : "Save quantity"}</Button></div></form></Modal>}
       {deleting && <Modal title="Delete requirement?" onClose={() => setDeleting(null)}><p className="modal-copy">Delete the requirement for <strong>{resourceMap.get(deleting.resourceId)?.name ?? `Resource ${deleting.resourceId}`}</strong>? Any Allocation history blocks deletion.</p>
-        <div className="modal-actions"><Button variant="quiet" disabled={busy} onClick={() => setDeleting(null)}>Keep requirement</Button><Button variant="danger" disabled={busy} onClick={() => void confirmDelete()}>{busy ? "Checking…" : "Confirm delete"}</Button></div></Modal>}
+        <div className="modal-actions"><Button variant="quiet" disabled={busy} onClick={() => setDeleting(null)}>Keep requirement</Button><Button variant="danger" disabled={busy || postReviewRequired} onClick={() => void confirmDelete()}>{busy ? "Checking…" : "Confirm delete"}</Button></div></Modal>}
     </section>
   );
 }

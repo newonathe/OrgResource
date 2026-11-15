@@ -39,26 +39,48 @@ async function request<T>(
     });
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") throw error;
-    throw new ApiError(0, "NETWORK_ERROR", "The OrgResource API could not be reached. Check that the backend is running, then retry.");
+    throw method === "POST"
+      ? new ApiError(0, "POST_OUTCOME_UNCERTAIN", "The server may have completed this change, but its response was not received. Refresh and review current records before deciding what to do next.")
+      : new ApiError(0, "NETWORK_ERROR", "The OrgResource API could not be reached. Check that the backend is running, then retry.");
   }
 
-  const text = await response.text();
+  let text: string;
+  try {
+    text = await response.text();
+  } catch {
+    throw method === "POST"
+      ? new ApiError(response.status, "POST_OUTCOME_UNCERTAIN", "The server may have completed this change, but the response body could not be read. Refresh and review current records before deciding what to do next.")
+      : new ApiError(response.status, "INVALID_SERVER_RESPONSE", "The server response could not be read.");
+  }
   let parsed: unknown = null;
   if (text.length > 0) {
     try {
       parsed = JSON.parse(text) as unknown;
     } catch {
-      throw new ApiError(response.status, "INVALID_SERVER_RESPONSE", "The server returned a response that was not valid JSON.");
+      throw method === "POST"
+        ? new ApiError(response.status, "POST_OUTCOME_UNCERTAIN", "The server may have completed this change, but returned invalid confirmation data. Refresh and review current records before deciding what to do next.")
+        : new ApiError(response.status, "INVALID_SERVER_RESPONSE", "The server returned a response that was not valid JSON.");
     }
   }
 
   if (!response.ok) {
     const error = parsed && typeof parsed === "object" ? parsed as Partial<ApiErrorBody> : {};
+    if (method === "POST") {
+      if ([400, 404, 409].includes(response.status)
+        && typeof error.code === "string" && error.code.length > 0
+        && typeof error.message === "string" && error.message.length > 0) {
+        throw new ApiError(response.status, error.code, error.message);
+      }
+      throw new ApiError(response.status, "POST_OUTCOME_UNCERTAIN", "The server did not provide a definitive result for this change. Refresh and review current records before deciding what to do next.");
+    }
     throw new ApiError(
       response.status,
       typeof error.code === "string" ? error.code : "REQUEST_FAILED",
       typeof error.message === "string" ? error.message : "The request could not be completed.",
     );
+  }
+  if (method === "POST" && (!parsed || typeof parsed !== "object" || Array.isArray(parsed) || Object.keys(parsed).length === 0)) {
+    throw new ApiError(response.status, "POST_OUTCOME_UNCERTAIN", "The server may have completed this change, but returned no usable confirmation. Refresh and review current records before deciding what to do next.");
   }
   return parsed as T;
 }

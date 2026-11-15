@@ -69,9 +69,7 @@ export function AcademicShell({ children }: { children: React.ReactNode }) {
           <span className="brand-seal" aria-hidden="true"><span>O</span><i>R</i></span>
           <span><strong>OrgResource</strong><small>Academic Commons</small></span>
         </NavLink>
-        <div className="sidebar-notice"><span className="local-dot" aria-hidden="true" />Local academic prototype</div>
         <Navigation onNavigate={() => setMenuOpen(false)} />
-        <div className="sidebar-foot"><span>CSCI 180.05</span><span>Philippine time · Asia/Manila</span></div>
       </aside>
 
       <div className="workspace-column">
@@ -90,7 +88,7 @@ export function AcademicShell({ children }: { children: React.ReactNode }) {
         </header>
 
         <main id="main" className="main-content" tabIndex={-1}>{children}</main>
-        <footer className="site-footer"><span>OrgResource · Local academic prototype</span><span>Saved records come from the Java API and MySQL.</span></footer>
+        <footer className="site-footer"><span>Saved records come from the Java API and MySQL.</span></footer>
       </div>
 
       <nav className="mobile-bottom-nav" aria-label="Mobile navigation">

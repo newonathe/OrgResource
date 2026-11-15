@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { api } from "../api/client";
 import type { Department } from "../api/types";
-import { explainError } from "../domain";
-import { Button, GlassPanel, LoadState, Modal, Notice, PageHeader, PanelHeading } from "../ui";
+import { explainError, isUncertain } from "../domain";
+import { Button, GlassPanel, LoadState, Modal, MutationReviewNotice, Notice, PageHeader, PanelHeading } from "../ui";
 
 export function DepartmentsPage() {
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -16,6 +16,7 @@ export function DepartmentsPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [postReviewRequired, setPostReviewRequired] = useState(false);
   const [reload, setReload] = useState(0);
 
   useEffect(() => {
@@ -39,33 +40,36 @@ export function DepartmentsPage() {
 
   async function submitCreate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (busy || !name.trim()) return;
+    if (busy || postReviewRequired || !name.trim()) return;
     setBusy(true); setError(""); setNotice("");
     try {
       await api.createDepartment(name.trim());
       setName(""); setNotice("Department saved."); refresh();
-    } catch (reason) { setError(explainError(reason)); }
+    } catch (reason) { if (isUncertain(reason)) { setPostReviewRequired(true); refresh(); } else setError(explainError(reason)); }
     finally { setBusy(false); }
   }
 
   async function submitUpdate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (busy || !editing || !editName.trim()) return;
+    if (busy || postReviewRequired || !editing || !editName.trim()) return;
     setBusy(true); setError(""); setNotice("");
     try {
       await api.updateDepartment(editing.id, editName.trim());
       setEditing(null); setNotice("Department updated."); refresh();
-    } catch (reason) { setError(explainError(reason)); }
+    } catch (reason) { if (isUncertain(reason)) { setPostReviewRequired(true); refresh(); } else setError(explainError(reason)); }
     finally { setBusy(false); }
   }
 
   async function confirmDelete() {
-    if (busy || !deleting) return;
+    if (busy || postReviewRequired || !deleting) return;
     setBusy(true); setError(""); setNotice("");
     try {
       await api.deleteDepartment(deleting.id);
       setDeleting(null); setNotice("Department deleted."); refresh();
-    } catch (reason) { setError(explainError(reason)); setDeleting(null); }
+    } catch (reason) {
+      if (isUncertain(reason)) { setPostReviewRequired(true); refresh(); }
+      else { setError(explainError(reason)); setDeleting(null); }
+    }
     finally { setBusy(false); }
   }
 
@@ -75,6 +79,7 @@ export function DepartmentsPage() {
         action={<div className="header-stat"><span>{loadState === "ready" ? departments.length : "—"}</span><small>departments</small></div>} />
       {notice && <Notice tone="success">{notice}</Notice>}
       {error && <Notice tone="danger">{error}</Notice>}
+      <MutationReviewNotice required={postReviewRequired} ready={loadState === "ready"} onReviewed={() => setPostReviewRequired(false)} />
       <div className="content-grid departments-grid">
         <GlassPanel className="form-panel" tilt={false}>
           <PanelHeading kicker="Organization" title="Add a department" />
@@ -82,7 +87,7 @@ export function DepartmentsPage() {
           <form className="stack-form" onSubmit={submitCreate}>
             <label htmlFor="department-name">Department name</label>
             <input id="department-name" value={name} maxLength={100} onChange={(event) => setName(event.target.value)} required />
-            <Button type="submit" variant="primary" magnetic disabled={busy || !name.trim()}>{busy ? "Saving…" : "Add department"}</Button>
+            <Button type="submit" variant="primary" magnetic disabled={busy || postReviewRequired || !name.trim()}>{busy ? "Saving…" : "Add department"}</Button>
           </form>
           <div className="form-footnote"><span className="small-seal" aria-hidden="true">i</span><span>Projects remain linked to their original department.</span></div>
         </GlassPanel>
@@ -99,12 +104,12 @@ export function DepartmentsPage() {
                   <tbody>{ordered.map((department) => <tr key={department.id}>
                     <td>{editing?.id === department.id ? <form className="inline-edit" onSubmit={submitUpdate}>
                       <label htmlFor="edit-department-name">Department name</label><input id="edit-department-name" value={editName} maxLength={100} onChange={(event) => setEditName(event.target.value)} autoFocus required />
-                      <Button type="submit" variant="primary" disabled={busy || !editName.trim()}>Save changes</Button>
+                      <Button type="submit" variant="primary" disabled={busy || postReviewRequired || !editName.trim()}>Save changes</Button>
                       <Button type="button" variant="quiet" disabled={busy} onClick={() => setEditing(null)}>Cancel</Button>
                     </form> : <div className="record-cell"><span className="record-symbol" aria-hidden="true">⌘</span><span><strong>{department.name}</strong><small>Organization group</small></span></div>}</td>
                     {editing?.id !== department.id && <><td><span className="mono-id">D{String(department.id).padStart(3, "0")}</span></td><td><div className="row-actions">
-                      <Button variant="quiet" disabled={busy} aria-label={`Edit ${department.name}`} onClick={() => { setEditing(department); setEditName(department.name); setError(""); }}>Edit</Button>
-                      <Button variant="quiet" className="button-text-danger" disabled={busy} aria-label={`Delete ${department.name}`} onClick={() => { setDeleting(department); setError(""); }}>Delete</Button>
+                      <Button variant="quiet" disabled={busy || postReviewRequired} aria-label={`Edit ${department.name}`} onClick={() => { setEditing(department); setEditName(department.name); setError(""); }}>Edit</Button>
+                      <Button variant="quiet" className="button-text-danger" disabled={busy || postReviewRequired} aria-label={`Delete ${department.name}`} onClick={() => { setDeleting(department); setError(""); }}>Delete</Button>
                     </div></td></>}
                   </tr>)}</tbody></table></div>}
           </LoadState>
@@ -113,7 +118,7 @@ export function DepartmentsPage() {
 
       {deleting && <Modal title="Delete department?" onClose={() => setDeleting(null)}>
         <p className="modal-copy">Delete <strong>{deleting.name}</strong>? The server will refuse if Projects still reference this department.</p>
-        <div className="modal-actions"><Button variant="quiet" disabled={busy} onClick={() => setDeleting(null)}>Keep department</Button><Button variant="danger" disabled={busy} onClick={() => void confirmDelete()}>{busy ? "Checking…" : "Confirm delete"}</Button></div>
+        <div className="modal-actions"><Button variant="quiet" disabled={busy} onClick={() => setDeleting(null)}>Keep department</Button><Button variant="danger" disabled={busy || postReviewRequired} onClick={() => void confirmDelete()}>{busy ? "Checking…" : "Confirm delete"}</Button></div>
       </Modal>}
     </section>
   );
