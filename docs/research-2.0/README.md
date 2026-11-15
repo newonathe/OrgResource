@@ -1,4 +1,7 @@
 # OrgResource 2.0 research documentation
+
+> **CP30 LATEST USER DECISION (2026-11-16):** The target is **ONE unified end-to-end, genuinely course-compliant production OrgResource product**, not two separately maintained final apps. Academic code SHA `2dd336ed39cecd417a8bce3388b303e688e95dee` remains protected until complete runtime parity is actually verified. The supported single-runtime path for literal `javax.validation` is **UNPROVEN**; Twilio real SMS and perpetually free 24/7 hosting/CD cannot be guaranteed. **Research-only changes; no Codex/hosting authorization.** Read [54](54_CP30_ONE_UNIFIED_ORGRESOURCE_DECISION_AND_CONFLICT_REGISTER.md), [55](55_CP30_ONE_PRODUCT_COURSE_AND_PRODUCTION_COMPLIANCE_MATRIX.md), [56](56_CP30_SINGLE_RUNTIME_AND_ZERO_COST_CICD_FEASIBILITY.md), and [57](57_CP30_UNIFIED_ARCHITECTURE_PROOF_AND_RELEASE_ROADMAP.md) first. CP27/CP29 two-final-product statements are now historical; technical findings remain candidates.
+
 **Status:** USER-APPROVED NEW PRE-CANVAS RELEASE ORDER; V2 architecture and implementation still provisional/unbuilt. **As of:** 2026-11-15 Asia/Manila. [Live draft PR #7](https://github.com/newonathe/OrgResource/pull/7).
 
 This directory is a **research and planning layer**, not a production application, completed O14, official Ateneo product, field study, deployment, live user trial, or verified indefinite-free hosting. Do not use the historical documents as a substitute for the actual 2026 code or the course PDF. No real students/organizations have been onboarded.

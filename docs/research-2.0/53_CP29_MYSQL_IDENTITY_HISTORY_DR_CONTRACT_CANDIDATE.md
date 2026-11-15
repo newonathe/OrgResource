@@ -1,5 +1,8 @@
 # CP29 — Proposed MySQL integrity, identity lock, history and disaster-recovery contract
 
+> **CP30 LATEST USER DECISION (2026-11-16):** The target is **ONE unified end-to-end, genuinely course-compliant production OrgResource product**, not two separately maintained final apps. Academic code SHA `2dd336ed39cecd417a8bce3388b303e688e95dee` remains protected until complete runtime parity is actually verified. The supported single-runtime path for literal `javax.validation` is **UNPROVEN**; Twilio real SMS and perpetually free 24/7 hosting/CD cannot be guaranteed. **Research-only changes; no Codex/hosting authorization.** Read [54](54_CP30_ONE_UNIFIED_ORGRESOURCE_DECISION_AND_CONFLICT_REGISTER.md), [55](55_CP30_ONE_PRODUCT_COURSE_AND_PRODUCTION_COMPLIANCE_MATRIX.md), [56](56_CP30_SINGLE_RUNTIME_AND_ZERO_COST_CICD_FEASIBILITY.md), and [57](57_CP30_UNIFIED_ARCHITECTURE_PROOF_AND_RELEASE_ROADMAP.md) first. CP27/CP29 two-final-product statements are now historical; technical findings remain candidates.
+
+
 **2026-11-16. SOURCE-GROUNDED DESIGN RECOMMENDATION; NO DDL MIGRATION OR SECURITY/RUNTIME TEST EXECUTED.** Decisions OD04–OD10/OD19–OD22 in [51](51_CP29_OWNER_DECISIONS_AND_CONTRACT_FREEZE_GATE.md) are UNSIGNED. Exact public API candidate in [52](52_CP29_PUBLIC_ROUTE_DTO_ROLE_ERROR_CONTRACT_CANDIDATE.md). Academic O14 five-entity schema and source commit remain separate/unmodified.
 
 ## 1. Public physical schema candidate (17 tables conditional)

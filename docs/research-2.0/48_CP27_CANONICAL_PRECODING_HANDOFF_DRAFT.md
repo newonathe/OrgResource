@@ -1,5 +1,8 @@
 # OrgResource — CP27 canonical pre-coding handoff (DRAFT 1)
 
+> **CP30 LATEST USER DECISION (2026-11-16):** The target is **ONE unified end-to-end, genuinely course-compliant production OrgResource product**, not two separately maintained final apps. Academic code SHA `2dd336ed39cecd417a8bce3388b303e688e95dee` remains protected until complete runtime parity is actually verified. The supported single-runtime path for literal `javax.validation` is **UNPROVEN**; Twilio real SMS and perpetually free 24/7 hosting/CD cannot be guaranteed. **Research-only changes; no Codex/hosting authorization.** Read [54](54_CP30_ONE_UNIFIED_ORGRESOURCE_DECISION_AND_CONFLICT_REGISTER.md), [55](55_CP30_ONE_PRODUCT_COURSE_AND_PRODUCTION_COMPLIANCE_MATRIX.md), [56](56_CP30_SINGLE_RUNTIME_AND_ZERO_COST_CICD_FEASIBILITY.md), and [57](57_CP30_UNIFIED_ARCHITECTURE_PROOF_AND_RELEASE_ROADMAP.md) first. CP27/CP29 two-final-product statements are now historical; technical findings remain candidates.
+
+
 > **CP29 precision overlay (2026-11-16, PROPOSED/NOT APPROVED):** The exact public route/DTO/role/error proposal in [52](52_CP29_PUBLIC_ROUTE_DTO_ROLE_ERROR_CONTRACT_CANDIDATE.md), candidate MySQL/history/DR model in [53](53_CP29_MYSQL_IDENTITY_HISTORY_DR_CONTRACT_CANDIDATE.md), and owner decision sheet [51](51_CP29_OWNER_DECISIONS_AND_CONTRACT_FREEZE_GATE.md) clarify this earlier draft. They supersede conflicting *provisional* CP27 public sketches only. **No user sign-off, implemented public API, DDL or Codex authorization.**
 
 
