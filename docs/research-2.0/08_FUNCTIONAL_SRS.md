@@ -1,0 +1,61 @@
+# V2 functional software requirements specification (SRS)
+**Status:** PROVISIONAL RECOMMENDATION — NOT IMPLEMENTED, TESTED OR USER APPROVED. **Date:** 2026-11-15. Evidence: C01–C03; A01–A07; E01–E05; G05–G10. Contracts are for **future V2**, not replacement of the five-entity V1 academic artifact.
+
+## Interpretive conventions
+All IDs are opaque server-generated UUIDs in the proposed public JSON contract, even if physical DB PKs are bigint. Time values: RFC3339 UTC instants in API, normalized from user-entered `Asia/Manila` with explicit zone; intervals **[start,end)**, start inclusive/end exclusive. Positive integer quantities per immutable resource unit. Zero is valid only for initial stock or whole-record results, never an action quantity. No floating-point stock math. All mutations are authenticated, tenant checked, transactional, logged and idempotency-protected when indicated. `orgId` path is NEVER proof of authorization. Error shape: `{code,message,requestId,details?}`; 400 syntax, 401 no authentication, 403 no permission, 404 no visible resource (also cross-tenant), 409 state/conflict, 412 stale version, 422 semantic validation, 429 rate limit, 503 provider/quota. Codes and example responses are in [12](12_API_AND_AUTHORIZATION_CONTRACT.md).
+
+### Actors and permissions
+`OWNER`: only validated current workspace owner; `ADMIN`: tenant membership management, transfer; `CUSTODIAN`: stock, fulfillment and approval; `LEAD`: project/demand requests; `MEMBER`: catalog and own custody; `OPERATOR`: infrastructure actions only, no implicit tenant content permissions. A user may have multiple memberships, each with a role. Public demo account is not a real membership. All workflows assume organization state `ACTIVE`.
+
+## Identity / membership
+| ID | Trigger/actor and input | Preconditions, business/database effects and response | Errors; evidence/acceptance |
+|---|---|---|---|
+| F01 | User starts permitted auth with account subject; provider verified email (if used) | Identity account created/linked, subject unique; session uses secure server-managed cookie, `GET /session` returns only principal + memberships | 401 invalid session; 429 abuse; test unverified email cannot impersonate |
+| F02 | Authenticated user creates fictional/private organization, `name:String(2..120)`, optional `slug:String(3..40)` | Policy-gated org creation; create organization + OWNER membership in one transaction; `201` with org ID; do not assert university approval | 409 slug conflict; 422 invalid; test no orphan org |
+| F03 | OWNER/ADMIN invites user by email, `role` in permitted set, expiry <=7d | Random >=128-bit hashed single-use token, org-scoped, expires, audit event; `201 INVITED`; raw token only once to inviter if no verified mail transport | 403 role grant forbidden; 409 duplicate invite; 429; test token replay and raw token never in DB |
+| F04 | Signed-in invitee redeems token with verified email match | Under transaction lock, consume invite once; insert/activate membership; `200` with member role; don't auto-grant role based on @ateneo.edu domain | 409 used/expired/revoked; 403 mismatched email; two simultaneous redemptions exactly one wins |
+| F05 | OWNER/ADMIN changes role, suspends member, or revokes invite with `expectedVersion` | Record audit `before/after`, update version; last ACTIVE OWNER cannot be demoted/removed; actor cannot escalate beyond own authority | 403 privilege; 409 LAST_OWNER; 412 stale; revoked member loses access immediately |
+| F06 | OWNER initiates transfer to target ACTIVE ADMIN, target accepts within 48h | Owner remains until target verified acceptance, atomic role swap, 2-admin recovery option | 409 transfer expired; last-owner preserved, audit mandatory; test concurrent demotions |
+| F07 | Authenticated member exits workspace | Leave if not last OWNER, invalidate workspace-scoped access; personal session remains elsewhere | 409 LAST_OWNER; historical actions retained with pseudonymous actor ID per retention policy |
+
+## Resources, stock and plans
+| ID | Trigger/actor and input | Preconditions, transaction and return | Errors / acceptance |
+|---|---|---|---|
+| F08 | CUSTODIAN adds resource `name:String(1..120),kind:REUSABLE|CONSUMABLE,unitLabel:String(1..24),initialQty:int[0,1e6]` | Resource unique within org by normalized active name; immutable kind/unit after first movement; initial stock ledger CREDIT event; `201` includes available-now derived | 409 DUPLICATE_NAME; 422 invalid; cross-tenant 404; test initial ledger balances snapshot |
+| F09 | CUSTODIAN records stock receipt `quantity:int[1..1e6],reason`, idempotency key | Lock org resource, create immutable movement with `deltaTotal=+q`, increment version and stock snapshot; `200` with current totals | 412 stale; duplicate key same payload same result, different payload 409; no partial write |
+| F10 | CUSTODIAN adjusts stock count `newTotal:int>=0,reason:String(10..500),expectedVersion` | Compute delta, refuse total < unresolved issued + effective reservation obligations; append movement and audit; no history rewrite | 409 BELOW_COMMITMENTS, 412 stale; test negative refused unchanged |
+| F11 | ADMIN/CUSTODIAN archives unused resource | No future holds, issued qty, pending live requirements or preserving foreign keys; soft archive; JSON row retained, no new allocations | 409 ACTIVE_DEPENDENCIES; test audit and historical readability |
+| F12 | LEAD creates project `name`, `startAt/endAt` timezone-checked, optional description | Future or present allowed by policy; end>start, duration<=90d, `DRAFT` then `ACTIVE`; 201 | 422 bad times; 403; verify DST/Philippine zone no accidental UTC shift |
+| F13 | LEAD adds/edits project requirement `resourceId,quantity` positive | Unique (orgId,projectId,resourceId), no cross-org resource, cannot reduce below effective fulfilled/committed quantity; return shortage calculation | 409 UNDER_COMMITMENT, DUPLICATE_REQUIREMENT; 404 cross-tenant; correct shortage after edits |
+| F14 | LEAD or CUSTODIAN modifies project time while uncommitted | Refuse date edit after approved/issued/consumed history; create replacement/superseding project instead | 409 DATES_LOCKED; name edits still allowed; history immutable |
+
+## Booking, allocation, custody, consumption
+| ID | Trigger/actor and input | Invariant/side effects and result | Failures / acceptance |
+|---|---|---|---|
+| F15 | LEAD requests q against requirement and future `[start,end)` project window | Create `PENDING` allocation; no stock held, `201`; borrower is authenticated membership or synthetic demo label | 422 q>requirement; 409 ended; no physical stock change |
+| F16 | CUSTODIAN approves PENDING with idempotency-key and expectedVersion | Lock resource→requirement→allocation in stable order, calculate overlap-time availability for reusable / global unconsumed commitments for consumable; commit APPROVED hold+audit atomically | 409 CAPACITY_CONFLICT / DEMAND_COVERED / PROJECT_ENDED, 412 stale; 2 approvals competing stock5 q4+q4 exactly one succeeds |
+| F17 | CUSTODIAN cancels PENDING or APPROVED, q whole batch | Status CANCELLED, release eligible hold; capture actor/reason, no irreversible deleted history; idempotent read-back | 409 ALREADY_FULFILLED; test no phantom release/double credit |
+| F18 | CUSTODIAN issues approved reusable `q` all allocation quantity during active window | Physical custody q increases once; append ISSUE movement `deltaIssued=+q`; approved hold transitions into issued record and is not double counted; borrower remains responsible | 409 INSUFFICIENT_ON_HAND / WRONG_STATE / NOT_ACTIVE; concurrent issues cannot over-issue |
+| F19 | CUSTODIAN registers reusable return `quantity:int` with optional condition `USABLE` (P0 only) | q<=unreturned, append RETURN movement `deltaIssued=-q`, keep original requirement covered, status PARTIALLY_RETURNED or RETURNED | 409 RETURN_EXCEEDS_OUTSTANDING; damage/loss mode unsupported -> explicit 422, not silently usable; repeated same key no double return |
+| F20 | CUSTODIAN records approved consumable use, whole approved batch | Same transaction stock total -q and APPROVED hold -q, immutable CONSUME movement; status CONSUMED; no issued custody | 409 WRONG_KIND / WRONG_STATE / NOT_ACTIVE; consuming twice fails; available before/after unchanged if no other event |
+| F21 | Scheduled expiry job scans bounded batch of eligible PENDING/APPROVED where project ended | Transaction per allocation, change EXPIRED/CANCELLED; never releases issued custody or marks automatic return; one clock-injected time; log job count and failures | Test duplicate two workers idempotence, no external SMS under stock lock |
+| F22 | Authorized tenant member lists dashboard, resources, projects, requirements, allocations; cursor, limit <=100, filter | Scoped by orgId in each DB predicate, response includes derived shortage, `availableNow` and `atRisk` status; no cross-workspace totals | 404 for foreign ID, 400 invalid paging, loading/empty/error accessible; index plans checked |
+| F23 | CUSTODIAN performs discrepancy/reconciliation report of snapshot vs stock events | Detect mismatch, **do not auto-heal**; mark tenant writes read-only pending authorized append-only correction | 409 INVARIANT_BROKEN; synthetic tamper test detection |
+| F24 | ADMIN exports org records and versioned schema `format=json|csv`, with explicit scope/retention | Stream authorized bounded tenant data, exclude auth tokens/contact until policy permits; audit export, record schemaVersion and checksum | 403; 429; cross tenant export denied; restore round-trip fixture check |
+| F25 | OWNER requests org deletion/closure, export and grace period | Mark CLOSING, revoke invites, freeze mutations; retain necessary history according policy, later purge tenant rows with audited destruction receipt | 409 unresolved custody; avoid immediate hard deletion; verify backups retention plan |
+| F26 | Member reads in-app task notifications `GET /activity`; owner disables reminders | Store internal messages, no paid outbound provider; no Twilio real message; TTL purge | Expired notices not sent, no phone stored; fake simulator only in frozen V1 academic artifact |
+
+## Global exceptions
+Network timeout after POST returns **UNKNOWN outcome** to client: do not automatically send same unkeyed write; query operation/idempotency receipt before retry. All critical mutations require `Idempotency-Key` (UUID/opaque random >=128 bit). Same key+body returns saved result; same key different body 409 IDEMPOTENCY_MISMATCH; record expires after an explicitly versioned retention period (proposed 24h) and old operations remain non-replayable via unique business references. 409 is not 500 and must not be auto retried blindly. Audit captures actor, org, action, object, timestamp, requestId and minimal field changes without phone/password/token, including refusals at security boundary where useful.
+
+## Scope consistency
+F19 partial **usable** returns are **proposed** in V2 while academic V1 remains whole-batch, different DTO/state semantics. Future loss/damage lifecycle requires separately scoped inventory and custody accounting; P0 must reject unsupported condition instead of misclassifying. `F01` provider implementation/identity flows are future work and no provider verified with an account yet.
+
+## Functional acceptance matrix
+- Two orgs A/B have identical resource display IDs? Opaque IDs must still produce 404 on foreign access across every mutation, list, export and audit query.
+- Repeated F16/F18/F19/F20 with same idempotency key never double reserves, issues, returns, or consumes.
+- Overlapping reusable windows [10:00,12:00) and [11:00,13:00) compete; adjacent [12:00,14:00) do not overlap in planned reservation math, but unreturned real custody can make issue at 12:00 unsafe.
+- Two simultaneous capacity requests of 4 where total 5: exactly one approval. Consumable approve q4 then consume q4 reduces `total` only once, `available` not twice.
+- ARCHIVE/CLOSE never erases active issued custody.
+- Workspace role change immediately denies old permissions; email suffix alone never grants access.
+- Named page interactions, end-to-end Postman, concurrency, restore and security tests in [17](17_TEST_VALIDATION_AND_RELEASE_GATES.md) are NOT RUN.
