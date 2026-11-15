@@ -75,3 +75,6 @@ R7 public supported Java+genuine **MySQL** now has TWO stronger primary-source c
 
 ## CP13 R4/R5/R9 consistency audit
 [CP13 canonical conflict register](40_CP13_CANONICAL_SRS_EERD_API_CONFLICT_REGISTER.md) documents 21 contradictions and 18 acceptance test specs ALL NOT RUN; original/user stack unchanged. Research NOT ACCEPTED, architecture BLOCKED, **~4–8 focused research passes** estimated.
+
+## CP14 R8 traceability gate improvement (2026-11-15)
+[41](41_CP14_REQUIREMENTS_TEST_EVIDENCE_TRACEABILITY.md) maps 22 acceptance rows A/P/G to exact course sources, environments, expected observations, required artifact types, and gap statuses; also R0–R10 current evidence gates. [17](17_TEST_VALIDATION_AND_RELEASE_GATES.md) historical Postman steps 5–10 use temporal/partial and must not drive course/global whole P0. All V2 acceptance **NOT RUN**, course CI reports not independently reproduced, Canvas/Twilio/CLO9 external unknown, Javax public stack still BLOCKED. **~3–7 focused research passes remain**; cannot certify pre-code actual E2E.

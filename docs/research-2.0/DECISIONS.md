@@ -129,3 +129,9 @@ Details and dates: [28](28_STRICT_COURSE_STACK_COMPATIBILITY_AND_CP2_CONFLICTS.m
 | D-088 | **TABLE COUNT** | Conditional local auth+JDBC+Department has at least 17 physical tables, not original eleven. | DESIGN OPEN |
 | D-089 | **GOVERNANCE OPEN** | Owner transfer/durable recovery and no real institution authority. | DESIGN OPEN |
 | D-090 | **ESTIMATE** | ~4–8 further research passes after CP13, no actual E2E proof. | BLOCKED |
+
+## CP14 evidence and test-plan decisions (2026-11-15)
+| D-091 | **TEST CONTRACT CORRECTION** | Old [17](17_TEST_VALIDATION_AND_RELEASE_GATES.md) deterministic Postman steps 5–10 are historical temporal/partial V2, not recommended global/whole P0 and not academic course regression. | [41](41_CP14_REQUIREMENTS_TEST_EVIDENCE_TRACEABILITY.md) J-A/J-P0/J-OPTION split; tests NOT RUN |
+| D-092 | **EVIDENCE PROVENANCE** | Every real PASS requires exact SHA, environment, fixture, command, expected/actual HTTP+DB postcondition, redacted artifact and reviewer; author-reported or CI pass is not independent runtime proof. | 22 trace rows and R0–R10 evidence matrix [41] |
+| D-093 | **STOP CONDITIONS** | Critical unsupported Javax/owner/cost/CSRF/BOLA/ledger/DR/Canvas cannot be waved through by deadline or green unrelated CI. | Full build/public/A-FINAL independent gates BLOCKED |
+| D-094 | **ESTIMATE** | CP14 maps requirements to future acceptance; ~3–7 focused research passes remain, not calendar or runtime E2E guarantee. | Await owner decisions and external authorization |

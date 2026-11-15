@@ -89,3 +89,6 @@ New [38_ZERO_COST_HOST_MYSQL_FREE_TLS_AND_EXTERNAL_DR_CP11.md](38_ZERO_COST_HOST
 
 ## CP13 historical design conflict precedence
 [CP13 canonical conflict register](40_CP13_CANONICAL_SRS_EERD_API_CONFLICT_REGISTER.md) records 21 MC-29..49 conflicts and CX-01..18 test requirements ALL NOT RUN. Older F02/verified mail, 11-table no Department, partial/temporal, D1 and in-app-only Twilio do not constitute approved design. **Architecture BLOCKED, ~4–8 passes remain.**
+
+## CP14 traceable academic/P0 evidence and obsolete test corrections (2026-11-15)
+[41_CP14_REQUIREMENTS_TEST_EVIDENCE_TRACEABILITY.md](41_CP14_REQUIREMENTS_TEST_EVIDENCE_TRACEABILITY.md) maps **22 course/public/release evidence rows**, **R0–R10** research checks and exact `caseId/SHA/environment/expected/actual/artifact` proof requirements. Detects old Test 17 Postman time-window and q3+q1 partial-return steps incompatible with proposed global/whole P0; three mutually exclusive journey types J-A original, J-P0 global, J-OPTION temporal/partial deferred. **All V2 tests NOT RUN; ~3–7 further focused passes, architecture BLOCKED.**

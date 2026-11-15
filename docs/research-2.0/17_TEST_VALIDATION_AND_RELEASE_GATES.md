@@ -1,4 +1,7 @@
 # V2 verification, Postman, performance, privacy and release gates
+
+**CP14 CURRENT TEST PRECEDENCE (2026-11-15):** Existing Postman steps 5–10 below use HISTORICAL time-window and partial-return V2, **NOT** the current recommended global/whole-batch public P0. Use [41 CP14 evidence matrix](41_CP14_REQUIREMENTS_TEST_EVIDENCE_TRACEABILITY.md) J-A/J-P0/J-OPTION and [40 conflicts](40_CP13_CANONICAL_SRS_EERD_API_CONFLICT_REGISTER.md). No P0 test has been executed or approved.
+
 **Status:** PROVISIONAL TEST PLAN. **No V2 tests performed** as of 2026-11-15. Academic V1 remote **reports** tests G08; do not equate with independent execution. Sources C01–C03/G08, E02–E05, F01–F26.
 
 ## Test pyramid and required artifacts
@@ -96,3 +99,7 @@ Future authorized actual verification [36](36_VALIDATION_DUAL_API_AND_LIBERTY_CV
 
 ## CP12 DB-version, private link and true DR proof (2026-11-15)
 [39](39_MYSQL_84_VS_FREE_97_VERSION_CLIENT_AND_RESTORE_COMPATIBILITY.md) MV-01..12 **NOT RUN**: actual MySQL.Free `SELECT VERSION()`/track + maintenance policy; exact supported Boot/Jersey/JPA/Hibernate7.4/Connector/J9.7/BOM and true Javax DTO+JPA entity callbacks; clean MySQL8.4/Free DDL/tenant FK/CHECK/stock/JPQL; private VCN port3306 and TLS certificate checks; 100-way approval+late replay+owner races; full MySQL Shell export with encrypted external key/checksum, fixed 1day backup and conditional final7day same-tenancy restore; **actual 9.7→8.4 cross-version clean restore**, off-tenancy failure drill, version-change rehearsal, original 5 entities/26 Jersey/Autowired/Retrofit/Gson/Twilio/scheduled/Postman regression. This is test specification not tests passed.
+
+
+## CP14 corrected deterministic global-P0 and academic evidence journeys (2026-11-15)
+[41](41_CP14_REQUIREMENTS_TEST_EVIDENCE_TRACEABILITY.md) contains the canonical phase-separated current test contract. **Original academic:** five entities/26 routes, whole RETURN, Retrofit/Gson and Javax, all original errors/JPQL/MySQL. **Recommended global P0:** two fictional orgs, Department, reusable T5 q4 approval leaves1, second q4 gets409 despite disjoint project windows; issue moves H→I without changing T, **whole** RETURN restores I0; consumable T100 q30→consumed T70 available70; no q3+q1 partial. **Optional deferred:** time-window peak sweep and partial q3+q1. All future runs must include exact SHA, environment, expected/actual and artifacts; **ALL NOT RUN**.
