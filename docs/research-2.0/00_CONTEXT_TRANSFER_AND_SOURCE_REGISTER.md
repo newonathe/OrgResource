@@ -146,3 +146,14 @@ OrgResource 1.0 course result and evidence must remain frozen and reproducible, 
 - Oracle Cloud Always Free, Cloudflare Pages/Workers/D1/Durable Objects, Google Cloud free tier, Render and Supabase: verify their official **current** pricing/quotas/eligibility/ToS before making factual comparisons.
 
 **Do not treat these leads or the previous chat's conclusions as proof of 2026 current organizational directories, inventory systems or free-tier guarantees. The new chat must independently source and date claims.**
+
+
+## LATER SAME-DAY FRESHNESS UPDATE — PR #6 NOW EXISTS (2026-11-15)
+
+During this transfer packet's final GitHub verification, the separate Codex engineering cycle **O11+O13 was pushed**: branch \`feat/o11-o13-system-acceptance-release-2026-11-15\`, HEAD \`6693c58a1d3f3e731296a1a27896e6211e9cf77d\`, open **PR #6**, targeting the O8/O10 branch. Its latest two CI workflows report SUCCESS. This supersedes the earlier handoff line saying O11 had not been pushed when first checked. **Do not assume O14 complete.**
+
+PR #6 reports response-loss-safe UI mutation handling, release packaging tooling, API/Newman runner, Java-source/release hash documentation. Its \`evidence/O11-O13/PHASE_REPORT.md\` reports local frontend tests **15 passed**, **5 Playwright tests**, **four Newman collections with 73 requests/105 assertions** and isolated MySQL, BUT the same report still contains a pre-push checklist claiming JAR packaging, source export, remote push/CI and packaged-JAR smoke are **PENDING**. PR metadata and CI now establish push/CI success, but do **not** by themselves prove every local package-generation, standalone-JAR startup, screenshot and hash gate was performed. New chat MUST read PR #6 latest code, \`docs/RELEASE_AND_DEMO.md\`, \`docs/compliance/CLO9_IMAGE_DECISION.md\`, \`evidence/O11-O13/PHASE_REPORT.md\`, CI workflow/logs, and resolve any stale report language before asserting completion.
+
+**CLO9 remains UNRESOLVED in the actual PR #6 decision document.** That file inspected \`files/ImageServerDemo (1).zip\` and the timestamped V10 course transcript and found a standalone UploadedFile entity + upload/get image example, but did not treat it as a mandatory OrgResource feature or as safe to copy unchanged. Canvas still unverified.
+
+Latest observed implementation SHA is therefore \`6693c58a...\` on O11+O13, but it is a **new unmerged feature branch**. The research-continuity docs branch intentionally remains based on the stable O8/O10 implementation HEAD so it does not accidentally incorporate unreviewed release code. Future research doc commits can stay on this docs-only PR (#7) while looking at PR #6 as current implementation evidence; choose the correct base after a fresh remote audit.
