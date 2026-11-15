@@ -32,7 +32,7 @@ This directory is a **research and planning layer**, not a production applicatio
 | [20_INDEPENDENT_CRITIQUE_AND_REVISED_DECISIONS.md](20_INDEPENDENT_CRITIQUE_AND_REVISED_DECISIONS.md) | Fault finding, recommendation revisions |
 | [21_RESEARCH_STATUS_AND_OPEN_QUESTIONS.md](21_RESEARCH_STATUS_AND_OPEN_QUESTIONS.md) | Precise documentation, tested/code/deployed status |
 
-Some later links may not exist until the next research commit; missing documents MUST NOT be interpreted as written. The two transferred 00/01 files are historical; no automatic changes to them.
+All documents listed are included in this research branch after the verified third batch. The original transferred 00/01 files remain unchanged; no unapproved code changes or main merges.
 
 ## Git/review record
-2026-11-15: Rechecked private GitHub repo, PR #1–#7 and newer O11 report SHA `fd34a8a...`; read course primary extracted sources and dated 2026 primary public evidence. This tranche adds source/coverage/compliance/ecosystem/governance/scope/decision/risk files **only after a successful committed push**; the current index is a statement of intended directory structure, not independent execution proof. Audit limitations remain in 02. No production source, merges, SMS, emails, financial commitments, institutional contacts or deployment occurred.
+2026-11-15: Rechecked private GitHub repo, PR #1–#7 and newer O11 report SHA `fd34a8a...`; read course primary extracted sources and dated 2026 primary public evidence. The research documentation is versioned on draft PR #7; inspect the latest remote SHA to confirm actual file history. V2 implementation/hosting/testing is explicitly NOT completed. Audit limitations remain in 02. No production source, merges, SMS, emails, financial commitments, institutional contacts or deployment occurred.

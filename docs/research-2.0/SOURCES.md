@@ -49,5 +49,14 @@ Use these IDs in all other research documents. `C` = local original course prima
 | E18 | [Supabase pricing](https://supabase.com/pricing), accessed 2026-11-15 | Free 500 MB database, 5 GB egress listed, usage limitations; not an eligible Java hosting replacement |
 | E19 | [CF Git repository primary](https://github.com/grokability/snipe-it), accessed 2026-11-15 | Code/self-hosting and license source; do not assert actual deployment reviewed |
 
+| E20 | [Spring Boot official releases](https://github.com/spring-projects/spring-boot/releases), accessed 2026-11-15 | 4.1.2 listed latest stable, 4.2.0-RC2 is prerelease; not a tested compatibility BOM for this project |
+| E21 | [Jersey 4.x migration](https://eclipse-ee4j.github.io/jersey.github.io/documentation/latest4x/migration.html), accessed 2026-11-15 | Jersey4 is Jakarta REST4, JDK >=17, namespace migration; no Jersey2 javax source identity |
+| E22 | [Jersey 3.x namespace migration](https://eclipse-ee4j.github.io/jersey.github.io/documentation/latest3x/migration.html), accessed 2026-11-15 | Transition `javax.*` to `jakarta.*` with version/compatibility changes |
+| E23 | [Spring Boot supported versions wiki](https://github.com/spring-projects/spring-boot/wiki/), edited Sep14,2026, accessed Nov15 | 4.1 and 4.0 actively maintained as of snapshot; verify before choosing later |
+| E24 | [Cloudflare workers.dev documentation](https://developers.cloudflare.com/workers/configuration/routing/workers-dev/), updated Nov6,2026 | Free platform hostname for Workers, intended hobby/personal/nonbusiness-critical; not automatic custom JVM VM DNS/TLS |
+| E25 | [Cloudflare Pages limits](https://developers.cloudflare.com/pages/platform/limits/), updated Sep5,2026 | Free 500 builds/month, 20k assets, 25MiB/file, static host only |
+| E26 | [GitHub security/analysis features](https://docs.github.com/en/code-security/getting-started/github-security-features), accessed 2026-11-15 | Private repository advanced scanning paid feature limits may differ; verify availability |
+| E27 | [OCI Always Free idle reclaim](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm), accessed 2026-11-15 | Free VMs can be reclaimed based on 7-day CPU/network/memory use; no availability promise |
+
 ## Evidence still missing
 No current Canvas enrollment/announcements; no authenticated OSA/CFMO views; no organizational primary interviews; no real cloud account eligibility, region capacity, quotas or costs test; no actual data; no independent code/CI rerun; no independent ZIP entry-by-entry audit. All diagrams, capacity assumptions, counts and SLOs in V2 specs are **proposed test fixtures or targets**, not measured facts.
