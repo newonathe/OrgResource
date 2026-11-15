@@ -98,3 +98,7 @@ These severities/likelihoods are qualitative expert estimates only, not incident
 | R67 | 5×4 | Same-tenancy one-day OCI snapshot mistaken for independent backup or seven-day regular backup | Final deletion backup up to7d only if configured; external client encrypted export and lost-tenancy MV-07..10 | No DR claim |
 | R68 | 5×4 | Untested logical migration from managed newer MySQL to pinned 8.4 fails on unsupported new features/collation/privileges | Clean cross-version load, schema/checksum/roles/ledger and explicit approved fallback | Recovery GO blocked |
 | R69 | 4×4 | Private OCI VCN DB connection assumed TLS enforced and no outbound/inbound security exposure | Least privilege NSG, port3306 restricted, actual TLS and invalid certificate negative test MV-05 | No public host pass |
+
+## CP14 real academic CI reproducibility risk
+| R78 | 5×4 | O14 Java8/MySQL `ResourceListAggregationMySqlTest` at time boundary expected5 actual8 on push run43732859018 while same commit PR run43732864033 passed; later CP14 both green | CI-01..05 repeated deterministic exact-SHA tests, one-clock JPQL vs raw DB and timezone/order diagnostics; no silent flaky skip | A-FINAL source test reliability OPEN, root cause unproven |
+| R79 | 4×4 | Documentation research overstates green CI if only latest run read | Record run ID/event/sha/job/result including failures and passes; independent exact repeatability | Audit truth required |
