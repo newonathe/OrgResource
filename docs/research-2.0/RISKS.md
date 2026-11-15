@@ -43,3 +43,9 @@ These severities/likelihoods are qualitative expert estimates only, not incident
 | R30 | 5×5 | Legacy Apache BVal2/HV6.2 manually loaded into public Boot4 without maintenance or provider-conflict review | Effective BOM, actual injection, XXE/expression/CVE/EL behavior, secure negative tests; independent review | Architecture BLOCKED until risk acceptable |
 | R31 | 5×4 | No free mail/real identity provider leaves owner unprovable or unrecoverable | Operator-controlled synthetic bootstrap, high entropy saved codes, two-party transfer, deny official affiliation; real accounts later gate | No real-org claim or first-visitor ownership |
 | R32 | 4×4 | Missing credential/recovery/ownership-transfer schema causes unrecoverable or privilege-escalated accounts | New justified identity tables/session decision and transaction acceptance | Do not build against provisional 11 tables |
+
+## CP5 risks added — 2026-11-15
+| R33 | 5×4 | Timestamp UTC conversion or 2038 overflow corrupts start/end/expiry | Prefer DATETIME(6) UTC for V2 with RFC3339+timezone/2040 tests; never modify academic PHT dates | Block live if failing |
+| R34 | 5×4 | DB-only CHECK falsely used to ensure >=1 ACTIVE OWNER | Serialize every owner-changing path via org row lock and verify 2-way demotion race/transfer | NO-GO if zero owner possible |
+| R35 | 5×3 | Identity code incorrectly counts 11 tables or uses one invented session table instead of Spring Session JDBC 2 tables | Final MySQL vendor schema/accounting and reset/restart tests, owner-approved local auth option | Research blocked |
+| R36 | 5×4 | Unverified invite bearer assumed to verify a real student or school org | Synthetic labels, manual token with stated limitations, no domain-based ownership; later real identity proof process | No real signup/adoption claim |
