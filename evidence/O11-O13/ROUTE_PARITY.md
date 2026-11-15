@@ -1,5 +1,7 @@
 # O11 route acceptance parity
 
+This is the O11/O13 baseline route report, not production-route acceptance. The current O14 route-by-route controller/DTO/HTTP-evidence matrix is [`../O14/ROUTE_ACCEPTANCE_MATRIX.md`](../O14/ROUTE_ACCEPTANCE_MATRIX.md).
+
 **Scope:** 25 original API operations plus separately identified A09 consent revocation. **Count: 26 current operations.** The 26-request reference is `postman/OrgResource-Current-26-Routes.postman_collection.json`; it is a route reference, not an ordered mutation runner.
 
 | ID | Operation | Route | Executable acceptance collection |

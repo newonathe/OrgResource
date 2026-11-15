@@ -1,5 +1,7 @@
 # ORGRESOURCE — COMPLETE SINGLE-FILE MASTER HANDOFF
 
+> **HISTORICAL PLANNING ARCHIVE — NOT CURRENT IMPLEMENTATION EVIDENCE.** This file preserves its original November 13, 2026 planning state, prompts, drafts, and templates. It predates O1–O14 implementation and must not be used to infer current test status or override code. The current five-entity/26-operation application, acceptance status, and release state are in the [root README](../README.md), [current API contract](complete-handoff/05_API_26_ROUTES_AND_RESPONSES.md), and [O14 final report](../evidence/O14/FINAL_ACCEPTANCE_REPORT.md). Earlier nine-entity/68-operation material is **HISTORICAL, NOT CURRENT IMPLEMENTATION**.
+
 **PLANNING SPECIFICATION / AGENT PROMPTS / SETUP / API / UI / TESTS / EXPORT**
 
 **Date:** 2026-11-13 (Asia/Manila)  
