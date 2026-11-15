@@ -1,5 +1,7 @@
 # O11 + O13 continuation report
 
+**Scope clarification:** these results describe the five-entity/26-operation academic baseline at the recorded O11/O13 commits. They are not final-product, multi-organization, public-runtime, or production-security acceptance. The O14 report supersedes this phase report for the current academic status.
+
 **Status: local acceptance and release packaging passed.** The source and packaged JAR run locally. CLO9 image scope remains unresolved and is excluded from any completion claim.
 
 ## Verified local evidence
@@ -16,5 +18,6 @@
 ## Academic acceptance boundary
 
 - CLO9 image scope remains **UNRESOLVED** in `docs/compliance/CLO9_IMAGE_DECISION.md`; no image subsystem was added.
+- The assignment's “at the very least Twilio” wording is also **UNRESOLVED** for provider-specific course acceptance; the verified adapter/test path is FakeTwilio simulation, not live Twilio.
 - Canvas/current deadline and rubric were not checked. No video was fabricated or submitted, and no instructor or course acceptance is claimed.
 - The student must complete the authorship certificate, accurately acknowledge assistance, and complete any required peer/group evidence.

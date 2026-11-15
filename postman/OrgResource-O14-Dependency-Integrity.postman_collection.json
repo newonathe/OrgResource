@@ -1,0 +1,551 @@
+{
+  "info": {
+    "_postman_id": "d6a034c3-91dd-4a5b-a1d7-2e8d4356aa14",
+    "name": "OrgResource O14 Dependency Integrity",
+    "description": "Focused live HTTP acceptance for dependency-protected deletion, unchanged rows after 409, and eligible cleanup. Uses uniquely named fictional records and deletes only the fixtures created in this run.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+        "var supplied=pm.environment.get('runTag');if(supplied){pm.collectionVariables.set('runTag',supplied);}else if(!pm.collectionVariables.get('runTag')){pm.collectionVariables.set('runTag','O14-DI-'+Date.now()+'-'+Math.floor(Math.random()*1000000));}function f(n){return new Date(Date.now()+n*86400000).toISOString().slice(0,19);}pm.collectionVariables.set('startAt',f(30));pm.collectionVariables.set('endAt',f(32));"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "01 Create Department fixture",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Department create returns 201',function(){pm.response.to.have.status(201);});var x=pm.response.json();pm.test('Department ID is positive',function(){pm.expect(x.id).to.be.above(0);});pm.collectionVariables.set('departmentId',x.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"O14-DI Department {{runTag}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/departments"
+      },
+      "response": []
+    },
+    {
+      "name": "02 Create future Project fixture",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Project create returns 201',function(){pm.response.to.have.status(201);});var x=pm.response.json();pm.test('Project belongs to fixture Department',function(){pm.expect(x.departmentId).to.eql(Number(pm.collectionVariables.get('departmentId')));});pm.collectionVariables.set('projectId',x.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"departmentId\":{{departmentId}},\"name\":\"O14-DI Project {{runTag}}\",\"startAt\":\"{{startAt}}\",\"endAt\":\"{{endAt}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/projects"
+      },
+      "response": []
+    },
+    {
+      "name": "03 Create zero-stock Resource fixture",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Resource create returns 201',function(){pm.response.to.have.status(201);});var x=pm.response.json();pm.test('Resource starts at zero stock',function(){pm.expect(x.totalQuantity).to.eql(0);pm.expect(x.availableQuantity).to.eql(0);});pm.collectionVariables.set('resourceId',x.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"O14-DI Resource {{runTag}}\",\"type\":\"REUSABLE\",\"totalQuantity\":0}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/resources"
+      },
+      "response": []
+    },
+    {
+      "name": "04 Create Requirement fixture",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Requirement create returns 201',function(){pm.response.to.have.status(201);});var x=pm.response.json();pm.test('Requirement links both fixture parents',function(){pm.expect(x.projectId).to.eql(Number(pm.collectionVariables.get('projectId')));pm.expect(x.resourceId).to.eql(Number(pm.collectionVariables.get('resourceId')));});pm.collectionVariables.set('requirementId',x.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"projectId\":{{projectId}},\"resourceId\":{{resourceId}},\"quantity\":1}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/requirements"
+      },
+      "response": []
+    },
+    {
+      "name": "05 Create never-approved Allocation fixture",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Allocation create returns 201',function(){pm.response.to.have.status(201);});var x=pm.response.json();pm.test('Allocation begins pending without a contact',function(){pm.expect(x.status).to.eql('PENDING');pm.expect(x.phoneNumber).to.eql(undefined);});pm.collectionVariables.set('allocationId',x.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"requirementId\":{{requirementId}},\"quantity\":1,\"borrowerName\":\"O14 fictional fixture {{runTag}}\",\"smsConsent\":false}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/allocations"
+      },
+      "response": []
+    },
+    {
+      "name": "06 D04 refuses a referenced Department",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('D04 dependency delete returns 409',function(){pm.response.to.have.status(409);pm.expect(pm.response.json().code).to.eql('DEPENDENCY_EXISTS');});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/departments/{{departmentId}}/delete"
+      },
+      "response": []
+    },
+    {
+      "name": "07 Confirm Department survived refused delete",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Department list returns 200',function(){pm.response.to.have.status(200);});var xs=pm.response.json();pm.test('Refused Department delete changed nothing',function(){pm.expect(xs.some(function(x){return x.id===Number(pm.collectionVariables.get('departmentId'));})).to.eql(true);});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/departments"
+      },
+      "response": []
+    },
+    {
+      "name": "08 P04 refuses a referenced Project",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('P04 dependency delete returns 409',function(){pm.response.to.have.status(409);pm.expect(pm.response.json().code).to.eql('DEPENDENCY_EXISTS');});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/projects/{{projectId}}/delete"
+      },
+      "response": []
+    },
+    {
+      "name": "09 Confirm Project survived refused delete",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Filtered Project list returns 200',function(){pm.response.to.have.status(200);});var xs=pm.response.json();pm.test('Refused Project delete changed nothing',function(){pm.expect(xs.some(function(x){return x.id===Number(pm.collectionVariables.get('projectId'));})).to.eql(true);});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/projects?departmentId={{departmentId}}"
+      },
+      "response": []
+    },
+    {
+      "name": "10 R04 refuses a referenced Resource",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('R04 dependency delete returns 409',function(){pm.response.to.have.status(409);pm.expect(pm.response.json().code).to.eql('DEPENDENCY_EXISTS');});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/resources/{{resourceId}}/delete"
+      },
+      "response": []
+    },
+    {
+      "name": "11 Confirm Resource survived refused delete",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Resource list returns 200',function(){pm.response.to.have.status(200);});var xs=pm.response.json();pm.test('Refused Resource delete changed nothing',function(){pm.expect(xs.some(function(x){return x.id===Number(pm.collectionVariables.get('resourceId'))&&x.totalQuantity===0;})).to.eql(true);});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/resources"
+      },
+      "response": []
+    },
+    {
+      "name": "12 Q04 refuses a Requirement with Allocation history",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Q04 dependency delete returns 409',function(){pm.response.to.have.status(409);pm.expect(pm.response.json().code).to.eql('DEPENDENCY_EXISTS');});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/requirements/{{requirementId}}/delete"
+      },
+      "response": []
+    },
+    {
+      "name": "13 Confirm Requirement survived refused delete",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Requirement list returns 200',function(){pm.response.to.have.status(200);});var xs=pm.response.json();pm.test('Refused Requirement delete changed nothing',function(){pm.expect(xs.some(function(x){return x.id===Number(pm.collectionVariables.get('requirementId'));})).to.eql(true);});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/requirements?projectId={{projectId}}"
+      },
+      "response": []
+    },
+    {
+      "name": "14 A08 deletes never-approved Allocation",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Never-approved Allocation delete returns 200',function(){pm.response.to.have.status(200);pm.expect(pm.response.json().message).to.eql('Record deleted.');});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/allocations/{{allocationId}}/delete"
+      },
+      "response": []
+    },
+    {
+      "name": "15 Confirm Allocation was deleted",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Allocation list returns 200',function(){pm.response.to.have.status(200);});pm.test('Deleted Allocation is absent',function(){pm.expect(pm.response.json().some(function(x){return x.id===Number(pm.collectionVariables.get('allocationId'));})).to.eql(false);});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/allocations?requirementId={{requirementId}}"
+      },
+      "response": []
+    },
+    {
+      "name": "16 Q04 deletes unreferenced Requirement",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Unreferenced Requirement delete returns 200',function(){pm.response.to.have.status(200);pm.expect(pm.response.json().message).to.eql('Record deleted.');});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/requirements/{{requirementId}}/delete"
+      },
+      "response": []
+    },
+    {
+      "name": "17 Confirm Requirement was deleted",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Requirement list returns 200',function(){pm.response.to.have.status(200);});pm.test('Deleted Requirement is absent',function(){pm.expect(pm.response.json().some(function(x){return x.id===Number(pm.collectionVariables.get('requirementId'));})).to.eql(false);});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/requirements?projectId={{projectId}}"
+      },
+      "response": []
+    },
+    {
+      "name": "18 P04 deletes unreferenced Project",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Unreferenced Project delete returns 200',function(){pm.response.to.have.status(200);pm.expect(pm.response.json().message).to.eql('Record deleted.');});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/projects/{{projectId}}/delete"
+      },
+      "response": []
+    },
+    {
+      "name": "19 Confirm Project was deleted",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Project list returns 200',function(){pm.response.to.have.status(200);});pm.test('Deleted Project is absent',function(){pm.expect(pm.response.json().some(function(x){return x.id===Number(pm.collectionVariables.get('projectId'));})).to.eql(false);});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/projects?departmentId={{departmentId}}"
+      },
+      "response": []
+    },
+    {
+      "name": "20 R04 deletes zero-stock unreferenced Resource",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Eligible Resource delete returns 200',function(){pm.response.to.have.status(200);pm.expect(pm.response.json().message).to.eql('Record deleted.');});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/resources/{{resourceId}}/delete"
+      },
+      "response": []
+    },
+    {
+      "name": "21 Confirm Resource was deleted",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Resource list returns 200',function(){pm.response.to.have.status(200);});pm.test('Deleted Resource is absent',function(){pm.expect(pm.response.json().some(function(x){return x.id===Number(pm.collectionVariables.get('resourceId'));})).to.eql(false);});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/resources"
+      },
+      "response": []
+    },
+    {
+      "name": "22 D04 deletes unreferenced Department",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Eligible Department delete returns 200',function(){pm.response.to.have.status(200);pm.expect(pm.response.json().message).to.eql('Record deleted.');});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/departments/{{departmentId}}/delete"
+      },
+      "response": []
+    },
+    {
+      "name": "23 Confirm Department was deleted",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Department list returns 200',function(){pm.response.to.have.status(200);});pm.test('Deleted Department is absent',function(){pm.expect(pm.response.json().some(function(x){return x.id===Number(pm.collectionVariables.get('departmentId'));})).to.eql(false);});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/departments"
+      },
+      "response": []
+    }
+  ]
+}

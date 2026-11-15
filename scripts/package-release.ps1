@@ -8,7 +8,7 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 $frontendRoot = Join-Path $repoRoot 'frontend'
 $backendRoot = Join-Path $repoRoot 'backend'
 if (-not $ArtifactsDirectory) {
-    $ArtifactsDirectory = Join-Path $repoRoot 'deliverables\O11-O13'
+    $ArtifactsDirectory = Join-Path $repoRoot 'deliverables\O14'
 }
 $ArtifactsDirectory = [IO.Path]::GetFullPath($ArtifactsDirectory)
 New-Item -ItemType Directory -Force -Path $ArtifactsDirectory | Out-Null
@@ -111,5 +111,32 @@ $hashes = @($releaseJar, $fullSourceZip, $javaSourceZip) | ForEach-Object {
     '{0}  {1}' -f $hash.Hash.ToLowerInvariant(), (Split-Path -Leaf $_)
 }
 Set-Content -LiteralPath (Join-Path $ArtifactsDirectory 'SHA256SUMS.txt') -Value $hashes -Encoding ascii
+$sourceCommit = (& git -C $repoRoot rev-parse HEAD).Trim()
+$sourceBranch = (& git -C $repoRoot branch --show-current).Trim()
+$javaVersion = (& java -version 2>&1 | Out-String).Trim()
+$mavenVersion = (& (Join-Path $backendRoot 'mvnw.cmd') -version 2>&1 | Select-Object -First 1 | Out-String).Trim()
+$nodeVersion = (& node --version 2>&1 | Out-String).Trim()
+$npmVersion = (& npm --version 2>&1 | Out-String).Trim()
+$artifactInventory = @($releaseJar, $fullSourceZip, $javaSourceZip) | ForEach-Object {
+    $hash = Get-FileHash -LiteralPath $_ -Algorithm SHA256
+    $file = Get-Item -LiteralPath $_
+    [ordered]@{
+        name = $file.Name
+        sizeBytes = $file.Length
+        sha256 = $hash.Hash.ToLowerInvariant()
+    }
+}
+$manifest = [ordered]@{
+    schemaVersion = 1
+    generatedAtLocal = (Get-Date).ToString('o')
+    sourceBranch = $sourceBranch
+    sourceCommit = $sourceCommit
+    javaVersion = $javaVersion
+    mavenWrapperVersion = $mavenVersion
+    nodeVersion = $nodeVersion
+    npmVersion = $npmVersion
+    artifacts = $artifactInventory
+}
+($manifest | ConvertTo-Json -Depth 6) | Set-Content -LiteralPath (Join-Path $ArtifactsDirectory 'RELEASE-MANIFEST.json') -Encoding utf8
 Write-Output "Release artifacts created in $ArtifactsDirectory"
 Get-ChildItem -LiteralPath $ArtifactsDirectory -File | Select-Object Name, Length

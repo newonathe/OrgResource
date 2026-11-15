@@ -1,4 +1,4 @@
-# OrgResource React frontend (O7–O10)
+# OrgResource React frontend
 
 The React, TypeScript, and Vite application is a local same-origin client for the existing Java API. Its eight routes provide the project workspace:
 
@@ -14,6 +14,8 @@ The React, TypeScript, and Vite application is a local same-origin client for th
 | `#/about` | About | Explain the five records, whole-batch lifecycle, and prototype boundaries |
 
 Business records always come from the API. Only the light/dark theme and motion preference are stored in browser `localStorage`. The UI does not claim production authentication, institutional integration, delivered SMS, or CLO9 image handling. The SMS consent input accepts only the reserved fictional range `+12025550100`–`+12025550199`; the allocation read DTO never exposes the saved phone number.
+
+The current build is part of the O14 release check. Generated `dist/` files, source maps, and dependency caches are not tracked. Maven's `bundle-react-ui` profile copies the production assets into the executable Java JAR. See [`../docs/PORTABLE_FIRST_RUN.md`](../docs/PORTABLE_FIRST_RUN.md) for the portable runtime and [`../docs/RELEASE_AND_DEMO.md`](../docs/RELEASE_AND_DEMO.md) for reproducible packaging. This interface is an academic prototype; it does not provide authentication or claim institutional approval.
 
 ## Local development
 

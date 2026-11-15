@@ -1,27 +1,27 @@
-# CLO9 image requirement decision record
+# CLO9 image-scope decision
 
-**Status: UNRESOLVED. Image upload and serving are not implemented or claimed as satisfied.**
+**Status: UNRESOLVED.** OrgResource does not receive or serve images. This project does not claim CLO9 satisfaction or a course waiver.
 
-## What the sources establish
+## Primary-source findings
 
-- The CSCI 180.05 syllabus names CLO9 as creating a web application that can receive and serve images over HTTP (syllabus, p. 2). The course outline separately lists image saving to a database under CLO9 (p. 3).
-- The project assignment's final-project section describes completing the proposed application and its actual logic, but does not specify an OrgResource image feature or image API (assignment, pp. 2–3).
-- The concise OrgResource proposal defines five domain entities and the resource planning/allocation API. Its project description and route catalogue do not define image upload, image retrieval, image ownership, or image persistence.
-- The V10 transcript describes the image-server sample as a standalone upload/retrieval example and discusses integrating it with another application as an optional design choice. That lecture demonstrates a course pattern; it does not state that every final project must include images.
-- The supplied `files/ImageServerDemo (1).zip` contains a separate `UploadedFile` JPA entity and `/tester/upload` plus `/tester/image?id=...` endpoints. Its `FileManager` writes uploaded filenames to a local `temp/` directory and stores the filename in MySQL. It is a teaching example, not an OrgResource contract. The sample does not provide the validation, upload limits, or filename/path protection needed to adopt it unchanged.
+| Source locator | What it says | Effect on OrgResource scope |
+|---|---|---|
+| `ChatGPT-Project-Pack/UPLOAD/08_CSCI180_SYLLABUS.pdf`, p. 2, Section C | CLO9 says students create a web application that receives and serves images via HTTP. CLO10 says students define an application using previously discussed functionality for the final project. | Establishes CLO9 as a course outcome and CLO10 as the final-project outcome, but does not say every project must implement every preceding CLO. |
+| Same syllabus, p. 3, Section D | The course outline lists “Discussion of Image saving to the Database” under CLO9 and “Final Project proposal and implementation” under CLO10. | Separates image persistence from the final project in the outline. |
+| Same syllabus, p. 4, Sections E/G | The project proposal and two-stage implementation assessment rows are mapped to CLO9; the teaching-method table also maps “Project” to CLO9. | Conflicts with p. 2 and p. 3, which map the final project to CLO10. This is a material syllabus inconsistency. |
+| `ChatGPT-Project-Pack/UPLOAD/09_ESP_PROJECT_ASSIGNMENT.pdf`, p. 1 | Requires use of the tools used to date and enumerates Jersey REST, JSON, Spring annotations, JPA/Spring Data, Javax Validation, “RetroJit” (at least Twilio), and scheduling. It requires at least five justified entity types, runtime create/delete operations, controller-to-component `@Autowired` forwarding, and Postman definitions. The enumerated list does not name image upload/storage. | The broad “all tools” wording could include images taught before the project, while the explicit tool list and project checklist do not specify an image operation. It does not settle the scope. |
+| Same assignment, pp. 2–3 | Part III requires completing the actual logic of the proposed application and submitting the final project and a recorded group discussion; p. 3 makes the UI optional bonus and describes an early-presentation alternative. | Does not name a separate image endpoint or image-storage behavior. Current Canvas instructions still need student verification. |
+| `ChatGPT-Project-Pack/UPLOAD/10_ORGRESOURCE_CONCISE_PROPOSAL.docx`, all 12 pages | Defines Department, Project, Resource, ResourceRequirement, Allocation, and the original 25 API operations. It has no image field, image route, image ownership, or image persistence contract. | The implemented five-entity, 25-route baseline does not include images. |
+| Local course source `..\files\ImageServerDemo (1).zip` and `ChatGPT-Project-Pack/UPLOAD/06_VIDEO_TRANSCRIPTS.md`, V10 | The example is a separate image server with a separate `UploadedFile` entity and upload/retrieval endpoints. The inspected implementation writes incoming filenames to `temp/` without adequate type, size, or path validation. The transcript describes integration as optional. | Demonstrates a course pattern, but does not say it is mandatory for this project; it is unsafe to copy unchanged. No raw video was reprocessed. |
 
-## Why the answer stays unresolved
+## Decision
 
-The syllabus makes CLO9 a course outcome, while the assignment and OrgResource proposal do not say whether image functionality is a required feature of this particular final project. The lecture leaves the integration choice to the student and explicitly describes the example as untied to another application's records. Those sources do not settle whether OrgResource must implement the outcome, how it would relate images to organization records, or whether an additional persistence model is allowed.
+Keep the application’s five JPA entities and current 26 operations (the original 25 plus A09 consent revocation). Do not add a speculative image subsystem, sixth entity, or two unrequested routes. The syllabus’s CLO mappings conflict internally, the assignment’s broad “all tools” sentence is not limited by a clear image exception, and the current Canvas rubric was unavailable through the connected tools. These sources do not establish whether image functionality is required in OrgResource or assessed separately.
 
-The current OrgResource implementation contract preserves exactly five JPA domain entities and the original 25 API operations, with A09 tracked separately. Adding the sample's sixth entity or filesystem behavior without resolving the course requirement would change that contract. Therefore this release does not add image routes, file storage, or image binaries.
+The UI bonus does not resolve this question. A passing build, API suite, or project demonstration is not evidence that CLO9 is satisfied.
 
-## Evidence needed to resolve it
+## Student clarification to check in Canvas or ask the instructor
 
-Obtain the current final-project rubric or written instructor direction that answers:
+> For CSCI 180.05, must the OrgResource final project itself receive and serve images over HTTP and save them to a database to satisfy CLO9, or is that outcome assessed separately? The syllabus p. 2 and p. 3 map CLO9 to images and CLO10 to the final project, while the p. 4 assessment table maps the project to CLO9. If OrgResource images are required, what record should own the image, what storage design is expected, and are additional API operations or database fields allowed?
 
-1. Must this final project itself receive and serve images to satisfy CLO9, or is CLO9 assessed independently through the course work?
-2. If required, must images be associated with a Department, Project, Resource, or another record?
-3. What storage approach and acceptance checks are required, and may that feature add a table/entity or separate service?
-
-Canvas was not inspected during this work. No instructor or Canvas submission was made. Until the requirement is answered, treat CLO9 as a release blocker for any claim of complete course compliance.
+No message was sent. The student must check the current Canvas rubric and obtain any needed written clarification before claiming full course compliance or adding an image feature.

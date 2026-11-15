@@ -1,6 +1,14 @@
+param([string]$JarPath)
+
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$jarPath = Join-Path $repoRoot 'deliverables\O11-O13\OrgResource.jar'
+if (-not $JarPath) {
+    $JarPath = Join-Path $repoRoot 'deliverables\O14\OrgResource.jar'
+    if (-not (Test-Path -LiteralPath $JarPath -PathType Leaf)) {
+        $JarPath = Join-Path $repoRoot 'deliverables\O11-O13\OrgResource.jar'
+    }
+}
+$jarPath = [IO.Path]::GetFullPath($JarPath)
 $environmentScript = Join-Path $env:LOCALAPPDATA 'OrgResourceDev\Set-OrgResourceTestEnvironment.ps1'
 
 if (-not (Test-Path -LiteralPath $jarPath -PathType Leaf)) {

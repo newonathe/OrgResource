@@ -1,5 +1,7 @@
 # 05 — Complete HTTP/JSON contract: 25 original routes + 1 proposed additional route
 
+**Scope note:** this is the five-entity, 26-operation academic-baseline contract. The assignment requires at least five justified entity types, so five is not a course-imposed maximum or a permanent production-product cap. Any later justified production additions must preserve and separately map these academic routes and behaviors; O14 does not implement those additions.
+
 All external URLs begin with http://127.0.0.1:8080/api (actual port configured at runtime). GET for retrieval, POST for submissions/updates/deletes per original course assignment and Word proposal. Components are Spring-managed, injected via @Autowired by Jersey @Component controllers; business rules not written in controllers. Every create returns 201; other successful calls 200; list none returns []; successful delete response {"message":"Record deleted."}; errors have 'code' (new optional additive field) and 'message' (original required field).
 
 Entity response formats
