@@ -10,11 +10,11 @@ OrgResource is a local academic application for planning one student organizatio
 - **Stack:** Java 8-compatible Spring Boot 2.1, Jersey/JAX-RS `javax`, Spring Data JPA/Hibernate, Javax Validation, MySQL/InnoDB, and React/TypeScript/Vite.
 - **Inventory:** the server computes availability and requirement coverage from current persisted commitments. Pending allocations do not reserve stock. Reusable and consumable stock follow different lifecycle rules.
 - **Reminders:** disabled by default. FakeTwilio remains a loopback simulator. A separate official Twilio Messages protocol adapter is covered by a fictional loopback server test; no provider account or SMS was used. `SIMULATED` and `PROVIDER_ACCEPTED` do not mean a phone received a message.
-- **Images:** `POST` multipart upload and raw-byte `GET` under `/api/resources/{id}/image`; PNG/JPEG only, maximum 2 MiB, content and dimensions validated, bytes stored on the existing Resource row. See the Course A acceptance report for actual MySQL/HTTP evidence.
+- **Images:** POST multipart upload and raw-byte GET under /api/resources/{id}/image; PNG/JPEG only, maximum 2 MiB, content and dimensions validated, bytes stored on the existing Resource row. Current A3 MySQL/HTTP evidence is in the technical gate.
 
-The assignment requires **at least five justified entity types**. The O14 baseline implemented five and preserved the proposal’s 25 operations plus A09; Course A adds only the two authorized image operations. This academic scope is not a maximum for a later, separately reviewed production product. Course A does not begin that production expansion.
+The assignment requires **at least five justified entity types**. Course Final A retains the five-entity baseline, the proposal’s 25 operations, A09 as a separately recorded addition, and the two authorized image operations. Later production work is separate and is not part of this academic release.
 
-The original project-design contract is [the 26-operation API specification](docs/complete-handoff/05_API_26_ROUTES_AND_RESPONSES.md); Course A adds the two specified image operations. The importable current [Postman reference contains all 28 operations](postman/OrgResource-Course-A-28-Routes.postman_collection.json). Fresh implementation evidence is in the [Course A A1+A2 acceptance report](evidence/COURSE-A/A1_A2_ACCEPTANCE_REPORT.md); O14 evidence remains a historical 26-operation baseline.
+The original project-design contract is [the 26-operation API specification](docs/complete-handoff/05_API_26_ROUTES_AND_RESPONSES.md); Course A adds the two specified image operations. The current [Postman reference contains all 28 operations](postman/OrgResource-Course-A-28-Routes.postman_collection.json). See the [as-built proposal](docs/academic-final/COURSE_FINAL_A_AS_BUILT.md), [technical gate](evidence/COURSE-A/A3_TECHNICAL_GATE.md), and [student demo guide](docs/COURSE_A_FINAL_DEMO_GUIDE.md) for current state and proof boundaries. The A1+A2 report is historical implementation-stage evidence.
 
 ## Run the packaged application
 
@@ -39,11 +39,11 @@ Push-Location backend
 Pop-Location
 ```
 
-The Maven integration tests require protected `ORG_TEST_DB_*` values for the isolated `orgresource_test` schema. Do not point them at the regular development schema. Portable database setup and the JAR runtime command are documented in the [first-run guide](docs/PORTABLE_FIRST_RUN.md). The release packaging script is `scripts/package-release.ps1`; it requires a clean, committed HEAD and a stopped OrgResource process before it runs the verified build and writes release archives.
+The Maven integration tests require protected `ORG_TEST_DB_*` values for the isolated `orgresource_test` schema. Do not point them at the regular development schema. Portable database setup and the JAR runtime command are documented in the [first-run guide](docs/PORTABLE_FIRST_RUN.md). The release script `scripts/package-release.ps1` requires a clean, committed HEAD, a stopped OrgResource process, and an as-built proposal DOCX generated from that exact HEAD. It runs the verified build and writes release artifacts outside Git.
 
 ## Acceptance and course status
 
-See the [course compliance matrix](docs/compliance/FINAL_COURSE_COMPLIANCE_MATRIX.md), the [CLO9 implementation record](docs/compliance/CLO9_IMAGE_DECISION.md), and the [Course A A1+A2 acceptance report](evidence/COURSE-A/A1_A2_ACCEPTANCE_REPORT.md). Local tests establish software behavior only. They do not establish Canvas submission, instructor approval, group or peer requirements, a real recording, or academic authorship certification.
+See the [course compliance matrix](docs/compliance/FINAL_COURSE_COMPLIANCE_MATRIX.md), the [CLO9 implementation record](docs/compliance/CLO9_IMAGE_DECISION.md), and the [A3 technical gate](evidence/COURSE-A/A3_TECHNICAL_GATE.md). Local tests establish software behavior only. They do not establish Canvas submission, instructor approval, group or peer requirements, a real recording, or academic authorship certification.
 
 ## Historical material — not the current implementation
 

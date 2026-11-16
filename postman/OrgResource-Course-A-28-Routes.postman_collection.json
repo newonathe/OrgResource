@@ -22,9 +22,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/departments"
-            },
+            "url": "{{baseUrl}}/api/departments",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Fictional Logistics {{runTag}}\"\n}",
@@ -59,9 +57,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/departments"
-            }
+            "url": "{{baseUrl}}/api/departments"
           },
           "event": [
             {
@@ -90,9 +86,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/departments/{{departmentId}}/update"
-            },
+            "url": "{{baseUrl}}/api/departments/{{departmentId}}/update",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Fictional Operations {{runTag}}\"\n}",
@@ -126,9 +120,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/departments/{{departmentId}}/delete"
-            }
+            "url": "{{baseUrl}}/api/departments/{{departmentId}}/delete"
           },
           "event": [
             {
@@ -162,9 +154,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/projects"
-            },
+            "url": "{{baseUrl}}/api/projects",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"departmentId\": {{departmentId}},\n  \"name\": \"Fictional Workshop {{runTag}}\",\n  \"startAt\": \"{{projectStartAt}}\",\n  \"endAt\": \"{{projectEndAt}}\"\n}",
@@ -210,9 +200,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/projects?departmentId={{departmentId}}"
-            }
+            "url": "{{baseUrl}}/api/projects?departmentId={{departmentId}}"
           },
           "event": [
             {
@@ -241,9 +229,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}/update"
-            },
+            "url": "{{baseUrl}}/api/projects/{{projectId}}/update",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Workshop Updated {{runTag}}\",\n  \"startAt\": \"{{projectStartAt}}\",\n  \"endAt\": \"{{projectEndAt}}\"\n}",
@@ -277,9 +263,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/projects/{{projectId}}/delete"
-            }
+            "url": "{{baseUrl}}/api/projects/{{projectId}}/delete"
           },
           "event": [
             {
@@ -313,9 +297,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/resources"
-            },
+            "url": "{{baseUrl}}/api/resources",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Extension cords {{runTag}}\",\n  \"type\": \"REUSABLE\",\n  \"totalQuantity\": 10\n}",
@@ -350,9 +332,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/resources?type=REUSABLE"
-            }
+            "url": "{{baseUrl}}/api/resources?type=REUSABLE"
           },
           "event": [
             {
@@ -381,9 +361,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/resources/{{resourceId}}/update"
-            },
+            "url": "{{baseUrl}}/api/resources/{{resourceId}}/update",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Extension cords {{runTag}}\",\n  \"totalQuantity\": 10,\n  \"expectedTotalQuantity\": 10\n}",
@@ -417,9 +395,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/resources/{{resourceId}}/delete"
-            }
+            "url": "{{baseUrl}}/api/resources/{{resourceId}}/delete"
           },
           "event": [
             {
@@ -444,9 +420,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/resources/{{resourceId}}/availability"
-            }
+            "url": "{{baseUrl}}/api/resources/{{resourceId}}/availability"
           },
           "event": [
             {
@@ -465,11 +439,22 @@
           "name": "IMAGE-01 POST /api/resources/{{resourceId}}/image",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Accept", "value": "application/json" }],
-            "url": { "raw": "{{baseUrl}}/api/resources/{{resourceId}}/image" },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/resources/{{resourceId}}/image",
             "body": {
               "mode": "formdata",
-              "formdata": [{ "key": "file", "type": "file", "src": "{{imageFile}}" }]
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "{{imageFile}}"
+                }
+              ]
             }
           },
           "event": [
@@ -489,8 +474,13 @@
           "name": "IMAGE-02 GET /api/resources/{{resourceId}}/image",
           "request": {
             "method": "GET",
-            "header": [{ "key": "Accept", "value": "image/png" }],
-            "url": { "raw": "{{baseUrl}}/api/resources/{{resourceId}}/image" }
+            "header": [
+              {
+                "key": "Accept",
+                "value": "image/png"
+              }
+            ],
+            "url": "{{baseUrl}}/api/resources/{{resourceId}}/image"
           },
           "event": [
             {
@@ -498,7 +488,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('IMAGE-02 expected status 200 and PNG bytes', function() { pm.response.to.have.status(200); pm.expect(pm.response.headers.get('Content-Type')).to.include('image/png'); pm.expect(pm.response.responseSize).to.be.above(0); });",
+                  "pm.test('IMAGE-02 expected status 200 and non-empty PNG bytes', function() { pm.response.to.have.status(200); pm.expect(pm.response.headers.get('Content-Type')).to.include('image/png'); const length = Number(pm.response.headers.get('Content-Length')); pm.expect(length).to.be.above(0); });",
                   "pm.test('IMAGE-02 response is private-cache-safe', function() { pm.expect(pm.response.headers.get('Cache-Control')).to.include('no-store'); pm.expect(pm.response.headers.get('X-Content-Type-Options')).to.eql('nosniff'); });"
                 ]
               }
@@ -524,9 +514,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/requirements"
-            },
+            "url": "{{baseUrl}}/api/requirements",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"projectId\": {{projectId}},\n  \"resourceId\": {{resourceId}},\n  \"quantity\": 6\n}",
@@ -561,9 +549,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/requirements?projectId={{projectId}}"
-            }
+            "url": "{{baseUrl}}/api/requirements?projectId={{projectId}}"
           },
           "event": [
             {
@@ -592,9 +578,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/requirements/{{requirementId}}/update"
-            },
+            "url": "{{baseUrl}}/api/requirements/{{requirementId}}/update",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"quantity\": 8\n}",
@@ -628,9 +612,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/requirements/{{requirementId}}/delete"
-            }
+            "url": "{{baseUrl}}/api/requirements/{{requirementId}}/delete"
           },
           "event": [
             {
@@ -664,9 +646,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/allocations"
-            },
+            "url": "{{baseUrl}}/api/allocations",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"requirementId\": {{requirementId}},\n  \"quantity\": 4,\n  \"borrowerName\": \"Fictional Representative\",\n  \"smsConsent\": false\n}",
@@ -701,9 +681,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/allocations?requirementId={{requirementId}}"
-            }
+            "url": "{{baseUrl}}/api/allocations?requirementId={{requirementId}}"
           },
           "event": [
             {
@@ -728,9 +706,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/allocations/{{allocationId}}/approve"
-            }
+            "url": "{{baseUrl}}/api/allocations/{{allocationId}}/approve"
           },
           "event": [
             {
@@ -755,9 +731,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/allocations/{{allocationId}}/issue"
-            }
+            "url": "{{baseUrl}}/api/allocations/{{allocationId}}/issue"
           },
           "event": [
             {
@@ -782,9 +756,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/allocations/{{allocationId}}/return"
-            }
+            "url": "{{baseUrl}}/api/allocations/{{allocationId}}/return"
           },
           "event": [
             {
@@ -809,9 +781,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/allocations/{{allocationId}}/consume"
-            }
+            "url": "{{baseUrl}}/api/allocations/{{allocationId}}/consume"
           },
           "event": [
             {
@@ -836,9 +806,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/allocations/{{allocationId}}/cancel"
-            }
+            "url": "{{baseUrl}}/api/allocations/{{allocationId}}/cancel"
           },
           "event": [
             {
@@ -863,9 +831,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/allocations/{{allocationId}}/delete"
-            }
+            "url": "{{baseUrl}}/api/allocations/{{allocationId}}/delete"
           },
           "event": [
             {
@@ -890,9 +856,7 @@
                 "value": "application/json"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/allocations/{{allocationId}}/revoke-sms-consent"
-            }
+            "url": "{{baseUrl}}/api/allocations/{{allocationId}}/revoke-sms-consent"
           },
           "event": [
             {
@@ -918,6 +882,30 @@
     {
       "key": "imageFile",
       "value": "postman/fixtures/academic-demo-image.png"
+    },
+    {
+      "key": "runTag",
+      "value": ""
+    },
+    {
+      "key": "projectStartAt",
+      "value": ""
+    },
+    {
+      "key": "projectEndAt",
+      "value": ""
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (!pm.collectionVariables.get('runTag')) { pm.collectionVariables.set('runTag', 'CourseA-' + Date.now().toString(36)); }",
+          "if (!pm.collectionVariables.get('projectStartAt') || !pm.collectionVariables.get('projectEndAt')) { const start = new Date(Date.now() + 48 * 60 * 60 * 1000); const end = new Date(start.getTime() + 3 * 60 * 60 * 1000); const local = d => [d.getFullYear(), String(d.getMonth()+1).padStart(2,'0'), String(d.getDate()).padStart(2,'0')].join('-') + 'T' + [String(d.getHours()).padStart(2,'0'), String(d.getMinutes()).padStart(2,'0'), String(d.getSeconds()).padStart(2,'0')].join(':'); pm.collectionVariables.set('projectStartAt', local(start)); pm.collectionVariables.set('projectEndAt', local(end)); }"
+        ]
+      }
     }
   ]
 }

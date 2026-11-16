@@ -45,7 +45,7 @@ npm run build
 Pop-Location
 ```
 
-Then run Maven from this folder. The Course A release procedure and its exact commands are in [`../docs/RELEASE_AND_DEMO.md`](../docs/RELEASE_AND_DEMO.md). `scripts/package-release.ps1` runs both sets of checks, creates the executable JAR and source archives, and writes SHA-256 sums after the source commit is clean.
+Then run Maven from this folder. The Course A release procedure and its exact commands are in [`../docs/RELEASE_AND_DEMO.md`](../docs/RELEASE_AND_DEMO.md). `scripts/package-release.ps1` runs the frontend and backend gates, creates the executable JAR and both source archives, includes the current as-built proposal/demo/Postman materials, and hashes the payload after the source commit is clean.
 
 ## MySQL and runtime configuration
 
@@ -62,6 +62,6 @@ The test profile reads only `ORG_TEST_DB_*` and includes a guard that requires t
 - Course A has five JPA entities: `Department`, `Project`, `Resource`, `ResourceRequirement`, and `Allocation`, with 28 operations (the 25 proposal routes, A09, and two image routes). The assignment says **at least five**, not at most five; this course edition's count is not a cap on a later separately reviewed product.
 - A09 is an additional operation, not an additional entity.
 - No production authentication, campus integration, real SMS delivery, migration framework, or cloud deployment is claimed.
-- CLO9 image receive/serve is implemented and has local Java 8/MySQL/HTTP byte-verification evidence; current Canvas or instructor acceptance remains **NOT VERIFIED**. See [`../docs/compliance/CLO9_IMAGE_DECISION.md`](../docs/compliance/CLO9_IMAGE_DECISION.md) and the Course A acceptance report.
+- CLO9 image receive/serve is implemented and has local Java 8/MySQL/HTTP byte-verification evidence; whether the feature is required within OrgResource and instructor acceptance remain **NOT VERIFIED**. See [`../docs/compliance/CLO9_IMAGE_DECISION.md`](../docs/compliance/CLO9_IMAGE_DECISION.md) and the A3 technical gate.
 - The root `OrgResource-Formal-Proposal.docx` and `OrgResource-Specification-Package.zip` are historical planning artifacts. Their nine-entity/68-operation material is **HISTORICAL, NOT CURRENT IMPLEMENTATION**.
 - This Java 8/Spring Boot 2.1 academic runtime is not a supported public production service. It lacks authentication, tenant isolation, account recovery, a stock-movement audit ledger, production migrations, backup/restore operations, and an approved public demo/runtime. Do not expose it publicly. Production development is deferred until a separate reviewed prompt; research documents are proposals, not implementation authorization.
