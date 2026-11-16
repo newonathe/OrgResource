@@ -125,7 +125,7 @@ All paths start `/api/v2`. Under `/orgs/{orgId}`, active membership/org status m
 | POST `/allocations/{id}/consume` | operationId+If-Match→CONSUMED | OWNER/CUSTODIAN | wrong kind/outside interval 409 |
 | POST `/allocations/{id}/cancel` | reason+If-Match→CANCELLED | OWNER/CUSTODIAN; assigned LEAD own request | ISSUED/RETURNED/CONSUMED 409 |
 | POST `/allocations/{id}/delete` | If-Match→delete receipt | OWNER/ADMIN; assigned LEAD only if originator | any approved history 409 |
-| POST `/allocations/{id}/revoke-sms-consent` | If-Match→updated allocation redacted | OWNER/CUSTODIAN; borrower with verified binding for own | clears encrypted contact, no further send, repeated success |
+| POST `/allocations/{id}/revoke-sms-consent` | If-Match→updated allocation redacted | OWNER/CUSTODIAN; borrower with verified binding for own | clears encrypted contact; same Idempotency-Key retry returns receipt after auth, new op with stale ETag 412, new op with current ETag on already revoked is 200 no-op without version increment; legacy A09 repeated 200 remains |
 
 **Design issue now resolved:** CP29 public A09 absence is superseded; A09 exists in actual O14, so a functional protected route is mandatory and a public equivalent is included.
 
