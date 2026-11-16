@@ -46,7 +46,7 @@
 
 ## Latest execution handoff — 2026-11-16
 
-**A FIRST, THEN EXTENDED C.** After reviewing the completed source-derived 00–06 packet, read [07 Course A executable freeze](07_COURSE_A_EXECUTABLE_SPEC_FREEZE_2026-11-16.md) and [08 Free-Luna Codex A1+A2 master prompt](08_CODEX_A1_A2_MASTER_PROMPT_FREE_LUNA.md). These are the **active Course A execution specifications**, superseding the older modern-runtime-S1-first and all-in-one A+B prompt sequence for the **first engineering cycle only**. This does not mark A built or grant automatic deployment/merge/Canvas actions. A3 release freeze is a separate reviewed gate after actual A2 acceptance; Extended C follows from exact A source SHA.
+**A FIRST, THEN EXTENDED C.** After reviewing the completed source-derived 00–06 packet, read [07 Course A executable freeze](07_COURSE_A_EXECUTABLE_SPEC_FREEZE_2026-11-16.md) and [08 Free-Luna Codex A1+A2 master prompt](08_CODEX_A1_A2_MASTER_PROMPT_FREE_LUNA.md). These are the **active Course A1+A2 execution specifications**; now that A1+A2 passed the latest source/CI gates, the subsequent **A3-only release master** is [09 — Codex A3 source-and-artifact freeze](09_CODEX_A3_COURSE_FINAL_FREEZE_MASTER_FREE_LUNA.md). All supersede the older modern-runtime-S1-first and all-in-one A+B prompt sequence for the Course A engineering cycles. This does not mark A built or grant automatic deployment/merge/Canvas actions. A3 release freeze is a separate reviewed gate after actual A2 acceptance; Extended C follows from exact A source SHA.
 
 ## This canonical packet
 
