@@ -79,7 +79,34 @@ MySQL permits UNIQUE generated-column indexes and multiple NULLs, supporting one
 
 **Future evidence fields** `testId, exact code SHA, MySQL version, migration checksum, ORM/validator versions, run command, SQL/HTTP request, expected and actual row counts, source fixture, CI job URL, PASS/FAIL/BLOCKED/NOT_RUN`. All rows currently **NOT_RUN** on the proposed product.
 
-## 6. Verdict, source and precedence
+## 6. Primary-source security finding: existing JPA repository methods are GLOBAL
+
+**VERIFIED O14 SOURCE** at the same pinned academic SHA, directly read the actual five `backend/src/main/java/app/repositories/*Repository.java` classes:
+
+| Original repository/source method | Why unchanged reuse violates new multi-org contract | Recommended secure replacement/query pattern |
+|---|---|---|
+| Department `existsByNameKey(String)` | Rejects valid same-name Department in two different orgs; old `@UniqueConstraint(name_key)` is global | `existsByOrg_IdAndNameKey(orgId,nameKey)`; change DB UQ to `(org_id,name_key)` |
+| Project `findByDepartment_Id(Long)` | Caller may pass a foreign tenant's numeric Department ID; unscoped listing exposes it | `findByOrg_IdAndDepartment_Id(orgId,departmentId)` after authorized same-org Department lookup |
+| Resource `existsByNameKey`, `existsByNameKeyAndIdNot`, `findByType` | Global duplicate rejection, global type list, and potential foreign-tenant lookup | `existsByOrg_IdAndNameKey`, `existsByOrg_IdAndNameKeyAndIdNot`, `findByOrg_IdAndType` |
+| ResourceRequirement `findByProject_Id`, `existsByProject_IdAndResource_Id` | Unscoped foreign project/resource pairing or disclosure | `findByOrg_IdAndProject_Id`, `existsByOrg_IdAndProject_IdAndResource_Id`; enforce composite FK for both parents |
+| Allocation `findByRequirement_Id`, `findByStatus`, `findByRequirement_IdAndStatus` | Foreign-tenant Allocation list possible, even under a logged-in user | `findByOrg_IdAndRequirement_Id`, `findByOrg_IdAndStatus`, `findByOrg_IdAndRequirement_IdAndStatus` with role/Project scope |
+| Inherited `JpaRepository.findAll/findById/deleteById`, each original `lockById` | Global methods remain available despite new org_id column; controller-only filtering is insufficient | Ban unqualified repository paths from user-request Components; use `findByOrg_IdAndId` and tenant-scoped `SELECT...FOR UPDATE`; only separately authorized internal job may span orgs with explicit system scope |
+| Allocation grouped JPQL `sumEffectiveHolds`, `sumIssuedCustody`, `sumResourceCommitments` | A future bug passing wrong resource IDs can mix tenant sums; original JPQL has no orgId predicate | Add **orgId** to every grouping/filter and join via related org ID; inject scoped Resource IDs; test result and DB postcondition |
+
+**Essential actual mapping:** O14 Source `Resource` and `Department` use `@Table` global unique `name_key`; the new table must replace those constraints with `UQ(org_id,name_key)`, not retain both. `ddl-auto=update` is unacceptable as a migration policy: it may leave old global indexes and untested old schema artifacts. Run a real new empty MySQL schema with reviewed explicit DDL migration and JPA validation. **Do not claim the old Component methods can be copied verbatim and magically gain organization scoping.**
+
+**Protected numeric /api** lacks an orgId path; resolve active org from server session, not `X-Org-Id` supplied by the client. Every old controller must delegate to a tenant-aware Component whose repository query contains server-authorized orgId. A foreign numeric resource, allocation or Department ID returns 404 (when concealment applies) without disclosing whether it exists. Public `/api/v2/orgs/{orgId}` additionally validates matching server membership/role, no implicit cross-tenant superuser.
+
+**Required additional tests (UNEXECUTED):**
+- `TENANT41-01`: org A and org B create identical normalized Department and Resource name keys—both accepted; same org duplicate rejected by DB UQ.
+- `TENANT41-02`: actor A lists all five entity families, filters Resource by type, or lists Allocations by status while B has data—only A returned, including derived holds/movements.
+- `TENANT41-03`: actor A supplies B numeric IDs to all 26 protected original routes—no B data read or mutated; 404/403 as source-safe, server org context not forgable.
+- `TENANT41-04`: A ResourceRequirement with A Project + B Resource rejected directly by DB composite FK; B Allocation and A Resource mismatch similarly rejected.
+- `TENANT41-05`: static repository call audit forbids `findAll`, unqualified `findById`, and `lockById` in user-request Component paths; authorization rechecked after org switch and before idempotency receipt lookup.
+
+The broad unit-of-work org lock is a performance tradeoff but never substitutes for tenant-aware **SELECT/JPQL predicates** and restrictive FK constraints.
+
+## 7. Verdict, source and precedence
 
 **This pass resolves two source/SQL naming errors and identifies additional DB-enforced integrity safeguards**. It does **not** establish that the 18-table model was implemented, that a supported dual Javax/Jakarta provider exists, that the current O14 intermittent query has a known cause, or that current Canvas/instructor and hosting conditions are met.
 
