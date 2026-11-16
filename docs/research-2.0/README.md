@@ -1,5 +1,8 @@
 # OrgResource 2.0 research documentation
 
+> **Machine-readable course QA (2026-11-16):** [Academic 26-case CSV](contracts/ACADEMIC_26_ROUTE_ACCEPTANCE_NOT_RUN.csv) and [source-annotation crosswalk JSON](contracts/ACADEMIC_26_SOURCE_ANNOTATION_CROSSWALK.json) were checked against all five actual O14 Jersey controllers: **26/26 static matches, 20 POST and 6 GET**. This is static source traceability, **not** evidence the unified application has executed the requests. See [CP39](66_CP39_PINNED_CI_TRIAGE_AND_LAST_CONTRACT_CORRECTIONS.md) for the exact CI failure investigation and corrected bounded S1 gate.
+
+
 > **CP39 TARGETED DIRECT-EVIDENCE CORRECTION (2026-11-16):** [CI flake source/log comparison, bounded S1 versus full S5 26-route gate, public borrower snapshot derivation, and exact original archive limitation](66_CP39_PINNED_CI_TRIAGE_AND_LAST_CONTRACT_CORRECTIONS.md). CP39 is a narrow correction to CP31–CP38, not a new product design or executed test. Direct GitHub push run [43732859018](https://github.com/newonathe/OrgResource/actions/runs/43732859018) and PR run [43732864033](https://github.com/newonathe/OrgResource/actions/runs/43732864033) used identical earlier SHA and respectively failed/passed the real MySQL aggregation test. **Root cause unknown; no source fix claimed.** Latest recommendation remains a single paper-level review candidate, and S0–S10 Codex prompts remain SEALED.
 
 
