@@ -1,5 +1,8 @@
 # CP38 — Independent pre-Codex design freeze review, consolidated decisions and open evidence
 
+> **NEW USER COURSE AUTHORITY (2026-11-16):** [CP43 final written-scope resolution](70_CP43_FIXED_WRITTEN_COURSE_SCOPE_AND_HANDOFF_GO_NO_GO.md) settles syllabus+ESP assignment as the **only provided final instructions**; earlier suggestions in CP38 to wait on Canvas/instructor feature rulings are now **historical**, not active gates. Implement CLO9 image, a real Twilio REST adapter plus local FakeTwilio, all written runtime CRUD/26-route requirements, and a genuine student submission by printed Dec5. Real Twilio credentials, runtime compatibility, hosted zero-cost account, CI bug and actual authorship/demo/receipt **remain unproven**. No Codex or app work authorized by this note.
+
+
 > **OWNER-READABLE P42 ADJUDICATION (2026-11-16):** [CP42](69_CP42_FINAL_OWNER_DECISION_REVIEW_AND_CURRENT_BUILD_DELTA.md) reconciles the final research findings into a concise current O14 code-vs-future product table and owner decision review D42-01..13. It explicitly does **not** mark defaults signed, authorize Codex or claim technical/academic acceptance. Use CP42 to review adoption choices; CP31–CP41 remain detailed traceability documents.
 
 
@@ -79,7 +82,7 @@ These defaults are **recommended**, not falsely called individually approved by 
 | MEDIUM | 18 tables, roles and public endpoints for solo academic deadline | Scope and regression risk | Strict sequence and protect core functionality; defer nonessential enhancements only |
 | MEDIUM | Search, exports, logs and auth PII | Leakage even with correct row table scoping | Cross-org list/filter/history/image/receipt/export security tests and redacted logs |
 
-**Important nuance:** the assignment explicitly says **Javax Validation**, but does not explicitly say `saveAndFlush` automatic JPA listener integration must occur. The direct JPA persistence validation is a rigorous proposed evidence gate, grounded partly in attached course examples/research, not a fabricated explicit sentence from the assignment. Likewise the syllabus's image mapping conflict remains a real source ambiguity. No outside knowledge can grant instructor approval.
+**Important nuance:** the assignment explicitly says **Javax Validation**, but does not explicitly say `saveAndFlush` automatic JPA listener integration must occur. The direct JPA persistence validation is a rigorous proposed evidence gate, grounded partly in attached course examples/research, not a fabricated explicit sentence from the assignment. Although the syllabus's assessment CLO-number mapping differs from its p2 learning-outcome table, CLO9 **explicitly** says image receive/serve. Per P43 source-only choice, implement it rather than treating ambiguity as a blocker. No outside knowledge or undocumented waiver is assumed.
 
 ## 5. Source coverage limits
 
@@ -97,7 +100,7 @@ These defaults are **recommended**, not falsely called individually approved by 
 
 **Owner high-level planning review** (do not infer signatures): accept ONE product with original protected 26 and public v2, global/whole stock rules, invited fictional identity, clean schema + append-only ledger, conservative image/Twilio simulator, no mandatory spend, and the known R04 safety extension. This is one coherent design package; a user may amend a material rule before handoff. **Already decided:** one product and product-first acceptance order, unless expressly changed.
 
-**Student/instructor check:** current Canvas final module/deadline; whether the project itself must implement CLO9 image; whether local FakeTwilio suffices or actual authorized provider API necessary; how to judge safety-driven R04 deviation; actual group/peer/video/COA access; whether course demonstrator needs automatic JPA flush validation. Student should confirm before claiming A-FINAL; no message or submission sent.
+**P43 USER SOURCE FREEZE OVERRIDES PRIOR EXTERNAL DESIGN QUESTIONS:** the supplied 9-page syllabus plus 3-page ESP final-project specification now settle the planned features: actual CLO9 image receive/serve, official Twilio Messages REST adapter in addition to FakeTwilio, 5+ justified entities with eligible runtime create/delete, Postman/Javax/Jersey and Dec5 as printed. No instructor/email/Canvas response is a feature-selection gate. The syllabus still requires actual Canvas submission, COA and assistance acknowledgment; the student must produce genuine final video/peer reviews if any other group members and receipt. No message or submission was sent. See [CP43](70_CP43_FIXED_WRITTEN_COURSE_SCOPE_AND_HANDOFF_GO_NO_GO.md).
 
 **External runtime proof:** S1 UNIFIED-COMPAT-01 after owner later authorizes Codex; no amount of additional docs can prove compilation/integration. **External provider proof:** account-specific OCI/free host/Actions quotas, TLS and backup restore only after explicitly permitted access. These cannot be frozen as “passed” at the paper stage.
 
