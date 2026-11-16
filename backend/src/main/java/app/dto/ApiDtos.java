@@ -83,11 +83,28 @@ public final class ApiDtos {
         public Integer availableQuantity;
         public ResourceView() { }
         public ResourceView(Resource resource, int availableQuantity) {
-            this.id = resource.id;
-            this.name = resource.name;
-            this.type = resource.type;
-            this.totalQuantity = resource.totalQuantity;
+            this(resource.id, resource.name, resource.type, resource.totalQuantity, availableQuantity);
+        }
+        public ResourceView(Long id, String name, ResourceType type, Integer totalQuantity, int availableQuantity) {
+            this.id = id;
+            this.name = name;
+            this.type = type;
+            this.totalQuantity = totalQuantity;
             this.availableQuantity = availableQuantity;
+        }
+    }
+
+    public static class ResourceImageUploadView {
+        public Long resourceId;
+        public String contentType;
+        public Integer sizeBytes;
+        public String sha256;
+        public ResourceImageUploadView() { }
+        public ResourceImageUploadView(Long resourceId, String contentType, int sizeBytes, String sha256) {
+            this.resourceId = resourceId;
+            this.contentType = contentType;
+            this.sizeBytes = sizeBytes;
+            this.sha256 = sha256;
         }
     }
 

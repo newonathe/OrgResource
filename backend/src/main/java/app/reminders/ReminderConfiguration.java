@@ -20,9 +20,16 @@ public class ReminderConfiguration {
     public ReminderTransport reminderTransport(
             ReminderMode mode,
             @Value("${orgresource.reminders.fake-twilio.base-url:http://127.0.0.1:9997/}") String fakeBaseUrl,
-            @Value("${orgresource.reminders.fake-twilio.message-service-sid:MG00000000000000000000000000000000}") String fakeServiceSid) {
+            @Value("${orgresource.reminders.fake-twilio.message-service-sid:MG00000000000000000000000000000000}") String fakeServiceSid,
+            @Value("${ORGRESOURCE_TWILIO_BASE_URL:}") String twilioBaseUrl,
+            @Value("${ORGRESOURCE_TWILIO_ACCOUNT_SID:}") String accountSid,
+            @Value("${ORGRESOURCE_TWILIO_AUTH_TOKEN:}") String authToken,
+            @Value("${ORGRESOURCE_TWILIO_FROM_NUMBER:}") String fromNumber) {
         if (mode == ReminderMode.DISABLED) return new DisabledReminderTransport();
         if (mode == ReminderMode.FAKE_TWILIO) return new FakeTwilioTransport(fakeBaseUrl, fakeServiceSid);
-        throw new IllegalStateException("TWILIO_VIRTUAL is not enabled: no real-provider adapter or live send is authorized in this phase.");
+        if (mode == ReminderMode.TWILIO_VIRTUAL) {
+            return new TwilioRestTransport(twilioBaseUrl, accountSid, authToken, fromNumber);
+        }
+        throw new IllegalStateException("No supported reminder transport is configured.");
     }
 }

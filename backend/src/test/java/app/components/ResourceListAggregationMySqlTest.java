@@ -12,12 +12,11 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.jdbc.core.JdbcTemplate;
 import app.SpringBootApp;
 import app.dto.ApiDtos.ResourceView;
 import app.entities.Allocation;
@@ -55,8 +55,8 @@ public class ResourceListAggregationMySqlTest {
     @Autowired private ResourceRepository resources;
     @Autowired private ResourceRequirementRepository requirements;
     @Autowired private AllocationRepository allocations;
+    @Autowired private JdbcTemplate jdbc;
     @MockBean private Clock philippineClock;
-    @PersistenceContext private EntityManager entityManager;
 
     private final List<Long> departmentIds = new ArrayList<>();
     private final List<Long> projectIds = new ArrayList<>();
@@ -95,6 +95,26 @@ public class ResourceListAggregationMySqlTest {
 
         Fixture activeConsumable = fixture(consumable, NOW.plusHours(2));
         saveAllocation(activeConsumable.requirement, 5, AllocationStatus.APPROVED);
+
+        List<Map<String, Object>> persistedRows = jdbc.queryForList(
+                "SELECT a.status, a.quantity, p.end_at FROM allocation a "
+                        + "JOIN resource_requirement q ON q.id = a.requirement_id "
+                        + "JOIN project p ON p.id = q.project_id WHERE q.resource_id = ? ORDER BY a.id",
+                reusable.id);
+        assertEquals(3, persistedRows.size());
+        assertEquals("APPROVED", persistedRows.get(0).get("status"));
+        assertEquals(3, ((Number) persistedRows.get(0).get("quantity")).intValue());
+        assertEquals("ISSUED", persistedRows.get(1).get("status"));
+        assertEquals(2, ((Number) persistedRows.get(1).get("quantity")).intValue());
+        assertEquals("APPROVED", persistedRows.get(2).get("status"));
+        assertEquals(4, ((Number) persistedRows.get(2).get("quantity")).intValue());
+        List<Object[]> aggregateRows = allocations.sumResourceCommitments(Collections.singletonList(reusable.id),
+                AllocationStatus.APPROVED, AllocationStatus.ISSUED, NOW,
+                java.util.Arrays.asList(AllocationStatus.APPROVED, AllocationStatus.ISSUED));
+        assertEquals(1, aggregateRows.size());
+        assertEquals(reusable.id.longValue(), ((Number) aggregateRows.get(0)[0]).longValue());
+        assertEquals(3L, ((Number) aggregateRows.get(0)[1]).longValue());
+        assertEquals(2L, ((Number) aggregateRows.get(0)[2]).longValue());
 
         reset(philippineClock);
         when(philippineClock.instant()).thenReturn(NOW.atZone(MANILA).toInstant());

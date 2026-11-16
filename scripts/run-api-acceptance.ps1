@@ -20,6 +20,7 @@ function Invoke-NewmanCollection {
 }
 
 $runSuffix = 'O11_' + (Get-Date -Format 'yyyyMMdd_HHmmss')
+$runTag = 'CourseA_' + (Get-Date -Format 'yyyyMMddHHmmss') + '-' + [guid]::NewGuid().ToString('N').Substring(0, 8)
 Invoke-NewmanCollection 'postman\OrgResource-O1-Skeleton.postman_collection.json' @(
     '--environment', (Join-Path $repoRoot 'postman\OrgResource-O1-Local.postman_environment.json'),
     '--env-var', "baseUrl=$apiBase",
@@ -31,4 +32,17 @@ Invoke-NewmanCollection 'postman\OrgResource-O4-O5-Allocation-Expiry.postman_col
     '--env-var', "baseUrl=$apiBase",
     '--delay-request', '1000'
 )
-Write-Output 'All current O1, O3, O4/O5, and A09 Newman acceptance collections passed.'
+Invoke-NewmanCollection 'postman\OrgResource-O14-Dependency-Integrity.postman_collection.json' @(
+    '--env-var', "baseUrl=$apiBase",
+    '--env-var', "runTag=$runTag"
+)
+$imageFixture = Join-Path $repoRoot 'postman\fixtures\academic-demo-image.png'
+if (-not (Test-Path -LiteralPath $imageFixture -PathType Leaf)) {
+    throw 'The synthetic Course A image fixture is missing.'
+}
+Invoke-NewmanCollection 'postman\OrgResource-Course-A-Image-HTTP.postman_collection.json' @(
+    '--env-var', 'baseUrl=http://127.0.0.1:8080',
+    '--env-var', "imageFile=$imageFixture",
+    '--working-dir', $repoRoot
+)
+Write-Output 'All O1, O3, O4/O5, A09, O14 dependency-integrity, and Course A image HTTP Newman acceptance collections passed.'

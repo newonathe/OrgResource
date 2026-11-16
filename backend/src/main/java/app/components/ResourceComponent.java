@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Isolation;
 import app.dto.ApiDtos.ResourceAvailabilityView;
+import app.dto.ApiDtos.ResourceImageUploadView;
 import app.dto.ApiDtos.MessageView;
 import app.dto.ApiDtos.ResourceView;
 import app.entities.AllocationStatus;
@@ -46,11 +47,11 @@ public class ResourceComponent {
 
     @Transactional(readOnly = true)
     public List<ResourceView> list(ResourceType type) {
-        List<Resource> rows = type == null ? resources.findAll() : resources.findByType(type);
+        List<Object[]> rows = resources.findListSummaries(type);
         if (rows.isEmpty()) return java.util.Collections.emptyList();
 
         LocalDateTime now = LocalDateTime.now(philippineClock);
-        List<Long> resourceIds = rows.stream().map(resource -> resource.id).collect(Collectors.toList());
+        List<Long> resourceIds = rows.stream().map(row -> ((Number) row[0]).longValue()).collect(Collectors.toList());
         Map<Long, ResourceCommitments> byResource = new HashMap<>();
         for (Long id : resourceIds) byResource.put(id, new ResourceCommitments(0L, 0L));
         List<Object[]> sums = allocations.sumResourceCommitments(resourceIds,
@@ -60,9 +61,14 @@ public class ResourceComponent {
             Long id = ((Number) sum[0]).longValue();
             byResource.put(id, new ResourceCommitments(exactLong(sum[1]), exactLong(sum[2])));
         }
-        return rows.stream().map(resource -> {
-            ResourceCommitments commitments = byResource.get(resource.id);
-            return view(resource, commitments.holds, commitments.issued);
+        return rows.stream().map(row -> {
+            Long id = ((Number) row[0]).longValue();
+            ResourceCommitments commitments = byResource.get(id);
+            ResourceType typeForView = (ResourceType) row[2];
+            int available = availableQuantity(((Number) row[3]).longValue(), commitments.holds,
+                    commitments.issued, typeForView);
+            return new ResourceView(id, (String) row[1], typeForView,
+                    ((Number) row[3]).intValue(), available);
         }).collect(Collectors.toList());
     }
 
@@ -73,6 +79,31 @@ public class ResourceComponent {
         LocalDateTime now = LocalDateTime.now(philippineClock);
         ResourceView view = view(resource, effectiveHolds(id, now), issuedCustody(id));
         return new ResourceAvailabilityView(resource.id, view.availableQuantity);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public ResourceImageUploadView storeImage(Long id, byte[] bytes, String contentType) {
+        requirePositiveId(id);
+        Resource resource = resources.lockById(id)
+                .orElseThrow(() -> new ApiException(404, "NOT_FOUND", "Resource not found."));
+        String validatedType = ResourceImageSupport.validate(bytes, contentType);
+        resource.setImageBytes(bytes);
+        resource.imageContentType = validatedType;
+        resources.saveAndFlush(resource);
+        return new ResourceImageUploadView(resource.id, validatedType, bytes.length,
+                ResourceImageSupport.sha256(bytes));
+    }
+
+    @Transactional(readOnly = true)
+    public ResourceImageContent getImage(Long id) {
+        requirePositiveId(id);
+        Resource resource = resources.findById(id)
+                .orElseThrow(() -> new ApiException(404, "NOT_FOUND", "Resource not found."));
+        byte[] bytes = resource.getImageBytes();
+        if (bytes == null || resource.imageContentType == null) {
+            throw new ApiException(404, "NOT_FOUND", "Resource image not found.");
+        }
+        return new ResourceImageContent(bytes, resource.imageContentType);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -137,17 +168,22 @@ public class ResourceComponent {
     private ResourceView view(Resource resource, Long holdsValue, Long issuedValue) {
         long holds = holdsValue == null ? 0L : holdsValue;
         long issued = issuedValue == null ? 0L : issuedValue;
+        int available = availableQuantity(resource.totalQuantity.longValue(), holds, issued, resource.type);
+        return new ResourceView(resource, available);
+    }
+
+    private int availableQuantity(long total, long holds, long issued, ResourceType type) {
         long available;
         try {
-            available = Math.subtractExact(resource.totalQuantity.longValue(), holds);
-            if (resource.type == ResourceType.REUSABLE) available = Math.subtractExact(available, issued);
+            available = Math.subtractExact(total, holds);
+            if (type == ResourceType.REUSABLE) available = Math.subtractExact(available, issued);
         } catch (ArithmeticException overflow) {
             throw new ApiException(500, "INTERNAL_ERROR", "Stored Resource commitments exceed supported whole-unit limits.");
         }
         if (available < 0 || available > 1000000) {
             throw new ApiException(500, "INTERNAL_ERROR", "Stored Resource capacity violates inventory invariants.");
         }
-        return new ResourceView(resource, (int) available);
+        return (int) available;
     }
 
     private Long effectiveHolds(Long resourceId, LocalDateTime now) {
@@ -190,6 +226,15 @@ public class ResourceComponent {
         private ResourceCommitments(long holds, long issued) {
             this.holds = holds;
             this.issued = issued;
+        }
+    }
+
+    public static final class ResourceImageContent {
+        public final byte[] bytes;
+        public final String contentType;
+        private ResourceImageContent(byte[] bytes, String contentType) {
+            this.bytes = bytes;
+            this.contentType = contentType;
         }
     }
 }

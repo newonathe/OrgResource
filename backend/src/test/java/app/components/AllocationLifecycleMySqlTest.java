@@ -32,6 +32,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,6 +57,7 @@ import app.repositories.ResourceRequirementRepository;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SpringBootApp.class, webEnvironment = WebEnvironment.NONE)
 @ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @TestPropertySource(properties = {
         "orgresource.expiry.scheduler-enabled=true",
         "orgresource.expiry.fixed-delay-ms=100",

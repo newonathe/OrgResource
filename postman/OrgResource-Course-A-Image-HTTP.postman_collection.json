@@ -1,0 +1,109 @@
+{
+  "info": {
+    "name": "OrgResource Course A — Image HTTP acceptance",
+    "description": "Executable, fictional-data Postman/Newman acceptance for Resource create, multipart PNG upload, byte retrieval and safe zero-stock cleanup. The current 26 routes remain covered by the O1/O3/O4-O5/O14 execution collections. Import this alongside the current 28-route reference; set imageFile to the included synthetic fixture path.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create isolated fictional Resource for image tests",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "{{baseUrl}}/api/resources",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Course A image test {{$guid}}\",\n  \"type\": \"REUSABLE\",\n  \"totalQuantity\": 0\n}",
+          "options": { "raw": { "language": "json" } }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Resource created with HTTP 201', function () { pm.response.to.have.status(201); });",
+              "if (pm.response.code === 201) { const body = pm.response.json(); pm.test('Created Resource has a positive ID', function () { pm.expect(body.id).to.be.above(0); }); pm.collectionVariables.set('imageResourceId', String(body.id)); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "POST /api/resources/{{imageResourceId}}/image",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Accept", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/resources/{{imageResourceId}}/image",
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "file", "type": "file", "src": "{{imageFile}}" }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Image upload returns HTTP 200', function () { pm.response.to.have.status(200); });",
+              "if (pm.response.code === 200) { const body = pm.response.json(); pm.test('Upload reports PNG, positive size and SHA-256', function () { pm.expect(body.contentType).to.eql('image/png'); pm.expect(body.sizeBytes).to.be.above(0); pm.expect(body.sha256).to.match(/^[a-f0-9]{64}$/); }); pm.test('Upload identifies the Resource', function () { pm.expect(String(body.resourceId)).to.eql(pm.collectionVariables.get('imageResourceId')); }); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET /api/resources/{{imageResourceId}}/image",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Accept", "value": "image/png" }],
+        "url": "{{baseUrl}}/api/resources/{{imageResourceId}}/image"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Image retrieval returns HTTP 200 and PNG media type', function () { pm.response.to.have.status(200); pm.expect(pm.response.headers.get('Content-Type')).to.include('image/png'); });",
+              "pm.test('Image response disables caching and MIME sniffing', function () { pm.expect(pm.response.headers.get('Cache-Control')).to.include('no-store'); pm.expect(pm.response.headers.get('X-Content-Type-Options')).to.eql('nosniff'); });",
+              "pm.test('Image response has a nonzero Content-Length', function () { pm.expect(Number(pm.response.headers.get('Content-Length'))).to.be.above(0); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "POST /api/resources/{{imageResourceId}}/delete — safe cleanup",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Accept", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/resources/{{imageResourceId}}/delete"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('The zero-stock unreferenced fixture was deleted with HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.collectionVariables.unset('imageResourceId');"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://127.0.0.1:8080", "type": "string" },
+    { "key": "imageFile", "value": "postman/fixtures/academic-demo-image.png", "type": "string" },
+    { "key": "imageResourceId", "value": "", "type": "string" }
+  ]
+}

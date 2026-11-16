@@ -17,6 +17,10 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
     boolean existsByNameKeyAndIdNot(String nameKey, Long id);
     List<Resource> findByType(ResourceType type);
 
+    @Query("SELECT r.id, r.name, r.type, r.totalQuantity FROM Resource r "
+            + "WHERE (:type IS NULL OR r.type = :type) ORDER BY r.id")
+    List<Object[]> findListSummaries(@Param("type") ResourceType type);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT r FROM Resource r WHERE r.id = :id")
     Optional<Resource> lockById(@Param("id") Long id);

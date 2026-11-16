@@ -5,16 +5,16 @@ OrgResource is a local academic application for planning one student organizatio
 ## Current implementation
 
 - **Five JPA entities:** Department, Project, Resource, ResourceRequirement, and Allocation.
-- **26 current API operations:** the original 25 proposal operations plus the separately documented A09 SMS-consent revocation amendment.
+- **28 current API operations:** the original 25 proposal operations, the separately documented A09 SMS-consent revocation amendment, and two Resource image HTTP operations for Course A.
 - **Eight React screens:** Overview, Allocations, Resource Library, Projects, Requirements, Departments, Reminder Activity, and About.
 - **Stack:** Java 8-compatible Spring Boot 2.1, Jersey/JAX-RS `javax`, Spring Data JPA/Hibernate, Javax Validation, MySQL/InnoDB, and React/TypeScript/Vite.
 - **Inventory:** the server computes availability and requirement coverage from current persisted commitments. Pending allocations do not reserve stock. Reusable and consumable stock follow different lifecycle rules.
-- **Reminders:** disabled by default. The local FakeTwilio mode is a simulator; `SIMULATED` or `PROVIDER_ACCEPTED` does not mean a phone received a message.
-- **Images:** no image upload or serving feature is implemented. CLO9 scope remains unresolved pending current course instructions.
+- **Reminders:** disabled by default. FakeTwilio remains a loopback simulator. A separate official Twilio Messages protocol adapter is covered by a fictional loopback server test; no provider account or SMS was used. `SIMULATED` and `PROVIDER_ACCEPTED` do not mean a phone received a message.
+- **Images:** `POST` multipart upload and raw-byte `GET` under `/api/resources/{id}/image`; PNG/JPEG only, maximum 2 MiB, content and dimensions validated, bytes stored on the existing Resource row. See the Course A acceptance report for actual MySQL/HTTP evidence.
 
-The assignment requires **at least five justified entity types**. This O14 academic baseline implements five and preserves the proposal’s 25 operations plus A09; that current scope is not a maximum for a later, separately reviewed production product. O14 intentionally does not begin that production expansion.
+The assignment requires **at least five justified entity types**. The O14 baseline implemented five and preserved the proposal’s 25 operations plus A09; Course A adds only the two authorized image operations. This academic scope is not a maximum for a later, separately reviewed production product. Course A does not begin that production expansion.
 
-The current implementation contract is [the 26-operation API reference](docs/complete-handoff/05_API_26_ROUTES_AND_RESPONSES.md). The O14 route-by-route acceptance map and evidence are [here](evidence/O14/ROUTE_ACCEPTANCE_MATRIX.md) and in the [final acceptance report](evidence/O14/FINAL_ACCEPTANCE_REPORT.md).
+The original project-design contract is [the 26-operation API specification](docs/complete-handoff/05_API_26_ROUTES_AND_RESPONSES.md); Course A adds the two specified image operations. The importable current [Postman reference contains all 28 operations](postman/OrgResource-Course-A-28-Routes.postman_collection.json). Fresh implementation evidence is in the [Course A A1+A2 acceptance report](evidence/COURSE-A/A1_A2_ACCEPTANCE_REPORT.md); O14 evidence remains a historical 26-operation baseline.
 
 ## Run the packaged application
 
@@ -43,11 +43,11 @@ The Maven integration tests require protected `ORG_TEST_DB_*` values for the iso
 
 ## Acceptance and course status
 
-See the [course compliance matrix](docs/compliance/FINAL_COURSE_COMPLIANCE_MATRIX.md), [CLO9 decision record](docs/compliance/CLO9_IMAGE_DECISION.md), and [O14 report](evidence/O14/FINAL_ACCEPTANCE_REPORT.md). Local tests establish software behavior only. They do not establish Canvas submission, instructor approval, group or peer requirements, a real recording, or academic authorship certification.
+See the [course compliance matrix](docs/compliance/FINAL_COURSE_COMPLIANCE_MATRIX.md), the [CLO9 implementation record](docs/compliance/CLO9_IMAGE_DECISION.md), and the [Course A A1+A2 acceptance report](evidence/COURSE-A/A1_A2_ACCEPTANCE_REPORT.md). Local tests establish software behavior only. They do not establish Canvas submission, instructor approval, group or peer requirements, a real recording, or academic authorship certification.
 
 ## Historical material — not the current implementation
 
-The older [formal proposal](OrgResource-Formal-Proposal.docx), [specification package](OrgResource-Specification-Package.zip), and earlier handoff chapters are retained for provenance. Some describe a nine-entity, 68-operation concept. Those counts and requirements are **HISTORICAL, NOT CURRENT IMPLEMENTATION**. The current five-entity, 26-operation contract above controls implementation. The current concise proposal is retained at `ChatGPT-Project-Pack/UPLOAD/10_ORGRESOURCE_CONCISE_PROPOSAL.docx`; the existence of that document does not establish that it was submitted or approved.
+The older [formal proposal](OrgResource-Formal-Proposal.docx), [specification package](OrgResource-Specification-Package.zip), and earlier handoff chapters are retained for provenance. Some describe a nine-entity, 68-operation concept. Those counts and requirements are **HISTORICAL, NOT CURRENT IMPLEMENTATION**. Course A has five JPA entities and 28 HTTP operations; the current concise proposal remains the source for the original 25 design operations. The proposal is retained at `ChatGPT-Project-Pack/UPLOAD/10_ORGRESOURCE_CONCISE_PROPOSAL.docx`; its existence does not establish that it was submitted or approved.
 
 ## Production track — deferred
 
