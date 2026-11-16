@@ -1,5 +1,8 @@
 # OrgResource repository agent instructions — Course Final A then Extended C B
 
+> **LATEST USER QUALITY/EFFICIENCY DIRECTIVE (2026-11-16):** Prioritize maximum correctness, security, completeness, academic fidelity and precise tests, while minimizing free-Luna Codex tokens, needless tool calls, build time, and repository storage. Use dependency-coherent medium-to-large implementation batches rather than micro-slices or unchecked multi-system rewrites. Delegate to narrowly scoped specialized subagents **only when the actual free Codex environment offers them and the net overhead is worthwhile**; never pretend agents/models/reasoning settings were invoked. One writer per file, one primary integration reviewer; fast/light read-only checks, medium leaf work, highest available effort for transactions/security/compatibility. **Active Course A implementation contract**: `docs/academic-final/07_COURSE_A_EXECUTABLE_SPEC_FREEZE_2026-11-16.md`; **active implementation-only prompt**: `docs/academic-final/08_CODEX_A1_A2_MASTER_PROMPT_FREE_LUNA.md` (on the academic docs feature branch). A1+A2 acceptance must pass before separate A3 freeze; no Extended C code before A is protected. Codex BUILDS/TESTS, never open-ended researches or changes stack without approval.
+
+
 > **Branch and evidence boundary:** This updated root AGENTS.md applies on the documentation/research branch; it does not change O14 PR #8 or main. The original expanded agent guide appeared in separate academic draft PR #9 and was consolidated with CP44–46 two-edition decisions. Preparing this document does NOT authorize app-code changes, provider actions, branch merges, or student submission.
 
 
