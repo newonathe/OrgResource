@@ -1,0 +1,88 @@
+ORGRESOURCE — CODEX MASTER HANDOFF, STAGE-GATED EXECUTION AND SAFE WINDOWS LOCAL SYNC
+Planning authority: November 16, 2026. Read this entire instruction before doing any action.
+Repository: newonathe/OrgResource (PRIVATE)
+IMPORTANT: This text is a handoff plan. My request to create or paste this master prompt DOES NOT automatically grant approval to run all S0–S10 stages without review. Execute S0 now only if I explicitly ask Codex to run it. After S0, STOP; each S1–S9 stage requires separate authorization. S10 consists of actual student actions, never something to fake.
+
+END GOAL IN ORDINARY WORDS:
+Make ONE reliable OrgResource app in which a student organization plans events, knows its reusable and consumable stock, requests and approves whole-batch borrowing/use, knows who holds equipment, returns or consumes stock without double-counting, and sees shortages/overdue items/history. Several independent fictional organizations should have private spaces, secure member permissions and backups. Keep the usable O14 React appearance and workflows. This is NOT official Ateneo software, not campus-account integration and not measured student adoption. Use only synthetic data.
+
+AUTHORITATIVE COURSE SOURCES:
+- 08_CSCI180_SYLLABUS.pdf (9 pp)
+- 09_ESP_PROJECT_ASSIGNMENT.pdf (3 pp)
+The user says these are the FINAL course instructions; never invent a later Canvas rubric or require instructor confirmation as a feature-design gate. The syllabus still prescribes actual Canvas submissions and honest authorship acknowledgment.
+- 10_ORGRESOURCE_CONCISE_PROPOSAL.docx is original proposal design history, NOT third course authority.
+- Applicable course code/slides and video *audio transcripts only*, where actually available. Never assert video frames were watched or unattached original ZIPs fully inspected.
+
+PINNED SOURCE CONTEXT (REFETCH AND REPORT LIVE BEFORE USE; DO NOT BLINDLY TRUST THESE HISTORICAL SHAS):
+main: 16e781c837dd7e1f0481fb7a01e49c27d80a91e8 — older baseline
+academic O14: feat/o14-academic-final-acceptance-2026-11-15 @ 2dd336ed39cecd417a8bce3388b303e688e95dee — UNMERGED draft PR #8
+research docs: docs/orgresource2-research-continuity-2026-11-15 — UNMERGED draft PR #7; read CURRENT head, NOT just an older SHA.
+Actual academic O14 app: 5 domain JPA entities, 26 original Jersey operations, 8 connected React pages, local Spring/MySQL/Retrofit/Gson/scheduler/FakeTwilio; Java8/Boot2.1 not suitable for public Internet as-is. Existing local test reports do not prove new product implemented.
+
+READ THE ACTUAL SOURCES IN THIS ORDER:
+CP43 docs/research-2.0/70_CP43_FIXED_WRITTEN_COURSE_SCOPE_AND_HANDOFF_GO_NO_GO.md
+CP42 docs/research-2.0/69_CP42_FINAL_OWNER_DECISION_REVIEW_AND_CURRENT_BUILD_DELTA.md
+CP31 .../58_CP31_PRE_CODEX_FINALIZATION_PACKET.md
+CP32 .../59_CP32_FINAL_CONFLICT_ADJUDICATION_AND_CONTRACT_FREEZE.md
+CP33 .../60_CP33_ACCEPTANCE_TRACEABILITY_RISK_AND_REVIEW_GATE.md
+CP34 .../61_CP34_CANONICAL_SCHEMA_AND_CUTOVER_BLUEPRINT.md
+CP35 .../62_CP35_API_AUTH_UI_WORKFLOW_FREEZE_CANDIDATE.md
+CP36 .../63_CP36_LEGACY_COMPATIBILITY_ATOMICITY_AND_CUTOVER_GATES.md
+CP37 .../64_CP37_SEALED_STAGE_BY_STAGE_CODEX_PROMPTS.md
+CP38 .../65_CP38_INDEPENDENT_PRE_CODEX_FREEZE_REVIEW_AND_OPEN_EVIDENCE.md
+CP39 .../66_CP39_PINNED_CI_TRIAGE_AND_LAST_CONTRACT_CORRECTIONS.md
+CP40 .../67_CP40_PROVIDER_TRIAL_SECURITY_AND_DEADLINE_REALITY_CHECK.md
+CP41 .../68_CP41_SOURCE_TO_SQL_INVARIANT_GUARDS_AND_PROOF_CASES.md
+and the 35-column crosswalk JSON plus 26-route crosswalk/acceptance evidence.
+Later corrections take precedence over specifically superseded older speculation. Never assume a plan file equals working source or passing test.
+
+NONNEGOTIABLES:
+1. ONE real application, ONE source-of-truth MySQL inventory, ONE web UI, shared actual business components; original 5 domain entities preserved and original 25+O14 A09=26 authentic source operations running behind protected Jersey /api; new v2 for secure product functions.
+2. Keep the course's literal Javax Validation, Jersey, Spring @Autowired controller -> Component, Spring Data/JPA/Hibernate/MySQL and JPQL, GET/POST/JSON, real runtime eligible create/read/delete of ALL five original entity families, scheduling, and full importable Postman. Don't replace them with screenshots, mocks or Jakarta-only claims.
+3. Include syllabus CLO9 actual resource image HTTP receive/store/serve. Include a REAL official Twilio Messages REST adapter via Retrofit/Gson, with local FakeTwilio and protocol-server tests. Live SMS/default sending DISABLED. Provider-side test only after separately authorized permitted account; do not send to actual numbers, promise delivery, spend or assume trial permissions.
+4. Keep correct T/H/I whole-batch conservation: approved effective holds, issued reusable custody, single consumable stock deduction, explicit reasoned inventory changes, no double issue/return/consume, no phantom stock, permanent per-operation IDs, safely append-only stock/audit history. No partial/lost/damaged returns in P0.
+5. Security: every original and v2 route authenticates and checks CURRENT server-side organization and role; never reuse O14 global repository searches without tenant filters; unique names per org and same-org composite FK guards. Owner/Admin/Custodian/Lead/Member roles, invitations and recovery with no official campus identity assertions. Validate session, CSRF, access, audit and backups.
+6. Do not add unsupported payment/finance/procurement, verified university SSO, actual campus resource records, untested third-party promises or fashionable infrastructure unrelated to scope.
+7. NEVER alter or delete original O14 academic branch or main; no merge/tag/prod deploy/provider credentials/permission changes/paid service/real SMS without specific authorization. Never falsify tests, class attendance, video recording, grades, submission, authorship certificate or peer reviews.
+8. The printed final deadline is Dec 5, 2026. Preserve production-first release preference, but if not realistically feasible, report schedule/no-go and explicit owner decision; do not silently reorder, promise an extension or claim complete.
+
+STAGED WORKFLOW (ONE STAGE PER SEPARATE APPROVAL):
+S0 READ-ONLY: inspect actual Git branches and code/PR trees, 5 source entities, 26 actual Jersey operations, repository methods, UI pages, CI and evidence hashes, and CP31–CP43. Deliver verified baseline, missing sources, code risks, PR dependency graph, exact next safe work; NO application code change. STOP for owner review.
+S1 ISOLATED FEASIBILITY SPIKE: only when authorized, new throwaway branch based on independently verified O14 source; prove maintained Java/Jersey/Spring/JPA/MySQL + literal javax validation (DTO and actual entity save), safe auth+CSRF, one JVM serving React+real Jersey, JPQL, 5 representative protected route families (not full 26), bounded scheduler/Retrofit/Gson/FakeTwilio and official Twilio Messages API-shaped POST to local protocol server. UC01–UC12 actual evidence; fail/partial blocks broader product.
+S2 ARCHITECTURE & DB CONTRACT: select proven exact versions and traceable DDL/route/DTO/migration plan with CP41 exact O14 physical names resource.type and allocation.borrower_name, five core entity relationships and actual tenant-safe uniqueness. Owner review of material changes.
+S3 ACCOUNTS & SECURITY: build real migrations, authentication/session/CSRF/recovery/invites, roles, organization scoping, last owner protection and negative tenant tests.
+S4 INVENTORY: transactional T/H/I, durable immutable stock movements, exact concurrency, duplicate/rollback/restart/expiry tests.
+S5 ORIGINAL+PUBLIC APIs: secure all 26 original Jersey routes, public v2, image receive/serve, Twilio actual REST adapter + FakeTwilio simulator, scheduler; real Postman and data integrity tests.
+S6 WEB UI: upgrade real eight pages; add Login, Invite, Workspace picker, Members, Account, Activity, Exports and photo/stock workspaces; verify accessible mobile/desktop real API journeys.
+S7 RELEASE OPERATIONS: reproducible builds, security/dependency scan, real migration/backup/restore, protected CI/CD and optional verified no-mandatory-cost hosting only after account approval.
+S8 PRODUCTION-STYLE ACCEPTANCE: actual security/permission/ledger/restore/browser/API/negative/load/reliability tests at exact SHA; no mock-based pass.
+S9 ACADEMIC FINAL ACCEPTANCE: independent complete course-matrix proof against SAME code, all original 26 running, real image handling, Twilio transport and truthful provider-test status, real Postman, source ZIP and clean first-run.
+S10 STUDENT ACTIONS ONLY: actual recording/accessible link or valid early in-person presentation, genuine Certificate of Authorship with honest outside/AI help acknowledgment, peer emails only if other actual group members, final source and Canvas submission receipt. Never claim done without student evidence.
+
+AFTER EVERY STAGE PRINT:
+stage, status PASS/FAIL/PARTIAL/NOT_RUN, source SHA, base SHA, exact edited files, commands, environments and actual outputs, tests passed/failed/skipped, CI run URL, screenshots/data artifacts, known defects, security/cost effects, rollback, and what specific user authorization is needed NEXT. Publish only reviewed small PRs; do not merge main.
+
+WINDOWS LOCAL REPOSITORY SYNCHRONIZATION — CRITICAL:
+Codex Cloud cannot directly change a private Windows folder. If you run in Cloud, do repository/GitHub work there and give the user exact subsequent PowerShell instructions. If this Codex session runs locally with permission to access the existing folder, discover the ACTUAL path; DO NOT invent C:\Users\... or assume the desktop client shares Cloud files.
+
+Before touching local files print and inspect:
+  pwd
+  git rev-parse --show-toplevel
+  git remote -v
+  git status --short --branch
+  git branch -vv
+  git worktree list
+Only run git fetch origin --prune AFTER verifying origin is newonathe/OrgResource; report the branch and uncommitted tracked/untracked changes. Fetch is not a merge. Never reset --hard, clean -fd, force-push, discard, auto-stash, rebase a dirty branch or replace the whole local folder. If local work is dirty, STOP and explain options; no hidden stash. If local work is clean and user wants an existing checked-out branch updated, use git pull --ff-only origin <exact-checked-out-branch> only, then verify SHA. Do not pull main when target is still an unmerged feature PR. If user wants the latest academic or implementation branch without modifying current checkout, offer a sibling git worktree based on the explicitly requested fetched origin branch and verify directory doesn't exist before creating it. When implementation PR is not yet accepted/merged, explain that their local folder cannot reflect it by pulling main; they must explicitly fetch/checkout that specific branch or wait for review.
+
+For example, SAFE READ-ONLY PowerShell discovery/fetch after cd to the actual user's repository:
+  git rev-parse --show-toplevel
+  git remote -v
+  git status --short --branch
+  git branch -vv
+  git fetch origin --prune
+  git branch -r
+Only if clean and on DESIRED branch:
+  git pull --ff-only origin <EXACT_CURRENT_BRANCH_NAME>
+Never substitute these placeholders silently. Record before/after git rev-parse HEAD and git status --short --branch. Do not claim the Windows folder updated if this ran only in Codex Cloud.
+
+START ACTION FOR THIS HANDOFF: Execute only **S0**, strictly read-only in the application repository, if the user separately authorizes this prompt in Codex. Report findings and stop. DO NOT automatically execute S1–S10 from this single master prompt.
