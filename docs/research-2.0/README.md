@@ -1,5 +1,8 @@
 # OrgResource 2.0 research documentation
 
+> **USER'S NEW HANDOFF BOUNDARY (2026-11-16):** [Read the S0–S2 research ownership and COMPLETE non-course additions register](73_PRE_CODEX_S0_S2_IN_CHAT_SCOPE_AUTHORITY_AND_ALL_EXTRAS_REGISTER.md). This ChatGPT Project does original-source audits and conditional modern-stack/architecture decisions; Codex gets the actual software build after explicit final scope approval, starting with an **executable small S1 fail-fast gate** (not a second research program). The original 5-entity/26-route academic code is real; many production additions (multi-org, five roles, v2, 18-table candidate, ledger, hosting, DR) are **NOT COURSE MANDATES**. Prior `71` launch instructions to do standalone Codex S0 are now superseded. No application edits or performance/compatibility test were run here.
+
+
 > **READY TO HAND TO CODEX / READABLE PROJECT END STATE (2026-11-16):** [Detailed per-screen current vs final changes and to-do](72_PLAIN_ENGLISH_FINAL_PRODUCT_EACH_SCREEN_AND_REMAINING_WORK.md) explains all eight existing O14 pages, planned additional screens, technical safeguards and actual evidence gates in ordinary language. The [copy-ready Codex master handoff & safe Windows local sync](71_CODEX_MASTER_HANDOFF_STAGED_EXECUTION_AND_LOCAL_WINDOWS_SYNC.txt) orchestrates the full S0–S10 plan but authorizes **only read-only S0 as a start**, with stage-by-stage approvals and no automatic local Windows-folder update from Codex Cloud. Both are documents, not implementation or verification.
 
 
