@@ -1,5 +1,8 @@
 # CP37 — SEALED copy-ready Codex implementation prompts (S0–S10)
 
+> **LATEST OWNER WORK DIVISION (2026-11-16):** [S0–S2 in-chat research/decision register and all extra scope](73_PRE_CODEX_S0_S2_IN_CHAT_SCOPE_AUTHORITY_AND_ALL_EXTRAS_REGISTER.md) SUPERCEDES any suggestion that the user must run a **separate S0 Codex session** before the reviewed final build. The ChatGPT Project is the planning workspace; the final executable build will be handed to Codex only after explicit owner selection. S0 code facts can be audited statically in chat; **S1 executable proof CANNOT be called PASS in chat** and must be the first fail-fast internal gate during the Codex build, with defects returned here. S2 conceptual API/DB design can be reviewed in chat but exact runtime versions and SQL behavior cannot be frozen as PROVEN until Codex's experiment succeeds. All non-course E01–E39 decisions are disclosed in register 73 and not automatically approved. No source code was changed by this statement.
+
+
 > **NEW USER COURSE-SCOPE DECISION (2026-11-16):** [CP43](70_CP43_FIXED_WRITTEN_COURSE_SCOPE_AND_HANDOFF_GO_NO_GO.md) fixes the supplied CSCI180 syllabus and final-project ESP specification as the **only written project requirements** for this planning/handoff. CLO9 images are included, valid five-entity runtime create/delete is tested, and the Twilio-specific wording is met conservatively with **a real official REST adapter plus Retrofit/Gson/FakeTwilio tests**; live/costly sends remain unauthorized. Earlier requests to seek a new Canvas rubric or instructor waiver are **superseded as design blockers**. The syllabus's Canvas submission/receipt requirement remains student-only. S0–S10 stay **SEALED**.
 
 
