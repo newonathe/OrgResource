@@ -17,6 +17,14 @@
 
 **VERIFIED TEST PROFILE** `backend/src/main/resources/application-test.properties`: `orgresource.expiry.scheduler-enabled=false` and `orgresource.reminders.scheduler-enabled=false`; scheduled jobs are **not a leading hypothesis** for this specific CI test. Test code explicitly calls `reset(philippineClock)` and stubs `instant` and `getZone` before the list; but this alone does not prove what Hibernate actually bound.
 
+**NEW DIRECT SOURCE COMPARISON (2026-11-16, two exact commits):** Using the GitHub file blobs at the failed-run source SHA `f224e000361bb2214a59234634faa784855f1e61` and latest O14 SHA `2dd336ed39cecd417a8bce3388b303e688e95dee`, the following relevant files have **identical Git blob SHA-1** across commits:
+- `ResourceListAggregationMySqlTest.java` `d94d558f2ae2859f84a43c7ef2cc32d56c67a94c`;
+- `ResourceComponent.java` `98d2f9cc2f77ae8c85923f98e88170fdb6a9279a`;
+- `AllocationRepository.java` `141c259a58b52f56ed83aa0abee4132a64405af7`;
+- `ClockConfiguration.java` `46e9959d01affff4d421d66e77e7a1ff20d45736`;
+- `application-test.properties` `e6f445bb4c8485105dd3d3ce3a11be0e36752603`.
+The `.github/workflows/verify.yml` blob **did change** between the two commits, so its broader workflow steps must not be treated as byte-identical. The exact test/query/core clock and test-profile source did **not** change. This increases the importance of environment/test order/session DB state but does not prove which mechanism caused expected5/actual8. **No root cause or fixed test claim.**
+
 **SOURCE-FOCUSED FUTURE INVESTIGATION, NOT PERFORMED:**
 1. Pin the actual prior SHA `f224e...` and the later O14 SHA; record exact test class/test ordering and Maven Surefire versions rather than mix logs.
 2. Run this one test in an isolated MySQL 8.0.46 database repeatedly, then a clean full 55-test suite, then randomized order, exact JVM/build options; avoid just rerunning green.
