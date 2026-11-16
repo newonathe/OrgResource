@@ -8,7 +8,7 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 $frontendRoot = Join-Path $repoRoot 'frontend'
 $backendRoot = Join-Path $repoRoot 'backend'
 if (-not $ArtifactsDirectory) {
-    $ArtifactsDirectory = Join-Path $repoRoot 'deliverables\O14'
+    $ArtifactsDirectory = Join-Path $repoRoot 'deliverables\COURSE-A'
 }
 $ArtifactsDirectory = [IO.Path]::GetFullPath($ArtifactsDirectory)
 New-Item -ItemType Directory -Force -Path $ArtifactsDirectory | Out-Null

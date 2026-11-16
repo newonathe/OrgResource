@@ -2,6 +2,7 @@ package app.config;
 
 import javax.ws.rs.ApplicationPath;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.stereotype.Component;
 import app.rest.controllers.AllocationController;
@@ -21,5 +22,6 @@ public class JerseyConfig extends ResourceConfig {
         register(AllocationController.class);
         register(ApiExceptionMapper.class);
         register(JacksonFeature.class);
+        register(MultiPartFeature.class);
     }
 }

@@ -1,6 +1,8 @@
 # Twilio and external-service course decision
 
-**Status: UNRESOLVED for instructor acceptance.** The academic baseline demonstrates Retrofit/Gson HTTP communication with the supplied FakeTwilio protocol. It does not connect to a live Twilio account or send a real SMS.
+> **Course A status (2026-11-17):** A separate Retrofit/Gson Twilio Messages REST protocol transport is implemented. `TwilioRestTransportTest` exercises its path, form, Basic auth, acceptance/rejection parsing, malformed/lost responses, bounded timeout and no-retry behavior against a fictional loopback server. MySQL lifecycle evidence verifies `PROVIDER_ACCEPTED` persistence without claiming delivery. The adapter remains disabled by default, and no provider account, real SMS or carrier delivery was used. Instructor acceptance of the assignment wording remains **NOT_VERIFIED**; Canvas was not checked. See `evidence/COURSE-A/A1_A2_ACCEPTANCE_REPORT.md`.
+
+**Current technical status: local Twilio protocol verified. Assignment/instructor acceptance: NOT_VERIFIED.** No live Twilio account or SMS was used.
 
 ## Evidence
 
@@ -10,7 +12,7 @@
 - OrgResource uses Retrofit/Gson with an equivalent loopback-only FakeTwilio transport and dummy authorization. `FakeTwilioTransportTest` and `ReminderLifecycleMySqlTest` exercise the local HTTP response, persistent reminder outcomes, redaction, single claims, and uncertain-result handling. Reminder sending is disabled by default.
 - No live provider credential, paid account, real destination, handset, or delivery receipt was used. No real SMS was sent.
 
-## Decision for O14
+## O14 decision (historical)
 
 Count Retrofit/Gson and simulator transport as **verified technical course-pattern evidence**. Do not claim that this settles the assignment’s “at the very least Twilio” requirement. Until the current rubric or instructor direction confirms simulator acceptance, mark the provider-specific academic requirement **UNRESOLVED**. Do not add live Twilio credentials or send test messages in O14; the user has reserved production work for a later reviewed prompt.
 

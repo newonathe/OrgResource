@@ -17,6 +17,10 @@ public final class ReminderSendResult {
         return new ReminderSendResult(ReminderOutcome.SIMULATED, status, sid);
     }
 
+    public static ReminderSendResult providerAccepted(int status, String sid) {
+        return new ReminderSendResult(ReminderOutcome.PROVIDER_ACCEPTED, status, sid);
+    }
+
     public static ReminderSendResult rejected(Integer status) {
         return new ReminderSendResult(ReminderOutcome.REJECTED, status, null);
     }

@@ -13,9 +13,9 @@ The React, TypeScript, and Vite application is a local same-origin client for th
 | `#/reminders` | Reminder Activity | Read upcoming/overdue Projects and server-recorded reminder outcomes |
 | `#/about` | About | Explain the five records, whole-batch lifecycle, and prototype boundaries |
 
-Business records always come from the API. Only the light/dark theme and motion preference are stored in browser `localStorage`. The UI does not claim production authentication, institutional integration, delivered SMS, or CLO9 image handling. The SMS consent input accepts only the reserved fictional range `+12025550100`–`+12025550199`; the allocation read DTO never exposes the saved phone number.
+Business records always come from the API. Only the light/dark theme and motion preference are stored in browser `localStorage`. Course A's CLO9 image receive/serve behavior is implemented in the Resource HTTP API and exercised through Postman; this React UI has no image-upload workflow. The UI does not claim production authentication, institutional integration, or delivered SMS. The SMS consent input accepts only the reserved fictional range `+12025550100`–`+12025550199`; the allocation read DTO never exposes the saved phone number.
 
-The current build is part of the O14 release check. Generated `dist/` files, source maps, and dependency caches are not tracked. Maven's `bundle-react-ui` profile copies the production assets into the executable Java JAR. See [`../docs/PORTABLE_FIRST_RUN.md`](../docs/PORTABLE_FIRST_RUN.md) for the portable runtime and [`../docs/RELEASE_AND_DEMO.md`](../docs/RELEASE_AND_DEMO.md) for reproducible packaging. This interface is an academic prototype; it does not provide authentication or claim institutional approval.
+The current build is part of Course A release acceptance. Generated `dist/` files, source maps, and dependency caches are not tracked. Maven's `bundle-react-ui` profile copies the production assets into the executable Java JAR. See [`../docs/PORTABLE_FIRST_RUN.md`](../docs/PORTABLE_FIRST_RUN.md) for the portable runtime and [`../docs/RELEASE_AND_DEMO.md`](../docs/RELEASE_AND_DEMO.md) for reproducible packaging. This interface is an academic prototype; it does not provide authentication or claim institutional approval.
 
 ## Local development
 

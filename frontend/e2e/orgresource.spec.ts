@@ -2,7 +2,7 @@ import { mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { expect, test, type Page } from "@playwright/test";
 
-const screenshotDir = resolve(process.cwd(), "../evidence/O8-O10/screenshots/raw");
+const screenshotDir = resolve(process.env.ORGRESOURCE_E2E_SCREENSHOT_DIR ?? "../evidence/O8-O10/screenshots/raw");
 mkdirSync(screenshotDir, { recursive: true });
 
 function manilaWallTime(offsetMs: number): string {
@@ -430,4 +430,31 @@ test("desktop pointer highlights follow the mouse and motion can be switched off
   await expect(shell).toHaveAttribute("data-motion", "off");
   await page.mouse.move(buttonBounds!.x + buttonBounds!.width * 0.3, buttonBounds!.y + buttonBounds!.height * 0.3);
   await expect.poll(() => magneticButton.evaluate((node) => (node as HTMLElement).style.getPropertyValue("--mag-x"))).toBe("0px");
+});
+
+test("the packaged Java application serves React assets, hash routes, and the five JSON APIs", async ({ page }) => {
+  const assetResponses: Array<{ path: string; status: number }> = [];
+  page.on("response", (response) => {
+    const path = new URL(response.url()).pathname;
+    if (path.startsWith("/assets/") && /\.(?:js|css)$/.test(path)) {
+      assetResponses.push({ path, status: response.status() });
+    }
+  });
+
+  const home = await page.goto("http://127.0.0.1:8080/");
+  expect(home?.status()).toBe(200);
+  await expect(page.getByRole("heading", { name: "Overview", level: 1 })).toBeVisible();
+  await expect.poll(() => assetResponses.filter((item) => item.path.endsWith(".js")).length).toBeGreaterThan(0);
+  await expect.poll(() => assetResponses.filter((item) => item.path.endsWith(".css")).length).toBeGreaterThan(0);
+  expect(assetResponses.every((item) => item.status === 200)).toBe(true);
+
+  await page.goto("http://127.0.0.1:8080/#/projects");
+  await expect(page.getByRole("heading", { name: "Projects", level: 1 })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Projects", level: 1 })).toBeVisible();
+
+  for (const route of ["departments", "projects", "resources", "requirements", "allocations"]) {
+    const rows = await getJson<unknown[]>(page, `/api/${route}`);
+    expect(Array.isArray(rows), `/api/${route} returns a JSON array`).toBe(true);
+  }
 });

@@ -1,6 +1,8 @@
 # CLO9 image-scope decision
 
-**Status: UNRESOLVED.** OrgResource does not receive or serve images. This project does not claim CLO9 satisfaction or a course waiver.
+> **Course A status (2026-11-17):** Resource image receive/store/serve is implemented locally under the user-approved Course A scope. `ResourceImageHttpMySqlTest` exercises upload/retrieval through HTTP against MySQL, including PNG/JPEG, a >64 KiB image, the exact 2 MiB limit, oversize/invalid/truncated inputs, MySQL BLOB bytes and SHA-256. Implementation evidence is recorded in `evidence/COURSE-A/A1_A2_ACCEPTANCE_REPORT.md`. Whether the course rubric requires this feature in OrgResource, and whether the instructor accepts it, remain **NOT_VERIFIED**; Canvas was not checked.
+
+**Current technical status: IMPLEMENTED LOCALLY. Academic interpretation and instructor acceptance: NOT_VERIFIED.**
 
 ## Primary-source findings
 
@@ -14,11 +16,11 @@
 | `ChatGPT-Project-Pack/UPLOAD/10_ORGRESOURCE_CONCISE_PROPOSAL.docx`, all 12 pages | Defines Department, Project, Resource, ResourceRequirement, Allocation, and the original 25 API operations. It has no image field, image route, image ownership, or image persistence contract. | The implemented five-entity, 25-route baseline does not include images. |
 | Local course source `..\files\ImageServerDemo (1).zip` and `ChatGPT-Project-Pack/UPLOAD/06_VIDEO_TRANSCRIPTS.md`, V10 | The example is a separate image server with a separate `UploadedFile` entity and upload/retrieval endpoints. The inspected implementation writes incoming filenames to `temp/` without adequate type, size, or path validation. The transcript describes integration as optional. | Demonstrates a course pattern, but does not say it is mandatory for this project; it is unsafe to copy unchanged. No raw video was reprocessed. |
 
-## Decision
+## O14 decision (historical; superseded for implementation status)
 
-Keep the application’s five JPA entities and current 26 operations (the original 25 plus A09 consent revocation). Do not add a speculative image subsystem, sixth entity, or two unrequested routes. The syllabus’s CLO mappings conflict internally, the assignment’s broad “all tools” sentence is not limited by a clear image exception, and the current Canvas rubric was unavailable through the connected tools. These sources do not establish whether image functionality is required in OrgResource or assessed separately.
+At O14, OrgResource had five JPA entities and 26 operations (25 proposal routes plus A09), without image receive/serve. The syllabus’s CLO mappings conflict internally, the assignment’s broad “all tools” sentence is not limited by a clear image exception, and the current Canvas rubric was unavailable through the connected tools. These sources still do not establish whether image functionality is required in OrgResource or assessed separately.
 
-The UI bonus does not resolve this question. A passing build, API suite, or project demonstration is not evidence that CLO9 is satisfied.
+The later user-approved Course A specification authorizes the two image routes. Their local implementation evidence does not itself settle the academic interpretation or constitute instructor sign-off.
 
 ## Student clarification to check in Canvas or ask the instructor
 

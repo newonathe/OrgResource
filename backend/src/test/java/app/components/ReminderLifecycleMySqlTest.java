@@ -119,6 +119,23 @@ public class ReminderLifecycleMySqlTest {
     }
 
     @Test
+    public void providerAcceptanceIsPersistedAsAcceptanceAndNeverAsDelivery() {
+        Fixture fixture = fixture(NOW.plusHours(2), "+15550001116", true);
+        String fictionalSid = "SM00000000000000000000000000000000";
+        when(transport.send(any())).thenReturn(ReminderSendResult.providerAccepted(201, fictionalSid));
+
+        dispatcher.dispatchOne(fixture.allocation.id);
+
+        Allocation saved = allocations.findById(fixture.allocation.id).get();
+        assertEquals(ReminderOutcome.PROVIDER_ACCEPTED, saved.reminderOutcome);
+        assertEquals(Integer.valueOf(201), saved.reminderHttpStatus);
+        assertEquals(fictionalSid, saved.providerMessageSid);
+        assertNotNull(saved.reminderClaimedAt);
+        assertEquals("PROVIDER_ACCEPTED", allocationComponent.list(null, null).stream()
+                .filter(view -> view.id.equals(fixture.allocation.id)).findFirst().get().reminderOutcome);
+    }
+
+    @Test
     public void finalCheckSuppressesRevokedConsentAndStaleClaimNeverResends() {
         Fixture revoked = fixture(NOW.plusHours(2), "+15550001112", true);
         assertTrue(reminders.claimOne(revoked.allocation.id));
