@@ -1,5 +1,8 @@
 # CP46 — FINAL GitHub planning handoff, source/decision index and release gate
 
+> **FINAL RESEARCH CLOSEOUT — CP47 (2026-11-16):** The concise [what remains / next action checklist](78_CP47_FINAL_NEXT_ACTIONS_RESEARCH_CLOSED.md) is the stop-point and first thing to read when returning. General research is closed; the scope and two-release source authority here remain binding. Exact build/test evidence is still Codex work, not something established by this planning upload.
+
+
 **Date:** 2026-11-16, Asia/Manila · **State:** `PLANNING_PACKET_PUBLISHED / CODE_NOT_YET_CHANGED / A_RELEASE_NOT_BUILT / B_RELEASE_NOT_BUILT / CODEX_NOT_SENT`.
 
 This is the **one entrypoint for subsequent Codex work** in the existing private repository `newonathe/OrgResource`. It consolidates earlier research CP31–CP45 and the independently prepared academic-specific **draft PR #9** specification into a coherent **two-edition** contract. It documents what was **actually published to GitHub**; it is not a claim that the software passes any new tests, that either edition exists, or that the user has submitted it to Canvas.
