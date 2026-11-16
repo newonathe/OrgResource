@@ -1,5 +1,8 @@
 # OrgResource 2.0 research documentation
 
+> **CP39 TARGETED DIRECT-EVIDENCE CORRECTION (2026-11-16):** [CI flake source/log comparison, bounded S1 versus full S5 26-route gate, public borrower snapshot derivation, and exact original archive limitation](66_CP39_PINNED_CI_TRIAGE_AND_LAST_CONTRACT_CORRECTIONS.md). CP39 is a narrow correction to CP31–CP38, not a new product design or executed test. Direct GitHub push run [43732859018](https://github.com/newonathe/OrgResource/actions/runs/43732859018) and PR run [43732864033](https://github.com/newonathe/OrgResource/actions/runs/43732864033) used identical earlier SHA and respectively failed/passed the real MySQL aggregation test. **Root cause unknown; no source fix claimed.** Latest recommendation remains a single paper-level review candidate, and S0–S10 Codex prompts remain SEALED.
+
+
 > **CP34–CP38 NEW REVIEW MATERIAL (2026-11-16):** The source-grounded [CP34 physical schema + clean-install/cutover plan](61_CP34_CANONICAL_SCHEMA_AND_CUTOVER_BLUEPRINT.md), [CP35 complete public v2 API, account/roles and connected UI](62_CP35_API_AUTH_UI_WORKFLOW_FREEZE_CANDIDATE.md), [CP36 true legacy no-body POST/CAS atomicity](63_CP36_LEGACY_COMPATIBILITY_ATOMICITY_AND_CUTOVER_GATES.md), [CP37 SEALED copy-ready Codex stages](64_CP37_SEALED_STAGE_BY_STAGE_CODEX_PROMPTS.md), and [CP38 independent pre-Codex sign-off review and open evidence](65_CP38_INDEPENDENT_PRE_CODEX_FREEZE_REVIEW_AND_OPEN_EVIDENCE.md) extend CP31–CP33. **One reviewed design candidate, not a Codex handoff or runtime acceptance.** Current paper read order: CP31→CP32→CP33→CP34→CP35→CP36→CP37→CP38. Later facts and explicit supersession rules within those documents control conflicting older research proposals.
 
 
