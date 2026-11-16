@@ -1,5 +1,8 @@
 # CP38 — Independent pre-Codex design freeze review, consolidated decisions and open evidence
 
+> **Independent correction after CP38:** [CP41](68_CP41_SOURCE_TO_SQL_INVARIANT_GUARDS_AND_PROOF_CASES.md) verifies five source JPA entity classes and five real repositories: the new schema must preserve old physical `resource.type`/`allocation.borrower_name` or explicitly migrate mappings, rewrite global old repository queries for org isolation, add double-movement and PENDING-transfer DB guards, and supply limited LEAD borrower lookup and initial account recovery codes. These changes raise the quality of the **paper review candidate**; physical DB/Java execution and owner sign-off still NOT RUN/OPEN.
+
+
 > **Additional direct historical-document count audit:** [Machine-readable original source manifest reconciliation](contracts/ORIGINAL_MANIFEST_COUNT_RECONCILIATION_2026-11-16.json) counts all 2,611 embedded C04 records: 1,241 filesystem including 15 video paths, plus 1,370 archive_member rows. C04 states a generated manifest CSV was also stored in PART1; that could explain the +1 reported original nonvideo ZIP entry, but exact path/hash cannot be established without new raw ZIP inspection. Thus scope accounting is improved, **not** falsely marked fully resolved.
 
 
