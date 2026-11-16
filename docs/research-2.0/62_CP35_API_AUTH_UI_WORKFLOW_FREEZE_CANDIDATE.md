@@ -67,7 +67,7 @@ All paths start `/api/v2`. Under `/orgs/{orgId}`, active membership/org status m
 | GET `/session` | SessionView: accountId,displayName, activeOrgId?, memberships[] with roles | authenticated; never hashes/phone/tokens |
 | GET `/orgs` | OrgSummary[] of active memberships only | authenticated; no public organization registry |
 | POST `/session/active-org` | orgId UUID → SessionView | authenticated, ACTIVE membership, rotate/revalidate context, CSRF |
-| POST `/invitations/redeem` | anonymous: token,username,newPassword,displayName; authenticated: token | 256-bit bearer token, hashed+single-use and <=24h, no intendedUserId; new account 201 and secure login; existing member join 200; no identity verification claim |
+| POST `/invitations/redeem` | anonymous: token,username,newPassword,displayName; authenticated: token | 256-bit bearer token, hashed+single-use and <=24h, no intendedUserId; new account 201 plus one-time initial recovery codes shown **only once** to the newly registered account and secure login; existing account join 200 and no new recovery codes; no identity verification claim |
 | GET `/account` | AccountView | authenticated; account-only safe fields |
 | POST `/account/password` | currentPassword,newPassword →200 | authenticated recent/reauth + CSRF; credential_version++ and all sessions except rotated current invalidated |
 | POST `/account/recovery-codes/rotate` | currentPassword → one-time codes once | authenticated recent/reauth, old codes revoked; no raw secret logs |
