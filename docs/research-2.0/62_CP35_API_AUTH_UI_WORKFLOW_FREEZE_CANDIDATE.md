@@ -153,7 +153,7 @@ The eight original O14 screens are source precedent: Overview, Departments, Proj
 | UI section/route (suggested HashRouter or framework-safe equivalent) | Primary visible job | Actual real API required |
 |---|---|---|
 | `/login` | CSRF setup, login, recovery flow, no verification claims | auth/csrf,auth/login,auth/recover |
-| `/invite` | Redeem emailed/hand-delivered token from **manual** channel; new/existing account paths | invitations/redeem; no token in URL logs if avoidable |
+| `/invite` | Redeem manually delivered bearer token, new/existing account paths; on new account show generated recovery codes once and require explicit save-offline acknowledgement, never log/copy to local storage | invitations/redeem; no token in URL logs or analytics |
 | `/workspace` | Select ACTIVE organization; clear org context on logout | GET orgs, POST active-org, GET session |
 | `/overview` | Visible accurate stock, effective holds/issued and upcoming project cards | resources/requirements/projects activeOrg-scoped |
 | `/departments` | Browse/add/edit/eligible delete with refusal explanation | Departments CRUD |
