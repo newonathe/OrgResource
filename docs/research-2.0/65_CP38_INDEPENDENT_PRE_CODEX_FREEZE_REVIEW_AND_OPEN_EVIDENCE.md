@@ -1,5 +1,8 @@
 # CP38 — Independent pre-Codex design freeze review, consolidated decisions and open evidence
 
+> **2026-11-16 primary-source correction:** [CP40](67_CP40_PROVIDER_TRIAL_SECURITY_AND_DEADLINE_REALITY_CHECK.md) updates the pre-Codex risk verdict with current official Twilio trial template/recipient/expiry constraints, OCI idle reclamation/capacity limits, GitHub private CI billing, and the removal of unverified `intendedUserId` binding from P0. It also provides a copy-ready **unsent** course clarification and explicitly preserves earlier Canvas/submission uncertainty. Prior CP38 broad owner review remains open.
+
+
 > **2026-11-16 static verification:** The [academic source annotation crosswalk](contracts/ACADEMIC_26_SOURCE_ANNOTATION_CROSSWALK.json) and [26 original route acceptance CSV](contracts/ACADEMIC_26_ROUTE_ACCEPTANCE_NOT_RUN.csv) match the O14 five actual Jersey controllers with no unmatched operation IDs. This does not certify a production route is implemented or tested. CP39 separately reports the CI regression triage and bounded S1 correction.
 
 
