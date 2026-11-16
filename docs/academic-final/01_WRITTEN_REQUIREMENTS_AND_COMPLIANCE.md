@@ -3,14 +3,14 @@
 > **FINAL TWO-EDITION OVERRIDE (CP44–CP46, 2026-11-16):** This academic canonical document originated in already-uploaded **draft PR #9**, and is consolidated here without merging that PR. Read [Final consolidated handoff](../research-2.0/77_CP46_FINAL_GITHUB_HANDOFF_RELEASE_INDEX.md), [A-first / B-extended decision](../research-2.0/74_CP44_TWO_EDITION_COURSE_IMMUTABILITY_AND_FULL_C_HANDOFF_DECISION.md), and the [single active Codex master prompt](../research-2.0/75_FINAL_TWO_EDITION_CODEX_HANDOFF_MASTER_PROMPT.txt). **A** is a local strict course version; **B** is separate enhanced C descended from frozen A. Any prior wording implying one final release, modernizing A before course acceptance, or production testing before A completion is **historical/superseded**. A image testing is safe local single-organization; B must enforce authorization/tenant isolation. No application tests or course submission were performed by this document copy.
 
 
-**Version:** A-CANON-1.0, 2026-11-16. **Status:** requirements verified from the supplied original documents; final unified-product acceptance NOT RUN.  
+**Version:** A-CANON-1.0, 2026-11-16. **Status:** source-verified written academic requirements; A1/A2 actual acceptance and later C parity NOT RUN. Later CP44–CP46 two-edition decision controls older one-product wording.  
 **Primary sources:** 09_ESP_PROJECT_ASSIGNMENT.pdf (3 pages, referred to as A1–A3) and 08_CSCI180_SYLLABUS.pdf (9 pages, S2–S6). Original 10_ORGRESOURCE_CONCISE_PROPOSAL.docx (12 pages, P1–P12) is project-design history, not a new course rule.
 
 **Labels:** CR = explicitly written project requirement; SF = syllabus fact/outcome/policy; PD = original OrgResource proposal commitment; UD = user-directed conservative addition or final-delivery choice; EV = verified existing O14 source; PL = proposed/not yet implemented; ST = student-only action. These classifications are NOT interchangeable.
 
 ## A. Academic compliance matrix
 
-| ID | Authority | Exact required capability or deliverable | Acceptance proof in final ONE product | Baseline O14 / remaining gap |
+| ID | Authority | Exact required capability or deliverable | Acceptance proof in Course Final A (and independently repeated on Extended C where applicable) | Baseline O14 / remaining gap |
 |---|---|---|---|---|
 | CR-01 | A1 | Build a coherent service useful to the Ateneo community; project group of 1–3 | Working OrgResource operations with truthful fictional use case; actual group roster only | EV service; no campus validation/adoption claim |
 | CR-02 | A1, S2 CLO3 | Jersey REST web controllers | Executed @Path Jersey GET and POST on the deployed final server; real HTTP JSON | EV five Jersey Controller classes; must rerun on final runtime |
@@ -41,12 +41,12 @@
 | SF-03 | S4 rubric | Coherent, compiling, complete error-free operation, bonus additional functionality | Exact final source SHA builds and passes real HTTP/DB/UI course acceptance, records defects without inflating grade | No instructor grade claimed |
 | SF-04 | S5/S6 | Check actual Canvas for administrative notices; submit deliverables through module; no corruption/malware | Student performs actual upload/access check and retains receipt; planning user chose written syllabus+assignment as feature scope | ST; not automatically done |
 | SF-05 | S6 | Certificate of Authorship and disclosure of outside assistance | Student signs truthful declaration and specifies relevant Web/AI/tool assistance; no fabricated authorship | ST unfulfilled in this documentation work |
-| UD-01 | User decision / CP30 | ONE unified usable product; no course-stack substitution or empty archival compliance | Final supported runtime passes actual Jersey/JPA/MySQL/Javax/Retrofit/scheduling tests and complete original route parity within product lineage | PL; major runtime proof OPEN |
+| UD-01 | Latest USER DECISION / CP44–CP46 | TWO independently runnable editions from ONE Git lineage: Course A first; Extended C descends from frozen A, without rendering course code inert | A independently passes its real original + image/Twilio course tests; C later repeats actual course parity on its own executable and proves supported security | A acceptance pending; C implementation NOT RUN |
 | UD-02 | User decision / CP42 | Authenticated private multi-organization operation | Server-side org scoping for every repository/API, roles, sessions, CSRF, last owner protection, cross-org negative tests | PL; NOT a written course requirement |
 | UD-03 | User decision / CP43 | Full runnable Twilio Messages REST adapter (disabled by default) + FakeTwilio | Protocol server test validates form, Basic auth, parsing, timeout/unknown, never real SMS without consent/authorization | PL |
 | UD-04 | User decision / CP43 | Real CLO9 image feature and protected history safety | Upload bytes read back accurately; safe delete of never-used Resource, conflict on historically used | PL |
 | UD-05 | User decision | Cost $0 mandatory build/host operations, protected private data, repeatable backups/restore | Verified provider eligibility/quotas, no incurred charge, TLS, off-host encrypted restore and fail-closed limits | NOT RUN; provider forever-free claim prohibited |
-| UD-06 | User decision | Production technical acceptance BEFORE final academic submission | P-ACCEPT then A-FINAL at exact reviewed source SHA; manual Canvas follows | Future staged work, no currently accepted release |
+| UD-06 | Latest USER DECISION / CP44–CP46 | Course A must be completely accepted and protected BEFORE Extended C development. Extended C production acceptance is separately required before claiming C ready; student submits actually completed and permissible deliverables before deadline. | A1/A2 actual acceptance → A3 immutable artifact → C extension from exact A SHA → C independent production/course acceptance → real student Canvas action | Neither release is complete/frozen; no actual Canvas submission |
 
 ## B. Actual entity justification (not optional arbitrary tables)
 
@@ -78,7 +78,7 @@ These are neither waivers nor new alleged faculty instructions: Spring Security,
 
 ## E. Academic approval criteria
 
-The final academic technical sign-off is permitted only if:
+Course A academic technical acceptance is permitted only if (repeat all actual course tests independently on Extended C before claiming C also course compliant):
 - Every CR-02 through CR-18 applicable implemented operation has a real reproducible test/evidence entry.
 - All five original domain types have justified real HTTP create/read and a valid safe runtime delete demonstration.
 - Javax validation is actually invoked and enforced; no “Jakarta is close enough” assertion.
