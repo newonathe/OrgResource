@@ -47,7 +47,9 @@
 2. 02_DOMAIN_26_ROUTE_COMPONENT_CONTRACT.md — accurate existing five-entity fields, relationships, routes/DTOs/forwarding, source vs desired behavior, stock math, states and protected operations.
 3. 03_TEST_POSTMAN_DEMO_AND_SUBMISSION.md — positive/negative and concurrent acceptance, real service/image/Twilio checks, proposal/Eclipse/export/recording/Canvas actions.
 4. 04_AGENT_AND_EFFICIENCY_POLICY.md — mandatory quality and token/speed/storage optimization, optional scoped subagent role/model policy, safe Git workflows.
-5. Root AGENTS.md on THIS documentation branch is corrected for the latest requirement hierarchy; the original O14 application branch is untouched.
+5. 05_EERD_REPOSITORIES_AND_METHOD_SEQUENCES.md — original five-entity ER relationships, all 27 custom repository methods and exact Component flows.
+6. 06_SOURCE_QA_AND_CHANGE_LOG.md — static source coverage audit, corrected conflicts and remaining runtime proof gates.
+7. Root AGENTS.md on THIS documentation branch is corrected for the latest requirement hierarchy; the original O14 application branch is untouched.
 
 **Supersession:** For *academic requirement interpretation*, this packet is the concise canonical reference. It does not delete historical proposals or replace CP34–CP41 provisional production schema/API decisions. Any future source contradiction requires a dated diff and owner review; do not silently amend.
 
