@@ -1,5 +1,8 @@
 # CP40 — Independent provider-trial, invitation-security, zero-cost and deadline reality check
 
+> **New source-manifest recount (2026-11-16):** [Machine-readable historical count reconciliation](contracts/ORIGINAL_MANIFEST_COUNT_RECONCILIATION_2026-11-16.json) was created by reading the entire embedded CSV record set in `04_ORGRESOURCE_PRIOR_WORK_RESEARCH_AND_MANIFEST.md`: **1,241 original filesystem entries, 15 video file paths, 1,226 historical non-video files, and 1,370 nested archive members (2,611 rows)**. The previously recorded 1,227 actual outer nonvideo ZIP entries are one more. The historical text states that its generated CSV is stored inside Part 1, a **plausible** one-added-file explanation, but exact ZIP path/hash remains **NOT RECHECKED** because original archive bytes could not be opened in this execution environment. Do not say the discrepancy is resolved.
+
+
 **Research date:** 2026-11-16 PHT. **Status:** primary-source-supported **DESIGN RECOMMENDATION** and targeted correction, **NOT** implementation, actual vendor-account verification, instructor waiver, paid account, live SMS, new runtime test or Codex handoff. Read [CP31](58_CP31_PRE_CODEX_FINALIZATION_PACKET.md) then [CP32–CP39](66_CP39_PINNED_CI_TRIAGE_AND_LAST_CONTRACT_CORRECTIONS.md); CP40 controls only the explicit topics below.
 
 ## 1. Fresh current external constraints and actual O14 code
