@@ -1,5 +1,8 @@
 # CP35 — Complete user journeys and public API contract candidate for ONE OrgResource
 
+> **2026-11-16 SECURITY/PROVIDER correction:** [CP40](67_CP40_PROVIDER_TRIAL_SECURITY_AND_DEADLINE_REALITY_CHECK.md) removes the ungrounded `intendedUserId` invite field from fictional P0, specifies the bearer-token limitation, and updates SMS status: the current Twilio free trial does **not** establish capability to send personalized reminder bodies. No real Twilio dispatch is proven; use disabled/in-app or FakeTwilio simulated until account-specific and instructor gates are reviewed.
+
+
 **Dated:** 2026-11-16 PHT. **Classification:** DESIGN RECOMMENDATION, research-document contract; **NO routes or UI implemented by this document**. Derived from [CP31](58_CP31_PRE_CODEX_FINALIZATION_PACKET.md), [CP32](59_CP32_FINAL_CONFLICT_ADJUDICATION_AND_CONTRACT_FREEZE.md), [CP33](60_CP33_ACCEPTANCE_TRACEABILITY_RISK_AND_REVIEW_GATE.md), [CP34 schema](61_CP34_CANONICAL_SCHEMA_AND_CUTOVER_BLUEPRINT.md), the original 12-page proposal, actual pinned O14 controller/DTO source, and CP29 [52](52_CP29_PUBLIC_ROUTE_DTO_ROLE_ERROR_CONTRACT_CANDIDATE.md). Current Canvas, supported runtime and provider constraints remain external gates.
 
 ## 1. Product boundaries and route authority
@@ -42,7 +45,7 @@
 | Requirement | create `projectId UUID,resourceId UUID,quantity:int[1..1e6]`; edit quantity | id,orgId,projectId,resourceId,quantity,coveredQuantity,shortageQuantity,version |
 | Allocation | create `requirementId UUID,quantity:int[1..1e6],borrowerMembershipId UUID` for reusable; optional for consumable. **Server-derived** `borrowerNameSnapshot` from the authorized same-org borrower's current fictional display label; when no consumable borrower is specified use current authenticated requester's display label. | id,orgId,requirementId,quantity,borrowerMembershipId?,borrowerNameSnapshot,status,created/approved/issued/returned/consumed/cancelledAt?,cancellationReason?,expiredPendingCleanup,isEffectiveHold,version |
 | Inventory action | Receive `quantity:int[1..1e6],reason[1..500],operationId UUID`; Adjust `newTotal:int[0..1e6],reason[10..500],operationId UUID`; Issue/Return/Consume `operationId UUID` | ResourceView + movement receipt (kind,deltaTotal,deltaIssued,at,operationId) |
-| Invitation | role ADMIN/CUSTODIAN/LEAD/MEMBER, intendedUserId? UUID, expiresAt | invitation id,orgId,role,status; secret token shown only **once** to inviter |
+| Invitation | role ADMIN/CUSTODIAN/LEAD/MEMBER, expiresAt <=24h from creation; **no intendedUserId in P0** | invitation id,orgId,role,status; 256-bit secret token shown only **once** to inviter, stored hashed |
 | Ownership transfer | initiate `toMembershipId UUID`; accept `transferId UUID` | transfer id,status,from/to membership,createdAt,acceptedAt?,version |
 
 **Read-only derived values:** `H` counts effective APPROVED until exclusive project end, `I` issued reusable outstanding, `covered` counts effective APPROVED + ISSUED/RETURNED/CONSUMED, `available=T-H-I` reusable or `T-H` consumable. Project can be UPCOMING and permit APPROVE; ISSUE/CONSUME require IN_PROGRESS, RETURN allowed after end. No persisted Project.status. All quantities whole-unit checked arithmetic.
@@ -62,7 +65,7 @@ All paths start `/api/v2`. Under `/orgs/{orgId}`, active membership/org status m
 | GET `/session` | SessionView: accountId,displayName, activeOrgId?, memberships[] with roles | authenticated; never hashes/phone/tokens |
 | GET `/orgs` | OrgSummary[] of active memberships only | authenticated; no public organization registry |
 | POST `/session/active-org` | orgId UUID → SessionView | authenticated, ACTIVE membership, rotate/revalidate context, CSRF |
-| POST `/invitations/redeem` | anonymous: token,username,newPassword,displayName; authenticated: token | token hashed+single-use; new account 201 and secure login; existing member join 200; no identity verification claim |
+| POST `/invitations/redeem` | anonymous: token,username,newPassword,displayName; authenticated: token | 256-bit bearer token, hashed+single-use and <=24h, no intendedUserId; new account 201 and secure login; existing member join 200; no identity verification claim |
 | GET `/account` | AccountView | authenticated; account-only safe fields |
 | POST `/account/password` | currentPassword,newPassword →200 | authenticated recent/reauth + CSRF; credential_version++ and all sessions except rotated current invalidated |
 | POST `/account/recovery-codes/rotate` | currentPassword → one-time codes once | authenticated recent/reauth, old codes revoked; no raw secret logs |
