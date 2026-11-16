@@ -160,7 +160,7 @@ The eight original O14 screens are source precedent: Overview, Departments, Proj
 | `/projects` | Future/active/ended projects, date validation, assigned lead | Projects CRUD, timePhase derived |
 | `/resources` | Stock table, availability, receive/adjust, movement timeline, image | resources detail,receive,adjust,movements,image |
 | `/requirements` | Project demands, shortage and linked requested quantities | Requirements CRUD |
-| `/allocations` | Request→approve→issue/return/consume/cancel; due reminders | Allocations CRUD, status transitions, operations |
+| `/allocations` | Request→approve→issue/return/consume/cancel; reusable borrower selector from minimal ACTIVE member options (not admin-only MemberView), due reminders | Allocations CRUD, GET borrowers, status transitions, operations |
 | `/members` | OWNER/ADMIN invitation and role governance, explicit locks | members,invites,role,suspend,transfer |
 | `/account` | Password/recovery/disable, active sessions, fictional profile | account,session,credential commands |
 | `/activity` | Who changed stock/history without exposing secrets | activity,audit,stock movements |
