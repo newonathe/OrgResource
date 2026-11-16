@@ -1,5 +1,8 @@
 # OrgResource pre-Codex work division and full non-course change register
 
+> **OWNER ADOPTION UPDATE 2026-11-16:** Previously this register listed A (course-only), B (middle), and C (full) as choices. The user **has now explicitly chosen full Option C PLUS an independently finished course-only edition**: first freeze the fully academic compliant A, then derive the full C extension B from A preserving course code/behavior. This is not a request to cut or replace C. [CP44](74_CP44_TWO_EDITION_COURSE_IMMUTABILITY_AND_FULL_C_HANDOFF_DECISION.md) supersedes §E alternatives and the former single-artifact production-first chronology. [Final two-edition prompt 75](75_FINAL_TWO_EDITION_CODEX_HANDOFF_MASTER_PROMPT.txt) supersedes historic 71. Individual extra features E01–E39 remain design additions, not newly invented professor mandates. All executable tests/builds remain undone.
+
+
 **16 November 2026, PHT. USER'S CURRENT REQUEST:** conduct **ALL research, S0 source audit, S1 paper feasibility/alternative examination, S2 scope/architecture decisions and Codex prompt authoring in THIS ChatGPT research workspace**. Deliver **only the actual build and executable proof** to Codex after final review. Never suggest that static research passed a runtime integration test. No implementation or production branches changed here. **Source audit below is read-only and evidence-limited.**
 
 ## A. Binding source hierarchy and crucial correction
