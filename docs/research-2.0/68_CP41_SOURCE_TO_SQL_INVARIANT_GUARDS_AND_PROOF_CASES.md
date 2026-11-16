@@ -106,7 +106,19 @@ MySQL permits UNIQUE generated-column indexes and multiple NULLs, supporting one
 
 The broad unit-of-work org lock is a performance tradeoff but never substitutes for tenant-aware **SELECT/JPQL predicates** and restrictive FK constraints.
 
-## 7. Verdict, source and precedence
+## 7. Genuine connected-user-workflow gaps closed without new entities
+
+**INDEPENDENT DESIGN CRITIQUE:** CP35 allowed an assigned LEAD to `POST /allocations` using required reusable `borrowerMembershipId`, but its only prior membership list `GET /members` was OWNER/ADMIN only. An assigned LEAD's connected UI therefore had **no authorized member-ID discovery path**. Fix in [CP35](62_CP35_API_AUTH_UI_WORKFLOW_FREEZE_CANDIDATE.md): minimal `GET /api/v2/orgs/{orgId}/borrowers` returns only ACTIVE same-org `{membershipId,displayName}` with bounded cursor/search. OWNER/ADMIN/CUSTODIAN may query within their authorized org. LEAD must supply an assigned same-org `projectId` and cannot use the endpoint to enumerate other projects' participants; membership itself is still fictional/unverified. This is an extra **public v2** route and not falsely counted as a 27th original academic operation. A MEMBER does not get the directory. No personal phone, password, email or recovery metadata is sent.
+
+**ACCOUNT-RECOVERY GAP:** CP35 had one-time offline recovery code redemption and code rotation but did not specify initial issuance when a new account is created. Corrected: new-account invitation redemption creates high-entropy recovery code hashes and displays plaintext codes **once** in that user's creation response/UI, not in logs, URL, storage or a later GET. Offline first OWNER bootstrap also needs a similarly controlled one-time recovery-code handoff. Existing-account invite acceptance does not issue new codes. Later authenticated `/account/recovery-codes/rotate` invalidates old codes after current-password confirmation. A UI acknowledgement cannot prove the user truly saved the codes. If all are lost, no username-only unauthenticated bypass is added; manual owner-controlled recovery remains a separate security decision.
+
+**New unexecuted tests:**
+- `UI41-01`: LEAD assigned Project A obtains only two fields via `/borrowers?projectId=A`, then creates a reusable Allocation with an authorized ACTIVE borrower membership; no access to ADMIN `GET /members`.
+- `UI41-02`: LEAD tries `projectId=B` not assigned, MEMBER calls `/borrowers`, foreign organization member is supplied to A01, or injected borrowerNameSnapshot is submitted; all safely rejected.
+- `AUTH41-02`: brand-new fictional account gets recovery codes once at accepted invitation; replay of invite cannot reveal or regenerate them; account recovery invalidates prior sessions.
+- `AUTH41-03`: existing-account join does not regenerate recovery codes; offline bootstrap hands first OWNER codes through controlled local-only channel with no secret in Git/CI logs.
+  
+## 8. Verdict, source and precedence
 
 **This pass resolves two source/SQL naming errors and identifies additional DB-enforced integrity safeguards**. It does **not** establish that the 18-table model was implemented, that a supported dual Javax/Jakarta provider exists, that the current O14 intermittent query has a known cause, or that current Canvas/instructor and hosting conditions are met.
 
