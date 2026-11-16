@@ -1,5 +1,8 @@
 # CP38 — Independent pre-Codex design freeze review, consolidated decisions and open evidence
 
+> **Additional direct historical-document count audit:** [Machine-readable original source manifest reconciliation](contracts/ORIGINAL_MANIFEST_COUNT_RECONCILIATION_2026-11-16.json) counts all 2,611 embedded C04 records: 1,241 filesystem including 15 video paths, plus 1,370 archive_member rows. C04 states a generated manifest CSV was also stored in PART1; that could explain the +1 reported original nonvideo ZIP entry, but exact path/hash cannot be established without new raw ZIP inspection. Thus scope accounting is improved, **not** falsely marked fully resolved.
+
+
 > **2026-11-16 primary-source correction:** [CP40](67_CP40_PROVIDER_TRIAL_SECURITY_AND_DEADLINE_REALITY_CHECK.md) updates the pre-Codex risk verdict with current official Twilio trial template/recipient/expiry constraints, OCI idle reclamation/capacity limits, GitHub private CI billing, and the removal of unverified `intendedUserId` binding from P0. It also provides a copy-ready **unsent** course clarification and explicitly preserves earlier Canvas/submission uncertainty. Prior CP38 broad owner review remains open.
 
 
