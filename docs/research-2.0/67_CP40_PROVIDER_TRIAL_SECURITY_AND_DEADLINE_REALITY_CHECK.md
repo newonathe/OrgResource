@@ -1,5 +1,8 @@
 # CP40 — Independent provider-trial, invitation-security, zero-cost and deadline reality check
 
+> **P43 course-scope user decision (2026-11-16):** The previous optional instructor-clarification draft in §6 remains historical/UNSENT; it is **not necessary** to choose product scope. The supplied final-project specification and syllabus now govern. A **real Twilio Messages REST adapter** is a planned code requirement alongside FakeTwilio (no live SMS, unauthorized trial, fee or borrowed credentials), and **real CLO9 image receive/serve** is included. See [CP43](70_CP43_FIXED_WRITTEN_COURSE_SCOPE_AND_HANDOFF_GO_NO_GO.md). Existing CP40 external trial/cost constraints still apply. No user/instructor approval or actual provider test inferred.
+
+
 > **New source-manifest recount (2026-11-16):** [Machine-readable historical count reconciliation](contracts/ORIGINAL_MANIFEST_COUNT_RECONCILIATION_2026-11-16.json) was created by reading the entire embedded CSV record set in `04_ORGRESOURCE_PRIOR_WORK_RESEARCH_AND_MANIFEST.md`: **1,241 original filesystem entries, 15 video file paths, 1,226 historical non-video files, and 1,370 nested archive members (2,611 rows)**. The previously recorded 1,227 actual outer nonvideo ZIP entries are one more. The historical text states that its generated CSV is stored inside Part 1, a **plausible** one-added-file explanation, but exact ZIP path/hash remains **NOT RECHECKED** because original archive bytes could not be opened in this execution environment. Do not say the discrepancy is resolved.
 
 
