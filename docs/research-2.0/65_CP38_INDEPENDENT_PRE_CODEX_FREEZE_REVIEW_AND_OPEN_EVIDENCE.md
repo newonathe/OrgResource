@@ -1,5 +1,8 @@
 # CP38 — Independent pre-Codex design freeze review, consolidated decisions and open evidence
 
+> **2026-11-16 direct evidence update:** [CP39](66_CP39_PINNED_CI_TRIAGE_AND_LAST_CONTRACT_CORRECTIONS.md) verifies failed and passed same-SHA GitHub Actions MySQL jobs and the exact fixture, corrects a circular S1 “full 26 routes before full build” gate, and defines the previously missing public borrower-name snapshot. These are **material evidence corrections**, not a new blanket research pass. The root cause, runtime feasibility and account/Canvas gates are still open. The [sealed S0–S10 prompts](64_CP37_SEALED_STAGE_BY_STAGE_CODEX_PROMPTS.md) now use bounded S1 and full S5 compatibility acceptance.
+
+
 **Review date:** November 16, 2026 (Asia/Manila). **Scope:** independent paper/specification review of CP31–CP37 and actual academic O14/source requirements, with official published framework/MySQL facts. **Verdict:** **DESIGN-COVERAGE READY FOR OWNER REVIEW; OWNER SIGN-OFF OPEN; RUNTIME FEASIBILITY NOT PROVEN; PRODUCT/COURSE ACCEPTANCE NOT RUN.** This is not an instruction or permission for Codex, cloud, paid trial, real Twilio, repository merge or Canvas. Final publication only in research PR #7.
 
 ## 1. What is decisively settled by primary sources and user
