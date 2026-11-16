@@ -1,5 +1,8 @@
 # OrgResource — Pre-Codex Finalization Packet (CP31, review candidate)
 
+> **CP41 PHYSICAL/REPOSITORY CORRECTION (2026-11-16):** [CP41](68_CP41_SOURCE_TO_SQL_INVARIANT_GUARDS_AND_PROOF_CASES.md) and [O14 35-column JSON crosswalk](contracts/O14_TO_UNIFIED_FIVE_ENTITY_COLUMN_MAPPING_CANDIDATE.json) require original SQL `resource.type`, `allocation.borrower_name`, and explicit **tenant-safe JPA repositories** (original `existsByNameKey`, `findByType`, `findByStatus`, `findAll`, grouped JPQL are global). Physical unique `name_key` must become composite `org_id,name_key`, movement+transfer uniqueness and DB append-only credentials must be tested, and public LEAD borrower lookups and one-time new-user recovery codes are in the API. No code was built or merged and these changes do not imply owner approval.
+
+
 > **LATEST external-evidence and identity safeguard (2026-11-16):** [CP40](67_CP40_PROVIDER_TRIAL_SECURITY_AND_DEADLINE_REALITY_CHECK.md) confirms Twilio's current 30-day verified-recipient/predefined-template trial cannot be assumed to deliver custom project-due SMS; provider account, no-cost host and private Actions billing require actual access/controls. The optional P0 `intendedUserId` invitation binding is removed to avoid a false recipient verification guarantee. Real photos, provider sends, hosted free uptime and successful course submission are **not proven**. All Codex work remains sealed.
 
 
