@@ -1,5 +1,8 @@
 # CP39 — New direct CI evidence and last material pre-Codex contract corrections
 
+> **2026-11-16 static QA addition:** [Academic route acceptance CSV](contracts/ACADEMIC_26_ROUTE_ACCEPTANCE_NOT_RUN.csv) and [Jersey source annotation JSON](contracts/ACADEMIC_26_SOURCE_ANNOTATION_CROSSWALK.json) match the O14 JerseyConfig /api root and all five controller classes: 26 source methods, 20 POST + 6 GET, zero unmatched ARC IDs. Future unified-product execution remains NOT RUN.
+
+
 **As-of:** 2026-11-16 PHT. **Status:** verified source/log facts and **RECOMMENDED** remediation; no test run, Java/SQL implementation, modern compatibility proof, branch merge, Codex execution or application deployment. This addendum is deliberately narrow: it addresses specific verifiable defects discovered **after** [CP38](65_CP38_INDEPENDENT_PRE_CODEX_FREEZE_REVIEW_AND_OPEN_EVIDENCE.md). It does NOT reopen the entire project's research scope.
 
 ## 1. Exact independent CI evidence: a narrow, reproducible symptom
