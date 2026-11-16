@@ -1,5 +1,8 @@
 # CP38 — Independent pre-Codex design freeze review, consolidated decisions and open evidence
 
+> **2026-11-16 static verification:** The [academic source annotation crosswalk](contracts/ACADEMIC_26_SOURCE_ANNOTATION_CROSSWALK.json) and [26 original route acceptance CSV](contracts/ACADEMIC_26_ROUTE_ACCEPTANCE_NOT_RUN.csv) match the O14 five actual Jersey controllers with no unmatched operation IDs. This does not certify a production route is implemented or tested. CP39 separately reports the CI regression triage and bounded S1 correction.
+
+
 > **2026-11-16 direct evidence update:** [CP39](66_CP39_PINNED_CI_TRIAGE_AND_LAST_CONTRACT_CORRECTIONS.md) verifies failed and passed same-SHA GitHub Actions MySQL jobs and the exact fixture, corrects a circular S1 “full 26 routes before full build” gate, and defines the previously missing public borrower-name snapshot. These are **material evidence corrections**, not a new blanket research pass. The root cause, runtime feasibility and account/Canvas gates are still open. The [sealed S0–S10 prompts](64_CP37_SEALED_STAGE_BY_STAGE_CODEX_PROMPTS.md) now use bounded S1 and full S5 compatibility acceptance.
 
 
