@@ -30,7 +30,7 @@
 - All five relationships and source table names were verified: department, project, resource, resource_requirement, allocation. The specification **does not** pretend proposal-added infrastructure tables already exist.
 - 01 distinguishes **course assignment** (CR), **syllabus fact** (SF), **project design history** (PD), **user decision** (UD), **current implementation source** (EV), and **student-only act** (ST).
 - Exact known amendments are described: A09, expectedTotalQuantity CAS, raw phone redaction, effective endAt approval hold, structured ErrorView.
-- Root AGENTS.md is updated to the latest explicit ONE-product/AT-LEAST-five requirement and scoped build-efficiency policy. O14 code/AGENTS remains unchanged on its PR.
+- Root AGENTS.md is updated for the later CP44–CP46 **Course A first / Extended C second** decision, at-least-five requirement, and scoped build-efficiency policy. The original O14 root policy remains unchanged on its protected feature ref. O14 code/AGENTS remains unchanged on its PR.
 
 **QA limitation:** This is a manual/repository-static review, not a complete code proof or automated all-links semantic test. GitHub's documentation CI passing cannot establish that the NEW unified application functions; the actual secure supported runtime and Twilio/image features are NOT implemented by this packet.
 
@@ -61,9 +61,9 @@
 6. **ACADEMIC STUDENT:** Final Word proposal after code freeze, real group/recording, COA+assistance statement, applicable peer reviews, actual Canvas receipt — NOT VERIFIED.
 7. **SOURCE PROVENANCE:** Historical original ZIP one-path manifest discrepancy unresolved; not incorrectly reported as all original binaries fully checked.
 
-**Release ordering:** research and academic requirements → S1 compatibility proof → reviewed complete product implementation → P-ACCEPT → actual A-FINAL technical/academic verification → student-run Canvas actions. Printed final deadline Dec 5, 2026; no speculative extension.
+**Release ordering (latest CP44–CP46):** existing O14 → A1/A2 course code and actual acceptance → separately authorized A3 immutable Course Final A freeze → C0 maintained-runtime compatibility proof from A's SHA → Extended C implementation and independent C course/production acceptance → student's real Canvas submission. Course A must not be held hostage by speculative production hosting, and no provider/send or Canvas act is automated. Printed final deadline Dec 5, 2026; no speculative extension.
 
 ## Change log
 
 - **2026-11-16 A-CANON-1.0:** Rebuilt course matrix, original five-entity/26-route API and Component contracts, actual repository inventory/EERD, per-route Postman/DB/demo acceptance, student deliverable checklist, and token/speed/storage-efficient optional delegation policy. Replaced obsolete research-root AGENTS.md with current instructions on the docs branch. No application code changed.
-- **Next:** Any implementation-detected inconsistency must create a dated amendment with direct source path, diff, affected test and owner decision. Do not silently overwrite proposal history or claim more completion from prose.
+- **2026-11-16 A-first execution correction:** Exact Course A endpoints, Twilio/image and A1/A2 test scope now in `07_COURSE_A_EXECUTABLE_SPEC_FREEZE_2026-11-16.md`, with code-only Luna/free Codex prompt in `08_CODEX_A1_A2_MASTER_PROMPT_FREE_LUNA.md`. This is still source/planning work, not executed Java/Postman evidence. **Next:** Any implementation-detected inconsistency must create a dated amendment with direct source path, diff, affected test and owner decision. Do not silently overwrite proposal history or claim more completion from prose.
