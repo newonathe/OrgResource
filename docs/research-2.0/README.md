@@ -1,5 +1,8 @@
 # OrgResource 2.0 research documentation
 
+> **P42 FINAL OWNER REVIEW — NOT AN IMPLEMENTATION AUTHORIZATION (2026-11-16):** [CP42](69_CP42_FINAL_OWNER_DECISION_REVIEW_AND_CURRENT_BUILD_DELTA.md) is the short, nontechnical current O14→proposed one-product comparison plus explicit owner decision checklist D42-01..13 and remaining gating evidence G42-1..7. User's existing one-product, original course features, no mandatory recurring spend, production-first and no automatic Codex decisions remain respected. Other recommended defaults are NOT marked user-signed. **No changes to O14/main code**, no tests or hosted release. The next meaningful gates are owner review, current Canvas and separately authorized S0 read-only/S1 isolated runtime proof.
+
+
 > **CP41 SOURCE-TO-SCHEMA/SECURITY REVIEW (2026-11-16):** [CP41 actual physical mapping and DB invariants](68_CP41_SOURCE_TO_SQL_INVARIANT_GUARDS_AND_PROOF_CASES.md) plus [machine-readable 35-column O14 source→target crosswalk](contracts/O14_TO_UNIFIED_FIVE_ENTITY_COLUMN_MAPPING_CANDIDATE.json) correct `resource.type`/`allocation.borrower_name` SQL naming, enforce ledger and one-PENDING-transfer uniqueness, identify the original JPA repositories' GLOBAL (not tenant-scoped) `findAll/findById/existsByNameKey/findByType/findByStatus/JPQL` methods, clarify public A09 idempotency versus ETag, and close a genuine LEAD borrower-selection/first recovery-code flow. **No migrations, Java tests or new app endpoints were executed.** CP41 is a focused correction to [CP34](61_CP34_CANONICAL_SCHEMA_AND_CUTOVER_BLUEPRINT.md), [CP35](62_CP35_API_AUTH_UI_WORKFLOW_FREEZE_CANDIDATE.md), and sealed [CP37](64_CP37_SEALED_STAGE_BY_STAGE_CODEX_PROMPTS.md); owner and runtime proof gates remain OPEN.
 
 
