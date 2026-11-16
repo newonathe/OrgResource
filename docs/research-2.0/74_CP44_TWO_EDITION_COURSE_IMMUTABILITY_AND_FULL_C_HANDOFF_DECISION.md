@@ -53,7 +53,7 @@ These are features of the **class requirement and its particular proposal**, NOT
 
 ## 4. Full C / additional product acceptance — after A freeze, without contaminating A
 
-The user explicitly selects full C of [E01–E39 change register](73_PRE_CODEX_S0_S2_IN_CHAT_SCOPE_AUTHORITY_AND_ALL_EXTRAS_REGISTER.md). These are **user-selected additional product features**, NOT instructor mandates.
+The user explicitly selects the full approved C goal in the [E01–E39 change/exclusion register](73_PRE_CODEX_S0_S2_IN_CHAT_SCOPE_AUTHORITY_AND_ALL_EXTRAS_REGISTER.md). These are **user-selected additional product features**, NOT instructor mandates.
 
 - **Multi-org safe identity**: Login/logout, session and CSRF, local credentials, one-use recovery codes, no fabricated Ateneo account verification, invitations, ACTIVE org/membership and first-owner bootstrap.
 - **Governance**: Five roles OWNER/ADMIN/CUSTODIAN/LEAD/MEMBER, member management, assigned lead/borrower lookup, one pending ownership transfer, last-owner protection, revocation/suspension.
@@ -97,7 +97,7 @@ This is **future-facing copy**. Do NOT use the past-tense statements "I am provi
 | Two deliverables, Course Final then full Extended C | **USER APPROVED, current directive** |
 | Course-compatible/older framework allowed and literal academic technology mandatory | **USER APPROVED** |
 | Course source/release freeze and no silent course regression | **USER APPROVED** |
-| Full C features E01–E39 as extra scope | **USER APPROVED at goal level** (individual safety/hosting/account constraints remain) |
+| Full C product additions E01–E37 (with E38–E39 expressly excluded/deferred) | **USER APPROVED at goal level** (individual safety/hosting/account constraints remain) |
 | Independent full C runtime / one vs two internal processes | **DESIGN HYPOTHESIS**, requires C0 experiment; no proven selection |
 | Source A fully compliant/runnable and frozen | **NOT BUILT/NOT VERIFIED YET** |
 | Source C truly preserves execution of academic code | **NOT BUILT/NOT VERIFIED YET** |
