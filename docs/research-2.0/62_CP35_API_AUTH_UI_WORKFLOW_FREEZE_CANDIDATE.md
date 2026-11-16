@@ -80,7 +80,7 @@ All paths start `/api/v2`. Under `/orgs/{orgId}`, active membership/org status m
 | Method/path under `/orgs/{orgId}` | Input/output | Permission and principal negative |
 |---|---|---|
 | GET `/members` | limit/cursor → minimally redacted MemberView[] | OWNER/ADMIN; org-scoped |
-| GET `/borrowers` | limit/cursor + optional bounded search → ACTIVE same-org BorrowerOption[] **{membershipId,displayName} only** | OWNER/ADMIN/CUSTODIAN or assigned LEAD, no passwords/phone/roles/recovery codes; LEAD needs this to create reusable allocations |
+| GET `/borrowers` | limit/cursor, optional bounded search and projectId (required for LEAD) → ACTIVE same-org BorrowerOption[] **{membershipId,displayName} only** | OWNER/ADMIN/CUSTODIAN or LEAD assigned to specified same-org Project; no passwords/phone/roles/recovery codes; allows reusable allocation without ADMIN member-list privilege |
 | POST `/invitations` | Invite DTO →201, one-time secret | OWNER can invite all non-owner roles; ADMIN can invite CUSTODIAN/LEAD/MEMBER, not ADMIN/OWNER |
 | POST `/invitations/{id}/revoke` | If-Match → 200 invitation state | OWNER/ADMIN with grant authority; used/expired cannot reissue |
 | POST `/members/{id}/role` | role + If-Match → MemberView | OWNER changes non-OWNER; ADMIN cannot grant ADMIN/OWNER or modify OWNER |
