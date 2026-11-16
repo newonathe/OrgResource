@@ -77,11 +77,20 @@ def parse_table(lines: list[str]) -> list[list[str]]:
 
 def style_table(table, rows: list[list[str]]) -> None:
     table.style = "Table Grid"
-    table.autofit = True
+    table.autofit = False
+    width_map = {
+        3: (1.50, 2.40, 3.36),
+        4: (1.20, 1.25, 1.50, 3.31),
+        5: (0.65, 1.35, 1.55, 1.65, 2.06),
+    }
+    widths = width_map.get(len(table.columns), tuple(7.26 / len(table.columns) for _ in table.columns))
+    for column, width in zip(table.columns, widths):
+        column.width = Inches(width)
     repeat_table_header(table.rows[0])
     for row_index, row in enumerate(table.rows):
         row._tr.get_or_add_trPr().append(OxmlElement("w:cantSplit"))
         for cell_index, cell in enumerate(row.cells):
+            cell.width = Inches(widths[cell_index])
             cell.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.TOP
             cell.text = ""
             paragraph = cell.paragraphs[0]
@@ -105,6 +114,8 @@ def add_table(document: Document, lines: list[str]) -> None:
     rows = parse_table(lines)
     if not rows:
         return
+    if document.paragraphs:
+        document.paragraphs[-1].paragraph_format.keep_with_next = True
     columns = max(len(row) for row in rows)
     table = document.add_table(rows=len(rows), cols=columns)
     style_table(table, rows)
