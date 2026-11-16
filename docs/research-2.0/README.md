@@ -1,5 +1,8 @@
 # OrgResource 2.0 research documentation
 
+> **DIRECT ORIGINAL MANIFEST COUNT AUDIT (2026-11-16):** [historical C04 embedded CSV reconciliation JSON](contracts/ORIGINAL_MANIFEST_COUNT_RECONCILIATION_2026-11-16.json) confirms 1,241 original paths (15 video), 1,370 nested members, and the remaining +1 non-video outer-ZIP difference, which may be the generated CSV C04 says is stored inside PART1. **No current raw ZIP hash/path validation**; do not call this confirmed. Latest provider/security and submission corrections are [CP40](67_CP40_PROVIDER_TRIAL_SECURITY_AND_DEADLINE_REALITY_CHECK.md).
+
+
 > **CP40 PRIMARY-SOURCE SAFETY FINDINGS (2026-11-16):** [Current Twilio trial, free hosting, invitation and deadline reality check](67_CP40_PROVIDER_TRIAL_SECURITY_AND_DEADLINE_REALITY_CHECK.md). Current official Twilio trial is 30 days, verified recipients, preset templates and cannot be assumed to send arbitrary OrgResource due-date SMS. OCI Always Free may run out of region capacity or reclaim idle compute; private GitHub Actions billing is quota-based. P0 uses one-time **bearer** invites, not unsupported `intendedUserId` identity claims. Current O14 `TWILIO_VIRTUAL` intentionally has no authorized live adapter. These findings are applied to CP31, CP34, CP35 and CP37; all are **documentation-only recommendations**, with Codex S0–S10 still sealed.
 
 
