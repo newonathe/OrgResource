@@ -93,7 +93,7 @@ All repositories inherit Spring Data JpaRepository basic save, saveAndFlush, fin
 | AllocationRepository | sumResourceCommitments(List<Long> resourceIds,AllocationStatus approved,AllocationStatus issued,LocalDateTime now,Collection<AllocationStatus> countedStatuses):List<Object[]> | Grouped JPQL H and I per Resource for list availability |
 | AllocationRepository | findExpiredCandidateIds(Collection<AllocationStatus> openStatuses,LocalDateTime now,Pageable pageable):List<Long> | Bounded PENDING/APPROVED candidates for expiry worker, ordered id |
 | AllocationRepository | findReminderCandidateIds(AllocationStatus issued,ResourceType reusable,ReminderOutcome neverAttempted,LocalDateTime now,LocalDateTime within24Hours,Pageable pageable):List<Long> | Bounded consented ISSUED reusable reminders with end in [now,+24h) and no prior claim |
-| AllocationRepository | findStaleReminderClaimIds(ReminderOutcome claimed,LocalDateTime cutoff,Pageable pageable):List<Long> | Bounded CLAiMED reminder recovery candidates before cutoff |
+| AllocationRepository | findStaleReminderClaimIds(ReminderOutcome claimed,LocalDateTime cutoff,Pageable pageable):List<Long> | Bounded CLAIMED reminder recovery candidates before cutoff |
 
 **Security-critical production discrepancy:** All O14 findAll, findById, name uniqueness, findByType, findByStatus, lockById and aggregate JPQL are **GLOBAL**, not organization filtered. They are correct as original single-demo workspace methods but NOT safe unchanged for future authenticated multi-tenant product. The actual SQL/JPQL tenant rewrite and DB constraints must follow a separate reviewed migration and failure tests (research CP41), never merely add a client-side filter.
 
