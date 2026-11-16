@@ -1,4 +1,7 @@
 ORGRESOURCE FINAL TWO-EDITION CODEX MASTER IMPLEMENTATION HANDOFF
+
+**CP45 FINAL PRE-HANDOFF QA (2026-11-16):** Read `docs/research-2.0/76_CP45_FINAL_TARGETED_PRE_CODEX_VERIFICATION_AND_RESEARCH_STOP.md` BEFORE execution. Clarifies three separate claims: A frozen bytes/source unchanged; B descends from A and reports actual diffs (B may need explicitly reviewed source adaptations); B independently PROVES actual academic course behavior rather than carrying inert copies. Confirms official course `Twilio SMS Notification Setup.pptx` teaches Retrofit→actual Twilio VIRTUAL PHONE, not just local FakeTwilio. Plan a permitted, separately authorized Twilio Virtual Phone provider test where eligible; T2 unavailable => BLOCKED, not fake PASS or an unapproved SMS. The course assignment itself does not say real carrier delivery is required. The source-based prep is DONE; remaining Java/MySQL/CI/parity/host evidence is executable, NOT another paper pass. A needs a clean independent delivery even if B cannot finish by printed Dec 5; do not silently call an incomplete B finished. This note does not authorize Codex.
+
 **STILL SEALED IN RESEARCH WORKSPACE. START ONLY WHEN USER EXPLICITLY HANDS OVER TO CODEX.**
 This file supersedes the old single-version stage chronology in CP37 and research prompt 71. Read CP44 as top-level authority: docs/research-2.0/74_CP44_TWO_EDITION_COURSE_IMMUTABILITY_AND_FULL_C_HANDOFF_DECISION.md
 
