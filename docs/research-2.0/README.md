@@ -1,5 +1,8 @@
 # OrgResource 2.0 research documentation
 
+> **CP41 SOURCE-TO-SCHEMA/SECURITY REVIEW (2026-11-16):** [CP41 actual physical mapping and DB invariants](68_CP41_SOURCE_TO_SQL_INVARIANT_GUARDS_AND_PROOF_CASES.md) plus [machine-readable 35-column O14 source→target crosswalk](contracts/O14_TO_UNIFIED_FIVE_ENTITY_COLUMN_MAPPING_CANDIDATE.json) correct `resource.type`/`allocation.borrower_name` SQL naming, enforce ledger and one-PENDING-transfer uniqueness, identify the original JPA repositories' GLOBAL (not tenant-scoped) `findAll/findById/existsByNameKey/findByType/findByStatus/JPQL` methods, clarify public A09 idempotency versus ETag, and close a genuine LEAD borrower-selection/first recovery-code flow. **No migrations, Java tests or new app endpoints were executed.** CP41 is a focused correction to [CP34](61_CP34_CANONICAL_SCHEMA_AND_CUTOVER_BLUEPRINT.md), [CP35](62_CP35_API_AUTH_UI_WORKFLOW_FREEZE_CANDIDATE.md), and sealed [CP37](64_CP37_SEALED_STAGE_BY_STAGE_CODEX_PROMPTS.md); owner and runtime proof gates remain OPEN.
+
+
 > **DIRECT ORIGINAL MANIFEST COUNT AUDIT (2026-11-16):** [historical C04 embedded CSV reconciliation JSON](contracts/ORIGINAL_MANIFEST_COUNT_RECONCILIATION_2026-11-16.json) confirms 1,241 original paths (15 video), 1,370 nested members, and the remaining +1 non-video outer-ZIP difference, which may be the generated CSV C04 says is stored inside PART1. **No current raw ZIP hash/path validation**; do not call this confirmed. Latest provider/security and submission corrections are [CP40](67_CP40_PROVIDER_TRIAL_SECURITY_AND_DEADLINE_REALITY_CHECK.md).
 
 
