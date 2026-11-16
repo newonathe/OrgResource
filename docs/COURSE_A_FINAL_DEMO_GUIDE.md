@@ -4,15 +4,15 @@ This guide is a rehearsal aid. It is not a recording, Canvas submission, instruc
 
 ## Before the recording
 
-1. Open the extracted OrgResource source folder in VS Code. Keep the release folder outside the repository.
+1. Open the A3 release folder in VS Code; it contains the JAR, portable launcher, read-only SQL, Postman collection, and this guide. Keep the release folder outside the repository. The source ZIP is a separate artifact for inspection or rebuilding.
 2. Confirm MySQL is running. For the presentation, create a new empty local `orgresource` schema and least-privileged account using [the portable first-run guide](PORTABLE_FIRST_RUN.md). Do not use or clean the accumulated `orgresource_test` acceptance database.
 3. Confirm JDK 8 is active with java -version. The package receipt records the exact Java version used for the release.
 4. Stop any old OrgResource process using Ctrl+C in the PowerShell window that started it. Do not kill an unidentified process.
 5. Start the exact packaged JAR:
 
-   .\scripts\start-portable-demo.ps1 -JarPath 'C:\path\to\OrgResource.jar' -PromptForPassword
+.\scripts\start-portable-demo.ps1 -PromptForPassword
 
-   The script prompts for the local schema account password without saving or printing it, starts Java on 127.0.0.1:8080, and leaves MySQL running. The caller should replace the example path with the final A3 release JAR path.
+The script uses the OrgResource.jar beside the release folder, prompts for the local schema account password without saving or printing it, starts Java on 127.0.0.1:8080, and leaves MySQL running. If MySQL uses a nondefault local port, configure ORG_DB_URL as described in PORTABLE_FIRST_RUN.md before starting.
 6. Wait for the Spring Boot started message. Open http://127.0.0.1:8080/ and confirm the Overview screen loads.
 7. In MySQL Workbench choose the new local `orgresource` connection and open scripts/course-a-demo.sql. Run it as read-only. Confirm five tables, InnoDB relationships, row counts, and fictional rows. Do not show phone numbers or borrower names. The SQL file uses the currently selected schema and does not switch databases.
 8. Import postman/OrgResource-Course-A-28-Routes.postman_collection.json and postman/OrgResource-Course-A-Local.postman_environment.json. Set the environment as active. The 28-route file is a reference with variables, not the ordered Newman runner. For automated execution use scripts/run-api-acceptance.ps1.

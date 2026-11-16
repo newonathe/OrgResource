@@ -14,7 +14,12 @@ $loadedUrl = $false
 $loadedUser = $false
 $loadedPassword = $false
 if (-not $JarPath) {
-    $JarPath = Join-Path $repoRoot 'deliverables\O14\OrgResource.jar'
+    $releaseJar = Join-Path $repoRoot 'OrgResource.jar'
+    if (Test-Path -LiteralPath $releaseJar -PathType Leaf) {
+        $JarPath = $releaseJar
+    } else {
+        $JarPath = Join-Path $repoRoot 'deliverables\COURSE-A\OrgResource.jar'
+    }
 }
 $JarPath = [IO.Path]::GetFullPath($JarPath)
 if (-not (Test-Path -LiteralPath $JarPath -PathType Leaf)) {
@@ -36,8 +41,10 @@ try {
         $env:ORG_DB_URL = 'jdbc:mysql://127.0.0.1:3306/orgresource?useSSL=false&serverTimezone=UTC'
         $loadedUrl = $true
     }
-    if ($env:ORG_DB_URL -notmatch '^jdbc:mysql://127\.0\.0\.1:3306/orgresource(?:[?;]|$)') {
-        throw 'For safety, the portable demo must use the local orgresource schema at 127.0.0.1:3306. No database was changed.'
+    $databaseUrlMatch = [regex]::Match($env:ORG_DB_URL, '^jdbc:mysql://127\.0\.0\.1:(?<port>\d{1,5})/orgresource(?:[?;]|$)')
+    $databasePort = if ($databaseUrlMatch.Success) { [int]$databaseUrlMatch.Groups['port'].Value } else { 0 }
+    if (-not $databaseUrlMatch.Success -or $databasePort -lt 1 -or $databasePort -gt 65535) {
+        throw 'For safety, the portable demo must use a local 127.0.0.1 MySQL port and the exact orgresource schema. No database was changed.'
     }
     if (-not $env:ORG_DB_USER) {
         $env:ORG_DB_USER = 'orgresource_app'

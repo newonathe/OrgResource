@@ -43,9 +43,9 @@ For a visually clean demonstration, use a newly created empty local orgresource 
 
 In the release folder, set up the empty local schema using PORTABLE_FIRST_RUN.md and run:
 
-    .\scripts\start-portable-demo.ps1 -JarPath 'C:\path\to\OrgResource.jar' -PromptForPassword
+.\scripts\start-portable-demo.ps1 -PromptForPassword
 
-Open http://127.0.0.1:8080/. Add only fictional records. Stop Java with Ctrl+C in the PowerShell window; MySQL remains running and rows persist. Restart with the same command.
+The launcher finds the adjacent JAR. If MySQL is not listening on default port 3306, set ORG_DB_URL to the observed local port before starting; the launcher allows only 127.0.0.1 and the exact orgresource schema. Open http://127.0.0.1:8080/. Add only fictional records. Stop Java with Ctrl+C in the PowerShell window; MySQL remains running and rows persist. Restart with the same command.
 
 For the protected developer test database only, the local script can be run with:
 
