@@ -53,7 +53,7 @@ All results below are from executions for this A1+A2 continuation; historical O1
 | Release packaging | `scripts/package-release.ps1 -ArtifactsDirectory <external release folder>` | **PASS** — created executable JAR, complete tracked-source ZIP, Java/Eclipse source ZIP, SHA-256 file and release manifest. The final package was rebuilt from the final committed source; exact current sizes/hashes are in `RELEASE-MANIFEST.json` and `SHA256SUMS.txt` beside the release files. |
 | Packaged runtime and restart | Started the actual release JAR with `scripts/start-release-demo.ps1`; used HTTP to create a unique fictional Department, stopped Java with a console Ctrl+C event, restarted the same JAR, queried the same ID/name, then deleted only that exact test record | **PASS** — record persisted after restart and was then absent after cleanup. Java exited; Windows `MySQL80` remained **Running**. |
 | GitHub CI | GitHub Actions `Verify`, run `43940334562`, for implementation commit `f355210...` | **PASS** — completed with `success`. |
-| Git hygiene | `git diff --check`; branch/remote SHA check | **PASS** at implementation commit; the report is being committed as a separate documentation change on the same feature branch. No force-push or merge was used. |
+| Git hygiene | `git diff --check`; branch/remote SHA check | **PASS** — implementation commit was pushed, then this report was committed and pushed separately on the same feature branch. The release manifest records the exact packaged HEAD. No force-push or merge was used. |
 
 The package also passed local checks that the executable JAR contains the bundled React entry point and assets and that the current v2.1 Postman collection parses as a standard collection with 28 requests. The packaged-JAR Playwright and Newman suites verified the actual served assets and APIs, rather than treating archive inspection as runtime proof.
 
@@ -92,5 +92,5 @@ The full-source archive's own digest is recorded in the adjacent manifest/checks
 
 **Technical A1+A2 status: PASS for the executed local acceptance gates.**  
 **Academic/instructor sign-off: PENDING / NOT_VERIFIED.**  
-**Git:** feature branch pushed; PR #11 is draft/open, based on the verified O14 implementation branch. The final report-only commit and final remote SHA are to be verified after this report is committed.  
+**Git:** feature branch pushed; PR #11 is draft/open, based on the verified O14 implementation branch. The implementation SHA is recorded above; the final packaged feature-branch SHA is recorded in the adjacent release manifest and verified against the remote branch after the report push.  
 **A3:** not started; stop here for the user's review.
