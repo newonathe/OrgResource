@@ -44,6 +44,10 @@
 
 **Historic technical caveat:** Research identified an earlier identical-source failing/passing MySQL test (available=8 when expected 5). Cause is UNKNOWN, not fixed merely because later CI is green. See CP39. Do not alter the expected value or disable the test.
 
+## Latest execution handoff — 2026-11-16
+
+**A FIRST, THEN EXTENDED C.** After reviewing the completed source-derived 00–06 packet, read [07 Course A executable freeze](07_COURSE_A_EXECUTABLE_SPEC_FREEZE_2026-11-16.md) and [08 Free-Luna Codex A1+A2 master prompt](08_CODEX_A1_A2_MASTER_PROMPT_FREE_LUNA.md). These are the **active Course A execution specifications**, superseding the older modern-runtime-S1-first and all-in-one A+B prompt sequence for the **first engineering cycle only**. This does not mark A built or grant automatic deployment/merge/Canvas actions. A3 release freeze is a separate reviewed gate after actual A2 acceptance; Extended C follows from exact A source SHA.
+
 ## This canonical packet
 
 1. 01_WRITTEN_REQUIREMENTS_AND_COMPLIANCE.md — complete written academic acceptance requirements, authority, evidence and grading-safe judgments.
