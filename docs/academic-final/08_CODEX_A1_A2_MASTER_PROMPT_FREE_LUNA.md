@@ -29,12 +29,16 @@ Inspect current PR parents and latest relevant GitHub CI. **Do not reset, clean,
 \`\`\`
 git show origin/docs/course-a-final-spec-build-handoff-2026-11-16:AGENTS.md
 git show origin/docs/course-a-final-spec-build-handoff-2026-11-16:docs/academic-final/07_COURSE_A_EXECUTABLE_SPEC_FREEZE_2026-11-16.md
-git show origin/docs/course-a-final-spec-build-handoff-2026-11-16:docs/academic-final/01_WRITTEN_REQUIREMENTS_AND_COMPLIANCE.md
-git show origin/docs/course-a-final-spec-build-handoff-2026-11-16:docs/academic-final/02_DOMAIN_26_ROUTE_COMPONENT_CONTRACT.md
-git show origin/docs/course-a-final-spec-build-handoff-2026-11-16:docs/academic-final/05_EERD_REPOSITORIES_AND_METHOD_SEQUENCES.md
-git show origin/docs/course-a-final-spec-build-handoff-2026-11-16:docs/academic-final/03_TEST_POSTMAN_DEMO_AND_SUBMISSION.md
-git show origin/docs/course-a-final-spec-build-handoff-2026-11-16:docs/academic-final/04_AGENT_AND_EFFICIENCY_POLICY.md
 \`\`\`
+**Only as needed for the affected change/test**, use narrow path-specific `git show`, file search and source slices from:
+- `docs/academic-final/02_DOMAIN_26_ROUTE_COMPONENT_CONTRACT.md` §1–4 when editing a DTO/route; the entire file need not be recopied into context.
+- `docs/academic-final/03_TEST_POSTMAN_DEMO_AND_SUBMISSION.md` §2–4 when writing acceptance tests.
+- `docs/academic-final/05_EERD_REPOSITORIES_AND_METHOD_SEQUENCES.md` for changed entity/repository/Component methods.
+- `docs/academic-final/01_WRITTEN_REQUIREMENTS_AND_COMPLIANCE.md` for a disputed course requirement.
+- `docs/academic-final/04_AGENT_AND_EFFICIENCY_POLICY.md` for actual delegation/effort rules only.
+
+The 07 document is the concise active **execution contract**. Do not fully ingest the 80-file research tree, seven academic documents or 319k historic master at start merely to establish context. Retrieve an exact additional section only when a concrete contract ambiguity or failing test warrants it.
+
 Read the original course PDFs/proposal from the repository's \`ChatGPT-Project-Pack/UPLOAD\` when available and necessary. Cite exact paths but do not repeatedly ingest massive history. Read current O14 source, \`backend/pom.xml\`, Jersey registration, five entities/controllers/repositories, relevant Components, \`application.properties\` and test profile, FakeTwilio/Reminder code, relevant tests, Maven/React release scripts and Postman files.
 
 **Hierarchy:** Original 3-page assignment + 9-page syllabus > authentic historical 12-page proposal for project-specific behavior > approved current O14 code amendments > concise course-A spec 07 > historical research. CP44/46 two-edition user decision overrides old one-modern-runtime-first agent plans.
