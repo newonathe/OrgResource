@@ -1,5 +1,8 @@
 # OrgResource 2.0 research documentation
 
+> **CP40 PRIMARY-SOURCE SAFETY FINDINGS (2026-11-16):** [Current Twilio trial, free hosting, invitation and deadline reality check](67_CP40_PROVIDER_TRIAL_SECURITY_AND_DEADLINE_REALITY_CHECK.md). Current official Twilio trial is 30 days, verified recipients, preset templates and cannot be assumed to send arbitrary OrgResource due-date SMS. OCI Always Free may run out of region capacity or reclaim idle compute; private GitHub Actions billing is quota-based. P0 uses one-time **bearer** invites, not unsupported `intendedUserId` identity claims. Current O14 `TWILIO_VIRTUAL` intentionally has no authorized live adapter. These findings are applied to CP31, CP34, CP35 and CP37; all are **documentation-only recommendations**, with Codex S0–S10 still sealed.
+
+
 > **Machine-readable course QA (2026-11-16):** [Academic 26-case CSV](contracts/ACADEMIC_26_ROUTE_ACCEPTANCE_NOT_RUN.csv) and [source-annotation crosswalk JSON](contracts/ACADEMIC_26_SOURCE_ANNOTATION_CROSSWALK.json) were checked against all five actual O14 Jersey controllers: **26/26 static matches, 20 POST and 6 GET**. This is static source traceability, **not** evidence the unified application has executed the requests. See [CP39](66_CP39_PINNED_CI_TRIAGE_AND_LAST_CONTRACT_CORRECTIONS.md) for the exact CI failure investigation and corrected bounded S1 gate.
 
 
