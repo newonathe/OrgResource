@@ -3,7 +3,7 @@
 > **FINAL TWO-EDITION OVERRIDE (CP44–CP46, 2026-11-16):** This academic canonical document originated in already-uploaded **draft PR #9**, and is consolidated here without merging that PR. Read [Final consolidated handoff](../research-2.0/77_CP46_FINAL_GITHUB_HANDOFF_RELEASE_INDEX.md), [A-first / B-extended decision](../research-2.0/74_CP44_TWO_EDITION_COURSE_IMMUTABILITY_AND_FULL_C_HANDOFF_DECISION.md), and the [single active Codex master prompt](../research-2.0/75_FINAL_TWO_EDITION_CODEX_HANDOFF_MASTER_PROMPT.txt). **A** is a local strict course version; **B** is separate enhanced C descended from frozen A. Any prior wording implying one final release, modernizing A before course acceptance, or production testing before A completion is **historical/superseded**. A image testing is safe local single-organization; B must enforce authorization/tenant isolation. No application tests or course submission were performed by this document copy.
 
 
-**Version:** A-CANON-1.0, 2026-11-16. **Status:** O14 SOURCE-VERIFIED contract; final secured one-product runtime not implemented.  
+**Version:** A-CANON-1.1, 2026-11-16. **Status:** Original O14 course routes SOURCE-VERIFIED; Course A image/Twilio completion NOT EXECUTED; Extended C runtime NOT BUILT.  
 **Direct source:** O14 SHA 2dd336ed39cecd417a8bce3388b303e688e95dee, backend/src/main/java/app/entities, dto/ApiDtos.java, five rest/controllers, five components, repositories, app/config/ApiExceptionMapper.java, and O14 ROUTE_ACCEPTANCE_MATRIX.md. **Proposal differences** are explicitly distinguished. All URLs have prefix /api from JerseyConfig.
 
 ## 1. Domain model and exact stored fields
@@ -118,9 +118,9 @@ Let T = persisted Resource.totalQuantity; H = sum Allocation.quantity where stat
 
 **Source reconciliation warning:** The initial proposal's statement “approved remains reserved until action” conflicts with current O14 effective-time query. The canonical current contract preserves O14 immediate expiration of an APPROVED hold at Project.endAt, with worker cleanup eventually setting CANCELLED/EXPIRED. Document as amendment, not retroactive proposal text.
 
-## 7. Final product security/extension compatibility boundary
+## 7. Extended C security/extension compatibility boundary (AFTER Course A freezes)
 
-**This section is NOT a new course requirement**. The user wants the final course-submitted product to support actual secure multi-org use:
+**This section is NOT a new course requirement and is NOT part of Course A implementation.** Latest user decision CP44–CP46 requires a finished independently runnable Course A FIRST; then Extended C is derived from immutable A and separately demonstrates actual course parity. For Extended C, the user wants real multi-organization operation:
 
 - Every original /api handler must be executed in an authenticated, server-chosen active organization; path IDs and repo queries must be org-scoped; 401/403/404 boundaries and CSRF/rate limit tested. Five original semantics, method shapes and names remain available.
 - Public /api/v2 APIs may use UUID, UTC, membership/role, ETag, idempotency keys, protected histories and safe stock ledger, but must call the SAME business components/transactions and MySQL data as original /api. No second synchronized fake product.
