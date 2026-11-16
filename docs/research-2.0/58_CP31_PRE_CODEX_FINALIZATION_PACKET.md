@@ -1,5 +1,8 @@
 # OrgResource — Pre-Codex Finalization Packet (CP31, review candidate)
 
+> **LATER PRIMARY-EVIDENCE REFINEMENT:** [CP39](66_CP39_PINNED_CI_TRIAGE_AND_LAST_CONTRACT_CORRECTIONS.md) compares exact same-SHA failing/passing Java/MySQL GitHub job logs and source test, bounds S1 to supported-technology proof rather than full 26 handlers, and fixes the public Allocation.borrowerNameSnapshot contract through CP34/CP35. **S5** retains mandatory full 26-route live verification. The original ZIP +1 path discrepancy remains open because original ZIP bytes were not newly available in the current tool runtime. These findings supersede older ambiguous gate phrasing; no application code or merge changed.
+
+
 > **LATEST PAPER REVIEW ADDENDA (2026-11-16):** In addition to CP32/CP33, see [CP34 schema and clean historical-data cutover](61_CP34_CANONICAL_SCHEMA_AND_CUTOVER_BLUEPRINT.md), [CP35 exact public API/identity/UI journeys](62_CP35_API_AUTH_UI_WORKFLOW_FREEZE_CANDIDATE.md), [CP36 original course API retry/ledger compatibility](63_CP36_LEGACY_COMPATIBILITY_ATOMICITY_AND_CUTOVER_GATES.md), [CP37 SEALED stage-by-stage Codex prompts](64_CP37_SEALED_STAGE_BY_STAGE_CODEX_PROMPTS.md), and [CP38 independent owner review/no-go register](65_CP38_INDEPENDENT_PRE_CODEX_FREEZE_REVIEW_AND_OPEN_EVIDENCE.md). These are the reviewed **candidate** contract refinements; none proves build execution or constitutes owner signoff or deployment authorization.
 
 
