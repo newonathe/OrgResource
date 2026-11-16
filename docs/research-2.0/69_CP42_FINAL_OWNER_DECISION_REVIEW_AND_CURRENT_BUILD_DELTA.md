@@ -1,5 +1,8 @@
 # CP42 — Final owner decision review and plain-language current-build comparison
 
+> **SUPERSEDED CHRONOLOGY / USER DECISION (2026-11-16):** The user has selected **BOTH a strict course-complete edition A and full C extension edition B**. The production-first ordering, one-release assumption, and owner-approval checkboxes in historical CP42 must be read through [CP44 binding decision](74_CP44_TWO_EDITION_COURSE_IMMUTABILITY_AND_FULL_C_HANDOFF_DECISION.md). Academic A must be completed and frozen first; extended C descends from exactly that source and keeps A verifiable without destructive changes. Two artifacts do NOT imply two independent grading submissions or authorization to deploy. This did not edit any application code.
+
+
 > **P43 USER DECISION (2026-11-16) SUPERCEDES THE COURSE-CLARIFICATION GATE IN THIS HISTORICAL P42:** [CP43 written scope and acceptance](70_CP43_FIXED_WRITTEN_COURSE_SCOPE_AND_HANDOFF_GO_NO_GO.md). Only the syllabus and ESP final-project specification define final requirements. CLO9 image and real Twilio REST integration are **implementation inclusions**, eligible runtime deletion is tested, and Dec5 is the printed deadline. Do **not** ask for new Canvas/instructor requirements; actual student submission to Canvas remains required. This changes **planned implementation**, not current O14 application code, nor does it grant Codex/hosting approval.
 
 
