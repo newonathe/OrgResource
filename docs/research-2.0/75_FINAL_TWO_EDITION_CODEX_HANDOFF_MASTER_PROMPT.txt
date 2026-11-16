@@ -1,5 +1,8 @@
 ORGRESOURCE FINAL TWO-EDITION CODEX MASTER IMPLEMENTATION HANDOFF
 
+RESEARCH CLOSEOUT NOTE (CP47, 2026-11-16): Read `docs/research-2.0/78_CP47_FINAL_NEXT_ACTIONS_RESEARCH_CLOSED.md` as the concise, final remaining-work and owner-approval list. No further general research phase is required. This prompt remains SEALED until the user explicitly authorizes Codex implementation. The academic A must be accepted and frozen before C's compatibility spike/extended implementation; no public provider, paid-host, Windows local write, destructive PR merge, or submission is pre-authorized.
+
+
 LATEST FINAL HANDOFF AUTHORITY (CP46, 2026-11-16): Read `docs/research-2.0/77_CP46_FINAL_GITHUB_HANDOFF_RELEASE_INDEX.md` and the consolidated `docs/academic-final/00_READ_FIRST_AND_DECISION_BOUNDARIES.md` → 01 (written matrix) → 02 (all 26 route semantics) → 05 (EERD/repository/method sequences) → 03 (runtime acceptance/Postman/demo) → 04 (agent policy) → 06 (static QA). These academic docs were originally prepared in PR#9 and copied into the research branch under CP44 two-edition precedence. Do NOT use old root README, old exactly-five/production-first AGENTS, earlier CP37 or prompt 71 to change the current A-FIRST-B-SECOND delivery sequence. All tests still must be actually run by Codex; this file's presence alone does NOT start Codex.
 
 
