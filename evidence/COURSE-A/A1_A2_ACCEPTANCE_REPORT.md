@@ -92,5 +92,5 @@ The full-source archive's own digest is recorded in the adjacent manifest/checks
 
 **Technical A1+A2 status: PASS for the executed local acceptance gates.**  
 **Academic/instructor sign-off: PENDING / NOT_VERIFIED.**  
-**Git:** feature branch pushed; PR #11 is draft/open, based on the verified O14 implementation branch. The implementation SHA is recorded above; the final packaged feature-branch SHA is recorded in the adjacent release manifest and verified against the remote branch after the report push.  
+**Git:** feature branch pushed; PR #11 is draft/open, based on the verified O14 implementation branch. The implementation SHA is recorded above; the final packaged feature-branch SHA is recorded in the adjacent release manifest and verified against the remote branch after the report push.
 **A3:** not started; stop here for the user's review.
