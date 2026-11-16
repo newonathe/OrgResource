@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
-    [string]$ArtifactsDirectory
+    [string]$ArtifactsDirectory,
+    [string]$AsBuiltProposalDocx
 )
 
 $ErrorActionPreference = 'Stop'
@@ -10,6 +11,10 @@ $backendRoot = Join-Path $repoRoot 'backend'
 if (-not $ArtifactsDirectory) {
     $ArtifactsDirectory = Join-Path $repoRoot 'deliverables\COURSE-A'
 }
+if (-not $AsBuiltProposalDocx -or -not (Test-Path -LiteralPath $AsBuiltProposalDocx -PathType Leaf)) {
+    throw 'Pass -AsBuiltProposalDocx with the rendered Course A as-built proposal generated from the clean committed source HEAD.'
+}
+$AsBuiltProposalDocx = [IO.Path]::GetFullPath($AsBuiltProposalDocx)
 $ArtifactsDirectory = [IO.Path]::GetFullPath($ArtifactsDirectory)
 New-Item -ItemType Directory -Force -Path $ArtifactsDirectory | Out-Null
 
@@ -75,12 +80,47 @@ if ($LASTEXITCODE -ne 0 -or $jarEntries -notcontains 'BOOT-INF/classes/static/in
 $fullSourceZip = Join-Path $ArtifactsDirectory 'OrgResource-complete-source.zip'
 $javaSourceZip = Join-Path $ArtifactsDirectory 'OrgResource-java-source.zip'
 $releaseJar = Join-Path $ArtifactsDirectory 'OrgResource.jar'
+$asBuiltProposal = Join-Path $ArtifactsDirectory 'OrgResource-Course-A-As-Built-Proposal.docx'
+$demoGuide = Join-Path $ArtifactsDirectory 'OrgResource-Course-A-Demo-Guide.md'
+$portableGuide = Join-Path $ArtifactsDirectory 'PORTABLE_FIRST_RUN.md'
+$demoSql = Join-Path $ArtifactsDirectory 'OrgResource-Course-A-Demo.sql'
+$postmanCollection = Join-Path $ArtifactsDirectory 'OrgResource-Course-A-28-Routes.postman_collection.json'
+$postmanEnvironment = Join-Path $ArtifactsDirectory 'OrgResource-Course-A-Local.postman_environment.json'
+$portableScriptDirectory = Join-Path $ArtifactsDirectory 'scripts'
+$portableScript = Join-Path $portableScriptDirectory 'start-portable-demo.ps1'
 $repoChanges = & git -C $repoRoot status --porcelain
 if ($LASTEXITCODE -ne 0 -or $repoChanges) {
     throw 'Commit the reviewed source changes before creating source ZIPs so the archives match the repository HEAD.'
 }
+$sourceCommit = (& git -C $repoRoot rev-parse HEAD).Trim()
+$docxArchive = [IO.Compression.ZipFile]::OpenRead($AsBuiltProposalDocx)
+try {
+    $coreProperties = $docxArchive.GetEntry('docProps/core.xml')
+    if (-not $coreProperties) {
+        throw 'The as-built proposal DOCX has no core properties for source verification.'
+    }
+    $coreReader = [IO.StreamReader]::new($coreProperties.Open())
+    try {
+        $coreText = $coreReader.ReadToEnd()
+    } finally {
+        $coreReader.Dispose()
+    }
+} finally {
+    $docxArchive.Dispose()
+}
+if (-not $coreText.Contains($sourceCommit)) {
+    throw 'The as-built proposal DOCX was not generated from this exact Git HEAD.'
+}
 Invoke-CheckedCommand 'git' @('-C', $repoRoot, 'archive', '--format=zip', '--prefix=OrgResource/', "--output=$fullSourceZip", 'HEAD')
 Copy-Item -LiteralPath $jarPath -Destination $releaseJar -Force
+Copy-Item -LiteralPath $AsBuiltProposalDocx -Destination $asBuiltProposal -Force
+Copy-Item -LiteralPath (Join-Path $repoRoot 'docs\COURSE_A_FINAL_DEMO_GUIDE.md') -Destination $demoGuide -Force
+Copy-Item -LiteralPath (Join-Path $repoRoot 'docs\PORTABLE_FIRST_RUN.md') -Destination $portableGuide -Force
+Copy-Item -LiteralPath (Join-Path $repoRoot 'scripts\course-a-demo.sql') -Destination $demoSql -Force
+Copy-Item -LiteralPath (Join-Path $repoRoot 'postman\OrgResource-Course-A-28-Routes.postman_collection.json') -Destination $postmanCollection -Force
+Copy-Item -LiteralPath (Join-Path $repoRoot 'postman\OrgResource-Course-A-Local.postman_environment.json') -Destination $postmanEnvironment -Force
+New-Item -ItemType Directory -Force -Path $portableScriptDirectory | Out-Null
+Copy-Item -LiteralPath (Join-Path $repoRoot 'scripts\start-portable-demo.ps1') -Destination $portableScript -Force
 
 $stagingParent = [IO.Path]::GetFullPath((Join-Path $env:TEMP ('OrgResourceJavaSource-' + [guid]::NewGuid().ToString('N'))))
 $tempRoot = [IO.Path]::GetFullPath($env:TEMP).TrimEnd('\') + '\'
@@ -106,9 +146,16 @@ if (-not $stagingResolved.StartsWith($tempRoot, [StringComparison]::OrdinalIgnor
 }
 Remove-Item -LiteralPath $stagingResolved -Recurse -Force
 
-$hashes = @($releaseJar, $fullSourceZip, $javaSourceZip) | ForEach-Object {
+$releaseFiles = @($releaseJar, $fullSourceZip, $javaSourceZip, $asBuiltProposal, $demoGuide, $portableGuide, $demoSql,
+    $postmanCollection, $postmanEnvironment, $portableScript)
+$artifactPaths = @{}
+foreach ($releaseFile in $releaseFiles) {
+    $artifactPaths[$releaseFile] = Split-Path -Leaf $releaseFile
+}
+$artifactPaths[$portableScript] = 'scripts/start-portable-demo.ps1'
+$hashes = $releaseFiles | ForEach-Object {
     $hash = Get-FileHash -LiteralPath $_ -Algorithm SHA256
-    '{0}  {1}' -f $hash.Hash.ToLowerInvariant(), (Split-Path -Leaf $_)
+    '{0}  {1}' -f $hash.Hash.ToLowerInvariant(), $artifactPaths[$_]
 }
 Set-Content -LiteralPath (Join-Path $ArtifactsDirectory 'SHA256SUMS.txt') -Value $hashes -Encoding ascii
 $sourceCommit = (& git -C $repoRoot rev-parse HEAD).Trim()
@@ -117,11 +164,12 @@ $javaVersion = (& java -version 2>&1 | Out-String).Trim()
 $mavenVersion = (& (Join-Path $backendRoot 'mvnw.cmd') -version 2>&1 | Select-Object -First 1 | Out-String).Trim()
 $nodeVersion = (& node --version 2>&1 | Out-String).Trim()
 $npmVersion = (& npm --version 2>&1 | Out-String).Trim()
-$artifactInventory = @($releaseJar, $fullSourceZip, $javaSourceZip) | ForEach-Object {
+$artifactInventory = $releaseFiles | ForEach-Object {
     $hash = Get-FileHash -LiteralPath $_ -Algorithm SHA256
     $file = Get-Item -LiteralPath $_
     [ordered]@{
         name = $file.Name
+        path = $artifactPaths[$_]
         sizeBytes = $file.Length
         sha256 = $hash.Hash.ToLowerInvariant()
     }
@@ -136,6 +184,7 @@ $manifest = [ordered]@{
     nodeVersion = $nodeVersion
     npmVersion = $npmVersion
     artifacts = $artifactInventory
+    manifestNote = 'SHA256SUMS and this manifest describe the listed payload files; the manifest does not hash itself.'
 }
 ($manifest | ConvertTo-Json -Depth 6) | Set-Content -LiteralPath (Join-Path $ArtifactsDirectory 'RELEASE-MANIFEST.json') -Encoding utf8
 Write-Output "Release artifacts created in $ArtifactsDirectory"

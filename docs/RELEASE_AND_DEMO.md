@@ -1,60 +1,66 @@
-# OrgResource release and demonstration
+# OrgResource Course Final A release and demonstration
 
-This document describes repeatable Course A technical packaging. The portable database setup is in [`PORTABLE_FIRST_RUN.md`](PORTABLE_FIRST_RUN.md); the O14 storyboard is historical and must be reconciled with the Course A acceptance report before the student records a final demonstration.
+The A3 release is assembled from one clean, committed source SHA. The release output is generated outside the repository. Do not overwrite the earlier A1+A2 release folder.
 
-## Build the release
+## Build the release from source
 
-Use the existing release script from the repository root after the source changes are committed. It runs frontend install/typecheck/unit tests/lint/build, then Maven `clean verify` with the bundled UI and the guarded local `orgresource_test` database. It creates the executable JAR, complete tracked-source ZIP, Java/Eclipse source ZIP, and SHA-256 manifest.
+Requirements are JDK 8, MySQL 8/InnoDB and Node.js 20.19 or newer. The integration tests require the protected local orgresource_test database configuration. The release script refuses to package with a running OrgResource process, a dirty Git tree, missing test credentials, or a missing as-built DOCX. It does not reset or drop MySQL data.
 
-```powershell
-.\scripts\package-release.ps1 -ArtifactsDirectory deliverables\COURSE-A
-```
+After committing the final source and recording its SHA, generate the DOCX from that exact commit with the tracked builder. Use the bundled workspace Python and its python-docx package when it is available; render every DOCX page to images and inspect the output before packaging.
 
-Before running, stop the local Java preview with Ctrl+C and ensure the protected `ORG_TEST_DB_*` setup is available. The test database is fictional and separate from the portable `orgresource` database. The script refuses a non-test schema and does not reset the database. Do not run `clean verify` or these tests against a personal/shared database.
+    $docx = Join-Path $env:TEMP 'OrgResource-Course-A-As-Built-Proposal.docx'
+    $sourceSha = (git rev-parse HEAD).Trim()
+    & 'C:\path\to\python.exe' scripts/build-course-final-a-docx.py --source-commit $sourceSha --output $docx
+    .\scripts\package-release.ps1 -ArtifactsDirectory 'C:\path\to\OrgResource-Course-Final-A3-Release' -AsBuiltProposalDocx $docx
 
-The output names are:
+The release script runs frontend npm ci, typecheck, unit tests, lint and production build, then Maven clean verify with React bundled. It makes the executable JAR, complete tracked-source ZIP, Java/Eclipse source ZIP, and copies the as-built DOCX, demo guide, read-only SQL, Postman reference and local environment into the release folder. SHA256SUMS and RELEASE-MANIFEST.json cover each payload file; the manifest does not hash itself.
 
-- `deliverables/COURSE-A/OrgResource.jar`
-- `deliverables/COURSE-A/OrgResource-complete-source.zip`
-- `deliverables/COURSE-A/OrgResource-java-source.zip`
-- `deliverables/COURSE-A/SHA256SUMS.txt`
-- `deliverables/COURSE-A/RELEASE-MANIFEST.json` (source branch/commit, tool versions, artifact sizes and hashes)
+The output contains:
 
-Build artifacts are ignored by Git and remain outside the source ZIP. The full-source ZIP comes from the exact committed Git `HEAD`; the Java ZIP includes Java source/tests/resources, `pom.xml`, Maven Wrapper, and the provided Eclipse metadata. Neither source archive contains the separate executable JAR or the workstation credential script.
+- OrgResource.jar
+- OrgResource-complete-source.zip
+- OrgResource-java-source.zip
+- OrgResource-Course-A-As-Built-Proposal.docx
+- OrgResource-Course-A-Demo-Guide.md
+- PORTABLE_FIRST_RUN.md
+- OrgResource-Course-A-Demo.sql
+- OrgResource-Course-A-28-Routes.postman_collection.json
+- OrgResource-Course-A-Local.postman_environment.json
+- scripts/start-portable-demo.ps1
+- SHA256SUMS.txt and RELEASE-MANIFEST.json
 
-## Verify clean extraction and hashes
+The complete-source ZIP comes from Git archive at HEAD. The Java/Eclipse ZIP includes backend source/tests, Maven Wrapper, POM, README, and Eclipse metadata. No release ZIP contains the developer workstation credential helper or a database password.
 
-After packaging, independently read the hash and release manifests and compare each file:
+## Verify artifacts and clean extraction
 
-```powershell
-Get-Content deliverables\COURSE-A\SHA256SUMS.txt
-Get-Content deliverables\COURSE-A\RELEASE-MANIFEST.json
-Get-FileHash deliverables\COURSE-A\OrgResource.jar -Algorithm SHA256
-Get-FileHash deliverables\COURSE-A\OrgResource-complete-source.zip -Algorithm SHA256
-Get-FileHash deliverables\COURSE-A\OrgResource-java-source.zip -Algorithm SHA256
-```
+Compare every payload with SHA256SUMS.txt and RELEASE-MANIFEST.json. Then extract both source archives into unique temporary directories. Inspect archive entries and confirm the Maven Wrapper, frontend lockfile/source, Java source/tests, Eclipse metadata, docs, Postman files and SQL guide are present. Run the relevant frontend and Java 8 build from the complete-source extraction using the protected isolated test schema. A separate computer or clean-account setup is NOT_RUN unless actually performed.
 
-Extract both source ZIPs into new, uniquely named directories under `$env:TEMP`; list their entries and verify the expected wrappers, Java sources, frontend sources, lockfiles, docs, and `.project` / `.classpath` / `.settings` metadata. From the complete-source extraction, run the frontend build and Java 8 Maven build with a local isolated test schema. Start the separate JAR from that extraction with process-local `ORG_DB_*` variables and verify `/`, bundled assets, a HashRouter path, and all five list APIs. Do not claim a separate-machine setup or live Eclipse import unless one was actually performed. If external access/account provisioning prevents a clean empty-schema first run, report it as **NOT_RUN** and retain the documented steps rather than using an existing schema destructively.
+The Java/Eclipse ZIP is an export for import into Eclipse; no independent Eclipse installation/import is claimed unless completed. The portable first-run guide describes a new empty local orgresource schema and least-privileged local account. Do not drop, truncate or reset an existing database to simulate a clean machine.
 
-Record actual artifact sizes, hashes, source commit, JDK/Maven/Node versions, commands, outcomes, and limitations in [`../evidence/COURSE-A/A1_A2_ACCEPTANCE_REPORT.md`](../evidence/COURSE-A/A1_A2_ACCEPTANCE_REPORT.md). If any tracked file changes after packaging, rebuild the archives from the new committed `HEAD` before calling them the final source snapshot.
+## Run the packaged app for a student demonstration
 
-## Start the packaged app
+For a visually clean demonstration, use a newly created empty local orgresource schema and the documented portable launcher. The protected orgresource_test integration schema intentionally accumulates fictional acceptance fixtures and can make overview counts and lists crowded; it is not a clean presentation database. Do not delete those test fixtures or reset that schema.
 
-For this workstation’s protected fictional test database:
+In the release folder, set up the empty local schema using PORTABLE_FIRST_RUN.md and run:
 
-```powershell
-.\scripts\start-release-demo.ps1
-```
+.\scripts\start-portable-demo.ps1 -PromptForPassword
 
-This local script loads the existing DPAPI-protected credential helper and starts only the `orgresource_test` test profile. It does not reveal the password, reset MySQL, or represent portable setup. For a clean computer, use [`PORTABLE_FIRST_RUN.md`](PORTABLE_FIRST_RUN.md) and `scripts/start-portable-demo.ps1` with a new `orgresource` schema/account.
+The launcher finds the adjacent JAR. If MySQL is not listening on default port 3306, set ORG_DB_URL to the observed local port before starting; the launcher allows only 127.0.0.1 and the exact orgresource schema. Open http://127.0.0.1:8080/. Add only fictional records. Stop Java with Ctrl+C in the PowerShell window; MySQL remains running and rows persist. Restart with the same command.
 
-Open <http://127.0.0.1:8080/>. The bundled React app is served at `/`, the API under `/api/`, and Vite development mode is unnecessary for the packaged demonstration. Stop Java with Ctrl+C in the PowerShell window that started it. MySQL stays running; restarting Java preserves database rows.
+For the protected developer test database only, the local script can be run with:
 
-## Acceptance boundaries
+    .\scripts\start-release-demo.ps1 -JarPath 'C:\path\to\OrgResource.jar'
 
-- Newman requests execute against a local service and fictional database rows; they are not a remote deployment test.
-- Playwright acceptance runs headless from the command line. The in-app browser is not used on this Windows installation.
-- FakeTwilio is a local HTTP simulator. The Twilio protocol adapter was tested only against a loopback protocol server. `SIMULATED` or `PROVIDER_ACCEPTED` is not delivery evidence.
-- No real SMS, personal phone number, student-authored recording, instructor approval, peer review, authorship certificate, or Canvas submission is created by packaging.
-- Course A implements local CLO9 image receive/serve, but current Canvas interpretation and instructor acceptance remain **NOT_VERIFIED**. Do not claim academic sign-off while student-only actions are open.
-- No official GitHub Release or version tag is created as part of Course A.
+This script uses the private local helper and starts the isolated orgresource_test profile; it is not a portable first-run path. Never display environment variables, password prompts, or credentials in a recording.
+
+## Postman
+
+Import the current 28-operation reference and the OrgResource Course A Local environment from the release folder. Select the environment, keep baseUrl at http://127.0.0.1:8080, and use a fictional Resource for IMAGE-01/02 with the bundled synthetic PNG file. The reference is importable but is not a dependency-ordered run: it includes mutually exclusive and destructive operations. Use scripts/run-api-acceptance.ps1 for ordered Newman acceptance against the isolated fictional test database.
+
+## Demonstration and evidence limits
+
+The student storyboard and expected results are in docs/COURSE_A_FINAL_DEMO_GUIDE.md. The SQL file is read-only and uses the schema already selected by the MySQL client; for the student demonstration, select the newly created local `orgresource` schema. It contains no DDL or mutation statements and omits borrower names and phone numbers. The route acceptance matrix separately records the earlier read-only query against the protected `orgresource_test` schema.
+
+Newman, MySQL integration tests, CLI Playwright, packaged-JAR smoke checks, and SHA checks establish only the local behavior actually exercised. FakeTwilio is a simulator. A loopback Twilio protocol test does not prove provider acceptance or SMS delivery. The local image endpoint works, but whether CLO9 must be implemented in this application and whether the instructor accepts the evidence remain NOT_VERIFIED. No video, group discussion, instructor approval, peer review, authorship declaration, Canvas submission, or receipt is created by these scripts.
+
+Manual student actions include checking live Canvas requirements/deadline, confirming the actual group roster, recording the real demonstration if required, verifying video permissions, completing authorship and peer-review requirements truthfully, uploading the actual deliverables, and checking the submission receipt.

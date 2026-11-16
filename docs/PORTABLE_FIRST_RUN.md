@@ -28,7 +28,7 @@ In Workbench’s **Server → Users and Privileges** screen, create a local acco
 
 ## 2. Start the packaged JAR
 
-Copy `scripts/` from the complete source export beside the release JAR, or use the script in the extracted repository. Open PowerShell in the repository folder. Set Java 8 on `PATH` if multiple Java versions are installed, then check it:
+The release folder contains `OrgResource.jar` and `scripts/start-portable-demo.ps1`. Open PowerShell in that folder. The launcher defaults to the JAR beside the release folder and MySQL port 3306. If your local MySQL service uses another port, set `ORG_DB_URL` as shown in Step 3. Set Java 8 on `PATH` if multiple Java versions are installed, then check it:
 
 ```powershell
 java -version
@@ -37,10 +37,10 @@ java -version
 Start the application:
 
 ```powershell
-.\scripts\start-portable-demo.ps1 -JarPath 'C:\path\to\OrgResource.jar' -PromptForPassword
+.\scripts\start-portable-demo.ps1 -PromptForPassword
 ```
 
-The hidden prompt reads the database password into the current process environment and does not write a credential file. The launcher restricts the database URL to `127.0.0.1:3306/orgresource`, forces reminders to `DISABLED`, binds HTTP to `127.0.0.1:8080`, and refuses to start if that port is occupied. It does not issue database deletion/reset commands.
+The hidden prompt reads the database password into the current process environment and does not write a credential file. The launcher restricts the database URL to `127.0.0.1:<local-port>/orgresource`, forces reminders to `DISABLED`, binds HTTP to `127.0.0.1:8080`, and refuses to start if that port is occupied. It accepts only the loopback host, a valid TCP port, and the exact `orgresource` schema. It does not issue database deletion/reset commands.
 
 Open <http://127.0.0.1:8080/>. The React interface and JavaScript/CSS assets are served from the JAR. The JSON API is at `http://127.0.0.1:8080/api/`; for example, `GET /api/departments` returns a JSON array. On the first start, Hibernate creates/updates the five application tables in the new schema. Check in MySQL Workbench:
 
@@ -53,12 +53,14 @@ Expected tables are `allocation`, `department`, `project`, `resource`, and `reso
 
 ## 3. Configure variables without saving a password
 
-The launcher accepts `ORG_DB_URL`, `ORG_DB_USER`, and `ORG_DB_PASSWORD` from the current PowerShell process. If URL or user are unset, it uses the local `orgresource` defaults. If the password is unset, it prompts securely. To enter the username explicitly:
+The launcher accepts `ORG_DB_URL`, `ORG_DB_USER`, and `ORG_DB_PASSWORD` from the current PowerShell process. If URL or user are unset, it uses the local `orgresource` defaults on port 3306. If your Workbench connection shows another local port (for example 3307), set that port here. If the password is unset, the launcher prompts securely. To enter the username explicitly:
+
+For a local MySQL listener on port `3307`, change only the URL port to `3307`. Keep host `127.0.0.1` and schema `orgresource` unchanged. Never use the protected test schema or a remote MySQL host for the student demo.
 
 ```powershell
 $env:ORG_DB_URL = 'jdbc:mysql://127.0.0.1:3306/orgresource?useSSL=false&serverTimezone=UTC'
 $env:ORG_DB_USER = 'orgresource_app'
-.\scripts\start-portable-demo.ps1 -JarPath 'C:\path\to\OrgResource.jar' -PromptForPassword
+.\scripts\start-portable-demo.ps1 -PromptForPassword
 ```
 
 The script restores the password and reminder-mode environment values when Java exits. Do not put a password on a command line, in a `.env` file committed to Git, or in a screenshot/log. To run directly without the script, set the same three variables only in the current process and run `java -jar C:\path\to\OrgResource.jar`; clear the password variable after the server stops.
