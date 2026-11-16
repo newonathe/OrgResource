@@ -1,0 +1,35 @@
+{
+  "artifactType": "historical_source_manifest_count_reconciliation_NOT_raw_zip_rehash",
+  "auditedDate": "2026-11-16",
+  "sourceFile": "04_ORGRESOURCE_PRIOR_WORK_RESEARCH_AND_MANIFEST.md",
+  "sourceManifestHeading": "Complete source manifest (CSV)",
+  "sourceManifestLineWindow": "53740-56374",
+  "method": "Read all 2,611 CSV record lines through Files source ranges, count record_type prefixes directly; video extension count restricted to historical filesystem_file paths.",
+  "historicalManifest": {
+    "filesystem_file": 1241,
+    "video_paths": 15,
+    "nonvideo_filesystem_file": 1226,
+    "archive_member": 1370,
+    "total_record_rows": 2611
+  },
+  "previouslyReportedOriginalNonvideoZipAudit": {
+    "outer_file_entries": 1227,
+    "nested_file_entries": 1370,
+    "source": "docs/research-2.0/22_PRIMARY_ARCHIVE_VERIFICATION.md",
+    "currentTurnRawByteVerification": false
+  },
+  "scopeDifference": {
+    "outer_minus_historical_nonvideo": 1,
+    "status": "EXACT_ENTRY_NAME_AND_SHA_UNVERIFIED",
+    "candidateExplanation": "The consolidated C04 manifest states that the standalone generated source manifest CSV is also stored inside Part 1; packaging a generated CSV in Part 1 would produce one extra non-video outer entry absent from original filesystem_file rows.",
+    "hypothesisVerifiedAgainstRawZip": false,
+    "sourceForHypothesis": "C04 introduction to CSV manifest states that the CSV is also stored inside first complete-source ZIP",
+    "requiredProof": "Reopen exact PART1 and PART2 original ZIP bytes; extract all outer entry names and SHA256; compare normalized exact paths with historical filesystem_file excluding the 15 video paths, preserve raw path spelling and duplicates; identify the extra entry and hash."
+  },
+  "limitations": [
+    "Counts establish the historical embedded manifest's internal row tally, not a second current ZIP member count.",
+    "Historical ZIP CRC and SHA pass was previously reported but not rerun now.",
+    "Every original video was intentionally excluded from image/video frame analysis; the audio transcripts are not video-frame evidence.",
+    "Record-type count does not imply that all 2,611 source file contents were semantically inspected."
+  ]
+}
