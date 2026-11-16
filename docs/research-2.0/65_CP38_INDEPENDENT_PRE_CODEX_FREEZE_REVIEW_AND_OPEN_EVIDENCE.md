@@ -1,5 +1,8 @@
 # CP38 — Independent pre-Codex design freeze review, consolidated decisions and open evidence
 
+> **OWNER-READABLE P42 ADJUDICATION (2026-11-16):** [CP42](69_CP42_FINAL_OWNER_DECISION_REVIEW_AND_CURRENT_BUILD_DELTA.md) reconciles the final research findings into a concise current O14 code-vs-future product table and owner decision review D42-01..13. It explicitly does **not** mark defaults signed, authorize Codex or claim technical/academic acceptance. Use CP42 to review adoption choices; CP31–CP41 remain detailed traceability documents.
+
+
 > **Independent correction after CP38:** [CP41](68_CP41_SOURCE_TO_SQL_INVARIANT_GUARDS_AND_PROOF_CASES.md) verifies five source JPA entity classes and five real repositories: the new schema must preserve old physical `resource.type`/`allocation.borrower_name` or explicitly migrate mappings, rewrite global old repository queries for org isolation, add double-movement and PENDING-transfer DB guards, and supply limited LEAD borrower lookup and initial account recovery codes. These changes raise the quality of the **paper review candidate**; physical DB/Java execution and owner sign-off still NOT RUN/OPEN.
 
 
