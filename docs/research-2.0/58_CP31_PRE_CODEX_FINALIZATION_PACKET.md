@@ -1,5 +1,8 @@
 # OrgResource — Pre-Codex Finalization Packet (CP31, review candidate)
 
+> **LATEST external-evidence and identity safeguard (2026-11-16):** [CP40](67_CP40_PROVIDER_TRIAL_SECURITY_AND_DEADLINE_REALITY_CHECK.md) confirms Twilio's current 30-day verified-recipient/predefined-template trial cannot be assumed to deliver custom project-due SMS; provider account, no-cost host and private Actions billing require actual access/controls. The optional P0 `intendedUserId` invitation binding is removed to avoid a false recipient verification guarantee. Real photos, provider sends, hosted free uptime and successful course submission are **not proven**. All Codex work remains sealed.
+
+
 > **LATER PRIMARY-EVIDENCE REFINEMENT:** [CP39](66_CP39_PINNED_CI_TRIAGE_AND_LAST_CONTRACT_CORRECTIONS.md) compares exact same-SHA failing/passing Java/MySQL GitHub job logs and source test, bounds S1 to supported-technology proof rather than full 26 handlers, and fixes the public Allocation.borrowerNameSnapshot contract through CP34/CP35. **S5** retains mandatory full 26-route live verification. The original ZIP +1 path discrepancy remains open because original ZIP bytes were not newly available in the current tool runtime. These findings supersede older ambiguous gate phrasing; no application code or merge changed.
 
 
