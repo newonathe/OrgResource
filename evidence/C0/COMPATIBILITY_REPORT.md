@@ -86,8 +86,8 @@ GitHub Actions run [`44049599015`](https://github.com/newonathe/OrgResource/acti
 
 ## Git and PR
 
-- Implementation commit: `86b3983171cd8aa439ded5aeed5f74baec546aba`
-- Remote feature branch was verified at the same SHA.
+- Implementation source commit tested from a clean archive: `86b3983171cd8aa439ded5aeed5f74baec546aba`.
+- The report and A3 provenance evidence were committed afterward on the same feature branch; the final branch tip is available in the PR metadata and final handoff.
 - Draft PR #13: [C0 isolated supported-runtime compatibility proof](https://github.com/newonathe/OrgResource/pull/13), targeting `feat/course-final-a3-freeze-2026-11-17`.
 - No merge, tag, public deployment, live SMS, Canvas submission, or C1 implementation was performed.
 
