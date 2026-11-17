@@ -56,8 +56,14 @@ public class Allocation {
     @Column(name = "borrower_name", nullable = false, length = 100)
     public String borrowerName;
 
-    @Column(name = "phone_number", length = 20)
-    public String phoneNumber;
+    @Column(name = "phone_ciphertext", columnDefinition = "VARBINARY(512)")
+    public byte[] phoneCiphertext;
+
+    @Column(name = "phone_nonce", columnDefinition = "BINARY(12)")
+    public byte[] phoneNonce;
+
+    @Column(name = "phone_key_id", length = 64)
+    public String phoneKeyId;
 
     @NotNull
     @Column(name = "sms_consent", nullable = false)
@@ -87,20 +93,36 @@ public class Allocation {
     @Column(name = "cancelled_at")
     public LocalDateTime cancelledAt;
 
+    @Column(name = "cancellation_reason", length = 24)
+    public String cancellationReason;
+
+    @Column(name = "reminder_claimed_at")
+    public LocalDateTime reminderClaimedAt;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "reminder_outcome", nullable = false, length = 24)
+    public ReminderOutcome reminderOutcome = ReminderOutcome.NONE;
+
+    @Column(name = "reminder_http_status")
+    public Integer reminderHttpStatus;
+
+    @Column(name = "provider_message_sid", length = 64)
+    public String providerMessageSid;
+
     @Version @Column(nullable = false)
     public long version;
 
     protected Allocation() { }
 
     public Allocation(Long organizationId, ResourceRequirement requirement, Integer quantity,
-                      String borrowerName, String phoneNumber, Boolean smsConsent, LocalDateTime createdAt) {
+                      String borrowerName, Boolean smsConsent, LocalDateTime createdAt) {
         this.organizationId = organizationId;
         this.requirement = requirement;
         this.requirementId = requirement.id;
         this.resourceId = requirement.resourceId;
         this.quantity = quantity;
         this.borrowerName = borrowerName;
-        this.phoneNumber = phoneNumber;
         this.smsConsent = smsConsent;
         this.status = AllocationStatus.PENDING;
         this.createdAt = createdAt;

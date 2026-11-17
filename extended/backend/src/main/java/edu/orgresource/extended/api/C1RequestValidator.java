@@ -16,6 +16,9 @@ public class C1RequestValidator {
     }
 
     public void validate(Object request) {
+        if (request == null) {
+            throw new C1ValidationException();
+        }
         Set<ConstraintViolation<Object>> violations = validator.validate(request);
         if (!violations.isEmpty()) {
             throw new C1ValidationException();

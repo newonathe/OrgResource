@@ -3,6 +3,7 @@ package edu.orgresource.extended.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Pageable;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -15,8 +16,54 @@ import edu.orgresource.extended.domain.AllocationStatus;
 import jakarta.persistence.LockModeType;
 
 public interface AllocationRepository extends JpaRepository<Allocation, Long> {
+    interface ExpiryCandidate { Long getOrganizationId(); Long getAllocationId(); }
+    interface ReminderCandidate { Long getAllocationId(); }
     @EntityGraph(attributePaths = {"requirement"})
     List<Allocation> findByOrganizationIdAndRequirementIdOrderById(Long organizationId, Long requirementId);
+    @EntityGraph(attributePaths = {"requirement"})
+    List<Allocation> findByOrganizationIdOrderById(Long organizationId);
+    @EntityGraph(attributePaths = {"requirement"})
+    List<Allocation> findByOrganizationIdAndStatusOrderById(Long organizationId, AllocationStatus status);
+    @EntityGraph(attributePaths = {"requirement"})
+    List<Allocation> findByOrganizationIdAndRequirementIdAndStatusOrderById(Long organizationId,
+            Long requirementId, AllocationStatus status);
+    boolean existsByOrganizationIdAndRequirementId(Long organizationId, Long requirementId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select a from Allocation a where a.id=:id")
+    Optional<Allocation> lockById(@Param("id") Long id);
+
+    @EntityGraph(attributePaths = {"requirement", "requirement.project", "requirement.resource"})
+    Optional<Allocation> findDetailedByIdAndOrganizationId(@Param("id") Long id,
+                                                            @Param("organizationId") Long organizationId);
+
+    @Query(value = "SELECT a.organization_id AS organizationId,a.id AS allocationId "
+            + "FROM allocation a JOIN resource_requirement q ON q.id=a.requirement_id AND q.organization_id=a.organization_id "
+            + "JOIN project p ON p.id=q.project_id AND p.organization_id=q.organization_id "
+            + "WHERE a.status IN ('PENDING','APPROVED') AND p.end_at<=:sampledNow "
+            + "ORDER BY a.organization_id,a.id", nativeQuery = true)
+    List<ExpiryCandidate> findExpiredCandidates(@Param("sampledNow") LocalDateTime sampledNow, Pageable pageable);
+
+    @Query(value = "SELECT a.id AS allocationId FROM allocation a "
+            + "JOIN resource_requirement q ON q.id=a.requirement_id AND q.organization_id=a.organization_id "
+            + "JOIN project p ON p.id=q.project_id AND p.organization_id=q.organization_id "
+            + "JOIN resource r ON r.id=q.resource_id AND r.organization_id=q.organization_id "
+            + "WHERE a.status='ISSUED' AND r.type='REUSABLE' AND a.sms_consent=TRUE "
+            + "AND a.phone_ciphertext IS NOT NULL AND a.reminder_outcome='NONE' "
+            + "AND p.end_at>=:sampledNow AND p.end_at<:dueBefore "
+            + "ORDER BY p.end_at,a.id", nativeQuery = true)
+    List<ReminderCandidate> findReminderCandidates(@Param("sampledNow") LocalDateTime sampledNow,
+                                                   @Param("dueBefore") LocalDateTime dueBefore,
+                                                   Pageable pageable);
+
+    @Query(value = "SELECT id AS allocationId FROM allocation WHERE reminder_outcome='CLAIMED' "
+            + "AND reminder_claimed_at<:cutoff ORDER BY reminder_claimed_at,id", nativeQuery = true)
+    List<ReminderCandidate> findStaleReminderClaims(@Param("cutoff") LocalDateTime cutoff, Pageable pageable);
+
+    @Query("select count(a) from Allocation a join a.requirement q where a.organizationId=:organizationId "
+            + "and q.projectId=:projectId and a.approvedAt is not null")
+    long countHistoricallyApprovedByProject(@Param("organizationId") Long organizationId,
+                                            @Param("projectId") Long projectId);
     Optional<Allocation> findByIdAndOrganizationId(Long id, Long organizationId);
     Optional<Allocation> findByPublicIdAndOrganizationId(java.util.UUID publicId, Long organizationId);
 
@@ -48,6 +95,23 @@ public interface AllocationRepository extends JpaRepository<Allocation, Long> {
     @Query("select a from Allocation a where a.publicId = :publicId and a.organizationId = :organizationId")
     Optional<Allocation> lockByPublicIdAndOrganizationId(@Param("publicId") java.util.UUID publicId,
                                                           @Param("organizationId") Long organizationId);
+
+    @Query(value = "SELECT r.id AS resource_id, COALESCE(l.ledger_total,0) AS ledger_total, "
+            + "COALESCE(l.ledger_issued,0) AS ledger_issued, COALESCE(c.holds,0) AS holds, "
+            + "COALESCE(c.issued,0) AS issued FROM resource r "
+            + "LEFT JOIN (SELECT organization_id,resource_id,SUM(delta_total) AS ledger_total,"
+            + "SUM(delta_issued) AS ledger_issued FROM stock_movement GROUP BY organization_id,resource_id) l "
+            + "ON l.organization_id=r.organization_id AND l.resource_id=r.id "
+            + "LEFT JOIN (SELECT q.organization_id,q.resource_id,"
+            + "SUM(CASE WHEN a.status='APPROVED' AND p.end_at>:sampledNow THEN a.quantity ELSE 0 END) AS holds,"
+            + "SUM(CASE WHEN a.status='ISSUED' THEN a.quantity ELSE 0 END) AS issued "
+            + "FROM allocation a JOIN resource_requirement q ON q.id=a.requirement_id AND q.organization_id=a.organization_id "
+            + "JOIN project p ON p.id=q.project_id AND p.organization_id=q.organization_id "
+            + "GROUP BY q.organization_id,q.resource_id) c "
+            + "ON c.organization_id=r.organization_id AND c.resource_id=r.id "
+            + "WHERE r.organization_id=:organizationId ORDER BY r.id", nativeQuery = true)
+    List<Object[]> findInventoryListBalances(@Param("organizationId") Long organizationId,
+                                             @Param("sampledNow") LocalDateTime sampledNow);
 
     @Query("select a from Allocation a join a.requirement q join q.project p "
             + "where a.organizationId = :organizationId and a.status = :pending and p.endAt <= :sampledNow")

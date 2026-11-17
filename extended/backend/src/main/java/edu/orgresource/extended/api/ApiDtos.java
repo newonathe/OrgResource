@@ -27,6 +27,10 @@ public final class ApiDtos {
         public CreateDepartment(String name) { this.name = name; }
     }
 
+    public static class DepartmentUpdate {
+        @NotBlank @Size(max = 100) public String name;
+    }
+
     public static class DepartmentView {
         public Long id;
         public String name;
@@ -39,6 +43,12 @@ public final class ApiDtos {
 
     public static class CreateProject {
         @NotNull @Positive public Long departmentId;
+        @NotBlank @Size(max = 100) public String name;
+        @NotBlank public String startAt;
+        @NotBlank public String endAt;
+    }
+
+    public static class ProjectUpdate {
         @NotBlank @Size(max = 100) public String name;
         @NotBlank public String startAt;
         @NotBlank public String endAt;
@@ -66,6 +76,12 @@ public final class ApiDtos {
         @NotNull @Min(0) @Max(1000000) public Integer totalQuantity;
     }
 
+    public static class ResourceUpdate {
+        @NotBlank @Size(max = 100) public String name;
+        @NotNull @Min(0) @Max(1000000) public Integer totalQuantity;
+        @NotNull @Min(0) @Max(1000000) public Integer expectedTotalQuantity;
+    }
+
     public static class ResourceView {
         public Long id;
         public String name;
@@ -82,9 +98,37 @@ public final class ApiDtos {
         }
     }
 
+    public static class ResourceAvailabilityView {
+        public Long resourceId;
+        public Integer availableQuantity;
+        public ResourceAvailabilityView() { }
+        public ResourceAvailabilityView(Long resourceId, Integer availableQuantity) {
+            this.resourceId = resourceId;
+            this.availableQuantity = availableQuantity;
+        }
+    }
+
+    public static class ResourceImageUploadView {
+        public Long resourceId;
+        public String contentType;
+        public Integer sizeBytes;
+        public String sha256;
+        public ResourceImageUploadView() { }
+        public ResourceImageUploadView(Long resourceId, String contentType, int sizeBytes, String sha256) {
+            this.resourceId = resourceId;
+            this.contentType = contentType;
+            this.sizeBytes = sizeBytes;
+            this.sha256 = sha256;
+        }
+    }
+
     public static class CreateRequirement {
         @NotNull @Positive public Long projectId;
         @NotNull @Positive public Long resourceId;
+        @NotNull @Min(1) @Max(1000000) public Integer quantity;
+    }
+
+    public static class RequirementUpdate {
         @NotNull @Min(1) @Max(1000000) public Integer quantity;
     }
 
@@ -132,7 +176,7 @@ public final class ApiDtos {
             this.requirementId = allocation.requirement.id;
             this.quantity = allocation.quantity;
             this.borrowerName = allocation.borrowerName;
-            this.contactPresent = allocation.phoneNumber != null;
+            this.contactPresent = allocation.phoneCiphertext != null;
             this.smsConsent = allocation.smsConsent;
             this.status = allocation.status.name();
             this.createdAt = format(allocation.createdAt);

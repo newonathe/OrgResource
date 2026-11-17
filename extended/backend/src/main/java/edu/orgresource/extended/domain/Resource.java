@@ -3,12 +3,15 @@ package edu.orgresource.extended.domain;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Basic;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.persistence.Version;
@@ -49,6 +52,14 @@ public class Resource {
     @Version @Column(nullable = false)
     public long version;
 
+    @Basic(fetch = FetchType.LAZY)
+    @Lob
+    @Column(name = "image_bytes", columnDefinition = "MEDIUMBLOB")
+    private byte[] imageBytes;
+
+    @Column(name = "image_content_type", length = 16)
+    public String imageContentType;
+
     protected Resource() { }
 
     public Resource(Long organizationId, String name, String nameKey, ResourceType type, Integer totalQuantity) {
@@ -58,4 +69,7 @@ public class Resource {
         this.type = type;
         this.totalQuantity = totalQuantity;
     }
+
+    public byte[] getImageBytes() { return imageBytes; }
+    public void setImageBytes(byte[] bytes) { this.imageBytes = bytes; }
 }

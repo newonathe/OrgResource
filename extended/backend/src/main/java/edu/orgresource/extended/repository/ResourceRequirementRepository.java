@@ -14,6 +14,8 @@ import jakarta.persistence.LockModeType;
 
 public interface ResourceRequirementRepository extends JpaRepository<ResourceRequirement, Long> {
     @EntityGraph(attributePaths = {"project", "resource"})
+    List<ResourceRequirement> findByOrganizationIdOrderById(Long organizationId);
+    @EntityGraph(attributePaths = {"project", "resource"})
     List<ResourceRequirement> findByOrganizationIdAndProjectIdOrderById(Long organizationId, Long projectId);
     Optional<ResourceRequirement> findByIdAndOrganizationId(Long id, Long organizationId);
 
@@ -25,6 +27,14 @@ public interface ResourceRequirementRepository extends JpaRepository<ResourceReq
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select q from ResourceRequirement q where q.id = :id and q.organizationId = :organizationId")
     Optional<ResourceRequirement> lockById(@Param("id") Long id, @Param("organizationId") Long organizationId);
+
+    boolean existsByOrganizationIdAndProjectId(Long organizationId, Long projectId);
+    boolean existsByOrganizationIdAndResourceId(Long organizationId, Long resourceId);
+    boolean existsByOrganizationIdAndProjectIdAndResourceId(Long organizationId, Long projectId, Long resourceId);
+
+    @Query("select max(a.quantity) from Allocation a where a.requirementId=:requirementId and a.status=:status")
+    Integer maxPendingQuantity(@Param("requirementId") Long requirementId,
+                               @Param("status") edu.orgresource.extended.domain.AllocationStatus status);
 
     @Query("select coalesce(sum(case when a.status in "
             + "(edu.orgresource.extended.domain.AllocationStatus.ISSUED, edu.orgresource.extended.domain.AllocationStatus.RETURNED, "

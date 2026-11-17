@@ -98,8 +98,8 @@ jobs:
       - run: npm run lint
       - run: npm run build
 
-  extended-c2:
-    name: Extended C Java 21 and isolated MySQL acceptance
+  extended-c3:
+    name: Extended C Java 21, isolated MySQL and Newman acceptance
     runs-on: ubuntu-latest
     timeout-minutes: 20
     services:
@@ -124,13 +124,15 @@ jobs:
       EXT_DB_MIGRATION_URL: jdbc:mysql://127.0.0.1:3306/orgresource_c1_ci?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       EXT_DB_MIGRATION_USER: root
       EXT_DB_MIGRATION_PASSWORD: root_ci_only
-      EXT_BOOTSTRAP_SLUG: c1-ci-workspace
-      EXT_BOOTSTRAP_ORG_NAME: Fictional C1 CI Workspace
-      EXT_BOOTSTRAP_USERNAME: c1-ci-owner
-      EXT_BOOTSTRAP_DISPLAY_NAME: C1 CI Owner
+      EXT_BOOTSTRAP_SLUG: c1-seed-workspace
+      EXT_BOOTSTRAP_ORG_NAME: Fictional C1 Workspace
+      EXT_BOOTSTRAP_USERNAME: c1-owner
+      EXT_BOOTSTRAP_DISPLAY_NAME: C1 Owner
       EXT_BOOTSTRAP_PASSWORD: c1-ci-bootstrap-only-7f43d8d1
       EXT_SMS_ENABLED: 'false'
+      EXT_REMINDER_MODE: DISABLED
       EXT_SCHEDULER_DELAY_MS: '60000'
+      EXT_SERVER_PORT: '8080'
       SPRING_PROFILES_ACTIVE: c1-test
     steps:
       - uses: actions/checkout@v4
@@ -147,9 +149,35 @@ jobs:
           node-version: '24'
           cache: npm
           cache-dependency-path: frontend/package-lock.json
+      - name: Generate ephemeral contact-encryption test key
+        shell: bash
+        run: |
+          key="$(openssl rand -base64 32 | tr -d '\n')"
+          echo "::add-mask::$key"
+          printf 'EXT_CONTACT_ENCRYPTION_KEY=%s\n' "$key" >> "$GITHUB_ENV"
       - name: Build React assets for packaged Extended runtime
         run: |
           npm --prefix frontend ci
           npm --prefix frontend run build
       - name: Verify Extended C Java 21 backend against isolated MySQL
         run: bash ./backend/mvnw -B -f extended/backend/pom.xml clean verify
+      - name: Run authenticated 28-operation Postman acceptance against packaged JAR
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -Duser.timezone=Asia/Manila -jar extended/backend/target/extended-backend-0.1.0-SNAPSHOT.jar > /tmp/orgresource-extended-c3.log 2>&1 &
+          app_pid=$!
+          trap 'kill "$app_pid" 2>/dev/null || true; wait "$app_pid" 2>/dev/null || true' EXIT
+          ready=false
+          for attempt in $(seq 1 60); do
+            if curl --silent --fail http://127.0.0.1:8080/ > /tmp/orgresource-extended-c3-index.html; then ready=true; break; fi
+            sleep 2
+          done
+          if [ "$ready" != true ]; then cat /tmp/orgresource-extended-c3.log; exit 1; fi
+          grep -Eq 'assets/index-[^" ]+\.js' /tmp/orgresource-extended-c3-index.html
+          npx --yes newman@6.2.3 run postman/OrgResource-Extended-C3-28-Operations.postman_collection.json \
+            --reporters cli --bail --delay-request 1000 \
+            --env-var baseUrl=http://127.0.0.1:8080 \
+            --env-var username="$EXT_BOOTSTRAP_USERNAME" \
+            --env-var password="$EXT_BOOTSTRAP_PASSWORD" \
+            --env-var imagePath="$GITHUB_WORKSPACE/postman/fixtures/academic-demo-image.png"
