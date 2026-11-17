@@ -1,5 +1,8 @@
 # CP46 — FINAL GitHub planning handoff, source/decision index and release gate
 
+> **LATEST CURRENT AUDIT-FIRST AUTHORITY (2026-11-17):** [CP48 GitHub critical source/PR audit](79_CP48_FRESH_GITHUB_INDEPENDENT_AUDIT_AND_SOCRATIC_CRITIQUE_2026-11-17.md) + [CP49 full audit-first P00–P19 Codex implementation plan](80_CP49_COMPLETE_AUDIT_FIRST_SOCRATIC_PHASE_BY_PHASE_BUILD_AND_CODEX_PROMPTS.md) + [603-path inventory](contracts/CP48_GITHUB_TRACKED_PATH_AUDIT_REGISTER.csv) SUPERSEDE the old assumption that the next Codex step is to create A1/A2 or start from O14. PR11 A1/A2 has real code/CI; PR12 A3 source/CI success; release ZIP/JAR/DOCX manifest remain independently uninspected externally. Codex next does P00/P01 read-only audit and P02 A3 release-verification; only after actual A freeze starts C0. All source studies and critiques are documented with review-depth boundaries, not false claims of 603 files fully read.
+
+
 > **FINAL RESEARCH CLOSEOUT — CP47 (2026-11-16):** The concise [what remains / next action checklist](78_CP47_FINAL_NEXT_ACTIONS_RESEARCH_CLOSED.md) is the stop-point and first thing to read when returning. General research is closed; the scope and two-release source authority here remain binding. Exact build/test evidence is still Codex work, not something established by this planning upload.
 
 
