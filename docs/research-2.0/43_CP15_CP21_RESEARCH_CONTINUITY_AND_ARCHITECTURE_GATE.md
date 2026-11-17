@@ -1,0 +1,34 @@
+# CP15–CP21 — Research continuity and architecture decision gate
+
+**As of 2026-11-16 (Asia/Manila). Status: retrospective continuity synthesis of research discussed after committed CP14; NOT a verbatim chat export; NO public P0 implementation or new execution claimed.**
+
+## Governing source and hierarchy
+- Original `09_ESP_PROJECT_ASSIGNMENT.pdf`, `08_CSCI180_SYLLABUS.pdf`, and 12-page `10_ORGRESOURCE_CONCISE_PROPOSAL.docx`.
+- Academic O14 code at SHA `2dd336ed39cecd417a8bce3388b303e688e95dee`, draft PR #8, independently runnable course source.
+- Research PR #7, head before this upload `856a2fceabcbbf95b569d8965bd6b4a23d418c54`. Earlier design files `08/10/11/12/17` are historical drafts when inconsistent with `40`, `41`, this continuity and CP27.
+- User decisions D-018–D-026, D-031: academic baseline first; proposed public product engineering and genuine P-ACCEPT; academic A-FINAL only afterward; student-only Canvas; no code/cloud/provider changes by the research chat; preserve actual course technologies. The printed deadline is December 5, 2026, subject to live Canvas.
+
+## What is settled as evidence, not implementation
+1. **Course compliance preservation.** Academic application uses Spring Boot 2.1.0, Jersey 2.26, Java 8, MySQL, Spring Data JPA, literal `javax.validation`, Retrofit/Gson via loopback FakeTwilio, scheduled jobs, five entities and 26 handlers (25 original proposal + A09 consent-revocation amendment). Repository source and reported/CI tests are distinct evidence grades.
+2. **Public application candidate.** Separate supported Java/Jersey/Jakarta implementation preserves the distinct academic executable. Ordinary Boot 4 / Jersey 4 / Jakarta Validation does not silently execute literal Javax annotations. No integrated public runtime was compiled/tested. A narrow local COMPAT-01 must test real Jersey, Spring injection, JSON, JPA/MySQL, sessions/CSRF and concurrency before selecting stack.
+3. **Small viable domain.** The first proposed public P0 retains Organization as workspace and Department as a distinct entity; Project, Resource, Requirement, Allocation; global holds; whole-batch usable returns and consumable use. Time-window reservations and partial returns are later optional, **not active P0 instructions**.
+4. **Inventory integrity.** Reusable `available = T-H-I`; consumable `available = T-H`; whole reusable return decreases I but not T; consumable consumption decreases T and H equally. Issued units remain physically unavailable after project end until actual return. Approval capacity must be serialized against real MySQL transactions, not trusting stale aggregate reads.
+5. **MySQL relational and replay.** Proposed composite `(org_id, parent_id)` FKs and additionally a same-resource `(org_id, allocation_id, resource_id)` movement FK; mandatory parent key columns non-null; no MySQL FK MATCH. Durable client-reused physical operation ID distinct from expiring HTTP response receipt; same ID/payload must not duplicate stock after 48 hours or restart. SQL, migration, deadlock isolation, backup and restore NOT RUN.
+6. **Identity.** Fictional operator-provisioned orgs, local credentials/saved recovery codes, manual confidential invites, current membership checks, no automatic campus authority and no email suffix proof. Effective owner requires ACTIVE account and ACTIVE OWNER membership. Last-owner safety across global account-disable needs multi-org ordered locks. Ownership transfer old OWNER→ADMIN versus retaining two owners is an OPEN USER DECISION.
+7. **Security.** No anonymous legacy API on the Internet. Public cookies travel in Cookie header; CSRF on writes; current-role revalidation, tenant IDOR/BOLA controls, per-route role matrix, redacted audit, independent restore and truthful synthetic-data labeling. Merely putting org_id into tables is not adequate.
+8. **Hosting.** Official vendor documents support conditional zero-mandatory-spend candidates, not account eligibility. Candidate OCI A1 ARM VM + controllable MySQL 8.4; Oracle MySQL.Free is an unpinnable-version alternative with a different restore/version risk. No no-charge real tenancy, HTTPS renewal, maintained VM, card/overage policy or independent offsite restore demonstrated.
+9. **Provider and course unknowns.** Twilio classroom Virtual Phone differs from FakeTwilio loopback; actual O14 TWILIO_VIRTUAL selection intentionally throws; current instructor acceptance of simulator is unknown. Syllabus CLO9 image receive/serve appears but final assignment mapping ambiguous. Current Canvas may update requirements.
+10. **Deadline and independent acceptance.** Historic 37–75 expert-person-day estimate is subjective and not Codex measured velocity. A high-risk condensed timeline cannot relax exact P-ACCEPT security/DR or A-FINAL course/authorship evidence. No pilot, adoption or institutional approval is claimed.
+
+## Architectural decision gate — unresolved, no automatic sign-off
+- **COURSE REQUIREMENT:** preserve actively executable literal Javax course validation and actual academic provider proof expectations.
+- **USER DECISION:** two artifacts in sequence, zero mandatory spend, research-first authorization, manual student-only submission.
+- **DESIGN RECOMMENDATION:** public modular monolith, Java17+/Boot4/Jersey4/Jakarta JPA and native validation, real MySQL8.4, operator-provisioned fictional tenancy and global holds; no microservices, no public legacy API. No frozen effective dependency graph yet.
+- **OPEN:** exact public stack/Jersey authorization integration, public-specific source/API parity, owner transfer and emergency recovery, physical UUID representation, SQL/locking model, account eligibility, TLS, DR, CLO9, Twilio and Canvas.
+- **STOP:** no full public build without approved domain/identity/stack/SQL contract; no public P-ACCEPT without true hosted/safety/backup tests; no academic A-FINAL without original technology and student evidence.
+- **Potential GO WITH CONDITIONS:** owner-authorized isolated COMPAT-01, not whole implementation, to obtain runtime proof impossible in paper-only research.
+
+## Related anchored sources
+`docs/research-2.0/28`–`42`, especially `29_PRE_BUILD_RESEARCH_ACCEPTANCE_GATE.md`, `30_ORIGINAL_26_ROUTE_CROSSWALK_AND_RUNTIME_CORRECTIONS.md`, `32_IDENTITY_STATE_MACHINE_MYSQL_SCHEMA_AND_SECURITY_TESTS.md`, `33_TENANT_MYSQL_RESERVATIONS_LEDGER_AND_GLOBAL_COMPATIBILITY.md`, `40_CP13_CANONICAL_SRS_EERD_API_CONFLICT_REGISTER.md`, `41_CP14_REQUIREMENTS_TEST_EVIDENCE_TRACEABILITY.md`, and `42_CP14_O14_JAVA_MYSQL_INTERMITTENT_CI_FAILURE.md`.
+
+**This file records continuity, not a claim that CP15–CP21 were previously committed as individual documents.**

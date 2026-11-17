@@ -1,0 +1,369 @@
+{
+  "artifactType": "direct_source_column_mapping_DESIGN_ONLY",
+  "generatedAt": "2026-11-16",
+  "sourceRepo": "newonathe/OrgResource",
+  "sourceCommit": "2dd336ed39cecd417a8bce3388b303e688e95dee",
+  "sourceOriginalEntityCount": 5,
+  "sourceOriginalPhysicalColumnCount": 35,
+  "newSchemaMigratedOrTested": false,
+  "policy": "source is O14 five actual JPA entity classes, columns verified individually from @Column/@JoinColumn source; target is a recommended physical/schema compatibility mapping, not migrations",
+  "notes": [
+    "O14 @javax.persistence annotations are code-level source proof only; modern Jakarta JPA requires real retest and likely annotation/package adaptation.",
+    "Source Resource.type and Allocation.borrower_name are preserved as physical columns. Public v2 may name its JSON fields kind and borrowerNameSnapshot.",
+    "Legacy phone_number plaintext field is not allowed as a live DB persistence strategy; service DTO compatibility must be separated from ORM mapping and authenticated encryption.",
+    "Other original physical names preserved, but org_id, public_id, version and new relationship/ledger columns are added.",
+    "Modern DB must be created fresh with migrations; source reference DB not silently imported."
+  ],
+  "columns": [
+    {
+      "sourceEntity": "Department",
+      "sourceTable": "department",
+      "sourceColumn": "id",
+      "target": "department.id",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Department.java"
+    },
+    {
+      "sourceEntity": "Department",
+      "sourceTable": "department",
+      "sourceColumn": "name",
+      "target": "department.name",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Department.java"
+    },
+    {
+      "sourceEntity": "Department",
+      "sourceTable": "department",
+      "sourceColumn": "name_key",
+      "target": "department.name_key",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Department.java"
+    },
+    {
+      "sourceEntity": "Project",
+      "sourceTable": "project",
+      "sourceColumn": "id",
+      "target": "project.id",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Project.java"
+    },
+    {
+      "sourceEntity": "Project",
+      "sourceTable": "project",
+      "sourceColumn": "department_id",
+      "target": "project.department_id",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Project.java"
+    },
+    {
+      "sourceEntity": "Project",
+      "sourceTable": "project",
+      "sourceColumn": "name",
+      "target": "project.name",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Project.java"
+    },
+    {
+      "sourceEntity": "Project",
+      "sourceTable": "project",
+      "sourceColumn": "start_at",
+      "target": "project.start_at UTC DATETIME(6)",
+      "v2": "ProjectView.startAt RFC3339",
+      "strategy": "PHT naive legacy input/output explicit conversion UTC; source uses LocalDateTime",
+      "severity": "TYPE_SEMANTICS_CHANGE",
+      "sourcePath": "backend/src/main/java/app/entities/Project.java"
+    },
+    {
+      "sourceEntity": "Project",
+      "sourceTable": "project",
+      "sourceColumn": "end_at",
+      "target": "project.end_at UTC DATETIME(6)",
+      "v2": "ProjectView.endAt RFC3339",
+      "strategy": "PHT naive legacy input/output explicit conversion UTC; inclusive/exclusive times per original tests",
+      "severity": "TYPE_SEMANTICS_CHANGE",
+      "sourcePath": "backend/src/main/java/app/entities/Project.java"
+    },
+    {
+      "sourceEntity": "Resource",
+      "sourceTable": "resource",
+      "sourceColumn": "id",
+      "target": "resource.id",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Resource.java"
+    },
+    {
+      "sourceEntity": "Resource",
+      "sourceTable": "resource",
+      "sourceColumn": "name",
+      "target": "resource.name",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Resource.java"
+    },
+    {
+      "sourceEntity": "Resource",
+      "sourceTable": "resource",
+      "sourceColumn": "name_key",
+      "target": "resource.name_key",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Resource.java"
+    },
+    {
+      "sourceEntity": "Resource",
+      "sourceTable": "resource",
+      "sourceColumn": "type",
+      "target": "resource.type",
+      "v2": "ResourceView.kind",
+      "strategy": "physical name preserved; JSON alias kind",
+      "severity": "MATERIAL_CORRECTION",
+      "sourcePath": "backend/src/main/java/app/entities/Resource.java"
+    },
+    {
+      "sourceEntity": "Resource",
+      "sourceTable": "resource",
+      "sourceColumn": "total_quantity",
+      "target": "resource.total_quantity",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Resource.java"
+    },
+    {
+      "sourceEntity": "ResourceRequirement",
+      "sourceTable": "resource_requirement",
+      "sourceColumn": "id",
+      "target": "resource_requirement.id",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/ResourceRequirement.java"
+    },
+    {
+      "sourceEntity": "ResourceRequirement",
+      "sourceTable": "resource_requirement",
+      "sourceColumn": "project_id",
+      "target": "resource_requirement.project_id",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/ResourceRequirement.java"
+    },
+    {
+      "sourceEntity": "ResourceRequirement",
+      "sourceTable": "resource_requirement",
+      "sourceColumn": "resource_id",
+      "target": "resource_requirement.resource_id",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/ResourceRequirement.java"
+    },
+    {
+      "sourceEntity": "ResourceRequirement",
+      "sourceTable": "resource_requirement",
+      "sourceColumn": "quantity",
+      "target": "resource_requirement.quantity",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/ResourceRequirement.java"
+    },
+    {
+      "sourceEntity": "Allocation",
+      "sourceTable": "allocation",
+      "sourceColumn": "id",
+      "target": "allocation.id",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Allocation.java"
+    },
+    {
+      "sourceEntity": "Allocation",
+      "sourceTable": "allocation",
+      "sourceColumn": "requirement_id",
+      "target": "allocation.requirement_id",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Allocation.java"
+    },
+    {
+      "sourceEntity": "Allocation",
+      "sourceTable": "allocation",
+      "sourceColumn": "quantity",
+      "target": "allocation.quantity",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Allocation.java"
+    },
+    {
+      "sourceEntity": "Allocation",
+      "sourceTable": "allocation",
+      "sourceColumn": "borrower_name",
+      "target": "allocation.borrower_name",
+      "v2": "AllocationView.borrowerNameSnapshot",
+      "strategy": "physical name preserved; service supplied verified-membership/display snapshot for v2, free text for legacy",
+      "severity": "MATERIAL_CORRECTION",
+      "sourcePath": "backend/src/main/java/app/entities/Allocation.java"
+    },
+    {
+      "sourceEntity": "Allocation",
+      "sourceTable": "allocation",
+      "sourceColumn": "phone_number",
+      "target": "allocation.phone_ciphertext / phone_nonce / phone_key_id",
+      "v2": "no public raw phone; legacy authorized DTO decrypts if fictitious demo contact",
+      "strategy": "NO plaintext persistence; migrate/adapt original JPA field and preserve old request/response semantics only where authorized",
+      "severity": "INTENTIONAL_PHYSICAL_CHANGE",
+      "sourcePath": "backend/src/main/java/app/entities/Allocation.java"
+    },
+    {
+      "sourceEntity": "Allocation",
+      "sourceTable": "allocation",
+      "sourceColumn": "sms_consent",
+      "target": "allocation.sms_consent",
+      "v2": "consent status (redacted)",
+      "strategy": "retained boolean; external sender requires stronger consent-source proof",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Allocation.java"
+    },
+    {
+      "sourceEntity": "Allocation",
+      "sourceTable": "allocation",
+      "sourceColumn": "status",
+      "target": "allocation.status",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Allocation.java"
+    },
+    {
+      "sourceEntity": "Allocation",
+      "sourceTable": "allocation",
+      "sourceColumn": "created_at",
+      "target": "allocation.created_at",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Allocation.java"
+    },
+    {
+      "sourceEntity": "Allocation",
+      "sourceTable": "allocation",
+      "sourceColumn": "approved_at",
+      "target": "allocation.approved_at",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Allocation.java"
+    },
+    {
+      "sourceEntity": "Allocation",
+      "sourceTable": "allocation",
+      "sourceColumn": "issued_at",
+      "target": "allocation.issued_at",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Allocation.java"
+    },
+    {
+      "sourceEntity": "Allocation",
+      "sourceTable": "allocation",
+      "sourceColumn": "returned_at",
+      "target": "allocation.returned_at",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Allocation.java"
+    },
+    {
+      "sourceEntity": "Allocation",
+      "sourceTable": "allocation",
+      "sourceColumn": "consumed_at",
+      "target": "allocation.consumed_at",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Allocation.java"
+    },
+    {
+      "sourceEntity": "Allocation",
+      "sourceTable": "allocation",
+      "sourceColumn": "cancelled_at",
+      "target": "allocation.cancelled_at",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Allocation.java"
+    },
+    {
+      "sourceEntity": "Allocation",
+      "sourceTable": "allocation",
+      "sourceColumn": "cancellation_reason",
+      "target": "allocation.cancellation_reason",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Allocation.java"
+    },
+    {
+      "sourceEntity": "Allocation",
+      "sourceTable": "allocation",
+      "sourceColumn": "reminder_claimed_at",
+      "target": "allocation.reminder_claimed_at",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Allocation.java"
+    },
+    {
+      "sourceEntity": "Allocation",
+      "sourceTable": "allocation",
+      "sourceColumn": "reminder_outcome",
+      "target": "allocation.reminder_outcome",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Allocation.java"
+    },
+    {
+      "sourceEntity": "Allocation",
+      "sourceTable": "allocation",
+      "sourceColumn": "reminder_http_status",
+      "target": "allocation.reminder_http_status",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Allocation.java"
+    },
+    {
+      "sourceEntity": "Allocation",
+      "sourceTable": "allocation",
+      "sourceColumn": "provider_message_sid",
+      "target": "allocation.provider_message_sid",
+      "v2": "see CP35 view/DTO and service mapping",
+      "strategy": "physical column name preserved; add org_id and public_id to new schema",
+      "severity": "SAME_COLUMN",
+      "sourcePath": "backend/src/main/java/app/entities/Allocation.java"
+    }
+  ]
+}

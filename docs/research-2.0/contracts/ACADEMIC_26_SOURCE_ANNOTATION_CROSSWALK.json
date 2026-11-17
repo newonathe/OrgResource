@@ -1,0 +1,226 @@
+{
+  "artifactType": "source_inspected_route_crosswalk_NOT_runtime_evidence",
+  "preparedDate": "2026-11-16",
+  "repo": "newonathe/OrgResource",
+  "sourceCommit": "2dd336ed39cecd417a8bce3388b303e688e95dee",
+  "sourceJerseyApplicationPath": "/api",
+  "sourceControllers": 5,
+  "sourceAnnotatedOperations": 26,
+  "verbs": {
+    "GET": 6,
+    "POST": 20
+  },
+  "traceabilitySource": "docs/research-2.0/60_CP33_ACCEPTANCE_TRACEABILITY_RISK_AND_REVIEW_GATE.md",
+  "sourceStaticCrosswalkStatus": "MATCH_26_OF_26",
+  "executionStatus": "NOT_EXECUTED_ON_UNIFIED_PRODUCT",
+  "routes": [
+    {
+      "method": "POST",
+      "path": "/api/departments",
+      "controller": "DepartmentController",
+      "javaMethod": "create",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/DepartmentController.java",
+      "acceptanceId": "ARC-D01"
+    },
+    {
+      "method": "GET",
+      "path": "/api/departments",
+      "controller": "DepartmentController",
+      "javaMethod": "list",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/DepartmentController.java",
+      "acceptanceId": "ARC-D02"
+    },
+    {
+      "method": "POST",
+      "path": "/api/departments/{id}/update",
+      "controller": "DepartmentController",
+      "javaMethod": "update",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/DepartmentController.java",
+      "acceptanceId": "ARC-D03"
+    },
+    {
+      "method": "POST",
+      "path": "/api/departments/{id}/delete",
+      "controller": "DepartmentController",
+      "javaMethod": "delete",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/DepartmentController.java",
+      "acceptanceId": "ARC-D04"
+    },
+    {
+      "method": "POST",
+      "path": "/api/projects",
+      "controller": "ProjectController",
+      "javaMethod": "create",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/ProjectController.java",
+      "acceptanceId": "ARC-P01"
+    },
+    {
+      "method": "GET",
+      "path": "/api/projects",
+      "controller": "ProjectController",
+      "javaMethod": "list",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/ProjectController.java",
+      "acceptanceId": "ARC-P02"
+    },
+    {
+      "method": "POST",
+      "path": "/api/projects/{id}/update",
+      "controller": "ProjectController",
+      "javaMethod": "update",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/ProjectController.java",
+      "acceptanceId": "ARC-P03"
+    },
+    {
+      "method": "POST",
+      "path": "/api/projects/{id}/delete",
+      "controller": "ProjectController",
+      "javaMethod": "delete",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/ProjectController.java",
+      "acceptanceId": "ARC-P04"
+    },
+    {
+      "method": "POST",
+      "path": "/api/resources",
+      "controller": "ResourceController",
+      "javaMethod": "create",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/ResourceController.java",
+      "acceptanceId": "ARC-R01"
+    },
+    {
+      "method": "GET",
+      "path": "/api/resources",
+      "controller": "ResourceController",
+      "javaMethod": "list",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/ResourceController.java",
+      "acceptanceId": "ARC-R02"
+    },
+    {
+      "method": "POST",
+      "path": "/api/resources/{id}/update",
+      "controller": "ResourceController",
+      "javaMethod": "update",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/ResourceController.java",
+      "acceptanceId": "ARC-R03"
+    },
+    {
+      "method": "POST",
+      "path": "/api/resources/{id}/delete",
+      "controller": "ResourceController",
+      "javaMethod": "delete",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/ResourceController.java",
+      "acceptanceId": "ARC-R04"
+    },
+    {
+      "method": "GET",
+      "path": "/api/resources/{id}/availability",
+      "controller": "ResourceController",
+      "javaMethod": "availability",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/ResourceController.java",
+      "acceptanceId": "ARC-R05"
+    },
+    {
+      "method": "POST",
+      "path": "/api/requirements",
+      "controller": "RequirementController",
+      "javaMethod": "create",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/RequirementController.java",
+      "acceptanceId": "ARC-Q01"
+    },
+    {
+      "method": "GET",
+      "path": "/api/requirements",
+      "controller": "RequirementController",
+      "javaMethod": "list",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/RequirementController.java",
+      "acceptanceId": "ARC-Q02"
+    },
+    {
+      "method": "POST",
+      "path": "/api/requirements/{id}/update",
+      "controller": "RequirementController",
+      "javaMethod": "update",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/RequirementController.java",
+      "acceptanceId": "ARC-Q03"
+    },
+    {
+      "method": "POST",
+      "path": "/api/requirements/{id}/delete",
+      "controller": "RequirementController",
+      "javaMethod": "delete",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/RequirementController.java",
+      "acceptanceId": "ARC-Q04"
+    },
+    {
+      "method": "POST",
+      "path": "/api/allocations",
+      "controller": "AllocationController",
+      "javaMethod": "create",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/AllocationController.java",
+      "acceptanceId": "ARC-A01"
+    },
+    {
+      "method": "GET",
+      "path": "/api/allocations",
+      "controller": "AllocationController",
+      "javaMethod": "list",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/AllocationController.java",
+      "acceptanceId": "ARC-A02"
+    },
+    {
+      "method": "POST",
+      "path": "/api/allocations/{id}/approve",
+      "controller": "AllocationController",
+      "javaMethod": "approve",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/AllocationController.java",
+      "acceptanceId": "ARC-A03"
+    },
+    {
+      "method": "POST",
+      "path": "/api/allocations/{id}/issue",
+      "controller": "AllocationController",
+      "javaMethod": "issue",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/AllocationController.java",
+      "acceptanceId": "ARC-A04"
+    },
+    {
+      "method": "POST",
+      "path": "/api/allocations/{id}/return",
+      "controller": "AllocationController",
+      "javaMethod": "returnItems",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/AllocationController.java",
+      "acceptanceId": "ARC-A05"
+    },
+    {
+      "method": "POST",
+      "path": "/api/allocations/{id}/consume",
+      "controller": "AllocationController",
+      "javaMethod": "consume",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/AllocationController.java",
+      "acceptanceId": "ARC-A06"
+    },
+    {
+      "method": "POST",
+      "path": "/api/allocations/{id}/cancel",
+      "controller": "AllocationController",
+      "javaMethod": "cancel",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/AllocationController.java",
+      "acceptanceId": "ARC-A07"
+    },
+    {
+      "method": "POST",
+      "path": "/api/allocations/{id}/delete",
+      "controller": "AllocationController",
+      "javaMethod": "delete",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/AllocationController.java",
+      "acceptanceId": "ARC-A08"
+    },
+    {
+      "method": "POST",
+      "path": "/api/allocations/{id}/revoke-sms-consent",
+      "controller": "AllocationController",
+      "javaMethod": "revokeSmsConsent",
+      "sourceFile": "backend/src/main/java/app/rest/controllers/AllocationController.java",
+      "acceptanceId": "ARC-A09"
+    }
+  ]
+}

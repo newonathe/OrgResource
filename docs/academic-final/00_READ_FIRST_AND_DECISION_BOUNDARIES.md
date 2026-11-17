@@ -1,0 +1,68 @@
+# OrgResource — Canonical Academic Requirements: Read First
+
+> **LATEST CURRENT AUDIT-FIRST AUTHORITY (2026-11-17):** [CP48 GitHub critical source/PR audit](../research-2.0/79_CP48_FRESH_GITHUB_INDEPENDENT_AUDIT_AND_SOCRATIC_CRITIQUE_2026-11-17.md) + [CP49 full audit-first P00–P19 Codex implementation plan](../research-2.0/80_CP49_COMPLETE_AUDIT_FIRST_SOCRATIC_PHASE_BY_PHASE_BUILD_AND_CODEX_PROMPTS.md) + [603-path inventory](../research-2.0/contracts/CP48_GITHUB_TRACKED_PATH_AUDIT_REGISTER.csv) SUPERSEDE the old assumption that the next Codex step is to create A1/A2 or start from O14. PR11 A1/A2 has real code/CI; PR12 A3 source/CI success; release ZIP/JAR/DOCX manifest remain independently uninspected externally. Codex next does P00/P01 read-only audit and P02 A3 release-verification; only after actual A freeze starts C0. All source studies and critiques are documented with review-depth boundaries, not false claims of 603 files fully read.
+
+
+> **FINAL TWO-EDITION OVERRIDE (CP44–CP46, 2026-11-16):** This academic canonical document originated in already-uploaded **draft PR #9**, and is consolidated here without merging that PR. Read [Final consolidated handoff](../research-2.0/77_CP46_FINAL_GITHUB_HANDOFF_RELEASE_INDEX.md), [A-first / B-extended decision](../research-2.0/74_CP44_TWO_EDITION_COURSE_IMMUTABILITY_AND_FULL_C_HANDOFF_DECISION.md), and the [single active Codex master prompt](../research-2.0/75_FINAL_TWO_EDITION_CODEX_HANDOFF_MASTER_PROMPT.txt). **A** is a local strict course version; **B** is separate enhanced C descended from frozen A. Any prior wording implying one final release, modernizing A before course acceptance, or production testing before A completion is **historical/superseded**. A image testing is safe local single-organization; B must enforce authorization/tenant isolation. No application tests or course submission were performed by this document copy.
+
+
+**Prepared:** 2026-11-16 (Asia/Manila)  
+**Status:** SOURCE-VERIFIED REQUIREMENTS / EXECUTION STILL OPEN  
+**Purpose:** Consolidate the *actual course requirements*, the previously proposed 25-operation OrgResource design, the actual 26-operation O14 implementation, and the user's conservative final-product decisions into one precise academic contract. These are specifications, **not** proof that newly planned features have been implemented or accepted.
+
+## Source and decision authority
+
+1. **COURSE REQUIREMENT:** 09_ESP_PROJECT_ASSIGNMENT.pdf, pp. 1–3, is the explicit final-project specification. The original wording says “RetroJit”; 08_CSCI180_SYLLABUS.pdf p. 2 CLO8 and supplied course examples establish the relevant Retrofit/Gson API. Do not invent a technology called RetroJit.
+2. **SYLLABUS FACT:** 08_CSCI180_SYLLABUS.pdf, pp. 2–4 and 6, specifies CLO1–CLO10, including HTTP image receive/serve at CLO9, the project rubric, Canvas submission, and the Certificate of Authorship/outside-help acknowledgment. **Dates may change on Canvas**, but the user has fixed the provided two documents as the written feature scope for planning. This does not waive real Canvas submission.
+3. **PROJECT DESIGN HISTORY:** 10_ORGRESOURCE_CONCISE_PROPOSAL.docx, 12 pp., defines the original five-domain-entity, 25-operation proposal and its Component methods. It is not a new syllabus or proof of execution.
+4. **VERIFIED SOURCE:** O14 implementation: feat/o14-academic-final-acceptance-2026-11-15 at 2dd336ed39cecd417a8bce3388b303e688e95dee, open draft PR #8. Includes actual five JPA classes, 26 Jersey handlers, React eight-screen frontend, local scheduler, FakeTwilio Retrofit/Gson implementation, and previous Java/MySQL/UI acceptance evidence. The O14 old Java8/Boot2.1 executable must NOT be exposed as an Internet production service.
+5. **USER DECISION, UPDATED by CP44:** two independently runnable editions from one Git lineage: Course Final A finished and frozen FIRST; Extended C B derives from A and independently re-proves original course functions. Both precede actual student's Canvas submission where completed. The original five core business types and their 26 source operations remain genuine, not replaced by mocks, screenshots, paper-only files or a separate irrelevant backend.
+6. **CONSERVATIVE IMPLEMENTATION DECISION:** Include authentic image HTTP receive/store/serve and a real Twilio Messages API Retrofit/Gson adapter, alongside the existing local FakeTwilio. Live SMS, enrollment, purchases and cloud deployment remain separate unauthorized actions.
+7. **RESEARCH REFERENCE:** docs/research-2.0/70_CP43_FIXED_WRITTEN_COURSE_SCOPE_AND_HANDOFF_GO_NO_GO.md; 69_CP42_FINAL_OWNER_DECISION_REVIEW_AND_CURRENT_BUILD_DELTA.md; 64_CP37_SEALED_STAGE_BY_STAGE_CODEX_PROMPTS.md; 68_CP41_SOURCE_TO_SQL_INVARIANT_GUARDS_AND_PROOF_CASES.md; 66_CP39_PINNED_CI_TRIAGE_AND_LAST_CONTRACT_CORRECTIONS.md. Earlier research drafts conflict; cite the most recent explicit adjudication rather than combining contradictory models.
+
+## Scope distinctions — essential to accurate grading
+
+- **WRITTEN MANDATORY:** Jersey REST, JSON, Spring annotations with Controller delegating to injected Component, JPA/Spring Data repositories, Javax Validation, Retrofit-related external service including Twilio, scheduling, >=5 justified entities, GET retrieval/POST submission, runtime create/read/delete (not initializer only), Postman for all calls, final logic, academic submission/recording and genuine peer-review/COA obligations.
+- **SYLLABUS OUTCOME / CONSERVATIVE INCLUDED FEATURE:** Actual image receive and serve over HTTP (CLO9); do not mark present in O14.
+- **PROJECT DESIGN COMMITMENT:** Original Department/Project/Resource/ResourceRequirement/Allocation, original 25 operations plus A09 consent-withdrawal amendment, short JSON fields, whole-batch allocation and effective current holds.
+- **USER-PREFERRED PRODUCT EXTENSION:** authenticated organization-private workspaces, roles, history/ledger, real recovery, same-source MySQL, one React UI, secure supported runtime and zero *mandatory* paid services. These are NOT explicit assignment requirements and MUST NOT substitute for any written course item.
+- **OPERATING SAFETY:** Public demonstration must use fictional data and must not claim Ateneo affiliation/adoption. No production deployment before supported runtime, tenant isolation, HTTPS, cost/backup and recovery acceptance. No perpetual free uptime promise.
+- **ACADEMIC ACTIONS:** Cannot be automated/fabricated: real recording, signed truthful COA, actual peer reviews if there are other group members, Canvas submission receipt, any instructor approval. Do not silently assume the prior proposal or submissions were accepted.
+
+## Verified academic baseline (not new tests from this documentation pass)
+
+| Evidence | Actual status | Precise boundary |
+|---|---|---|
+| Five O14 JPA @Entity classes | SOURCE VERIFIED | Department, Project, Resource, ResourceRequirement, Allocation |
+| Five O14 Jersey Controller families | SOURCE VERIFIED | 26 handlers: D4+P4+R5+Q4+A9; original 25 + separately added A09 |
+| Java 8 / MySQL + React baseline | PREVIOUS CI PASS | O14 reports 55 backend and 15 frontend tests, CI Java/MySQL and packaged JAR smoke |
+| Browser / Newman | AUTHOR-REPORTED LOCAL PASS | O14 reports 5 Playwright, 96 Newman requests / 142 assertions; no fresh rerun here |
+| CLO9 actual image HTTP | NOT IMPLEMENTED IN O14 | Required by chosen conservative final-contract coverage |
+| Real Twilio Messages API adapter | NOT IMPLEMENTED IN O14 | FakeTwilio simulator != real Twilio protocol adapter or actual provider acceptance |
+| Full auth / organization isolation | NOT IMPLEMENTED IN O14 | Public production remains BLOCKED |
+| Supported one-runtime literal Javax + modern Jakarta | NOT RUN / TECHNICAL BLOCKER | Research candidate, requires actual executable proof |
+| Production public $0 host, off-host DR, TLS | NOT RUN / ACCOUNT-DEPENDENT | Cannot be certified from documents |
+| Final proposal updated to match product | NOT DONE | Original 12-page proposal is historical, not final as-built specification |
+| Recording, COA, peer/Canvas submission | STUDENT ACTION NOT VERIFIED | Never claim completed from generated documents |
+
+**Historic technical caveat:** Research identified an earlier identical-source failing/passing MySQL test (available=8 when expected 5). Cause is UNKNOWN, not fixed merely because later CI is green. See CP39. Do not alter the expected value or disable the test.
+
+## This canonical packet
+
+1. 01_WRITTEN_REQUIREMENTS_AND_COMPLIANCE.md — complete written academic acceptance requirements, authority, evidence and grading-safe judgments.
+2. 02_DOMAIN_26_ROUTE_COMPONENT_CONTRACT.md — accurate existing five-entity fields, relationships, routes/DTOs/forwarding, source vs desired behavior, stock math, states and protected operations.
+3. 03_TEST_POSTMAN_DEMO_AND_SUBMISSION.md — positive/negative and concurrent acceptance, real service/image/Twilio checks, proposal/Eclipse/export/recording/Canvas actions.
+4. 04_AGENT_AND_EFFICIENCY_POLICY.md — mandatory quality and token/speed/storage optimization, optional scoped subagent role/model policy, safe Git workflows.
+5. 05_EERD_REPOSITORIES_AND_METHOD_SEQUENCES.md — original five-entity ER relationships, all 27 custom repository methods and exact Component flows.
+6. 06_SOURCE_QA_AND_CHANGE_LOG.md — static source coverage audit, corrected conflicts and remaining runtime proof gates.
+7. Root AGENTS.md on THIS documentation branch is corrected for the latest requirement hierarchy; the original O14 application branch is untouched.
+
+**Supersession:** For *academic requirement interpretation*, this packet is the concise canonical reference. It does not delete historical proposals or replace CP34–CP41 provisional production schema/API decisions. Any future source contradiction requires a dated diff and owner review; do not silently amend.
+
+## Current remote state and git boundary
+
+- Main at 16e781c837dd7e1f0481fb7a01e49c27d80a91e8 is the earlier O1 source, not full app.
+- O14 at 2dd336ed39cecd417a8bce3388b303e688e95dee is the actual academic implementation baseline.
+- Research docs parent used here: 14635f5f3c9e213636f39b544c5627fcdbe3a0c2 on docs/orgresource2-research-continuity-2026-11-15.
+- This is **documentation-only**: no Java, SQL, React, tests, cloud, credentials or academic submission were changed/performed.
+- All implementation stages remain separately scoped; Codex builds/tests, research chat researches/verifies, this planning space defines and tracks exact handoffs. No background or subagent work is claimed when not invoked.
