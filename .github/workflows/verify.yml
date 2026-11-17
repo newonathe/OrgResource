@@ -152,4 +152,4 @@ jobs:
           npm --prefix frontend ci
           npm --prefix frontend run build
       - name: Verify Extended C Java 21 backend against isolated MySQL
-        run: ./backend/mvnw -B -f extended/backend/pom.xml clean verify
+        run: bash ./backend/mvnw -B -f extended/backend/pom.xml clean verify
