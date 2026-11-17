@@ -124,10 +124,10 @@ jobs:
       EXT_DB_MIGRATION_URL: jdbc:mysql://127.0.0.1:3306/orgresource_c1_ci?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       EXT_DB_MIGRATION_USER: root
       EXT_DB_MIGRATION_PASSWORD: root_ci_only
-      EXT_BOOTSTRAP_SLUG: c1-ci-workspace
-      EXT_BOOTSTRAP_ORG_NAME: Fictional C1 CI Workspace
-      EXT_BOOTSTRAP_USERNAME: c1-ci-owner
-      EXT_BOOTSTRAP_DISPLAY_NAME: C1 CI Owner
+      EXT_BOOTSTRAP_SLUG: c1-seed-workspace
+      EXT_BOOTSTRAP_ORG_NAME: Fictional C1 Workspace
+      EXT_BOOTSTRAP_USERNAME: c1-owner
+      EXT_BOOTSTRAP_DISPLAY_NAME: C1 Owner
       EXT_BOOTSTRAP_PASSWORD: c1-ci-bootstrap-only-7f43d8d1
       EXT_SMS_ENABLED: 'false'
       EXT_REMINDER_MODE: DISABLED
