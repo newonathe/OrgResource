@@ -46,6 +46,8 @@
 
 ## Latest execution handoff — 2026-11-16
 
+**LATEST C0 EXECUTION MASTER (2026-11-17):** After Course A3 source K (`7f8c0746da18fd54b47f430ac1435ac36e605d67`) passes its release-receipt evidence check, execute [10 — C0 implementation-only supported-runtime compatibility proof](10_CODEX_C0_COMPATIBILITY_PROOF_FREE_LUNA.md) on a NEW feature branch **from exact K**, never altering frozen A. The initial preflight must report inaccessible A3 external release hashes honestly; C0 is an isolated executable experiment, not a supported production release or approved C1. Research ChatGPT owns research; Codex builds/tests only. No cloud/provider/Canvas actions are authorized.
+
 **A FIRST, THEN EXTENDED C.** After reviewing the completed source-derived 00–06 packet, read [07 Course A executable freeze](07_COURSE_A_EXECUTABLE_SPEC_FREEZE_2026-11-16.md) and [08 Free-Luna Codex A1+A2 master prompt](08_CODEX_A1_A2_MASTER_PROMPT_FREE_LUNA.md). These are the **active Course A1+A2 execution specifications**; now that A1+A2 passed the latest source/CI gates, the subsequent **A3-only release master** is [09 — Codex A3 source-and-artifact freeze](09_CODEX_A3_COURSE_FINAL_FREEZE_MASTER_FREE_LUNA.md). All supersede the older modern-runtime-S1-first and all-in-one A+B prompt sequence for the Course A engineering cycles. This does not mark A built or grant automatic deployment/merge/Canvas actions. A3 release freeze is a separate reviewed gate after actual A2 acceptance; Extended C follows from exact A source SHA.
 
 ## This canonical packet
