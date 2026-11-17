@@ -1,5 +1,8 @@
 # OrgResource repository agent instructions — Course Final A then Extended C B
 
+> **FRESH ACTUAL GITHUB AUDIT AND NEW BUILD ORDER — 2026-11-17:** NEW draft **PR #10** academic execution docs, **PR #11** real A1+A2 image/Twilio code and tests, **PR #12** A3 source/CI/release preparation were pushed after earlier planning. **DO NOT restart A1+A2 or assume A3 external JAR/ZIP/DOCX/hash release is independently verified.** Start with [CP48 independent audit+Socratic source critique](docs/research-2.0/79_CP48_FRESH_GITHUB_INDEPENDENT_AUDIT_AND_SOCRATIC_CRITIQUE_2026-11-17.md), [603-path tracked-tree inventory](docs/research-2.0/contracts/CP48_GITHUB_TRACKED_PATH_AUDIT_REGISTER.csv), and [CP49 all phases / one CURRENT Codex kickoff](docs/research-2.0/80_CP49_COMPLETE_AUDIT_FIRST_SOCRATIC_PHASE_BY_PHASE_BUILD_AND_CODEX_PROMPTS.md). **First engineering work = audit + verify A3 freeze artifacts; next is isolated C0 from exact accepted A SHA.** Previously active master prompt 75 describes the overall two-edition goal but its older implementation start sequence is superseded. All app/main/academic branches remain separate; no real runtime test was executed in this planning pass.
+
+
 > **Branch and evidence boundary:** This updated root AGENTS.md applies on the documentation/research branch; it does not change O14 PR #8 or main. The original expanded agent guide appeared in separate academic draft PR #9 and was consolidated with CP44–46 two-edition decisions. Preparing this document does NOT authorize app-code changes, provider actions, branch merges, or student submission.
 
 
