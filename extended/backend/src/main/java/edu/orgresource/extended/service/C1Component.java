@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import edu.orgresource.extended.api.ApiDtos;
-import edu.orgresource.extended.domain.Allocation;
 
 @Component
 public class C1Component {
@@ -25,8 +24,10 @@ public class C1Component {
     public List<ApiDtos.AllocationView> listAllocations(Long requirementId) { return service.listAllocations(requirementId); }
     public ApiDtos.DepartmentView readDepartmentV2(Long id) { return service.readDepartmentV2(id); }
     public ApiDtos.DepartmentView createDepartmentV2(ApiDtos.CreateDepartment request) { return service.createDepartmentV2(request); }
-    public Allocation approve(Long id, Long orgId) { return service.approveAllocation(id, orgId); }
-    public Allocation issue(Long id, Long orgId) { return service.issueAllocation(id, orgId); }
-    public Allocation consume(Long id, Long orgId) { return service.consumeAllocation(id, orgId); }
+    public ApiDtos.AllocationView approve(Long id, Long orgId) { return service.approveAllocation(id, orgId); }
+    public ApiDtos.AllocationView issue(Long id, Long orgId) { return service.issueAllocation(id, orgId); }
+    public ApiDtos.AllocationView returnAllocation(Long id, Long orgId) { return service.returnAllocation(id, orgId); }
+    public ApiDtos.AllocationView consume(Long id, Long orgId) { return service.consumeAllocation(id, orgId); }
+    public ApiDtos.AllocationView cancel(Long id, Long orgId) { return service.cancelAllocation(id, orgId); }
     public int cleanupExpiredPending(Long orgId, LocalDateTime now) { return service.cleanupExpiredPending(orgId, now); }
 }

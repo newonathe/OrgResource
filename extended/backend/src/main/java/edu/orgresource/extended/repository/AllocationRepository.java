@@ -18,23 +18,36 @@ public interface AllocationRepository extends JpaRepository<Allocation, Long> {
     @EntityGraph(attributePaths = {"requirement"})
     List<Allocation> findByOrganizationIdAndRequirementIdOrderById(Long organizationId, Long requirementId);
     Optional<Allocation> findByIdAndOrganizationId(Long id, Long organizationId);
+    Optional<Allocation> findByPublicIdAndOrganizationId(java.util.UUID publicId, Long organizationId);
 
     interface OperationSnapshot {
+        Long getAllocationId();
         Long getProjectId();
         Long getResourceId();
         Long getRequirementId();
         Integer getRequirementQuantity();
     }
 
-    @Query("select p.id as projectId, r.id as resourceId, q.id as requirementId, q.quantity as requirementQuantity "
+    @Query("select a.id as allocationId, p.id as projectId, r.id as resourceId, q.id as requirementId, q.quantity as requirementQuantity "
             + "from Allocation a join a.requirement q join q.project p join q.resource r "
             + "where a.id = :id and a.organizationId = :organizationId")
     Optional<OperationSnapshot> findOperationSnapshot(@Param("id") Long id,
                                                        @Param("organizationId") Long organizationId);
 
+    @Query("select a.id as allocationId, p.id as projectId, r.id as resourceId, q.id as requirementId, q.quantity as requirementQuantity "
+            + "from Allocation a join a.requirement q join q.project p join q.resource r "
+            + "where a.publicId = :publicId and a.organizationId = :organizationId")
+    Optional<OperationSnapshot> findOperationSnapshotByPublicId(@Param("publicId") java.util.UUID publicId,
+                                                                  @Param("organizationId") Long organizationId);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select a from Allocation a where a.id = :id and a.organizationId = :organizationId")
     Optional<Allocation> lockById(@Param("id") Long id, @Param("organizationId") Long organizationId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select a from Allocation a where a.publicId = :publicId and a.organizationId = :organizationId")
+    Optional<Allocation> lockByPublicIdAndOrganizationId(@Param("publicId") java.util.UUID publicId,
+                                                          @Param("organizationId") Long organizationId);
 
     @Query("select a from Allocation a join a.requirement q join q.project p "
             + "where a.organizationId = :organizationId and a.status = :pending and p.endAt <= :sampledNow")

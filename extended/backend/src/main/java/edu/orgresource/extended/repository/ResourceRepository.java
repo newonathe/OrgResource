@@ -15,11 +15,17 @@ import jakarta.persistence.LockModeType;
 public interface ResourceRepository extends JpaRepository<Resource, Long> {
     List<Resource> findByOrganizationIdOrderById(Long organizationId);
     Optional<Resource> findByIdAndOrganizationId(Long id, Long organizationId);
+    Optional<Resource> findByPublicIdAndOrganizationId(java.util.UUID publicId, Long organizationId);
     boolean existsByOrganizationIdAndNameKey(Long organizationId, String nameKey);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select r from Resource r where r.id = :id and r.organizationId = :organizationId")
     Optional<Resource> lockById(@Param("id") Long id, @Param("organizationId") Long organizationId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select r from Resource r where r.publicId = :publicId and r.organizationId = :organizationId")
+    Optional<Resource> lockByPublicIdAndOrganizationId(@Param("publicId") java.util.UUID publicId,
+                                                        @Param("organizationId") Long organizationId);
 
     @Query("select coalesce(sum(case when a.status = edu.orgresource.extended.domain.AllocationStatus.APPROVED "
             + "and p.endAt > :sampledNow then a.quantity "

@@ -3,6 +3,7 @@ name: Verify
 on:
   pull_request:
   push:
+    branches: [main]
 
 permissions:
   contents: read
@@ -96,3 +97,59 @@ jobs:
       - run: npm test
       - run: npm run lint
       - run: npm run build
+
+  extended-c2:
+    name: Extended C Java 21 and isolated MySQL acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      mysql:
+        image: mysql:8.0.46
+        env:
+          MYSQL_DATABASE: orgresource_c1_ci
+          MYSQL_USER: orgresource_c1_ci
+          MYSQL_PASSWORD: c1_ci_only
+          MYSQL_ROOT_PASSWORD: root_ci_only
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot_ci_only"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+    env:
+      EXT_DB_URL: jdbc:mysql://127.0.0.1:3306/orgresource_c1_ci?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      EXT_DB_USER: orgresource_c1_ci
+      EXT_DB_PASSWORD: c1_ci_only
+      EXT_DB_MIGRATION_URL: jdbc:mysql://127.0.0.1:3306/orgresource_c1_ci?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      EXT_DB_MIGRATION_USER: root
+      EXT_DB_MIGRATION_PASSWORD: root_ci_only
+      EXT_BOOTSTRAP_SLUG: c1-ci-workspace
+      EXT_BOOTSTRAP_ORG_NAME: Fictional C1 CI Workspace
+      EXT_BOOTSTRAP_USERNAME: c1-ci-owner
+      EXT_BOOTSTRAP_DISPLAY_NAME: C1 CI Owner
+      EXT_BOOTSTRAP_PASSWORD: c1-ci-bootstrap-only-7f43d8d1
+      EXT_SMS_ENABLED: 'false'
+      EXT_SCHEDULER_DELAY_MS: '60000'
+      SPRING_PROFILES_ACTIVE: c1-test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: |
+            backend/pom.xml
+            extended/backend/pom.xml
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Build React assets for packaged Extended runtime
+        run: |
+          npm --prefix frontend ci
+          npm --prefix frontend run build
+      - name: Verify Extended C Java 21 backend against isolated MySQL
+        run: ./backend/mvnw -B -f extended/backend/pom.xml clean verify

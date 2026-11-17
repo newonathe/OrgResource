@@ -32,6 +32,10 @@ public class C1OrganizationContext {
 
     public long currentUserId() { return principal().accountId(); }
 
+    public Membership requireCurrentMembership(long organizationId) {
+        return requireMembership(organizationId, false);
+    }
+
     public Long currentOrganizationId() {
         HttpSession session = currentSession();
         Object stored = session == null ? null : session.getAttribute(ACTIVE_ORG_ID);
