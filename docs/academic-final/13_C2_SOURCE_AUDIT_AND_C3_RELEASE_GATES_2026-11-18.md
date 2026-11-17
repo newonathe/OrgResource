@@ -1,0 +1,65 @@
+# OrgResource — Independent C2 Source/PR Audit, C3 Release-Blocker Register
+**Date:** 2026-11-18 PHT · **Audit target:** \`newonathe/OrgResource\` draft PR #15 \`feat/extended-c-c2-ledger-atomicity-2026-11-17\` HEAD \`c8b6e76c249f99f3642c1513ddd7d55b584e027a\`, tested code \`aa2f30f7239316f8be11968fff4a41e665e710de\`, PR base C1 \`7c349a6a818f2aafd21598e76d3eb8b9faa9a8ef\`.
+**Evidence classification:** STATIC SOURCE VERIFIED (retrieved GitHub file content and PR diff) vs CI VERIFIED (GitHub checks/jobs) vs CODEX-REPORTED LOCAL (C2 report) vs NOT_RUN by reviewing chat. NO tests run on the reviewing chat's local machine. Do NOT claim semantic review of every one of the 696 original filesystem files; coverage is every one of PR #15's 21 changed files at diff-path/source-review level plus selected related authorization and original Course A sources.
+
+## 1. What is actually verified
+
+- PR #15 contains **21 changed files**, 2,150 insertions, 182 deletions, clean draft PR ancestry to C1; current code SHA \`c8b6e76\` is a docs-only follow-up to tested SHA \`aa2f30f\`.
+- GitHub run \`44150537948\` at head \`c8b6e76\` has actual SUCCESS statuses for \`Extended C Java 21 and isolated MySQL acceptance\`, \`Java 8 and isolated MySQL tests\`, and \`React typecheck, tests, lint, and build\`. C2 report claims 27 actual Java21 tests local and remote. This is not independent re-execution; green CI demonstrates executed checks, not all possible production behaviors.
+- C2 source has real Flyway V3, MySQL composite FKs, unique \`(org,operation_public_id)\` and \`(org,allocation_id,kind)\` backstops, insert-only movement runtime grants, separate migration principal in tests, ledger-vs-stock reconciliation, no negative-availability clamp, PESSIMISTIC_WRITE child locks and organization-first serializable transition ordering, rollback injection tests, same-process Jersey routes, true literal javax validator use, and C1's explicit-org selection correction.
+- Course A source K \`7f8c0746da18fd54b47f430ac1435ac36e605d67\` remains historically preserved; no C3 public deploy or real provider send.
+- C2 V3 refuses preexisting nonzero stock / terminal physical history. This is an **intentional accuracy guard** rather than a bug. No production/historical C1 dataset is authorized for silent import. A fresh installation is the reviewed target.
+
+## 2. Socratic questions and falsification defects
+
+| ID/priority | Ask | Direct observed source | Judgment / mandatory next proof |
+|---|---|---|---|
+| C2-F01 HIGH | Does a stable physical operation ID yield durable results AFTER 24h HTTP receipt expiry? | \`InventoryService.priorOperation\` lines ~504–513; \`operationReceipt\` ~340–354 both reject \`idempotency_key.expires_at\`, though \`stock_movement\` persists. \`C1IdentityAcceptanceTest.C2_LEDGER02\` actually asserts expired response 409. | **CONFIRMED CONTRACT MISMATCH to CP34/CP41**: permanent stock operationId uniqueness ≠ durable read/replay receipt. Separate 24h HTTP key TTL from permanent movement receipt; test same op/body, changed body, authorized read, restart and after-expiry/after-pruning. Do not invent prior historical availability; return stable factual movement receipt if historic result cannot be exactly reproduced. |
+| C2-F02 HIGH | Are malformed/missing request bodies controlled 400? | \`InventoryResource.receive/adjust/transition\` call \`C1RequestValidator.validate(body)\` without null guard; validator delegates to \`javax.validation.Validator.validate(request)\`, whose null parameter is invalid. | **STATIC LIKELY BUG**, needs actual POST empty-body test. Use controlled 400/415/422 as specified, not raw fallback 500. Test malformed JSON, UUID, absent Idempotency-Key/If-Match, excessive input and forbidden SVG/content types when image implemented. |
+| C2-F03 HIGH | Do protected *original* list routes retain original unfiltered GET? | \`C1Service.listProjects(null)\` returns \`List.of()\` but Course A \`ProjectComponent.list(null)\` runs scoped equivalent of \`findAll\`. \`listRequirements(null)\` and \`listAllocations(null)\` invoke scoped \`findBy...Id(null)\`, and A02 lacks status query; R02 lacks type filtering. | **CONFIRMED API PARITY GAPS**; implement tenant-scoped all/combined filter, exactly same original DTO JSON and statuses; negative foreign IDs. No cross-tenant \`findAll\`. |
+| C2-F04 HIGH | Can the extended product store a private phone contact unencrypted? | \`C1Service.createAllocation\` passes \`request.phoneNumber\` into \`Allocation.phoneNumber\` mapped to \`phone_number\` plaintext. | **SECURITY/PRIVACY DEBT**, acceptable only for fictional loopback demo; NOT public production. For C3 implement approved test-key-backed at-rest encryption/redaction, or fail closed on consent/contact input until authorized mechanism exists; never silently claim source-equivalent consent support if rejected. Explicitly test non-personal fixture E.164 and no logs/cross-org leaks. Do not backfill unknown historical PII silently. |
+| C2-F05 HIGH | Is actual expiration/reminder present in Extended C? | \`C1ReminderScheduler\` counts disabled ticks only and throws if SMS enabled; \`C1Service.cleanupExpiredPending\` handles only PENDING, not APPROVED, with no proper lock/reason logic. | **INCOMPLETE COURSE PARITY**; port bounded transactionally safe expiry of PENDING+APPROVED and real claim/send-outside-lock/result reminder workflow + FakeTwilio/official stub; default disabled, no live sends. |
+| C2-F06 HIGH | Are the two syllabus CLO9 image operations and original 26 all live on Extended C? | Current 5 original Jersey families have only 15 live business handlers: D01–D02, P01–P02, R01–R02, Q01–Q02, A01–A07. | 11 original routes missing: D03–D04, P03–P04, R03–R05, Q03–Q04, A08–A09. Both additional image routes absent. C3 must bring original 26+2 to *new* JVM and run authenticated Postman; archived Course A alone is not enough. |
+| C2-F07 MED | Are successful stock receipts size-bounded? | \`idempotency_key\` retains full \`response_json\`, and no bounded retention worker/operational cleanup is shown. | Store only needed 24h HTTP receipts and prune expired safe rows **without erasing permanent stock_movement**; test no orphan/fingerprint loss and post-expiry durable operation read. |
+| C2-F08 MED | Is stock read efficient under 100s of resources? | \`C1Service.listResources()\` loops every Resource and calls \`InventoryService.availableQuantity\` per row, each invoking SQL aggregates. | N+1 and unbounded legacy list concern; use one scoped grouped aggregate sample instant + bounded page path where user contract allows. Measure actual SQL calls and preserve original GET array shape. |
+| C2-F09 MED | Are all 27 tests independently isolated? | \`C1IdentityAcceptanceTest\` is one \`@TestMethodOrder\` and \`PER_CLASS\` integration flow, with shared fixture state. | Good workflow E2E proof but not per-test independence. Add dedicated isolated negative cases and fresh schema/DB restart gates for C3, not an expensive full re-architecture. |
+| C2-F10 HIGH for public release | What are the 12 high npm advisories actually about? | C2 report and user state \`npm ci\` reported 12 high advisories. \`frontend/package.json\` includes modern React/Vite/Vitest tooling, but no itemized \`npm audit --json\` is stored. | **UNVERIFIED PACKAGE-LEVEL RISKS**. Obtain machine-readable advisory ID, package, installed/fixed versions, direct/transitive, runtime/build-only exposure, fixAvailability. Do not claim 12 distinct exploitable browser vulnerabilities. Apply minimal compatible verified fixes, no \`--force\`; re-run all checks. Unresolved high runtime exposure blocks public release, not necessarily local C3. |
+| C2-F11 MED | Are equality/clock/role failures safely handled? | Core \`InventoryService\` enforces T/H/I and direct role checks; its \`priorOperation\` uses 24h retention; service list APIs are mostly OWNER/CUSTODIAN-only though CP35 calls for broader scoped read. | Finish actual role matrix/tenant-safe borrowed views during C3. New views must not expose phone or org-hidden rows. Source code alone cannot prove load/performance. |
+| C2-F12 RELEASE | What is actually production-ready? | Current supported JVM still has no full 28-route parity, usable full UI, off-host recovery, verified zero-cost hosted ops or real users. | C2 local/CI pass ≠ approved production release; stop before public hosting, Canvas/teacher claims or manual real SMS. |
+
+## 3. PR #15 changed-file-by-file review register (21/21)
+
+| File | Static review result / consequence |
+|---|---|
+| \`.github/workflows/verify.yml\` | Added distinct MySQL/Java21 test job; latest 3 checks succeeded; repeated npm asset builds cost extra Actions time, consolidate only when justified. |
+| \`AGENTS.md\` | Correctly advances source-protection, scope and no-GUI-browser constraints, no production authorization. |
+| \`evidence/C2/PHASE_REPORT.md\` | Traceable source/CI SHA, 27 tests and known npm findings; supplemental local claims are not independently rerun. |
+| \`.../api/C1FallbackExceptionMapper.java\` | Redacts 500 and maps lock/deadlock 503; include malformed-body/validation error negative HTTP tests. |
+| \`.../api/InventoryDtos.java\` | Literal javax constraints and UUID operation requests; body itself is not null-guarded by controller. |
+| \`.../config/C1JerseyConfiguration.java\` | New true Jersey InventoryResource registration; original 11 routes/images still missing. |
+| \`.../domain/Allocation.java\` | Adds public UUID/resource linkage and return/consume instants; actual status/state test needed. |
+| \`.../domain/Resource.java\` | Adds public UUID, version, mutable total; ledger must remain authoritative for all mutations. |
+| \`.../identity/C1SessionService.java\` | Implicit-org selection removed; explicit-org acceptance exists, but test independent from legacy absent context. |
+| \`.../repository/AllocationRepository.java\` | Tenant-filtered snapshot/locks; period and role checks service-level; indexing query plans later. |
+| \`.../repository/ResourceRepository.java\` | Tenant-filtered locks/aggregate; avoid all-org findAll in C3. |
+| \`.../rest/AllocationResource.java\` | 5 original lifecycle methods now delegated to ledger; A08/A09 still missing. |
+| \`.../rest/InventoryResource.java\` | Secured v2 stock APIs/ETag/Idempotency-Key; likely null-body fallback defect, 24h receipt semantics. |
+| \`.../security/C1OrganizationContext.java\` | Exposes fresh server-derived membership gate; test switched/suspended actor and stale requests. |
+| \`.../service/C1Component.java\` | Actual Spring @Autowired delegate, limited existing original operations; extend not replace. |
+| \`.../service/C1Service.java\` | Source-backed API filtering/parity defects, raw optional phone storage, N+1 list; change carefully. |
+| \`.../service/InventoryService.java\` | Core 693-line engine with enforced T/H/I and transactional statuses; critical 24h/physical op conflation. |
+| \`.../resources/application.properties\` | Loopback, UTC MySQL and no-live-SMS defaults maintained; test privacy key config fail closed. |
+| \`.../db/migration/V3__atomic_inventory_ledger.sql\` | Strong UQ/FK/check + preflight intentional stop; do NOT modify checksum, add V4 for safe changes. |
+| \`.../test/.../C1IdentityAcceptanceTest.java\` | Real MySQL integration 27 tests, including test explicitly expecting incorrect post-expiry 409 receipt behavior. Correct oracle and add independent fixture cases. |
+| \`scripts/verify-extended-c1.ps1\` | Uses isolated local MySQL, separate migration/runtime permissions, packaged JAR/restart; preserve guarded cleanup and never target user DB. |
+
+**Note:** \`extended/backend/\` shortened \`...\` paths in this register; the exact files exist in PR #15. Baseline source also checked: \`C1RequestValidator\`, \`C1ReminderScheduler\`, \`C1ClockConfiguration\`, \`C1Service.listProjects/listRequirements/listAllocations\`, the five original Course A Component sources, and the original academic 26-route contract.
+
+## 4. Next implementation scope
+
+**Recommend C3 single cohesive cycle with gated three checkpoints**:
+1. **C3-A** correct durable physical operation receipt vs 24h HTTP TTL, null body validation and intentional source parity list/filter errors, audit and minimally patch npm advisories, protect V3 checksum, tests.
+2. **C3-B** add 11 missing protected original Jersey operations + 2 image operations; port required safe original Component behavior against shared org-tenant MySQL/ledger, optional encrypted contact and consent revocation, keep old source DTO/paths (no mandatory new If-Match on /api). Add real prior GET filters and signed endpoint matrix.
+3. **C3-C** real bounded expiry/reminder and official loopback Twilio protocol adapters, complete authenticated original 28-operation Newman and MySQL negative acceptance, clean JAR+React static and complete CI.
+
+**Hard stop:** if C2 permanent replay/ledger invariants cannot be corrected safely, do not silently implement all C3 interfaces above it; push reproducible defect and conditional report. Do not start C4 UI or cloud.
