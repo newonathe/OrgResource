@@ -15,6 +15,7 @@ import edu.orgresource.extended.rest.C1GovernanceResource;
 import edu.orgresource.extended.rest.C1InvitationResource;
 import edu.orgresource.extended.rest.C1SessionResource;
 import edu.orgresource.extended.rest.DepartmentResource;
+import edu.orgresource.extended.rest.InventoryResource;
 import edu.orgresource.extended.rest.ProjectResource;
 import edu.orgresource.extended.rest.ResourceRequirementResource;
 import edu.orgresource.extended.rest.ResourceResource;
@@ -35,6 +36,7 @@ public class C1JerseyConfiguration {
         config.register(C1SessionResource.class);
         config.register(C1GovernanceResource.class);
         config.register(C1InvitationResource.class);
+        config.register(InventoryResource.class);
         config.register(JacksonFeature.class);
         config.register(C1ApiExceptionMapper.class);
         config.register(C1IntegrityExceptionMapper.class);

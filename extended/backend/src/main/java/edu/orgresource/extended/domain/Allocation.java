@@ -1,6 +1,7 @@
 package edu.orgresource.extended.domain;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,11 +26,17 @@ public class Allocation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
+    @Column(name = "public_id", nullable = false, unique = true, columnDefinition = "BINARY(16)")
+    public UUID publicId = UUID.randomUUID();
+
     @Column(name = "organization_id", nullable = false)
     public Long organizationId;
 
     @Column(name = "requirement_id", nullable = false)
     public Long requirementId;
+
+    @Column(name = "resource_id", nullable = false)
+    public Long resourceId;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -71,6 +78,12 @@ public class Allocation {
     @Column(name = "issued_at")
     public LocalDateTime issuedAt;
 
+    @Column(name = "returned_at")
+    public LocalDateTime returnedAt;
+
+    @Column(name = "consumed_at")
+    public LocalDateTime consumedAt;
+
     @Column(name = "cancelled_at")
     public LocalDateTime cancelledAt;
 
@@ -84,6 +97,7 @@ public class Allocation {
         this.organizationId = organizationId;
         this.requirement = requirement;
         this.requirementId = requirement.id;
+        this.resourceId = requirement.resourceId;
         this.quantity = quantity;
         this.borrowerName = borrowerName;
         this.phoneNumber = phoneNumber;

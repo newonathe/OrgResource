@@ -61,7 +61,7 @@ public class C1SessionService {
             throw new C1ApiException(401, "AUTH_INVALID", "Username or password is incorrect.");
         }
         sessionStrategy.onAuthentication(authentication, request, response);
-        establish(authentication, request, response, true);
+        establish(authentication, request, response);
         ExtendedUserPrincipal principal = (ExtendedUserPrincipal) authentication.getPrincipal();
         UserAccount account = accountService.account(principal.accountId());
         return new IdentityDtos.LoginResult(sessionView(account, request), refreshCsrf(request, response));
@@ -75,7 +75,7 @@ public class C1SessionService {
         Authentication authentication = UsernamePasswordAuthenticationToken.authenticated(
                 principal, null, principal.getAuthorities());
         sessionStrategy.onAuthentication(authentication, request, response);
-        establish(authentication, request, response, true);
+        establish(authentication, request, response);
         return new IdentityDtos.LoginResult(sessionView(account, request), refreshCsrf(request, response));
     }
 
@@ -175,23 +175,12 @@ public class C1SessionService {
     }
 
     private void establish(Authentication authentication, HttpServletRequest request,
-                           HttpServletResponse response, boolean chooseOrganization) {
+                           HttpServletResponse response) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
         request.getSession(true).setAttribute(C1AccountSessionFilter.SESSION_CREATED_AT, clock.millis());
         request.getSession(false).setAttribute(C1AccountSessionFilter.LAST_REAUTH_AT, clock.millis());
-        ExtendedUserPrincipal principal = (ExtendedUserPrincipal) authentication.getPrincipal();
-        if (chooseOrganization) {
-            List<Long> orgIds = memberships.organizationIdsByUserAndStatus(principal.accountId(), Membership.Status.ACTIVE);
-            for (Long orgId : orgIds) {
-                Organization organization = organizations.findById(orgId).orElse(null);
-                if (organization != null && organization.status == Organization.Status.ACTIVE) {
-                    request.getSession(false).setAttribute(C1OrganizationContext.ACTIVE_ORG_ID, orgId);
-                    break;
-                }
-            }
-        }
         contextRepository.saveContext(context, request, response);
     }
 

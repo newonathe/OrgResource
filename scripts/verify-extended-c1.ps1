@@ -23,6 +23,7 @@ $dataDirectory = $null
 $savedEnvironment = @{}
 $environmentNames = @(
     'EXT_DB_URL', 'EXT_DB_USER', 'EXT_DB_PASSWORD',
+    'EXT_DB_MIGRATION_URL', 'EXT_DB_MIGRATION_USER', 'EXT_DB_MIGRATION_PASSWORD',
     'EXT_BOOTSTRAP_SLUG', 'EXT_BOOTSTRAP_ORG_NAME', 'EXT_BOOTSTRAP_USERNAME',
     'EXT_BOOTSTRAP_DISPLAY_NAME', 'EXT_BOOTSTRAP_PASSWORD',
     'EXT_SMS_ENABLED', 'EXT_SCHEDULER_DELAY_MS', 'EXT_SERVER_PORT',
@@ -128,11 +129,13 @@ function Get-C1Csrf($Client, [string] $Base) {
     return [string]$body.data.csrfToken
 }
 
-function Invoke-C1Post($Session, [string] $Path, [object] $Body, [string] $IfMatch = $null) {
+function Invoke-C1Post($Session, [string] $Path, [object] $Body, [string] $IfMatch = $null,
+        [string] $IdempotencyKey = $null) {
     $request = [System.Net.Http.HttpRequestMessage]::new([System.Net.Http.HttpMethod]::Post, "$($Session.Base)$Path")
     $request.Headers.Add('Origin', $Session.Base)
     if (-not [string]::IsNullOrWhiteSpace([string]$Session.Token)) { $request.Headers.Add('X-CSRF-TOKEN', [string]$Session.Token) }
     if (-not [string]::IsNullOrWhiteSpace($IfMatch)) { $request.Headers.Add('If-Match', $IfMatch) }
+    if (-not [string]::IsNullOrWhiteSpace($IdempotencyKey)) { $request.Headers.Add('Idempotency-Key', $IdempotencyKey) }
     if ($null -ne $Body) {
         $json = ConvertTo-Json -InputObject $Body -Depth 8 -Compress
         $request.Content = [System.Net.Http.StringContent]::new($json, [System.Text.Encoding]::UTF8, 'application/json')
@@ -153,9 +156,10 @@ function Invoke-C1Get($Session, [string] $Path) {
     $raw = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
     $parsed = if ([string]::IsNullOrWhiteSpace($raw)) { $null } else { $raw | ConvertFrom-Json }
     $data = if ($parsed) { $parsed.data } else { $null }
+    $etag = if ($response.Headers.ETag) { [string]$response.Headers.ETag } else { $null }
     $statusCode = [int]$response.StatusCode
     $response.Dispose()
-    return @{ StatusCode = $statusCode; Data = $data; Raw = $raw }
+    return @{ StatusCode = $statusCode; Data = $data; ETag = $etag; Raw = $raw }
 }
 
 function New-C1Session([string] $Username, [string] $Password) {
@@ -168,7 +172,17 @@ function New-C1Session([string] $Username, [string] $Password) {
         throw 'Packaged JAR JSON login failed.'
     }
     $session.Token = [string]$login.Data.csrfToken
-    $session.OrgId = [string]$login.Data.session.activeOrgId
+    if ($null -ne $login.Data.session.activeOrgId) { throw 'Login unexpectedly selected an organization.' }
+    $availableOrganizations = Invoke-C1Get $session '/api/v2/orgs'
+    if ($availableOrganizations.StatusCode -ne 200 -or @($availableOrganizations.Data).Count -lt 1) {
+        throw 'Authenticated account has no selectable organization.'
+    }
+    $session.OrgId = [string]$availableOrganizations.Data[0].id
+    $selected = Invoke-C1Post $session '/api/v2/session/active-org' @{ organizationId = $session.OrgId }
+    if ($selected.StatusCode -ne 200 -or [string]$selected.Data.activeOrgId -ne $session.OrgId) {
+        throw 'Explicit organization selection failed.'
+    }
+    $session.Token = Get-C1Csrf $client $base
     return $session
 }
 
@@ -266,6 +280,11 @@ FLUSH PRIVILEGES;
     $env:EXT_DB_URL = "jdbc:mysql://127.0.0.1:$databasePort/orgresource_c1_acceptance?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
     $env:EXT_DB_USER = 'c1_app'
     $env:EXT_DB_PASSWORD = $dbPassword
+    $env:EXT_DB_MIGRATION_URL = $env:EXT_DB_URL
+    # Root is confined to this disposable, freshly initialized local MySQL instance.
+    # It is used only by Flyway and the acceptance test that narrows the runtime role.
+    $env:EXT_DB_MIGRATION_USER = 'root'
+    $env:EXT_DB_MIGRATION_PASSWORD = ''
     $env:EXT_BOOTSTRAP_SLUG = 'c1-seed-workspace'
     $env:EXT_BOOTSTRAP_ORG_NAME = 'Fictional C1 Workspace'
     $env:EXT_BOOTSTRAP_USERNAME = 'c1-owner'
@@ -321,7 +340,15 @@ FLUSH PRIVILEGES;
     if ($redeemed.StatusCode -ne 201 -or $redeemed.Data.recoveryCodes.Count -ne 5) {
         throw 'Packaged JAR failed to redeem the invitation into a new fictional account with one-time recovery codes.'
     }
+    if ($null -ne $redeemed.Data.session.activeOrgId) { throw 'New-account establishment unexpectedly selected an organization.' }
+    $missingContext = Invoke-C1Get @{ Client = $anonymous.Client; Base = $anonymous.Base } '/api/departments'
+    if ($missingContext.StatusCode -ne 409 -or $missingContext.Raw -notmatch 'ORG_CONTEXT_REQUIRED') {
+        throw 'Legacy route did not require explicit organization selection after invitation redemption.'
+    }
     $adminSession = @{ Client = $anonymous.Client; Token = [string]$redeemed.Data.csrfToken; Base = $anonymous.Base }
+    $selected = Invoke-C1Post $adminSession '/api/v2/session/active-org' @{ organizationId = $orgId }
+    if ($selected.StatusCode -ne 200) { throw 'Invited account could not explicitly select its organization.' }
+    $adminSession.Token = Get-C1Csrf $anonymous.Client $anonymous.Base
     $members = Invoke-C1Get $ownerSession "/api/v2/orgs/$orgId/members"
     $target = @($members.Data.items | Where-Object { $_.role -eq 'ADMIN' -and $_.displayName -eq $adminDisplayName } | Select-Object -First 1)
     if ($members.StatusCode -ne 200 -or $target.Count -ne 1) { throw 'Packaged JAR member listing did not show the invited ADMIN account.' }
@@ -355,6 +382,35 @@ FLUSH PRIVILEGES;
     $name = 'C1 packaged persistence ' + [guid]::NewGuid().ToString('N')
     $departmentId = Add-PersistedDemoDepartment $persistedSession $name
     $project = Add-PersistedDemoProject $persistedSession $departmentId
+    $resourceName = 'C2 restart-safe receipt ' + [guid]::NewGuid().ToString('N')
+    $resourceCreated = Invoke-C1Post $persistedSession '/api/resources' @{
+        name = $resourceName; type = 'CONSUMABLE'; totalQuantity = 7
+    }
+    if ($resourceCreated.StatusCode -ne 201) { throw 'Packaged JAR failed to create the fictional C2 persistence Resource.' }
+    $orgRoot = "/api/v2/orgs/$($persistedSession.OrgId)"
+    $resourceList = Invoke-C1Get $persistedSession "$orgRoot/resources?limit=100"
+    $resource = @($resourceList.Data.items | Where-Object { $_.name -eq $resourceName } | Select-Object -First 1)
+    if ($resourceList.StatusCode -ne 200 -or $resource.Count -ne 1) { throw 'Versioned Resource discovery did not expose its public UUID.' }
+    $resourcePath = "$orgRoot/resources/$($resource[0].id)"
+    $resourceState = Invoke-C1Get $persistedSession $resourcePath
+    if ($resourceState.StatusCode -ne 200 -or $resourceState.Data.totalQuantity -ne 7) {
+        throw 'Packaged JAR could not read the initial C2 Resource state.'
+    }
+    $operationId = [guid]::NewGuid().ToString()
+    $operationKey = New-RandomHex
+    $operationBody = @{ operationId = $operationId; quantity = 5 }
+    $receipt = Invoke-C1Post $persistedSession "$resourcePath/receive" $operationBody $resourceState.ETag $operationKey
+    if ($receipt.StatusCode -ne 201 -or $receipt.Data.totalQuantity -ne 12 -or $receipt.Data.availableQuantity -ne 12) {
+        throw 'Packaged C2 receive operation did not commit its first movement and receipt.'
+    }
+    $preRestartReplay = Invoke-C1Post $persistedSession "$resourcePath/receive" $operationBody '"v0"' $operationKey
+    if ($preRestartReplay.StatusCode -ne 201 -or $preRestartReplay.Data.totalQuantity -ne 12) {
+        throw 'Same-key/same-body replay did not return the committed receipt with its original stale ETag.'
+    }
+    $movementPage = Invoke-C1Get $persistedSession "$resourcePath/movements?limit=10"
+    if ($movementPage.StatusCode -ne 200 -or @($movementPage.Data.items).Count -ne 2) {
+        throw 'INITIAL and RECEIPT history did not produce exactly two bounded movement rows.'
+    }
     $ownerSession.Client.Dispose()
     $recovery.Client.Dispose()
     Stop-C1App
@@ -376,6 +432,24 @@ FLUSH PRIVILEGES;
     if ($projectState.StatusCode -ne 200 -or $reloadedProject.Count -ne 1 -or
         $reloadedProject[0].startAt -ne $project.StartAt -or $reloadedProject[0].endAt -ne $project.EndAt) {
         throw 'The packaged JAR changed a persisted year-2040 project time after restart from Asia/Manila to UTC.'
+    }
+    $resourceStateAfterRestart = Invoke-C1Get $persistedSession $resourcePath
+    if ($resourceStateAfterRestart.StatusCode -ne 200 -or
+        $resourceStateAfterRestart.Data.totalQuantity -ne 12 -or
+        $resourceStateAfterRestart.Data.availableQuantity -ne 12) {
+        throw 'Packaged C2 physical quantity did not persist across restart.'
+    }
+    $receiptAfterRestart = Invoke-C1Get $persistedSession "$orgRoot/operations/$operationId"
+    if ($receiptAfterRestart.StatusCode -ne 200 -or $receiptAfterRestart.Data.totalQuantity -ne 12) {
+        throw 'Packaged C2 operation receipt was not recoverable after restart.'
+    }
+    $restartReplay = Invoke-C1Post $persistedSession "$resourcePath/receive" $operationBody '"v0"' $operationKey
+    if ($restartReplay.StatusCode -ne 201 -or $restartReplay.Data.totalQuantity -ne 12) {
+        throw 'Packaged C2 idempotent replay after restart changed the committed receipt.'
+    }
+    $movementAfterRestart = Invoke-C1Get $persistedSession "$resourcePath/movements?limit=10"
+    if ($movementAfterRestart.StatusCode -ne 200 -or @($movementAfterRestart.Data.items).Count -ne 2) {
+        throw 'C2 HTTP replay after restart duplicated an immutable stock movement.'
     }
 
     $replay = New-C1AnonymousSession
@@ -404,11 +478,11 @@ FLUSH PRIVILEGES;
     Stop-C1App
 
     if ($SkipFrontend) {
-        Write-Output 'C1 PASS: frontend gates were skipped by request; MySQL-backed ID01-ID17 acceptance; Maven package; packaged React/API smoke; invitation, ownership transfer and one-time recovery; session/data/recovery replay checks after JAR restart.'
+        Write-Output 'C2 PASS: frontend gates were skipped by request; MySQL-backed C1 and C2 acceptance; Maven package; packaged React/API smoke; identity/governance and inventory; receipt replay/persistence, session/data/recovery after JAR restart.'
     } else {
-        Write-Output 'C1 PASS: frontend checks; MySQL-backed ID01-ID17 acceptance; Maven package; packaged React/API smoke; invitation, ownership transfer and one-time recovery; session/data/recovery replay checks after JAR restart.'
+        Write-Output 'C2 PASS: frontend checks; MySQL-backed C1 and C2 acceptance; Maven package; packaged React/API smoke; identity/governance and inventory; receipt replay/persistence, session/data/recovery after JAR restart.'
     }
-    Write-Output "C1 run evidence and stopped isolated datadir: $dataDirectory"
+    Write-Output "C2 run evidence and stopped isolated datadir: $dataDirectory"
     Write-Output "Packaged JAR: $(Join-Path $experiment 'target\extended-backend-0.1.0-SNAPSHOT.jar')"
 } finally {
     Stop-C1App

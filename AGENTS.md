@@ -1,29 +1,24 @@
-# OrgResource repository rules
+# OrgResource implementation rules
 
-## Current O14 scope: academic baseline only
+## Protected Course Final A
 
-1. Treat O14 as an interim, course-traceable technical baseline, not the final product freeze. Finish its acceptance, documentation, reproducible artifacts, evidence, feature-branch commit/push and PR. Do not begin the production expansion within O14.
-2. Read the current README, relevant authoritative assignment/syllabus/proposal sections, current implementation, and only the relevant sections of `docs/ORGRESOURCE_MASTER_HANDOFF.md`. The master handoff and `docs/complete-handoff/` are historical planning material; use current source/evidence over stale phase prompts.
-3. The current academic implementation has five JPA entities and 25 proposal operations plus A09. Preserve their route and behavior traceability. The assignment requires **at least five justified entity types**, not a maximum; five is the current academic-baseline contract, not a permanent product cap.
-4. Preserve the course implementation in this baseline: Java 8-compatible Spring Boot/Jersey, `javax`, Spring `@Autowired` components, JPA/Spring Data/MySQL, Javax Validation, Retrofit/Gson, scheduling, and current Postman definitions. Do not publicly expose the legacy Java 8/Spring Boot 2.1 runtime as a supported production service.
-5. The present inventory rules, status transitions, stock formulas, validation, transaction locks, safe deletion, reminders, and UI behavior remain binding for O14. Do not change functioning modules without a verified defect or requirement.
-6. Keep current demo data fictional. SMS stays disabled by default; simulator results are not delivery. Never print or commit database passwords, provider credentials, personal contacts, private student information, or private local configuration.
-7. Do not claim Canvas review/submission, instructor approval, authorship certification, peer review, video recording, external-user acceptance, hosted deployment, or a real SMS unless the corresponding event actually occurred.
-8. Inspect Git status/remotes before edits. Preserve unrelated work. For O14 use the existing feature branch, push without force, and open/update its PR against the O11/O13 branch. Do not merge, tag a final release, submit to Canvas, or deploy without explicit authorization.
-9. Evidence must name actual commands, observed outcomes, files, SHAs and limitations. Use PASS/FAIL/BLOCKED/NOT_RUN/UNRESOLVED precisely. Do not treat annotations, static checks, screenshots, CI, or simulator responses as proof of unrelated behavior.
+- `7f8c0746da18fd54b47f430ac1435ac36e605d67` is the immutable Course Final A source and artifact reference. Never modify its implementation, release artifacts, or academic history while working on Extended C.
+- Preserve the course stack and functionality on that source: Java 8, Spring Boot/Jersey, `javax` validation, JPA/Spring Data/MySQL, Retrofit/Gson, scheduling, and React.
+- Distinguish Course A evidence from Extended C evidence. Do not claim Extended C has full Course A route parity unless it is independently verified.
 
-## Later production track
+## Extended C implementation
 
-1. After O14, pause production implementation until the user supplies the next separately reviewed master prompt. This direction changes the ultimate objective but is not authorization to start a production rewrite in O14.
-2. The target is a potential multi-organization product. Production work may add justified domain entities, routes, tenancy, authentication/session/account recovery, organization roles/memberships, audit history, migrations, backups/recovery, operations, and a supported runtime when the next approved prompt requires them. Do not interpret the O14 five-entity baseline or original 25 routes as a maximum; preserve their academic traceability and demonstrate the required course behavior.
-3. `docs/research-2.0/` and its separate PR are proposed research, not automatically approved implementation requirements. Do not merge, cherry-pick, or silently implement that branch during O14. Reconcile it against the next reviewed prompt.
-4. Do not deploy publicly or expose the Java 8/Spring Boot 2.1 academic runtime. A supported production architecture and any dual-track boundary must be validated before public operation; no serverless rewrite may erase the required Java coursework.
-5. Do not invent Ateneo endorsement, stakeholder interviews, pilots, organization membership, institutional inventory, or adoption. The public demonstration, if later approved, must use synthetic data and have a documented cost and recovery plan.
+- Work only on the currently authorized phase and its correctly based feature branch. C0–C2 do not authorize C3 or a broad product rewrite.
+- Preserve C1 identity, sessions, CSRF, explicit organization selection, database-backed roles, and tenant isolation. Reuse the maintained `extended/backend/` architecture and the five existing domain entities.
+- Use Java 21 and actual MySQL 8 for Extended C compatibility and transactional acceptance. Do not treat Java 8 CI or mocked/H2 database results as proof of Extended C behavior.
+- Keep stock movements and audit history append-only for the runtime account. Use separate elevated migration/fixture credentials only for migrations and isolated test setup. Test actual MySQL grants, constraints, rollback, concurrency, replay, and restart behavior.
+- Use only fictional data. Never print, commit, or expose database/provider secrets, personal contact details, real student data, or real SMS. SMS remains disabled unless an explicitly authorized simulator test requires it.
+- Inventory totals, movements, holds, issued custody, and idempotency receipts must remain transactionally reconciled. Reject corrupt invariants; never clamp negative availability into a fabricated success.
+- Use only fresh, disposable, loopback MySQL instances and schemas created by the guarded acceptance scripts, including their generated `orgresource_c1_*` / `orgresource_c2_*` test schemas. Never reset, migrate, or delete a shared/user-owned or Course A database.
+- Preserve unrelated work. Inspect Git status/remotes before edits; never reset, force-push, or merge automatically. Exclude secrets, databases, caches, `target/`, `dist/`, and `node_modules/` from commits.
+- Report only commands actually run and results actually observed. Mark failures, blocked checks, and unrun checks precisely. Do not claim Canvas submission, instructor approval, recording, public deployment, or real provider delivery without evidence.
+- Do not continue into C3, merge, deploy publicly, create paid resources, send real SMS, or submit Canvas without a separate explicit authorization.
 
-## Working practice
+## Local computer-use constraint
 
-- Prefer current source contracts and smallest coherent changes; preserve business behavior and test relevant failure/rollback cases.
-- Reuse installed tools and scripts. Do not add dependencies, caches, build outputs, or duplicate release systems without a demonstrated need.
-- Do not reset/delete any existing MySQL schema. Use only the guarded fictional `orgresource_test` schema for integration acceptance.
-- Verify with command-line Playwright only; never invoke the in-app browser/Chrome-control plugins on this Windows installation.
-- Finish independent, authorized work without repeated confirmation requests. Stop only for a real blocker or an action the user reserved for themselves.
+- Never invoke the in-app Browser or Chrome-control plugins on this Windows installation. The embedded Chromium GPU process crashes when an in-app browser session starts. Use command-line Playwright or non-GUI checks for local web verification. Retry browser plugins only after the user confirms an app update fixed the GPU crash.
