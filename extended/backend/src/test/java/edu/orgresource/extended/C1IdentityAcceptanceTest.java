@@ -2008,7 +2008,7 @@ class C1IdentityAcceptanceTest {
         var expiring = springSessions.findById(rotatedSessionId);
         assertNotNull(expiring);
         expiring.setAttribute(edu.orgresource.extended.security.C1AccountSessionFilter.SESSION_CREATED_AT,
-                clock.millis() - java.time.Duration.ofHours(12).toMillis() - 1_000);
+                clock.millis() - java.time.Duration.ofHours(12).toMillis());
         springSessions.save(expiring);
         HttpResponse<String> expired = get(session.client, "/api/v2/session");
         assertEquals(401, expired.statusCode(), "Switching organizations must not renew the 12-hour absolute lifetime.");
