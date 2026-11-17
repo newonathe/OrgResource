@@ -41,5 +41,9 @@ public final class InventoryDtos {
     public record MovementView(UUID id, UUID operationId, UUID allocationId, String kind,
                                int quantity, long deltaTotal, long deltaIssued, String occurredAt) { }
 
+    /** Permanent fact reconstructed from stock_movement after the 24-hour HTTP receipt expires. */
+    public record MovementReceipt(UUID operationId, UUID resourceId, UUID allocationId, String kind,
+                                  int quantity, long deltaTotal, long deltaIssued, String occurredAt) { }
+
     public record MovementPage(List<MovementView> items, UUID nextCursor) { }
 }

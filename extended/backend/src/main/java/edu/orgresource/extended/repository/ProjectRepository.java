@@ -14,10 +14,15 @@ import jakarta.persistence.LockModeType;
 
 public interface ProjectRepository extends JpaRepository<Project, Long> {
     @EntityGraph(attributePaths = {"department"})
+    List<Project> findByOrganizationIdOrderById(Long organizationId);
+    @EntityGraph(attributePaths = {"department"})
     List<Project> findByOrganizationIdAndDepartmentIdOrderById(Long organizationId, Long departmentId);
     Optional<Project> findByIdAndOrganizationId(Long id, Long organizationId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select p from Project p where p.id = :id and p.organizationId = :organizationId")
     Optional<Project> lockById(@Param("id") Long id, @Param("organizationId") Long organizationId);
+
+    boolean existsByOrganizationIdAndDepartmentId(Long organizationId, Long departmentId);
+    boolean existsByDepartmentIdAndOrganizationId(Long departmentId, Long organizationId);
 }

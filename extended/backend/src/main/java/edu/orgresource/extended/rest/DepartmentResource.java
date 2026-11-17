@@ -10,6 +10,7 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -23,5 +24,12 @@ public class DepartmentResource {
         requestValidator.validate(request);
         return Response.status(Response.Status.CREATED).entity(component.createDepartment(request)).build();
     }
+    @POST @Path("/{id}/update") @Consumes(MediaType.APPLICATION_JSON)
+    public ApiDtos.DepartmentView update(@PathParam("id") Long id, ApiDtos.DepartmentUpdate request) {
+        requestValidator.validate(request);
+        return component.updateDepartment(id, request);
+    }
+    @POST @Path("/{id}/delete")
+    public ApiDtos.MessageView delete(@PathParam("id") Long id) { return component.deleteDepartment(id); }
     @GET public List<ApiDtos.DepartmentView> list() { return component.listDepartments(); }
 }

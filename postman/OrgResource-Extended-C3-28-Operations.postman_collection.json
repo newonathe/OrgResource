@@ -1,0 +1,141 @@
+{
+  "info": {
+    "name": "OrgResource Extended C3 — Authenticated 28-Operation Acceptance",
+    "description": "Ordered Newman acceptance for the 26 Course A Jersey operations (D01–D04, P01–P04, R01–R05, Q01–Q04, A01–A09) and two Resource image operations, against the same Extended C MySQL-backed application and stock ledger. Uses a fresh fictional run tag, real session cookie, CSRF token, explicit organization selection, dynamic IDs, and a local PNG fixture. Configure baseUrl, username, password, imagePath. Loopback only; never use a live database or real recipient data.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const base = pm.environment.get('baseUrl');",
+          "const imageRead = pm.request.method === 'GET' && pm.request.url.toString().endsWith('/image');",
+          "pm.request.headers.upsert({ key: 'Accept', value: imageRead ? 'image/png, image/jpeg' : 'application/json' });",
+          "if (pm.request.method === 'POST') {",
+          "  pm.request.headers.upsert({ key: 'Origin', value: base });",
+          "  const csrf = pm.environment.get('csrfToken');",
+          "  if (csrf) pm.request.headers.upsert({ key: 'X-CSRF-TOKEN', value: csrf });",
+          "}",
+          "if (!pm.environment.get('runTag')) pm.environment.set('runTag', 'C3-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8));",
+          "const plus = (days) => new Date(Date.now() + days * 86400000 + 28800000).toISOString().slice(0, 19);",
+          "if (!pm.environment.get('activeProjectStart')) pm.environment.set('activeProjectStart', new Date(Date.now() + 30000 + 28800000).toISOString().slice(0, 19));",
+          "if (!pm.environment.get('projectStart')) pm.environment.set('projectStart', plus(2));",
+          "if (!pm.environment.get('projectEnd')) pm.environment.set('projectEnd', plus(5));",
+          "if (!pm.environment.get('projectStartUpdate')) pm.environment.set('projectStartUpdate', plus(3));",
+          "if (!pm.environment.get('projectEndUpdate')) pm.environment.set('projectEndUpdate', plus(6));"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const expected = {",
+          "  'AUTH-01 GET CSRF': 200, 'AUTH-02 POST login': 200, 'AUTH-03 GET organizations': 200, 'AUTH-04 POST explicit active organization': 200, 'AUTH-05 GET refreshed CSRF': 200,",
+          "  'PREP-01 POST workflow Department': 201, 'PREP-02 POST workflow Project': 201, 'PREP-03 POST consumable Resource': 201, 'PREP-04 POST consumable Requirement': 201, 'PREP-05 POST empty Resource': 201, 'PREP-06 POST empty Requirement': 201,",
+          "  'D01 POST Department': 201, 'D02 GET Departments': 200, 'D03 POST Department update': 200, 'D04 POST eligible Department delete': 200,",
+          "  'P01 POST Project': 201, 'P02 GET Projects': 200, 'P03 POST Project update': 200, 'P04 POST eligible Project delete': 200,",
+          "  'R01 POST reusable Resource': 201, 'R02 GET Resources by type': 200, 'R03 POST Resource update': 200, 'R03-STALE POST stale Resource update': 409, 'R04-REFUSED POST nonempty Resource delete': 409, 'R04 POST eligible empty Resource delete': 200, 'R05 GET Resource availability': 200,",
+          "  'IMAGE-01 POST PNG upload': 200, 'IMAGE-02 GET PNG bytes': 200,",
+          "  'Q01 POST main Requirement': 201, 'Q02 GET Requirements by project': 200, 'Q03 POST Requirement update': 200, 'Q04-REFUSED POST referenced Requirement delete': 409, 'Q04 POST eligible Requirement delete': 200,",
+          "  'A01 POST reusable Allocation': 201, 'A02 GET Allocations by status and requirement': 200, 'A02-STATUS GET Allocations by status only': 200, 'A02-REQUIREMENT GET Allocations by requirement only': 200,",
+          "  'A03 POST approve reusable Allocation': 200, 'A04 POST issue reusable Allocation': 200, 'A08-REFUSED POST issued Allocation delete': 409, 'A05 POST return reusable Allocation': 200, 'A09 POST revoke SMS consent': 200,",
+          "  'A01-CONSUMABLE POST consumable Allocation': 201, 'A03-CONSUMABLE POST approve consumable Allocation': 200, 'A06 POST consume consumable Allocation': 200,",
+          "  'A01-CANCEL POST cancellable Allocation': 201, 'A07 POST cancel Allocation': 200, 'A08 POST eligible cancelled Allocation delete': 200",
+          "};",
+          "const name = pm.info.requestName;",
+          "pm.test(name + ' returns the contract HTTP status', () => pm.expect(pm.response.code, pm.response.text()).to.eql(expected[name]));",
+          "if (expected[name] === undefined || pm.response.code !== expected[name]) return;",
+          "if (name === 'IMAGE-02 GET PNG bytes') {",
+          "  pm.test('IMAGE-02 serves raw PNG with safe headers', () => { pm.expect(pm.response.headers.get('Content-Type')).to.include('image/png'); pm.expect(pm.response.headers.get('X-Content-Type-Options')).to.eql('nosniff'); pm.expect(pm.response.headers.get('Cache-Control')).to.include('no-store'); });",
+          "  return;",
+          "}",
+          "let body; try { body = pm.response.json(); } catch (e) { pm.test(name + ' returns JSON', () => { throw e; }); return; }",
+          "const captures = { 'PREP-01 POST workflow Department':'workflowDepartmentId', 'PREP-02 POST workflow Project':'workflowProjectId', 'PREP-03 POST consumable Resource':'consumableResourceId', 'PREP-04 POST consumable Requirement':'consumableRequirementId', 'PREP-05 POST empty Resource':'emptyResourceId', 'PREP-06 POST empty Requirement':'emptyRequirementId', 'D01 POST Department':'deleteDepartmentId', 'P01 POST Project':'deleteProjectId', 'R01 POST reusable Resource':'reusableResourceId', 'Q01 POST main Requirement':'mainRequirementId', 'A01 POST reusable Allocation':'mainAllocationId', 'A01-CONSUMABLE POST consumable Allocation':'consumableAllocationId', 'A01-CANCEL POST cancellable Allocation':'cancelAllocationId' };",
+          "if (name.startsWith('AUTH-')) {",
+          "  pm.test(name + ' has the expected security envelope', () => pm.expect(body).to.have.property('data'));",
+          "  if (name === 'AUTH-01 GET CSRF' || name === 'AUTH-02 POST login' || name === 'AUTH-05 GET refreshed CSRF') pm.environment.set('csrfToken', body.data.csrfToken);",
+          "  if (name === 'AUTH-03 GET organizations') { pm.test('Organization choice is explicit', () => pm.expect(body.data).to.be.an('array').that.is.not.empty); if (body.data[0]) pm.environment.set('organizationId', body.data[0].id); }",
+          "  return;",
+          "}",
+          "const capture = captures[name]; if (capture && body.id !== undefined) pm.environment.set(capture, String(body.id));",
+          "if (expected[name] === 201) pm.test(name + ' returns a numeric public DTO id', () => pm.expect(Number(body.id)).to.be.above(0));",
+          "if (/^D02|^P02|^R02|^Q02|^A02/.test(name)) pm.test(name + ' returns the original unwrapped array response', () => pm.expect(body).to.be.an('array'));",
+          "if (name === 'R03 POST Resource update') pm.test('R03 calculates server availability', () => { pm.expect(body.totalQuantity).to.eql(12); pm.expect(body.availableQuantity).to.eql(12); });",
+          "if (name === 'R05 GET Resource availability') pm.test('R05 returns the resource id and nonnegative availability', () => { pm.expect(Number(body.resourceId)).to.eql(Number(pm.environment.get('reusableResourceId'))); pm.expect(body.availableQuantity).to.be.at.least(0); });",
+          "if (name === 'IMAGE-01 POST PNG upload') { pm.test('IMAGE-01 returns upload digest metadata', () => { pm.expect(body.resourceId).to.eql(Number(pm.environment.get('reusableResourceId'))); pm.expect(body.contentType).to.eql('image/png'); pm.expect(body.sizeBytes).to.be.above(0); pm.expect(body.sha256).to.match(/^[a-f0-9]{64}$/); }); pm.environment.set('imageSha256', body.sha256); pm.environment.set('imageSizeBytes', String(body.sizeBytes)); }",
+          "if (name === 'A09 POST revoke SMS consent') pm.test('A09 erases contact and revokes consent in the response', () => { pm.expect(body.smsConsent).to.eql(false); pm.expect(body.contactPresent).to.eql(false); pm.expect(body).not.to.have.property('phoneNumber'); });",
+          "if (name.startsWith('A02')) pm.test('A02 never exposes stored phone numbers', () => { pm.expect(pm.response.text()).not.to.include('phoneNumber'); });",
+          "if (name === 'A02 GET Allocations by status and requirement') pm.test('A02 status and requirement filters compose', () => { pm.expect(body.every(row => Number(row.requirementId) === Number(pm.environment.get('mainRequirementId')) && row.status === 'PENDING')).to.eql(true); });",
+          "if (name === 'A02-STATUS GET Allocations by status only') pm.test('A02 status-only filter returns only PENDING rows', () => pm.expect(body.every(row => row.status === 'PENDING')).to.eql(true));",
+          "if (name === 'A02-REQUIREMENT GET Allocations by requirement only') pm.test('A02 requirement-only filter returns the requested requirement', () => pm.expect(body.every(row => Number(row.requirementId) === Number(pm.environment.get('mainRequirementId')))).to.eql(true));",
+          "if (name === 'A03 POST approve reusable Allocation') pm.test('Approval changes the state', () => pm.expect(body.status).to.eql('APPROVED'));",
+          "if (name === 'A04 POST issue reusable Allocation') pm.test('Issue is fulfilled without another total-stock deduction', () => pm.expect(body.status).to.eql('ISSUED'));",
+          "if (name === 'A05 POST return reusable Allocation') pm.test('Full usable return is recorded', () => pm.expect(body.status).to.eql('RETURNED'));",
+          "if (name === 'A06 POST consume consumable Allocation') pm.test('Consumable allocation is fulfilled', () => pm.expect(body.status).to.eql('CONSUMED'));",
+          "if (name === 'A07 POST cancel Allocation') pm.test('Pending allocation is cancelled', () => pm.expect(body.status).to.eql('CANCELLED'));"
+        ]
+      }
+    }
+  ],
+  "item": [
+    { "name":"AUTH-01 GET CSRF", "request":{"method":"GET","url":"{{baseUrl}}/api/v2/auth/csrf"} },
+    { "name":"AUTH-02 POST login", "request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/api/v2/auth/login","body":{"mode":"raw","raw":"{\"username\":\"{{username}}\",\"password\":\"{{password}}\"}","options":{"raw":{"language":"json"}}}} },
+    { "name":"AUTH-03 GET organizations", "request":{"method":"GET","url":"{{baseUrl}}/api/v2/orgs"} },
+    { "name":"AUTH-04 POST explicit active organization", "request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/api/v2/session/active-org","body":{"mode":"raw","raw":"{\"organizationId\":\"{{organizationId}}\"}","options":{"raw":{"language":"json"}}}} },
+    { "name":"AUTH-05 GET refreshed CSRF", "request":{"method":"GET","url":"{{baseUrl}}/api/v2/auth/csrf"} },
+
+    { "name":"PREP-01 POST workflow Department", "request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/api/departments","body":{"mode":"raw","raw":"{\"name\":\"C3 {{runTag}} workflow department\"}","options":{"raw":{"language":"json"}}}} },
+    { "name":"PREP-02 POST workflow Project", "request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/api/projects","body":{"mode":"raw","raw":"{\"departmentId\":{{workflowDepartmentId}},\"name\":\"C3 {{runTag}} workflow project\",\"startAt\":\"{{activeProjectStart}}\",\"endAt\":\"{{projectEnd}}\"}","options":{"raw":{"language":"json"}}}} },
+    { "name":"PREP-03 POST consumable Resource", "request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/api/resources","body":{"mode":"raw","raw":"{\"name\":\"C3 {{runTag}} consumable\",\"type\":\"CONSUMABLE\",\"totalQuantity\":10}","options":{"raw":{"language":"json"}}}} },
+    { "name":"PREP-04 POST consumable Requirement", "request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/api/requirements","body":{"mode":"raw","raw":"{\"projectId\":{{workflowProjectId}},\"resourceId\":{{consumableResourceId}},\"quantity\":10}","options":{"raw":{"language":"json"}}}} },
+    { "name":"PREP-05 POST empty Resource", "request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/api/resources","body":{"mode":"raw","raw":"{\"name\":\"C3 {{runTag}} empty resource\",\"type\":\"CONSUMABLE\",\"totalQuantity\":0}","options":{"raw":{"language":"json"}}}} },
+    { "name":"PREP-06 POST empty Requirement", "request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/api/requirements","body":{"mode":"raw","raw":"{\"projectId\":{{workflowProjectId}},\"resourceId\":{{emptyResourceId}},\"quantity\":1}","options":{"raw":{"language":"json"}}}} },
+
+    { "name":"D01 POST Department", "request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/api/departments","body":{"mode":"raw","raw":"{\"name\":\"C3 {{runTag}} delete department\"}","options":{"raw":{"language":"json"}}}} },
+    { "name":"D02 GET Departments", "request":{"method":"GET","url":"{{baseUrl}}/api/departments"} },
+    { "name":"D03 POST Department update", "request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/api/departments/{{deleteDepartmentId}}/update","body":{"mode":"raw","raw":"{\"name\":\"C3 {{runTag}} updated department\"}","options":{"raw":{"language":"json"}}}} },
+    { "name":"D04 POST eligible Department delete", "request":{"method":"POST","url":"{{baseUrl}}/api/departments/{{deleteDepartmentId}}/delete"} },
+
+    { "name":"P01 POST Project", "request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/api/projects","body":{"mode":"raw","raw":"{\"departmentId\":{{workflowDepartmentId}},\"name\":\"C3 {{runTag}} delete project\",\"startAt\":\"{{projectStart}}\",\"endAt\":\"{{projectEnd}}\"}","options":{"raw":{"language":"json"}}}} },
+    { "name":"P02 GET Projects", "request":{"method":"GET","url":"{{baseUrl}}/api/projects"} },
+    { "name":"P03 POST Project update", "request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/api/projects/{{deleteProjectId}}/update","body":{"mode":"raw","raw":"{\"name\":\"C3 {{runTag}} updated project\",\"startAt\":\"{{projectStartUpdate}}\",\"endAt\":\"{{projectEndUpdate}}\"}","options":{"raw":{"language":"json"}}}} },
+    { "name":"P04 POST eligible Project delete", "request":{"method":"POST","url":"{{baseUrl}}/api/projects/{{deleteProjectId}}/delete"} },
+
+    { "name":"R01 POST reusable Resource", "request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/api/resources","body":{"mode":"raw","raw":"{\"name\":\"C3 {{runTag}} reusable\",\"type\":\"REUSABLE\",\"totalQuantity\":10}","options":{"raw":{"language":"json"}}}} },
+    { "name":"R02 GET Resources by type", "request":{"method":"GET","url":"{{baseUrl}}/api/resources?type=REUSABLE"} },
+    { "name":"R03 POST Resource update", "request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/api/resources/{{reusableResourceId}}/update","body":{"mode":"raw","raw":"{\"name\":\"C3 {{runTag}} reusable updated\",\"totalQuantity\":12,\"expectedTotalQuantity\":10}","options":{"raw":{"language":"json"}}}} },
+    { "name":"R03-STALE POST stale Resource update", "request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/api/resources/{{reusableResourceId}}/update","body":{"mode":"raw","raw":"{\"name\":\"C3 {{runTag}} stale update\",\"totalQuantity\":15,\"expectedTotalQuantity\":10}","options":{"raw":{"language":"json"}}}} },
+    { "name":"R04-REFUSED POST nonempty Resource delete", "request":{"method":"POST","url":"{{baseUrl}}/api/resources/{{reusableResourceId}}/delete"} },
+    { "name":"R05 GET Resource availability", "request":{"method":"GET","url":"{{baseUrl}}/api/resources/{{reusableResourceId}}/availability"} },
+    { "name":"IMAGE-01 POST PNG upload", "request":{"method":"POST","url":"{{baseUrl}}/api/resources/{{reusableResourceId}}/image","body":{"mode":"formdata","formdata":[{"key":"file","type":"file","src":"{{imagePath}}","contentType":"image/png"}]}} },
+    { "name":"IMAGE-02 GET PNG bytes", "request":{"method":"GET","url":"{{baseUrl}}/api/resources/{{reusableResourceId}}/image"} },
+
+    { "name":"Q01 POST main Requirement", "request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/api/requirements","body":{"mode":"raw","raw":"{\"projectId\":{{workflowProjectId}},\"resourceId\":{{reusableResourceId}},\"quantity\":8}","options":{"raw":{"language":"json"}}}} },
+    { "name":"Q02 GET Requirements by project", "request":{"method":"GET","url":"{{baseUrl}}/api/requirements?projectId={{workflowProjectId}}"} },
+    { "name":"Q03 POST Requirement update", "request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/api/requirements/{{mainRequirementId}}/update","body":{"mode":"raw","raw":"{\"quantity\":9}","options":{"raw":{"language":"json"}}}} },
+
+    { "name":"A01 POST reusable Allocation", "request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/api/allocations","body":{"mode":"raw","raw":"{\"requirementId\":{{mainRequirementId}},\"quantity\":4,\"borrowerName\":\"C3 Fictional Borrower {{runTag}}\",\"phoneNumber\":\"+15555550123\",\"smsConsent\":true}","options":{"raw":{"language":"json"}}}} },
+    { "name":"A02 GET Allocations by status and requirement", "request":{"method":"GET","url":"{{baseUrl}}/api/allocations?status=PENDING&requirementId={{mainRequirementId}}"} },
+    { "name":"A02-STATUS GET Allocations by status only", "request":{"method":"GET","url":"{{baseUrl}}/api/allocations?status=PENDING"} },
+    { "name":"A02-REQUIREMENT GET Allocations by requirement only", "request":{"method":"GET","url":"{{baseUrl}}/api/allocations?requirementId={{mainRequirementId}}"} },
+    { "name":"A03 POST approve reusable Allocation", "request":{"method":"POST","url":"{{baseUrl}}/api/allocations/{{mainAllocationId}}/approve"} },
+    { "name":"A04 POST issue reusable Allocation", "request":{"method":"POST","url":"{{baseUrl}}/api/allocations/{{mainAllocationId}}/issue"} },
+    { "name":"A08-REFUSED POST issued Allocation delete", "request":{"method":"POST","url":"{{baseUrl}}/api/allocations/{{mainAllocationId}}/delete"} },
+    { "name":"A05 POST return reusable Allocation", "request":{"method":"POST","url":"{{baseUrl}}/api/allocations/{{mainAllocationId}}/return"} },
+    { "name":"A09 POST revoke SMS consent", "request":{"method":"POST","url":"{{baseUrl}}/api/allocations/{{mainAllocationId}}/revoke-sms-consent"} },
+    { "name":"Q04-REFUSED POST referenced Requirement delete", "request":{"method":"POST","url":"{{baseUrl}}/api/requirements/{{mainRequirementId}}/delete"} },
+
+    { "name":"A01-CONSUMABLE POST consumable Allocation", "request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/api/allocations","body":{"mode":"raw","raw":"{\"requirementId\":{{consumableRequirementId}},\"quantity\":3,\"borrowerName\":\"C3 Fictional Consumable Borrower {{runTag}}\",\"smsConsent\":false}","options":{"raw":{"language":"json"}}}} },
+    { "name":"A03-CONSUMABLE POST approve consumable Allocation", "request":{"method":"POST","url":"{{baseUrl}}/api/allocations/{{consumableAllocationId}}/approve"} },
+    { "name":"A06 POST consume consumable Allocation", "request":{"method":"POST","url":"{{baseUrl}}/api/allocations/{{consumableAllocationId}}/consume"} },
+    { "name":"A01-CANCEL POST cancellable Allocation", "request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"url":"{{baseUrl}}/api/allocations","body":{"mode":"raw","raw":"{\"requirementId\":{{mainRequirementId}},\"quantity\":1,\"borrowerName\":\"C3 Fictional Cancel Borrower {{runTag}}\",\"smsConsent\":false}","options":{"raw":{"language":"json"}}}} },
+    { "name":"A07 POST cancel Allocation", "request":{"method":"POST","url":"{{baseUrl}}/api/allocations/{{cancelAllocationId}}/cancel"} },
+    { "name":"A08 POST eligible cancelled Allocation delete", "request":{"method":"POST","url":"{{baseUrl}}/api/allocations/{{cancelAllocationId}}/delete"} },
+    { "name":"Q04 POST eligible Requirement delete", "request":{"method":"POST","url":"{{baseUrl}}/api/requirements/{{emptyRequirementId}}/delete"} },
+    { "name":"R04 POST eligible empty Resource delete", "request":{"method":"POST","url":"{{baseUrl}}/api/resources/{{emptyResourceId}}/delete"} }
+  ]
+}

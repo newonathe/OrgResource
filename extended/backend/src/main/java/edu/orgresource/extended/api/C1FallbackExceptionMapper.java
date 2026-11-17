@@ -9,6 +9,7 @@ import jakarta.ws.rs.core.Context;
 import edu.orgresource.extended.identity.C1HttpResponses;
 import edu.orgresource.extended.security.C1RequestPaths;
 import java.sql.SQLException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 @Provider
 public class C1FallbackExceptionMapper implements ExceptionMapper<Throwable> {
@@ -32,6 +33,21 @@ public class C1FallbackExceptionMapper implements ExceptionMapper<Throwable> {
                     .entity(new ApiDtos.ErrorView("NOT_FOUND", "The requested resource was not found."))
                     .build();
         }
+        if (containsCause(exception, org.glassfish.jersey.server.ParamException.class)) {
+            if (C1RequestPaths.path(request).startsWith("/api/v2/"))
+                return C1HttpResponses.error(400, "INVALID_PATH_PARAMETER", "A path parameter has an invalid format.", request);
+            return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE)
+                    .entity(new ApiDtos.ErrorView("INVALID_PATH_PARAMETER", "A path parameter has an invalid format."))
+                    .build();
+        }
+        if (containsCause(exception, jakarta.ws.rs.BadRequestException.class)
+                || containsCause(exception, JsonProcessingException.class)) {
+            if (C1RequestPaths.path(request).startsWith("/api/v2/"))
+                return C1HttpResponses.error(400, "INVALID_REQUEST_BODY", "The request body is malformed or invalid.", request);
+            return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE)
+                    .entity(new ApiDtos.ErrorView("INVALID_REQUEST_BODY", "The request body is malformed or invalid."))
+                    .build();
+        }
         if (C1RequestPaths.path(request).startsWith("/api/v2/"))
             return C1HttpResponses.error(500, "INTERNAL_ERROR", "The request could not be completed.", request);
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -47,6 +63,12 @@ public class C1FallbackExceptionMapper implements ExceptionMapper<Throwable> {
                     || cause instanceof SQLException sql && (sql.getErrorCode() == 1213
                             || "40001".equals(sql.getSQLState()))) return true;
         }
+        return false;
+    }
+
+    private static boolean containsCause(Throwable failure, Class<? extends Throwable> type) {
+        for (Throwable cause = failure; cause != null; cause = cause.getCause())
+            if (type.isInstance(cause)) return true;
         return false;
     }
 }

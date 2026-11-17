@@ -7,6 +7,7 @@ import edu.orgresource.extended.api.ApiDtos;
 import edu.orgresource.extended.api.C1RequestValidator;
 import edu.orgresource.extended.service.C1Component;
 import edu.orgresource.extended.security.C1OrganizationContext;
+import edu.orgresource.extended.domain.AllocationStatus;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -27,8 +28,9 @@ public class AllocationResource {
         requestValidator.validate(request);
         return Response.status(Response.Status.CREATED).entity(component.createAllocation(request)).build();
     }
-    @GET public List<ApiDtos.AllocationView> list(@QueryParam("requirementId") Long requirementId) {
-        return component.listAllocations(requirementId);
+    @GET public List<ApiDtos.AllocationView> list(@QueryParam("requirementId") Long requirementId,
+            @QueryParam("status") AllocationStatus status) {
+        return component.listAllocations(requirementId, status);
     }
 
     @POST @Path("/{id}/approve")
@@ -54,5 +56,15 @@ public class AllocationResource {
     @POST @Path("/{id}/cancel")
     public ApiDtos.AllocationView cancel(@PathParam("id") Long id) {
         return component.cancel(id, organizationContext.currentOrganizationId());
+    }
+
+    @POST @Path("/{id}/delete")
+    public ApiDtos.MessageView delete(@PathParam("id") Long id) {
+        return component.deleteAllocation(id, organizationContext.currentOrganizationId());
+    }
+
+    @POST @Path("/{id}/revoke-sms-consent")
+    public ApiDtos.AllocationView revokeSmsConsent(@PathParam("id") Long id) {
+        return component.revokeSmsConsent(id, organizationContext.currentOrganizationId());
     }
 }

@@ -52,12 +52,18 @@ public final class LoopbackRetrofitTwilioClient {
     private final String accountSid;
 
     public TwilioMessageResponse send(String to, String from, String body) throws IOException {
-        Response<TwilioMessageResponse> response = api.createMessage(accountSid, to, from, body).execute();
-        if (!response.isSuccessful() || response.body() == null) {
-            throw new IOException("Loopback provider protocol returned HTTP " + response.code() + ".");
-        }
-        return response.body();
+        TwilioProtocolResult result = sendResult(to, from, body);
+        if (!result.successful() || result.message() == null)
+            throw new IOException("Loopback provider protocol returned HTTP " + result.httpStatus() + ".");
+        return result.message();
     }
+
+    public TwilioProtocolResult sendResult(String to, String from, String body) throws IOException {
+        Response<TwilioMessageResponse> response = api.createMessage(accountSid, to, from, body).execute();
+        return new TwilioProtocolResult(response.code(), response.isSuccessful(), response.body());
+    }
+
+    public record TwilioProtocolResult(int httpStatus, boolean successful, TwilioMessageResponse message) { }
 
     private static void requireLoopbackHttp(URI uri) {
         if (uri == null || !"http".equalsIgnoreCase(uri.getScheme()) || uri.getHost() == null

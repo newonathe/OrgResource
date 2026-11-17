@@ -105,6 +105,65 @@ public class InventoryService {
         return new ApiDtos.ResourceView(resource, available(resource, businessNow()));
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public ApiDtos.ResourceView updateLegacyResource(long resourceId, ApiDtos.ResourceUpdate request) {
+        long organizationId = organizationContext.currentOrganizationId();
+        Actor actor = lockOrganization(organizationId, true);
+        requireStockRole(actor.membership);
+        if (resourceId <= 0) throw new C1ApiException(400, "VALIDATION_FAILED", "Resource ID must be positive.");
+        Resource resource = resources.lockById(resourceId, organizationId).orElseThrow(InventoryService::notFound);
+        if (request.expectedTotalQuantity == null || !request.expectedTotalQuantity.equals(resource.totalQuantity))
+            throw new C1ApiException(409, "STALE_RESOURCE_QUANTITY", "Resource totalQuantity changed; reload it before updating.");
+        String name = normalizeName(request.name);
+        String nameKey = name.toLowerCase(Locale.ROOT);
+        if (resources.existsByOrganizationIdAndNameKeyAndIdNot(organizationId, nameKey, resourceId))
+            throw new C1ApiException(409, "DUPLICATE_NAME", "A Resource with this name already exists.");
+        LocalDateTime sampledNow = businessNow();
+        Balance before = balance(resource, sampledNow);
+        long committed = resource.type == ResourceType.REUSABLE ? before.holds + before.issued : before.holds;
+        if (request.totalQuantity == null || request.totalQuantity < 0 || request.totalQuantity > 1000000)
+            throw new C1ApiException(400, "VALIDATION_FAILED", "totalQuantity must be from 0 to 1000000.");
+        if (request.totalQuantity < committed)
+            throw new C1ApiException(409, "RESOURCE_BELOW_COMMITMENTS", "totalQuantity cannot be lower than current commitments.");
+        int delta = request.totalQuantity - resource.totalQuantity;
+        resource.name = name;
+        resource.nameKey = nameKey;
+        resource.totalQuantity = request.totalQuantity;
+        try {
+            resources.saveAndFlush(resource);
+        } catch (DataIntegrityViolationException duplicate) {
+            throw new C1ApiException(409, "DUPLICATE_NAME", "A Resource with this name already exists.");
+        }
+        if (delta != 0) {
+            UUID operationId = UUID.randomUUID();
+            insertMovement(resource, null, actor.membership.id, operationId,
+                    fingerprint("POST:/api/resources/" + resourceId + "/update|" + organizationId + "|" + nameKey
+                            + "|" + request.expectedTotalQuantity + "|" + request.totalQuantity),
+                    "ADJUST", Math.abs(delta), delta, 0, utcNow());
+        }
+        return new ApiDtos.ResourceView(resource, available(resource, sampledNow));
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public ApiDtos.MessageView deleteLegacyResource(long resourceId) {
+        long organizationId = organizationContext.currentOrganizationId();
+        Actor actor = lockOrganization(organizationId, true);
+        requireStockRole(actor.membership);
+        if (resourceId <= 0) throw new C1ApiException(400, "VALIDATION_FAILED", "Resource ID must be positive.");
+        Resource resource = resources.lockById(resourceId, organizationId).orElseThrow(InventoryService::notFound);
+        if (requirements.existsByOrganizationIdAndResourceId(organizationId, resourceId))
+            throw new C1ApiException(409, "DEPENDENCY_EXISTS", "Resource still has ResourceRequirements.");
+        if (resource.totalQuantity != 0)
+            throw new C1ApiException(409, "RESOURCE_NOT_EMPTY", "Resource totalQuantity must be zero before deletion.");
+        Integer history = jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=? AND resource_id=?",
+                Integer.class, organizationId, resourceId);
+        if (history != null && history > 0)
+            throw new C1ApiException(409, "HISTORY_PROTECTED", "Resource stock history is permanently protected.");
+        resources.delete(resource);
+        resources.flush();
+        return new ApiDtos.MessageView("Record deleted.");
+    }
+
     @Transactional(readOnly = true)
     public int availableQuantity(Resource resource, LocalDateTime sampledNow) {
         return available(resource, sampledNow);
@@ -121,7 +180,7 @@ public class InventoryService {
         String canonical = organizationPublicId + "|" + resourcePublicId + "|" + body.operationId + "|" + body.quantity;
         byte[] bodyHash = fingerprint(route + "|" + canonical);
         validateIdempotencyKey(idempotencyKey);
-        OperationResponse operationReplay = priorOperation(actor.organization.id, body.operationId, route, bodyHash);
+        OperationResponse operationReplay = priorOperation(actor.organization.id, body.operationId, route, bodyHash, requestId);
         if (operationReplay != null) return operationReplay;
         IdempotencyClaim claim = claim(actor, route, idempotencyKey, bodyHash, body.operationId);
         if (claim.replay != null) return claim.replay;
@@ -153,7 +212,7 @@ public class InventoryService {
         String canonical = organizationPublicId + "|" + resourcePublicId + "|" + body.operationId + "|" + body.newTotalQuantity;
         byte[] bodyHash = fingerprint(route + "|" + canonical);
         validateIdempotencyKey(idempotencyKey);
-        OperationResponse operationReplay = priorOperation(actor.organization.id, body.operationId, route, bodyHash);
+        OperationResponse operationReplay = priorOperation(actor.organization.id, body.operationId, route, bodyHash, requestId);
         if (operationReplay != null) return operationReplay;
         IdempotencyClaim claim = claim(actor, route, idempotencyKey, bodyHash, body.operationId);
         if (claim.replay != null) return claim.replay;
@@ -208,6 +267,64 @@ public class InventoryService {
         LockedAllocation locked = lockAllocation(snapshot, selectedOrgId);
         applyTransition(actor, locked, action, UUID.randomUUID(), fingerprint("legacy:" + action + ":" + allocationId));
         return new ApiDtos.AllocationView(locked.allocation);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public ApiDtos.MessageView deleteLegacyAllocation(long allocationId, long expectedOrganizationId) {
+        long organizationId = organizationContext.currentOrganizationId();
+        if (organizationId != expectedOrganizationId) throw notFound();
+        Actor actor = lockOrganization(organizationId, true);
+        requireStockRole(actor.membership);
+        if (allocationId <= 0) throw new C1ApiException(400, "VALIDATION_FAILED", "Allocation ID must be positive.");
+        AllocationSnapshot snapshot = allocations.findOperationSnapshot(allocationId, organizationId)
+                .map(s -> new AllocationSnapshot(allocationId, s.getProjectId(), s.getResourceId(), s.getRequirementId(), s.getRequirementQuantity()))
+                .orElseThrow(InventoryService::notFound);
+        LockedAllocation locked = lockAllocation(snapshot, organizationId);
+        if (locked.allocation.approvedAt != null)
+            throw new C1ApiException(409, "HISTORY_PROTECTED", "Historically approved Allocations cannot be deleted.");
+        if (locked.allocation.status != AllocationStatus.PENDING && locked.allocation.status != AllocationStatus.CANCELLED)
+            throw invalidState("Only never-approved PENDING or CANCELLED allocations can be deleted.");
+        allocations.delete(locked.allocation);
+        allocations.flush();
+        return new ApiDtos.MessageView("Record deleted.");
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public ApiDtos.AllocationView revokeLegacySmsConsent(long allocationId, long expectedOrganizationId) {
+        long organizationId = organizationContext.currentOrganizationId();
+        if (organizationId != expectedOrganizationId) throw notFound();
+        Actor actor = lockOrganization(organizationId, true);
+        requireStockRole(actor.membership);
+        if (allocationId <= 0) throw new C1ApiException(400, "VALIDATION_FAILED", "Allocation ID must be positive.");
+        AllocationSnapshot snapshot = allocations.findOperationSnapshot(allocationId, organizationId)
+                .map(s -> new AllocationSnapshot(allocationId, s.getProjectId(), s.getResourceId(), s.getRequirementId(), s.getRequirementQuantity()))
+                .orElseThrow(InventoryService::notFound);
+        LockedAllocation locked = lockAllocation(snapshot, organizationId);
+        locked.allocation.smsConsent = false;
+        locked.allocation.phoneCiphertext = null;
+        locked.allocation.phoneNonce = null;
+        locked.allocation.phoneKeyId = null;
+        if (locked.allocation.reminderOutcome == edu.orgresource.extended.domain.ReminderOutcome.CLAIMED)
+            locked.allocation.reminderOutcome = edu.orgresource.extended.domain.ReminderOutcome.SUPPRESSED;
+        allocations.saveAndFlush(locked.allocation);
+        return new ApiDtos.AllocationView(locked.allocation);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public boolean expireIfEligible(long organizationId, long allocationId, LocalDateTime sampledNow) {
+        AllocationSnapshot snapshot = allocations.findOperationSnapshot(allocationId, organizationId)
+                .map(s -> new AllocationSnapshot(allocationId, s.getProjectId(), s.getResourceId(), s.getRequirementId(), s.getRequirementQuantity()))
+                .orElse(null);
+        if (snapshot == null) return false;
+        LockedAllocation locked = lockAllocation(snapshot, organizationId);
+        Allocation allocation = locked.allocation;
+        if ((allocation.status != AllocationStatus.PENDING && allocation.status != AllocationStatus.APPROVED)
+                || locked.project.endAt.isAfter(sampledNow)) return false;
+        allocation.status = AllocationStatus.CANCELLED;
+        allocation.cancelledAt = sampledNow;
+        allocation.cancellationReason = "EXPIRED";
+        allocations.saveAndFlush(allocation);
+        return true;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -339,6 +456,13 @@ public class InventoryService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public String operationReceipt(UUID organizationPublicId, UUID operationId, String requestId) {
         Actor actor = lockPathOrganization(organizationPublicId, false);
+        Optional<MovementFact> movement = findMovementByOperation(actor.organization.id, operationId);
+        if (movement.isPresent()) {
+            MovementFact fact = movement.get();
+            if (fact.actorUserId != actor.userId && !isStockRole(actor.membership.role))
+                throw new C1ApiException(403, "FORBIDDEN", "The current membership cannot read this operation receipt.");
+            return durableMovementResponse(fact, requestId).json;
+        }
         Receipt receipt = findReceiptByOperation(actor.organization.id, operationId).orElseThrow(InventoryService::notFound);
         if (receipt.expiresAt.isBefore(utcNow()))
             throw new C1ApiException(409, "IDEMPOTENCY_KEY_EXPIRED", "The operation receipt has expired.");
@@ -359,7 +483,7 @@ public class InventoryService {
         String canonical = actor.organization.publicId + "|" + locked.allocation.publicId + "|" + operationId + "|" + action;
         byte[] bodyHash = fingerprint(route + "|" + canonical);
         if (modern) validateIdempotencyKey(idempotencyKey);
-        OperationResponse operationReplay = priorOperation(actor.organization.id, operationId, route, bodyHash);
+        OperationResponse operationReplay = priorOperation(actor.organization.id, operationId, route, bodyHash, requestId);
         if (operationReplay != null) return operationReplay;
         IdempotencyClaim claim = modern ? claim(actor, route, idempotencyKey, bodyHash, operationId)
                 : IdempotencyClaim.none();
@@ -437,6 +561,7 @@ public class InventoryService {
                     throw invalidState("Only PENDING or APPROVED allocations can be cancelled.");
                 allocation.status = AllocationStatus.CANCELLED;
                 allocation.cancelledAt = now;
+                allocation.cancellationReason = locked.project.endAt.isAfter(now) ? "USER_REQUEST" : "EXPIRED";
                 allocations.saveAndFlush(allocation);
             }
         }
@@ -501,15 +626,46 @@ public class InventoryService {
         return new IdempotencyClaim(null, receipt.response());
     }
 
-    private OperationResponse priorOperation(long organizationId, UUID operationId, String route, byte[] bodyHash) {
+    private OperationResponse priorOperation(long organizationId, UUID operationId, String route, byte[] bodyHash, String requestId) {
         Optional<Receipt> receipt = findReceiptByOperation(organizationId, operationId);
-        if (receipt.isEmpty()) return null;
-        Receipt existing = receipt.get();
-        if (existing.expiresAt.isBefore(utcNow()))
+        if (receipt.isPresent()) {
+            Receipt existing = receipt.get();
+            if (!existing.route.equals(route) || !Arrays.equals(existing.bodyHash, bodyHash))
+                throw new C1ApiException(409, "OPERATION_ID_REUSED", "This operationId is already bound to a different operation.");
+            if (!existing.expiresAt.isBefore(utcNow())) return existing.response();
+        }
+        Optional<MovementFact> movement = findMovementByOperation(organizationId, operationId);
+        if (movement.isPresent()) {
+            MovementFact fact = movement.get();
+            if (!Arrays.equals(fact.requestFingerprint, bodyHash))
+                throw new C1ApiException(409, "OPERATION_ID_REUSED", "This operationId is already bound to a different operation.");
+            return durableMovementResponse(fact, requestId);
+        }
+        if (receipt.isPresent())
             throw new C1ApiException(409, "IDEMPOTENCY_KEY_EXPIRED", "The operation receipt has expired.");
-        if (!existing.route.equals(route) || !Arrays.equals(existing.bodyHash, bodyHash))
-            throw new C1ApiException(409, "OPERATION_ID_REUSED", "This operationId is already bound to a different operation.");
-        return existing.response();
+        return null;
+    }
+
+    private Optional<MovementFact> findMovementByOperation(long organizationId, UUID operationId) {
+        return jdbc.query("SELECT BIN_TO_UUID(m.operation_public_id,0),BIN_TO_UUID(r.public_id,0),"
+                + "CASE WHEN a.public_id IS NULL THEN NULL ELSE BIN_TO_UUID(a.public_id,0) END,"
+                + "m.kind,m.quantity,m.delta_total,m.delta_issued,m.occurred_at,m.request_fingerprint,actor.user_id "
+                + "FROM stock_movement m JOIN resource r ON r.id=m.resource_id AND r.organization_id=m.organization_id "
+                + "LEFT JOIN allocation a ON a.id=m.allocation_id AND a.organization_id=m.organization_id "
+                + "JOIN membership actor ON actor.id=m.actor_membership_id AND actor.org_id=m.organization_id "
+                + "WHERE m.organization_id=? AND m.operation_public_id=UUID_TO_BIN(?,0)",
+                rs -> rs.next() ? Optional.of(new MovementFact(UUID.fromString(rs.getString(1)),
+                        UUID.fromString(rs.getString(2)), rs.getString(3) == null ? null : UUID.fromString(rs.getString(3)),
+                        rs.getString(4), rs.getInt(5), rs.getLong(6), rs.getLong(7),
+                        rs.getTimestamp(8).toLocalDateTime(), rs.getBytes(9), rs.getLong(10))) : Optional.empty(),
+                organizationId, operationId.toString());
+    }
+
+    private OperationResponse durableMovementResponse(MovementFact fact, String requestId) {
+        InventoryDtos.MovementReceipt view = new InventoryDtos.MovementReceipt(fact.operationId,
+                fact.resourceId, fact.allocationId, fact.kind, fact.quantity, fact.deltaTotal,
+                fact.deltaIssued, fact.occurredAt.toString());
+        return new OperationResponse(200, toJson(new IdentityDtos.Envelope<>(view, requestId)), null);
     }
 
     private Optional<Receipt> findReceiptByOperation(long organizationId, UUID operationId) {
@@ -689,4 +845,7 @@ public class InventoryService {
                            long actorUserId, String route) {
         OperationResponse response() { return new OperationResponse(status, responseJson, etag); }
     }
+    private record MovementFact(UUID operationId, UUID resourceId, UUID allocationId, String kind,
+                                int quantity, long deltaTotal, long deltaIssued,
+                                LocalDateTime occurredAt, byte[] requestFingerprint, long actorUserId) { }
 }

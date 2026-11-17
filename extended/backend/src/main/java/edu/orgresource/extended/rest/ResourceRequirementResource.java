@@ -12,6 +12,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -24,6 +25,13 @@ public class ResourceRequirementResource {
         requestValidator.validate(request);
         return Response.status(Response.Status.CREATED).entity(component.createRequirement(request)).build();
     }
+    @POST @Path("/{id}/update") @Consumes(MediaType.APPLICATION_JSON)
+    public ApiDtos.RequirementView update(@PathParam("id") Long id, ApiDtos.RequirementUpdate request) {
+        requestValidator.validate(request);
+        return component.updateRequirement(id, request);
+    }
+    @POST @Path("/{id}/delete")
+    public ApiDtos.MessageView delete(@PathParam("id") Long id) { return component.deleteRequirement(id); }
     @GET public List<ApiDtos.RequirementView> list(@QueryParam("projectId") Long projectId) {
         return component.listRequirements(projectId);
     }

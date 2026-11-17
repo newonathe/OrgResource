@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
+import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -26,10 +27,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.util.Base64;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -48,6 +51,11 @@ import edu.orgresource.extended.security.C1IdentityNormalization;
 import edu.orgresource.extended.security.ExtendedUserPrincipal;
 import edu.orgresource.extended.service.C1Service;
 import edu.orgresource.extended.service.InventoryService;
+import edu.orgresource.extended.service.ResourceImageSupport;
+import edu.orgresource.extended.service.C3ReminderDispatcher;
+import edu.orgresource.extended.integration.C3ReminderTransport;
+import edu.orgresource.extended.domain.ReminderMode;
+import edu.orgresource.extended.scheduler.C1ReminderScheduler;
 import jakarta.validation.Validator;
 import javax.sql.DataSource;
 import org.apache.bval.jsr.ApacheValidationProvider;
@@ -63,6 +71,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
+import org.springframework.scheduling.config.ScheduledTask;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -95,7 +105,12 @@ class C1IdentityAcceptanceTest {
     @Autowired ResourceRequirementRepository requirementRepository;
     @Autowired AllocationRepository allocationRepository;
     @Autowired PasswordEncoder passwordEncoder;
+    @SuppressWarnings("rawtypes")
+    @Autowired org.springframework.session.SessionRepository springSessions;
     @Autowired InventoryService inventory;
+    @Autowired edu.orgresource.extended.security.ContactCipher contactCipher;
+    @Autowired C3ReminderDispatcher reminderDispatcher;
+    @Autowired ScheduledAnnotationBeanPostProcessor scheduledTasks;
     @Autowired Clock clock;
     @org.springframework.beans.factory.annotation.Value("${c1.sms.enabled:false}") boolean smsEnabled;
     @Autowired javax.validation.Validator javaxValidator;
@@ -272,7 +287,7 @@ class C1IdentityAcceptanceTest {
         RuntimeException invalidRole = assertThrows(RuntimeException.class,
                 () -> jdbc.update("UPDATE membership SET role='ROOT' WHERE id=?", a.membershipDbId));
         assertNotNull(findCause(invalidRole, java.sql.SQLException.class));
-        assertEquals(3, jdbc.queryForObject("SELECT COUNT(*) FROM flyway_schema_history WHERE success=1", Integer.class));
+        assertEquals(4, jdbc.queryForObject("SELECT COUNT(*) FROM flyway_schema_history WHERE success=1", Integer.class));
     }
 
     @Test @Order(4)
@@ -764,7 +779,7 @@ class C1IdentityAcceptanceTest {
     @Test @Order(15)
     void ID15_cleanFlywayBootstrapAndEffectiveDependencyVersionsArePresent() throws Exception {
         assertEquals("1", jdbc.queryForObject("SELECT version FROM flyway_schema_history WHERE success=1 ORDER BY installed_rank LIMIT 1", String.class));
-        assertEquals(3, jdbc.queryForObject("SELECT COUNT(*) FROM flyway_schema_history WHERE success=1", Integer.class));
+        assertEquals(4, jdbc.queryForObject("SELECT COUNT(*) FROM flyway_schema_history WHERE success=1", Integer.class));
         String[] tables = jdbc.queryForList("SELECT LOWER(table_name) FROM information_schema.tables WHERE table_schema=DATABASE()", String.class).toArray(String[]::new);
         assertTrue(List.of(tables).contains("spring_session"));
         assertTrue(get(newClient(), "/").body().contains("OrgResource"));
@@ -1124,10 +1139,16 @@ class C1IdentityAcceptanceTest {
         jdbc.update("UPDATE idempotency_key SET created_at=?,expires_at=? WHERE organization_id=? AND operation_public_id=UUID_TO_BIN(?,0)",
                 Timestamp.valueOf(expiredAt.minusDays(1)), Timestamp.valueOf(expiredAt), owner.orgDbId, receiveOperation.toString());
         HttpResponse<String> expiredReplay = modernPost(session, resourcePath + "/receive", receiveBody, "\"v0\"", receiveKey);
-        assertEquals(409, expiredReplay.statusCode(), expiredReplay.body());
-        assertEquals("IDEMPOTENCY_KEY_EXPIRED", json(expiredReplay).get("code").getAsString());
+        assertEquals(200, expiredReplay.statusCode(), expiredReplay.body());
+        assertEquals("RECEIPT", json(expiredReplay).getAsJsonObject("data").get("kind").getAsString());
         HttpResponse<String> expiredReceipt = get(session.client, root + "/operations/" + receiveOperation);
-        assertEquals(409, expiredReceipt.statusCode(), expiredReceipt.body());
+        assertEquals(200, expiredReceipt.statusCode(), expiredReceipt.body());
+        assertEquals(resource.publicId.toString(), json(expiredReceipt).getAsJsonObject("data").get("resourceId").getAsString());
+        jdbc.update("DELETE FROM idempotency_key WHERE organization_id=? AND operation_public_id=UUID_TO_BIN(?,0)",
+                owner.orgDbId, receiveOperation.toString());
+        HttpResponse<String> prunedReplay = modernPost(session, resourcePath + "/receive", receiveBody,
+                "\"v0\"", C1Secrets.bearerToken());
+        assertEquals(200, prunedReplay.statusCode(), prunedReplay.body());
         assertEquals(105, resourceRepository.findByIdAndOrganizationId(resourceId, owner.orgDbId).orElseThrow().totalQuantity);
         assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=? AND resource_id=? AND kind='RECEIPT'",
                 Integer.class, owner.orgDbId, resourceId));
@@ -1521,6 +1542,619 @@ class C1IdentityAcceptanceTest {
         }
     }
 
+    @Test @Order(28)
+    void C3_INPUT01_emptyInventoryBodyReturnsControlledValidationError() throws Exception {
+        Fixture owner = newTenant("C3-empty-body-owner", Membership.Role.OWNER);
+        Session session = login(owner.username, owner.password);
+        HttpRequest request = HttpRequest.newBuilder(URI.create(base() + "/api/v2/orgs/" + owner.orgPublicId
+                        + "/resources/" + UUID.randomUUID() + "/receive"))
+                .header("Origin", origin())
+                .header("X-CSRF-TOKEN", session.csrf)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.noBody()).build();
+        HttpResponse<String> response = session.client.send(request, HttpResponse.BodyHandlers.ofString());
+        assertEquals(400, response.statusCode(), response.body());
+        assertEquals("VALIDATION_FAILED", json(response).get("code").getAsString());
+    }
+
+    @Test @Order(35)
+    void C3_INPUT02_malformedJsonAndUuidAreControlledClientErrors() throws Exception {
+        Fixture owner = newTenant("C3-malformed-owner", Membership.Role.OWNER);
+        Session session = login(owner.username, owner.password);
+        String path = "/api/v2/orgs/" + owner.orgPublicId + "/resources/" + UUID.randomUUID() + "/receive";
+        HttpRequest malformedJson = HttpRequest.newBuilder(URI.create(base() + path))
+                .header("Origin", origin())
+                .header("X-CSRF-TOKEN", session.csrf)
+                .header("Idempotency-Key", UUID.randomUUID().toString())
+                .header("If-Match", "\"v0\"")
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString("{\"operationId\":"))
+                .build();
+        HttpResponse<String> malformed = session.client.send(malformedJson, HttpResponse.BodyHandlers.ofString());
+        assertEquals(400, malformed.statusCode(), malformed.body());
+        assertEquals("application/json", malformed.headers().firstValue("Content-Type").orElse("").split(";")[0]);
+        assertEquals("INVALID_REQUEST_BODY", json(malformed).get("code").getAsString());
+
+        HttpResponse<String> invalidUuid = get(session.client, "/api/v2/orgs/" + owner.orgPublicId + "/resources/not-a-uuid");
+        assertEquals(400, invalidUuid.statusCode(), invalidUuid.body());
+        assertEquals("INVALID_PATH_PARAMETER", json(invalidUuid).get("code").getAsString());
+    }
+
+    @Test @Order(29)
+    void C3_PARITY01_legacyListsFiltersAndProtectedCrudAreTenantScoped() throws Exception {
+        Fixture owner = newTenant("C3-parity-owner", Membership.Role.OWNER);
+        Session session = login(owner.username, owner.password);
+        long departmentId = json(post(session, "/api/departments", GSON.toJson(new NameRequest("C3 Parity Department")))).get("id").getAsLong();
+        long duplicateDepartmentId = json(post(session, "/api/departments", GSON.toJson(new NameRequest("C3 Parity Other Department")))).get("id").getAsLong();
+        HttpResponse<String> departmentRename = post(session, "/api/departments/" + duplicateDepartmentId + "/update",
+                GSON.toJson(new NameRequest("C3 Parity Department")));
+        assertEquals(409, departmentRename.statusCode(), departmentRename.body());
+        assertEquals(200, post(session, "/api/departments/" + duplicateDepartmentId + "/update",
+                GSON.toJson(new NameRequest("C3 Parity Renamed"))).statusCode());
+
+        LocalDateTime now = LocalDateTime.now(clock).withNano(0);
+        long projectId = json(post(session, "/api/projects", GSON.toJson(new ProjectRequest(departmentId, "C3 Parity Project",
+                now.plusDays(2).toString(), now.plusDays(4).toString())))).get("id").getAsLong();
+        long reusableId = json(post(session, "/api/resources", GSON.toJson(new ResourceRequest("C3 Parity Reusable", "REUSABLE", 10)))).get("id").getAsLong();
+        long consumableId = json(post(session, "/api/resources", GSON.toJson(new ResourceRequest("C3 Parity Consumable", "CONSUMABLE", 0)))).get("id").getAsLong();
+        long requirementId = json(post(session, "/api/requirements", GSON.toJson(new RequirementRequest(projectId, reusableId, 20)))).get("id").getAsLong();
+        long allocationId = json(post(session, "/api/allocations", GSON.toJson(new AllocationRequest(requirementId, 8,
+                "Fictional Borrower", null, false)))).get("id").getAsLong();
+
+        Fixture otherOwner = newTenant("C3-parity-other", Membership.Role.OWNER);
+        Session otherSession = login(otherOwner.username, otherOwner.password);
+        long otherDepartment = json(post(otherSession, "/api/departments", GSON.toJson(new NameRequest("Other tenant department")))).get("id").getAsLong();
+
+        var allProjects = JsonParser.parseString(get(session.client, "/api/projects").body()).getAsJsonArray();
+        assertTrue(allProjects.asList().stream().anyMatch(row -> row.getAsJsonObject().get("id").getAsLong() == projectId));
+        var tenantDepartments = JsonParser.parseString(get(session.client, "/api/departments").body()).getAsJsonArray();
+        assertFalse(tenantDepartments.asList().stream().anyMatch(row -> row.getAsJsonObject().get("id").getAsLong() == otherDepartment));
+        var filteredResources = JsonParser.parseString(get(session.client, "/api/resources?type=REUSABLE").body()).getAsJsonArray();
+        assertTrue(filteredResources.asList().stream().anyMatch(row -> row.getAsJsonObject().get("id").getAsLong() == reusableId));
+        assertFalse(filteredResources.asList().stream().anyMatch(row -> row.getAsJsonObject().get("id").getAsLong() == consumableId));
+        var allRequirements = JsonParser.parseString(get(session.client, "/api/requirements").body()).getAsJsonArray();
+        assertTrue(allRequirements.asList().stream().anyMatch(row -> row.getAsJsonObject().get("id").getAsLong() == requirementId));
+        var filteredAllocations = JsonParser.parseString(get(session.client,
+                "/api/allocations?requirementId=" + requirementId + "&status=PENDING").body()).getAsJsonArray();
+        assertEquals(1, filteredAllocations.size());
+        assertEquals("PENDING", filteredAllocations.get(0).getAsJsonObject().get("status").getAsString());
+        assertEquals(0, JsonParser.parseString(get(session.client,
+                "/api/allocations?requirementId=" + requirementId + "&status=ISSUED").body()).getAsJsonArray().size());
+
+        HttpResponse<String> projectRenamed = post(session, "/api/projects/" + projectId + "/update",
+                GSON.toJson(new ProjectUpdateRequest("C3 Parity Renamed Project", now.plusDays(2).toString(), now.plusDays(4).toString())));
+        assertEquals(200, projectRenamed.statusCode(), projectRenamed.body());
+        assertEquals(departmentId, json(projectRenamed).get("departmentId").getAsLong());
+        HttpResponse<String> projectBlocked = post(session, "/api/projects/" + projectId + "/delete", null);
+        assertEquals(409, projectBlocked.statusCode(), projectBlocked.body());
+
+        HttpResponse<String> updatedResource = post(session, "/api/resources/" + reusableId + "/update",
+                GSON.toJson(new ResourceUpdateRequest("C3 Parity Reusable Updated", 12, 10)));
+        assertEquals(200, updatedResource.statusCode(), updatedResource.body());
+        assertEquals(12, json(updatedResource).get("totalQuantity").getAsInt());
+        assertEquals(12, json(updatedResource).get("availableQuantity").getAsInt());
+        HttpResponse<String> availability = get(session.client, "/api/resources/" + reusableId + "/availability");
+        assertEquals(200, availability.statusCode(), availability.body());
+        assertEquals(12, json(availability).get("availableQuantity").getAsInt());
+        assertEquals(409, post(session, "/api/resources/" + reusableId + "/update",
+                GSON.toJson(new ResourceUpdateRequest("C3 Parity Stale", 11, 10))).statusCode());
+        assertEquals(409, post(session, "/api/resources/" + reusableId + "/delete", null).statusCode());
+
+        assertEquals(200, post(session, "/api/requirements/" + requirementId + "/update",
+                GSON.toJson(new RequirementUpdateRequest(25))).statusCode());
+        assertEquals(409, post(session, "/api/requirements/" + requirementId + "/update",
+                GSON.toJson(new RequirementUpdateRequest(7))).statusCode());
+        assertEquals(409, post(session, "/api/requirements/" + requirementId + "/delete", null).statusCode());
+        assertEquals(200, post(session, "/api/allocations/" + allocationId + "/delete", null).statusCode());
+        assertEquals(200, post(session, "/api/requirements/" + requirementId + "/delete", null).statusCode());
+        assertEquals(200, post(session, "/api/projects/" + projectId + "/delete", null).statusCode());
+        assertEquals(200, post(session, "/api/departments/" + departmentId + "/delete", null).statusCode());
+        assertEquals(200, post(session, "/api/departments/" + duplicateDepartmentId + "/delete", null).statusCode());
+        assertEquals(200, post(session, "/api/resources/" + consumableId + "/delete", null).statusCode());
+    }
+
+    @Test @Order(30)
+    void C3_PRIVACY01_contactIsEncryptedAndConsentRevocationErasesIt() throws Exception {
+        Fixture owner = newTenant("C3-contact-owner", Membership.Role.OWNER);
+        Session session = login(owner.username, owner.password);
+        long departmentId = json(post(session, "/api/departments", GSON.toJson(new NameRequest("C3 Contact Department")))).get("id").getAsLong();
+        LocalDateTime now = LocalDateTime.now(clock).withNano(0);
+        long projectId = json(post(session, "/api/projects", GSON.toJson(new ProjectRequest(departmentId, "C3 Contact Project",
+                now.plusDays(1).toString(), now.plusDays(3).toString())))).get("id").getAsLong();
+        long resourceId = json(post(session, "/api/resources", GSON.toJson(new ResourceRequest("C3 Contact Resource", "REUSABLE", 5)))).get("id").getAsLong();
+        long requirementId = json(post(session, "/api/requirements", GSON.toJson(new RequirementRequest(projectId, resourceId, 5)))).get("id").getAsLong();
+        String fictionalPhone = "+15555550123";
+        HttpResponse<String> created = post(session, "/api/allocations", GSON.toJson(new AllocationRequest(requirementId, 1,
+                "Fictional Contact", fictionalPhone, true)));
+        assertEquals(201, created.statusCode(), created.body());
+        long allocationId = json(created).get("id").getAsLong();
+        assertTrue(json(created).get("contactPresent").getAsBoolean());
+        assertFalse(json(created).has("phoneNumber"));
+        var stored = jdbc.queryForMap("SELECT BIN_TO_UUID(public_id,0) public_id,phone_ciphertext,phone_nonce,phone_key_id,sms_consent FROM allocation WHERE id=? AND organization_id=?",
+                allocationId, owner.orgDbId);
+        byte[] ciphertext = (byte[]) stored.get("phone_ciphertext");
+        byte[] nonce = (byte[]) stored.get("phone_nonce");
+        assertNotNull(ciphertext);
+        assertNotNull(nonce);
+        assertEquals("test-only-v1", stored.get("phone_key_id"));
+        assertFalse(java.util.Arrays.equals(fictionalPhone.getBytes(StandardCharsets.UTF_8), ciphertext));
+        assertEquals(fictionalPhone, contactCipher.decrypt(owner.orgDbId,
+                UUID.fromString((String) stored.get("public_id")), ciphertext, nonce, (String) stored.get("phone_key_id")));
+        int movementsBefore = jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=?", Integer.class, owner.orgDbId);
+        HttpResponse<String> revoked = post(session, "/api/allocations/" + allocationId + "/revoke-sms-consent", null);
+        assertEquals(200, revoked.statusCode(), revoked.body());
+        assertFalse(json(revoked).get("contactPresent").getAsBoolean());
+        assertFalse(json(revoked).get("smsConsent").getAsBoolean());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE id=? AND sms_consent=FALSE "
+                + "AND phone_ciphertext IS NULL AND phone_nonce IS NULL AND phone_key_id IS NULL", Integer.class, allocationId));
+        assertEquals(movementsBefore, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=?", Integer.class, owner.orgDbId));
+    }
+
+    @Test @Order(31)
+    void C3_IMAGE01_boundedPngIsPersistedAndServedOnlyInsideItsTenant() throws Exception {
+        Fixture owner = newTenant("C3-image-owner", Membership.Role.OWNER);
+        Fixture other = newTenant("C3-image-other", Membership.Role.OWNER);
+        Session ownerSession = login(owner.username, owner.password);
+        Session otherSession = login(other.username, other.password);
+        long resourceId = json(post(ownerSession, "/api/resources", GSON.toJson(new ResourceRequest("C3 Image Resource", "CONSUMABLE", 0)))).get("id").getAsLong();
+        HttpResponse<String> missing = get(ownerSession.client, "/api/resources/" + resourceId + "/image");
+        assertEquals(404, missing.statusCode());
+        byte[] png = tinyPng();
+        HttpResponse<String> uploaded = multipartPost(ownerSession, "/api/resources/" + resourceId + "/image", "image/png", png);
+        assertEquals(200, uploaded.statusCode(), uploaded.body());
+        assertEquals("image/png", json(uploaded).get("contentType").getAsString());
+        assertEquals(png.length, json(uploaded).get("sizeBytes").getAsInt());
+        HttpResponse<byte[]> served = ownerSession.client.send(HttpRequest.newBuilder(URI.create(base() + "/api/resources/" + resourceId + "/image"))
+                .GET().build(), HttpResponse.BodyHandlers.ofByteArray());
+        assertEquals(200, served.statusCode());
+        assertArrayEquals(png, served.body());
+        assertEquals("image/png", served.headers().firstValue("Content-Type").orElse("").split(";")[0]);
+        assertEquals("nosniff", served.headers().firstValue("X-Content-Type-Options").orElse(""));
+        assertTrue(served.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
+        assertArrayEquals(png, jdbc.queryForObject("SELECT image_bytes FROM resource WHERE id=? AND organization_id=?",
+                byte[].class, resourceId, owner.orgDbId));
+        assertEquals(404, get(otherSession.client, "/api/resources/" + resourceId + "/image").statusCode());
+        HttpResponse<String> wrongType = multipartPost(ownerSession, "/api/resources/" + resourceId + "/image", "image/jpeg", png);
+        assertEquals(400, wrongType.statusCode(), wrongType.body());
+        byte[] oversized = new byte[ResourceImageSupport.MAX_BYTES + 1];
+        HttpResponse<String> tooLarge = multipartPost(ownerSession, "/api/resources/" + resourceId + "/image", "image/png", oversized);
+        assertEquals(413, tooLarge.statusCode(), tooLarge.body());
+        HttpResponse<String> svg = multipartPost(ownerSession, "/api/resources/" + resourceId + "/image", "image/svg+xml",
+                "<svg xmlns=\"http://www.w3.org/2000/svg\"></svg>".getBytes(StandardCharsets.UTF_8));
+        assertEquals(400, svg.statusCode(), svg.body());
+        assertEquals("INVALID_IMAGE", json(svg).get("code").getAsString());
+    }
+
+    @Test @Order(32)
+    void C3_LIFECYCLE01_scheduledExpiryAndLoopbackReminderProtocolsAreOneShot() throws Exception {
+        Fixture owner = newTenant("C3-lifecycle-owner", Membership.Role.OWNER);
+        Session session = login(owner.username, owner.password);
+        long departmentId = json(post(session, "/api/departments", GSON.toJson(new NameRequest("C3 Lifecycle Department")))).get("id").getAsLong();
+        LocalDateTime now = LocalDateTime.now(clock).withNano(0);
+        long reminderProjectId = json(post(session, "/api/projects", GSON.toJson(new ProjectRequest(departmentId, "C3 Reminder Project",
+                now.plusHours(1).toString(), now.plusHours(4).toString())))).get("id").getAsLong();
+        long reusableId = json(post(session, "/api/resources", GSON.toJson(new ResourceRequest("C3 Reminder Reusable", "REUSABLE", 2)))).get("id").getAsLong();
+        long reminderRequirementId = json(post(session, "/api/requirements", GSON.toJson(new RequirementRequest(reminderProjectId, reusableId, 2)))).get("id").getAsLong();
+        long fakeAllocationId = json(post(session, "/api/allocations", GSON.toJson(new AllocationRequest(reminderRequirementId, 1,
+                "Fictional Reminder One", "+15555550111", true)))).get("id").getAsLong();
+        long twilioAllocationId = json(post(session, "/api/allocations", GSON.toJson(new AllocationRequest(reminderRequirementId, 1,
+                "Fictional Reminder Two", "+15555550112", true)))).get("id").getAsLong();
+        jdbc.update("UPDATE project SET start_at=?,end_at=? WHERE id=? AND organization_id=?",
+                Timestamp.valueOf(now.minusHours(2)), Timestamp.valueOf(now.plusHours(3)), reminderProjectId, owner.orgDbId);
+        for (long allocationId : List.of(fakeAllocationId, twilioAllocationId)) {
+            assertEquals(200, post(session, "/api/allocations/" + allocationId + "/approve", null).statusCode());
+            assertEquals(200, post(session, "/api/allocations/" + allocationId + "/issue", null).statusCode());
+        }
+
+        String accountSid = "AC00000000000000000000000000000000";
+        String authToken = "c3-local-protocol-only-token";
+        String providerSid = "SM00000000000000000000000000000000";
+        String expectedAuthorization = "Basic " + Base64.getEncoder().encodeToString((accountSid + ":" + authToken).getBytes(StandardCharsets.UTF_8));
+        AtomicInteger fakeCalls = new AtomicInteger();
+        AtomicReference<String> fakeRequest = new AtomicReference<>();
+        AtomicReference<String> twilioAuthorization = new AtomicReference<>();
+        AtomicReference<String> twilioContentType = new AtomicReference<>();
+        AtomicReference<String> twilioRequest = new AtomicReference<>();
+        com.sun.net.httpserver.HttpServer server = com.sun.net.httpserver.HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/fake/messages", exchange -> {
+            fakeCalls.incrementAndGet();
+            fakeRequest.set(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
+            byte[] body = "{\"id\":\"fake-local-1\",\"status\":\"accepted\"}".getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, body.length);
+            exchange.getResponseBody().write(body);
+            exchange.close();
+        });
+        server.createContext("/2010-04-01/Accounts/" + accountSid + "/Messages.json", exchange -> {
+            twilioAuthorization.set(exchange.getRequestHeaders().getFirst("Authorization"));
+            twilioContentType.set(exchange.getRequestHeaders().getFirst("Content-Type"));
+            twilioRequest.set(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
+            byte[] body = GSON.toJson(java.util.Map.of("sid", providerSid, "status", "queued")).getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
+            exchange.sendResponseHeaders(201, body.length);
+            exchange.getResponseBody().write(body);
+            exchange.close();
+        });
+        server.start();
+        try {
+            String loopbackBase = "http://127.0.0.1:" + server.getAddress().getPort() + "/";
+            C3ReminderTransport fakeTransport = new C3ReminderTransport(loopbackBase, accountSid, authToken, "+15555550123");
+            C3ReminderTransport twilioTransport = new C3ReminderTransport(loopbackBase, accountSid, authToken, "+15555550123");
+            reminderDispatcher.dispatchOne(fakeAllocationId, now, ReminderMode.FAKE_TWILIO, fakeTransport);
+            reminderDispatcher.dispatchOne(twilioAllocationId, now, ReminderMode.TWILIO_VIRTUAL, twilioTransport);
+            assertEquals(1, fakeCalls.get());
+            assertTrue(fakeRequest.get().contains("+15555550111"));
+            assertEquals(expectedAuthorization, twilioAuthorization.get());
+            assertTrue(twilioContentType.get().startsWith("application/x-www-form-urlencoded"));
+            assertTrue(twilioRequest.get().contains("To=%2B15555550112"));
+            assertTrue(twilioRequest.get().contains("From=%2B15555550123"));
+            assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE id=? AND reminder_outcome='SIMULATED' AND reminder_http_status=200",
+                    Integer.class, fakeAllocationId));
+            assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE id=? AND reminder_outcome='PROVIDER_ACCEPTED' "
+                    + "AND reminder_http_status=201 AND provider_message_sid=?", Integer.class, twilioAllocationId, providerSid));
+            reminderDispatcher.dispatchOne(fakeAllocationId, now, ReminderMode.FAKE_TWILIO, fakeTransport);
+            assertEquals(1, fakeCalls.get(), "A committed reminder outcome must never be sent a second time.");
+        } finally {
+            server.stop(0);
+        }
+
+        long expiryProjectId = json(post(session, "/api/projects", GSON.toJson(new ProjectRequest(departmentId, "C3 Expiry Project",
+                now.plusDays(1).toString(), now.plusDays(2).toString())))).get("id").getAsLong();
+        long expiryResourceId = json(post(session, "/api/resources", GSON.toJson(new ResourceRequest("C3 Expiry Resource", "REUSABLE", 5)))).get("id").getAsLong();
+        long expiryRequirementId = json(post(session, "/api/requirements", GSON.toJson(new RequirementRequest(expiryProjectId, expiryResourceId, 2)))).get("id").getAsLong();
+        long pendingId = json(post(session, "/api/allocations", GSON.toJson(new AllocationRequest(expiryRequirementId, 1,
+                "Fictional Expiry Pending", null, false)))).get("id").getAsLong();
+        long approvedId = json(post(session, "/api/allocations", GSON.toJson(new AllocationRequest(expiryRequirementId, 1,
+                "Fictional Expiry Approved", null, false)))).get("id").getAsLong();
+        jdbc.update("UPDATE project SET start_at=?,end_at=? WHERE id=? AND organization_id=?",
+                Timestamp.valueOf(now.minusHours(1)), Timestamp.valueOf(now.plusHours(1)), expiryProjectId, owner.orgDbId);
+        assertEquals(200, post(session, "/api/allocations/" + approvedId + "/approve", null).statusCode());
+        int movementCount = jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=? AND resource_id=?",
+                Integer.class, owner.orgDbId, expiryResourceId);
+        jdbc.update("UPDATE project SET end_at=? WHERE id=? AND organization_id=?",
+                Timestamp.valueOf(now.minusSeconds(1)), expiryProjectId, owner.orgDbId);
+        invokeRegisteredLifecycleSchedule();
+        assertEquals(2, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE organization_id=? AND id IN (?,?) "
+                + "AND status='CANCELLED' AND cancellation_reason='EXPIRED'", Integer.class,
+                owner.orgDbId, pendingId, approvedId));
+        assertEquals(movementCount, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=? AND resource_id=?",
+                Integer.class, owner.orgDbId, expiryResourceId), "Expiry releases computed holds without inserting stock movements.");
+        assertEquals(2, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE id IN (?,?) AND reminder_outcome='NONE'",
+                Integer.class, pendingId, approvedId));
+    }
+
+    @Test @Order(33)
+    void C3_SECURITY02_everyLegacyOperationIsTenantScopedAndMemberWritesAreForbidden() throws Exception {
+        Fixture tenantA = newTenant("C3-sec-a", Membership.Role.OWNER);
+        Session sessionA = login(tenantA.username, tenantA.password);
+        Fixture tenantB = newTenant("C3-sec-b", Membership.Role.OWNER);
+        Session ownerB = login(tenantB.username, tenantB.password);
+        LocalDateTime start = LocalDateTime.now(clock).withNano(0).plusDays(2);
+
+        long departmentA = json(post(sessionA, "/api/departments", GSON.toJson(new NameRequest("C3 Security A Department")))).get("id").getAsLong();
+        long projectA = json(post(sessionA, "/api/projects", GSON.toJson(new ProjectRequest(departmentA, "C3 Security A Project",
+                start.toString(), start.plusDays(2).toString())))).get("id").getAsLong();
+        long resourceA = json(post(sessionA, "/api/resources", GSON.toJson(new ResourceRequest("C3 Security A Resource", "REUSABLE", 10)))).get("id").getAsLong();
+        long requirementA = json(post(sessionA, "/api/requirements", GSON.toJson(new RequirementRequest(projectA, resourceA, 8)))).get("id").getAsLong();
+        long allocationA = json(post(sessionA, "/api/allocations", GSON.toJson(new AllocationRequest(requirementA, 1,
+                "Fictional Security A Borrower", null, false)))).get("id").getAsLong();
+        assertEquals(200, multipartPost(sessionA, "/api/resources/" + resourceA + "/image", "image/png", tinyPng()).statusCode());
+
+        long departmentB = json(post(ownerB, "/api/departments", GSON.toJson(new NameRequest("C3 Security B Department")))).get("id").getAsLong();
+        long projectB = json(post(ownerB, "/api/projects", GSON.toJson(new ProjectRequest(departmentB, "C3 Security B Project",
+                start.toString(), start.plusDays(2).toString())))).get("id").getAsLong();
+        long resourceB = json(post(ownerB, "/api/resources", GSON.toJson(new ResourceRequest("C3 Security B Resource", "REUSABLE", 10)))).get("id").getAsLong();
+        long requirementB = json(post(ownerB, "/api/requirements", GSON.toJson(new RequirementRequest(projectB, resourceB, 8)))).get("id").getAsLong();
+        long allocationB = json(post(ownerB, "/api/allocations", GSON.toJson(new AllocationRequest(requirementB, 1,
+                "Fictional Security B Borrower", null, false)))).get("id").getAsLong();
+
+        HttpResponse<String> createDepartmentB = post(ownerB, "/api/departments", GSON.toJson(new NameRequest("C3 Security B Create")));
+        assertEquals(201, createDepartmentB.statusCode(), createDepartmentB.body());
+        long createdDepartmentB = json(createDepartmentB).get("id").getAsLong();
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM department WHERE id=? AND organization_id=?",
+                Integer.class, createdDepartmentB, tenantB.orgDbId), "D01 creation must persist only in the active tenant.");
+        HttpResponse<String> createResourceB = post(ownerB, "/api/resources", GSON.toJson(new ResourceRequest("C3 Security B Create", "CONSUMABLE", 0)));
+        assertEquals(201, createResourceB.statusCode(), createResourceB.body());
+        long createdResourceB = json(createResourceB).get("id").getAsLong();
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM resource WHERE id=? AND organization_id=?",
+                Integer.class, createdResourceB, tenantB.orgDbId), "R01 creation must persist only in the active tenant.");
+
+        assertLegacyListOmits(get(ownerB.client, "/api/departments"), departmentA);
+        assertLegacyListOmits(get(ownerB.client, "/api/projects"), projectA);
+        assertLegacyListOmits(get(ownerB.client, "/api/resources?type=REUSABLE"), resourceA);
+        assertLegacyListOmits(get(ownerB.client, "/api/requirements"), requirementA);
+        assertLegacyListOmits(get(ownerB.client, "/api/allocations"), allocationA);
+
+        List<String> foreignNames = List.of("D03", "D04", "P01", "P03", "P04", "R03", "R04", "R05",
+                "Q01", "Q03", "Q04", "A01", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "IMAGE-01", "IMAGE-02");
+        List<HttpResponse<String>> foreignResponses = List.of(
+                post(ownerB, "/api/departments/" + departmentA + "/update", GSON.toJson(new NameRequest("cross tenant"))),
+                post(ownerB, "/api/departments/" + departmentA + "/delete", null),
+                post(ownerB, "/api/projects", GSON.toJson(new ProjectRequest(departmentA, "C3 Foreign Project", start.toString(), start.plusDays(2).toString()))),
+                post(ownerB, "/api/projects/" + projectA + "/update", GSON.toJson(new ProjectUpdateRequest("C3 Foreign Rename", start.toString(), start.plusDays(2).toString()))),
+                post(ownerB, "/api/projects/" + projectA + "/delete", null),
+                post(ownerB, "/api/resources/" + resourceA + "/update", GSON.toJson(new ResourceUpdateRequest("C3 Foreign Rename", 11, 10))),
+                post(ownerB, "/api/resources/" + resourceA + "/delete", null),
+                get(ownerB.client, "/api/resources/" + resourceA + "/availability"),
+                post(ownerB, "/api/requirements", GSON.toJson(new RequirementRequest(projectA, resourceA, 1))),
+                post(ownerB, "/api/requirements/" + requirementA + "/update", GSON.toJson(new RequirementUpdateRequest(2))),
+                post(ownerB, "/api/requirements/" + requirementA + "/delete", null),
+                post(ownerB, "/api/allocations", GSON.toJson(new AllocationRequest(requirementA, 1, "C3 Foreign Borrower", null, false))),
+                post(ownerB, "/api/allocations/" + allocationA + "/approve", null),
+                post(ownerB, "/api/allocations/" + allocationA + "/issue", null),
+                post(ownerB, "/api/allocations/" + allocationA + "/return", null),
+                post(ownerB, "/api/allocations/" + allocationA + "/consume", null),
+                post(ownerB, "/api/allocations/" + allocationA + "/cancel", null),
+                post(ownerB, "/api/allocations/" + allocationA + "/delete", null),
+                post(ownerB, "/api/allocations/" + allocationA + "/revoke-sms-consent", null),
+                multipartPost(ownerB, "/api/resources/" + resourceA + "/image", "image/png", tinyPng()),
+                get(ownerB.client, "/api/resources/" + resourceA + "/image"));
+        for (int i = 0; i < foreignResponses.size(); i++)
+            assertEquals(404, foreignResponses.get(i).statusCode(), foreignNames.get(i) + " must conceal a foreign tenant record: " + foreignResponses.get(i).body());
+
+        Fixture memberFixture = fixtureInOrg(tenantB.orgDbId, Membership.Role.MEMBER);
+        Session member = login(memberFixture.username, memberFixture.password);
+        List<String> deniedNames = List.of("D01", "D03", "D04", "P01", "P03", "P04", "R01", "R03", "R04", "IMAGE-01",
+                "Q01", "Q03", "Q04", "A01", "A03", "A04", "A05", "A06", "A07", "A08", "A09");
+        List<HttpResponse<String>> deniedResponses = List.of(
+                post(member, "/api/departments", GSON.toJson(new NameRequest("C3 Member Denied Department"))),
+                post(member, "/api/departments/" + departmentB + "/update", GSON.toJson(new NameRequest("C3 Member Rename"))),
+                post(member, "/api/departments/" + departmentB + "/delete", null),
+                post(member, "/api/projects", GSON.toJson(new ProjectRequest(departmentB, "C3 Member Denied Project", start.toString(), start.plusDays(2).toString()))),
+                post(member, "/api/projects/" + projectB + "/update", GSON.toJson(new ProjectUpdateRequest("C3 Member Rename", start.toString(), start.plusDays(2).toString()))),
+                post(member, "/api/projects/" + projectB + "/delete", null),
+                post(member, "/api/resources", GSON.toJson(new ResourceRequest("C3 Member Denied Resource", "CONSUMABLE", 0))),
+                post(member, "/api/resources/" + resourceB + "/update", GSON.toJson(new ResourceUpdateRequest("C3 Member Rename", 11, 10))),
+                post(member, "/api/resources/" + resourceB + "/delete", null),
+                multipartPost(member, "/api/resources/" + resourceB + "/image", "image/png", tinyPng()),
+                post(member, "/api/requirements", GSON.toJson(new RequirementRequest(projectB, resourceB, 1))),
+                post(member, "/api/requirements/" + requirementB + "/update", GSON.toJson(new RequirementUpdateRequest(2))),
+                post(member, "/api/requirements/" + requirementB + "/delete", null),
+                post(member, "/api/allocations", GSON.toJson(new AllocationRequest(requirementB, 1, "C3 Member Denied", null, false))),
+                post(member, "/api/allocations/" + allocationB + "/approve", null),
+                post(member, "/api/allocations/" + allocationB + "/issue", null),
+                post(member, "/api/allocations/" + allocationB + "/return", null),
+                post(member, "/api/allocations/" + allocationB + "/consume", null),
+                post(member, "/api/allocations/" + allocationB + "/cancel", null),
+                post(member, "/api/allocations/" + allocationB + "/delete", null),
+                post(member, "/api/allocations/" + allocationB + "/revoke-sms-consent", null));
+        assertEquals(deniedNames.size(), deniedResponses.size());
+        for (int i = 0; i < deniedResponses.size(); i++)
+            assertEquals(403, deniedResponses.get(i).statusCode(), deniedNames.get(i) + " must reject MEMBER writes: " + deniedResponses.get(i).body());
+    }
+
+    @Test @Order(34)
+    void C3_RECEIPT01_boundedPrunerDeletesExpiredHttpReceiptButKeepsPhysicalMovementReplayable() throws Exception {
+        Fixture owner = newTenant("C3-receipt-prune", Membership.Role.OWNER);
+        Session session = login(owner.username, owner.password);
+        long resourceId = json(post(session, "/api/resources", GSON.toJson(new ResourceRequest("C3 Receipt Prune Stock", "CONSUMABLE", 0))))
+                .get("id").getAsLong();
+        Resource resource = resourceRepository.findByIdAndOrganizationId(resourceId, owner.orgDbId).orElseThrow();
+        String resourcePath = "/api/v2/orgs/" + owner.orgPublicId + "/resources/" + resource.publicId;
+        HttpResponse<String> state = get(session.client, resourcePath);
+        assertEquals(200, state.statusCode(), state.body());
+        UUID operation = UUID.randomUUID();
+        String key = C1Secrets.bearerToken();
+        String body = GSON.toJson(new ReceiveRequest(operation, 2));
+        HttpResponse<String> receive = modernPost(session, resourcePath + "/receive", body,
+                state.headers().firstValue("ETag").orElseThrow(), key);
+        assertEquals(201, receive.statusCode(), receive.body());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=? AND operation_public_id=UUID_TO_BIN(?,0)",
+                Integer.class, owner.orgDbId, operation.toString()));
+
+        LocalDateTime utcNow = LocalDateTime.ofInstant(clock.instant(), ZoneOffset.UTC);
+        jdbc.update("UPDATE idempotency_key SET created_at=?,expires_at=? WHERE organization_id=? AND operation_public_id=UUID_TO_BIN(?,0)",
+                Timestamp.valueOf(utcNow.minusHours(25)), Timestamp.valueOf(utcNow.minusHours(1)), owner.orgDbId, operation.toString());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM idempotency_key WHERE organization_id=? AND operation_public_id=UUID_TO_BIN(?,0)",
+                Integer.class, owner.orgDbId, operation.toString()));
+
+        invokeRegisteredLifecycleSchedule();
+        assertEquals(0, jdbc.queryForObject("SELECT COUNT(*) FROM idempotency_key WHERE organization_id=? AND operation_public_id=UUID_TO_BIN(?,0)",
+                Integer.class, owner.orgDbId, operation.toString()), "Cleanup removes only expired completed HTTP receipts.");
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=? AND operation_public_id=UUID_TO_BIN(?,0)",
+                Integer.class, owner.orgDbId, operation.toString()), "Permanent stock movement must remain after HTTP receipt pruning.");
+
+        HttpResponse<String> replay = modernPost(session, resourcePath + "/receive", body, "\"v0\"", key);
+        assertEquals(200, replay.statusCode(), replay.body());
+        assertEquals("RECEIPT", json(replay).getAsJsonObject("data").get("kind").getAsString());
+        assertEquals(2, resourceRepository.findByIdAndOrganizationId(resourceId, owner.orgDbId).orElseThrow().totalQuantity);
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=? AND operation_public_id=UUID_TO_BIN(?,0)",
+                Integer.class, owner.orgDbId, operation.toString()));
+    }
+
+    @Test @Order(36)
+    void C3_SESSION01_organizationSwitchRotatesSessionAndCsrfWithoutExtendingLifetimeOrReauth() throws Exception {
+        Fixture home = newTenant("C3-session-home", Membership.Role.OWNER);
+        Fixture second = newTenant("C3-session-second", Membership.Role.OWNER);
+        Fixture foreign = newTenant("C3-session-foreign", Membership.Role.OWNER);
+        addMembership(second.orgDbId, home.userDbId, Membership.Role.MEMBER);
+
+        Session session = login(home.username, home.password);
+        String originalSessionId = cookie(session.client);
+        String originalCsrf = session.csrf;
+        var stored = springSessions.findById(originalSessionId);
+        assertNotNull(stored, "The authenticated session must be stored in MySQL.");
+        long agedTimestamp = clock.millis() - java.time.Duration.ofHours(12).toMillis() + 60_000;
+        stored.setAttribute(edu.orgresource.extended.security.C1AccountSessionFilter.SESSION_CREATED_AT, agedTimestamp);
+        stored.setAttribute(edu.orgresource.extended.security.C1AccountSessionFilter.LAST_REAUTH_AT, agedTimestamp);
+        springSessions.save(stored);
+
+        HttpResponse<String> switched = post(session, "/api/v2/session/active-org", GSON.toJson(new OrgRequest(second.orgPublicId)));
+        assertEquals(200, switched.statusCode(), switched.body());
+        assertEquals(second.orgPublicId.toString(), json(switched).getAsJsonObject("data").get("activeOrgId").getAsString());
+        String rotatedSessionId = cookie(session.client);
+        assertNotEquals(originalSessionId, rotatedSessionId, "Organization selection must rotate the session identifier.");
+        assertNull(springSessions.findById(originalSessionId), "The pre-rotation session identifier must no longer authenticate.");
+        var afterSwitch = springSessions.findById(rotatedSessionId);
+        assertNotNull(afterSwitch, "The rotated session must be persisted in MySQL.");
+        assertEquals(agedTimestamp, ((Number) afterSwitch.getAttribute(edu.orgresource.extended.security.C1AccountSessionFilter.SESSION_CREATED_AT)).longValue());
+        assertEquals(agedTimestamp, ((Number) afterSwitch.getAttribute(edu.orgresource.extended.security.C1AccountSessionFilter.LAST_REAUTH_AT)).longValue(),
+                "Organization switching must not count as password reauthentication.");
+
+        String refreshedCsrf = json(get(session.client, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();
+        assertNotEquals(originalCsrf, refreshedCsrf, "Session rotation must also rotate CSRF.");
+        HttpResponse<String> staleCsrf = post(session.client, "/api/v2/session/active-org",
+                GSON.toJson(new OrgRequest(home.orgPublicId)), originalCsrf, origin());
+        assertEquals(403, staleCsrf.statusCode(), "The pre-switch CSRF token must no longer authorize writes.");
+
+        session.csrf = refreshedCsrf;
+        assertEquals(200, get(session.client, "/api/departments").statusCode(), "An active member can read the selected tenant.");
+        assertEquals(403, post(session, "/api/departments", GSON.toJson(new NameRequest("C3 member write denied"))).statusCode(),
+                "The selected tenant's MEMBER role must remain read-only.");
+        HttpResponse<String> foreignSwitch = post(session, "/api/v2/session/active-org",
+                GSON.toJson(new OrgRequest(foreign.orgPublicId)));
+        assertEquals(404, foreignSwitch.statusCode(), "A valid session cannot select an organization without membership.");
+
+        var expiring = springSessions.findById(rotatedSessionId);
+        assertNotNull(expiring);
+        expiring.setAttribute(edu.orgresource.extended.security.C1AccountSessionFilter.SESSION_CREATED_AT,
+                clock.millis() - java.time.Duration.ofHours(12).toMillis() - 1_000);
+        springSessions.save(expiring);
+        HttpResponse<String> expired = get(session.client, "/api/v2/session");
+        assertEquals(401, expired.statusCode(), "Switching organizations must not renew the 12-hour absolute lifetime.");
+        assertNull(springSessions.findById(rotatedSessionId), "An expired session must be removed from the persistent repository.");
+    }
+
+    @Test @Order(37)
+    void C3_MIGRATION01_v4RefusesLegacyPlaintextContactWithoutChangingItsSchemaOrRows() throws Exception {
+        String suffix = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
+        String schema = "orgresource_c3_contact_" + suffix;
+        assertTrue(schema.matches("orgresource_c3_contact_[a-f0-9]{16}"));
+        String migrationUrl = System.getenv("EXT_DB_MIGRATION_URL");
+        String migrationUser = System.getenv("EXT_DB_MIGRATION_USER");
+        String migrationPassword = System.getenv("EXT_DB_MIGRATION_PASSWORD");
+        String currentSchema;
+        try (Connection connection = DriverManager.getConnection(migrationUrl, migrationUser, migrationPassword)) {
+            currentSchema = connection.getCatalog();
+        }
+        String legacyUrl = migrationUrl.replace("/" + currentSchema, "/" + schema);
+        boolean created = false;
+        try (Connection migration = DriverManager.getConnection(migrationUrl, migrationUser, migrationPassword);
+             var statement = migration.createStatement()) {
+            statement.execute("CREATE DATABASE `" + schema + "` CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci");
+            created = true;
+            org.flywaydb.core.Flyway.configure().dataSource(legacyUrl, migrationUser, migrationPassword)
+                    .target(org.flywaydb.core.api.MigrationVersion.fromVersion("3")).load().migrate();
+            long organizationId;
+            long departmentId;
+            long resourceId;
+            long projectId;
+            long requirementId;
+            try (Connection legacy = DriverManager.getConnection(legacyUrl, migrationUser, migrationPassword);
+                 var seed = legacy.createStatement()) {
+                seed.executeUpdate("INSERT INTO organization(public_id,slug,display_name,status,created_at,updated_at) "
+                        + "VALUES(UUID_TO_BIN(UUID(),0),'" + "legacy-" + suffix + "','Fictional legacy contact','ACTIVE',UTC_TIMESTAMP(6),UTC_TIMESTAMP(6))");
+                organizationId = scalarLong(seed, "SELECT id FROM organization WHERE slug='legacy-" + suffix + "'");
+                seed.executeUpdate("INSERT INTO department(organization_id,name,name_key) VALUES(" + organizationId + ",'Legacy Department','legacy department')");
+                departmentId = scalarLong(seed, "SELECT id FROM department WHERE organization_id=" + organizationId);
+                seed.executeUpdate("INSERT INTO project(organization_id,department_id,name,start_at,end_at) VALUES(" + organizationId
+                        + "," + departmentId + ",'Legacy Project','2040-01-01 00:00:00.000000','2040-01-01 01:00:00.000000')");
+                projectId = scalarLong(seed, "SELECT id FROM project WHERE organization_id=" + organizationId);
+                seed.executeUpdate("INSERT INTO resource(public_id,organization_id,name,name_key,type,total_quantity) VALUES(UUID_TO_BIN(UUID(),0),"
+                        + organizationId + ",'Legacy Resource','legacy resource','REUSABLE',0)");
+                resourceId = scalarLong(seed, "SELECT id FROM resource WHERE organization_id=" + organizationId);
+                seed.executeUpdate("INSERT INTO resource_requirement(organization_id,project_id,resource_id,quantity) VALUES("
+                        + organizationId + "," + projectId + "," + resourceId + ",1)");
+                requirementId = scalarLong(seed, "SELECT id FROM resource_requirement WHERE organization_id=" + organizationId);
+                seed.executeUpdate("INSERT INTO allocation(public_id,organization_id,requirement_id,resource_id,quantity,borrower_name,phone_number,sms_consent,status,created_at) "
+                        + "VALUES(UUID_TO_BIN(UUID(),0)," + organizationId + "," + requirementId + "," + resourceId
+                        + ",1,'Fictional Legacy Borrower','+15555550199',TRUE,'PENDING',UTC_TIMESTAMP(6))");
+            }
+            RuntimeException failed = assertThrows(RuntimeException.class, () -> org.flywaydb.core.Flyway.configure()
+                    .dataSource(legacyUrl, migrationUser, migrationPassword).load().migrate());
+            StringBuilder detail = new StringBuilder();
+            for (Throwable cause = failed; cause != null; cause = cause.getCause()) detail.append(cause).append('\n');
+            assertTrue(detail.toString().contains("LEGACY_CONTACT_DATA_REQUIRES_EXPLICIT_SECURE_MIGRATION"), detail.toString());
+            try (Connection legacy = DriverManager.getConnection(legacyUrl, migrationUser, migrationPassword);
+                 var query = legacy.createStatement()) {
+                assertEquals(1, scalarLong(query, "SELECT COUNT(*) FROM allocation WHERE phone_number='+15555550199' AND sms_consent=TRUE"));
+                assertEquals(0, scalarLong(query, "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() "
+                        + "AND table_name='allocation' AND column_name='phone_ciphertext'"));
+                assertEquals(1, scalarLong(query, "SELECT COUNT(*) FROM flyway_schema_history WHERE version='3' AND success=1"));
+                assertEquals(0, scalarLong(query, "SELECT COUNT(*) FROM flyway_schema_history WHERE version='4' AND success=1"));
+            }
+        } finally {
+            if (created) try (Connection migration = DriverManager.getConnection(migrationUrl, migrationUser, migrationPassword);
+                    var statement = migration.createStatement()) { statement.execute("DROP DATABASE `" + schema + "`"); }
+        }
+    }
+
+    @Test @Order(38)
+    void C3_INPUT03_missingAndInvalidInventoryPreconditionsAreControlledAndAtomic() throws Exception {
+        Fixture owner = newTenant("C3-header-owner", Membership.Role.OWNER);
+        Session session = login(owner.username, owner.password);
+        long resourceId = json(post(session, "/api/resources",
+                GSON.toJson(new ResourceRequest("C3 Header Resource", "CONSUMABLE", 5)))).get("id").getAsLong();
+        Resource resource = resourceRepository.findByIdAndOrganizationId(resourceId, owner.orgDbId).orElseThrow();
+        String path = "/api/v2/orgs/" + owner.orgPublicId + "/resources/" + resource.publicId + "/receive";
+
+        HttpResponse<String> missingKey = modernPost(session, path,
+                GSON.toJson(new ReceiveRequest(UUID.randomUUID(), 1)), "\"v0\"", null);
+        assertEquals(400, missingKey.statusCode(), missingKey.body());
+        assertEquals("IDEMPOTENCY_KEY_REQUIRED", json(missingKey).get("code").getAsString());
+
+        HttpResponse<String> missingVersion = modernPost(session, path,
+                GSON.toJson(new ReceiveRequest(UUID.randomUUID(), 1)), null, C1Secrets.bearerToken());
+        assertEquals(428, missingVersion.statusCode(), missingVersion.body());
+        assertEquals("PRECONDITION_REQUIRED", json(missingVersion).get("code").getAsString());
+
+        HttpResponse<String> malformedVersion = modernPost(session, path,
+                GSON.toJson(new ReceiveRequest(UUID.randomUUID(), 1)), "W/\"v0\"", C1Secrets.bearerToken());
+        assertEquals(400, malformedVersion.statusCode(), malformedVersion.body());
+        assertEquals("INVALID_ETAG", json(malformedVersion).get("code").getAsString());
+        assertEquals(5, resourceRepository.findByIdAndOrganizationId(resourceId, owner.orgDbId).orElseThrow().totalQuantity);
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=? AND resource_id=?",
+                Integer.class, owner.orgDbId, resourceId), "Failed requests must not append a movement or change physical stock.");
+    }
+
+    private static long scalarLong(java.sql.Statement statement, String sql) throws Exception {
+        try (ResultSet result = statement.executeQuery(sql)) {
+            assertTrue(result.next(), "Expected a scalar query row: " + sql);
+            return result.getLong(1);
+        }
+    }
+
+    private void assertLegacyListOmits(HttpResponse<String> response, long foreignId) {
+        assertEquals(200, response.statusCode(), response.body());
+        assertTrue(JsonParser.parseString(response.body()).isJsonArray(), "Legacy list response must remain an unwrapped array.");
+        assertFalse(JsonParser.parseString(response.body()).getAsJsonArray().asList().stream()
+                .anyMatch(row -> row.getAsJsonObject().get("id").getAsLong() == foreignId),
+                "Active tenant list must not reveal a foreign record ID.");
+    }
+
+    private static byte[] tinyPng() throws Exception {
+        java.awt.image.BufferedImage image = new java.awt.image.BufferedImage(2, 2, java.awt.image.BufferedImage.TYPE_INT_RGB);
+        image.setRGB(0, 0, 0xff123456);
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        assertTrue(javax.imageio.ImageIO.write(image, "png", output));
+        image.flush();
+        return output.toByteArray();
+    }
+
+    private HttpResponse<String> multipartPost(Session session, String path, String contentType, byte[] file) throws Exception {
+        String boundary = "OrgResourceC3Boundary";
+        ByteArrayOutputStream body = new ByteArrayOutputStream(file.length + 256);
+        body.write(("--" + boundary + "\r\nContent-Disposition: form-data; name=\"file\"; filename=\"fixture.bin\"\r\n"
+                + "Content-Type: " + contentType + "\r\n\r\n").getBytes(StandardCharsets.UTF_8));
+        body.write(file);
+        body.write(("\r\n--" + boundary + "--\r\n").getBytes(StandardCharsets.UTF_8));
+        HttpRequest request = HttpRequest.newBuilder(URI.create(base() + path))
+                .header("Origin", origin()).header("X-CSRF-TOKEN", session.csrf)
+                .header("Content-Type", "multipart/form-data; boundary=" + boundary)
+                .POST(HttpRequest.BodyPublishers.ofByteArray(body.toByteArray())).build();
+        return session.client.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    private void invokeRegisteredLifecycleSchedule() {
+        ScheduledTask lifecycleTask = scheduledTasks.getScheduledTasks().stream()
+                .filter(task -> task.getTask().getRunnable().toString()
+                        .contains(C1ReminderScheduler.class.getName() + ".scheduledReminderTick"))
+                .findFirst().orElse(null);
+        assertNotNull(lifecycleTask, "Spring must register the lifecycle @Scheduled method. Registered: "
+                + scheduledTasks.getScheduledTasks().stream().map(task -> task.getTask().getRunnable().toString()).toList());
+        lifecycleTask.getTask().getRunnable().run();
+    }
+
     private Session login(String username, String password) throws Exception {
         HttpClient client = newClient();
         String preToken = json(get(client, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();
@@ -1591,8 +2225,8 @@ class C1IdentityAcceptanceTest {
             String ifMatch, String idempotencyKey) throws Exception {
         HttpRequest.Builder request = HttpRequest.newBuilder(URI.create(base() + path))
                 .header("Origin", origin()).header("X-CSRF-TOKEN", session.csrf)
-                .header("Idempotency-Key", idempotencyKey)
                 .header("Content-Type", "application/json");
+        if (idempotencyKey != null) request.header("Idempotency-Key", idempotencyKey);
         if (ifMatch != null) request.header("If-Match", ifMatch);
         request.POST(HttpRequest.BodyPublishers.ofString(body));
         return session.client.send(request.build(), HttpResponse.BodyHandlers.ofString());
@@ -1639,7 +2273,10 @@ class C1IdentityAcceptanceTest {
     private record RoleRequest(String role) { }
     private record ResourceRequest(String name, String type, int totalQuantity) { }
     private record ProjectRequest(long departmentId, String name, String startAt, String endAt) { }
+    private record ProjectUpdateRequest(String name, String startAt, String endAt) { }
+    private record ResourceUpdateRequest(String name, int totalQuantity, int expectedTotalQuantity) { }
     private record RequirementRequest(long projectId, long resourceId, int quantity) { }
+    private record RequirementUpdateRequest(int quantity) { }
     private record AllocationRequest(long requirementId, int quantity, String borrowerName, String phoneNumber, Boolean smsConsent) { }
     private record OperationRequest(UUID operationId) { }
     private record ReceiveRequest(UUID operationId, int quantity) { }

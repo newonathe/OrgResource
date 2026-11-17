@@ -143,8 +143,6 @@ public class C1SessionService {
         UserAccount account = accountService.account(accountId);
         request.changeSessionId();
         request.getSession(true).setAttribute(C1OrganizationContext.ACTIVE_ORG_ID, organization.id);
-        request.getSession(false).setAttribute(C1AccountSessionFilter.SESSION_CREATED_AT, clock.millis());
-        request.getSession(false).setAttribute(C1AccountSessionFilter.LAST_REAUTH_AT, clock.millis());
         refreshCsrf(request, response);
         SecurityContext context = SecurityContextHolder.getContext();
         contextRepository.saveContext(context, request, response);

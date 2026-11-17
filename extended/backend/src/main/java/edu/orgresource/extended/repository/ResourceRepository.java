@@ -14,9 +14,11 @@ import jakarta.persistence.LockModeType;
 
 public interface ResourceRepository extends JpaRepository<Resource, Long> {
     List<Resource> findByOrganizationIdOrderById(Long organizationId);
+    List<Resource> findByOrganizationIdAndTypeOrderById(Long organizationId, ResourceType type);
     Optional<Resource> findByIdAndOrganizationId(Long id, Long organizationId);
     Optional<Resource> findByPublicIdAndOrganizationId(java.util.UUID publicId, Long organizationId);
     boolean existsByOrganizationIdAndNameKey(Long organizationId, String nameKey);
+    boolean existsByOrganizationIdAndNameKeyAndIdNot(Long organizationId, String nameKey, Long id);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select r from Resource r where r.id = :id and r.organizationId = :organizationId")

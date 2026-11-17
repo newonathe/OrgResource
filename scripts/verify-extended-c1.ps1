@@ -323,6 +323,10 @@ FLUSH PRIVILEGES;
     } finally { Pop-Location }
 
     Start-C1PackagedApp
+    & (Join-Path $repoRoot 'scripts\run-extended-c3-newman.ps1') `
+        -BaseUrl "http://127.0.0.1:$appPort" `
+        -Username $env:EXT_BOOTSTRAP_USERNAME `
+        -Password $env:EXT_BOOTSTRAP_PASSWORD
     $ownerSession = New-C1OwnerSession
     $orgId = $ownerSession.OrgId
     if ([string]::IsNullOrWhiteSpace($orgId)) { throw 'Bootstrap OWNER session did not select its organization.' }
@@ -396,6 +400,41 @@ FLUSH PRIVILEGES;
     if ($resourceState.StatusCode -ne 200 -or $resourceState.Data.totalQuantity -ne 7) {
         throw 'Packaged JAR could not read the initial C2 Resource state.'
     }
+
+    $imageResourceName = 'C3 restart image ' + [guid]::NewGuid().ToString('N')
+    $imageResource = Invoke-C1Post $persistedSession '/api/resources' @{
+        name = $imageResourceName; type = 'CONSUMABLE'; totalQuantity = 0
+    }
+    if ($imageResource.StatusCode -ne 201) { throw 'Packaged JAR failed to create the fictional restart-image Resource.' }
+    $imageResourceId = [long](($imageResource.Raw | ConvertFrom-Json).id)
+    $imageBytes = [System.IO.File]::ReadAllBytes((Join-Path $repoRoot 'postman\fixtures\academic-demo-image.png'))
+    $imageForm = [System.Net.Http.MultipartFormDataContent]::new()
+    $imagePart = [System.Net.Http.ByteArrayContent]::new($imageBytes)
+    $imagePart.Headers.ContentType = [System.Net.Http.Headers.MediaTypeHeaderValue]::Parse('image/png')
+    $imageForm.Add($imagePart, 'file', 'fictional-restart-image.png')
+    $imageRequest = [System.Net.Http.HttpRequestMessage]::new([System.Net.Http.HttpMethod]::Post,
+        "$($persistedSession.Base)/api/resources/$imageResourceId/image")
+    $imageRequest.Headers.Add('Origin', $persistedSession.Base)
+    $imageRequest.Headers.Add('X-CSRF-TOKEN', $persistedSession.Token)
+    $imageRequest.Content = $imageForm
+    $imageUploadResponse = $persistedSession.Client.SendAsync($imageRequest).GetAwaiter().GetResult()
+    $imageUploadBody = $imageUploadResponse.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+    if ([int]$imageUploadResponse.StatusCode -ne 200) {
+        throw "Packaged JAR failed to store the bounded fictional image (HTTP $([int]$imageUploadResponse.StatusCode))."
+    }
+    $imageUpload = $imageUploadBody | ConvertFrom-Json
+    $expectedImageSha256 = [System.Convert]::ToHexString([System.Security.Cryptography.SHA256]::HashData($imageBytes)).ToLowerInvariant()
+    if ($imageUpload.resourceId -ne $imageResourceId -or
+            $imageUpload.contentType -ne 'image/png' -or
+            $imageUpload.sizeBytes -ne $imageBytes.Length -or
+            $imageUpload.sha256 -ne $expectedImageSha256) {
+        throw 'Packaged JAR image upload metadata did not match the exact fictional image bytes.'
+    }
+    $imageUploadResponse.Dispose()
+    $imageRequest.Dispose()
+    $imageForm.Dispose()
+    $imagePart.Dispose()
+
     $operationId = [guid]::NewGuid().ToString()
     $operationKey = New-RandomHex
     $operationBody = @{ operationId = $operationId; quantity = 5 }
@@ -420,6 +459,9 @@ FLUSH PRIVILEGES;
     if ($revokedAfterRestart.StatusCode -ne 401) { throw 'The recovery-revoked session became valid after the packaged JAR restart.' }
     $persistedState = Invoke-C1Get $persistedSession '/api/v2/session'
     if ($persistedState.StatusCode -ne 200) { throw 'Spring Session JDBC did not preserve the authenticated session across the packaged JAR restart.' }
+    if ([string]$persistedState.Data.activeOrgId -ne [string]$persistedSession.OrgId) {
+        throw 'Spring Session JDBC did not preserve the explicitly selected organization across the packaged JAR restart.'
+    }
     $response = $persistedSession.Client.GetAsync("$($persistedSession.Base)/api/departments").GetAwaiter().GetResult()
     $departments = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult() | ConvertFrom-Json
     if (-not $response.IsSuccessStatusCode -or -not ($departments | Where-Object { $_.id -eq $departmentId -and $_.name -eq $name })) {
@@ -439,8 +481,24 @@ FLUSH PRIVILEGES;
         $resourceStateAfterRestart.Data.availableQuantity -ne 12) {
         throw 'Packaged C2 physical quantity did not persist across restart.'
     }
+    $imageAfterRestartResponse = $persistedSession.Client.GetAsync(
+        "$($persistedSession.Base)/api/resources/$imageResourceId/image").GetAwaiter().GetResult()
+    $imageAfterRestart = $imageAfterRestartResponse.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult()
+    if ([int]$imageAfterRestartResponse.StatusCode -ne 200 -or
+            $imageAfterRestartResponse.Content.Headers.ContentType.MediaType -ne 'image/png' -or
+            $imageAfterRestart.Length -ne $imageBytes.Length) {
+        throw 'Packaged JAR did not restore the stored image after restart.'
+    }
+    for ($imageIndex = 0; $imageIndex -lt $imageBytes.Length; $imageIndex++) {
+        if ($imageAfterRestart[$imageIndex] -ne $imageBytes[$imageIndex]) {
+            throw "The image served after restart differs at byte $imageIndex."
+        }
+    }
+    $imageAfterRestartResponse.Dispose()
     $receiptAfterRestart = Invoke-C1Get $persistedSession "$orgRoot/operations/$operationId"
-    if ($receiptAfterRestart.StatusCode -ne 200 -or $receiptAfterRestart.Data.totalQuantity -ne 12) {
+    if ($receiptAfterRestart.StatusCode -ne 200 -or $receiptAfterRestart.Data.kind -ne 'RECEIPT' -or
+        $receiptAfterRestart.Data.quantity -ne 5 -or $receiptAfterRestart.Data.deltaTotal -ne 5 -or
+        $receiptAfterRestart.Data.resourceId -ne [string]$resource[0].id) {
         throw 'Packaged C2 operation receipt was not recoverable after restart.'
     }
     $restartReplay = Invoke-C1Post $persistedSession "$resourcePath/receive" $operationBody '"v0"' $operationKey
@@ -478,11 +536,11 @@ FLUSH PRIVILEGES;
     Stop-C1App
 
     if ($SkipFrontend) {
-        Write-Output 'C2 PASS: frontend gates were skipped by request; MySQL-backed C1 and C2 acceptance; Maven package; packaged React/API smoke; identity/governance and inventory; receipt replay/persistence, session/data/recovery after JAR restart.'
+        Write-Output 'C3 PASS: frontend gates were skipped by request; 38 MySQL-backed C1/C2/C3 tests; Maven package; packaged React/API smoke; authenticated 28-operation Newman (48 requests/90 assertions); inventory and governance; permanent receipt replay; organization-switch session/CSRF/role/12-hour expiry; image bytes and session/data/recovery after JAR restart.'
     } else {
-        Write-Output 'C2 PASS: frontend checks; MySQL-backed C1 and C2 acceptance; Maven package; packaged React/API smoke; identity/governance and inventory; receipt replay/persistence, session/data/recovery after JAR restart.'
+        Write-Output 'C3 PASS: frontend typecheck/unit/lint/build; 38 MySQL-backed C1/C2/C3 tests; Maven package; packaged React/API smoke; authenticated 28-operation Newman (48 requests/90 assertions); inventory and governance; permanent receipt replay; organization-switch session/CSRF/role/12-hour expiry; image bytes and session/data/recovery after JAR restart.'
     }
-    Write-Output "C2 run evidence and stopped isolated datadir: $dataDirectory"
+    Write-Output "C3 run evidence and stopped isolated datadir: $dataDirectory"
     Write-Output "Packaged JAR: $(Join-Path $experiment 'target\extended-backend-0.1.0-SNAPSHOT.jar')"
 } finally {
     Stop-C1App

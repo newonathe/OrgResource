@@ -53,7 +53,7 @@ public final class C1AccountSessionFilter extends OncePerRequestFilter {
         }
         var session = request.getSession(false);
         Object createdAt = session == null ? null : session.getAttribute(SESSION_CREATED_AT);
-        if (!(createdAt instanceof Long created) || clock.millis() - created > absoluteLifetime.toMillis()) {
+        if (!(createdAt instanceof Long created) || clock.millis() - created >= absoluteLifetime.toMillis()) {
             deny(request, response);
             return;
         }
