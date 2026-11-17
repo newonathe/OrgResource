@@ -1,6 +1,7 @@
 # OrgResource C1 Phase Report
 
-**Date:** 2026-11-17  
+**Date:** 2026-11-17
+
 **Result:** C1-A, C1-B, and C1-C implementation gates PASS locally. Draft PR #14 is open; C1-specific remote Java 21/MySQL CI is not configured and is not claimed.
 
 ## Source lineage and Git
@@ -43,7 +44,7 @@ The C1 branch was created from the exact C0 parent. The C0 experiment is promote
 
 ## MySQL and HTTP acceptance results
 
-Command: `scripts/verify-extended-c1.ps1`  
+Command: `scripts/verify-extended-c1.ps1`
 Result: **PASS** on a fresh loopback-only MySQL 8.0.46 data directory and disposable `orgresource_c1_*` schema. Flyway applied and validated V1 and V2; Hibernate started against MySQL with `ddl-auto=validate`. The run also built and exercised the packaged Spring Boot JAR, React assets, authentication/governance flows, restart persistence, session survival/revocation, and recovery-code replay denial. The script stopped the Java process and isolated MySQL on completion; the temporary datadir remains under the local Temp directory.
 
 All acceptance methods in `extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java` passed:
