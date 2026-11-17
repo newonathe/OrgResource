@@ -142,15 +142,16 @@ class C1IdentityAcceptanceTest {
             assertTrue(schema.matches("orgresource_c[12]_[A-Za-z0-9_]+"));
             statement.execute("REVOKE ALL PRIVILEGES, GRANT OPTION FROM " + account);
             List<String> tableNames = new ArrayList<>();
-            try (var tables = statement.executeQuery("SELECT LOWER(table_name) FROM information_schema.tables "
+            try (var tables = statement.executeQuery("SELECT table_name FROM information_schema.tables "
                     + "WHERE table_schema='" + schema + "' AND engine='InnoDB'")) {
                 while (tables.next()) tableNames.add(tables.getString(1));
             }
             for (String table : tableNames) {
-                assertTrue(table.matches("[a-z0-9_]+"));
-                String privileges = table.equals("stock_movement") || table.equals("audit_event")
+                assertTrue(table.matches("(?i)[a-z0-9_]+"));
+                String normalizedTable = table.toLowerCase(java.util.Locale.ROOT);
+                String privileges = normalizedTable.equals("stock_movement") || normalizedTable.equals("audit_event")
                         ? "SELECT, INSERT"
-                        : table.equals("flyway_schema_history") ? "SELECT" : "SELECT, INSERT, UPDATE, DELETE";
+                        : normalizedTable.equals("flyway_schema_history") ? "SELECT" : "SELECT, INSERT, UPDATE, DELETE";
                 statement.execute("GRANT " + privileges + " ON `" + schema + "`.`" + table + "` TO " + account);
             }
             statement.execute("FLUSH PRIVILEGES");
@@ -715,7 +716,7 @@ class C1IdentityAcceptanceTest {
         Fixture user = newTenant("ID13-session", Membership.Role.OWNER);
         Session session = login(user.username, user.password);
         assertEquals(200, get(session.client, "/api/v2/session").statusCode());
-        SessionRow stored = jdbc.queryForObject("SELECT PRIMARY_ID,SESSION_ID FROM spring_session WHERE PRINCIPAL_NAME=? ORDER BY CREATION_TIME DESC LIMIT 1",
+        SessionRow stored = jdbc.queryForObject("SELECT PRIMARY_ID,SESSION_ID FROM SPRING_SESSION WHERE PRINCIPAL_NAME=? ORDER BY CREATION_TIME DESC LIMIT 1",
                 (rs, row) -> new SessionRow(rs.getString(1), rs.getString(2)), user.username);
         assertNotNull(stored);
         assertEquals(session.sessionId, stored.sessionId);
@@ -723,7 +724,7 @@ class C1IdentityAcceptanceTest {
         assertNotNull(primary, "The authenticated security context must be persisted in Spring Session JDBC.");
         byte[] serialized;
         try (Connection connection = dataSource.getConnection(); PreparedStatement query = connection.prepareStatement(
-                "SELECT ATTRIBUTE_BYTES FROM spring_session_attributes WHERE SESSION_PRIMARY_ID=? AND ATTRIBUTE_NAME=?")) {
+                "SELECT ATTRIBUTE_BYTES FROM SPRING_SESSION_ATTRIBUTES WHERE SESSION_PRIMARY_ID=? AND ATTRIBUTE_NAME=?")) {
             query.setString(1, primary); query.setString(2, "org.orgresource.sessionCreatedAt");
             try (ResultSet row = query.executeQuery()) { assertTrue(row.next()); serialized = row.getBytes(1); }
         }
@@ -731,16 +732,16 @@ class C1IdentityAcceptanceTest {
         try (ObjectInputStream input = new ObjectInputStream(new ByteArrayInputStream(serialized))) { created = (Long) input.readObject(); }
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         try (ObjectOutputStream output = new ObjectOutputStream(bytes)) { output.writeObject(created - TimeUnit.HOURS.toMillis(13)); }
-        jdbc.update("UPDATE spring_session_attributes SET ATTRIBUTE_BYTES=? WHERE SESSION_PRIMARY_ID=? AND ATTRIBUTE_NAME=?",
+        jdbc.update("UPDATE SPRING_SESSION_ATTRIBUTES SET ATTRIBUTE_BYTES=? WHERE SESSION_PRIMARY_ID=? AND ATTRIBUTE_NAME=?",
                 bytes.toByteArray(), primary, "org.orgresource.sessionCreatedAt");
         assertEquals(401, get(session.client, "/api/v2/session").statusCode());
 
         Session idle = login(user.username, user.password);
-        SessionRow idleStored = jdbc.queryForObject("SELECT PRIMARY_ID,SESSION_ID FROM spring_session WHERE PRINCIPAL_NAME=? ORDER BY CREATION_TIME DESC LIMIT 1",
+        SessionRow idleStored = jdbc.queryForObject("SELECT PRIMARY_ID,SESSION_ID FROM SPRING_SESSION WHERE PRINCIPAL_NAME=? ORDER BY CREATION_TIME DESC LIMIT 1",
                 (rs, row) -> new SessionRow(rs.getString(1), rs.getString(2)), user.username);
         assertNotNull(idleStored);
         assertEquals(idle.sessionId, idleStored.sessionId);
-        jdbc.update("UPDATE spring_session SET LAST_ACCESS_TIME=?,EXPIRY_TIME=0 WHERE SESSION_ID=?",
+        jdbc.update("UPDATE SPRING_SESSION SET LAST_ACCESS_TIME=?,EXPIRY_TIME=0 WHERE SESSION_ID=?",
                 java.time.Instant.now().minus(2, java.time.temporal.ChronoUnit.HOURS).toEpochMilli(), idleStored.sessionId);
         assertEquals(401, get(idle.client, "/api/v2/session").statusCode());
     }
