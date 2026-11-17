@@ -149,6 +149,12 @@ jobs:
           node-version: '24'
           cache: npm
           cache-dependency-path: frontend/package-lock.json
+      - name: Generate ephemeral contact-encryption test key
+        shell: bash
+        run: |
+          key="$(openssl rand -base64 32 | tr -d '\n')"
+          echo "::add-mask::$key"
+          printf 'EXT_CONTACT_ENCRYPTION_KEY=%s\n' "$key" >> "$GITHUB_ENV"
       - name: Build React assets for packaged Extended runtime
         run: |
           npm --prefix frontend ci

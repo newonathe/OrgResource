@@ -26,6 +26,7 @@ $environmentNames = @(
     'EXT_DB_MIGRATION_URL', 'EXT_DB_MIGRATION_USER', 'EXT_DB_MIGRATION_PASSWORD',
     'EXT_BOOTSTRAP_SLUG', 'EXT_BOOTSTRAP_ORG_NAME', 'EXT_BOOTSTRAP_USERNAME',
     'EXT_BOOTSTRAP_DISPLAY_NAME', 'EXT_BOOTSTRAP_PASSWORD',
+    'EXT_CONTACT_ENCRYPTION_KEY',
     'EXT_SMS_ENABLED', 'EXT_SCHEDULER_DELAY_MS', 'EXT_SERVER_PORT',
     'SPRING_PROFILES_ACTIVE'
 )
@@ -290,6 +291,15 @@ FLUSH PRIVILEGES;
     $env:EXT_BOOTSTRAP_USERNAME = 'c1-owner'
     $env:EXT_BOOTSTRAP_DISPLAY_NAME = 'C1 Owner'
     $env:EXT_BOOTSTRAP_PASSWORD = $bootstrapPassword
+    $contactKeyBytes = New-Object byte[] 32
+    $contactKeyGenerator = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+    try {
+        $contactKeyGenerator.GetBytes($contactKeyBytes)
+        $env:EXT_CONTACT_ENCRYPTION_KEY = [Convert]::ToBase64String($contactKeyBytes)
+    } finally {
+        $contactKeyGenerator.Dispose()
+        [Array]::Clear($contactKeyBytes, 0, $contactKeyBytes.Length)
+    }
     $env:EXT_SMS_ENABLED = 'false'
     $env:EXT_SCHEDULER_DELAY_MS = '60000'
     $env:EXT_SERVER_PORT = [string]$appPort
