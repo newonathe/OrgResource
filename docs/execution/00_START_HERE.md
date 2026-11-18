@@ -5,7 +5,7 @@ Edition: 2026-11-19 (Asia/Manila). Status: DESIGN RECOMMENDATION and USER-DIRECT
 ## Start here and authority
 
 1. Read repository AGENTS.md completely and docs/QUALITY_EVIDENCE_CONTINUOUS_GATE.md completely. Both govern every subsequent audit, research, plan, prompt, implementation, test, PR, release, and independent review. This packet adds operational specificity and never relaxes either document.
-2. Read this index, then 01_EFFICIENCY_ENGINEERING_STANDARD.md, 02_SUBAGENT_ORCHESTRATION.md, 03_PASS_DEPENDENCIES_AND_ACCEPTANCE.md, 04_CODEX_PROMPTS_C6_C8.md and 05_CODEX_PROMPTS_C9_C11.md. The prompts are execution proposals pending a separate authorized phase.
+2. Read this index, then 01_EFFICIENCY_ENGINEERING_STANDARD.md, 02_SUBAGENT_ORCHESTRATION.md, 03_PASS_DEPENDENCIES_AND_ACCEPTANCE.md, 04_CODEX_PROMPTS_C6_C8.md and 05_CODEX_PROMPTS_C9_C11.md, 06_COVERAGE_AND_DECISION_REGISTER.md and 08–10 Ateneo demo-data requirements/prompts plus the sourced public-organization reference JSON. Read the entire quality gate. The prompts are execution proposals pending a separate authorized phase.
 3. Read the current CSCI 180.05 assignment, syllabus, actual supplied lab/slides/code, the original course proposal and final as-built records. The assignment is authoritative for assigned work, the syllabus for course context, and current Canvas announcements are a **STUDENT CHECK**. Distinguish supplied course fact from our design recommendations.
 4. Relevant current Git references (refresh immediately before use):
    - **Protected Course Final A**: 7f8c0746da18fd54b47f430ac1435ac36e605d67. Immutable source and academic artifact reference.
@@ -19,6 +19,8 @@ Edition: 2026-11-19 (Asia/Manila). Status: DESIGN RECOMMENDATION and USER-DIRECT
 **ACADEMIC A:** Course Final A stays frozen; course Java 8, Spring Boot/Jersey, Spring components with @Autowired, javax validation, JPA/Spring Data/MySQL, Retrofit/Gson, scheduling, JSON, GET/POST conventions, real React and Postman are preserved. Existing verified academic operations and Resource image behavior must not regress. The assignment's five-entity minimum is a requirement, while the frozen Course A has exactly five: Department, Project, Resource, ResourceRequirement, Allocation. The 26 business + 2 image operation set is a documented amended as-built contract, not a claim that the original assignment itself specifically mandates 28 endpoints. The printed final date is 2026-12-05; current Canvas and student-only obligations must be checked separately.
 
 **EXTENDED C:** A separate Java 21/MySQL 8 product lane under extended/backend and extended/frontend. It may add security, tenant governance, ledger storage, supporting migration tables and coherent workflows without editing course example files or the frozen academic implementation. Supporting Extended persistence tables are not retroactively reclassified as extra Course A JPA domain entities. Existing Flyway V1–V5 checksums remain unchanged.
+
+**HOSTED DEMONSTRATION:** The owner wants a populated hosted showcase with real publicly documented Ateneo 2026 organization listing identities (curated COA-M and LIONS) and fully **fictional/simulated** operational history of approximately eleven months. The UI, API and exports disclose simulation and no association/adoption; no personal information, live provider, unlicensed logos, existing organizational data, or fabricated historical usage. The full implementation and hosting remain NOT_RUN; see 08–10 and the public reference JSON.
 
 **PUBLIC PRODUCTION:** A future, explicitly approved deployment with a defined public-user scope, HTTPS/hosting, monitored operations, privacy, incident/recovery provisions and independently reproducible acceptance. It is **BLOCKED / NOT RUN** today. A local release candidate is not public production.
 
@@ -46,6 +48,10 @@ Priority is lexicographic: (1) verified course compliance and academic integrity
 | 05_CODEX_PROMPTS_C9_C11.md | Ready-to-copy full scoped master prompts for C9 reliability/performance/CI, C10 staging/off-host recovery, C11 independent release |
 | 06_COVERAGE_AND_DECISION_REGISTER.md | Known source paths, inspection levels, verified/reported distinction, unresolved decisions, exact next evidence |
 | 07_C5_EXACT_TREE_METADATA_INVENTORY.csv | Full 661-path C5 Git blob inventory with SHA/size and honest metadata-only semantic-review status |
+| 08_ATENEO_HOSTED_DEMO_REQUIREMENTS.md | Hosted public Ateneo org references + prominently identified eleven-month synthetic history, security/privacy/source safeguards |
+| 09_DEMO_SEED_ALGORITHM_AND_ACCEPTANCE.md | Deterministic historical event graph, guarded demo import, tenant/ledger invariants and DEM-* acceptance matrix |
+| 10_CODEX_DEMO_DATA_IMPLEMENTATION_PROMPT.md | Copy-ready C6-D/C8-D/C9-D/C10-D/C11-D audit, implementation, hosting and release prompts |
+| ../data/reference/ateneo-public-organizations-2026.json | Twelve real publicly listed 2026 COA-M/LIONS organization name+classification facts and individual source URLs; no real operations |
 
 ## Governance and explicit authorization
 
