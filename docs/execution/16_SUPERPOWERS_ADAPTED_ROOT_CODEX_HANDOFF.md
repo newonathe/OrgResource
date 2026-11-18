@@ -119,3 +119,7 @@ Exact tested source/binary SHA, final Course A immutability and original academi
 ## 8. Verification before changing source further
 
 This document does not invoke tools by itself. The first authorized Codex task must confirm plugin installation/version if user opted in, effective project-level configuration, actual model allowlist, current Git SHA, real CI environment and comprehensive current source coverage. A source-only policy PR is VERIFIED only as a Git object, never as an executable tested system.
+
+## Final audit companion (2026-11-19)
+
+The complete bounded research/source verification and remaining C6 entry conditions are in [19_FINAL_SOURCE_AUDIT_AND_C6_ENTRY_GATE.md](19_FINAL_SOURCE_AUDIT_AND_C6_ENTRY_GATE.md). Corrected custom-agent reviewer sandbox inheritance, official Codex model/effort keys and true video metadata barriers are part of that audit. All implementation/user data/public hosting/CI-runtime completion claims remain subject to actual executed evidence on the exact code SHA, never resolved by this planning document.
