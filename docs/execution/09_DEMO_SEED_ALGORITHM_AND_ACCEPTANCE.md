@@ -34,6 +34,7 @@ Fields should be implemented only if justified by actual audited schema and inte
 ## 3. Input manifests
 
 Input A: immutable **fact reference** file data/reference/ateneo-public-organizations-2026.json with 12 public roster names, source URLs, observed date, listing code, no real inventories or people. Refresh citations on implementation date; source conflicts recorded.
+Input A2: data/reference/ateneo-public-programs-2026.json is a curated 2026 **public program-title context** manifest: 12 public program titles across 6 organizations, each linked to its own organization profile. No occurrence dates/stock/usage are verified; show them only in a factual profile panel, NEVER attach simulated stock movements to the actual program names as if they occurred.
 Input B: approved **synthetic scenario catalog**, preferably small versioned YAML or JSON with original fictional department/resource archetypes grouped by theme (performing arts, publishing, technical events, outreach, etc.). These are *scenario hypotheses*, never assertions about any named organization's actual gear or usage.
 Input C: deterministic generator parameter object:
 ```json
@@ -127,6 +128,7 @@ Test ID | Expected setup/action | Evidence / mandatory assertion
 --- | --- | ---
 DEM-SRC-01 | Validate 12 public roster facts | Source URLs/date category and explicit no-real-inventory truth; 6 COA-M, 6 LIONS; LIONS represented as independent umbrella
 DEM-SRC-02 | Broken/stale URL, unsupported category, conflicting roster count | Fail/flag provenance, no silent fact fabrication or blanket 55/53 claim
+DEM-SRC-03 | Public project/program context | Match 12 source-linked program names to six curated orgs; no unverified event dates, resource ownership, allocations or implied historical use
 DEM-PII-01 | Scan input and resulting DB | No real individual names, personal emails, phones, student IDs, images, provider credentials
 DEM-PROV-01 | Anonymous/read/export, all React routes | Persistent demo label and machine-readable synthetic provenance; no implied real use/endorsement
 DEM-GEN-01 | Generate twice same seed/as_of/version | Exact canonical event-graph hash and org/reference links equal; zero DB side effects from dry run
