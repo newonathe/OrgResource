@@ -2,6 +2,9 @@
 
 **Edition:** 2026-11-19 (PHT). **Type:** USER DECISION / DESIGN RECOMMENDATION (future product requirement). **Status:** PLANNED; actual hosted dataset, permission, seed engine, tests, deployment and approval are **NOT IMPLEMENTED / NOT RUN**. This specification supplements **all** existing AGENTS.md and docs/QUALITY_EVIDENCE_CONTINUOUS_GATE.md criteria; none may be shortened or waived for demo appearance or speed.
 
+
+> **SUPERSEDING USER DECISION — 2026-11-19 expanded coverage.** The prior 12-org public reference sample is preserved as historical v1; the full hosted sample now targets **96 dated 2026 directory entries** (72 COA-M RecWeek page listings of mixed organizational/government/service types + 24 verified LIONS entries). **Eight older-only LIONS names remain unconfirmed and unseeded.** MISA and Sanggunian are highest-volume simulated flagships; a further 14 entries are `FEATURED_SHOWCASE` by designed workflow variety, not proven membership rank. Read `11_EXPANDED_CAMPUS_ROSTER_AND_HIGH_VOLUME_PLAN.md`, `data/reference/ateneo-recweek-2026-expanded-directory.json`, and `data/demo/ateneo-volume-profiles-2026.json` in full. Any 12-org count or 6+6 limit below is a historical v1 example, never the new full hosted acceptance target. The original privacy/source/quality gates remain intact.
+
 ## 0. Requirement and principled interpretation
 
 **USER DECISION:** At the first owner-approved hosted demo release, present a populated, credible Ateneo de Manila student-organization resource-management workspace reflecting approximately eleven months of **simulated** realistic usage. Draw the organization identity and publicly documented organization type/activities from actual accessible, dated sources, spanning:
@@ -62,21 +65,24 @@ Across anonymous preview, signed-in demo, exports and any seeded analytics:
 - HISTORY: avoid forged past audit timestamps by simply modifying immutable events after posting. The fixture engine must use explicit simulated event-time boundaries and the normal business services with an injectable clock/test-controlled scheduler or dedicated transactional fixture importer **on a disposable, clearly demo-only database**, validate resulting stock/audit and never bypass integrity constraints. Distinguish time-created (actual import) from simulated effective event-time where possible.
 - No production UI analytics should accidentally aggregate demo data into real customer activity, active user count, operational savings, institutional impact or adoption. Demo metrics are marked SIMULATED, with formulas and deterministic fixture count.
 
-## 4. Minimum launch-ready dataset profile (DESIGN TARGETS, not observed Ateneo facts)
+## 4. Full hosted directory-and-scale dataset profile (v2; DESIGN TARGETS, not actual Ateneo statistics)
 
-- Initial public-reference profiles: **12** sourced organizations: 6 COA-M and 6 LIONS; additional independent names only with source and rights review. This is a *curated sample*, not all Ateneo organizations.
-- Historical window: **2025-12-01 00:00 to 2026-11-18 23:59** Manila time, approximately 11½ months; anchor DEMO_AS_OF_DATE=2026-11-19. This is an **illustrative simulation period**, not actual platform uptime. If deployment is after that date, preserve explicit labeled historical simulation or regenerate to a newly approved fixed date with refreshed sources and deterministic version.
-- Default size target: 2–5 fictional operational departments per org (24–60 total); 3–8 simulated projects/org (36–96); 8–20 generic resource types/org (96–240); 2–5 requirements/project; 40–100 allocation requests/org over simulation (480–1200 total), each with coherent status progression and custody outcomes; movement/audit counts arise from real state transitions, **never hardcode ledger counts**.
-- Mix reusable equipment and consumable supplies without claiming org-owned assets. Vary activity to demonstrate cross-department scheduling, seasonal event workload, restocking, pending/approved/issued/returned/consumed/cancelled and long-tail zero usage. Distribution is a simulation design, not research about true demand.
-- Fictional personas: 4–7 synthetic non-personal identities per demo org with tested OWNER/ADMIN/CUSTODIAN/LEAD/MEMBER permissions; public preview cannot authenticate as real named officers. Reuse the same fake personas only where role boundaries tested.
-- Public preview cannot expose raw free-text borrower phone, reminders, authentication tokens, password/recovery codes, API secrets or image with real person.
-- Low-capacity CI fixture: 2–3 orgs, one month, ~10–40 requests to finish quickly while preserving every state/role branch. Full fixture: 12 orgs, full history. Stress profile separate and not automatically shipped.
-- Visual differentiation: realistic generic resource labels by mission domain (for example, audio kit for a performing arts scenario) are **fictional**; project titles should be original demo titles prefixed/marked as fictional, not copies of undocumented real org event names. Publicly documented events may appear as sourced descriptive context only; never attach invented allocations to them as if documented.
+**Expanded roster:** `data/reference/ateneo-recweek-2026-expanded-directory.json` lists **72** names/entries published on the COA-M RecWeek 2026 **directory page** (including Sanggunian/student government, COA-M governing umbrella, student arms/services and publications) and **24** 2026 LIONS entries evidenced by the RecWeek point-person register or profiles. This is **96 default demo tenant references**, not 96 proven accredited organizations; eight historical-only LIONS names are not seeded until separately corroborated. The old 12-entry `ateneo-public-organizations-2026.json` remains a dated research subset, not the full release denominator. Membership size/ranking claims are not verified.
+
+**Source context:** actual organization names and 12 publicly listed program titles in `ateneo-public-programs-2026.json` are source-linked facts only. Every Project, Resource, Allocation, Movement and operational timeline is independently fictional and labeled DEMO.
+
+**Period:** fixed *simulated* history 2025-12-01 00:00 through 2026-11-18 23:59 in Asia/Manila with as-of 2026-11-19. UI clearly identifies this as artificially generated, not the software's deployment date or actual organization's operating records.
+
+**Per-tenant approved proposal:** Sanggunian 2,500–4,500 fictional allocation requests; MISA 2,000–4,000; 14 selected high-coverage showcase entries 600–1,400 each; 56 remaining COA directory entries 120–400; 24 verified LIONS listings 60–240. Total configured target range **21,060–56,260 synthetic requests**, with approximately 713–1,853 generated Projects and 1,312–3,446 resource types, **not observed real-world activity**. Precise source-linked assignment and bounds in `data/demo/ateneo-volume-profiles-2026.json`. The generator must derive actual ledger and audit counts by executing lawful transitions, never fabricate exact movement totals.
+
+**Performance profiles:** `TINY_CI_DISPOSABLE` (few organizations, every critical state/role), `FULL_96_ORG_SHOWCASE` (complete hosted 96-name reference and 11-month simulation), and `SEPARATE_STRESS_TEST_NOT_SHIPPED` (optionally scaled volume). Existing MySQL restore-size and import limits may need evidence-backed engineering before this full dataset is feasible. The output is not prepopulated merely because these JSON files exist.
+
+**Minimum features:** sources and banner in all pages/API/exports; safe isolated 96-organization tenant selector; rich flagship inventory and paged chronological history; actual MySQL referential/role/stock semantics; rollback, idempotency and event-clock safeguards; original course protected; no real contact data or messages; actual hosted and off-host recovery receipts if deployed. Full quality/evidence gate must be passed for the final approved code SHA.
 
 ## 5. Core acceptance and user journeys
 
-1. Clean demo host responds with preloaded tenant selector, full twelve organization reference profiles and eleven-month historical chart after **explicit authorized fixture import**, without requiring local developer-only secrets.
-2. At least six COA-M and six LIONS examples are available as separate scoped organizations; category data matches the dated public roster file, with clear source badges and no invented third classification.
+1. Clean demo host responds with preloaded tenant selector, full 96 current-directory organization reference profiles and eleven-month historical chart after **explicit authorized fixture import**, without requiring local developer-only secrets.
+2. All 72 mixed-type 2026 COA-M-page directory entries and at least 24 separately corroborated 2026 LIONS organizations are available as properly typed independent demo references; historic-only eight are excluded from default, category data matches the dated public roster file, with clear source badges and no invented third classification.
 3. Demo owner/custodian/lead/member can view realistic permitted workflows; tenant switch cannot leak data from prior organization. Anonymous preview read-only. Any interactive trial is isolated from every other trial and auto-expires by defined policy.
 4. Every dashboard number reconciles with database resources/holds/issued/reusable/consumable stock; historical event timeline is chronological and consistent with the service status machine and project dates.
 5. Resource stock is conserved; all movements are append-only; no replayed allocations or double consumption; no negative availability; historical holds do not inappropriately remain active in the latest snapshot; all datetimes valid and timezone-aware at display boundary.
@@ -103,11 +109,11 @@ Optional cuts: number of roster profiles after source provenance review, number 
 
 ## 8. Owner decisions
 
-DEC-13: Confirm scope of 12 referenced real public org names (6 COA-M, 6 LIONS), whether any additional separately independent group will be curated; classification year and public source only. Default: curated twelve.
+DEC-13: Confirm expanded 96-current-directory source coverage (72 COA-M RecWeek page entries including student arms/government and 24 2026 LIONS); separately investigate full LIONS roster and eight older-only names. Existing 12-entry v1 research sample remains archived; default full hosted target 96 with explicit completeness boundaries.
 DEC-14: Confirm permanent demo/synthetic attribution and explicit "not affiliated" note for public host. Default: mandatory.
 DEC-15: Authorize dedicated public demo database and determine public guest read-only vs optional isolated temporary trial sessions; default: read-only preview + no shared writable tenant.
 DEC-16: Authorize original-only placeholder branding and whether external org logos require permission. Default: no logos.
-DEC-17: Approve fixed as-of 2026-11-19 with simulated period 2025-12-01–2026-11-18 and full fixture size; default as design target, cannot be declared actual observed traffic.
+DEC-17: Approve fixed as-of 2026-11-19 with simulated period 2025-12-01–2026-11-18 and full 96-reference tiered fixture (21,060–56,260 fictional requests). Must benchmark backup/import/storage constraints; never claim actual observed traffic or real size ranks.
 DEC-18: Define approved preservation/reset/TTL strategy and backing up demo database. Default: explicit operator import and isolated backups.
 DEC-19: Real organizational inventory/contacts/transactions would require separately obtained permitted source plus consent/authority, documented privacy assessment and distinct genuine-data production tenant; no automatic import from social media, public posts or inferred assets.
 
