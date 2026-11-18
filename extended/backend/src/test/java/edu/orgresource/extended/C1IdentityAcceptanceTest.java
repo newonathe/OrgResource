@@ -2499,6 +2499,22 @@ class C1IdentityAcceptanceTest {
         });
         assertEquals("KEY_UNAVAILABLE", jdbc.queryForObject("SELECT reminder_outcome FROM allocation WHERE id=?", String.class, unavailableKey));
         assertNull(jdbc.queryForObject("SELECT reminder_claimed_at FROM allocation WHERE id=?", Timestamp.class, unavailableKey));
+        String unrelatedFixtureKey = java.util.Base64.getEncoder().encodeToString(C1Secrets.sha256("isolated C7 test key"));
+        C3ReminderService differentKeyService = new C3ReminderService(allocationRepository,
+                new edu.orgresource.extended.security.ContactCipher(unrelatedFixtureKey, "c7-other-key"));
+        tx.executeWithoutResult(status -> {
+            assertTrue(differentKeyService.claimOne(unavailableKey, now));
+            assertNull(differentKeyService.prepareForDispatch(unavailableKey, now));
+        });
+        assertEquals("KEY_UNAVAILABLE", jdbc.queryForObject("SELECT reminder_outcome FROM allocation WHERE id=?", String.class, unavailableKey));
+        assertNull(jdbc.queryForObject("SELECT reminder_claimed_at FROM allocation WHERE id=?", Timestamp.class, unavailableKey));
+        var reminderPage = org.springframework.data.domain.PageRequest.of(0, 1000);
+        assertTrue(allocationRepository.findReminderCandidates(now, now.plusHours(24), contactCipher.availableKeyId(), reminderPage)
+                .stream().anyMatch(row -> row.getAllocationId() == unavailableKey));
+        assertFalse(allocationRepository.findReminderCandidates(now, now.plusHours(24), "c7-other-key", reminderPage)
+                .stream().anyMatch(row -> row.getAllocationId() == unavailableKey));
+        assertFalse(allocationRepository.findReminderCandidates(now, now.plusHours(24), null, reminderPage)
+                .stream().anyMatch(row -> row.getAllocationId() == unavailableKey));
         assertTrue(reminderService.claimOne(unavailableKey, now), "A temporary key outage may be retried after key configuration is restored.");
         assertNotNull(reminderService.prepareForDispatch(unavailableKey, now));
         assertTrue(reminderService.authorizeDispatch(unavailableKey, now));
@@ -2934,6 +2950,85 @@ class C1IdentityAcceptanceTest {
     private JsonObject json(HttpResponse<String> response) { return JsonParser.parseString(response.body()).getAsJsonObject(); }
     private String base() { return "http://127.0.0.1:" + port; }
     private String origin() { return base(); }
+    @Test @Order(48)
+    void C7RecoveryWithoutCredentialLeavesTheCodeUnused() throws Exception {
+        Fixture owner = newTenant("C7-incomplete-credential", Membership.Role.OWNER);
+        String code = owner.recoveryCodes.get(0);
+        long version = accounts.findById(owner.userDbId).orElseThrow().credentialVersion;
+        assertEquals(1, jdbc.update("DELETE FROM local_credential WHERE user_id=?", owner.userDbId));
+        HttpClient client = newClient();
+        String csrf = json(get(client, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();
+        HttpResponse<String> response = post(client, "/api/v2/auth/recover",
+                GSON.toJson(new RecoverRequest(owner.username, code, "Fictional-C7-recovery-" + UUID.randomUUID())), csrf, origin());
+        assertEquals(200, response.statusCode());
+        assertEquals("If the account and recovery code are valid, password recovery has completed.",
+                json(response).getAsJsonObject("data").get("message").getAsString());
+        assertEquals(version, accounts.findById(owner.userDbId).orElseThrow().credentialVersion);
+        assertNull(tx.execute(status -> recoveryCodes.lockByUserAndHash(owner.userDbId, C1Secrets.sha256(code)).orElseThrow().usedAt));
+        assertEquals(0, jdbc.queryForObject("SELECT COUNT(*) FROM audit_event WHERE actor_user_id=? AND action='ACCOUNT_RECOVERED'",
+                Integer.class, owner.userDbId));
+    }
+
+    @Test @Order(49)
+    void C7InventoryKeepsForeignOrganizationsPrivateAndFreezesAuthorizedWrites() throws Exception {
+        Fixture owner = newTenant("C7-frozen-inventory", Membership.Role.OWNER);
+        Fixture unrelated = newTenant("C7-inventory-scope", Membership.Role.OWNER);
+        Session ownerSession = login(owner.username, owner.password);
+        Session unrelatedSession = login(unrelated.username, unrelated.password);
+        JsonObject resource = json(post(ownerSession, "/api/resources", GSON.toJson(new ResourceRequest(
+                "C7 frozen resource", "REUSABLE", 0))));
+        assertEquals(1, jdbc.update("UPDATE organization SET status='FROZEN' WHERE id=?", owner.orgDbId));
+        String path = "/api/v2/orgs/" + owner.orgPublicId + "/resources/" + resource.get("publicId").getAsString() + "/receive";
+        UUID operationId = UUID.randomUUID();
+        String body = GSON.toJson(new ReceiveRequest(operationId, 1));
+        HttpResponse<String> unavailable = modernPost(unrelatedSession, path, body, "\"v0\"", C1Secrets.bearerToken());
+        assertEquals(404, unavailable.statusCode());
+        assertEquals("NOT_FOUND", json(unavailable).get("code").getAsString());
+        HttpResponse<String> frozen = modernPost(ownerSession, path, body, "\"v0\"", C1Secrets.bearerToken());
+        assertEquals(409, frozen.statusCode());
+        assertEquals("ORG_FROZEN", json(frozen).get("code").getAsString());
+        assertEquals(0, jdbc.queryForObject("SELECT total_quantity FROM resource WHERE id=?", Integer.class, resource.get("id").getAsLong()));
+        assertEquals(0, jdbc.queryForObject("SELECT COUNT(*) FROM idempotency_key WHERE operation_public_id=UUID_TO_BIN(?,0)",
+                Integer.class, operationId.toString()));
+    }
+
+    @Test @Order(50)
+    void C7GovernanceChecksPermissionBeforeTargetVersion() throws Exception {
+        Fixture owner = newTenant("C7-governance-authorization", Membership.Role.OWNER);
+        Fixture admin = fixtureInOrg(owner.orgDbId, Membership.Role.ADMIN);
+        Fixture member = fixtureInOrg(owner.orgDbId, Membership.Role.MEMBER);
+        Session ownerSession = login(owner.username, owner.password);
+        Session memberSession = login(member.username, member.password);
+        String root = "/api/v2/orgs/" + owner.orgPublicId;
+        String target = root + "/members/" + admin.membershipPublicId;
+        String grant = GSON.toJson(new RoleRequest("MEMBER"));
+        assertEquals(403, post(memberSession, target + "/role", grant).statusCode());
+        assertEquals(403, post(memberSession, target + "/suspend", null, "\"v9\"").statusCode());
+        assertEquals(428, post(ownerSession, target + "/role", grant).statusCode());
+        assertEquals(412, post(ownerSession, target + "/suspend", null, "\"v9\"").statusCode());
+        HttpResponse<String> started = post(ownerSession, root + "/transfer-ownership",
+                GSON.toJson(new TransferRequest(admin.membershipPublicId, owner.password)));
+        assertEquals(201, started.statusCode());
+        String transfer = json(started).getAsJsonObject("data").get("id").getAsString();
+        assertEquals(403, post(memberSession, root + "/transfers/" + transfer + "/revoke", null).statusCode());
+        assertEquals(200, post(ownerSession, root + "/transfers/" + transfer + "/revoke", null, "\"v0\"").statusCode());
+        Membership unchanged = memberships.findById(admin.membershipDbId).orElseThrow();
+        assertEquals(Membership.Role.ADMIN, unchanged.role);
+        assertEquals(Membership.Status.ACTIVE, unchanged.status);
+        assertEquals(0L, unchanged.version);
+
+        Session adminSession = login(admin.username, admin.password);
+        HttpResponse<String> secondTransfer = post(ownerSession, root + "/transfer-ownership",
+                GSON.toJson(new TransferRequest(admin.membershipPublicId, owner.password)));
+        assertEquals(201, secondTransfer.statusCode());
+        UUID secondTransferId = UUID.fromString(json(secondTransfer).getAsJsonObject("data").get("id").getAsString());
+        String acceptance = GSON.toJson(new TransferIdRequest(secondTransferId));
+        assertEquals(428, post(adminSession, root + "/accept-transfer", acceptance).statusCode());
+        assertEquals(200, post(ownerSession, target + "/role", grant, "\"v0\"").statusCode());
+        assertEquals(404, post(adminSession, root + "/accept-transfer", acceptance).statusCode());
+        assertEquals(Membership.Role.OWNER, memberships.findById(owner.membershipDbId).orElseThrow().role);
+    }
+
     private LocalDateTime now() { return LocalDateTime.ofInstant(clock.instant(), ZoneOffset.UTC); }
     private Set<String> actualSchemaColumns(String table) {
         return Set.copyOf(jdbc.queryForList("SELECT LOWER(column_name) FROM information_schema.columns WHERE table_schema=DATABASE() AND LOWER(table_name)=?", String.class, table));

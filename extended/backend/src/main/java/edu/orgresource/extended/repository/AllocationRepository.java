@@ -49,11 +49,13 @@ public interface AllocationRepository extends JpaRepository<Allocation, Long> {
             + "JOIN project p ON p.id=q.project_id AND p.organization_id=q.organization_id "
             + "JOIN resource r ON r.id=q.resource_id AND r.organization_id=q.organization_id "
             + "WHERE a.status='ISSUED' AND r.type='REUSABLE' AND a.sms_consent=TRUE "
-            + "AND a.phone_ciphertext IS NOT NULL AND a.reminder_outcome IN ('NONE','KEY_UNAVAILABLE') "
+            + "AND a.phone_ciphertext IS NOT NULL "
+            + "AND (a.reminder_outcome='NONE' OR (a.reminder_outcome='KEY_UNAVAILABLE' AND a.phone_key_id=:availableKeyId)) "
             + "AND p.end_at>=:sampledNow AND p.end_at<:dueBefore "
             + "ORDER BY p.end_at,a.id", nativeQuery = true)
     List<ReminderCandidate> findReminderCandidates(@Param("sampledNow") LocalDateTime sampledNow,
                                                    @Param("dueBefore") LocalDateTime dueBefore,
+                                                   @Param("availableKeyId") String availableKeyId,
                                                    Pageable pageable);
 
     @Query(value = "SELECT id AS allocationId FROM allocation WHERE reminder_outcome IN ('CLAIMED','DISPATCHING') "

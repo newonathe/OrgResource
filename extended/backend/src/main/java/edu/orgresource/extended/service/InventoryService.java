@@ -602,14 +602,14 @@ public class InventoryService {
 
     private Actor lockOrganization(long organizationId, boolean mutation) {
         Organization organization = organizations.lockById(organizationId).orElseThrow(InventoryService::notFound);
-        if (mutation && organization.status != Organization.Status.ACTIVE)
-            throw new C1ApiException(409, "ORG_FROZEN", "A frozen organization is read-only.");
         long userId = organizationContext.currentUserId();
         Membership locked = memberships.lockByOrganizationAndUser(organizationId, userId)
                 .orElseThrow(InventoryService::notFound);
         organizationContext.requireCurrentMembership(organizationId);
         if (locked.status != Membership.Status.ACTIVE)
             throw notFound();
+        if (mutation && organization.status != Organization.Status.ACTIVE)
+            throw new C1ApiException(409, "ORG_FROZEN", "A frozen organization is read-only.");
         return new Actor(organization, locked, userId);
     }
 
