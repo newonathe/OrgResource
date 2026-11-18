@@ -35,6 +35,7 @@ export function AllocationsPage() {
   const { session, organizations } = useAuth();
   const activeOrgId = session?.activeOrgId ?? "";
   const activeRole = organizations.find(org => org.id === activeOrgId)?.role;
+  const canCreateAllocation = activeRole === "OWNER" || activeRole === "ADMIN";
   const canOperateStock = activeRole === "OWNER" || activeRole === "CUSTODIAN";
   const [searchParams, setSearchParams] = useSearchParams();
   const [allocations, setAllocations] = useState<Allocation[]>([]);
@@ -187,7 +188,7 @@ export function AllocationsPage() {
         {receiptRetryAllowed && !postReviewRequired && <Button variant="secondary" disabled={busy} onClick={() => setPendingAction(uncertainOperation)}>Retry same operation safely</Button>}
       </div></Notice>}
       <div className="allocation-layout">
-        {canOperateStock ? <GlassPanel className="form-panel allocation-create-panel" tilt={false}>
+        {canCreateAllocation ? <GlassPanel className="form-panel allocation-create-panel" tilt={false}>
           <PanelHeading kicker="New request" title="Request a resource" />
           <form className="stack-form" onSubmit={createAllocation}>
             <label htmlFor="allocation-requirement">Project Requirement</label><select id="allocation-requirement" value={selectedRequirementId} onChange={(event) => setRequirementId(event.target.value)} required>
@@ -205,7 +206,10 @@ export function AllocationsPage() {
             <Button variant="primary" magnetic type="submit" disabled={busy || postReviewRequired || !selectedRequirementId || !borrowerName.trim() || (smsConsent && !isFictionalTestPhone(phoneNumber))}>{busy ? "Saving…" : "Submit request"}</Button>
             <p className="field-hint">A new request is PENDING and does not reserve stock until approved.</p>
           </form>
-        </GlassPanel> : <GlassPanel className="form-panel allocation-create-panel" tilt={false}><PanelHeading kicker="Read only" title="Allocation actions unavailable" /><p>Your role can view only the activity exposed by the server. A custodian or owner is required to create a borrower request or change its lifecycle.</p></GlassPanel>}
+        </GlassPanel> : <GlassPanel className="form-panel allocation-create-panel" tilt={false}>
+          <PanelHeading kicker="Allocation review" title="Review existing requests" />
+          <p>Owners and administrators create borrower requests. Custodians can review existing requests and record stock transitions.</p>
+        </GlassPanel>}
 
         <GlassPanel className="list-panel allocation-list-panel" tilt={false}>
           <PanelHeading kicker="Current state" title="Allocation batches"><Button variant="quiet" disabled={loadState === "loading"} onClick={refresh}>Refresh all data</Button></PanelHeading>

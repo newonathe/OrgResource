@@ -149,6 +149,14 @@ describe("Extended C authentication and organization shell", () => {
     expect(screen.getByRole("heading", { name: "Accept ownership transfer" })).toBeInTheDocument();
   });
 
+  it.each(["ADMIN", "CUSTODIAN"] as const)("gates allocation creation for the %s role", async role => {
+    window.location.hash = "#/allocations";
+    vi.stubGlobal("fetch", authenticatedFetch(role));
+    render(<App />);
+    await screen.findByRole("heading", { name: "Allocations", level: 1 });
+    expect(screen.queryByRole("button", { name: "Submit request" }) !== null).toBe(role === "ADMIN");
+  });
+
   it("sends the in-memory CSRF value on mutations", async () => {
     const fetchMock = authenticatedFetch();
     vi.stubGlobal("fetch", fetchMock);

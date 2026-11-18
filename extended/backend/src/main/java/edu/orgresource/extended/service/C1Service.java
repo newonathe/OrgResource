@@ -333,7 +333,7 @@ public class C1Service {
             allocation.phoneKeyId = encrypted.keyId();
         }
         Allocation saved = allocations.saveAndFlush(allocation);
-        return new ApiDtos.AllocationView(saved);
+        return new ApiDtos.AllocationView(saved, requirement.project.endAt, now);
     }
 
     @Transactional(readOnly = true)
@@ -355,7 +355,8 @@ public class C1Service {
         else rows = allocations.findByOrganizationIdOrderById(orgId);
         LocalDateTime now = LocalDateTime.now(philippineClock);
         return rows.stream()
-                .map(ApiDtos.AllocationView::new).collect(Collectors.toList());
+                .map(allocation -> new ApiDtos.AllocationView(allocation, allocation.requirement.project.endAt, now))
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

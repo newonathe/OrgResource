@@ -18,13 +18,13 @@ import jakarta.persistence.LockModeType;
 public interface AllocationRepository extends JpaRepository<Allocation, Long> {
     interface ExpiryCandidate { Long getOrganizationId(); Long getAllocationId(); }
     interface ReminderCandidate { Long getAllocationId(); }
-    @EntityGraph(attributePaths = {"requirement"})
+    @EntityGraph(attributePaths = {"requirement.project"})
     List<Allocation> findByOrganizationIdAndRequirementIdOrderById(Long organizationId, Long requirementId);
-    @EntityGraph(attributePaths = {"requirement"})
+    @EntityGraph(attributePaths = {"requirement.project"})
     List<Allocation> findByOrganizationIdOrderById(Long organizationId);
-    @EntityGraph(attributePaths = {"requirement"})
+    @EntityGraph(attributePaths = {"requirement.project"})
     List<Allocation> findByOrganizationIdAndStatusOrderById(Long organizationId, AllocationStatus status);
-    @EntityGraph(attributePaths = {"requirement"})
+    @EntityGraph(attributePaths = {"requirement.project"})
     List<Allocation> findByOrganizationIdAndRequirementIdAndStatusOrderById(Long organizationId,
             Long requirementId, AllocationStatus status);
     boolean existsByOrganizationIdAndRequirementId(Long organizationId, Long requirementId);

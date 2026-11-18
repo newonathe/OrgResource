@@ -566,11 +566,22 @@ test("connected O8–O10 workflows persist through the isolated Java/MySQL backe
     await expect(page.getByRole("heading", { name: heading, level: 1 })).toBeVisible();
   }
 
-  const finalAllocations = await getJson<Array<{ id: number; borrowerName: string; status: string; phoneNumber?: string }>>(page, "/api/allocations");
-  expect(finalAllocations.find((item) => item.id === reusableAllocation.id)?.status).toBe("RETURNED");
-  expect(finalAllocations.find((item) => item.id === consumableAllocation.id)?.status).toBe("CONSUMED");
+  const finalAllocations = await getJson<Array<{
+    id: number; status: string; returnedAt: string | null; consumedAt: string | null;
+    reminderOutcome: string; reminderAttempted: boolean; expiredPendingCleanup: boolean;
+  }>>(page, "/api/allocations");
+  expect(finalAllocations.find((item) => item.id === reusableAllocation.id)).toMatchObject({
+    status: "RETURNED", returnedAt: expect.any(String), consumedAt: null,
+    reminderOutcome: "NONE", reminderAttempted: false, expiredPendingCleanup: false,
+  });
+  expect(finalAllocations.find((item) => item.id === consumableAllocation.id)).toMatchObject({
+    status: "CONSUMED", consumedAt: expect.any(String), returnedAt: null,
+  });
   expect(finalAllocations.some((item) => item.id === cancelledAllocation.id)).toBe(false);
   expect(finalAllocations.every((item) => !("phoneNumber" in item))).toBe(true);
+  await page.goto("/#/allocations");
+  const returned = page.locator(".allocation-card").filter({ hasText: borrowerReusable });
+  await expect(returned.getByText("No reminder attempt", { exact: true })).toBeVisible();
 });
 
 test("captures the all-page responsive light/dark screenshot matrix", async ({ page }) => {

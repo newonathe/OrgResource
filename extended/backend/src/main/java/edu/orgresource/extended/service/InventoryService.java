@@ -268,7 +268,7 @@ public class InventoryService {
                 .orElseThrow(InventoryService::notFound);
         LockedAllocation locked = lockAllocation(snapshot, selectedOrgId);
         applyTransition(actor, locked, action, UUID.randomUUID(), fingerprint("legacy:" + action + ":" + allocationId));
-        return new ApiDtos.AllocationView(locked.allocation);
+        return new ApiDtos.AllocationView(locked.allocation, locked.project.endAt, businessNow());
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -309,7 +309,7 @@ public class InventoryService {
         if (locked.allocation.reminderOutcome == edu.orgresource.extended.domain.ReminderOutcome.CLAIMED)
             locked.allocation.reminderOutcome = edu.orgresource.extended.domain.ReminderOutcome.SUPPRESSED;
         allocations.saveAndFlush(locked.allocation);
-        return new ApiDtos.AllocationView(locked.allocation);
+        return new ApiDtos.AllocationView(locked.allocation, locked.project.endAt, businessNow());
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -496,7 +496,7 @@ public class InventoryService {
                 locked.resource.publicId, locked.allocation.publicId, locked.allocation.status.name(),
                 locked.allocation.quantity, locked.resource.totalQuantity, available, locked.allocation.version);
         if (!modern) return new OperationResponse(200, toJson(new IdentityDtos.Envelope<>(
-                new ApiDtos.AllocationView(locked.allocation), requestId)), null);
+                new ApiDtos.AllocationView(locked.allocation, locked.project.endAt, sampledNow), requestId)), null);
         return complete(claim, requestId, 200, view, etag);
     }
 

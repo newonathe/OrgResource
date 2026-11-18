@@ -2431,6 +2431,16 @@ class C1IdentityAcceptanceTest {
 
         assertTrue(reminderService.claimOne(afterGate, now) == false,
                 "A completed send must never be automatically retried after revocation.");
+        HttpResponse<String> activity = get(session.client, "/api/allocations?status=ISSUED");
+        assertEquals(200, activity.statusCode(), activity.body());
+        JsonObject sent = JsonParser.parseString(activity.body()).getAsJsonArray().asList().stream()
+                .map(row -> row.getAsJsonObject()).filter(row -> row.get("id").getAsLong() == afterGate)
+                .findFirst().orElseThrow();
+        assertEquals("SIMULATED", sent.get("reminderOutcome").getAsString());
+        assertTrue(sent.get("reminderAttempted").getAsBoolean());
+        assertFalse(sent.get("expiredPendingCleanup").getAsBoolean());
+        assertFalse(sent.get("smsConsent").getAsBoolean());
+        assertFalse(sent.has("phoneNumber"));
     }
 
     private static long scalarLong(java.sql.Statement statement, String sql) throws Exception {
