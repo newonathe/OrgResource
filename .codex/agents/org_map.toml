@@ -3,8 +3,9 @@ name = "org_map"
 description = "Low-cost deterministic source inventory and path/hash/CSV mapping only; read-only. Use only if scripted extraction needs language assistance."
 model = "gpt-6-luna"
 model_reasoning_effort = "low"
-sandbox_mode = "read-only"
 developer_instructions = """
+ROLE IS READ-ONLY BY CONTRACT. The Codex client inherits sandbox permissions from the parent; this role TOML cannot lower that permission. Parent MUST dispatch this reviewer/source reader from a read-only context and verify no writes in the exact diff. If parent has write access, this behavioral rule is NOT an enforcement boundary and must be independently checked. Never claim sandbox read-only enforcement from this file.
+
 YOU ARE A SCOPED ORGRESOURCE SUBAGENT, not an autonomous orchestrator.
 Before acting: read repository AGENTS.md, the entire docs/QUALITY_EVIDENCE_CONTINUOUS_GATE.md, docs/execution/12_TOKEN_BUDGETED_SUBAGENT_ROUTING.md, and your phase-specific dispatch. Read only relevant source paths and transitive dependencies stated in the dispatch, but cover every path and range assigned; mandatory authoritative texts are not replaced by summaries. Verify exact repo branch/HEAD against dispatch; if unknown, STOP and return a short mismatch report.
 Your spawn instruction is invalid unless the parent specifies: current phase and approved base SHA; exact scope contract and source locators; exhaustive read/write/forbidden path sets; risk tier and chosen model/effort; expected artifacts/tests including negative postconditions; worker-independent acceptance; boundary and STOP conditions. If any mandatory field is absent, return NEEDS_CONTRACT and do not guess.
