@@ -1,0 +1,840 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "PROPOSED_DETERMINISTIC_SYNTHETIC_DATASET_VOLUME_POLICY_NOT_EXECUTED",
+  "derived_from": "data/reference/ateneo-recweek-2026-expanded-directory.json",
+  "source_fact_conflict": "Directory includes 72 COA-M page entries including Sanggunian and service bodies, NOT 72 proven COA accredited member organizations. The 2026 LIONS list includes 24 independently evidenced 2026 org names and 8 older-only unverified; older-only excluded.",
+  "data_owner": "OrgResource demonstrator only; no source org participated or supplied inventory",
+  "as_of_date": "2026-11-19",
+  "history_start": "2025-12-01",
+  "history_end": "2026-11-18",
+  "timezone": "Asia/Manila",
+  "client_display_notice": "DEMO: Public organization references are real; departments, projects, inventory, requests, stock movements, user personas, timestamps, and usage metrics are simulated. No organization usage, affiliation or approval is implied.",
+  "classification": "ILLUSTRATIVE_SHOWCASE_VOLUME_NOT_REAL_MEMBERSHIP_RANKING",
+  "selection_policy": "MISA and Sanggunian highest volume per explicit user decision; featured showcase selection based on workflow/asset diversity, not measured org membership size; all other current-directory references get coherent baseline data. This scale is a design target; actual volume must pass MySQL/import/performance/backup constraints.",
+  "tier_profiles": {
+    "FLAGSHIP_SANGGUNIAN": {
+      "departments": [
+        10,
+        18
+      ],
+      "projects": [
+        45,
+        90
+      ],
+      "resource_types": [
+        75,
+        150
+      ],
+      "allocation_requests": [
+        2500,
+        4500
+      ],
+      "personas": [
+        15,
+        30
+      ]
+    },
+    "FLAGSHIP_MISA": {
+      "departments": [
+        8,
+        15
+      ],
+      "projects": [
+        40,
+        75
+      ],
+      "resource_types": [
+        65,
+        130
+      ],
+      "allocation_requests": [
+        2000,
+        4000
+      ],
+      "personas": [
+        15,
+        25
+      ]
+    },
+    "FEATURED_SHOWCASE": {
+      "departments": [
+        5,
+        10
+      ],
+      "projects": [
+        18,
+        40
+      ],
+      "resource_types": [
+        30,
+        65
+      ],
+      "allocation_requests": [
+        600,
+        1400
+      ],
+      "personas": [
+        8,
+        16
+      ]
+    },
+    "STANDARD_COA_DIRECTORY": {
+      "departments": [
+        2,
+        6
+      ],
+      "projects": [
+        5,
+        15
+      ],
+      "resource_types": [
+        10,
+        30
+      ],
+      "allocation_requests": [
+        120,
+        400
+      ],
+      "personas": [
+        4,
+        9
+      ]
+    },
+    "STANDARD_LIONS_DIRECTORY": {
+      "departments": [
+        2,
+        4
+      ],
+      "projects": [
+        4,
+        12
+      ],
+      "resource_types": [
+        8,
+        24
+      ],
+      "allocation_requests": [
+        60,
+        240
+      ],
+      "personas": [
+        4,
+        7
+      ]
+    }
+  },
+  "tier_counts": {
+    "FLAGSHIP_SANGGUNIAN": 1,
+    "FLAGSHIP_MISA": 1,
+    "FEATURED_SHOWCASE": 14,
+    "STANDARD_COA_DIRECTORY": 56,
+    "STANDARD_LIONS_DIRECTORY": 24
+  },
+  "forecast_record_ranges_not_evidence": {
+    "departments": [
+      248,
+      605
+    ],
+    "projects": [
+      713,
+      1853
+    ],
+    "resource_types": [
+      1312,
+      3446
+    ],
+    "allocation_requests": [
+      21060,
+      56260
+    ],
+    "personas": [
+      462,
+      951
+    ]
+  },
+  "flagship_assignments": [
+    {
+      "reference_key": "coa-misa",
+      "display_name": "Ateneo Management Information Systems Association",
+      "priority": "FLAGSHIP_MISA",
+      "range": {
+        "departments": [
+          8,
+          15
+        ],
+        "projects": [
+          40,
+          75
+        ],
+        "resource_types": [
+          65,
+          130
+        ],
+        "allocation_requests": [
+          2000,
+          4000
+        ],
+        "personas": [
+          15,
+          25
+        ]
+      }
+    },
+    {
+      "reference_key": "sanggunian-student-government",
+      "display_name": "Sanggunian ng mga Mag-aaral ng mga Paaralang Loyola ng Ateneo de Manila",
+      "priority": "FLAGSHIP_SANGGUNIAN",
+      "range": {
+        "departments": [
+          10,
+          18
+        ],
+        "projects": [
+          45,
+          90
+        ],
+        "resource_types": [
+          75,
+          150
+        ],
+        "allocation_requests": [
+          2500,
+          4500
+        ],
+        "personas": [
+          15,
+          30
+        ]
+      }
+    }
+  ],
+  "featured_reference_keys": [
+    "coa-aiesec-in-ateneo-de-manila-university",
+    "coa-blue-repertory",
+    "coa-celadon",
+    "coa-ateneo-code",
+    "coa-ateneo-de-manila-college-glee-club",
+    "coa-ateneo-management-association",
+    "coa-ateneo-management-engineering-association",
+    "coa-musicians-pool",
+    "coa-ateneo-student-exchange-council",
+    "coa-cads",
+    "coa-compsat",
+    "coa-m-council",
+    "coa-kythe-ateneo",
+    "coa-the-guidon"
+  ],
+  "all_eligible_references": [
+    {
+      "reference_key": "coa-aiesec-in-ateneo-de-manila-university",
+      "tier": "FEATURED_SHOWCASE",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-alay-ni-ignacio",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-aegis",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ARM_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-aspiring-restaurant-entrepreneurs-association",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-association-for-communications-technology-management",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-association-of-european-studies-students",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-biological-organization-explore-experience-excel",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-blue-consulting-group",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-blue-repertory",
+      "tier": "FEATURED_SHOWCASE",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-celadon",
+      "tier": "FEATURED_SHOWCASE",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-chemistry-society",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-christian-life-community",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-college-ministry-group",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-collegiate-society-of-advertising",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-commission-on-audit",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ARM_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-commission-on-elections",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ARM_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-code",
+      "tier": "FEATURED_SHOWCASE",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-de-manila-college-glee-club",
+      "tier": "FEATURED_SHOWCASE",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-debate-society",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-economics-association",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-education-geared-towards-empowerment",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-electronics-and-computer-engineering-society",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-enterteynment-para-sa-tao-bayan-lansangan-at-diyos",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-environmental-science-society",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-gabay",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-hinomoto",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-league-of-physicists",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-lex",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-lingua-ars-cultura",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-management-association",
+      "tier": "FEATURED_SHOWCASE",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-management-economics-organization",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-management-engineering-association",
+      "tier": "FEATURED_SHOWCASE",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-misa",
+      "tier": "FLAGSHIP_MISA",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-martial-law-museum-junior-fellows",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "SPECIAL_PROGRAM_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-mathematics-society",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-musicians-pool",
+      "tier": "FEATURED_SHOWCASE",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-office-of-the-ombudsman",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ARM_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-peers",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-project-for-asian-and-international-relations",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-psyche",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-special-education-society",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-student-catholic-action",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-student-exchange-council",
+      "tier": "FEATURED_SHOWCASE",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-ateneo-student-judicial-court",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ARM_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-barefoot-philippines-ateneo",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-baybayin-ateneo",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-cads",
+      "tier": "FEATURED_SHOWCASE",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-compsat",
+      "tier": "FEATURED_SHOWCASE",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-m-council",
+      "tier": "FEATURED_SHOWCASE",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "COA_M_UMBRELLA"
+    },
+    {
+      "reference_key": "coa-department-of-student-welfare-and-services",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_SERVICE_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-development-society-of-the-ateneo",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-habitat-for-humanity-blue-chapter",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-health-sciences-society-of-the-ateneo",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-heights-ateneo",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_PUBLICATION"
+    },
+    {
+      "reference_key": "coa-kythe-ateneo",
+      "tier": "FEATURED_SHOWCASE",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-laan-ateneo",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-lights-for-hope",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-loyola-film-circle",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-loyola-mountaineers",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-management-of-applied-chemistry-association",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-matanglawin-ateneo",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_PUBLICATION"
+    },
+    {
+      "reference_key": "coa-musmos-ateneo",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-office-of-placement-and-career-services",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_SERVICE_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-pre-medical-society-of-the-ateneo",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-rizal-library-ambassadors",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_SERVICE_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "sanggunian-student-government",
+      "tier": "FLAGSHIP_SANGGUNIAN",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_GOVERNMENT"
+    },
+    {
+      "reference_key": "coa-scholars-sectoral-board",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_SECTOR_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-tanghalang-ateneo",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-the-ateneo-assembly",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-the-guidon",
+      "tier": "FEATURED_SHOWCASE",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_PUBLICATION"
+    },
+    {
+      "reference_key": "coa-tugon-ateneo",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "coa-youth-for-christ-ateneo",
+      "tier": "STANDARD_COA_DIRECTORY",
+      "directory_section": "COA_M_RECWEEK_2026",
+      "institution_kind": "STUDENT_ORGANIZATION_DIRECTORY_LISTED"
+    },
+    {
+      "reference_key": "lions-blue-hanguk-society",
+      "tier": "STANDARD_LIONS_DIRECTORY",
+      "directory_section": "LIONS_RECWEEK_2026",
+      "institution_kind": "INDEPENDENT_STUDENT_ORGANIZATION"
+    },
+    {
+      "reference_key": "lions-blue-indie-komiks",
+      "tier": "STANDARD_LIONS_DIRECTORY",
+      "directory_section": "LIONS_RECWEEK_2026",
+      "institution_kind": "INDEPENDENT_STUDENT_ORGANIZATION"
+    },
+    {
+      "reference_key": "lions-spaces-for-womens-arts-and-narratives",
+      "tier": "STANDARD_LIONS_DIRECTORY",
+      "directory_section": "LIONS_RECWEEK_2026",
+      "institution_kind": "INDEPENDENT_STUDENT_ORGANIZATION"
+    },
+    {
+      "reference_key": "lions-loyola-gaming",
+      "tier": "STANDARD_LIONS_DIRECTORY",
+      "directory_section": "LIONS_RECWEEK_2026",
+      "institution_kind": "INDEPENDENT_STUDENT_ORGANIZATION"
+    },
+    {
+      "reference_key": "lions-thinc",
+      "tier": "STANDARD_LIONS_DIRECTORY",
+      "directory_section": "LIONS_RECWEEK_2026",
+      "institution_kind": "INDEPENDENT_STUDENT_ORGANIZATION"
+    },
+    {
+      "reference_key": "lions-touyou-no-shinju",
+      "tier": "STANDARD_LIONS_DIRECTORY",
+      "directory_section": "LIONS_RECWEEK_2026",
+      "institution_kind": "INDEPENDENT_STUDENT_ORGANIZATION"
+    },
+    {
+      "reference_key": "lions-blue-bird-improv",
+      "tier": "STANDARD_LIONS_DIRECTORY",
+      "directory_section": "LIONS_RECWEEK_2026",
+      "institution_kind": "INDEPENDENT_STUDENT_ORGANIZATION"
+    },
+    {
+      "reference_key": "lions-blue-symphony-orchestra",
+      "tier": "STANDARD_LIONS_DIRECTORY",
+      "directory_section": "LIONS_RECWEEK_2026",
+      "institution_kind": "INDEPENDENT_STUDENT_ORGANIZATION"
+    },
+    {
+      "reference_key": "lions-fash",
+      "tier": "STANDARD_LIONS_DIRECTORY",
+      "directory_section": "LIONS_RECWEEK_2026",
+      "institution_kind": "INDEPENDENT_STUDENT_ORGANIZATION"
+    },
+    {
+      "reference_key": "lions-casa",
+      "tier": "STANDARD_LIONS_DIRECTORY",
+      "directory_section": "LIONS_RECWEEK_2026",
+      "institution_kind": "INDEPENDENT_STUDENT_ORGANIZATION"
+    },
+    {
+      "reference_key": "lions-christs-youth-in-action",
+      "tier": "STANDARD_LIONS_DIRECTORY",
+      "directory_section": "LIONS_RECWEEK_2026",
+      "institution_kind": "INDEPENDENT_STUDENT_ORGANIZATION"
+    },
+    {
+      "reference_key": "lions-plume",
+      "tier": "STANDARD_LIONS_DIRECTORY",
+      "directory_section": "LIONS_RECWEEK_2026",
+      "institution_kind": "INDEPENDENT_STUDENT_ORGANIZATION"
+    },
+    {
+      "reference_key": "lions-agila",
+      "tier": "STANDARD_LIONS_DIRECTORY",
+      "directory_section": "LIONS_RECWEEK_2026",
+      "institution_kind": "INDEPENDENT_STUDENT_ORGANIZATION"
+    },
+    {
+      "reference_key": "lions-fit",
+      "tier": "STANDARD_LIONS_DIRECTORY",
+      "directory_section": "LIONS_RECWEEK_2026",
+      "institution_kind": "INDEPENDENT_STUDENT_ORGANIZATION"
+    },
+    {
+      "reference_key": "lions-ksa",
+      "tier": "STANDARD_LIONS_DIRECTORY",
+      "directory_section": "LIONS_RECWEEK_2026",
+      "institution_kind": "INDEPENDENT_STUDENT_ORGANIZATION"
+    },
+    {
+      "reference_key": "lions-effective-altruism-blue",
+      "tier": "STANDARD_LIONS_DIRECTORY",
+      "directory_section": "LIONS_RECWEEK_2026",
+      "institution_kind": "INDEPENDENT_STUDENT_ORGANIZATION"
+    },
+    {
+      "reference_key": "lions-jfel",
+      "tier": "STANDARD_LIONS_DIRECTORY",
+      "directory_section": "LIONS_RECWEEK_2026",
+      "institution_kind": "INDEPENDENT_STUDENT_ORGANIZATION"
+    },
+    {
+      "reference_key": "lions-writerskill",
+      "tier": "STANDARD_LIONS_DIRECTORY",
+      "directory_section": "LIONS_RECWEEK_2026",
+      "institution_kind": "INDEPENDENT_STUDENT_ORGANIZATION"
+    },
+    {
+      "reference_key": "lions-ateneo-car-enthusiasts",
+      "tier": "STANDARD_LIONS_DIRECTORY",
+      "directory_section": "LIONS_RECWEEK_2026",
+      "institution_kind": "INDEPENDENT_STUDENT_ORGANIZATION"
+    },
+    {
+      "reference_key": "lions-gdgoc-loyola",
+      "tier": "STANDARD_LIONS_DIRECTORY",
+      "directory_section": "LIONS_RECWEEK_2026",
+      "institution_kind": "INDEPENDENT_STUDENT_ORGANIZATION"
+    },
+    {
+      "reference_key": "lions-league-of-ateneo-historians",
+      "tier": "STANDARD_LIONS_DIRECTORY",
+      "directory_section": "LIONS_RECWEEK_2026",
+      "institution_kind": "INDEPENDENT_STUDENT_ORGANIZATION"
+    },
+    {
+      "reference_key": "lions-mokoa-animation",
+      "tier": "STANDARD_LIONS_DIRECTORY",
+      "directory_section": "LIONS_RECWEEK_2026",
+      "institution_kind": "INDEPENDENT_STUDENT_ORGANIZATION"
+    },
+    {
+      "reference_key": "lions-zoom-photography",
+      "tier": "STANDARD_LIONS_DIRECTORY",
+      "directory_section": "LIONS_RECWEEK_2026",
+      "institution_kind": "INDEPENDENT_STUDENT_ORGANIZATION"
+    },
+    {
+      "reference_key": "lions-laro-loyola",
+      "tier": "STANDARD_LIONS_DIRECTORY",
+      "directory_section": "LIONS_RECWEEK_2026",
+      "institution_kind": "INDEPENDENT_STUDENT_ORGANIZATION"
+    }
+  ],
+  "unconfirmed_2026_excluded_reference_keys": [
+    "historic-lions-brave-in-tv",
+    "historic-lions-camp-fight-like-a-girl",
+    "historic-lions-cryptocurrency-club",
+    "historic-lions-cuisina",
+    "historic-lions-interdisciplinary-studies-association",
+    "historic-lions-project-kabuhayan",
+    "historic-lions-regnum-christi-love-inspired-by-faith-and-encounter-rc-life",
+    "historic-lions-user-experience-society"
+  ],
+  "min_gate": "Every selected real name sourced, every simulated record labeled and consistent; no full fixture deemed feasible unless import and independent recovery across complete source SHA execute successfully. Real-user data never imported.",
+  "generator_mechanics": {
+    "seed": 20261119,
+    "logical_checksum": "SHA256 canonical graph independent of auto-increment IDs/nonce/time of actual import",
+    "idempotency": "stable logical operation IDs and collision check; no replay double movement",
+    "timeline": "chronologically ordered valid state-machine events over 12 month buckets",
+    "fixture_profiles": [
+      "TINY_CI_DISPOSABLE",
+      "FULL_96_ORG_SHOWCASE",
+      "SEPARATE_STRESS_TEST_NOT_SHIPPED"
+    ],
+    "operational_separation": "read-only public multi-org showcase; any writeable trial isolated ephemeral tenant, no shared user-controlled mutations"
+  },
+  "project_name_rule": "Simulated original project names must be visibly marked DEMO and never reuse actual named public programs as historical allocations.",
+  "scale_validation_required": [
+    "100% tenant isolation on 96 active demo organizations",
+    "complete E2E and unchanged Course Final A parity",
+    "no real PII, no real SMS, no public default owner account",
+    "stock conservation and append-only movements",
+    "deterministic schema and time validity",
+    "no unbounded query/UI load; keyset pages",
+    "cold+warm import and MySQL size/performance measured",
+    "complete off-host restore on hosted release",
+    "source rights and facts vs simulation independently audited"
+  ]
+}

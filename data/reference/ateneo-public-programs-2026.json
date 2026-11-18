@@ -1,0 +1,88 @@
+{
+  "schema_version": "0.1.0",
+  "dataset_id": "orgresource-ateneo-public-project-context-2026-v1",
+  "kind": "PUBLICLY_DESCRIBED_ORGANIZATION_PROGRAM_NAMES_CONTEXT_ONLY",
+  "reference_snapshot": "Ateneo RecWeek 2026",
+  "observed_at": "2026-11-19",
+  "safety_note": "Program titles were visibly listed on the cited public organization pages. They are source-linked public context only. Their exact occurrence dates, inventories, allocations, resource usage, personnel, budgets, adoption and whether a program occurred during the simulated Dec 2025-Nov 2026 window are NOT VERIFIED. Do not create transaction/event rows bearing these actual project names and imply those transactions took place. Simulated projects must use distinguishable fictional labels.",
+  "org_programs": [
+    {
+      "organization_reference_key": "coa-compsat",
+      "source_url": "https://ateneorecweek.org/coa-m-orgs/compsat",
+      "source_observed_date": "2026-11-19",
+      "verification_level": "PUBLIC_PAGE_FEATURED_PROJECT_LABEL_ONLY",
+      "verified_event_date": null,
+      "verified_inventory": null,
+      "verified_operational_activity": null,
+      "program_titles": [
+        "Blue Hacks",
+        "Learn-2-Dev"
+      ]
+    },
+    {
+      "organization_reference_key": "coa-ateneo-code",
+      "source_url": "https://ateneorecweek.org/coa-m-orgs/ateneo-code",
+      "source_observed_date": "2026-11-19",
+      "verification_level": "PUBLIC_PAGE_FEATURED_PROJECT_LABEL_ONLY",
+      "verified_event_date": null,
+      "verified_inventory": null,
+      "verified_operational_activity": null,
+      "program_titles": [
+        "Engagement Services",
+        "XChange"
+      ]
+    },
+    {
+      "organization_reference_key": "coa-cads",
+      "source_url": "https://ateneorecweek.org/coa-m-orgs/cads",
+      "source_observed_date": "2026-11-19",
+      "verification_level": "PUBLIC_PAGE_FEATURED_PROJECT_LABEL_ONLY",
+      "verified_event_date": null,
+      "verified_inventory": null,
+      "verified_operational_activity": null,
+      "program_titles": [
+        "Rhythm-in-Blue"
+      ]
+    },
+    {
+      "organization_reference_key": "lions-plume",
+      "source_url": "https://ateneorecweek.org/lions-orgs/plume",
+      "source_observed_date": "2026-11-19",
+      "verification_level": "PUBLIC_PAGE_FEATURED_PROJECT_LABEL_ONLY",
+      "verified_event_date": null,
+      "verified_inventory": null,
+      "verified_operational_activity": null,
+      "program_titles": [
+        "Reading Mania",
+        "Reader's Pick"
+      ]
+    },
+    {
+      "organization_reference_key": "lions-laro-loyola",
+      "source_url": "https://ateneorecweek.org/lions-orgs/laro-loyola",
+      "source_observed_date": "2026-11-19",
+      "verification_level": "PUBLIC_PAGE_FEATURED_PROJECT_LABEL_ONLY",
+      "verified_event_date": null,
+      "verified_inventory": null,
+      "verified_operational_activity": null,
+      "program_titles": [
+        "SkillTree",
+        "Game Clubs"
+      ]
+    },
+    {
+      "organization_reference_key": "lions-blue-bird-improv",
+      "source_url": "https://ateneorecweek.org/lions-orgs/blue-bird-improv",
+      "source_observed_date": "2026-11-19",
+      "verification_level": "PUBLIC_PAGE_FEATURED_PROJECT_LABEL_ONLY",
+      "verified_event_date": null,
+      "verified_inventory": null,
+      "verified_operational_activity": null,
+      "program_titles": [
+        "BASIC Improv Sessions",
+        "Shows & Performances",
+        "Mixer Sessions"
+      ]
+    }
+  ]
+}

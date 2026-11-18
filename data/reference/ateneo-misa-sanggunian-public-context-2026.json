@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0.0",
+  "dataset_id": "orgresource-ateneo-flagship-public-context-2026-v1",
+  "kind": "PUBLIC_ORGANIZATION_CONTEXT_ONLY_NO_OPERATIONAL_DATA",
+  "observed_at": "2026-11-19",
+  "truth_boundary": "All entries refer to public source context. They do not establish actual inventories, asset custody, actual usage of OrgResource, membership counts, transaction volumes, actual past event dates unless public source separately gives an exact event date, users/roles or authorization.",
+  "records": [
+    {
+      "organization_reference_key": "coa-misa",
+      "public_full_name": "Ateneo Management Information Systems Association",
+      "directory_source": "https://ateneorecweek.org/coa-m-orgs",
+      "organization_website": "https://misa.org.ph/",
+      "about_url": "https://misa.org.ph/about/",
+      "publicly_described_functions": [
+        "Comms",
+        "OSG",
+        "Marketing",
+        "OET",
+        "Events",
+        "eServs",
+        "HR"
+      ],
+      "public_event_or_program_references": [
+        {
+          "label": "LEAD Month 2026",
+          "source_url": "https://misa.org.ph/",
+          "verification_level": "PUBLIC_WEBSITE_2026_ANNOUNCEMENT",
+          "verified_occurrence_transaction": null
+        },
+        {
+          "label": "IM Summit 2026",
+          "source_url": "https://imsummit.misa.org.ph/about",
+          "verification_level": "PUBLIC_EVENT_SITE_NAME",
+          "verified_occurrence_transaction": null
+        }
+      ],
+      "display_in_demo": "Source-linked ABOUT panel only, synthetic programs use distinct Demo- prefixed original names",
+      "student_officers_or_contact_imported": false,
+      "largest_membership_claim_verified": false,
+      "source_note": "These are the exact abbreviations/labels on the current public MISA site. Do not invent a full expansion of OET or OSG without verified primary source."
+    },
+    {
+      "organization_reference_key": "sanggunian-student-government",
+      "public_full_name": "Sanggunian ng mga Mag-aaral ng mga Paaralang Loyola ng Ateneo de Manila",
+      "directory_source": "https://ateneorecweek.org/coa-m-orgs/sanggunian",
+      "institution_kind": "STUDENT_GOVERNMENT",
+      "featured_public_themes": [
+        "School Community Activities",
+        "Governance and Policy Reforms",
+        "Community and Student Engagement"
+      ],
+      "public_program_name_references": [
+        {
+          "label": "One Big Pride",
+          "source_url": "https://ateneorecweek.org/coa-m-orgs/sanggunian",
+          "verified_item_or_stock_usage": null
+        },
+        {
+          "label": "TALAB",
+          "source_url": "https://ateneorecweek.org/coa-m-orgs/sanggunian",
+          "verified_item_or_stock_usage": null
+        }
+      ],
+      "display_in_demo": "Public government context ONLY; simulated generic logistics/supply examples must be visibly fictional and never suggest actual government financial/election/case history",
+      "student_officers_or_contact_imported": false,
+      "coa_accredited_member_claim_verified": false
+    }
+  ],
+  "simulation_constraints": [
+    "No real student names/ID/email/phones/real members",
+    "No real Sanggunian case/committee decision, government document or actual finance record",
+    "No actual project asset usage inference from these public program names",
+    "No use of organization logos unless separately authorized",
+    "Distinct authenticated demo tenant per reference, no public shared mutability",
+    "Simulated project names visually distinct from sourced public program names",
+    "Persistent DEMO/no-adoption/affiliation notice on every route/API/export"
+  ]
+}
