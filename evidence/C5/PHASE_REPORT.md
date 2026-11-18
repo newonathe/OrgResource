@@ -1,8 +1,13 @@
 # Extended C5 phase report
 
+November 19, 2026, Asia/Manila
+
+**C5 VERIFIED — LOCAL RELEASE CANDIDATE AND INDEPENDENT RESTORE GATES PASS; READY FOR C6 REVIEW**
+
 ## Source and scope
 
 - C5 starts at C4 `3c0d677e37fb4df883d8eeb075ba14a773c90c8f`, [draft PR #17](https://github.com/newonathe/OrgResource/pull/17). Parent CI completed successfully in [run 44327604951](https://github.com/newonathe/OrgResource/actions/runs/44327604951). This is prior evidence.
+- The tested and packaged source is `14576b57fff44c6f0112fd37d8c237ca0122efb4`. GitHub reported that exact head on `feat/extended-c-c5-release-recovery-2026-11-18`, based on C4, and all three jobs passed. This report was updated after the package was sealed. The later report commit adds evidence only. [Draft PR #18](https://github.com/newonathe/OrgResource/pull/18) [CI run for packaged source](https://github.com/newonathe/OrgResource/actions/runs/44342137298)
 - Protected Course A `7f8c0746da18fd54b47f430ac1435ac36e605d67` is an ancestor. The protected `backend/` Git tree is `f2b522f88214a9cfba908cac6b0bcda70171875c` and `frontend/` is `052e5dbc5a0e84823c7dda06ccee83f27b1818c9`. Both match this branch. Flyway V1–V5 are unchanged.
 - Authority is the submitted assignment and syllabus, the original proposal, lesson transcripts V01–V10 and V12, and the approved specifications CP34–36 and CP41. CP44–45 keep the two editions distinct. CP49 is an audit list for future product decisions.
 
@@ -40,7 +45,7 @@ The collection ran 48 requests and 90 assertions with zero failures for the 28 o
 - Account throttling and password or recovery-code rotation are covered by the integration suite. Recovery codes and invitation bearers are hashed. Project LEAD visibility is limited by the current role policy. Assignment-specific reads await an approved ownership model.
 - The runtime account has SELECT/INSERT only on immutable movement and audit tables. Flyway uses a distinct migration identity. Background jobs are bounded; interrupted `DISPATCHING` attempts become UNKNOWN and are not replayed automatically. SIMULATED and PROVIDER_ACCEPTED remain distinct from delivery.
 - Images are bounded, validated PNG/JPEG, database-managed and served without cache. Stored contact ciphertext is tenant/allocation-bound. The archive key and the contact key have distinct purposes. Bootstrapping displays recovery codes once on the private operator console. Do not retain that console output as general run evidence.
-- Fresh `npm audit --json` returned 12 high development records rooted in [Picomatch GHSA-fc5q-39xc-vjpf](https://github.com/advisories/GHSA-fc5q-39xc-vjpf). `npm audit --omit=dev --json` returned zero findings. Affected records are picomatch, fdir, tinyglobby, vite, vitest, @vitejs/plugin-react, typescript-eslint, and its parser, plugin, utils, type-utils and typescript-estree packages. No forced upgrades. Build tooling remains local; compatible remediation or owner review is required before public release.
+- Fresh `npm audit --json` returned 12 high development records rooted in one Picomatch advisory. `npm audit --omit=dev --json` returned zero findings. Affected records are picomatch, fdir, tinyglobby, vite, vitest, @vitejs/plugin-react, typescript-eslint, and its parser, plugin, utils, type-utils and typescript-estree packages. The registry advertised 4.0.7 as latest, still in the vulnerable range. The non-forced audit fix dry run retained the 12 records. npm suggested a semver-major Vitest downgrade, which was not applied. Separate owner review and compatible remediation remain public release gates. [Picomatch GHSA-fc5q-39xc-vjpf](https://github.com/advisories/GHSA-fc5q-39xc-vjpf)
 
 ## Remaining P14 decisions
 
@@ -48,6 +53,41 @@ The collection ran 48 requests and 90 assertions with zero failures for the 28 o
 - Activity/audit browsing, exports, and traversal of bounded history remain deferred product affordances. Physical image retirement is implemented; a separate archival policy has yet to be approved.
 - Hosting and a genuine independent off-host recovery are later owner decisions. Live Twilio and the current academic rubric require separate authorization or student confirmation. No public deployment, live SMS, instructor contact, Canvas submission, or C6 work is represented here.
 
-## Run status
+## Executed verification
 
-The initial C5-A run passed frontend typecheck, lint, build and 24 units, 43 Java 21/MySQL tests, Newman 48/90, 10 packaged Chromium journeys and one standalone Vite journey. The later recovery-enabled run passed 11 packaged Chromium journeys, plus the standalone Vite test. It stopped at an unsupported `mysqldump` option before altering a restore database. The option was removed, and a standalone encrypted backup against that isolated source succeeded. The final clean-extraction run, CI, restore result and release hashes will be recorded against their actual source and evidence revisions.
+The final local release command was `pwsh -NoProfile -File .\scripts\package-extended-c.ps1 -Destination <new external release directory>`. It ran `verify-extended-c1.ps1 -VerifyRecovery` from a clean extraction of the Git archive. The executable JAR shipped in the release is copied directly from that tested extracted build.
+
+| Command or test gate | Observed result |
+|---|---|
+| `npm ci`, `npm run typecheck`, `npm test`, `npm run lint`, `npm run build` | PASS. 24 frontend unit tests across three files. |
+| `backend\mvnw.cmd -B -f extended/backend/pom.xml clean verify` | PASS. Java 21.0.3 with MySQL 8.0.46, 44 tests, zero failures/errors/skips. The runner's legacy summary banner still says 43; the Surefire aggregate in the saved log is 44. Includes tenant boundaries, grants, transaction rollback and concurrent inventory/replay. |
+| `run-extended-c3-newman.ps1` against the packaged app | PASS. 48 requests and 90 assertions over all 28 academic operations. |
+| `npm run e2e` with packaged origin | PASS. 11 Chromium journeys, including bounded role access, safe invitation handling, image changes, reduced motion and responsive screenshot capture. The desktop-light Projects and mobile-dark Resources screenshots were spot-checked. |
+| `npm run e2e -- --grep 'Allocation status filters'` | PASS at standalone Vite 5173 against the real Java/MySQL API. |
+| Fresh migration, safe upgrade and legacy refusals | PASS. Clean V1–V5 and the supported zero-stock V2–V5 upgrade preserved numeric identity and created no fictitious movement. The existing V3 nonzero historical stock and V4 legacy plaintext-contact refusals are intentional. Their preflight checks left legacy rows intact. |
+| Protected Course A and Extended on GitHub CI | PASS at the packaged source. Java 8/MySQL executed 61 tests with zero failures/errors/skips and the bundled JAR smoke test. The frozen frontend job passed. Extended CI repeated 44 Java tests, Newman and 11 browser journeys. [GitHub run](https://github.com/newonathe/OrgResource/actions/runs/44342137298) |
+
+Earlier checks found a TypeScript fixture error, an unsupported `mysqldump` option and an incorrect 201 expectation for durable replay. The corrected fixture, supported dump argument set and HTTP 200 permanent-receipt assertion passed the final extraction gate. Stock total, available stock, receipt identity and no-duplication checks remained required.
+
+## Backup and restored runtime
+
+The verified source and target each ran on their own fresh MySQL 8.0.46 process, port and data directory on this workstation. Restore authenticated the encrypted archive before sending SQL. A flipped ciphertext byte, a wrong backup key and an absent backup key were each refused with the target still empty. The verified fixture archive was 4,372,434 bytes, SHA-256 `93562ce55c090b8560919bed3439a344b5b935e5b10f5c227caad662ebb60775`. Its ephemeral test key is outside the release.
+
+- The restore checked all 18 tables, the foreign-key definitions and data checksums for non-session tables. Flyway validated existing V1–V5 before the JAR served traffic. Runtime grants were recreated with append-only movement and audit rights.
+- The verified lost-session policy omits session data from the snapshot. The pre-backup cookie received 401. Fresh sign-in succeeded. Active MEMBER and suspended membership checks remained enforced, including foreign-workspace denial.
+- The restored stock fixture retained total and availability of 12. Replay of a pruned durable operation returned its original movement identity and left the one-unit fixture and movement count unchanged. The PNG SHA-256 matched after restore.
+- Restored reminder outcomes and contact envelopes matched the source. A stored simulated reminder contact authenticated with the original contact key and was refused with an unrelated key. The MySQL integration suite separately covers the unavailable-key outcome. Recovery ran with external reminders disabled.
+- A fresh authenticated Chromium session opened the restored 2040 Project and verified the packaged assets and five API lists. The drill stopped both MySQL processes and Java on exit. **Off-host recovery — NOT RUN.**
+
+## Release artifacts
+
+The local package is `deliverables/OrgResource-Extended-C5-2026-11-19-14576b5` in the course workspace. The exact-commit source ZIP carried 195 entries, including directories. Python `zipfile.testzip()` returned no CRC failures for source ZIP or JAR. JAR inspection confirmed React and all five migrations. A second `Get-FileHash -Algorithm SHA256` check matched all manifest entries.
+
+| File | Bytes | SHA-256 |
+|---|---:|---|
+| `OrgResource-Extended-C5-Source.zip` | 331,828 | `d382e1b9783230d82391c81aa3142734cc1c81a199f878824aef2c95112db9df` |
+| `OrgResource-Extended-C5-Java21.jar` | 72,298,848 | `3471c98821f22ed28577a8fd29a96015b6982bf5a1a63b5b8ce2cdbf7914faaa` |
+| `VERIFICATION.log` | 35,220 | `214bd638b6bca251ca0851db2a8bacf4cb5503e2cc82d3f42e37c4d434d2767e` |
+| `RELEASE-MANIFEST.json` | See manifest file | `140fadeb0de56d65e321776b658aa3b2154ec2e8e09e75135666bce0f12eeb09` |
+
+The package uses Java 21.0.3, MySQL 8.0.46, Node 24.14.1, npm 11.11.0 and PowerShell 7.6.9 on Windows. Use this exact folder for local release review. Review the release guide, this evidence and draft PR before authorizing C6. The student should separately verify current Canvas instructions, course wording, authorship disclosure and delivery obligations using the frozen Course A materials.
