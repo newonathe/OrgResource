@@ -68,3 +68,6 @@ Every subsequent authorized pass returns: exact repo/branch/base/head and immuta
 ## Superseding 2026-11-19 source-coverage / volume decision
 
 The earlier hosted 12-org sample is research v1. The newly approved **planning target** is as many verified public organizations as feasible, currently **96 2026 directory entities** across **72 COA-M 2026 page entries of mixed institutional types** and **24 LIONS 2026 point-person/profile names**, with eight older-only LIONS entries pending verification and excluded from default seed. Sanggunian is student government, MISA a COA directory-listed organization, both heavy synthetic flagships; fourteen featured showcases are selected by demo workflow breadth **not** actual member rankings. Versioned source and volume config are linked above. Full 96-tenant import/test/deployment remains NOT_RUN and is separately authorized in C8-D/C10-D.
+
+
+**Source companion (v2):** [data/reference/ateneo-misa-sanggunian-public-context-2026.json](../../data/reference/ateneo-misa-sanggunian-public-context-2026.json) holds exact publicly described flagship context; it contains no factual resource usage or financial records and is mandatory for C6-D through C11-D.
