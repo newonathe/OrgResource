@@ -27,6 +27,22 @@
 
 **Source snapshot:** data/reference/ateneo-public-organizations-2026.json — twelve **name+2026 listing category only** entries, each carrying URL, date and evidence classification. It contains no authenticated org source, inventory measurement, real user, real contact, financial data, or simulation history. Re-fetch and revalidate at actual seed-release date; if public page is gone, retain dated provenance with archival proof or mark source stale/blocked.
 
+
+## 1A. Publicly documented programs — source-derived context, NEVER proof of resource use
+
+A separate curated source file, [data/reference/ateneo-public-programs-2026.json](../../data/reference/ateneo-public-programs-2026.json), adds **twelve publicly documented featured program/project titles across six of the twelve organizations**, each with a link to the corresponding 2026 RecWeek organization page and the 2026-11-19 observation date:
+
+- Computer Society of the Ateneo: Blue Hacks; Learn-2-Dev.
+- Ateneo CODE: Engagement Services; XChange.
+- Company of Ateneo Dancers: Rhythm-in-Blue.
+- PLUME: Reading Mania; Reader's Pick.
+- Laro Loyola: SkillTree; Game Clubs.
+- Blue Bird Improv: BASIC Improv Sessions; Shows & Performances; Mixer Sessions.
+
+These are **PUBLICLY DESCRIBED ACTIVITIES** from organizational public profiles, with individual program occurrence dates, personnel, budgets, ownership of equipment, quantities, and use of OrgResource all **UNVERIFIED**. They may be shown in a factual *About this publicly listed organization* context panel, with source link/date. Do **not** attach fictional borrowings to a real program name and imply the activity used those items. Instead, give the generated operational projects distinctive explicitly fictional titles (for example, "Demo Technical Workshop 01") aligned only to generic publicly described organizational themes. Do not invent a 2025/2026 event date for an undated public listing. Copyrighted descriptions, photos and logos are not being imported.
+
+Actual org **identity and public program context** therefore come from verifiable real public data, while all generated eleven-month stock/workflow usage remains clearly simulated.
+
 ## 2. Production UI truthfulness contract
 
 Across anonymous preview, signed-in demo, exports and any seeded analytics:
