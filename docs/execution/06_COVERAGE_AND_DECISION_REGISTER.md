@@ -73,3 +73,10 @@ At the end of every future pass, append residual unreviewed paths and unsupporte
 ## 5. First next action
 
 Run C6 from a fresh, approved base and generate the full coverage/contract/evidence register, then request owner review of C6 scope and DEC-01–DEC-12 before C7. This planning upload itself does not authorize C6 execution.
+
+## 6. Additional real public Ateneo source context (2026-11-19)
+
+- **VERIFIED EXTERNAL FACT / source metadata:** `data/reference/ateneo-public-organizations-2026.json` stores twelve 2026 publicly listed COA-M/LIONS organization names, listing categories, dated URLs; no current individual membership or historical inventory is verified.
+- **VERIFIED EXTERNAL FACT / source metadata:** `data/reference/ateneo-public-programs-2026.json` stores twelve publicly described program names across six of those organizations, URLs and observation date. It does **not** verify particular event dates, equipment, resource allocation, or prior OrgResource use. Fictional demo Projects require distinct labels.
+- **DESIGN RECOMMENDATION / NOT_IMPLEMENTED:** The generator/importer and hosted program in 08–10 have not been coded or run. Each later source review must independently revalidate public names/programs and privacy/brand/operational evidence.
+- **OPEN QUESTION:** RecWeek homepage says 55 COA-M organizations while COA profile says 53; do not choose a false exact total. LIONS is an umbrella for independent orgs, not an additional official category alongside independence.
