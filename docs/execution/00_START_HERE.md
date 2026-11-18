@@ -74,3 +74,7 @@ The earlier hosted 12-org sample is research v1. The newly approved **planning t
 
 
 **Legacy research-reference identity:** [data/reference/ateneo-v1-v2-reference-aliases.json](../../data/reference/ateneo-v1-v2-reference-aliases.json) maps all 12 previous source names to the expanded roster (including two source-URL-matched names). This is documentary alias provenance, not a migration or generated seed.
+
+## Strict per-agent routing and ready-to-dispatch prompts (2026-11-19)
+
+**Required before any Codex phase:** [12_TOKEN_BUDGETED_SUBAGENT_ROUTING.md](12_TOKEN_BUDGETED_SUBAGENT_ROUTING.md) defines exact model/reasoning assignment, zero-agent default, two concurrent max, per-phase four-session cap, bounded resource checkpoint and mandatory detailed task fields; [13_PHASE_SPECIFIC_SUBAGENT_PROMPTS.md](13_PHASE_SPECIFIC_SUBAGENT_PROMPTS.md) contains 17 exact C6–C11 source-grounded worker/critic prompts. The repository now includes .codex/config.toml and nine .codex/agents/*.toml named roles. Read actual support/availability and entire QA gate; do not assume model settings applied to an untrusted project. Previous general "2–3 agents" and routine "strongest high reasoning" suggestions in older drafts are superseded by these stricter rules. No agent sessions or token savings are proven by policy upload.
