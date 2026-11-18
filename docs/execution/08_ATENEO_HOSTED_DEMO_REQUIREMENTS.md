@@ -118,3 +118,6 @@ DEC-18: Define approved preservation/reset/TTL strategy and backing up demo data
 DEC-19: Real organizational inventory/contacts/transactions would require separately obtained permitted source plus consent/authority, documented privacy assessment and distinct genuine-data production tenant; no automatic import from social media, public posts or inferred assets.
 
 **Final governing sentence:** Source real organizations from verifiable public information; synthesize transparent and mathematically valid operational history; never counterfeit organizational adoption, use, membership, inventory, personal data, authorization or university endorsement.
+
+
+**V2 flagship factual context:** read `data/reference/ateneo-misa-sanggunian-public-context-2026.json` completely alongside the expanded directory and tier config. It captures real publicly described MISA function labels and event titles and Sanggunian government themes, but none are verified item/activity histories; use only a source-linked organizational profile section, never real-name fabricated allocation history.
