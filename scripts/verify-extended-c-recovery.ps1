@@ -57,7 +57,7 @@ $backupScript = Join-Path $PSScriptRoot 'extended-c-backup.ps1'
 $archive = Join-Path $dataDirectory 'orgresource-c5-isolated.aesgcm'
 $corrupted = Join-Path $dataDirectory 'orgresource-c5-tampered.aesgcm'
 $envNames = @('EXT_DB_URL', 'EXT_DB_MIGRATION_URL', 'MYSQL_HOME', 'EXT_BACKUP_KEY', 'EXT_E2E_BASE_URL',
-    'EXT_E2E_USERNAME', 'EXT_E2E_PASSWORD', 'ORGRESOURCE_E2E_SCREENSHOT_DIR')
+    'EXT_E2E_USERNAME', 'EXT_E2E_PASSWORD', 'ORGRESOURCE_E2E_SCREENSHOT_DIR', 'EXT_E2E_RESTORED_PROJECT')
 $savedRecoveryEnvironment = @{}
 foreach ($name in $envNames) { $savedRecoveryEnvironment[$name] = [Environment]::GetEnvironmentVariable($name, 'Process') }
 $target = $null
@@ -177,8 +177,10 @@ try {
     $replayed = Invoke-C1Post $restored "$receiptResourcePath/receive" $c4OperationBody $receiptResourceState.ETag $c4OperationKey
     $resourceAfter = Invoke-C1Get $restored $receiptResourcePath
     $receiptMoves = Invoke-C1Get $restored "$receiptResourcePath/movements?limit=10"
-    if ($replayed.StatusCode -ne 201 -or $resourceAfter.Data.totalQuantity -ne 1 -or
-            @($receiptMoves.Data.items).Count -ne 1 -or $receiptMoves.Data.items[0].operationId -ne $c4OperationId) {
+    if ($replayed.StatusCode -ne 200 -or $replayed.Data.kind -ne 'RECEIPT' -or $replayed.Data.operationId -ne $c4OperationId -or
+            $resourceAfter.StatusCode -ne 200 -or $resourceAfter.Data.totalQuantity -ne 1 -or $resourceAfter.Data.availableQuantity -ne 1 -or
+            $receiptMoves.StatusCode -ne 200 -or @($receiptMoves.Data.items).Count -ne 1 -or
+            $receiptMoves.Data.items[0].operationId -ne $c4OperationId) {
         throw 'Replay after recovery changed permanent stock history.'
     }
     $otherActor = New-C1Session $receiptUsername $receiptPassword
@@ -204,6 +206,7 @@ try {
     $env:EXT_E2E_USERNAME = $adminUsername
     $env:EXT_E2E_PASSWORD = $recoveredPassword
     $env:ORGRESOURCE_E2E_SCREENSHOT_DIR = Join-Path $recoveryDir 'screenshots'
+    $env:EXT_E2E_RESTORED_PROJECT = 'C1 cross-timezone 2040 project'
     Push-Location $frontend
     try {
         & npm run e2e -- --grep 'the packaged Java application serves'

@@ -797,6 +797,12 @@ test("the packaged Java application serves React assets, hash routes, and the fi
   await page.reload();
   await expect(page.getByRole("heading", { name: "Projects", level: 1 })).toBeVisible();
 
+  const restoredProject = process.env.EXT_E2E_RESTORED_PROJECT;
+  if (restoredProject) {
+    await page.getByRole("button", { name: `View ${restoredProject}`, exact: true }).click();
+    await expect(page.getByRole("dialog").getByRole("heading", { name: restoredProject, exact: true })).toBeVisible();
+  }
+
   for (const route of ["departments", "projects", "resources", "requirements", "allocations"]) {
     const rows = await getJson<unknown[]>(page, `/api/${route}`);
     expect(Array.isArray(rows), `/api/${route} returns a JSON array`).toBe(true);
