@@ -112,3 +112,8 @@ In addition to **all** earlier C6–C11 and 08–10 QA requirements:
 - Year-specific category ambiguities and roster conflicts require documented source comparison and correction path. Never claim completeness just because the current file has 96 entries.
 
 **Governance:** Requirements are proposed for review and owner-specific implementation phase approval. The current document does **not** authorize C8 code, database migration/import, merge, live credentials/SMS, paid hosting or public release. Every subsequent Codex prompt must copy and enforce the full specialized controls and the main quality gate.
+
+
+## 9. Flagship public-context fact supplement
+
+Read [data/reference/ateneo-misa-sanggunian-public-context-2026.json](../../data/reference/ateneo-misa-sanggunian-public-context-2026.json) as a source-linked 2026 factual context supplement. MISA's visible public team abbreviations **Comms, OSG, Marketing, OET, Events, eServs, HR** and names **LEAD Month 2026** and **IM Summit 2026** are not proof of asset custody or attendance. Sanggunian's descriptions of **school community activities, governance/policy reform, community/student engagement**, and its public references to **One Big Pride** and **TALAB**, do not establish an item-level project history. Original simulated Projects need distinct, clearly DEMO-prefixed labels and cannot claim association with a real public program unless independently documented and specifically permitted. Do not expand source abbreviations without a source. This supplement needs renewed dated verification at C6-D/C10-D.
