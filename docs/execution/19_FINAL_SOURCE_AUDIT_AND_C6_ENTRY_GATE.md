@@ -80,3 +80,17 @@ The quality gate statuses are deliberately limited: source existence/reading doe
 6. **BLOCKED PRODUCT GATES:** Actual C7–C11 code/test/host/recovery/large demo executed on exact release SHA. These cannot be 'finalized' by documentation or GitHub API commits.
 
 **Final bounded verdict:** Superpowers+GOAT **planning and source methodology can be finalized for owner review**, while full C6 source audit and production deployment remain to be done in the correct authorized runtime. No fabricated evidence of implementation, video inspection or optimization is acceptable.
+
+## 7. New CI evidence: workflow jobs fail BEFORE runner execution — BLOCKED
+
+**Exact observed run:** https://github.com/newonathe/OrgResource/actions/runs/44419291437, PR #23 commit `e279361654eeb5a29299ef8148040923d825a676`, created 2026-11-18T23:16:26Z, overall conclusion `failure`.
+
+- Jobs: Java 8+MySQL `135207694418`, Extended Java21+MySQL/Newman/Playwright `135207694655`, React test/build `135207694924` **all show conclusion failure but no steps at all**.
+- Each job reports `runner_name` empty, steps `[]`, start/end within about two seconds. Actions timing endpoint returned `billable.UBUNTU.total_ms=0` across all three jobs.
+- The dedicated job-steps tool independently returned `steps: []`; the job-logs tool returned `NOT_FOUND / BlobNotFound` for all three jobs. No Java, React, Newman or MySQL command can honestly be called failed or passed on this run because none ran.
+- GitHub workflow at the earlier PR #23 head `d21c6c2eab73435d9383e53566727920a27aaec2` had a **completed successful** workflow https://github.com/newonathe/OrgResource/actions/runs/44415834128. That earlier SHA does not prove the newer branch.
+- **Interpretation:** this is a PRE-EXECUTION CI / runner-eligibility / GitHub Actions infrastructure or account-level BLOCKER of **unknown precise root cause**. It is NOT evidence of a Java code regression; nor is it proof of a quota/billing problem without the UI/administrative message. Later attempts to run the same workflow failed in the same zero-step manner; no blind reruns or removed assertions should be used to turn this green.
+
+**Required owner/operator verification:** Open the exact GitHub Actions run UI and inspect its top-of-page organization/account billing, plan, policy, runner-eligibility or infrastructure failure message. The connected GitHub API returned no job log. Once that message is known, address the actual account/runner problem and then rerun the entire required workflow on the **latest HEAD**, record job steps, actual test commands, exit codes and SHA. A workflow check that cannot start blocks a full CI-VERIFIED claim. We cannot certify any newly uploaded policy/config is active in Codex from a no-step CI run.
+
+**CI status classification:** GitHub workflow `failure`; execution evidence `NOT_RUN (0 steps)`; causal reason `OPEN QUESTION`; full CI acceptance `BLOCKED`. This distinction is mandatory under the Quality Evidence Continuous Gate. No main merge or production readiness promotion based on this evidence.
