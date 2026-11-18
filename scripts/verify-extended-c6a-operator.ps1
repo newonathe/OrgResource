@@ -33,13 +33,18 @@ function Free-C6aPort {
 function New-FixtureSecret {
     return [Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(24))
 }
-function Start-C6aMysql([string] $Name) {
+function Start-C6aMysql([string] $Name, [int] $ReusePort = 0) {
     $dir = Join-Path $temp $Name
-    $null = New-Item -ItemType Directory -Path $dir
     $common = @('--no-defaults', ('--basedir="' + $mysqlHome + '"'), ('--datadir="' + $dir + '"'))
-    $init = Start-Process -FilePath "$bin/mysqld.exe" -ArgumentList ($common + '--initialize-insecure') -Wait -PassThru -WindowStyle Hidden
-    if ($init.ExitCode -ne 0) { throw 'Isolated MySQL initialization failed.' }
-    $port = Free-C6aPort
+    if ($ReusePort -eq 0) {
+        $null = New-Item -ItemType Directory -Path $dir
+        $init = Start-Process -FilePath "$bin/mysqld.exe" -ArgumentList ($common + '--initialize-insecure') -Wait -PassThru -WindowStyle Hidden
+        if ($init.ExitCode -ne 0) { throw 'Isolated MySQL initialization failed.' }
+        $port = Free-C6aPort
+    } else {
+        if (-not (Test-Path -LiteralPath (Join-Path $dir 'mysql') -PathType Container)) { throw 'Restart requires the initialized data directory from this drill.' }
+        $port = $ReusePort
+    }
     $process = Start-Process -FilePath "$bin/mysqld.exe" -ArgumentList ($common + @("--port=$port",
         '--bind-address=127.0.0.1','--mysqlx=0',('--log-error="' + (Join-Path $dir 'mysql.log') + '"'))) -PassThru -WindowStyle Hidden
     $servers.Add(@{ Port = $port; Process = $process })
@@ -84,6 +89,7 @@ from winpty import PtyProcess
 executable, section, user = sys.argv[1:]
 password = os.environ.pop("C6A_EDITOR_PASSWORD")
 editor = PtyProcess.spawn([executable, "set", f"--login-path={section}", "--host=127.0.0.1", f"--user={user}", "--password"], env=os.environ.copy())
+time.sleep(0.2)
 editor.write(password + "\r")
 cutoff = time.monotonic() + 10
 while editor.isalive() and time.monotonic() < cutoff:
@@ -94,6 +100,14 @@ if editor.isalive():
 editor.close()
 '@ "$bin/mysql_config_editor.exe" $Name $User
         Assert-Native 'mysql_config_editor protected entry'
+        $masked = (& "$bin/mysql_config_editor.exe" print "--login-path=$Name" 2>$null) -join "`n"
+        $hasSection = $masked -match ('(?m)^\[' + [regex]::Escape($Name) + '\]\s*$')
+        $hasUser = $masked -match ('(?m)^[ \t]*user\s*=\s*"?'+ [regex]::Escape($User) +'"?\s*$')
+        $hasPassword = $masked -match '(?m)^[ \t]*password\s*=\s*"?\*+"?\s*$'
+        $hasHost = $masked -match '(?m)^[ \t]*host\s*=\s*"?127\.0\.0\.1"?\s*$'
+        if (-not ($hasSection -and $hasUser -and $hasPassword -and $hasHost)) {
+            throw "Native protected-login provisioning failed for the fictional profile $Name (section=$hasSection, user=$hasUser, masked password=$hasPassword, host=$hasHost)."
+        }
     } finally { $env:C6A_EDITOR_PASSWORD = $null }
 }
 function Invoke-Bootstrap([bool] $ExpectSuccess) {
@@ -165,10 +179,11 @@ function Stop-OperatorJar {
     if ($script:app -and -not $script:app.HasExited) { Stop-Process -Id $script:app.Id -Force; $null = $script:app.WaitForExit() }
     $script:app = $null
 }
-function Assert-WebRead {
+function Assert-WebRead([switch] $Inventory) {
+    $grep = if ($Inventory) { 'the packaged Java application serves|connected inventory UI recovers' } else { 'the packaged Java application serves' }
     Push-Location (Join-Path $root 'extended/frontend')
     try {
-        & npm run e2e -- --grep 'the packaged Java application serves'
+        & npm run e2e -- --grep $grep
         Assert-Native 'Independent first-run authenticated Chromium'
     } finally { Pop-Location }
 }
@@ -192,6 +207,9 @@ try {
     $backupPassword = New-FixtureSecret
     $restorePassword = New-FixtureSecret
     $limitedPassword = New-FixtureSecret
+    New-ProtectedLogin 'c6-backup' 'c6_backup' $backupPassword
+    New-ProtectedLogin 'c6-restore' 'c6_restore' $restorePassword
+    New-ProtectedLogin 'c6-limited' 'c6_limited' $limitedPassword
     $null = Invoke-LocalSql $source @"
 CREATE DATABASE $db CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 CREATE USER 'c6_migrate'@'127.0.0.1' IDENTIFIED BY '$migratePassword';
@@ -205,7 +223,7 @@ CREATE DATABASE $partial CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 CREATE USER 'c6_restore'@'127.0.0.1' IDENTIFIED BY '$restorePassword';
 GRANT ALL ON $restored.* TO 'c6_restore'@'127.0.0.1';
 CREATE USER 'c6_limited'@'127.0.0.1' IDENTIFIED BY '$limitedPassword';
-GRANT SELECT, CREATE ON $partial.* TO 'c6_limited'@'127.0.0.1';
+GRANT SELECT, CREATE, REFERENCES ON $partial.* TO 'c6_limited'@'127.0.0.1';
 CREATE USER 'c6_migrate'@'127.0.0.1' IDENTIFIED BY '$migratePassword';
 GRANT ALL ON $restored.* TO 'c6_migrate'@'127.0.0.1';
 "@
@@ -239,13 +257,10 @@ GRANT ALL ON $restored.* TO 'c6_migrate'@'127.0.0.1';
     $env:ORGRESOURCE_E2E_SCREENSHOT_DIR = Join-Path $temp 'screenshots'
     Start-OperatorJar
     & "$PSScriptRoot/run-extended-c3-newman.ps1" -BaseUrl $base -Username $env:EXT_E2E_USERNAME -Password $env:EXT_E2E_PASSWORD
-    Assert-WebRead
+    Assert-WebRead -Inventory
     Stop-OperatorJar
     Write-Output 'Operator first run passed: separate database identities, real bootstrap and refusal, academic Newman and authenticated Chromium.'
 
-    New-ProtectedLogin 'c6-backup' 'c6_backup' $backupPassword
-    New-ProtectedLogin 'c6-restore' 'c6_restore' $restorePassword
-    New-ProtectedLogin 'c6-limited' 'c6_limited' $limitedPassword
     $backup = "$PSScriptRoot/extended-c-backup.ps1"
     $file = Join-Path $temp 'c6-operator.aesgcm'
     Assert-Refused { & $backup -Mode Backup -Port $source -Schema $db -LoginPath 'does-not-exist' -Archive $file } 'Protected login path is unavailable'
@@ -279,6 +294,15 @@ GRANT ALL ON $restored.* TO 'c6_migrate'@'127.0.0.1';
     Set-ApplicationDatabase $target $restored
     Start-OperatorJar
     Assert-WebRead
+    $originalTarget = $servers | Where-Object { $_.Port -eq $target } | Select-Object -Last 1
+    & "$bin/mysqladmin.exe" --no-defaults --protocol=tcp --host=127.0.0.1 "--port=$target" --user=root --skip-password shutdown *> $null
+    Assert-Native 'Disposable target shutdown while Java is live'
+    if (-not $originalTarget.Process.WaitForExit(15000)) { throw 'Disposable target did not stop.' }
+    $interrupted = Invoke-WebRequest -Uri "$base/api/v2/auth/csrf" -SkipHttpErrorCheck -TimeoutSec 25
+    if ($interrupted.StatusCode -lt 500) { throw 'A database-backed CSRF initialization succeeded during the outage.' }
+    $target = Start-C6aMysql 'target' $target
+    Assert-WebRead
+    Write-Output 'Java remained live through target MySQL unavailability and accepted a new authenticated browser session after restart.'
     Write-Output "Protected-login restore passed. Archive bytes: $($archive.Bytes), SHA-256 $($archive.Sha256). Evidence directory: $temp"
 } finally {
     Stop-OperatorJar

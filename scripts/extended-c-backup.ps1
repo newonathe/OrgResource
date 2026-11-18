@@ -126,10 +126,10 @@ try {
         $editor = Find-BackupMysqlTool 'mysql_config_editor'
         $settings = (& $editor print "--login-path=$LoginPath" 2>$null) -join "`n"
         $section = [regex]::Escape($LoginPath)
-        $user = [regex]::Match($settings, '(?m)^user\s*=\s*([A-Za-z0-9_]{1,32})\s*$')
-        if ($LASTEXITCODE -ne 0 -or $settings -notmatch "(?m)^\[$section\]\s*$" -or
-                -not $user.Success -or $settings -notmatch '(?m)^password\s*=\s*\*+\s*$' -or
-                $settings -notmatch '(?m)^host\s*=\s*127\.0\.0\.1\s*$') {
+        $user = [regex]::Match($settings, '(?m)^[ \t]*user\s*=\s*"?([A-Za-z0-9_]{1,32})"?\s*$')
+        if ($LASTEXITCODE -ne 0 -or $settings -cnotmatch "(?m)^\[$section\]\s*$" -or
+                -not $user.Success -or $settings -notmatch '(?m)^[ \t]*password\s*=\s*"?\*+"?\s*$' -or
+                $settings -notmatch '(?m)^[ \t]*host\s*=\s*"?127\.0\.0\.1"?\s*$') {
             throw 'Protected login path is unavailable or lacks an explicit loopback user and password.'
         }
         $clientUser = $user.Groups[1].Value

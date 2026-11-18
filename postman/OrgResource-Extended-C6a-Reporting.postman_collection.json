@@ -162,8 +162,8 @@
             "type": "text/javascript",
             "exec": [
               "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
-              "const data = pm.response.json().data;",
-              "pm.test('Bounded redacted audit data', () => { pm.expect(data.items.length).to.be.at.most(1); pm.expect(data.items.every(row => row.source === 'AUDIT' && !('targetId' in row) && !('actorUserId' in row))).to.eql(true); });"
+              "const c6aAuditPage = pm.response.json().data;",
+              "pm.test('Bounded redacted audit data', () => { pm.expect(c6aAuditPage.items.length).to.be.at.most(1); pm.expect(c6aAuditPage.items.every(row => row.source === 'AUDIT' && !('targetId' in row) && !('actorUserId' in row))).to.eql(true); });"
             ]
           }
         }

@@ -77,7 +77,8 @@ jobs:
             curl --silent --fail "http://127.0.0.1:8080/api/$route" > /dev/null
           done
           cd ..
-          npx --yes newman@6.2.3 run postman/OrgResource-Course-A-28-Routes.postman_collection.json \
+          node scripts/prepare-course-a-newman.mjs postman/OrgResource-Course-A-28-Routes.postman_collection.json "$RUNNER_TEMP/course-a-newman.json"
+          npx --yes newman@6.2.3 run "$RUNNER_TEMP/course-a-newman.json" \
             --environment postman/OrgResource-Course-A-Local.postman_environment.json --reporters cli --bail
           npm --prefix frontend run e2e -- --grep 'the packaged Java application serves'
       - uses: actions/upload-artifact@v4

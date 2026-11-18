@@ -2721,6 +2721,27 @@ class C1IdentityAcceptanceTest {
         assertEquals(400, get(foreignSession.client, "/api/v2/orgs/" + foreign.orgPublicId + "/activity?cursor=" + cursor).statusCode());
         var mixed = json(get(session.client, root + "/activity?cursor=" + cursor)).getAsJsonObject("data").getAsJsonArray("items");
         assertTrue(mixed.asList().stream().anyMatch(row -> "MOVEMENT".equals(row.getAsJsonObject().get("source").getAsString())));
+        String runtime = jdbc.queryForObject("SELECT CURRENT_USER()", String.class);
+        assertNotNull(runtime);
+        assertTrue(runtime.matches("[a-zA-Z0-9_]+@[a-zA-Z0-9_.%:-]+"));
+        String[] principal = runtime.split("@", 2);
+        String account = "'" + principal[0] + "'@'" + principal[1] + "'";
+        try (Connection migration = DriverManager.getConnection(System.getenv("EXT_DB_MIGRATION_URL"),
+                System.getenv("EXT_DB_MIGRATION_USER"), System.getenv("EXT_DB_MIGRATION_PASSWORD"));
+             var statement = migration.createStatement()) {
+            String schema = migration.getCatalog();
+            assertTrue(schema.matches("orgresource_c1_[a-zA-Z0-9_]+"));
+            String table = "`" + schema + "`.`audit_event`";
+            statement.execute("REVOKE SELECT ON " + table + " FROM " + account);
+            try {
+                HttpResponse<String> failed = get(session.client, root + "/activity");
+                assertEquals(500, failed.statusCode(), failed.body());
+                assertEquals("INTERNAL_ERROR", json(failed).get("code").getAsString());
+                assertFalse(json(failed).has("data"), "The working movement query must not produce partial success.");
+            } finally {
+                statement.execute("GRANT SELECT ON " + table + " TO " + account);
+            }
+        }
     }
 
     @Test @Order(47)
@@ -2775,6 +2796,32 @@ class C1IdentityAcceptanceTest {
             assertFalse(safe.body().contains("actorUserId") || safe.body().contains("targetId")
                     || safe.body().contains("requestFingerprint") || safe.body().contains("phoneCiphertext")
                     || safe.body().contains(token) || safe.body().contains(privateAuditTarget));
+        }
+        var writer = Executors.newSingleThreadExecutor();
+        CountDownLatch uncommitted = new CountDownLatch(1), allowCommit = new CountDownLatch(1);
+        try {
+            var update = writer.submit(() -> tx.executeWithoutResult(transaction -> {
+                jdbc.update("UPDATE resource SET name='C6 committed name' WHERE organization_id=? AND name='C6 persisted movement'",
+                        owner.orgDbId);
+                uncommitted.countDown();
+                try {
+                    if (!allowCommit.await(20, TimeUnit.SECONDS)) throw new IllegalStateException("Export snapshot test timed out.");
+                } catch (InterruptedException interrupted) {
+                    Thread.currentThread().interrupt();
+                    throw new IllegalStateException(interrupted);
+                }
+            }));
+            assertTrue(uncommitted.await(20, TimeUnit.SECONDS));
+            HttpResponse<String> whileOpen = post(session, path, resources);
+            assertEquals(200, whileOpen.statusCode());
+            assertTrue(whileOpen.body().contains("C6 persisted movement"));
+            assertFalse(whileOpen.body().contains("C6 committed name"));
+            allowCommit.countDown();
+            update.get(20, TimeUnit.SECONDS);
+            assertTrue(post(session, path, resources).body().contains("C6 committed name"));
+        } finally {
+            allowCommit.countDown();
+            writer.shutdownNow();
         }
         jdbc.update("""
                 INSERT INTO resource(public_id,organization_id,name,name_key,type,total_quantity)
