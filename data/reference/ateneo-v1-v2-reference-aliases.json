@@ -1,0 +1,108 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "HISTORIC_REFERENCE_KEY_ALIAS_MAP_NOT_A_SEED",
+  "observed_at": "2026-11-19",
+  "source_v1": "data/reference/ateneo-public-organizations-2026.json",
+  "source_v2": "data/reference/ateneo-recweek-2026-expanded-directory.json",
+  "old_records": 12,
+  "new_records": 96,
+  "notice": "Preserves earlier research reference keys when migrating planning metadata to v2; this is NOT a live database migration, not any student data, not history or institutional approval. Exact name or matching profile link is grounded, and any future alias requires evidence and independent review.",
+  "aliases": [
+    {
+      "old_v1_reference_key": "coa-compsat",
+      "new_v2_reference_key": "coa-compsat",
+      "old_name": "Computer Society of the Ateneo",
+      "new_name": "Computer Society of the Ateneo",
+      "identity_evidence": "EXACT_NAME_SOURCE_SNAPSHOT",
+      "source_url": "https://ateneorecweek.org/coa-m-orgs"
+    },
+    {
+      "old_v1_reference_key": "coa-ateneo-code",
+      "new_v2_reference_key": "coa-ateneo-code",
+      "old_name": "Ateneo Consultants for Organization Development and Empowerment",
+      "new_name": "Ateneo Consultants for Organization Development and Empowerment",
+      "identity_evidence": "EXACT_NAME_SOURCE_SNAPSHOT",
+      "source_url": "https://ateneorecweek.org/coa-m-orgs"
+    },
+    {
+      "old_v1_reference_key": "coa-cads",
+      "new_v2_reference_key": "coa-cads",
+      "old_name": "Company of Ateneo Dancers",
+      "new_name": "Company of Ateneo Dancers",
+      "identity_evidence": "EXACT_NAME_SOURCE_SNAPSHOT",
+      "source_url": "https://ateneorecweek.org/coa-m-orgs"
+    },
+    {
+      "old_v1_reference_key": "coa-celadon",
+      "new_v2_reference_key": "coa-celadon",
+      "old_name": "Ateneo Celadon",
+      "new_name": "Ateneo Celadon",
+      "identity_evidence": "EXACT_NAME_SOURCE_SNAPSHOT",
+      "source_url": "https://ateneorecweek.org/coa-m-orgs"
+    },
+    {
+      "old_v1_reference_key": "coa-musicians-pool",
+      "new_v2_reference_key": "coa-musicians-pool",
+      "old_name": "Ateneo Musicians' Pool",
+      "new_name": "Ateneo Musicians' Pool",
+      "identity_evidence": "EXACT_NAME_SOURCE_SNAPSHOT",
+      "source_url": "https://ateneorecweek.org/coa-m-orgs"
+    },
+    {
+      "old_v1_reference_key": "coa-blue-repertory",
+      "new_v2_reference_key": "coa-blue-repertory",
+      "old_name": "Ateneo Blue Repertory",
+      "new_name": "Ateneo Blue Repertory",
+      "identity_evidence": "EXACT_NAME_SOURCE_SNAPSHOT",
+      "source_url": "https://ateneorecweek.org/coa-m-orgs"
+    },
+    {
+      "old_v1_reference_key": "lions-plume",
+      "new_v2_reference_key": "lions-plume",
+      "old_name": "PLUME",
+      "new_name": "PLUME",
+      "identity_evidence": "EXACT_NAME_SOURCE_SNAPSHOT",
+      "source_url": "https://ateneorecweek.org/lions-orgs/plume"
+    },
+    {
+      "old_v1_reference_key": "lions-laro-loyola",
+      "new_v2_reference_key": "lions-laro-loyola",
+      "old_name": "Laro Loyola",
+      "new_name": "Laro Loyola",
+      "identity_evidence": "EXACT_NAME_SOURCE_SNAPSHOT",
+      "source_url": "https://ateneorecweek.org/lions-orgs/laro-loyola"
+    },
+    {
+      "old_v1_reference_key": "lions-blue-bird-improv",
+      "new_v2_reference_key": "lions-blue-bird-improv",
+      "old_name": "Blue Bird Improv",
+      "new_name": "Blue Bird Improv",
+      "identity_evidence": "EXACT_NAME_SOURCE_SNAPSHOT",
+      "source_url": "https://ateneorecweek.org/lions-orgs/blue-bird-improv"
+    },
+    {
+      "old_v1_reference_key": "lions-mokoa-animation",
+      "new_v2_reference_key": "lions-mokoa-animation",
+      "old_name": "Mokoa Animation",
+      "new_name": "Mokoa Animation Studio",
+      "identity_evidence": "MATCHING_2026_INDIVIDUAL_PROFILE_URL",
+      "source_url": "https://ateneorecweek.org/lions-orgs/mokoa-animation"
+    },
+    {
+      "old_v1_reference_key": "lions-blue-symphony",
+      "new_v2_reference_key": "lions-blue-symphony-orchestra",
+      "old_name": "Blue Symphony Orchestra",
+      "new_name": "Blue Symphony Orchestra",
+      "identity_evidence": "EXACT_NAME_SOURCE_SNAPSHOT",
+      "source_url": "https://ateneorecweek.org/lions-orgs/blue-symphony-orchestra"
+    },
+    {
+      "old_v1_reference_key": "lions-ateneo-historians",
+      "new_v2_reference_key": "lions-league-of-ateneo-historians",
+      "old_name": "League of Ateneo Historians",
+      "new_name": "League of Ateneo Historians (LAHi)",
+      "identity_evidence": "MATCHING_2026_INDIVIDUAL_PROFILE_URL",
+      "source_url": "https://ateneorecweek.org/lions-orgs/league-of-ateneo-historians"
+    }
+  ]
+}
