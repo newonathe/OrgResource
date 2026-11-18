@@ -45,6 +45,7 @@ Priority is lexicographic: (1) verified course compliance and academic integrity
 | 04_CODEX_PROMPTS_C6_C8.md | Ready-to-copy full scoped master prompts for C6 read-only audit, C7 identity/security, C8 coherent domain/UI workflow slices |
 | 05_CODEX_PROMPTS_C9_C11.md | Ready-to-copy full scoped master prompts for C9 reliability/performance/CI, C10 staging/off-host recovery, C11 independent release |
 | 06_COVERAGE_AND_DECISION_REGISTER.md | Known source paths, inspection levels, verified/reported distinction, unresolved decisions, exact next evidence |
+| 07_C5_EXACT_TREE_METADATA_INVENTORY.csv | Full 661-path C5 Git blob inventory with SHA/size and honest metadata-only semantic-review status |
 
 ## Governance and explicit authorization
 
