@@ -2642,6 +2642,205 @@ class C1IdentityAcceptanceTest {
         lifecycleTask.getTask().getRunnable().run();
     }
 
+    @Test @Order(45)
+    void C6aReportingEnforcesRolesSelectionCsrfAndTenantScope() throws Exception {
+        Fixture owner = newTenant("C6-report-owner", Membership.Role.OWNER);
+        Fixture foreign = newTenant("C6-report-other", Membership.Role.OWNER);
+        String root = "/api/v2/orgs/" + owner.orgPublicId;
+        String exportBody = "{\"format\":\"TENANT_JSON\",\"dataset\":\"RESOURCES\"}";
+        assertEquals(401, get(newClient(), root + "/audit").statusCode());
+        HttpClient unselected = newClient();
+        String preToken = json(get(unselected, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();
+        assertEquals(200, post(unselected, "/api/v2/auth/login", GSON.toJson(new LoginRequest(owner.username, owner.password)),
+                preToken, origin()).statusCode());
+        assertEquals(409, get(unselected, root + "/activity").statusCode());
+
+        Session foreignSession = login(foreign.username, foreign.password);
+        assertEquals(404, get(foreignSession.client, root + "/activity").statusCode());
+        assertEquals(404, post(foreignSession, root + "/exports", exportBody).statusCode());
+        Session ownerSession = login(owner.username, owner.password);
+        assertEquals(403, post(ownerSession, root + "/exports", exportBody, "", origin()).statusCode());
+        addMembership(foreign.orgDbId, owner.userDbId, Membership.Role.MEMBER);
+        String unselectedWorkspace = "/api/v2/orgs/" + foreign.orgPublicId;
+        assertEquals(404, get(ownerSession.client, unselectedWorkspace + "/audit").statusCode());
+        assertEquals(404, get(ownerSession.client, unselectedWorkspace + "/activity").statusCode());
+        assertEquals(404, post(ownerSession, unselectedWorkspace + "/exports", exportBody).statusCode());
+        for (Membership.Role role : List.of(Membership.Role.MEMBER, Membership.Role.LEAD, Membership.Role.CUSTODIAN, Membership.Role.ADMIN)) {
+            Fixture actor = fixtureInOrg(owner.orgDbId, role);
+            Session session = login(actor.username, actor.password);
+            int expected = role == Membership.Role.ADMIN ? 200 : 403;
+            assertEquals(expected, get(session.client, root + "/audit").statusCode());
+            assertEquals(expected, get(session.client, root + "/activity").statusCode());
+            assertEquals(expected, post(session, root + "/exports", exportBody).statusCode());
+            if (role == Membership.Role.ADMIN) {
+                HttpResponse<String> suspended = post(ownerSession, root + "/members/" + actor.membershipPublicId + "/suspend", "{}", "\"v0\"");
+                assertEquals(200, suspended.statusCode(), suspended.body());
+                assertEquals(404, get(session.client, root + "/audit").statusCode());
+                assertEquals(404, post(session, root + "/exports", exportBody).statusCode());
+            }
+        }
+        assertEquals(200, get(ownerSession.client, root + "/audit").statusCode());
+        assertEquals(200, post(ownerSession, root + "/exports", exportBody).statusCode());
+        assertEquals(1, jdbc.update("UPDATE SPRING_SESSION SET LAST_ACCESS_TIME=0, EXPIRY_TIME=0 WHERE SESSION_ID=?",
+                ownerSession.sessionId));
+        assertEquals(401, get(ownerSession.client, root + "/activity").statusCode());
+    }
+
+    @Test @Order(46)
+    void C6aReportingPaginatesTiesAndRejectsOtherTenantCursors() throws Exception {
+        Fixture owner = newTenant("C6-cursor-owner", Membership.Role.OWNER);
+        Fixture foreign = newTenant("C6-cursor-other", Membership.Role.OWNER);
+        Session session = login(owner.username, owner.password);
+        Session foreignSession = login(foreign.username, foreign.password);
+        String root = "/api/v2/orgs/" + owner.orgPublicId;
+        LocalDateTime tie = LocalDateTime.ofInstant(clock.instant(), ZoneOffset.UTC).withNano(123456000).plusSeconds(30);
+        List<Object[]> fixtures = new ArrayList<>();
+        for (int row = 0; row < 105; row++) {
+            fixtures.add(new Object[]{owner.orgDbId, owner.userDbId, UUID.randomUUID().toString(), tie});
+        }
+        String insert = """
+                INSERT INTO audit_event(org_id,actor_user_id,action,target_type,target_id,outcome,request_id,created_at)
+                VALUES(?,?,'C6_FICTIONAL_EVENT','membership','PRIVATE-TARGET-FIXTURE','SUCCESS',?,?)
+                """;
+        tx.executeWithoutResult(transaction -> jdbc.batchUpdate(insert, fixtures));
+        assertEquals(201, post(session, "/api/resources", GSON.toJson(new ResourceRequest("C6 Movement Resource", "REUSABLE", 2))).statusCode());
+        String filter = root + "/audit?limit=100";
+        HttpResponse<String> firstResponse = get(session.client, filter);
+        assertEquals(200, firstResponse.statusCode(), firstResponse.body());
+        assertFalse(firstResponse.body().contains("PRIVATE-TARGET-FIXTURE"));
+        var first = json(firstResponse).getAsJsonObject("data");
+        assertEquals(100, first.getAsJsonArray("items").size());
+        assertEquals(tie.toInstant(ZoneOffset.UTC), java.time.Instant.parse(first.getAsJsonArray("items").get(0)
+                .getAsJsonObject().get("occurredAt").getAsString()), "UTC timestamp format and microsecond precision");
+        String cursor = first.get("nextCursor").getAsString();
+        jdbc.update(insert, owner.orgDbId, owner.userDbId, UUID.randomUUID().toString(), tie.plusSeconds(1));
+        var second = json(get(session.client, filter + "&cursor=" + cursor)).getAsJsonObject("data");
+        Set<String> seen = new java.util.HashSet<>();
+        first.getAsJsonArray("items").forEach(row -> assertTrue(seen.add(row.getAsJsonObject().get("id").getAsString())));
+        second.getAsJsonArray("items").forEach(row -> assertTrue(seen.add(row.getAsJsonObject().get("id").getAsString())));
+        assertTrue(second.get("nextCursor").isJsonNull());
+        assertEquals(105, seen.size());
+        assertEquals(400, get(session.client, root + "/audit?limit=-1").statusCode());
+        assertEquals(400, get(session.client, root + "/activity?limit=101").statusCode());
+        assertEquals(400, get(session.client, root + "/activity?cursor=%21bad").statusCode());
+        assertEquals(400, get(foreignSession.client, "/api/v2/orgs/" + foreign.orgPublicId + "/activity?cursor=" + cursor).statusCode());
+        var mixed = json(get(session.client, root + "/activity?cursor=" + cursor)).getAsJsonObject("data").getAsJsonArray("items");
+        assertTrue(mixed.asList().stream().anyMatch(row -> "MOVEMENT".equals(row.getAsJsonObject().get("source").getAsString())));
+        String runtime = jdbc.queryForObject("SELECT CURRENT_USER()", String.class);
+        assertNotNull(runtime);
+        assertTrue(runtime.matches("[a-zA-Z0-9_]+@[a-zA-Z0-9_.%:-]+"));
+        String[] principal = runtime.split("@", 2);
+        String account = "'" + principal[0] + "'@'" + principal[1] + "'";
+        try (Connection migration = DriverManager.getConnection(System.getenv("EXT_DB_MIGRATION_URL"),
+                System.getenv("EXT_DB_MIGRATION_USER"), System.getenv("EXT_DB_MIGRATION_PASSWORD"));
+             var statement = migration.createStatement()) {
+            String schema = migration.getCatalog();
+            assertTrue(schema.matches("orgresource_c1_[a-zA-Z0-9_]+"));
+            String table = "`" + schema + "`.`audit_event`";
+            statement.execute("REVOKE SELECT ON " + table + " FROM " + account);
+            try {
+                HttpResponse<String> failed = get(session.client, root + "/activity");
+                assertEquals(500, failed.statusCode(), failed.body());
+                assertEquals("INTERNAL_ERROR", json(failed).get("code").getAsString());
+                assertFalse(json(failed).has("data"), "The working movement query must not produce partial success.");
+            } finally {
+                statement.execute("GRANT SELECT ON " + table + " TO " + account);
+            }
+        }
+    }
+
+    @Test @Order(47)
+    void C6aExportsChecksDatasetBytesLimitsAndRedaction() throws Exception {
+        Fixture owner = newTenant("C6-export-owner", Membership.Role.OWNER);
+        Fixture foreign = newTenant("C6-export-other", Membership.Role.OWNER);
+        Session session = login(owner.username, owner.password);
+        Session other = login(foreign.username, foreign.password);
+        String path = "/api/v2/orgs/" + owner.orgPublicId + "/exports";
+        assertEquals(201, post(other, "/api/resources", GSON.toJson(new ResourceRequest("Foreign C6 Resource", "REUSABLE", 3))).statusCode());
+        assertEquals(400, post(session, path, "{\"format\":\"PDF\",\"dataset\":\"RESOURCES\"}").statusCode());
+        assertEquals(400, post(session, path, "{\"format\":\"CSV\",\"dataset\":\"ALLOCATIONS\"}").statusCode());
+        assertEquals(400, post(session, path, "{\"format\":\"CSV\",\"dataset\":\"AUDIT\",\"limit\":1}").statusCode());
+        assertEquals(400, post(session, path, "{\"format\":\"CSV\",\"format\":\"TENANT_JSON\",\"dataset\":\"AUDIT\"}").statusCode());
+        assertEquals(400, post(session, path, "{\"format\":\"CSV\",\"dataset\":\"AUDIT\"}" + " ".repeat(1024)).statusCode());
+        String resources = "{\"format\":\"TENANT_JSON\",\"dataset\":\"RESOURCES\"}";
+        assertTrue(json(post(session, path, resources)).getAsJsonArray("rows").isEmpty());
+        String csv = "{\"format\":\"CSV\",\"dataset\":\"RESOURCES\"}";
+        for (String name : List.of("  =1+1", "\t+Test", "\r\n-Example", "@Example", "É, \"fictional\"\r\nline")) {
+            jdbc.update("""
+                    INSERT INTO resource(public_id,organization_id,name,name_key,type,total_quantity)
+                    VALUES(UUID_TO_BIN(UUID(),0),?,?,?,'REUSABLE',0)
+                    """, owner.orgDbId, name, UUID.randomUUID().toString());
+        }
+        HttpResponse<String> file = post(session, path, csv);
+        assertEquals(200, file.statusCode(), file.body());
+        assertTrue(file.headers().firstValue("Content-Type").orElseThrow().startsWith("text/csv"));
+        assertTrue(file.headers().firstValue("Content-Disposition").orElseThrow().matches("attachment; filename=\"orgresource-resources-[0-9TZ]+\\.csv\""));
+        assertEquals("no-store", file.headers().firstValue("Cache-Control").orElseThrow());
+        assertEquals("nosniff", file.headers().firstValue("X-Content-Type-Options").orElseThrow());
+        assertTrue(file.body().startsWith("schemaVersion,exportedAt,id,name,type,totalQuantity\r\n"));
+        assertTrue(file.body().contains(",\"'  =1+1\",\"REUSABLE\",0\r\n"));
+        assertTrue(file.body().contains(",\"'\t+Test\","));
+        assertTrue(file.body().contains(",\"'\r\n-Example\","));
+        assertTrue(file.body().contains(",\"'@Example\","));
+        assertTrue(file.body().contains(",\"É, \"\"fictional\"\"\r\nline\","));
+        JsonObject jsonFile = json(post(session, path, resources));
+        assertEquals(1, jsonFile.get("schemaVersion").getAsInt());
+        assertEquals(owner.orgPublicId.toString(), jsonFile.get("organizationId").getAsString());
+        assertEquals(5, jsonFile.getAsJsonArray("rows").size());
+        assertFalse(jsonFile.toString().contains("Foreign C6 Resource"));
+        String root = "/api/v2/orgs/" + owner.orgPublicId;
+        HttpResponse<String> invitation = post(session, root + "/invitations", GSON.toJson(new RoleRequest("MEMBER")));
+        assertEquals(201, invitation.statusCode());
+        String token = json(invitation).getAsJsonObject("data").get("bearerToken").getAsString();
+        String privateAuditTarget = json(invitation).getAsJsonObject("data").get("id").getAsString();
+        assertEquals(201, post(session, "/api/resources", GSON.toJson(new ResourceRequest("C6 persisted movement", "REUSABLE", 2))).statusCode());
+        for (String dataset : List.of("AUDIT", "MOVEMENTS")) {
+            HttpResponse<String> safe = post(session, path, GSON.toJson(java.util.Map.of("format", "TENANT_JSON", "dataset", dataset)));
+            assertEquals(200, safe.statusCode());
+            assertFalse(json(safe).getAsJsonArray("rows").isEmpty());
+            assertFalse(safe.body().contains("actorUserId") || safe.body().contains("targetId")
+                    || safe.body().contains("requestFingerprint") || safe.body().contains("phoneCiphertext")
+                    || safe.body().contains(token) || safe.body().contains(privateAuditTarget));
+        }
+        var writer = Executors.newSingleThreadExecutor();
+        CountDownLatch uncommitted = new CountDownLatch(1), allowCommit = new CountDownLatch(1);
+        try {
+            var update = writer.submit(() -> tx.executeWithoutResult(transaction -> {
+                jdbc.update("UPDATE resource SET name='C6 committed name' WHERE organization_id=? AND name='C6 persisted movement'",
+                        owner.orgDbId);
+                uncommitted.countDown();
+                try {
+                    if (!allowCommit.await(20, TimeUnit.SECONDS)) throw new IllegalStateException("Export snapshot test timed out.");
+                } catch (InterruptedException interrupted) {
+                    Thread.currentThread().interrupt();
+                    throw new IllegalStateException(interrupted);
+                }
+            }));
+            assertTrue(uncommitted.await(20, TimeUnit.SECONDS));
+            HttpResponse<String> whileOpen = post(session, path, resources);
+            assertEquals(200, whileOpen.statusCode());
+            assertTrue(whileOpen.body().contains("C6 persisted movement"));
+            assertFalse(whileOpen.body().contains("C6 committed name"));
+            allowCommit.countDown();
+            update.get(20, TimeUnit.SECONDS);
+            assertTrue(post(session, path, resources).body().contains("C6 committed name"));
+        } finally {
+            allowCommit.countDown();
+            writer.shutdownNow();
+        }
+        jdbc.update("""
+                INSERT INTO resource(public_id,organization_id,name,name_key,type,total_quantity)
+                WITH RECURSIVE digit(n) AS (SELECT 0 UNION ALL SELECT n+1 FROM digit WHERE n<9)
+                SELECT UUID_TO_BIN(UUID(),0),?,
+                       CONCAT('C6 export row ',a.n,b.n,c.n),CONCAT('c6 export row ',a.n,b.n,c.n),'REUSABLE',0
+                FROM digit a CROSS JOIN digit b CROSS JOIN digit c
+                """, owner.orgDbId);
+        HttpResponse<String> refused = post(session, path, csv);
+        assertEquals(413, refused.statusCode());
+        assertEquals("EXPORT_TOO_LARGE", json(refused).get("code").getAsString());
+        assertTrue(refused.headers().firstValue("Content-Disposition").isEmpty());
+    }
+
     private Session login(String username, String password) throws Exception {
         HttpClient client = newClient();
         String preToken = json(get(client, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();

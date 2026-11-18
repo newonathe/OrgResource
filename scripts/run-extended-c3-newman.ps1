@@ -2,15 +2,17 @@ param(
     [Parameter(Mandatory = $true)][string] $Username,
     [Parameter(Mandatory = $true)][string] $Password,
     [string] $BaseUrl = 'http://127.0.0.1:8080',
-    [string] $NewmanVersion = '6.2.3'
+    [string] $NewmanVersion = '6.2.3',
+    [switch] $Reporting
 )
 
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$collection = Join-Path $repoRoot 'postman\OrgResource-Extended-C3-28-Operations.postman_collection.json'
+$collectionName = if ($Reporting) { 'OrgResource-Extended-C6a-Reporting' } else { 'OrgResource-Extended-C3-28-Operations' }
+$collection = Join-Path $repoRoot "postman\$collectionName.postman_collection.json"
 $imagePath = Join-Path $repoRoot 'postman\fixtures\academic-demo-image.png'
 
-if (-not (Test-Path -LiteralPath $collection)) { throw 'The Extended C3 Postman collection is missing.' }
+if (-not (Test-Path -LiteralPath $collection)) { throw 'The requested Extended Postman collection is missing.' }
 if (-not (Test-Path -LiteralPath $imagePath)) { throw 'The tracked fictional PNG fixture is missing.' }
 if ([string]::IsNullOrWhiteSpace($Username) -or [string]::IsNullOrWhiteSpace($Password)) {
     throw 'A local fictional test account is required; credentials are never read from or written to repository files.'
@@ -46,13 +48,12 @@ try {
     } finally { Pop-Location }
     if ($exitCode -ne 0) {
         $output | Select-Object -Last 100 | ForEach-Object { Write-Output $_ }
-        throw "Extended C3 Newman acceptance failed with exit code $exitCode."
+        throw "$collectionName Newman acceptance failed with exit code $exitCode."
     }
     $summary = @($output | Where-Object { $_ -match 'requests|assertions|iterations|requests|total|failed|error' })
     $summary | ForEach-Object { Write-Output $_ }
-    Write-Output 'Extended C3 Newman acceptance passed against the supplied loopback server.'
+    Write-Output "$collectionName Newman acceptance passed against the supplied loopback server."
 } finally {
-    if (Test-Path -LiteralPath $tempDirectory) {
-        Remove-Item -LiteralPath $tempDirectory -Recurse -Force
-    }
+    if (Test-Path -LiteralPath $environmentPath) { Remove-Item -LiteralPath $environmentPath -Force }
+    if (Test-Path -LiteralPath $tempDirectory) { Remove-Item -LiteralPath $tempDirectory -ErrorAction SilentlyContinue }
 }

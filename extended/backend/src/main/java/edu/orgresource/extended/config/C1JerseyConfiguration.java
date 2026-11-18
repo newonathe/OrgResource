@@ -22,6 +22,7 @@ import edu.orgresource.extended.rest.C1SessionResource;
 import edu.orgresource.extended.rest.DepartmentResource;
 import edu.orgresource.extended.rest.InventoryResource;
 import edu.orgresource.extended.rest.ProjectResource;
+import edu.orgresource.extended.rest.ReportingResource;
 import edu.orgresource.extended.rest.ResourceRequirementResource;
 import edu.orgresource.extended.rest.ResourceResource;
 import edu.orgresource.extended.rest.V2DepartmentResource;
@@ -42,6 +43,7 @@ public class C1JerseyConfiguration {
         config.register(C1GovernanceResource.class);
         config.register(C1InvitationResource.class);
         config.register(InventoryResource.class);
+        config.register(ReportingResource.class);
         config.register(JacksonFeature.class);
         config.register(MultiPartFeature.class);
         config.register(C1ApiExceptionMapper.class);

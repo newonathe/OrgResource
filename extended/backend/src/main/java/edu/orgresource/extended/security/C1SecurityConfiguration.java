@@ -3,6 +3,7 @@ package edu.orgresource.extended.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -79,6 +80,7 @@ public class C1SecurityConfiguration {
     SessionAuthenticationStrategy c1SessionAuthenticationStrategy() { return new ChangeSessionIdAuthenticationStrategy(); }
 
     @Bean
+    @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
     SecurityFilterChain c1SecurityFilterChain(HttpSecurity http,
             CsrfTokenRepository csrfRepository,
             SecurityContextRepository contextRepository,

@@ -9,6 +9,7 @@ import { ProjectsPage } from "./pages/ProjectsPage";
 import { RemindersPage } from "./pages/RemindersPage";
 import { RequirementsPage } from "./pages/RequirementsPage";
 import { ResourcesPage } from "./pages/ResourcesPage";
+import { ActivityPage, ExportsPage } from "./pages/ReportingPages";
 import { AcademicShell } from "./shell/AcademicShell";
 import { SettingsProvider } from "./ui";
 
@@ -33,6 +34,8 @@ function WorkspaceRoutes() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/account" element={<AccountPage />} />
         <Route path="/governance" element={canGovern ? <GovernancePage orgId={organization.id} role={organization.role} /> : <ForbiddenPage />} />
+        <Route path="/activity" element={canGovern ? <ActivityPage orgId={organization.id} /> : <ForbiddenPage />} />
+        <Route path="/exports" element={canGovern ? <ExportsPage orgId={organization.id} /> : <ForbiddenPage />} />
         <Route path="/invite" element={<InvitationPage />} />
         <Route path="*" element={<Navigate replace to="/" />} />
       </Routes>

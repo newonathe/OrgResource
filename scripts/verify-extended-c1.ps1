@@ -340,6 +340,8 @@ FLUSH PRIVILEGES;
         -BaseUrl "http://127.0.0.1:$appPort" `
         -Username $env:EXT_BOOTSTRAP_USERNAME `
         -Password $env:EXT_BOOTSTRAP_PASSWORD
+    & (Join-Path $repoRoot 'scripts\run-extended-c3-newman.ps1') -Reporting `
+        -BaseUrl "http://127.0.0.1:$appPort" -Username $env:EXT_BOOTSTRAP_USERNAME -Password $env:EXT_BOOTSTRAP_PASSWORD
     $ownerSession = New-C1OwnerSession
     $orgId = $ownerSession.OrgId
     if ([string]::IsNullOrWhiteSpace($orgId)) { throw 'Bootstrap OWNER session did not select its organization.' }
@@ -680,9 +682,9 @@ FROM user_account WHERE username_key='$adminUsername';
     Stop-C1App
 
     if ($SkipFrontend) {
-        Write-Output 'Extended C PASS: frontend gates were skipped by request; 43 MySQL 8-backed tests; Maven package; authenticated 28-operation Newman (48 requests/90 assertions); inventory and governance; receipt authorization after demotion, expiry/prune and packaged JVM restart; image validation and persistence.'
+        Write-Output 'Extended C PASS: frontend gates skipped by request. See Surefire for the observed MySQL test count. Maven packaging, academic Newman, inventory and governance, durable replay, and image checks passed.'
     } else {
-        Write-Output 'Extended C PASS: Extended React typecheck/unit/lint/build; packaged-runtime Playwright workflows; 43 MySQL 8-backed tests; Maven package; authenticated 28-operation Newman (48 requests/90 assertions); inventory and governance; receipt authorization after demotion, expiry/prune and packaged JVM restart; image validation and persistence.'
+        Write-Output 'Extended C PASS: React, packaged and Vite Chromium, Maven, academic Newman, inventory and governance, durable replay, and image checks passed. See Surefire for the observed MySQL test count.'
     }
     Write-Output "Extended C run evidence and stopped isolated datadir: $dataDirectory"
     Write-Output "Packaged JAR: $(Join-Path $experiment 'target\extended-backend-0.1.0-SNAPSHOT.jar')"

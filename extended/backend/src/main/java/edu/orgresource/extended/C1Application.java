@@ -2,9 +2,11 @@ package edu.orgresource.extended;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.boot.WebApplicationType;
 import java.util.TimeZone;
@@ -12,11 +14,15 @@ import java.util.Arrays;
 import edu.orgresource.extended.identity.C1BootstrapService;
 
 @SpringBootApplication
-@EnableScheduling
 public class C1Application {
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
+
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+    @EnableScheduling
+    static class WebScheduling { }
 
     @Bean
     ApplicationRunner offlineBootstrap(C1BootstrapService bootstrap) {
@@ -33,8 +39,12 @@ public class C1Application {
 
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(C1Application.class);
-        if (Arrays.asList(args).contains("--bootstrap")) app.setWebApplicationType(WebApplicationType.NONE);
-        app.run(args);
+        if (Arrays.asList(args).contains("--bootstrap")) {
+            app.setWebApplicationType(WebApplicationType.NONE);
+            app.run(args).close();
+        } else {
+            app.run(args);
+        }
     }
 
     private static String requiredSetting(String key) {

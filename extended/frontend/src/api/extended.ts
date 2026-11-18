@@ -1,5 +1,36 @@
 import { request, type RequestResult } from "./client";
 
+export type ReportingDataset = "RESOURCES" | "MOVEMENTS" | "AUDIT";
+export type ReportingFormat = "CSV" | "TENANT_JSON";
+export interface ReportingEvent {
+  id: string; source: "AUDIT" | "MOVEMENT"; action: string; targetType: string; outcome: string | null;
+  resourceId: string | null; quantity: number | null; deltaTotal: number | null; deltaIssued: number | null;
+  occurredAt: string;
+}
+interface ReportingPage { items: ReportingEvent[]; nextCursor: string | null; }
+interface ExportDownload { filename: string; file: Blob; }
+
+export const reportingApi = {
+  events: (orgId: string, feed: "activity" | "audit", cursor: string | null, signal: AbortSignal) =>
+    request<ReportingPage>(`/api/v2/orgs/${encodeURIComponent(orgId)}/${feed}${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""}`,
+      "GET", undefined, { signal }).then(result => result.data),
+  download: (orgId: string, dataset: ReportingDataset, format: ReportingFormat, signal: AbortSignal) =>
+    request<ExportDownload>(`/api/v2/orgs/${encodeURIComponent(orgId)}/exports`, "POST", { dataset, format }, {
+      signal,
+      headers: { Accept: "text/csv, application/json" },
+      download: async response => {
+        const filename = response.headers.get("Content-Disposition")?.match(/^attachment; filename="([a-zA-Z0-9.-]+)"$/)?.[1];
+        const contentType = response.headers.get("Content-Type")?.split(";")[0];
+        const expectedType = format === "CSV" ? "text/csv" : "application/json";
+        if (!filename?.match(/^orgresource-(resources|movements|audit)-\d{8}T\d{6}Z\.(csv|json)$/) || contentType !== expectedType ||
+            !filename.endsWith(format === "CSV" ? ".csv" : ".json")) {
+          throw new Error("The server did not return the requested export file.");
+        }
+        return { filename, file: await response.blob() };
+      },
+    }).then(result => result.data),
+};
+
 export type Role = "OWNER" | "ADMIN" | "CUSTODIAN" | "LEAD" | "MEMBER";
 export interface SessionView { accountId: string; displayName: string; activeOrgId: string | null; memberships: MemberView[]; }
 export interface OrganizationView { id: string; slug: string; displayName: string; role: Role; }
