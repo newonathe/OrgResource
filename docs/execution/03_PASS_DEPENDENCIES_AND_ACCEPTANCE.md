@@ -128,3 +128,22 @@ R-10 Research-to-product overclaim → institutional/personal data risk → fict
 - Full clean gates with actual command receipts and CI SHAs.
 - Token/build/storage profiling only where measured; cannot replace acceptance.
 - Owner sees P0/P1/P2 and approves next phase. No automatic merge, public deployment, paid resources, live contacts, real SMS, or academic submission.
+
+## Additive hosted Ateneo demonstration release lane (C6-D through C11-D)
+
+**USER DECISION (2026-11-19):** The eventual hosted product is expected to be visibly prepopulated with sourced real-world Ateneo COA-M/LIONS independent organization *identity references* and approximately eleven months of truthful **simulated** operational history. This is part of the **hosted first-release acceptance scope** unless owner explicitly re-scopes it; it is not preexisting evidence of adoption. See [08_ATENEO_HOSTED_DEMO_REQUIREMENTS.md](08_ATENEO_HOSTED_DEMO_REQUIREMENTS.md), [09_DEMO_SEED_ALGORITHM_AND_ACCEPTANCE.md](09_DEMO_SEED_ALGORITHM_AND_ACCEPTANCE.md), [10_CODEX_DEMO_DATA_IMPLEMENTATION_PROMPT.md](10_CODEX_DEMO_DATA_IMPLEMENTATION_PROMPT.md) and [data/reference/ateneo-public-organizations-2026.json](../../data/reference/ateneo-public-organizations-2026.json).
+
+| Existing pass | Demo subgate | Required outcome and evidence |
+|---|---|---|
+| C6 | C6-D | Audit actual RecWeek 2026 listing sources, COA-M/LIONS/independent semantics, rights/privacy, current bootstrap/ledger API, role/tenant/time constraints and owner decisions; no code writes |
+| C7 | C7 auth prerequisite | Shared writable public demo is disallowed; explicit read-only preview or separately isolated per-visitor trial requires correct security, no org officer impersonation or real data |
+| C8 | C8-D | Implement deterministic source-linked 12-org fact manifest and synthetic historical event-graph/importer as one integrated authenticated MySQL/REST/React slice; guarded demo-only seed and correct ledger |
+| C9 | C9-D | Falsify generator, replay, historical state, account/tenant/role and source claims; benchmark import, data footprint and query plans without trimming evidence |
+| C10 | C10-D | **Separately authorized** hosted demonstration database, one-time seed, HTTPS public preview, truth labels, no live provider, off-host recovery and operator runbook |
+| C11 | C11-D | Independent audit of real organization facts versus invented history, integrity, provenance, visual/data disclosure, hosted URL behavior and release/go-no-go |
+
+**Decisions DEC-13–DEC-19** are listed in document 08. C6 must include them in the product/rights decision register. The 12-org public fact JSON presently contains six 2026 COA-M and six 2026 LIONS listings as a **curated sample**, not all organizations; the RecWeek site presents inconsistent COA-M membership totals (55 homepage / 53 profile), so a fixed total is not a verified requirement. LIONS is already the umbrella for independent organizations; no unsupported third official class may be fabricated.
+
+**Minimum acceptance:** 12 dated name/listing records independently source verified, a separately versioned deterministic 2025-12-01 through 2026-11-18 simulation with valid role/tenant/stock/project/transaction history, read-only or isolated interactive public access, persistent visible simulated-data notice, no real personal data or official endorsement implication, stable import on fresh allowlisted database, original Course Final A intact and C6–C11 complete mandated gates. A nonzero actual hosted demo population must be **observed** at the intended URL on the exact code/data SHA. Synthetic row counts are design targets, not observed student-organization inventory.
+
+**No new top-level pass by default:** C6-D through C11-D are **subgates embedded in the six existing cohesive passes**. Split C8-D into its own reviewable sub-PR only if it exceeds a safe single transaction/schema/UI ownership boundary; do not compromise code correctness or review proof for a pass-count target. Scope changes require user decision; no automatic deployment, public contacts, spending, merge or submission.
