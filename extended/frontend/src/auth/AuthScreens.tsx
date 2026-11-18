@@ -161,6 +161,7 @@ export function AccountPage() {
 }
 
 export function GovernancePage({ orgId, role }: { orgId: string; role: Role }) {
+  const { session, reload } = useAuth();
   const [members, setMembers] = useState<GovernanceMember[]>([]);
   const [inviteRole, setInviteRole] = useState<Exclude<Role, "OWNER">>("MEMBER");
   const [inviteToken, setInviteToken] = useState<string | null>(null);
@@ -171,7 +172,10 @@ export function GovernancePage({ orgId, role }: { orgId: string; role: Role }) {
   const [message, setMessage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const membersRequest = useRef<AbortController | null>(null);
-  const manage = role === "OWNER" || role === "ADMIN";
+  const ownMembershipId = session?.memberships.find(member => member.organizationId === orgId)?.id;
+  const grantableRoles = role === "OWNER"
+    ? (["ADMIN", "CUSTODIAN", "LEAD", "MEMBER"] as const)
+    : (["CUSTODIAN", "LEAD", "MEMBER"] as const);
   const load = useCallback(async () => {
     membersRequest.current?.abort();
     const controller = new AbortController();
@@ -192,16 +196,29 @@ export function GovernancePage({ orgId, role }: { orgId: string; role: Role }) {
   const changeRole = (member: GovernanceMember, roleValue: Exclude<Role, "OWNER">) => void run(() => identityApi.changeRole(orgId, member, roleValue), "Membership role updated.");
   const suspend = (member: GovernanceMember) => { if (window.confirm(`Suspend ${member.displayName}?`)) void run(() => identityApi.suspendMember(orgId, member), "Membership suspended."); };
   const startTransfer = async (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); const target = new FormData(event.currentTarget).get("target"); if (typeof target !== "string") return; void run(async () => { const result = await identityApi.startOwnershipTransfer(orgId, target, currentPassword); if (!result.data.id || !result.etag) throw new Error("The server did not return a transfer ID and ETag."); setTransferId(result.data.id); setTransferEtag(result.etag); setCurrentPassword(""); }, "Ownership transfer started. Share the transfer ID and ETag with its recipient through a private channel."); };
-  const acceptTransfer = (event: FormEvent) => { event.preventDefault(); void run(async () => { const result = await identityApi.acceptOwnershipTransfer(orgId, transferId, transferEtag); if (result.etag) setTransferEtag(result.etag); }, "Ownership transfer accepted."); };
+  const acceptTransfer = (event: FormEvent) => {
+    event.preventDefault();
+    void run(async () => {
+      await identityApi.acceptOwnershipTransfer(orgId, transferId, transferEtag);
+      setTransferId(""); setTransferEtag("");
+      await reload();
+    }, "Ownership transfer accepted.");
+  };
   return <section className="page-shell"><PageHeader eyebrow="Organization · governance" title="Members and access" description="Roles and membership state are enforced by the server. This page never grants access from browser state." />
     {error && <Notice tone="danger">{error}</Notice>}{message && <Notice tone="success">{message}</Notice>}
     <div className="governance-grid"><GlassPanel className="list-panel" tilt={false}><PanelHeading kicker="Active and suspended members" title="Memberships"><Button disabled={busy} onClick={() => void load()}>Refresh</Button></PanelHeading>
       {members.length === 0 ? <p>No memberships available, or your role cannot view member records.</p> : <div className="member-list">{members.map(member => <article className="member-row" key={member.id}><div><strong>{member.displayName}</strong><p><StatusBadge tone={member.status === "ACTIVE" ? "success" : "warning"}>{member.status}</StatusBadge> <StatusBadge tone="blue">{member.role}</StatusBadge></p></div>
-        {manage && member.role !== "OWNER" && member.status === "ACTIVE" && <div className="row-actions"><label className="compact-label">Role<select value={member.role} disabled={busy} onChange={event => changeRole(member, event.target.value as Exclude<Role, "OWNER">)}><option>ADMIN</option><option>CUSTODIAN</option><option>LEAD</option><option>MEMBER</option></select></label><Button variant="danger" disabled={busy} onClick={() => suspend(member)}>Suspend</Button></div>}</article>)}</div>}
+        {member.id !== ownMembershipId && member.role !== "OWNER" && member.status === "ACTIVE" &&
+          (role === "OWNER" || (role === "ADMIN" && member.role !== "ADMIN")) &&
+          <div className="row-actions"><label className="compact-label">Role<select value={member.role} disabled={busy} onChange={event => changeRole(member, event.target.value as Exclude<Role, "OWNER">)}>{grantableRoles.map(option => <option key={option}>{option}</option>)}</select></label><Button variant="danger" disabled={busy} onClick={() => suspend(member)}>Suspend</Button></div>}</article>)}</div>}
     </GlassPanel>
-    {manage && <GlassPanel className="form-panel" tilt={false}><PanelHeading kicker="Single-use credential" title="Create invitation" /><label>Grant role<select value={inviteRole} disabled={busy} onChange={event => setInviteRole(event.target.value as Exclude<Role, "OWNER">)}><option>ADMIN</option><option>CUSTODIAN</option><option>LEAD</option><option>MEMBER</option></select></label><Button variant="primary" disabled={busy} onClick={createInvite}>{busy ? "Working…" : "Create invitation"}</Button>{inviteToken && <div className="token-reveal"><strong>Bearer token — shown once</strong><code>{inviteToken}</code><Button onClick={() => void navigator.clipboard?.writeText(inviteToken)}>Copy token</Button><p>Send it using your approved private method. It is held only in current component memory.</p></div>}</GlassPanel>}
+    <GlassPanel className="form-panel" tilt={false}><PanelHeading kicker="Single-use credential" title="Create invitation" /><label>Grant role<select value={inviteRole} disabled={busy} onChange={event => setInviteRole(event.target.value as Exclude<Role, "OWNER">)}>{grantableRoles.map(option => <option key={option}>{option}</option>)}</select></label><Button variant="primary" disabled={busy} onClick={createInvite}>{busy ? "Working…" : "Create invitation"}</Button>{inviteToken && <div className="token-reveal"><strong>Bearer token — shown once</strong><code>{inviteToken}</code><Button onClick={() => void navigator.clipboard?.writeText(inviteToken)}>Copy token</Button><p>Send it using your approved private method. It is held only in current component memory.</p></div>}</GlassPanel>
     {role === "OWNER" && <GlassPanel className="form-panel" tilt={false}><PanelHeading kicker="Two-person governance flow" title="Transfer ownership" /><form className="auth-form" onSubmit={startTransfer}><label>Recipient membership<select name="target" required><option value="">Choose an active member</option>{members.filter(member => member.status === "ACTIVE" && member.role === "ADMIN").map(member => <option key={member.id} value={member.id}>{member.displayName}</option>)}</select></label><label>Current password<input type="password" autoComplete="current-password" required value={currentPassword} onChange={event => setCurrentPassword(event.target.value)} /></label><Button disabled={busy || !members.some(member => member.role === "ADMIN" && member.status === "ACTIVE")}>Start transfer</Button></form><p className="quiet-note">No pending-transfer list API exists. Keep the transfer ID returned by the server and give it to the recipient through a private channel.</p></GlassPanel>}
-    <GlassPanel className="form-panel" tilt={false}><PanelHeading kicker="Recipient action" title="Accept ownership transfer" /><form className="auth-form" onSubmit={acceptTransfer}><label>Transfer ID<input required value={transferId} onChange={event => setTransferId(event.target.value)} /></label><label>Current transfer ETag<input required value={transferEtag} onChange={event => setTransferEtag(event.target.value)} placeholder={'"v1"'} /></label><Button disabled={busy || !transferId || !transferEtag}>Accept transfer</Button></form><p className="quiet-note">The server requires both the transfer ID and matching ETag. No pending-transfer lookup API is available, so these values must be handed to the recipient privately.</p></GlassPanel>
+    {role === "OWNER" && transferId && transferEtag && <GlassPanel className="form-panel" tilt={false}>
+      <PanelHeading kicker="Private handoff" title="Transfer details" />
+      <dl className="account-details"><div><dt>Transfer ID</dt><dd><code>{transferId}</code></dd></div><div><dt>Current ETag</dt><dd><code>{transferEtag}</code></dd></div></dl>
+    </GlassPanel>}
+    {role === "ADMIN" && <GlassPanel className="form-panel" tilt={false}><PanelHeading kicker="Recipient action" title="Accept ownership transfer" /><form className="auth-form" onSubmit={acceptTransfer}><label>Transfer ID<input required value={transferId} onChange={event => setTransferId(event.target.value)} /></label><label>Current transfer ETag<input required value={transferEtag} onChange={event => setTransferEtag(event.target.value)} placeholder={'"v1"'} /></label><Button disabled={busy || !transferId || !transferEtag}>Accept transfer</Button></form><p className="quiet-note">The server requires both the transfer ID and matching ETag. No pending-transfer lookup API is available, so these values must be handed to the recipient privately.</p></GlassPanel>}
     </div>
   </section>;
 }

@@ -130,6 +130,25 @@ describe("Extended C authentication and organization shell", () => {
     expect(await screen.findByRole("heading", { name: "Welcome back" })).toBeInTheDocument();
   });
 
+  it("offers administrators only the membership changes allowed by the server contract", async () => {
+    window.location.hash = "#/governance";
+    const authenticated = authenticatedFetch("ADMIN");
+    vi.stubGlobal("fetch", vi.fn((input: RequestInfo | URL, init?: RequestInit) =>
+      String(input).startsWith("/api/v2/orgs/org-a/members?")
+        ? Promise.resolve(envelope({ items: [
+          { id: "admin", displayName: "Peer Administrator", role: "ADMIN", status: "ACTIVE", version: 0 },
+          { id: "member", displayName: "General Member", role: "MEMBER", status: "ACTIVE", version: 0 },
+        ], nextCursor: null }))
+        : authenticated(input, init)));
+    render(<App />);
+    await screen.findByText("Peer Administrator");
+    expect(screen.getAllByRole("button", { name: "Suspend" })).toHaveLength(1);
+    expect(within(screen.getByLabelText("Grant role")).queryByRole("option", { name: "ADMIN" })).toBeNull();
+    expect(within(screen.getByLabelText("Role", { exact: true })).queryByRole("option", { name: "ADMIN" })).toBeNull();
+    expect(screen.queryByRole("heading", { name: "Transfer ownership" })).toBeNull();
+    expect(screen.getByRole("heading", { name: "Accept ownership transfer" })).toBeInTheDocument();
+  });
+
   it("sends the in-memory CSRF value on mutations", async () => {
     const fetchMock = authenticatedFetch();
     vi.stubGlobal("fetch", fetchMock);
