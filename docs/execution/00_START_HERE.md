@@ -51,8 +51,11 @@ Priority is lexicographic: (1) verified course compliance and academic integrity
 | 08_ATENEO_HOSTED_DEMO_REQUIREMENTS.md | Hosted public Ateneo org references + prominently identified eleven-month synthetic history, security/privacy/source safeguards |
 | 09_DEMO_SEED_ALGORITHM_AND_ACCEPTANCE.md | Deterministic historical event graph, guarded demo import, tenant/ledger invariants and DEM-* acceptance matrix |
 | 10_CODEX_DEMO_DATA_IMPLEMENTATION_PROMPT.md | Copy-ready C6-D/C8-D/C9-D/C10-D/C11-D audit, implementation, hosting and release prompts |
-| ../data/reference/ateneo-public-organizations-2026.json | Twelve real publicly listed 2026 COA-M/LIONS organization name+classification facts and individual source URLs; no real operations |
+| ../data/reference/ateneo-public-organizations-2026.json | **Historic v1 research sample** of 12 source-backed org name+classification facts; superseded for full hosted target |
 | ../data/reference/ateneo-public-programs-2026.json | Twelve factual public program titles across six organizations, with URLs; **not** dates, asset ownership, or usage history |
+| 11_EXPANDED_CAMPUS_ROSTER_AND_HIGH_VOLUME_PLAN.md | Full 2026 directory-coverage goal, 96 source entries, mixed governance roles and heavyweight MISA/Sanggunian synthetic data plan |
+| ../data/reference/ateneo-recweek-2026-expanded-directory.json | **v2 expanded:** 72 COA-M directory-page entries (not 72 accredited organizations), 24 verified 2026 LIONS names, eight historical-only unconfirmed |
+| ../data/demo/ateneo-volume-profiles-2026.json | Proposed deterministic 96-tenant simulation load tiers; no actual generated or hosted rows |
 
 ## Governance and explicit authorization
 
@@ -61,3 +64,7 @@ The user's instruction to upload this planning packet to GitHub authorizes a **r
 ## Required implementation-result envelope
 
 Every subsequent authorized pass returns: exact repo/branch/base/head and immutable A tree hashes; files touched with reviewed source ranges; requirements→code→test→evidence matrix; errors and adversarial counterexamples; reproducible commands/tool versions/runtime; passed/failed/skipped/not-run counts; CI URLs; cold/warm build and storage metrics when measured; priority-ordered P0/P1/P2 defects; fallback and rollback; independent critique; explicit approval-required actions; and full next-pass copy-ready handoff. **No empty "all good" certificate and no fabricated tools/tests.**
+
+## Superseding 2026-11-19 source-coverage / volume decision
+
+The earlier hosted 12-org sample is research v1. The newly approved **planning target** is as many verified public organizations as feasible, currently **96 2026 directory entities** across **72 COA-M 2026 page entries of mixed institutional types** and **24 LIONS 2026 point-person/profile names**, with eight older-only LIONS entries pending verification and excluded from default seed. Sanggunian is student government, MISA a COA directory-listed organization, both heavy synthetic flagships; fourteen featured showcases are selected by demo workflow breadth **not** actual member rankings. Versioned source and volume config are linked above. Full 96-tenant import/test/deployment remains NOT_RUN and is separately authorized in C8-D/C10-D.
