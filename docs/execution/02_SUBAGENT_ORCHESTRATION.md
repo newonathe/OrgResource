@@ -1,6 +1,9 @@
 # OrgResource — Intelligent subagent orchestration and mandatory handoff contracts
 
-Edition 2026-11-19. Status: proposed policy. Applies to future authorized Codex phases; does not claim that subagents were spawned, available or tested during this documentation-only upload.
+Edition 2026-11-19. Status: proposed policy.
+
+**SUPERSEDING STRICT TOKEN-COST CONTROL (USER DECISION):** Read in full docs/execution/12_TOKEN_BUDGETED_SUBAGENT_ROUTING.md and docs/execution/13_PHASE_SPECIFIC_SUBAGENT_PROMPTS.md plus the now-existing project .codex/config.toml and nine .codex/agents/*.toml agent profiles. **ZERO default spawns**, up to **TWO concurrent** agents and **FOUR distinct sessions per phase**, reviewer included, unless owner-approved exceptional evidence requires more. Each subagent has an explicit model+reasoning+read/owned write paths+exact task/test/stop prompt. The earlier generic strong/high per-lane recommendations below are superseded for **actual routine dispatch** by the configured per-role choices: Luna-low/medium source, Terra-medium API/UI/ops, Sol-medium ledger/auth and independent review, Sol-high **only** exceptional critical/C11 review. No automatically spawned three-agent startup and no autonomous nested spawning. If Codex account cannot use a configured model, STOP and verify actual options before substitute. Full quality gate unchanged.
+ Applies to future authorized Codex phases; does not claim that subagents were spawned, available or tested during this documentation-only upload.
 
 ## A. Orchestrator responsibilities
 
@@ -34,22 +37,22 @@ Escalate when test failures are ambiguous, multi-file decisions interact, proof 
 ## C. Worker lanes and ownership
 
 ### Lane S — Source/academic compliance analyst (read-only)
-Inputs: course PDF, syllabus, slides/labs/examples, source ZIP manifests, frozen A tree, C5 tree and gate. Outputs: source coverage register; course and amendment conflict ledger; exact file/page/course authority; 26 business + 2 image trace matrix; verified/not-run boundaries. No code writes or unsupported statements about unseen video frames. Strong reasoning high.
+Inputs: course PDF, syllabus, slides/labs/examples, source ZIP manifests, frozen A tree, C5 tree and gate. Outputs: source coverage register; course and amendment conflict ledger; exact file/page/course authority; 26 business + 2 image trace matrix; verified/not-run boundaries. No code writes or unsupported statements about unseen video frames. Configured gpt-6-luna medium for bounded source facts; root escalates genuine course conflict.
 
 ### Lane B — Backend/auth/security and HTTP reviewer
-Inputs: Extended identity/security/rest/service sources; migrations and session behavior; role policy. Outputs: role×endpoint×tenant matrix, attack cases, actual controllers/DTO/SQL links, bounded changes and regression tests. Changes only under assigned backend paths. Strong reasoning high/extra-high for security.
+Inputs: Extended identity/security/rest/service sources; migrations and session behavior; role policy. Outputs: role×endpoint×tenant matrix, attack cases, actual controllers/DTO/SQL links, bounded changes and regression tests. Changes only under assigned backend paths. Configured gpt-6.1-sol medium for scoped auth/security, escalate to high only for concrete unresolved P0/P1.
 
 ### Lane D — MySQL/inventory/algorithm reviewer
-Inputs: InventoryService, related repositories/entities, Flyway V1–V5, CI MySQL, backup/restoration scripts. Outputs: stock/hold/issued equations, SQL locking and grant matrix, migration safety, idempotency replay and concurrency tests, EXPLAIN and storage results. Sole writer for schema modifications; never edits old migration checksum. Strongest reasoning high/extra-high.
+Inputs: InventoryService, related repositories/entities, Flyway V1–V5, CI MySQL, backup/restoration scripts. Outputs: stock/hold/issued equations, SQL locking and grant matrix, migration safety, idempotency replay and concurrency tests, EXPLAIN and storage results. Sole writer for schema modifications; never edits old migration checksum. Configured gpt-6.1-sol medium for verified stock contracts, escalate to high only on unresolved significant risk.
 
 ### Lane F — Frontend/accessibility reviewer
-Inputs: extended/frontend React pages/context/client/types, style rules, Playwright and original academic UI. Outputs: complete task flows by role, truthful partial/loading/error/uncertain states, keyboard/reduced motion/mobile tests, API/contract discrepancies. Owned frontend files only. Competent code model medium/high.
+Inputs: extended/frontend React pages/context/client/types, style rules, Playwright and original academic UI. Outputs: complete task flows by role, truthful partial/loading/error/uncertain states, keyboard/reduced motion/mobile tests, API/contract discrepancies. Owned frontend files only. Configured gpt-6.1-terra medium for fully specified frontend/UI work.
 
 ### Lane R — Build, release, performance, operations
-Inputs: workflow verify.yml, POM/package-lock, scripts, deployment decision, logs and artifact manifests. Outputs: clean reproducible build, cold/warm metrics, dependency graph, risk review, environment/TLS/restore/runbook artifacts. Does not create paid resources/deploy publicly. Medium/high for tooling; high for backup/security.
+Inputs: workflow verify.yml, POM/package-lock, scripts, deployment decision, logs and artifact manifests. Outputs: clean reproducible build, cold/warm metrics, dependency graph, risk review, environment/TLS/restore/runbook artifacts. Does not create paid resources/deploy publicly. Configured gpt-6.1-terra medium for measured ops; escalate single hard recovery/security issue if evidence requires.
 
 ### Lane X — Independent adversarial critic (read-only and separate)
-Receives **source and artifacts, not implementer's reassuring conclusion alone**. Reconstructs contract independently, searches counterexamples, reproduces high-impact failures when safe, classifies claims SOURCE_ONLY/REPORTED_ONLY/TEST_FAILED/NOT_RUN, finds missing file transitive dependencies and false-positive tests. Strongest reasoning extra-high for risk-heavy gates. Any unresolved P0/P1 vetoes acceptance.
+Receives **source and artifacts, not implementer's reassuring conclusion alone**. Reconstructs contract independently, searches counterexamples, reproduces high-impact failures when safe, classifies claims SOURCE_ONLY/REPORTED_ONLY/TEST_FAILED/NOT_RUN, finds missing file transitive dependencies and false-positive tests. Configured gpt-6.1-sol medium independent review normally; one gpt-6.1-sol high critic for documented P0/P1 or final C11 gate. xhigh is exceptional, not default. Any unresolved P0/P1 vetoes acceptance.
 
 ### Lane I — Integration coordinator (one writer)
 Checks change conflicts, merges only locally into authorized test branch/worktree when allowed, reconciles DTOs/schema/roles/API, runs exact gates and records release provenance. Responsible for consolidated reports and next-pass prompt; not a replacement for independent critic.
@@ -63,7 +66,7 @@ Checks change conflicts, merges only locally into authorized test branch/worktre
 - C10 staging/recovery: R owns deployment/runbook; D owns safe restore/data validation scripts; B reviews reverse proxy/session; X runs adversarial independent acceptance.
 - C11 release: X leads source/behavior falsification, I runs full clean gate and packages, S reviews academic separation; no new feature changes.
 
-A dependency edge is mandatory for overlapping source paths, shared contracts, Flyway migrations, schema migrations, integration tests and release branch mutations. Do not run five writers just because five agents exist. Start with 2–3 independent workers; compare actual time saved versus integration/rework cost and adjust.
+A dependency edge is mandatory for overlapping source paths, shared contracts, Flyway migrations, schema migrations, integration tests and release branch mutations. Do not run five writers just because five agents exist. Start with ZERO workers. Dispatch ONE well-scoped necessary specialist after a demonstrated benefit; a second only for disjoint parallel files under frozen contracts, capped at TWO concurrent and FOUR distinct sessions per phase (including later independent critic). Never spawn extra just because agents exist. See Sections 12/13.
 
 ## E. Worker dispatch template (mandatory fields, no placeholders in real issued task)
 
@@ -96,7 +99,7 @@ Return the following structured payload as Markdown tables/CSV files (or corresp
 
 ## G. Prompt compiler and quality verifier
 
-For each phase, generate a worker contract from its corresponding full master prompt in 04/05. Expand concrete refs/paths from fresh Git, then validate: (1) gate read instruction present, (2) accurate immutable A, (3) allowed/forbidden edits, (4) source review closure, (5) course/Extended route distinction, (6) exact feature contracts, (7) negative/concurrency/crash/restore tests, (8) independent critique, (9) no unauthorized actions, (10) exact evidence format and stop rule. If any is absent, fail dispatch preflight.
+For each phase, generate an exact worker contract from its corresponding full master prompt in 04/05 **and the role-and-phase task in 13**, applying all strict model/spawn ceilings in 12. Expand concrete refs/paths from fresh Git, then validate: (1) gate read instruction present, (2) accurate immutable A, (3) allowed/forbidden edits, (4) source review closure, (5) course/Extended route distinction, (6) exact feature contracts, (7) negative/concurrency/crash/restore tests, (8) independent critique, (9) no unauthorized actions, (10) exact evidence format and stop rule. If any is absent, fail dispatch preflight.
 
 Do not merely send "audit this" or "make production-ready" to an agent. Conversely, do not replicate every irrelevant 660-file document in every worker prompt. The full QA standard plus complete task-specific specifications and precise source locators are required; worker must fetch and read authoritative sources itself.
 
