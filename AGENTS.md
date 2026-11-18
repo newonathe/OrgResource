@@ -61,3 +61,6 @@
 
 
 - **Additional mandatory source context for both flagships:** read [data/reference/ateneo-misa-sanggunian-public-context-2026.json](data/reference/ateneo-misa-sanggunian-public-context-2026.json) before designing or generating MISA/Sanggunian example workflows. Its MISA team abbreviations, LEAD Month/IM Summit names, Sanggunian public themes, One Big Pride and TALAB are public **descriptive references only**; no source proves resource inventory, historical transactions, real officer action or actual OrgResource operation. Fictional transactional project titles must be distinct and DEMO-marked.
+
+
+- **Identity alias preservation:** [data/reference/ateneo-v1-v2-reference-aliases.json](data/reference/ateneo-v1-v2-reference-aliases.json) maps all twelve earlier source reference keys to the expanded directory; it is **not** permission for a live DB migration, duplicated tenant or retroactive record rewrite. Validate by exact name or verified public profile link before creating any v2 demo tenant.
