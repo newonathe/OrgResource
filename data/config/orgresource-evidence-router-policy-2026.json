@@ -1,0 +1,213 @@
+{
+  "schema_version": "1.0.0",
+  "status": "PROPOSED_RULE_POLICY_NOT_RUNTIME_ROUTER",
+  "version_date": "2026-11-19",
+  "authority": [
+    "AGENTS.md",
+    "docs/QUALITY_EVIDENCE_CONTINUOUS_GATE.md",
+    "docs/execution/12_TOKEN_BUDGETED_SUBAGENT_ROUTING.md",
+    "docs/execution/14_SUPERPOWERS_SOURCE_AUDIT_AND_CONFLICTS.md"
+  ],
+  "upstream_source": {
+    "repo": "obra/superpowers",
+    "sha": "22f0b463e7a5e579904dd6211a520321035526f7",
+    "version": "7.0.2",
+    "license": "MIT"
+  },
+  "creator_goat": {
+    "source": "https://imginn.com/p/DeFS0Fes8yu/",
+    "originator": "Daniyar Kazi / @donimas",
+    "date": "2026-10-04",
+    "status": "PUBLIC_CAPTION_ONLY_SIMULATED_WORKLOAD_NOT_BENCHMARK_DIRECT_VIDEO_UNINSPECTED",
+    "do_not_copy_usd_costs_as_forecast": true
+  },
+  "objective": "Minimize observed total token and iteration cost per accepted feature inside course, security, privacy, data-integrity, evidence and owner-authorization hard constraints",
+  "gate_preconditions": [
+    "frozen academic SHA unchanged",
+    "exact approved phase/slice",
+    "actual model allowlist and effort support verified",
+    "full source-contract-test-evidence inputs",
+    "no shared source paths for parallel writes",
+    "independent review/real MySQL/HTTP/browser as applicable",
+    "full L2/L3 acceptance at phase end"
+  ],
+  "root_default": {
+    "execution": "INLINE_NATIVE",
+    "subagents": 0,
+    "reasoning": "select case-by-case after design contract, not global maximum",
+    "proof": "RED_GREEN_REFACTOR plus verified task receipts; independent final branch review"
+  },
+  "agents": {
+    "max_simultaneous": 2,
+    "max_distinct_sessions_per_phase": 4,
+    "nested_spawns": false,
+    "automatic_retry": false,
+    "reviewer_separate_and_after_implementation": true,
+    "default_subagent_model": "gpt-6-luna",
+    "default_subagent_effort": "low"
+  },
+  "routing_rules": [
+    {
+      "priority": 0,
+      "kind": "DETERMINISTIC_NON_JUDGMENT",
+      "examples": [
+        "Git tree/hash",
+        "JSON schema validation",
+        "duplicate source ID detection",
+        "generated demo row creation via tested deterministic algorithm",
+        "log tally",
+        "timing capture"
+      ],
+      "executor": "SCRIPT",
+      "model": null,
+      "reasoning_effort": null,
+      "qa": "Script output/error and independent validation; scripts do not certify overall acceptance"
+    },
+    {
+      "priority": 10,
+      "kind": "EXACT_MECHANICAL_1_2_FILE",
+      "examples": [
+        "documentation formatting",
+        "fixed CSV mapping",
+        "small non-security test fixture conversion",
+        "trivial typed code from accepted exact interface"
+      ],
+      "executor": "INLINE_OR_SCOPED_WORKER_IF_JUSTIFIED",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "low",
+      "requires": [
+        "finite file whitelist",
+        "exact expected diff/assertion",
+        "no high-risk trust/SQL/crypto decisions",
+        "one revision likely"
+      ],
+      "escalation": "gpt-6.1-terra/medium only after real failed attempt or unexpected complex dependency"
+    },
+    {
+      "priority": 20,
+      "kind": "SCOPED_SOURCE_FACTS",
+      "examples": [
+        "course source page/line evidence",
+        "Ateneo 2026 public roster fact mapping"
+      ],
+      "executor": "INLINE_OR_ORG_SOURCE_WHEN_BENEFICIAL",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "medium",
+      "requires": [
+        "full relevant source original",
+        "year/classification/rights boundaries",
+        "human critical decision escalation"
+      ],
+      "escalation": "root strong reasoning on course conflict, not auto new agent"
+    },
+    {
+      "priority": 30,
+      "kind": "COHERENT_API_UI_CI_SLICE",
+      "examples": [
+        "Extended Java DTO/API after contract freeze",
+        "React page after backend schema locked",
+        "CI/packaging from measured bottleneck"
+      ],
+      "executor": "INLINE_NATIVE_PREFERRED",
+      "model": "gpt-6.1-terra",
+      "reasoning_effort": "medium",
+      "requires": [
+        "specified API/DB/UI/test/negative states",
+        "one writer per file",
+        "actual test receipts"
+      ],
+      "escalation": "gpt-6.1-sol/medium only for substantive cross-cutting issue"
+    },
+    {
+      "priority": 40,
+      "kind": "IDENTITY_TENANT_LEDGER_RECOVERY",
+      "examples": [
+        "cross-tenant security",
+        "concurrent stock service",
+        "idempotency migration",
+        "encrypted off-host restore"
+      ],
+      "executor": "ROOT_OR_SINGLE_SPECIALIST",
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "medium",
+      "requires": [
+        "risk-specific invariant proof",
+        "exact SQL/http source",
+        "real MySQL positive/negative concurrency",
+        "independent critic"
+      ],
+      "escalation": "gpt-6.1-sol/high for one reproduced P0/P1 or design ambiguity requiring judgment"
+    },
+    {
+      "priority": 50,
+      "kind": "ARCHITECTURE_COURSE_RELEASE_VETO",
+      "examples": [
+        "original academic requirement contradiction",
+        "unsafe migration decision",
+        "final public hosting readiness"
+      ],
+      "executor": "ROOT_OR_ONE_INDEPENDENT_CRITICAL_REVIEW",
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high",
+      "requires": [
+        "exact authority/source",
+        "alternative comparison",
+        "negative acceptance and independent evidence",
+        "scope of approved owner action"
+      ],
+      "escalation": "STOP_OWNER_DECISION; no uncontrolled high/extra-high workers"
+    }
+  ],
+  "selection_algorithm": [
+    "Check actual model+effort support. If unknown, do not spawn.",
+    "Identify hard-constraint/risk class and task ambiguity, not just file count.",
+    "Prefer deterministic tools, then inline Native implementation.",
+    "Choose cheapest capable model supported by complete task contract; skip cheap-first when risk is high.",
+    "Specify BOTH model and effort on any spawn; no silent inherited expensive parent.",
+    "Choose subagents only if isolated-context benefit exceeds spawning/review overhead.",
+    "Use TDD and real scoped tests; escalate on falsified hypothesis/failed check, not by intuition.",
+    "Record usage if exposed; report NOT_AVAILABLE otherwise.",
+    "Full phase acceptance and owner gate remain unchanged."
+  ],
+  "review_strategy": {
+    "low_risk": "root self-review+TDD plus one independent integrated branch review",
+    "high_risk": "additional targeted independent negative/invariant review at corresponding gated boundary, not duplicate full-suite rerun",
+    "final": "one strongest available independent release critic at approved C11"
+  },
+  "measurement": {
+    "fields": [
+      "TASK_ID",
+      "RISK_CLASS",
+      "INPUT_OUTPUT_REPORTED_TOKENS",
+      "MODEL_REPORTED",
+      "REASONING_EFFORT_REPORTED",
+      "ROOT_AND_SUBAGENT_SESSION_COUNT",
+      "RETRIES",
+      "WALL_CLOCK",
+      "BUILD_COLD_WARM",
+      "CI_CRITICAL_PATH",
+      "SQL_P95",
+      "ARTIFACT_DB_BACKUP_BYTES",
+      "ACCEPTANCE_COVERAGE",
+      "P0_P1"
+    ],
+    "unknown": "NOT_AVAILABLE",
+    "objective": "quality-adjusted total tokens and wall clock for one accepted tested slice",
+    "pre_register_baseline_first": true
+  },
+  "stop_rules": [
+    "unavailable selected model+effort and no approved replacement",
+    "unknown course/API/SQL role contract",
+    "unreviewed high-risk dependency",
+    "mandatory failed/NOT_RUN test",
+    "unresolved P0/P1",
+    "unexpected course source or Flyway checksum drift",
+    "unauthorized merge, hosting, real SMS, paid action, real-person data"
+  ],
+  "no_claims": [
+    "No router executable in this commit",
+    "No automatic model cost optimizer proven",
+    "No measured token saving",
+    "No new hosted app, generated records or full QA pass from this policy file"
+  ]
+}

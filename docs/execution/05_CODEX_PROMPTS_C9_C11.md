@@ -125,3 +125,5 @@ Release can be described as VERIFIED for a **bounded approved launch scope** onl
 Do not promote a local candidate to production merely because CI is green. Do not independently deploy, merge, push to main, create paid resources, send real SMS or submit to Canvas. Stop after report and owner decision request.
 
 Always include: "Do not reduce audit depth or acceptance criteria to satisfy time/token limits; complete all safe possible work and mark anything blocked or not run."
+
+**2026-11-19 newer execution directive:** Native-first implementation of authorized C9–C11 slice work; cost/risk-aware exact model+effort selection and one genuinely independent integrated review, with a stronger targeted C11 review and all required negative/host/off-host verification intact. See docs/execution/14–16. Existing 17 task prompts are optional specialists, not a spawn checklist. Full AGENTS.md, QA gate, course original/frozen A, source and runtime evidence remain mandatory; no third-party plugin installation or next-phase automation implied.
