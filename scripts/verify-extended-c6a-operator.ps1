@@ -245,8 +245,6 @@ GRANT ALL ON $restored.* TO 'c6_migrate'@'127.0.0.1';
     $env:EXT_SERVER_PORT = [string](Free-C6aPort)
     $base = "http://127.0.0.1:$env:EXT_SERVER_PORT"
     Invoke-Bootstrap $true
-    Invoke-Bootstrap $false
-    if ((Invoke-LocalSql $source "SELECT COUNT(*) FROM $db.organization;") -ne '1') { throw 'Bootstrap repeated initialization.' }
     $null = Invoke-LocalSql $source "CREATE USER 'c6_limited'@'127.0.0.1' IDENTIFIED BY '$limitedPassword'; GRANT SELECT ON $db.department TO 'c6_limited'@'127.0.0.1';"
     Set-RuntimeGrant $source $db $runtimePassword
     $env:EXT_DB_USER = 'c6_runtime'
@@ -259,6 +257,15 @@ GRANT ALL ON $restored.* TO 'c6_migrate'@'127.0.0.1';
     & "$PSScriptRoot/run-extended-c3-newman.ps1" -BaseUrl $base -Username $env:EXT_E2E_USERNAME -Password $env:EXT_E2E_PASSWORD
     Assert-WebRead -Inventory
     Stop-OperatorJar
+    $null = Invoke-LocalSql $source "UPDATE $db.idempotency_key SET created_at=UTC_TIMESTAMP(6)-INTERVAL 25 HOUR,expires_at=UTC_TIMESTAMP(6)-INTERVAL 1 HOUR WHERE state='COMPLETED';"
+    $receiptQuery = "SELECT COUNT(*) FROM $db.idempotency_key WHERE state='COMPLETED' AND expires_at<=UTC_TIMESTAMP(6);"
+    $expiredBefore = [int](Invoke-LocalSql $source $receiptQuery)
+    if ($expiredBefore -lt 1) { throw 'Expected persisted receipt fixture from the operator-owned workspace.' }
+    Invoke-Bootstrap $false
+    if ((Invoke-LocalSql $source "SELECT COUNT(*) FROM $db.organization;") -ne '1' -or
+            [int](Invoke-LocalSql $source $receiptQuery) -ne $expiredBefore) {
+        throw 'The refused offline bootstrap changed existing workspace or receipt records.'
+    }
     Write-Output 'Operator first run passed: separate database identities, real bootstrap and refusal, academic Newman and authenticated Chromium.'
 
     $backup = "$PSScriptRoot/extended-c-backup.ps1"
@@ -303,6 +310,18 @@ GRANT ALL ON $restored.* TO 'c6_migrate'@'127.0.0.1';
     $target = Start-C6aMysql 'target' $target
     Assert-WebRead
     Write-Output 'Java remained live through target MySQL unavailability and accepted a new authenticated browser session after restart.'
+    $null = Invoke-LocalSql $source @"
+INSERT INTO $db.resource (public_id, organization_id, name, name_key, type, total_quantity, image_bytes, image_content_type)
+WITH RECURSIVE fixture(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM fixture WHERE n<17)
+SELECT UUID_TO_BIN(UUID(),0), o.id, CONCAT('C6a oversized fixture ', n), CONCAT('c6a oversized fixture ', n),
+       'REUSABLE', 0, REPEAT(0x5a,2097152), 'image/png'
+FROM fixture CROSS JOIN $db.organization o
+WHERE o.slug='c6a-fictional-operator';
+"@
+    $oversizedBackup = Join-Path $temp 'oversized-backup.aesgcm'
+    Assert-Refused { & $backup -Mode Backup -Port $source -Schema $db -LoginPath 'c6-backup' -Archive $oversizedBackup } 'MySQL output exceeded the local recovery size limit'
+    if (Test-Path -LiteralPath $oversizedBackup) { throw 'An oversized backup was published.' }
+    Write-Output 'Oversized MySQL output was refused before an archive was published.'
     Write-Output "Protected-login restore passed. Archive bytes: $($archive.Bytes), SHA-256 $($archive.Sha256). Evidence directory: $temp"
 } finally {
     Stop-OperatorJar
