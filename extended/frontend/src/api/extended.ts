@@ -56,7 +56,9 @@ export const inventoryApi = {
   allocations: (orgId: string, limit = 100) => data<AllocationPage>(`/api/v2/orgs/${encodeURIComponent(orgId)}/allocations?limit=${Math.max(1, Math.min(100, limit))}`),
   allocation: (orgId: string, allocationId: string) => request<AllocationState>(`/api/v2/orgs/${encodeURIComponent(orgId)}/allocations/${encodeURIComponent(allocationId)}`, "GET"),
   movements: (orgId: string, resourceId: string, limit = 50) => data<MovementPage>(`/api/v2/orgs/${encodeURIComponent(orgId)}/resources/${encodeURIComponent(resourceId)}/movements?limit=${Math.max(1, Math.min(100, limit))}`),
-  receipt: (orgId: string, operationId: string) => request<OperationReceipt>(`/api/v2/orgs/${encodeURIComponent(orgId)}/operations/${encodeURIComponent(operationId)}`, "GET"),
+  receipt: (orgId: string, operationId: string) => request<OperationReceipt | OperationView>(`/api/v2/orgs/${encodeURIComponent(orgId)}/operations/${encodeURIComponent(operationId)}`, "GET"),
+  removeImage: (orgId: string, resourceId: string, etag: string) =>
+    request<InventoryResource>(`/api/v2/orgs/${encodeURIComponent(orgId)}/resources/${encodeURIComponent(resourceId)}/image/delete`, "POST", undefined, { headers: { "If-Match": etag } }),
   receive: (orgId: string, resourceId: string, quantity: number, etag: string, identity: OperationIdentity) =>
     inventoryPost<OperationView>(orgId, `resources/${resourceId}/receive`, { operationId: identity.operationId, quantity }, etag, identity),
   adjust: (orgId: string, resourceId: string, newTotalQuantity: number, etag: string, identity: OperationIdentity) =>

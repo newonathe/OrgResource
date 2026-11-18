@@ -71,8 +71,20 @@ export function RecoveryPage() {
 
 export function InvitationPage() {
   const { ready, session, adoptSession, reload, organizations } = useAuth();
-  const [params] = useSearchParams();
-  const [token, setToken] = useState(params.get("token") ?? "");
+  const [params, setParams] = useSearchParams();
+  const [token, setToken] = useState("");
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.has("token")) {
+      url.searchParams.delete("token");
+      window.history.replaceState(window.history.state, "", url);
+    }
+    if (params.has("token")) {
+      const sanitized = new URLSearchParams(params);
+      sanitized.delete("token");
+      setParams(sanitized, { replace: true });
+    }
+  }, [params, setParams]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -163,6 +175,7 @@ export function AccountPage() {
 export function GovernancePage({ orgId, role }: { orgId: string; role: Role }) {
   const { session, reload } = useAuth();
   const [members, setMembers] = useState<GovernanceMember[]>([]);
+  const [moreMembers, setMoreMembers] = useState(false);
   const [inviteRole, setInviteRole] = useState<Exclude<Role, "OWNER">>("MEMBER");
   const [inviteToken, setInviteToken] = useState<string | null>(null);
   const [transferId, setTransferId] = useState("");
@@ -182,7 +195,7 @@ export function GovernancePage({ orgId, role }: { orgId: string; role: Role }) {
     membersRequest.current = controller;
     try {
       const result = await identityApi.members(orgId, undefined, controller.signal);
-      if (!controller.signal.aborted) { setMembers(result.items); setError(null); }
+      if (!controller.signal.aborted) { setMembers(result.items); setMoreMembers(result.nextCursor !== null); setError(null); }
     } catch (cause) {
       if (!controller.signal.aborted) setError(errorText(cause));
     }
@@ -207,6 +220,7 @@ export function GovernancePage({ orgId, role }: { orgId: string; role: Role }) {
   return <section className="page-shell"><PageHeader eyebrow="Organization · governance" title="Members and access" description="Roles and membership state are enforced by the server. This page never grants access from browser state." />
     {error && <Notice tone="danger">{error}</Notice>}{message && <Notice tone="success">{message}</Notice>}
     <div className="governance-grid"><GlassPanel className="list-panel" tilt={false}><PanelHeading kicker="Active and suspended members" title="Memberships"><Button disabled={busy} onClick={() => void load()}>Refresh</Button></PanelHeading>
+      {moreMembers && <p className="quiet-note">Showing the first 100 members. More member records exist.</p>}
       {members.length === 0 ? <p>No memberships available, or your role cannot view member records.</p> : <div className="member-list">{members.map(member => <article className="member-row" key={member.id}><div><strong>{member.displayName}</strong><p><StatusBadge tone={member.status === "ACTIVE" ? "success" : "warning"}>{member.status}</StatusBadge> <StatusBadge tone="blue">{member.role}</StatusBadge></p></div>
         {member.id !== ownMembershipId && member.role !== "OWNER" && member.status === "ACTIVE" &&
           (role === "OWNER" || (role === "ADMIN" && member.role !== "ADMIN")) &&

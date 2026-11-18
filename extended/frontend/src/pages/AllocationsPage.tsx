@@ -61,7 +61,7 @@ export function AllocationsPage() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [postReviewRequired, setPostReviewRequired] = useState(false);
-  const [uncertainOperation, setUncertainOperation] = useState<{ allocation: Allocation; action: ActionName; identity: OperationIdentity } | null>(null);
+  const [uncertainOperation, setUncertainOperation] = useState<{ allocation: Allocation; action: ActionName; identity: OperationIdentity; etag: string } | null>(null);
   const [receiptRetryAllowed, setReceiptRetryAllowed] = useState(false);
   const [receiptRecoveryMessage, setReceiptRecoveryMessage] = useState("");
   const [receiptRecoveryBusy, setReceiptRecoveryBusy] = useState(false);
@@ -121,11 +121,14 @@ export function AllocationsPage() {
     setReceiptRecoveryBusy(true); setReceiptRecoveryMessage("");
     try {
       const result = await inventoryApi.receipt(activeOrgId, uncertainOperation.identity.operationId);
-      setReceiptRecoveryMessage(`Server receipt recovered: ${result.data.kind}, ${result.data.quantity} units. The saved transition was not repeated.`);
+      const receipt = result.data;
+      setReceiptRecoveryMessage("kind" in receipt
+        ? `Permanent movement receipt recovered: ${receipt.kind}, ${receipt.quantity} units.`
+        : `Temporary operation receipt recovered: ${receipt.action}, ${receipt.allocationStatus ?? "confirmed"}.`);
       setUncertainOperation(null); setReceiptRetryAllowed(false); refresh();
     } catch (reason) {
       if (reason instanceof ApiError && reason.status === 404) {
-        setReceiptRecoveryMessage("No committed receipt was found. The current Allocation state has been refreshed. Review it before retrying the same operation ID.");
+        setReceiptRecoveryMessage("No receipt is visible yet. The original request may still commit. Review the refreshed Allocation before retrying the original request.");
         setReceiptRetryAllowed(true); refresh();
       } else if (reason instanceof ApiError && reason.status === 409 && reason.code === "IDEMPOTENCY_KEY_EXPIRED") {
         setReceiptRecoveryMessage("The operation receipt expired. Permanent stock movements remain, but this transition cannot be safely retried from the page. Reconcile current state with an authorized custodian.");
@@ -137,17 +140,17 @@ export function AllocationsPage() {
     if (busy || postReviewRequired || !pendingAction) return;
     const { allocation, action } = pendingAction;
     setBusy(true); setError(""); setNotice("");
-    let actionIdentity: OperationIdentity | null = null;
+    let sentAttempt: typeof uncertainOperation = null;
     try {
       if (["approve", "issue", "return", "consume", "cancel"].includes(action)) {
         if (!canOperateStock || !allocation.publicId || !activeOrgId) throw new Error("Your current role cannot perform this lifecycle action.");
         const retry = uncertainOperation?.allocation.id === allocation.id && uncertainOperation.action === action && receiptRetryAllowed;
         if (uncertainOperation && !retry) throw new Error("Recover the uncertain operation receipt before another lifecycle request.");
         const identity = retry ? uncertainOperation.identity : newOperationIdentity();
-        actionIdentity = identity;
-        const state = await inventoryApi.allocation(activeOrgId, allocation.publicId);
-        if (!state.etag) throw new Error("The current Allocation ETag is missing. Reload and review this record.");
-        await inventoryApi.transition(activeOrgId, allocation.publicId, action as "approve" | "issue" | "return" | "consume" | "cancel", state.etag, identity);
+        const etag = retry ? uncertainOperation.etag : (await inventoryApi.allocation(activeOrgId, allocation.publicId)).etag;
+        if (!etag) throw new Error("The current Allocation ETag is missing. Reload and review this record.");
+        sentAttempt = { allocation, action, identity, etag };
+        await inventoryApi.transition(activeOrgId, allocation.publicId, action as "approve" | "issue" | "return" | "consume" | "cancel", etag, identity);
         setUncertainOperation(null); setReceiptRetryAllowed(false); setReceiptRecoveryMessage("");
       } else if (action === "delete") await api.deleteAllocation(allocation.id);
       else await api.revokeSmsConsent(allocation.id);
@@ -157,8 +160,8 @@ export function AllocationsPage() {
     } catch (reason) {
       if (isUncertain(reason)) {
         setPostReviewRequired(true);
-        if (["approve", "issue", "return", "consume", "cancel"].includes(action) && allocation.publicId && activeOrgId) {
-          setUncertainOperation({ allocation, action, identity: actionIdentity ?? newOperationIdentity() });
+        if (sentAttempt) {
+          setUncertainOperation(sentAttempt);
           setReceiptRetryAllowed(false);
           setReceiptRecoveryMessage("The response was uncertain. Recover the saved receipt before any retry; the page did not automatically repeat the transition.");
         }
