@@ -100,3 +100,7 @@ A public Instagram-caption mirror of `@donimas` / Daniyar Kazi, posted **2026-10
 - Proposed OrgResource router/skills adaptation: **PLAN/CONFIG ONLY** until authorized Codex execution and actual acceptance.
 
 **Do not copy upstream source wholesale.** MIT copying is permissible with attribution and retained license, but copying every hook/script/skill increases maintenance and context, may duplicate functionality, and is unnecessary if the official plugin is installed. This PR creates a small OrgResource-native overlay and instruction links; no upstream executable code is vendored.
+
+## Final policy correction: custom-agent sandbox_mode is NOT an enforceable agent-file override
+
+Official Codex project custom agents cannot independently override the parent sandbox_mode or approval_policy (https://learn.chatgpt.com/docs/agent-configuration/subagents). The original four reviewer/source role TOMLs had sandbox_mode=read-only even though those settings are ignored for standalone custom agents; now removed. A read-only reviewer must have an actually read-only parent session or be treated as behaviorally constrained only, plus the coordinator verifies the exact diff. All other model/effort/max-concurrency claims still require an actual trusted project runtime check. See 12 and 19; this correction supersedes any earlier impression in this audit that a TOML reviewer file enforces filesystem read-only.
