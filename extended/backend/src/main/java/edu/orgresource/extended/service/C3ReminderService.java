@@ -32,7 +32,9 @@ public class C3ReminderService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public boolean claimOne(long allocationId, LocalDateTime sampledNow) {
         Allocation allocation = loadLocked(allocationId);
-        if (allocation == null || allocation.reminderClaimedAt != null || allocation.reminderOutcome != ReminderOutcome.NONE
+        boolean retryableKeyFailure = allocation != null && allocation.reminderOutcome == ReminderOutcome.KEY_UNAVAILABLE;
+        if (allocation == null || (allocation.reminderClaimedAt != null && !retryableKeyFailure)
+                || (allocation.reminderOutcome != ReminderOutcome.NONE && !retryableKeyFailure)
                 || !hasReminderWindow(allocation, sampledNow)) return false;
         if (!Boolean.TRUE.equals(allocation.smsConsent) || allocation.phoneCiphertext == null
                 || allocation.phoneNonce == null || allocation.phoneKeyId == null) {
@@ -42,6 +44,8 @@ public class C3ReminderService {
         }
         allocation.reminderClaimedAt = sampledNow;
         allocation.reminderOutcome = ReminderOutcome.CLAIMED;
+        allocation.reminderHttpStatus = null;
+        allocation.providerMessageSid = null;
         allocations.saveAndFlush(allocation);
         return true;
     }
@@ -59,7 +63,7 @@ public class C3ReminderService {
             String destination = contactCipher.decrypt(allocation.organizationId, allocation.publicId,
                     allocation.phoneCiphertext, allocation.phoneNonce, allocation.phoneKeyId);
             if (!destination.matches("^\\+[1-9][0-9]{7,14}$")) {
-                suppressClaim(allocation);
+                invalidContactClaim(allocation);
                 return null;
             }
             LocalDateTime dueAt = allocation.requirement.project.endAt;
@@ -67,16 +71,37 @@ public class C3ReminderService {
                     + ". Please coordinate its return with your organization.";
             return new ReminderDispatch(destination, body);
         } catch (C1ApiException unavailableOrCorrupt) {
-            suppressClaim(allocation);
+            if ("CONTACT_ENCRYPTION_UNAVAILABLE".equals(unavailableOrCorrupt.getCode()))
+                deferForKeyAvailability(allocation);
+            else if ("CONTACT_INTEGRITY_FAILURE".equals(unavailableOrCorrupt.getCode()))
+                invalidContactClaim(allocation);
+            else
+                suppressClaim(allocation);
             return null;
         }
+    }
+
+    /** Commits the consent check immediately before transport; no database lock spans network I/O. */
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public boolean authorizeDispatch(long allocationId, LocalDateTime sampledNow) {
+        Allocation allocation = loadLocked(allocationId);
+        if (allocation == null || allocation.reminderOutcome != ReminderOutcome.CLAIMED
+                || allocation.reminderClaimedAt == null || !hasReminderWindow(allocation, sampledNow)
+                || !Boolean.TRUE.equals(allocation.smsConsent) || allocation.phoneCiphertext == null
+                || allocation.phoneNonce == null || allocation.phoneKeyId == null) {
+            suppressClaim(allocation);
+            return false;
+        }
+        allocation.reminderOutcome = ReminderOutcome.DISPATCHING;
+        allocations.saveAndFlush(allocation);
+        return true;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public boolean recordOutcome(long allocationId, ReminderSendResult result) {
         Allocation allocation = loadLocked(allocationId);
         if (allocation == null || allocation.reminderClaimedAt == null
-                || allocation.reminderOutcome != ReminderOutcome.CLAIMED) return false;
+                || allocation.reminderOutcome != ReminderOutcome.DISPATCHING) return false;
         ReminderOutcome outcome = result == null ? ReminderOutcome.UNKNOWN : result.outcome();
         if (outcome != ReminderOutcome.SIMULATED && outcome != ReminderOutcome.PROVIDER_ACCEPTED
                 && outcome != ReminderOutcome.REJECTED && outcome != ReminderOutcome.UNKNOWN) outcome = ReminderOutcome.UNKNOWN;
@@ -91,7 +116,8 @@ public class C3ReminderService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public boolean markStaleClaimUnknown(long allocationId, LocalDateTime cutoff) {
         Allocation allocation = loadLocked(allocationId);
-        if (allocation == null || allocation.reminderOutcome != ReminderOutcome.CLAIMED
+        if (allocation == null || (allocation.reminderOutcome != ReminderOutcome.CLAIMED
+                && allocation.reminderOutcome != ReminderOutcome.DISPATCHING)
                 || allocation.reminderClaimedAt == null || !allocation.reminderClaimedAt.isBefore(cutoff)) return false;
         allocation.reminderOutcome = ReminderOutcome.UNKNOWN;
         allocation.reminderHttpStatus = null;
@@ -113,6 +139,25 @@ public class C3ReminderService {
     private void suppressClaim(Allocation allocation) {
         if (allocation != null && allocation.reminderOutcome == ReminderOutcome.CLAIMED) {
             allocation.reminderOutcome = ReminderOutcome.SUPPRESSED;
+            allocation.reminderHttpStatus = null;
+            allocation.providerMessageSid = null;
+            allocations.saveAndFlush(allocation);
+        }
+    }
+
+    private void deferForKeyAvailability(Allocation allocation) {
+        if (allocation != null && allocation.reminderOutcome == ReminderOutcome.CLAIMED) {
+            allocation.reminderOutcome = ReminderOutcome.KEY_UNAVAILABLE;
+            allocation.reminderClaimedAt = null;
+            allocation.reminderHttpStatus = null;
+            allocation.providerMessageSid = null;
+            allocations.saveAndFlush(allocation);
+        }
+    }
+
+    private void invalidContactClaim(Allocation allocation) {
+        if (allocation != null && allocation.reminderOutcome == ReminderOutcome.CLAIMED) {
+            allocation.reminderOutcome = ReminderOutcome.INVALID_CONTACT;
             allocation.reminderHttpStatus = null;
             allocation.providerMessageSid = null;
             allocations.saveAndFlush(allocation);

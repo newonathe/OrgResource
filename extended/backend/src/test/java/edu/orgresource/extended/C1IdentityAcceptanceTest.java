@@ -23,6 +23,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
@@ -53,7 +54,10 @@ import edu.orgresource.extended.service.C1Service;
 import edu.orgresource.extended.service.InventoryService;
 import edu.orgresource.extended.service.ResourceImageSupport;
 import edu.orgresource.extended.service.C3ReminderDispatcher;
+import edu.orgresource.extended.service.C3ReminderService;
 import edu.orgresource.extended.integration.C3ReminderTransport;
+import edu.orgresource.extended.integration.ReminderDispatch;
+import edu.orgresource.extended.integration.ReminderSendResult;
 import edu.orgresource.extended.domain.ReminderMode;
 import edu.orgresource.extended.scheduler.C1ReminderScheduler;
 import jakarta.validation.Validator;
@@ -110,6 +114,7 @@ class C1IdentityAcceptanceTest {
     @Autowired InventoryService inventory;
     @Autowired edu.orgresource.extended.security.ContactCipher contactCipher;
     @Autowired C3ReminderDispatcher reminderDispatcher;
+    @Autowired C3ReminderService reminderService;
     @Autowired ScheduledAnnotationBeanPostProcessor scheduledTasks;
     @Autowired Clock clock;
     @org.springframework.beans.factory.annotation.Value("${c1.sms.enabled:false}") boolean smsEnabled;
@@ -287,7 +292,7 @@ class C1IdentityAcceptanceTest {
         RuntimeException invalidRole = assertThrows(RuntimeException.class,
                 () -> jdbc.update("UPDATE membership SET role='ROOT' WHERE id=?", a.membershipDbId));
         assertNotNull(findCause(invalidRole, java.sql.SQLException.class));
-        assertEquals(4, jdbc.queryForObject("SELECT COUNT(*) FROM flyway_schema_history WHERE success=1", Integer.class));
+        assertEquals(5, jdbc.queryForObject("SELECT COUNT(*) FROM flyway_schema_history WHERE success=1", Integer.class));
     }
 
     @Test @Order(4)
@@ -779,7 +784,7 @@ class C1IdentityAcceptanceTest {
     @Test @Order(15)
     void ID15_cleanFlywayBootstrapAndEffectiveDependencyVersionsArePresent() throws Exception {
         assertEquals("1", jdbc.queryForObject("SELECT version FROM flyway_schema_history WHERE success=1 ORDER BY installed_rank LIMIT 1", String.class));
-        assertEquals(4, jdbc.queryForObject("SELECT COUNT(*) FROM flyway_schema_history WHERE success=1", Integer.class));
+        assertEquals(5, jdbc.queryForObject("SELECT COUNT(*) FROM flyway_schema_history WHERE success=1", Integer.class));
         String[] tables = jdbc.queryForList("SELECT LOWER(table_name) FROM information_schema.tables WHERE table_schema=DATABASE()", String.class).toArray(String[]::new);
         assertTrue(List.of(tables).contains("spring_session"));
         assertTrue(get(newClient(), "/").body().contains("OrgResource"));
@@ -1723,6 +1728,41 @@ class C1IdentityAcceptanceTest {
                 "<svg xmlns=\"http://www.w3.org/2000/svg\"></svg>".getBytes(StandardCharsets.UTF_8));
         assertEquals(400, svg.statusCode(), svg.body());
         assertEquals("INVALID_IMAGE", json(svg).get("code").getAsString());
+
+        HttpResponse<String> noCsrf = multipartPost(ownerSession, "/api/resources/" + resourceId + "/image",
+                "image/png", png, false);
+        assertEquals(403, noCsrf.statusCode(), "Image write must enforce CSRF; response=" + noCsrf.body());
+        HttpResponse<String> malformed = malformedMultipartPost(ownerSession, "/api/resources/" + resourceId + "/image");
+        assertTrue(malformed.statusCode() == 400 || malformed.statusCode() == 415,
+                "Malformed multipart input must be rejected as a controlled client error: " + malformed.body());
+
+        byte[] corrupt = png.clone();
+        corrupt[41] ^= 0x01;
+        HttpResponse<String> corrupted = multipartPost(ownerSession, "/api/resources/" + resourceId + "/image", "image/png", corrupt);
+        assertEquals(400, corrupted.statusCode(), corrupted.body());
+        byte[] oversizedDimensions = pngWithOversizedDimensions(png, 5000, 5000);
+        HttpResponse<String> dimensions = multipartPost(ownerSession, "/api/resources/" + resourceId + "/image",
+                "image/png", oversizedDimensions);
+        assertEquals(400, dimensions.statusCode(), dimensions.body());
+
+        byte[] jpeg = noisyJpeg();
+        assertTrue(jpeg.length > 70 * 1024 && jpeg.length <= ResourceImageSupport.MAX_BYTES,
+                "The valid JPEG fixture must exercise a nontrivial image larger than 70 KiB.");
+        HttpResponse<String> jpegUpload = multipartPost(ownerSession, "/api/resources/" + resourceId + "/image", "image/jpeg", jpeg);
+        assertEquals(200, jpegUpload.statusCode(), jpegUpload.body());
+        HttpResponse<byte[]> jpegServed = ownerSession.client.send(HttpRequest.newBuilder(URI.create(
+                base() + "/api/resources/" + resourceId + "/image")).GET().build(), HttpResponse.BodyHandlers.ofByteArray());
+        assertEquals(200, jpegServed.statusCode());
+        assertEquals("image/jpeg", jpegServed.headers().firstValue("Content-Type").orElse("").split(";")[0]);
+        assertArrayEquals(jpeg, jpegServed.body(), "JPEG bytes must be stored and served without transformation.");
+
+        byte[] maxJpeg = padJpegToSize(jpeg, ResourceImageSupport.MAX_BYTES);
+        assertEquals(ResourceImageSupport.MAX_BYTES, maxJpeg.length);
+        HttpResponse<String> maximum = multipartPost(ownerSession, "/api/resources/" + resourceId + "/image", "image/jpeg", maxJpeg);
+        assertEquals(200, maximum.statusCode(), maximum.body());
+        HttpResponse<String> overMaximum = multipartPost(ownerSession, "/api/resources/" + resourceId + "/image",
+                "image/jpeg", Arrays.copyOf(maxJpeg, maxJpeg.length + 1));
+        assertEquals(413, overMaximum.statusCode(), overMaximum.body());
     }
 
     @Test @Order(32)
@@ -2107,6 +2147,302 @@ class C1IdentityAcceptanceTest {
                 Integer.class, owner.orgDbId, resourceId), "Failed requests must not append a movement or change physical stock.");
     }
 
+    @Test @Order(39)
+    void C4_A1_zeroStockResourceWithImageCannotBeDeletedButEmptyUnpicturedResourceCan() throws Exception {
+        Fixture owner = newTenant("C4-image-delete", Membership.Role.OWNER);
+        Session session = login(owner.username, owner.password);
+        long picturedId = json(post(session, "/api/resources", GSON.toJson(new ResourceRequest(
+                "C4 Pictured Empty Resource", "CONSUMABLE", 0)))).get("id").getAsLong();
+        byte[] png = tinyPng();
+        assertEquals(200, multipartPost(session, "/api/resources/" + picturedId + "/image", "image/png", png).statusCode());
+
+        HttpResponse<String> refused = post(session, "/api/resources/" + picturedId + "/delete", null);
+        assertEquals(409, refused.statusCode(), refused.body());
+        assertEquals("RESOURCE_IMAGE_EXISTS", json(refused).get("code").getAsString());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM resource WHERE id=? AND organization_id=? AND total_quantity=0",
+                Integer.class, picturedId, owner.orgDbId));
+        HttpResponse<byte[]> retained = session.client.send(HttpRequest.newBuilder(URI.create(
+                base() + "/api/resources/" + picturedId + "/image")).GET().build(), HttpResponse.BodyHandlers.ofByteArray());
+        assertEquals(200, retained.statusCode());
+        assertArrayEquals(png, retained.body(), "Refused deletion must preserve the exact image bytes.");
+
+        long emptyId = json(post(session, "/api/resources", GSON.toJson(new ResourceRequest(
+                "C4 Deletable Empty Resource", "CONSUMABLE", 0)))).get("id").getAsLong();
+        HttpResponse<String> deleted = post(session, "/api/resources/" + emptyId + "/delete", null);
+        assertEquals(200, deleted.statusCode(), deleted.body());
+        assertEquals(0, jdbc.queryForObject("SELECT COUNT(*) FROM resource WHERE id=? AND organization_id=?",
+                Integer.class, emptyId, owner.orgDbId));
+    }
+
+    @Test @Order(40)
+    void C4_A2_operationReceiptsRequireCurrentStockRoleEvenForOriginalActor() throws Exception {
+        Fixture owner = newTenant("C4-receipt-owner", Membership.Role.OWNER);
+        Fixture actor = fixtureInOrg(owner.orgDbId, Membership.Role.CUSTODIAN);
+        Fixture custodian = fixtureInOrg(owner.orgDbId, Membership.Role.CUSTODIAN);
+        Fixture foreign = newTenant("C4-receipt-foreign", Membership.Role.OWNER);
+        Session ownerSession = login(owner.username, owner.password);
+        Session actorSession = login(actor.username, actor.password);
+        Session custodianSession = login(custodian.username, custodian.password);
+        Session foreignSession = login(foreign.username, foreign.password);
+
+        long resourceId = json(post(ownerSession, "/api/resources", GSON.toJson(new ResourceRequest(
+                "C4 Receipt Resource", "CONSUMABLE", 0)))).get("id").getAsLong();
+        Resource resource = resourceRepository.findByIdAndOrganizationId(resourceId, owner.orgDbId).orElseThrow();
+        String root = "/api/v2/orgs/" + owner.orgPublicId;
+        String statePath = root + "/resources/" + resource.publicId;
+        HttpResponse<String> state = get(actorSession.client, statePath);
+        UUID operationId = UUID.randomUUID();
+        String body = GSON.toJson(new ReceiveRequest(operationId, 1));
+        HttpResponse<String> committed = modernPost(actorSession, statePath + "/receive", body,
+                state.headers().firstValue("ETag").orElseThrow(), C1Secrets.bearerToken());
+        assertEquals(201, committed.statusCode(), committed.body());
+
+        String receiptPath = root + "/operations/" + operationId;
+        assertEquals(200, get(custodianSession.client, receiptPath).statusCode(),
+                "A separate active CUSTODIAN may inspect organization stock activity.");
+        assertEquals(404, get(foreignSession.client, receiptPath).statusCode());
+        assertEquals(401, get(newClient(), receiptPath).statusCode());
+
+        jdbc.update("UPDATE membership SET role='MEMBER',version=version+1,updated_at=? WHERE id=? AND org_id=?",
+                Timestamp.valueOf(now()), actor.membershipDbId, owner.orgDbId);
+        HttpResponse<String> demotedReceipt = get(actorSession.client, receiptPath);
+        assertEquals(403, demotedReceipt.statusCode(), demotedReceipt.body());
+        assertEquals("FORBIDDEN", json(demotedReceipt).get("code").getAsString());
+
+        LocalDateTime expired = LocalDateTime.ofInstant(clock.instant(), ZoneOffset.UTC).minusHours(1);
+        jdbc.update("UPDATE idempotency_key SET created_at=?,expires_at=? WHERE organization_id=? AND operation_public_id=UUID_TO_BIN(?,0)",
+                Timestamp.valueOf(expired.minusHours(24)), Timestamp.valueOf(expired), owner.orgDbId, operationId.toString());
+        invokeRegisteredLifecycleSchedule();
+        assertEquals(0, jdbc.queryForObject("SELECT COUNT(*) FROM idempotency_key WHERE organization_id=? AND operation_public_id=UUID_TO_BIN(?,0)",
+                Integer.class, owner.orgDbId, operationId.toString()));
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=? AND operation_public_id=UUID_TO_BIN(?,0)",
+                Integer.class, owner.orgDbId, operationId.toString()), "Pruning the HTTP receipt must retain permanent movement history.");
+        assertEquals(403, get(actorSession.client, receiptPath).statusCode(),
+                "Receipt ownership must not restore a role after the temporary HTTP receipt is pruned.");
+        assertEquals(200, get(custodianSession.client, receiptPath).statusCode(),
+                "An active authorized CUSTODIAN may recover the permanent receipt after pruning.");
+
+        jdbc.update("UPDATE membership SET status='SUSPENDED',version=version+1,updated_at=? WHERE id=? AND org_id=?",
+                Timestamp.valueOf(now()), actor.membershipDbId, owner.orgDbId);
+        assertEquals(404, get(actorSession.client, receiptPath).statusCode(),
+                "A suspended actor must not read permanent operation history.");
+    }
+
+    @Test @Order(41)
+    void C4_A5_memberAndUnassignedLeadCannotBrowseBorrowerAllocationActivity() throws Exception {
+        Fixture owner = newTenant("C4-allocation-reads", Membership.Role.OWNER);
+        Fixture member = fixtureInOrg(owner.orgDbId, Membership.Role.MEMBER);
+        Fixture lead = fixtureInOrg(owner.orgDbId, Membership.Role.LEAD);
+        Session ownerSession = login(owner.username, owner.password);
+        Session memberSession = login(member.username, member.password);
+        Session leadSession = login(lead.username, lead.password);
+        long departmentId = json(post(ownerSession, "/api/departments", GSON.toJson(new NameRequest("C4 Allocation Department"))))
+                .get("id").getAsLong();
+        LocalDateTime start = LocalDateTime.now(clock).withNano(0).plusDays(2);
+        long projectId = json(post(ownerSession, "/api/projects", GSON.toJson(new ProjectRequest(departmentId,
+                "C4 Allocation Project", start.toString(), start.plusDays(2).toString())))).get("id").getAsLong();
+        var resourceCreated = json(post(ownerSession, "/api/resources", GSON.toJson(new ResourceRequest(
+                "C4 Allocation Resource", "REUSABLE", 4))));
+        long resourceId = resourceCreated.get("id").getAsLong();
+        Resource persistedResource = resourceRepository.findByIdAndOrganizationId(resourceId, owner.orgDbId).orElseThrow();
+        assertEquals(persistedResource.publicId.toString(), resourceCreated.get("publicId").getAsString(),
+                "The compatibility DTO must expose the stable UUID needed by the versioned stock API.");
+        long requirementId = json(post(ownerSession, "/api/requirements", GSON.toJson(new RequirementRequest(projectId, resourceId, 1))))
+                .get("id").getAsLong();
+        var allocationCreated = json(post(ownerSession, "/api/allocations", GSON.toJson(new AllocationRequest(requirementId, 1,
+                "Fictional Private Borrower", null, false))));
+        long allocationId = allocationCreated.get("id").getAsLong();
+        Allocation persistedAllocation = allocationRepository.findByIdAndOrganizationId(allocationId, owner.orgDbId).orElseThrow();
+        assertEquals(persistedAllocation.publicId.toString(), allocationCreated.get("publicId").getAsString(),
+                "The compatibility DTO must expose the stable UUID needed by versioned lifecycle actions.");
+        String v2ResourceList = get(ownerSession.client, "/api/v2/orgs/" + owner.orgPublicId + "/resources?limit=50").body();
+        assertTrue(v2ResourceList.contains(persistedResource.publicId.toString()), "The resource UUID must address the v2 inventory state.");
+        String v2AllocationList = get(ownerSession.client, "/api/v2/orgs/" + owner.orgPublicId + "/allocations?limit=50").body();
+        assertTrue(v2AllocationList.contains(persistedAllocation.publicId.toString()), "The allocation UUID must address versioned lifecycle actions.");
+
+        assertEquals(200, get(ownerSession.client, "/api/allocations").statusCode());
+        assertEquals(403, get(memberSession.client, "/api/allocations").statusCode(),
+                "MEMBER has no account-linked borrower identity to limit the result to their own records.");
+        assertEquals(403, get(leadSession.client, "/api/allocations").statusCode(),
+                "No project-assignment relationship exists to safely scope a LEAD allocation view.");
+        String v2Allocations = "/api/v2/orgs/" + owner.orgPublicId + "/allocations?limit=50";
+        assertEquals(403, get(memberSession.client, v2Allocations).statusCode());
+        assertEquals(403, get(leadSession.client, v2Allocations).statusCode());
+    }
+
+    @Test @Order(43)
+    void C4_A4_loopbackTransportsNeverFollowRedirectsAndSimulatorRejectionsStayRejected() throws Exception {
+        assertThrows(IllegalArgumentException.class, () -> new edu.orgresource.extended.integration.LoopbackRetrofitFakeTwilioClient(
+                URI.create("http://example.invalid/")), "Non-loopback hosts must fail before DNS resolution or network access.");
+        assertThrows(IllegalArgumentException.class, () -> new edu.orgresource.extended.integration.LoopbackRetrofitTwilioClient(
+                URI.create("http://localhost/"), "AC00000000000000000000000000000000", "fictional-token"),
+                "Loopback hostnames are rejected so DNS cannot rebind a trusted transport target.");
+        AtomicInteger redirectedRequests = new AtomicInteger();
+        AtomicReference<String> redirectedAuthorization = new AtomicReference<>();
+        AtomicReference<String> redirectedBody = new AtomicReference<>();
+        com.sun.net.httpserver.HttpServer target = com.sun.net.httpserver.HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        target.createContext("/sink", exchange -> {
+            redirectedRequests.incrementAndGet();
+            redirectedAuthorization.set(exchange.getRequestHeaders().getFirst("Authorization"));
+            redirectedBody.set(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
+            exchange.sendResponseHeaders(204, -1);
+            exchange.close();
+        });
+        target.start();
+
+        AtomicReference<String> fakeStatus = new AtomicReference<>("redirect");
+        String twilioAccount = "AC00000000000000000000000000000000";
+        com.sun.net.httpserver.HttpServer source = com.sun.net.httpserver.HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        source.createContext("/fake/messages", exchange -> {
+            exchange.getRequestBody().readAllBytes();
+            if ("redirect".equals(fakeStatus.get())) {
+                exchange.getResponseHeaders().set("Location", "http://127.0.0.1:" + target.getAddress().getPort() + "/sink");
+                exchange.sendResponseHeaders(307, -1);
+            } else {
+                byte[] response = GSON.toJson(java.util.Map.of(
+                        "id", "fake-rejected", "status", fakeStatus.get())).getBytes(StandardCharsets.UTF_8);
+                exchange.getResponseHeaders().set("Content-Type", "application/json");
+                exchange.sendResponseHeaders(200, response.length);
+                exchange.getResponseBody().write(response);
+            }
+            exchange.close();
+        });
+        source.createContext("/2010-04-01/Accounts/" + twilioAccount + "/Messages.json", exchange -> {
+            exchange.getRequestBody().readAllBytes();
+            exchange.getResponseHeaders().set("Location", "http://127.0.0.1:" + target.getAddress().getPort() + "/sink");
+            exchange.sendResponseHeaders(307, -1);
+            exchange.close();
+        });
+        source.start();
+        try {
+            String base = "http://127.0.0.1:" + source.getAddress().getPort() + "/";
+            ReminderDispatch payload = new ReminderDispatch("+15555550181", "Fictional local reminder.");
+            C3ReminderTransport transport = new C3ReminderTransport(base, twilioAccount,
+                    "C4-local-protocol-token", "+15555550123");
+            ReminderSendResult fakeRedirect = transport.send(ReminderMode.FAKE_TWILIO, payload);
+            assertEquals(edu.orgresource.extended.domain.ReminderOutcome.UNKNOWN, fakeRedirect.outcome());
+            ReminderSendResult twilioRedirect = transport.send(ReminderMode.TWILIO_VIRTUAL, payload);
+            assertEquals(edu.orgresource.extended.domain.ReminderOutcome.UNKNOWN, twilioRedirect.outcome());
+            assertEquals(0, redirectedRequests.get(), "Neither local protocol client may forward a sensitive body across a redirect.");
+            assertNull(redirectedAuthorization.get());
+            assertNull(redirectedBody.get());
+
+            fakeStatus.set("rejected");
+            ReminderSendResult rejected = transport.send(ReminderMode.FAKE_TWILIO, payload);
+            assertEquals(edu.orgresource.extended.domain.ReminderOutcome.REJECTED, rejected.outcome(),
+                    "An explicit FakeTwilio rejection is not a simulated acceptance.");
+        } finally {
+            source.stop(0);
+            target.stop(0);
+        }
+    }
+
+    @Test @Order(42)
+    void C4_A3_consentHasTransactionalSendBoundaryAndDistinctNoSendOutcomes() throws Exception {
+        Fixture owner = newTenant("C4-reminder-race", Membership.Role.OWNER);
+        Session session = login(owner.username, owner.password);
+        long departmentId = json(post(session, "/api/departments", GSON.toJson(new NameRequest("C4 Reminder Department"))))
+                .get("id").getAsLong();
+        LocalDateTime now = LocalDateTime.now(clock).withNano(0);
+        long projectId = json(post(session, "/api/projects", GSON.toJson(new ProjectRequest(departmentId,
+                "C4 Reminder Project", now.plusDays(1).toString(), now.plusDays(3).toString())))).get("id").getAsLong();
+        long resourceId = json(post(session, "/api/resources", GSON.toJson(new ResourceRequest(
+                "C4 Reminder Reusable", "REUSABLE", 8)))).get("id").getAsLong();
+        long requirementId = json(post(session, "/api/requirements", GSON.toJson(new RequirementRequest(projectId, resourceId, 4))))
+                .get("id").getAsLong();
+        long beforeGate = json(post(session, "/api/allocations", GSON.toJson(new AllocationRequest(requirementId, 1,
+                "Fictional Race Borrower A", "+15555550161", true)))).get("id").getAsLong();
+        long afterGate = json(post(session, "/api/allocations", GSON.toJson(new AllocationRequest(requirementId, 1,
+                "Fictional Race Borrower B", "+15555550162", true)))).get("id").getAsLong();
+        long unavailableKey = json(post(session, "/api/allocations", GSON.toJson(new AllocationRequest(requirementId, 1,
+                "Fictional Race Borrower C", "+15555550163", true)))).get("id").getAsLong();
+        long invalidContact = json(post(session, "/api/allocations", GSON.toJson(new AllocationRequest(requirementId, 1,
+                "Fictional Race Borrower D", "+15555550164", true)))).get("id").getAsLong();
+        jdbc.update("UPDATE project SET start_at=?,end_at=? WHERE id=? AND organization_id=?",
+                Timestamp.valueOf(now.minusHours(1)), Timestamp.valueOf(now.plusHours(4)), projectId, owner.orgDbId);
+        for (long id : List.of(beforeGate, afterGate, unavailableKey, invalidContact)) {
+            assertEquals(200, post(session, "/api/allocations/" + id + "/approve", null).statusCode());
+            assertEquals(200, post(session, "/api/allocations/" + id + "/issue", null).statusCode());
+        }
+
+        String beforeGatePath = "/api/allocations/" + beforeGate + "/revoke-sms-consent";
+        assertTrue(reminderService.claimOne(beforeGate, now));
+        assertNotNull(reminderService.prepareForDispatch(beforeGate, now));
+        assertEquals(200, post(session, beforeGatePath, null).statusCode());
+        assertFalse(reminderService.authorizeDispatch(beforeGate, now),
+                "Revocation committed after preparation but before the send gate must suppress transport.");
+        assertEquals("SUPPRESSED", jdbc.queryForObject("SELECT reminder_outcome FROM allocation WHERE id=?", String.class, beforeGate));
+
+        assertTrue(reminderService.claimOne(afterGate, now));
+        ReminderDispatch dispatch = reminderService.prepareForDispatch(afterGate, now);
+        assertNotNull(dispatch);
+        assertTrue(reminderService.authorizeDispatch(afterGate, now), "The final consent gate must be committed before network I/O.");
+        AtomicReference<Integer> revocationStatus = new AtomicReference<>();
+        AtomicReference<Exception> revocationFailure = new AtomicReference<>();
+        com.sun.net.httpserver.HttpServer local = com.sun.net.httpserver.HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        local.createContext("/fake/messages", exchange -> {
+            try {
+                HttpResponse<String> revoked = post(session, "/api/allocations/" + afterGate + "/revoke-sms-consent", null);
+                revocationStatus.set(revoked.statusCode());
+                byte[] response = "{\"id\":\"fake-race-1\",\"status\":\"accepted\"}".getBytes(StandardCharsets.UTF_8);
+                exchange.getResponseHeaders().set("Content-Type", "application/json");
+                exchange.sendResponseHeaders(200, response.length);
+                exchange.getResponseBody().write(response);
+            } catch (Exception failure) { revocationFailure.set(failure); }
+            finally { exchange.close(); }
+        });
+        local.start();
+        try {
+            String baseUrl = "http://127.0.0.1:" + local.getAddress().getPort() + "/";
+            C3ReminderTransport localTransport = new C3ReminderTransport(baseUrl, "", "", "+15555550123");
+            ReminderSendResult result = localTransport.send(ReminderMode.FAKE_TWILIO, dispatch);
+            assertNull(revocationFailure.get(), String.valueOf(revocationFailure.get()));
+            assertEquals(200, revocationStatus.get(), "Consent revocation during local HTTP proves no database lock spans transport.");
+            assertEquals(edu.orgresource.extended.domain.ReminderOutcome.SIMULATED, result.outcome(),
+                    "The durable send gate precedes revocation; the already-authorized local request cannot be recalled.");
+            assertTrue(reminderService.recordOutcome(afterGate, result));
+            assertEquals("SIMULATED", jdbc.queryForObject("SELECT reminder_outcome FROM allocation WHERE id=?", String.class, afterGate));
+            assertEquals(false, jdbc.queryForObject("SELECT sms_consent FROM allocation WHERE id=?", Boolean.class, afterGate));
+        } finally { local.stop(0); }
+
+        edu.orgresource.extended.security.ContactCipher unavailable =
+                new edu.orgresource.extended.security.ContactCipher("", "local-v1");
+        C3ReminderService noKeyService = new C3ReminderService(allocationRepository, unavailable);
+        tx.executeWithoutResult(status -> {
+            assertTrue(noKeyService.claimOne(unavailableKey, now));
+            assertNull(noKeyService.prepareForDispatch(unavailableKey, now));
+        });
+        assertEquals("KEY_UNAVAILABLE", jdbc.queryForObject("SELECT reminder_outcome FROM allocation WHERE id=?", String.class, unavailableKey));
+        assertNull(jdbc.queryForObject("SELECT reminder_claimed_at FROM allocation WHERE id=?", Timestamp.class, unavailableKey));
+        assertTrue(reminderService.claimOne(unavailableKey, now), "A temporary key outage may be retried after key configuration is restored.");
+        assertNotNull(reminderService.prepareForDispatch(unavailableKey, now));
+        assertTrue(reminderService.authorizeDispatch(unavailableKey, now));
+        assertTrue(reminderService.recordOutcome(unavailableKey, ReminderSendResult.unknown(null)));
+        assertFalse(reminderService.claimOne(unavailableKey, now), "An uncertain transport outcome must never be automatically retried.");
+        assertEquals("UNKNOWN", jdbc.queryForObject("SELECT reminder_outcome FROM allocation WHERE id=?", String.class, unavailableKey));
+
+        Allocation badContact = allocationRepository.findByIdAndOrganizationId(invalidContact, owner.orgDbId).orElseThrow();
+        var invalidEnvelope = contactCipher.encrypt(owner.orgDbId, badContact.publicId, "not-an-e164-contact");
+        jdbc.update("UPDATE allocation SET phone_ciphertext=?,phone_nonce=?,phone_key_id=? WHERE id=? AND organization_id=?",
+                invalidEnvelope.ciphertext(), invalidEnvelope.nonce(), invalidEnvelope.keyId(), invalidContact, owner.orgDbId);
+        assertTrue(reminderService.claimOne(invalidContact, now));
+        assertNull(reminderService.prepareForDispatch(invalidContact, now));
+        assertEquals("INVALID_CONTACT", jdbc.queryForObject("SELECT reminder_outcome FROM allocation WHERE id=?", String.class, invalidContact));
+
+        assertTrue(reminderService.claimOne(afterGate, now) == false,
+                "A completed send must never be automatically retried after revocation.");
+        HttpResponse<String> activity = get(session.client, "/api/allocations?status=ISSUED");
+        assertEquals(200, activity.statusCode(), activity.body());
+        JsonObject sent = JsonParser.parseString(activity.body()).getAsJsonArray().asList().stream()
+                .map(row -> row.getAsJsonObject()).filter(row -> row.get("id").getAsLong() == afterGate)
+                .findFirst().orElseThrow();
+        assertEquals("SIMULATED", sent.get("reminderOutcome").getAsString());
+        assertTrue(sent.get("reminderAttempted").getAsBoolean());
+        assertFalse(sent.get("expiredPendingCleanup").getAsBoolean());
+        assertFalse(sent.get("smsConsent").getAsBoolean());
+        assertFalse(sent.has("phoneNumber"));
+    }
+
     private static long scalarLong(java.sql.Statement statement, String sql) throws Exception {
         try (ResultSet result = statement.executeQuery(sql)) {
             assertTrue(result.next(), "Expected a scalar query row: " + sql);
@@ -2131,17 +2467,83 @@ class C1IdentityAcceptanceTest {
         return output.toByteArray();
     }
 
+    private static byte[] noisyJpeg() throws Exception {
+        java.awt.image.BufferedImage image = new java.awt.image.BufferedImage(512, 512, java.awt.image.BufferedImage.TYPE_INT_RGB);
+        java.util.Random random = new java.util.Random(0xC4C4L);
+        for (int y = 0; y < image.getHeight(); y++)
+            for (int x = 0; x < image.getWidth(); x++) image.setRGB(x, y, random.nextInt(0x1000000));
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        assertTrue(javax.imageio.ImageIO.write(image, "jpeg", output));
+        image.flush();
+        return output.toByteArray();
+    }
+
+    private static byte[] padJpegToSize(byte[] jpeg, int targetSize) throws Exception {
+        int extra = targetSize - jpeg.length;
+        if (extra < 4 || jpeg.length < 4 || (jpeg[0] & 0xff) != 0xff || (jpeg[1] & 0xff) != 0xd8)
+            throw new IllegalArgumentException("JPEG fixture cannot be padded to the requested size.");
+        List<Integer> segments = new ArrayList<>();
+        while (extra > 65537) { segments.add(65537); extra -= 65537; }
+        if (extra > 0 && extra < 4) {
+            int previous = segments.remove(segments.size() - 1);
+            int finalSize = 4;
+            segments.add(previous - (finalSize - extra));
+            extra = finalSize;
+        }
+        if (extra > 0) segments.add(extra);
+        ByteArrayOutputStream padded = new ByteArrayOutputStream(targetSize);
+        padded.write(jpeg, 0, 2);
+        for (int segmentSize : segments) {
+            padded.write(0xff); padded.write(0xfe);
+            int encodedLength = segmentSize - 2;
+            padded.write((encodedLength >>> 8) & 0xff); padded.write(encodedLength & 0xff);
+            padded.write(new byte[segmentSize - 4]);
+        }
+        padded.write(jpeg, 2, jpeg.length - 2);
+        return padded.toByteArray();
+    }
+
+    private static byte[] pngWithOversizedDimensions(byte[] original, int width, int height) {
+        byte[] changed = original.clone();
+        writeInt32(changed, 16, width);
+        writeInt32(changed, 20, height);
+        java.util.zip.CRC32 crc = new java.util.zip.CRC32();
+        crc.update(changed, 12, 17);
+        writeInt32(changed, 29, (int) crc.getValue());
+        return changed;
+    }
+
+    private static void writeInt32(byte[] target, int offset, int value) {
+        target[offset] = (byte) (value >>> 24);
+        target[offset + 1] = (byte) (value >>> 16);
+        target[offset + 2] = (byte) (value >>> 8);
+        target[offset + 3] = (byte) value;
+    }
+
     private HttpResponse<String> multipartPost(Session session, String path, String contentType, byte[] file) throws Exception {
+        return multipartPost(session, path, contentType, file, true);
+    }
+
+    private HttpResponse<String> multipartPost(Session session, String path, String contentType,
+            byte[] file, boolean includeCsrf) throws Exception {
         String boundary = "OrgResourceC3Boundary";
         ByteArrayOutputStream body = new ByteArrayOutputStream(file.length + 256);
         body.write(("--" + boundary + "\r\nContent-Disposition: form-data; name=\"file\"; filename=\"fixture.bin\"\r\n"
                 + "Content-Type: " + contentType + "\r\n\r\n").getBytes(StandardCharsets.UTF_8));
         body.write(file);
         body.write(("\r\n--" + boundary + "--\r\n").getBytes(StandardCharsets.UTF_8));
+        HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create(base() + path))
+                .header("Origin", origin()).header("Content-Type", "multipart/form-data; boundary=" + boundary);
+        if (includeCsrf) builder.header("X-CSRF-TOKEN", session.csrf);
+        HttpRequest request = builder.POST(HttpRequest.BodyPublishers.ofByteArray(body.toByteArray())).build();
+        return session.client.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    private HttpResponse<String> malformedMultipartPost(Session session, String path) throws Exception {
         HttpRequest request = HttpRequest.newBuilder(URI.create(base() + path))
                 .header("Origin", origin()).header("X-CSRF-TOKEN", session.csrf)
-                .header("Content-Type", "multipart/form-data; boundary=" + boundary)
-                .POST(HttpRequest.BodyPublishers.ofByteArray(body.toByteArray())).build();
+                .header("Content-Type", "multipart/form-data; boundary=broken-boundary")
+                .POST(HttpRequest.BodyPublishers.ofString("not a valid multipart body", StandardCharsets.UTF_8)).build();
         return session.client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 

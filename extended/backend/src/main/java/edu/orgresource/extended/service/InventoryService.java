@@ -155,6 +155,8 @@ public class InventoryService {
             throw new C1ApiException(409, "DEPENDENCY_EXISTS", "Resource still has ResourceRequirements.");
         if (resource.totalQuantity != 0)
             throw new C1ApiException(409, "RESOURCE_NOT_EMPTY", "Resource totalQuantity must be zero before deletion.");
+        if (resource.getImageBytes() != null)
+            throw new C1ApiException(409, "RESOURCE_IMAGE_EXISTS", "Remove the Resource image before deleting the Resource.");
         Integer history = jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=? AND resource_id=?",
                 Integer.class, organizationId, resourceId);
         if (history != null && history > 0)
@@ -266,7 +268,7 @@ public class InventoryService {
                 .orElseThrow(InventoryService::notFound);
         LockedAllocation locked = lockAllocation(snapshot, selectedOrgId);
         applyTransition(actor, locked, action, UUID.randomUUID(), fingerprint("legacy:" + action + ":" + allocationId));
-        return new ApiDtos.AllocationView(locked.allocation);
+        return new ApiDtos.AllocationView(locked.allocation, locked.project.endAt, businessNow());
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -307,7 +309,7 @@ public class InventoryService {
         if (locked.allocation.reminderOutcome == edu.orgresource.extended.domain.ReminderOutcome.CLAIMED)
             locked.allocation.reminderOutcome = edu.orgresource.extended.domain.ReminderOutcome.SUPPRESSED;
         allocations.saveAndFlush(locked.allocation);
-        return new ApiDtos.AllocationView(locked.allocation);
+        return new ApiDtos.AllocationView(locked.allocation, locked.project.endAt, businessNow());
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -456,18 +458,15 @@ public class InventoryService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public String operationReceipt(UUID organizationPublicId, UUID operationId, String requestId) {
         Actor actor = lockPathOrganization(organizationPublicId, false);
+        requireStockRole(actor.membership);
         Optional<MovementFact> movement = findMovementByOperation(actor.organization.id, operationId);
         if (movement.isPresent()) {
             MovementFact fact = movement.get();
-            if (fact.actorUserId != actor.userId && !isStockRole(actor.membership.role))
-                throw new C1ApiException(403, "FORBIDDEN", "The current membership cannot read this operation receipt.");
             return durableMovementResponse(fact, requestId).json;
         }
         Receipt receipt = findReceiptByOperation(actor.organization.id, operationId).orElseThrow(InventoryService::notFound);
         if (receipt.expiresAt.isBefore(utcNow()))
             throw new C1ApiException(409, "IDEMPOTENCY_KEY_EXPIRED", "The operation receipt has expired.");
-        if (receipt.actorUserId != actor.userId && !isStockRole(actor.membership.role))
-            throw new C1ApiException(403, "FORBIDDEN", "The current membership cannot read this operation receipt.");
         try {
             JsonNode prior = objectMapper.readTree(receipt.responseJson);
             JsonNode data = prior.get("data");
@@ -497,7 +496,7 @@ public class InventoryService {
                 locked.resource.publicId, locked.allocation.publicId, locked.allocation.status.name(),
                 locked.allocation.quantity, locked.resource.totalQuantity, available, locked.allocation.version);
         if (!modern) return new OperationResponse(200, toJson(new IdentityDtos.Envelope<>(
-                new ApiDtos.AllocationView(locked.allocation), requestId)), null);
+                new ApiDtos.AllocationView(locked.allocation, locked.project.endAt, sampledNow), requestId)), null);
         return complete(claim, requestId, 200, view, etag);
     }
 

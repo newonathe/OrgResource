@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import edu.orgresource.extended.domain.Allocation;
+import edu.orgresource.extended.domain.AllocationStatus;
 import edu.orgresource.extended.domain.Department;
 import edu.orgresource.extended.domain.Project;
 import edu.orgresource.extended.domain.Resource;
@@ -84,6 +85,8 @@ public final class ApiDtos {
 
     public static class ResourceView {
         public Long id;
+        /** Stable cross-version identifier used to call the tenant-scoped inventory API. */
+        public java.util.UUID publicId;
         public String name;
         public ResourceType type;
         public Integer totalQuantity;
@@ -91,6 +94,7 @@ public final class ApiDtos {
         public ResourceView() { }
         public ResourceView(Resource resource, int availableQuantity) {
             this.id = resource.id;
+            this.publicId = resource.publicId;
             this.name = resource.name;
             this.type = resource.type;
             this.totalQuantity = resource.totalQuantity;
@@ -160,6 +164,8 @@ public final class ApiDtos {
 
     public static class AllocationView {
         public Long id;
+        /** Stable cross-version identifier used for versioned lifecycle actions. */
+        public java.util.UUID publicId;
         public Long requirementId;
         public Integer quantity;
         public String borrowerName;
@@ -169,10 +175,17 @@ public final class ApiDtos {
         public String createdAt;
         public String approvedAt;
         public String issuedAt;
+        public String returnedAt;
+        public String consumedAt;
         public String cancelledAt;
+        public String cancellationReason;
+        public boolean expiredPendingCleanup;
+        public boolean reminderAttempted;
+        public String reminderOutcome;
         public AllocationView() { }
-        public AllocationView(Allocation allocation) {
+        public AllocationView(Allocation allocation, LocalDateTime projectEnd, LocalDateTime sampledNow) {
             this.id = allocation.id;
+            this.publicId = allocation.publicId;
             this.requirementId = allocation.requirement.id;
             this.quantity = allocation.quantity;
             this.borrowerName = allocation.borrowerName;
@@ -182,7 +195,14 @@ public final class ApiDtos {
             this.createdAt = format(allocation.createdAt);
             this.approvedAt = format(allocation.approvedAt);
             this.issuedAt = format(allocation.issuedAt);
+            this.returnedAt = format(allocation.returnedAt);
+            this.consumedAt = format(allocation.consumedAt);
             this.cancelledAt = format(allocation.cancelledAt);
+            this.cancellationReason = allocation.cancellationReason;
+            this.expiredPendingCleanup = (allocation.status == AllocationStatus.PENDING
+                    || allocation.status == AllocationStatus.APPROVED) && !projectEnd.isAfter(sampledNow);
+            this.reminderAttempted = allocation.reminderClaimedAt != null;
+            this.reminderOutcome = allocation.reminderOutcome.name();
         }
     }
 

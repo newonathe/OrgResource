@@ -37,7 +37,9 @@ public final class C3ReminderTransport {
                         dispatch.destination(), fromNumber, dispatch.body()));
                 if (response == null || response.status == null || response.status.isBlank())
                     return ReminderSendResult.unknown(200);
-                return ReminderSendResult.simulated(200);
+                if ("accepted".equalsIgnoreCase(response.status)) return ReminderSendResult.simulated(200);
+                if ("rejected".equalsIgnoreCase(response.status)) return ReminderSendResult.rejected(200);
+                return ReminderSendResult.unknown(200);
             }
             LoopbackRetrofitTwilioClient.TwilioProtocolResult response = twilioClient()
                     .sendResult(dispatch.destination(), fromNumber, dispatch.body());

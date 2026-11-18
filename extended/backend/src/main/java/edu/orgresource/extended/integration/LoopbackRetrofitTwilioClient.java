@@ -1,9 +1,7 @@
 package edu.orgresource.extended.integration;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.URI;
-import java.net.UnknownHostException;
 import java.time.Duration;
 
 import com.google.gson.Gson;
@@ -32,6 +30,8 @@ public final class LoopbackRetrofitTwilioClient {
                 .writeTimeout(Duration.ofSeconds(3))
                 .callTimeout(Duration.ofSeconds(5))
                 .retryOnConnectionFailure(false)
+                .followRedirects(false)
+                .followSslRedirects(false)
                 .addInterceptor(chain -> {
                     Request request = chain.request().newBuilder()
                             .header("Authorization", Credentials.basic(accountSid, authToken))
@@ -66,17 +66,9 @@ public final class LoopbackRetrofitTwilioClient {
     public record TwilioProtocolResult(int httpStatus, boolean successful, TwilioMessageResponse message) { }
 
     private static void requireLoopbackHttp(URI uri) {
-        if (uri == null || !"http".equalsIgnoreCase(uri.getScheme()) || uri.getHost() == null
+        if (uri == null || !"http".equalsIgnoreCase(uri.getScheme()) || !"127.0.0.1".equals(uri.getHost())
                 || uri.getUserInfo() != null || uri.getQuery() != null || uri.getFragment() != null) {
-            throw new IllegalArgumentException("C1 provider stubs must use a plain loopback HTTP base URI.");
-        }
-        try {
-            InetAddress address = InetAddress.getByName(uri.getHost());
-            if (!address.isLoopbackAddress()) {
-                throw new IllegalArgumentException("C1 provider stubs are restricted to loopback addresses.");
-            }
-        } catch (UnknownHostException exception) {
-            throw new IllegalArgumentException("C1 provider stub host could not be resolved.");
+            throw new IllegalArgumentException("C1 provider stubs must use a plain HTTP base URI at 127.0.0.1.");
         }
     }
 

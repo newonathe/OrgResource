@@ -99,7 +99,7 @@ jobs:
       - run: npm run build
 
   extended-c3:
-    name: Extended C Java 21, isolated MySQL and Newman acceptance
+    name: Extended C Java 21, isolated MySQL, Newman and Playwright
     runs-on: ubuntu-latest
     timeout-minutes: 20
     services:
@@ -148,7 +148,7 @@ jobs:
         with:
           node-version: '24'
           cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: extended/frontend/package-lock.json
       - name: Generate ephemeral contact-encryption test key
         shell: bash
         run: |
@@ -157,11 +157,20 @@ jobs:
           printf 'EXT_CONTACT_ENCRYPTION_KEY=%s\n' "$key" >> "$GITHUB_ENV"
       - name: Build React assets for packaged Extended runtime
         run: |
-          npm --prefix frontend ci
-          npm --prefix frontend run build
+          npm --prefix extended/frontend ci
+          npm --prefix extended/frontend run typecheck
+          npm --prefix extended/frontend test
+          npm --prefix extended/frontend run lint
+          npm --prefix extended/frontend run build
+      - name: Install Chromium for packaged browser acceptance
+        working-directory: extended/frontend
+        run: npx playwright install --with-deps chromium
       - name: Verify Extended C Java 21 backend against isolated MySQL
         run: bash ./backend/mvnw -B -f extended/backend/pom.xml clean verify
-      - name: Run authenticated 28-operation Postman acceptance against packaged JAR
+      - name: Run authenticated Newman and browser acceptance against packaged JAR
+        env:
+          MYSQL_CONTAINER: ${{ job.services.mysql.id }}
+          ORGRESOURCE_E2E_SCREENSHOT_DIR: ${{ runner.temp }}/orgresource-c4-screenshots
         shell: bash
         run: |
           set -euo pipefail
@@ -181,3 +190,15 @@ jobs:
             --env-var username="$EXT_BOOTSTRAP_USERNAME" \
             --env-var password="$EXT_BOOTSTRAP_PASSWORD" \
             --env-var imagePath="$GITHUB_WORKSPACE/postman/fixtures/academic-demo-image.png"
+          docker exec -i --env MYSQL_PWD=root_ci_only "$MYSQL_CONTAINER" mysql -uroot orgresource_c1_ci <<'SQL'
+          INSERT INTO organization(public_id,slug,display_name,status,created_at,updated_at)
+          VALUES(UUID_TO_BIN(UUID(),0),'c4-e2e-secondary','C4 Tenant Isolation','ACTIVE',UTC_TIMESTAMP(6),UTC_TIMESTAMP(6));
+          SET @c4_e2e_org_id=LAST_INSERT_ID();
+          INSERT INTO membership(public_id,org_id,user_id,role,status,created_at,updated_at)
+          SELECT UUID_TO_BIN(UUID(),0),@c4_e2e_org_id,id,'OWNER','ACTIVE',UTC_TIMESTAMP(6),UTC_TIMESTAMP(6)
+          FROM user_account WHERE username_key='c1-owner';
+          SQL
+          EXT_E2E_BASE_URL=http://127.0.0.1:8080 \
+            EXT_E2E_USERNAME="$EXT_BOOTSTRAP_USERNAME" \
+            EXT_E2E_PASSWORD="$EXT_BOOTSTRAP_PASSWORD" \
+            npm --prefix extended/frontend run e2e
