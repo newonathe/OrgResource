@@ -1,5 +1,8 @@
 # OrgResource — Complete copy-ready Codex master prompts: C9, C10, C11
 
+
+**ADDITIVE HOSTED ATENEO DEMO GATE (USER DECISION, 2026-11-19):** Read the entirety of docs/execution/08_ATENEO_HOSTED_DEMO_REQUIREMENTS.md, 09_DEMO_SEED_ALGORITHM_AND_ACCEPTANCE.md and 10_CODEX_DEMO_DATA_IMPLEMENTATION_PROMPT.md, and data/reference/ateneo-public-organizations-2026.json, plus all existing course/evidence sources. Treat C9-D deterministic ledger/source/provenance/privacy/performance regression, C10-D **separately authorized** public hosted read-only or isolated trial + one-time seeded 12-org demo + off-host backup/restore, and C11-D independent factual-versus-simulated data truth/no-unfounded-adoption review as mandatory hosted-release subgates. Their complete prompts are in document 10. This adds to the phase prompt and the full QUALITY_EVIDENCE_CONTINUOUS_GATE.md; it does not omit prior mandatory criteria. No hosted population/deployment/test is claimed by this documentation requirement.
+
 Edition 2026-11-19. Future **proposed** prompts. Read AGENTS.md and the complete docs/QUALITY_EVIDENCE_CONTINUOUS_GATE.md. A documented risk deferral must not be misrepresented as a passed gate. User approval for prior stage is not permission for a later stage; no default authorization to merge, host, spend, use real data, contact people, enable live SMS or submit to Canvas.
 
 ---
