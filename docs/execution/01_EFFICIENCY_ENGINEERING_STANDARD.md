@@ -38,6 +38,9 @@ Coverage register fields: source_path | ref/blob_sha | size/lines | relevance | 
 
 ### C. Model and reasoning-effort routing
 
+**Binding refined default:** See docs/execution/12_TOKEN_BUDGETED_SUBAGENT_ROUTING.md, 13_PHASE_SPECIFIC_SUBAGENT_PROMPTS.md and .codex/config.toml. Default = no subagent; when justified, gpt-6-luna/low project default with precise scope. Actual named roles: Luna low/medium map/source, Terra medium API/UI/ops, Sol medium ledger/auth/reviewer, Sol high only exceptional serious unresolved risk or C11 mandatory independent release veto. Two concurrent and default four distinct sessions per phase INCLUDING reviewer. A model not available in current Codex runtime blocks spawning until verified low-cost substitute; no silent expensive parent inheritance. This section below gives generic risk guidance, and is **superseded for exact dispatch by 12/13**. Never lower QA.
+
+
 Select **actual available** Codex models at run time, never assert an unverified model SKU exists. Classify work:
 - Low-risk formatting/manifest/index updates: fastest available capable model, low/medium reasoning; deterministic scripts preferred over LLM.
 - File graph mapping, routine API/UI implementation after exact contract: medium/high reasoning, one specialist owning disjoint files.
@@ -49,7 +52,7 @@ Upgrade model only when ambiguity, risk, complexity or prior error demonstrates 
 
 ### D. Parallelism
 
-Parallelize **disjoint read-only audits** and independent test design. Allow at most two or three implementation workers simultaneously after proving disjoint paths, compatible DTO/migration contracts and independent branches/worktrees. A single integration owner owns interfaces and integration tests. A single migration owner serializes Flyway files and schema changes. A single reviewer independently challenges work after integration. More agents may increase throughput only when merge/review/token overhead is measured lower than serial cost.
+Parallelize **disjoint read-only audits** and independent test design. Allow at most TWO concurrent subagents total, with four distinct session invocations per phase by default; implementation owners must have disjoint paths, compatible DTO/migration contracts and independent branches/worktrees. A single integration owner owns interfaces and integration tests. A single migration owner serializes Flyway files and schema changes. A single reviewer independently challenges work after integration. More agents may increase throughput only when merge/review/token overhead is measured lower than serial cost.
 
 ### E. Context cut-off and retry
 
