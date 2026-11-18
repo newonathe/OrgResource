@@ -67,8 +67,13 @@ public class C3ReminderService {
                 return null;
             }
             LocalDateTime dueAt = allocation.requirement.project.endAt;
-            String body = "OrgResource reminder: your reusable allocation is due by " + MESSAGE_DATE.format(dueAt)
-                    + ". Please coordinate its return with your organization.";
+            String resourceName = allocation.requirement.resource.name
+                    .replaceAll("[\\p{Cc}\\p{Cf}\\p{Z}]+", " ").strip();
+            if (resourceName.isEmpty()) resourceName = "Reusable resource";
+            if (resourceName.codePointCount(0, resourceName.length()) > 100)
+                resourceName = resourceName.substring(0, resourceName.offsetByCodePoints(0, 99)) + "…";
+            String body = "OrgResource: " + allocation.quantity + " × " + resourceName + " due "
+                    + MESSAGE_DATE.format(dueAt) + " PHT. Coordinate return with your organization.";
             return new ReminderDispatch(destination, body);
         } catch (C1ApiException unavailableOrCorrupt) {
             if ("CONTACT_ENCRYPTION_UNAVAILABLE".equals(unavailableOrCorrupt.getCode()))

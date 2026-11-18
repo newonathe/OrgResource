@@ -15,6 +15,7 @@ export function ProjectsPage() {
   const { session, organizations } = useAuth();
   const role = organizations.find(org => org.id === session?.activeOrgId)?.role;
   const canManage = role === "OWNER" || role === "ADMIN";
+  const canReadAllocations = canManage || role === "CUSTODIAN";
   const [projects, setProjects] = useState<Project[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loadState, setLoadState] = useState<"loading" | "error" | "ready">("loading");
@@ -38,6 +39,7 @@ export function ProjectsPage() {
   const [detailResources, setDetailResources] = useState<Resource[]>([]);
   const [detailState, setDetailState] = useState<"loading" | "error" | "ready">("loading");
   const [detailError, setDetailError] = useState("");
+  const [historyError, setHistoryError] = useState("");
   const [detailReload, setDetailReload] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -59,19 +61,26 @@ export function ProjectsPage() {
   useEffect(() => {
     if (!selected) return;
     const controller = new AbortController();
+    const history = canReadAllocations
+      ? api.allocations({}, controller.signal).then(rows => ({ rows, error: "" })).catch((reason: unknown) => ({ rows: [], error: explainError(reason) }))
+      : Promise.resolve({ rows: [], error: "" });
     Promise.all([
       api.requirements(selected.id, controller.signal),
-      api.allocations({}, controller.signal),
       api.resources(undefined, controller.signal),
-    ]).then(([requirements, allocations, resources]) => {
-      setDetailRequirements(requirements); setDetailAllocations(allocations.filter((a) => requirements.some((r) => r.id === a.requirementId)));
+      history,
+    ]).then(([requirements, resources, allocations]) => {
+      if (controller.signal.aborted) return;
+      const requirementIds = new Set(requirements.map(row => row.id));
+      setDetailRequirements(requirements);
+      setDetailAllocations(allocations.rows.filter(row => requirementIds.has(row.requirementId)));
+      setHistoryError(allocations.error);
       setDetailResources(resources); setDetailState("ready"); setDetailError("");
     }).catch((reason: unknown) => {
       if (reason instanceof DOMException && reason.name === "AbortError") return;
       setDetailError(explainError(reason)); setDetailState("error");
     });
     return () => controller.abort();
-  }, [selected, detailReload]);
+  }, [selected, detailReload, canReadAllocations]);
 
   const ordered = useMemo(() => projects.filter((project) => {
     const department = departments.find((item) => item.id === project.departmentId)?.name ?? "";
@@ -182,11 +191,12 @@ export function ProjectsPage() {
         <div className="modal-actions"><Button variant="quiet" disabled={busy} onClick={() => setDeleting(null)}>Keep project</Button><Button variant="danger" disabled={busy || postReviewRequired} onClick={() => void confirmDelete()}>{busy ? "Checking…" : "Confirm delete"}</Button></div></Modal>}
       {selected && <DetailSheet title={selected.name} onClose={() => setSelected(null)}>
         <div className="detail-grid"><div><span>Department</span><strong>{departments.find((item) => item.id === selected.departmentId)?.name ?? `Department ${selected.departmentId}`}</strong></div><div><span>Period</span><strong>{projectPeriod(selected).toLowerCase()}</strong></div><div><span>Starts</span><strong>{formatManila(selected.startAt)}</strong></div><div><span>Ends</span><strong>{formatManila(selected.endAt)}</strong></div></div>
-        <section className="sheet-section"><h3>Requirements and allocation history</h3>
+        <section className="sheet-section"><h3>{canReadAllocations ? "Requirements and allocation history" : "Requirements"}</h3>
           <LoadState state={detailState} error={detailError} onRetry={refreshDetails}>
+            {canReadAllocations && historyError && <Notice tone="warning">Allocation history could not be loaded. <Button onClick={refreshDetails}>Retry history</Button></Notice>}
             {detailRows.length === 0 ? <p className="quiet-note">This Project has no Requirements.</p> : <div className="sheet-record-list">{detailRows.map(({ requirement, resource, batches }) => <article key={requirement.id}>
               <div><strong>{resource?.name ?? `Resource ${requirement.resourceId}`}</strong><small>{requirement.quantity} required · {requirement.allocatedQuantity} covered · {requirement.shortageQuantity} shortage</small></div>
-              <div className="sheet-batches">{batches.length ? batches.map((batch) => <span key={batch.id}>A{batch.id} · {batch.quantity} · {batch.status.toLowerCase()}</span>) : <span>No Allocation batches</span>}</div>
+              {canReadAllocations && !historyError && <div className="sheet-batches">{batches.length ? batches.map((batch) => <span key={batch.id}>A{batch.id} · {batch.quantity} · {batch.status.toLowerCase()}</span>) : <span>No Allocation batches</span>}</div>}
             </article>)}</div>}
           </LoadState>
         </section>

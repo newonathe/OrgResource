@@ -1014,6 +1014,22 @@ class C1IdentityAcceptanceTest {
         HttpResponse<String> resourceState = get(ownerSession.client, root + "/resources/" + resourcePublicId);
         assertEquals(200, resourceState.statusCode(), resourceState.body());
         assertEquals(10, json(resourceState).getAsJsonObject("data").get("availableQuantity").getAsInt());
+        assertEquals(201, post(custodianSession, "/api/resources", GSON.toJson(
+                new ResourceRequest("C5 Resource Cursor Fixture", "REUSABLE", 0))).statusCode());
+        JsonObject firstResource = json(get(ownerSession.client, root + "/resources?limit=1")).getAsJsonObject("data");
+        String resourceCursor = firstResource.get("nextCursor").getAsString();
+        assertEquals(resourcePublicId.toString(), resourceCursor);
+        JsonObject nextResource = json(get(ownerSession.client, root + "/resources?limit=1&after=" + resourceCursor))
+                .getAsJsonObject("data");
+        assertEquals("C5 Resource Cursor Fixture", nextResource.getAsJsonArray("items").get(0).getAsJsonObject().get("name").getAsString());
+        assertTrue(nextResource.get("nextCursor").isJsonNull());
+        JsonObject firstMember = json(get(ownerSession.client, root + "/members?limit=1")).getAsJsonObject("data");
+        String memberCursor = firstMember.get("nextCursor").getAsString();
+        JsonObject nextMember = json(get(ownerSession.client, root + "/members?limit=1&cursor=" + memberCursor))
+                .getAsJsonObject("data");
+        assertEquals(1, nextMember.getAsJsonArray("items").size());
+        assertNotEquals(firstMember.getAsJsonArray("items").get(0).getAsJsonObject().get("id"),
+                nextMember.getAsJsonArray("items").get(0).getAsJsonObject().get("id"));
         HttpResponse<String> resourcePage = get(ownerSession.client, root + "/resources?limit=2");
         assertEquals(200, resourcePage.statusCode(), resourcePage.body());
         assertTrue(json(resourcePage).getAsJsonObject("data").getAsJsonArray("items").asList().stream()
@@ -1547,6 +1563,46 @@ class C1IdentityAcceptanceTest {
         }
     }
 
+    @Test @Order(44)
+    void C5_legacyZeroStockUpgradesToV5WithoutInventedLedgerRows() throws Exception {
+        String schema = "orgresource_c2_upgrade_" + UUID.randomUUID().toString().replace("-", "").substring(0, 16);
+        String url = System.getenv("EXT_DB_MIGRATION_URL");
+        String user = System.getenv("EXT_DB_MIGRATION_USER");
+        String password = System.getenv("EXT_DB_MIGRATION_PASSWORD");
+        try (Connection connection = DriverManager.getConnection(url, user, password);
+             var statement = connection.createStatement()) {
+            String legacyUrl = url.replace("/" + connection.getCatalog(), "/" + schema);
+            statement.execute("CREATE DATABASE `" + schema + "` CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci");
+            try {
+                org.flywaydb.core.Flyway.configure().dataSource(legacyUrl, user, password)
+                        .target(org.flywaydb.core.api.MigrationVersion.fromVersion("2")).load().migrate();
+                try (Connection legacy = DriverManager.getConnection(legacyUrl, user, password); var seed = legacy.createStatement()) {
+                    seed.executeUpdate("INSERT INTO organization(public_id,slug,display_name,status,created_at,updated_at) "
+                            + "VALUES(UUID_TO_BIN(UUID(),0),'legacy-safe','Fictional safe legacy','ACTIVE',UTC_TIMESTAMP(6),UTC_TIMESTAMP(6))");
+                    seed.executeUpdate("INSERT INTO resource(id,organization_id,name,name_key,type,total_quantity) "
+                            + "SELECT 77,id,'Legacy Empty Resource','legacy empty resource','REUSABLE',0 FROM organization");
+                }
+                var flyway = org.flywaydb.core.Flyway.configure().dataSource(legacyUrl, user, password).load();
+                assertEquals(3, flyway.migrate().migrationsExecuted);
+                flyway.validate();
+                assertEquals("5", flyway.info().current().getVersion().getVersion());
+                try (Connection upgraded = DriverManager.getConnection(legacyUrl, user, password);
+                     var query = upgraded.createStatement();
+                     ResultSet rows = query.executeQuery("SELECT id, BIN_TO_UUID(public_id,0), total_quantity, "
+                             + "(SELECT COUNT(*) FROM stock_movement) FROM resource")) {
+                    assertTrue(rows.next());
+                    assertEquals(77, rows.getLong(1));
+                    assertNotNull(UUID.fromString(rows.getString(2)));
+                    assertEquals(0, rows.getInt(3));
+                    assertEquals(0, rows.getInt(4));
+                    assertFalse(rows.next());
+                }
+            } finally {
+                statement.execute("DROP DATABASE `" + schema + "`");
+            }
+        }
+    }
+
     @Test @Order(28)
     void C3_INPUT01_emptyInventoryBodyReturnsControlledValidationError() throws Exception {
         Fixture owner = newTenant("C3-empty-body-owner", Membership.Role.OWNER);
@@ -1828,6 +1884,12 @@ class C1IdentityAcceptanceTest {
             assertTrue(twilioContentType.get().startsWith("application/x-www-form-urlencoded"));
             assertTrue(twilioRequest.get().contains("To=%2B15555550112"));
             assertTrue(twilioRequest.get().contains("From=%2B15555550123"));
+            String smsBody = Arrays.stream(twilioRequest.get().split("&"))
+                    .filter(field -> field.startsWith("Body="))
+                    .map(field -> java.net.URLDecoder.decode(field.substring(5), StandardCharsets.UTF_8))
+                    .findFirst().orElseThrow();
+            assertTrue(smsBody.startsWith("OrgResource: 1 × C3 Reminder Reusable due "));
+            assertTrue(smsBody.endsWith(" PHT. Coordinate return with your organization."));
             assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE id=? AND reminder_outcome='SIMULATED' AND reminder_http_status=200",
                     Integer.class, fakeAllocationId));
             assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE id=? AND reminder_outcome='PROVIDER_ACCEPTED' "
@@ -2165,6 +2227,29 @@ class C1IdentityAcceptanceTest {
                 base() + "/api/resources/" + picturedId + "/image")).GET().build(), HttpResponse.BodyHandlers.ofByteArray());
         assertEquals(200, retained.statusCode());
         assertArrayEquals(png, retained.body(), "Refused deletion must preserve the exact image bytes.");
+
+        Resource pictured = resourceRepository.findByIdAndOrganizationId(picturedId, owner.orgDbId).orElseThrow();
+        String statePath = "/api/v2/orgs/" + owner.orgPublicId + "/resources/" + pictured.publicId;
+        String removePath = statePath + "/image/delete";
+        String etag = get(session.client, statePath).headers().firstValue("ETag").orElseThrow();
+        Fixture memberFixture = fixtureInOrg(owner.orgDbId, Membership.Role.MEMBER);
+        Session member = login(memberFixture.username, memberFixture.password);
+        Fixture foreign = newTenant("C5-image-foreign", Membership.Role.OWNER);
+        assertEquals(403, post(member, removePath, null, etag).statusCode());
+        assertEquals(404, post(login(foreign.username, foreign.password), removePath, null, etag).statusCode());
+        assertEquals(403, post(session, removePath, null, "", origin()).statusCode());
+        assertEquals(412, post(session, removePath, null, "\"v999999\"").statusCode());
+        assertEquals(428, post(session, removePath, null).statusCode());
+        assertEquals(200, get(session.client, "/api/resources/" + picturedId + "/image").statusCode());
+        HttpResponse<String> removed = post(session, removePath, null, etag);
+        assertEquals(200, removed.statusCode(), removed.body());
+        String currentEtag = removed.headers().firstValue("ETag").orElseThrow();
+        assertNotEquals(etag, currentEtag);
+        assertEquals(0, json(removed).getAsJsonObject("data").get("totalQuantity").getAsInt());
+        assertEquals(404, get(session.client, "/api/resources/" + picturedId + "/image").statusCode());
+        assertEquals(404, post(session, removePath, null, currentEtag).statusCode());
+        assertEquals(0, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE resource_id=?", Integer.class, picturedId));
+        assertEquals(200, post(session, "/api/resources/" + picturedId + "/delete", null).statusCode());
 
         long emptyId = json(post(session, "/api/resources", GSON.toJson(new ResourceRequest(
                 "C4 Deletable Empty Resource", "CONSUMABLE", 0)))).get("id").getAsLong();

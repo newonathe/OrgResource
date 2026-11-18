@@ -126,6 +126,15 @@ public class InventoryResource {
                 .header("ETag", "\"v" + state.version() + "\"").build();
     }
 
+    @POST @Path("/resources/{resourceId}/image/delete")
+    public Response removeResourceImage(@PathParam("organizationId") UUID organizationId,
+            @PathParam("resourceId") UUID resourceId, @HeaderParam("If-Match") String ifMatch,
+            @Context HttpServletRequest request) {
+        InventoryDtos.ResourceState state = inventory.removeResourceImage(organizationId, resourceId, ifMatch);
+        return Response.fromResponse(C1HttpResponses.envelope(200, state, request, true))
+                .header("ETag", "\"v" + state.version() + "\"").build();
+    }
+
     @GET @Path("/resources")
     public Response resourcePage(@PathParam("organizationId") UUID organizationId,
             @DefaultValue("50") @QueryParam("limit") int limit, @QueryParam("after") UUID after,

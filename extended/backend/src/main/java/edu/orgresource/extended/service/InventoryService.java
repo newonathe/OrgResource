@@ -374,6 +374,22 @@ public class InventoryService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
+    public InventoryDtos.ResourceState removeResourceImage(UUID organizationPublicId, UUID resourcePublicId, String ifMatch) {
+        Actor actor = lockPathOrganization(organizationPublicId, true);
+        requireStockRole(actor.membership);
+        Resource resource = resources.lockByPublicIdAndOrganizationId(resourcePublicId, actor.organization.id)
+                .orElseThrow(InventoryService::notFound);
+        requireVersion(ifMatch, resource.version);
+        if (resource.imageContentType == null)
+            throw new C1ApiException(404, "NOT_FOUND", "Resource image was not found.");
+        resource.setImageBytes(null);
+        resource.imageContentType = null;
+        resources.saveAndFlush(resource);
+        return new InventoryDtos.ResourceState(resource.publicId, resource.name, resource.type.name(),
+                resource.totalQuantity, available(resource, businessNow()), resource.version);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public InventoryDtos.ResourcePage resourcePage(UUID organizationPublicId, int requestedLimit, UUID afterPublicId) {
         Actor actor = lockPathOrganization(organizationPublicId, false);
         requireStockRole(actor.membership);

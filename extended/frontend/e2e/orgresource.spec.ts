@@ -107,11 +107,12 @@ test("Allocation status filters follow browser back and forward navigation", asy
   await expect(status).toHaveValue("APPROVED");
 });
 
-test("connected invitation creates a read-only member session enforced by the server", async ({ page, browser }) => {
+for (const role of ["MEMBER", "LEAD", "ADMIN"] as const) {
+test(`connected invitation grants only ${role} Project and inventory access`, async ({ page, browser }) => {
   test.setTimeout(90_000);
   await page.goto("/#/governance");
   await expect(page.getByRole("heading", { name: "Members and access", level: 1 })).toBeVisible();
-  await page.locator(".governance-grid > .form-panel").first().locator("select").selectOption("MEMBER");
+  await page.locator(".governance-grid > .form-panel").first().locator("select").selectOption(role);
   await page.getByRole("button", { name: "Create invitation", exact: true }).click();
   await expect(page.getByText("Invitation created.")).toBeVisible();
   const bearerToken = (await page.locator(".token-reveal code").textContent())?.trim();
@@ -123,7 +124,9 @@ test("connected invitation creates a read-only member session enforced by the se
     const username = `c4-member-${Date.now().toString(36)}`;
     const password = `C4-Member-${Date.now().toString(36)}-Secure!`;
     const csrfInitialized = memberPage.waitForResponse(response => new URL(response.url()).pathname === "/api/v2/auth/csrf" && response.ok());
-    await memberPage.goto("/#/invite");
+    await memberPage.goto("/?token=fictional-query-placeholder#/invite?token=fictional-hash-placeholder");
+    await expect(memberPage).toHaveURL(/\/#\/invite$/);
+    await expect(memberPage.getByLabel("Invitation token", { exact: true })).toHaveValue("");
     await csrfInitialized;
     await memberPage.getByLabel("Invitation token", { exact: true }).fill(bearerToken!);
     await memberPage.getByLabel("New username", { exact: true }).fill(username);
@@ -133,25 +136,48 @@ test("connected invitation creates a read-only member session enforced by the se
     await expect(memberPage.getByRole("heading", { name: "Recovery codes", level: 2 })).toBeVisible();
     const storageKeys = await memberPage.evaluate(() => Object.keys(localStorage));
     expect(storageKeys.some(key => /token|password|session|csrf/i.test(key))).toBe(false);
+    const storageValues = await memberPage.evaluate(() => [...Object.values(sessionStorage), ...Object.values(localStorage)]);
+    expect(storageValues.some(value => value.includes(bearerToken!))).toBe(false);
 
     await memberPage.goto("/#/resources");
     await expect(memberPage.getByRole("heading", { name: /Choose an organization/ })).toBeVisible();
     await memberPage.getByRole("button", { name: "Open workspace", exact: true }).click();
     await expect(memberPage.getByRole("heading", { name: "Resource Library", level: 1 })).toBeVisible();
-    await expect(memberPage.getByRole("link", { name: "Allocations", exact: true })).toHaveCount(0);
-    await expect(memberPage.getByRole("link", { name: "Members and access", exact: true })).toHaveCount(0);
+    await expect(memberPage.getByRole("link", { name: "Allocations", exact: true })).toHaveCount(role === "ADMIN" ? 1 : 0);
+    await expect(memberPage.getByRole("link", { name: "Members and access", exact: true })).toHaveCount(role === "ADMIN" ? 1 : 0);
     await expect(memberPage.getByText("Inventory access", { exact: true })).toBeVisible();
 
     const denied = await postJson(memberPage, "/api/resources", { name: `Denied ${username}`, type: "REUSABLE", totalQuantity: 0 });
     expect(denied.status()).toBe(403);
+    const requirements = await getJson<Array<{ projectId: number }>>(memberPage, "/api/requirements");
+    const projects = await getJson<Array<{ id: number; name: string }>>(memberPage, "/api/projects");
+    const withRequirement = projects.find(project => requirements.some(row => row.projectId === project.id));
+    expect(withRequirement).toBeDefined();
+    let allocationReads = 0;
+    memberPage.on("request", request => { if (new URL(request.url()).pathname === "/api/allocations") allocationReads++; });
+    await memberPage.goto("/#/projects");
+    await memberPage.getByRole("button", { name: `View ${withRequirement!.name}`, exact: true }).click();
+    const dialog = memberPage.getByRole("dialog");
+    await expect(dialog.getByRole("heading", { name: role === "ADMIN" ? "Requirements and allocation history" : "Requirements", exact: true })).toBeVisible();
+    await expect(dialog.getByText(/required · .* covered · .* shortage/).first()).toBeVisible();
+    expect(allocationReads).toBe(role === "ADMIN" ? 1 : 0);
+    if (role === "ADMIN") await expect(dialog.locator(".sheet-batches").first()).toBeVisible();
+    await memberPage.goto("/#/resources");
+
     const savedSession = await getJson<{ activeOrgId: string | null }>(memberPage, "/api/v2/session");
     expect(savedSession.activeOrgId).toBeTruthy();
+    await memberPage.goto("/#/invite");
+    await expect(memberPage.getByRole("heading", { name: "Redeem invitation" })).toBeVisible();
+    await expect(memberPage.getByRole("heading", { name: "Recovery codes" })).toHaveCount(0);
+    await memberPage.goto("/#/resources");
     await memberPage.reload();
     await expect(memberPage.getByRole("heading", { name: "Resource Library", level: 1 })).toBeVisible();
   } finally {
     await context.close();
   }
 });
+
+}
 
 test("switching organizations hides old tenant data, cancels stale reads, and denies an unmember cross-tenant lookup", async ({ page, browser }) => {
   test.setTimeout(60_000);
@@ -220,7 +246,9 @@ test("switching organizations hides old tenant data, cancels stale reads, and de
     const username = `c4-secondary-member-${Date.now().toString(36)}`;
     const password = `C4-Secondary-${Date.now().toString(36)}-Secure!`;
     const csrfInitialized = memberPage.waitForResponse(response => new URL(response.url()).pathname === "/api/v2/auth/csrf" && response.ok());
-    await memberPage.goto("/#/invite");
+    await memberPage.goto("/?token=fictional-query-placeholder#/invite?token=fictional-hash-placeholder");
+    await expect(memberPage).toHaveURL(/\/#\/invite$/);
+    await expect(memberPage.getByLabel("Invitation token", { exact: true })).toHaveValue("");
     await csrfInitialized;
     await memberPage.getByLabel("Invitation token", { exact: true }).fill(bearerToken!);
     await memberPage.getByLabel("New username", { exact: true }).fill(username);
@@ -313,6 +341,40 @@ test("connected inventory UI recovers an uncertain receipt once and reloads its 
   await expect(page.locator(".stock-management")).toContainText("5");
   await page.unroute("**/api/v2/orgs/*/resources/*/receive");
 
+  // Hold the original upstream dispatch until after the receipt lookup returns 404.
+  let completeOriginal: (() => Promise<void>) | undefined;
+  let originalRequest: { body: string | null; etag: string; key: string } | undefined;
+  await page.route("**/api/v2/orgs/*/resources/*/receive", async route => {
+    const request = route.request();
+    const headers = await request.allHeaders();
+    const body = request.postData();
+    if (completeOriginal) {
+      expect({ body, etag: headers["if-match"], key: headers["idempotency-key"] }).toEqual(originalRequest);
+      return route.continue();
+    }
+    originalRequest = { body, etag: headers["if-match"], key: headers["idempotency-key"] };
+    const url = request.url();
+    completeOriginal = async () => {
+      const response = await page.request.post(url, { data: body ?? "", headers: {
+        "Content-Type": "application/json", "Origin": new URL(url).origin,
+        "X-CSRF-TOKEN": headers["x-csrf-token"], "If-Match": headers["if-match"],
+        "Idempotency-Key": headers["idempotency-key"],
+      } });
+      expect(response.ok()).toBeTruthy();
+    };
+    await route.abort();
+  });
+  await page.getByLabel("Receive additional units", { exact: true }).fill("3");
+  await page.getByRole("button", { name: "Record receipt", exact: true }).click();
+  await page.getByRole("button", { name: "Recover saved receipt", exact: true }).click();
+  await expect(page.getByText(/original request may still commit/)).toBeVisible();
+  expect(completeOriginal).toBeDefined();
+  await completeOriginal!();
+  await page.getByRole("button", { name: "Retry same operation ID safely", exact: true }).click();
+  await expect(page.getByText(/Stock receipt confirmed by the server/)).toBeVisible();
+  await expect(movementRows).toHaveCount(2);
+  await page.unroute("**/api/v2/orgs/*/resources/*/receive");
+
   const imageResponse = await page.request.get(`/api/resources/${resource!.id}/image`);
   expect(imageResponse.status()).toBe(200);
   const servedHash = createHash("sha256").update(await imageResponse.body()).digest("hex");
@@ -322,6 +384,12 @@ test("connected inventory UI recovers an uncertain receipt once and reloads its 
   await expect(page.getByRole("dialog").getByRole("img", { name: `Stored image for ${resourceName}` })).toBeVisible();
   const reloadedImage = await page.request.get(`/api/resources/${resource!.id}/image`);
   expect(createHash("sha256").update(await reloadedImage.body()).digest("hex")).toBe(fixtureHash);
+  await page.getByRole("button", { name: "Remove image", exact: true }).click();
+  await page.getByRole("button", { name: "Confirm image removal", exact: true }).click();
+  await expect(page.getByText("Resource image removed.")).toBeVisible();
+  await expect(page.getByRole("dialog").getByRole("img")).toHaveCount(0);
+  expect((await page.request.get(`/api/resources/${resource!.id}/image`)).status()).toBe(404);
+  await expect(movementRows).toHaveCount(2);
 });
 
 test("connected O8–O10 workflows persist through the isolated Java/MySQL backend", async ({ page }) => {
@@ -708,6 +776,7 @@ test("desktop pointer highlights follow the mouse and motion can be switched off
 });
 
 test("the packaged Java application serves React assets, hash routes, and the five JSON APIs", async ({ page }) => {
+  test.skip(!process.env.EXT_E2E_BASE_URL, "Packaged Java entry assets require an explicit packaged origin.");
   const assetResponses: Array<{ path: string; status: number }> = [];
   page.on("response", (response) => {
     const path = new URL(response.url()).pathname;
@@ -727,6 +796,12 @@ test("the packaged Java application serves React assets, hash routes, and the fi
   await expect(page.getByRole("heading", { name: "Projects", level: 1 })).toBeVisible();
   await page.reload();
   await expect(page.getByRole("heading", { name: "Projects", level: 1 })).toBeVisible();
+
+  const restoredProject = process.env.EXT_E2E_RESTORED_PROJECT;
+  if (restoredProject) {
+    await page.getByRole("button", { name: `View ${restoredProject}`, exact: true }).click();
+    await expect(page.getByRole("dialog").getByRole("heading", { name: restoredProject, exact: true })).toBeVisible();
+  }
 
   for (const route of ["departments", "projects", "resources", "requirements", "allocations"]) {
     const rows = await getJson<unknown[]>(page, `/api/${route}`);

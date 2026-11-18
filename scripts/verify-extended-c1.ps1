@@ -1,4 +1,6 @@
-param([switch] $SkipFrontend)
+param([switch] $SkipFrontend, [switch] $VerifyRecovery)
+
+if ($SkipFrontend -and $VerifyRecovery) { throw 'Recovery verification requires the complete connected browser gate.' }
 
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
@@ -647,7 +649,7 @@ FROM user_account WHERE username_key='$adminUsername';
                 @($e2eOrganizations.Data | Where-Object { $_.displayName -eq 'C4 Tenant Isolation' }).Count -ne 1) {
             throw 'The isolated MySQL browser fixture did not give the acceptance account access to a second organization.'
         }
-        $e2eEnvironmentNames = @('EXT_E2E_BASE_URL', 'EXT_E2E_USERNAME', 'EXT_E2E_PASSWORD', 'ORGRESOURCE_E2E_SCREENSHOT_DIR')
+        $e2eEnvironmentNames = @('EXT_E2E_BASE_URL', 'EXT_E2E_USERNAME', 'EXT_E2E_PASSWORD', 'ORGRESOURCE_E2E_SCREENSHOT_DIR', 'EXT_VITE_BACKEND_PORT')
         $e2eSavedEnvironment = @{}
         foreach ($name in $e2eEnvironmentNames) {
             $e2eSavedEnvironment[$name] = [Environment]::GetEnvironmentVariable($name, 'Process')
@@ -656,11 +658,15 @@ FROM user_account WHERE username_key='$adminUsername';
             $env:EXT_E2E_BASE_URL = "http://127.0.0.1:$appPort"
             $env:EXT_E2E_USERNAME = $adminUsername
             $env:EXT_E2E_PASSWORD = $recoveredPassword
-            $env:ORGRESOURCE_E2E_SCREENSHOT_DIR = Join-Path $repoRoot 'evidence\C4\screenshots'
+            $env:ORGRESOURCE_E2E_SCREENSHOT_DIR = Join-Path $dataDirectory 'screenshots'
             Push-Location $frontend
             try {
                 & npm run e2e
-                Assert-ExitCode 'packaged Java/MySQL C4 Playwright acceptance'
+                Assert-ExitCode 'packaged Java/MySQL Playwright acceptance'
+                Remove-Item Env:EXT_E2E_BASE_URL
+                $env:EXT_VITE_BACKEND_PORT = [string] $appPort
+                & npm run e2e -- --grep 'Allocation status filters'
+                Assert-ExitCode 'standalone Vite with Java/MySQL Playwright acceptance'
             } finally { Pop-Location }
         } finally {
             foreach ($name in $e2eEnvironmentNames) {
@@ -668,14 +674,17 @@ FROM user_account WHERE username_key='$adminUsername';
             }
         }
     }
+    if ($VerifyRecovery) {
+        . (Join-Path $PSScriptRoot 'verify-extended-c-recovery.ps1')
+    }
     Stop-C1App
 
     if ($SkipFrontend) {
-        Write-Output 'C4-A PASS: frontend gates were skipped by request; 43 MySQL 8-backed tests; Maven package; authenticated 28-operation Newman (48 requests/90 assertions); inventory and governance; receipt authorization after demotion, expiry/prune and packaged JVM restart; image validation and persistence.'
+        Write-Output 'Extended C PASS: frontend gates were skipped by request; 43 MySQL 8-backed tests; Maven package; authenticated 28-operation Newman (48 requests/90 assertions); inventory and governance; receipt authorization after demotion, expiry/prune and packaged JVM restart; image validation and persistence.'
     } else {
-        Write-Output 'C4-A PASS: Extended React typecheck/unit/lint/build; packaged-runtime Playwright workflows; 43 MySQL 8-backed tests; Maven package; authenticated 28-operation Newman (48 requests/90 assertions); inventory and governance; receipt authorization after demotion, expiry/prune and packaged JVM restart; image validation and persistence.'
+        Write-Output 'Extended C PASS: Extended React typecheck/unit/lint/build; packaged-runtime Playwright workflows; 43 MySQL 8-backed tests; Maven package; authenticated 28-operation Newman (48 requests/90 assertions); inventory and governance; receipt authorization after demotion, expiry/prune and packaged JVM restart; image validation and persistence.'
     }
-    Write-Output "C3 run evidence and stopped isolated datadir: $dataDirectory"
+    Write-Output "Extended C run evidence and stopped isolated datadir: $dataDirectory"
     Write-Output "Packaged JAR: $(Join-Path $experiment 'target\extended-backend-0.1.0-SNAPSHOT.jar')"
 } finally {
     Stop-C1App

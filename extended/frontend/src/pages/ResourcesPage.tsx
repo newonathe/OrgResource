@@ -6,6 +6,8 @@ import type { Resource, ResourceAvailability, ResourceType } from "../api/types"
 import { explainError, isUncertain } from "../domain";
 import { Button, DetailSheet, GlassPanel, LoadState, Modal, MutationReviewNotice, Notice, PageHeader, PanelHeading, StatusBadge } from "../ui";
 
+type StockAttempt = { resourceId: string; mode: "receive" | "adjust"; value: number; etag: string; identity: OperationIdentity };
+
 type AvailabilityResult =
   | { resourceId: number; status: "ready"; value: ResourceAvailability }
   | { resourceId: number; status: "error"; message: string };
@@ -38,18 +40,19 @@ export function ResourcesPage() {
   const [notice, setNotice] = useState("");
   const [postReviewRequired, setPostReviewRequired] = useState(false);
   const [inventorySnapshot, setInventorySnapshot] = useState<{ resourceId: string; value: InventoryResource; etag: string } | null>(null);
-  const [movementSnapshot, setMovementSnapshot] = useState<{ resourceId: string; items: Movement[] } | null>(null);
+  const [movementSnapshot, setMovementSnapshot] = useState<{ resourceId: string; items: Movement[]; nextCursor: string | null } | null>(null);
   const [inventoryErrorState, setInventoryErrorState] = useState<{ resourceId: string | null; message: string } | null>(null);
   const [stockBusy, setStockBusy] = useState(false);
   const [receiveQuantity, setReceiveQuantity] = useState("1");
   const [adjustQuantity, setAdjustQuantity] = useState("");
-  const [operationAttempt, setOperationAttempt] = useState<{ mode: "receive" | "adjust"; value: number; identity: OperationIdentity } | null>(null);
+  const [operationAttempt, setOperationAttempt] = useState<StockAttempt | null>(null);
   const [operationRecoverable, setOperationRecoverable] = useState(false);
   const [receiptId, setReceiptId] = useState("");
   const [receiptMessage, setReceiptMessage] = useState("");
   const [imagePreview, setImagePreview] = useState<{ resourceId: number; url: string } | null>(null);
   const [imageRefresh, setImageRefresh] = useState(0);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [confirmRemoveImage, setConfirmRemoveImage] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -95,7 +98,7 @@ export function ResourcesPage() {
         if (!active) return;
         if (!state.etag) throw new Error("The inventory API did not return its current ETag.");
         setInventorySnapshot({ resourceId: selectedPublicId, value: state.data, etag: state.etag });
-        setMovementSnapshot({ resourceId: selectedPublicId, items: page.items });
+        setMovementSnapshot({ resourceId: selectedPublicId, items: page.items, nextCursor: page.nextCursor });
         setInventoryErrorState(null);
       })
       .catch((reason: unknown) => {
@@ -111,9 +114,10 @@ export function ResourcesPage() {
     let objectUrl: string | null = null;
     void fetch(`/api/resources/${selectedId}/image`, { credentials: "same-origin", cache: "no-store", signal: controller.signal })
       .then(async response => {
+        if (response.status === 404 && !controller.signal.aborted) setImagePreview(null);
         if (!response.ok) return null;
         const blob = await response.blob();
-        if (!blob.type.startsWith("image/")) return null;
+        if (controller.signal.aborted || !blob.type.startsWith("image/")) return null;
         objectUrl = URL.createObjectURL(blob); setImagePreview({ resourceId: selectedId, url: objectUrl }); return null;
       })
       .catch(() => undefined);
@@ -126,13 +130,13 @@ export function ResourcesPage() {
   const availabilityState = currentAvailability?.status ?? "loading";
   const refresh = () => { setLoadState("loading"); setReload((value) => value + 1); };
 
-  async function executeStock(attempt: { mode: "receive" | "adjust"; value: number; identity: OperationIdentity }) {
-    if (!selected || !activeOrgId || !inventoryState || stockBusy) return;
+  async function executeStock(attempt: StockAttempt) {
+    if (!selected || selected.publicId !== attempt.resourceId || !activeOrgId || !inventoryState || stockBusy) return;
     setOperationAttempt(attempt); setOperationRecoverable(false); setStockBusy(true); reportInventoryError(""); setReceiptMessage("");
     try {
       const result = attempt.mode === "receive"
-        ? await inventoryApi.receive(activeOrgId, selected.publicId, attempt.value, inventoryState.etag, attempt.identity)
-        : await inventoryApi.adjust(activeOrgId, selected.publicId, attempt.value, inventoryState.etag, attempt.identity);
+        ? await inventoryApi.receive(activeOrgId, attempt.resourceId, attempt.value, attempt.etag, attempt.identity)
+        : await inventoryApi.adjust(activeOrgId, attempt.resourceId, attempt.value, attempt.etag, attempt.identity);
       setOperationAttempt(null); setReceiveQuantity("1"); setAdjustQuantity("");
       setNotice(`${attempt.mode === "receive" ? "Stock receipt" : "Stock adjustment"} confirmed by the server (operation ${result.data.operationId}).`);
       refresh(); setAvailabilityReload(current => current + 1);
@@ -156,24 +160,25 @@ export function ResourcesPage() {
     if (!selected || !activeOrgId || !inventoryState || stockBusy) return;
     const value = Number(mode === "receive" ? receiveQuantity : adjustQuantity);
     if (!Number.isInteger(value) || value < (mode === "receive" ? 1 : 0) || value > 1_000_000) return;
-    if (operationAttempt && !operationRecoverable) return;
-    if (operationAttempt && (operationAttempt.mode !== mode || operationAttempt.value !== value)) return;
-    await executeStock(operationAttempt ?? { mode, value, identity: newOperationIdentity() });
+    if (operationAttempt) return;
+    await executeStock({ resourceId: selected.publicId, mode, value, etag: inventoryState.etag, identity: newOperationIdentity() });
   }
 
   async function recoverOperationReceipt() {
     const id = operationAttempt?.identity.operationId || receiptId.trim();
     if (!activeOrgId || !id) return;
-    setStockBusy(true); reportInventoryError(""); setReceiptMessage("");
+    setStockBusy(true); setOperationRecoverable(false); reportInventoryError(""); setReceiptMessage("");
     try {
       const result = await inventoryApi.receipt(activeOrgId, id);
       const receipt = result.data;
-      setReceiptMessage(`Saved ${receipt.kind} receipt · quantity ${receipt.quantity} · total change ${receipt.deltaTotal} · operation ${receipt.operationId}.`);
+      setReceiptMessage("kind" in receipt
+        ? `Saved ${receipt.kind} receipt · permanent movement · quantity ${receipt.quantity} · total change ${receipt.deltaTotal} · operation ${receipt.operationId}.`
+        : `Temporary ${receipt.action} receipt · ${receipt.allocationStatus ?? "confirmed"} · operation ${receipt.operationId}.`);
       if (operationAttempt?.identity.operationId === id) { setOperationAttempt(null); setOperationRecoverable(false); }
       setAvailabilityReload(current => current + 1); refresh();
     } catch (reason) {
       if (reason instanceof ApiError && reason.status === 404) {
-        setReceiptMessage("No saved receipt was found for this ID. The current server state has been refreshed. Review it before deciding whether to retry.");
+        setReceiptMessage("No receipt is visible yet. The original request may still commit. Review the refreshed stock. A retry can only reuse the original request.");
         if (operationAttempt?.identity.operationId === id) setOperationRecoverable(true);
         setAvailabilityReload(current => current + 1);
       } else if (reason instanceof ApiError && reason.status === 409 && reason.code === "IDEMPOTENCY_KEY_EXPIRED") {
@@ -192,6 +197,20 @@ export function ResourcesPage() {
     try { const result = await inventoryApi.uploadImage(selected.id, imageFile); setImageFile(null); setImageRefresh(value => value + 1); setAvailabilityReload(value => value + 1); setNotice(`Image saved (${result.data.sizeBytes.toLocaleString()} bytes, ${result.data.contentType}).`); }
     catch (reason) { setError(explainError(reason)); }
     finally { setBusy(false); }
+  }
+
+  async function removeImage() {
+    if (!inventoryState || !activeOrgId || !canManageLibrary || busy || stockBusy) return;
+    setBusy(true); setError(""); setNotice("");
+    try {
+      await inventoryApi.removeImage(activeOrgId, inventoryState.resourceId, inventoryState.etag);
+      setImagePreview(null); setNotice("Resource image removed.");
+    } catch (reason) {
+      setError(explainError(reason));
+    } finally {
+      setConfirmRemoveImage(false); setBusy(false);
+      setImageRefresh(value => value + 1); setAvailabilityReload(value => value + 1);
+    }
   }
 
   async function createResource(event: FormEvent<HTMLFormElement>) {
@@ -301,13 +320,19 @@ export function ResourcesPage() {
         </GlassPanel>
       </div>
 
-      {selected && <DetailSheet title={selected.name} onClose={() => setSelected(null)}>
+      {selected && <DetailSheet title={selected.name} onClose={() => { setSelected(null); setImageFile(null); setConfirmRemoveImage(false); }}>
         <div className="detail-grid"><div><span>Type</span><strong>{selected.type}</strong></div><div><span>Physical total</span><strong>{selected.totalQuantity.toLocaleString()} units</strong></div><div><span>Available now</span><strong>{currentAvailability?.status === "ready" && currentAvailability.value.resourceId === selected.id ? `${currentAvailability.value.availableQuantity.toLocaleString()} units` : availabilityState === "error" ? "Unavailable" : "Loading…"}</strong></div></div>
         {availabilityState === "loading" && <p className="panel-copy" role="status">Reading current availability from the server…</p>}
         {currentAvailability?.status === "error" && <Notice tone="danger"><span>{currentAvailability.message}</span><Button variant="quiet" onClick={() => { setAvailabilityResult(null); setAvailabilityReload((value) => value + 1); }}>Retry availability</Button></Notice>}
         {availabilityState === "ready" && <p className="panel-copy">Availability is the server’s current inventory calculation, including applicable reservations and custody.</p>}
         <section className="sheet-section resource-image-section"><h3>Resource image</h3>
           {imageUrl ? <img className="resource-image-preview" src={imageUrl} alt={"Stored image for " + selected.name} /> : <p className="quiet-note">No image is currently available for this Resource.</p>}
+          {canManageLibrary && imageUrl && <Button variant="secondary" disabled={busy || stockBusy || !inventoryState} onClick={() => setConfirmRemoveImage(true)}>Remove image</Button>}
+          {confirmRemoveImage && <div className="auth-form">
+            <p>Remove the stored image for this Resource?</p>
+            <Button disabled={busy} onClick={() => void removeImage()}>Confirm image removal</Button>
+            <Button variant="secondary" disabled={busy} onClick={() => setConfirmRemoveImage(false)}>Keep image</Button>
+          </div>}
           {canManageLibrary && <form className="auth-form image-upload-form" onSubmit={event => void uploadImage(event)}>
             <label htmlFor="resource-image-file">Upload PNG or JPEG (maximum 2 MiB)</label>
             <input id="resource-image-file" type="file" accept="image/png,image/jpeg" onChange={event => setImageFile(event.target.files?.[0] ?? null)} />
@@ -323,18 +348,18 @@ export function ResourcesPage() {
             {operationAttempt && <div className="operation-recovery">
               <p>Operation ID <code>{operationAttempt.identity.operationId}</code></p>
               <Button disabled={stockBusy} onClick={() => void recoverOperationReceipt()}>{stockBusy ? "Checking…" : "Recover saved receipt"}</Button>
-              {operationRecoverable && <Button variant="secondary" disabled={stockBusy} onClick={() => void executeStock(operationAttempt)}>Retry same operation ID safely</Button>}
+              {operationRecoverable && operationAttempt.resourceId === selectedPublicId && <Button variant="secondary" disabled={stockBusy} onClick={() => void executeStock(operationAttempt)}>Retry same operation ID safely</Button>}
             </div>}
             <div className="stock-operation-grid">
               <form className="auth-form" onSubmit={event => void submitStock("receive", event)}>
                 <label htmlFor="stock-receive-quantity">Receive additional units</label>
-                <input id="stock-receive-quantity" type="number" min="1" max="1000000" step="1" value={receiveQuantity} onChange={event => setReceiveQuantity(event.target.value)} required disabled={stockBusy || (!!operationAttempt && !operationRecoverable)} />
-                <Button variant="primary" type="submit" disabled={stockBusy || !inventoryState.etag || (!!operationAttempt && !operationRecoverable)}>{stockBusy ? "Saving…" : "Record receipt"}</Button>
+                <input id="stock-receive-quantity" type="number" min="1" max="1000000" step="1" value={receiveQuantity} onChange={event => setReceiveQuantity(event.target.value)} required disabled={stockBusy || !!operationAttempt} />
+                <Button variant="primary" type="submit" disabled={stockBusy || !inventoryState.etag || !!operationAttempt}>{stockBusy ? "Saving…" : "Record receipt"}</Button>
               </form>
               <form className="auth-form" onSubmit={event => void submitStock("adjust", event)}>
                 <label htmlFor="stock-adjust-total">Correct physical total</label>
-                <input id="stock-adjust-total" type="number" min="0" max="1000000" step="1" value={adjustQuantity} onChange={event => setAdjustQuantity(event.target.value)} required disabled={stockBusy || (!!operationAttempt && !operationRecoverable)} />
-                <Button type="submit" disabled={stockBusy || adjustQuantity === "" || !inventoryState.etag || (!!operationAttempt && !operationRecoverable)}>{stockBusy ? "Saving…" : "Record adjustment"}</Button>
+                <input id="stock-adjust-total" type="number" min="0" max="1000000" step="1" value={adjustQuantity} onChange={event => setAdjustQuantity(event.target.value)} required disabled={stockBusy || !!operationAttempt} />
+                <Button type="submit" disabled={stockBusy || adjustQuantity === "" || !inventoryState.etag || !!operationAttempt}>{stockBusy ? "Saving…" : "Record adjustment"}</Button>
               </form>
             </div>
             <form className="receipt-lookup" onSubmit={event => { event.preventDefault(); void recoverOperationReceipt(); }}>
@@ -343,6 +368,7 @@ export function ResourcesPage() {
               <Button disabled={stockBusy || (!receiptId.trim() && !operationAttempt)}>{stockBusy ? "Checking…" : "Look up receipt"}</Button>
             </form>
             <h4>Permanent movement timeline</h4>
+            {movementState?.nextCursor && <p className="quiet-note">Showing the first 30 movement records. More records exist.</p>}
             {movements.length === 0 ? <p className="quiet-note">No stock movements have been recorded.</p> : <div className="table-scroll"><table className="data-table"><thead><tr><th>When (UTC from server)</th><th>Movement</th><th>Quantity</th><th>Total change</th><th>Issued change</th><th>Operation</th></tr></thead><tbody>{movements.map(movement => <tr key={movement.id}><td>{movement.occurredAt}</td><td>{movement.kind}</td><td>{movement.quantity}</td><td>{movement.deltaTotal > 0 ? "+" : ""}{movement.deltaTotal}</td><td>{movement.deltaIssued > 0 ? "+" : ""}{movement.deltaIssued}</td><td><code>{movement.operationId}</code></td></tr>)}</tbody></table></div>}
           </> : <p className="quiet-note">{inventoryError || "Loading tenant-scoped inventory state and ETag…"}</p>}
         </section>}
