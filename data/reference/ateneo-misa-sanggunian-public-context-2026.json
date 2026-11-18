@@ -12,13 +12,13 @@
       "organization_website": "https://misa.org.ph/",
       "about_url": "https://misa.org.ph/about/",
       "publicly_described_functions": [
-        "Communications (Comms)",
-        "Organizational Support Group (OSG)",
+        "Comms",
+        "OSG",
         "Marketing",
-        "Operations and External Transactions (OET)",
+        "OET",
         "Events",
-        "eServices (eServs)",
-        "Human Resources (HR)"
+        "eServs",
+        "HR"
       ],
       "public_event_or_program_references": [
         {
@@ -36,7 +36,8 @@
       ],
       "display_in_demo": "Source-linked ABOUT panel only, synthetic programs use distinct Demo- prefixed original names",
       "student_officers_or_contact_imported": false,
-      "largest_membership_claim_verified": false
+      "largest_membership_claim_verified": false,
+      "source_note": "These are the exact abbreviations/labels on the current public MISA site. Do not invent a full expansion of OET or OSG without verified primary source."
     },
     {
       "organization_reference_key": "sanggunian-student-government",
