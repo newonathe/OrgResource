@@ -71,3 +71,6 @@ The earlier hosted 12-org sample is research v1. The newly approved **planning t
 
 
 **Source companion (v2):** [data/reference/ateneo-misa-sanggunian-public-context-2026.json](../../data/reference/ateneo-misa-sanggunian-public-context-2026.json) holds exact publicly described flagship context; it contains no factual resource usage or financial records and is mandatory for C6-D through C11-D.
+
+
+**Legacy research-reference identity:** [data/reference/ateneo-v1-v2-reference-aliases.json](../../data/reference/ateneo-v1-v2-reference-aliases.json) maps all 12 previous source names to the expanded roster (including two source-URL-matched names). This is documentary alias provenance, not a migration or generated seed.
