@@ -12,7 +12,7 @@ default_subagent_model = "gpt-6-luna"
 default_subagent_reasoning_effort = "low"
 max_concurrent_threads_per_session = 2
 ```
-Implementation-role TOML files intentionally do NOT set sandbox_mode: they inherit the parent user's chosen permissions, so a planning/read-only run cannot gain workspace write capability merely by picking an agent. Read-only review roles explicitly set sandbox_mode=read-only. This gives any unspecified spawned Codex subagent a cheaper default and limits *concurrent open subagent threads* to two. It does **not** limit how many agents may be spawned in total, guarantee spend, prevent an explicit override by the orchestrator, or override higher-priority managed/account settings. **Therefore enforce additional written controls in Sections 2–7 and check effective runtime config before starting a phase.** The main/root model is not forcibly downgraded by this file. Project config may require the user to mark the project trusted in Codex.
+ALL standalone custom-agent TOML files intentionally omit sandbox_mode. Official Codex docs say sandbox_mode inside custom agent files does NOT override the parent sandbox. Read-only review roles have BEHAVIORAL read-only instructions; a client with writable parent permissions is not prevented from writing. To enforce read-only semantics, coordinator must use a read-only parent/session where supported and verify unchanged files/diff. Never label this sandbox-enforced purely because of a role TOML. This gives any unspecified spawned Codex subagent a cheaper default and limits *concurrent open subagent threads* to two. It does **not** limit how many agents may be spawned in total, guarantee spend, prevent an explicit override by the orchestrator, or override higher-priority managed/account settings. **Therefore enforce additional written controls in Sections 2–7 and check effective runtime config before starting a phase.** The main/root model is not forcibly downgraded by this file. Project config may require the user to mark the project trusted in Codex.
 
 **Model availability:** The model names below exist in OpenAI's public catalog as of the dated lookup, but this does **not** prove entitlement/availability in this user's specific Codex account. Query the models shown by the actual Codex runtime, or run a read-only negligible-cost probe, before first use. If requested model/effort is unsupported, **do not silently inherit an expensive parent model**: block spawning, record `MODEL_UNAVAILABLE`, select the least-expensive *actually available* model with comparable validated capability via an explicit task-specific model/effort override, and record that in the dispatch. If no suitable model exists, parent does the task serially or asks owner. Do not claim effective model config from a documentation file alone.
 
@@ -42,15 +42,15 @@ At the start of **every** phase, root must first construct a source inventory an
 
 | Custom role (file in `.codex/agents/`) | Exact initial model | Reasoning | Sandbox | Decision surface | When to invoke |
 | --- | --- | --- | --- | --- | --- |
-| `org_map` | `gpt-6-luna` | low | read-only | Metadata inventory/CSV if script fails | Optional, normally **no agent** |
-| `org_source` | `gpt-6-luna` | medium | read-only | Source-grounded academic/public org fact inventory | Only when source interpretation benefits from language model |
+| `org_map` | `gpt-6-luna` | low | parent-inherited; behavioral read-only | Metadata inventory/CSV if script fails | Optional, normally **no agent** |
+| `org_source` | `gpt-6-luna` | medium | parent-inherited; behavioral read-only | Source-grounded academic/public org fact inventory | Only when source interpretation benefits from language model |
 | `org_api` | `gpt-6.1-terra` | medium | inherit parent | Assigned Extended API/DTO/services, **not** stock/crypto | After exact contract freeze |
 | `org_ui` | `gpt-6.1-terra` | medium | inherit parent | Assigned React pages/client/accessibility | After API contract freeze |
 | `org_ledger` | `gpt-6.1-sol` | medium | inherit parent | SQL, holds, movement, migration, replay | Precise invariant and safe branch defined |
 | `org_auth` | `gpt-6.1-sol` | medium | inherit parent | Identity/tenancy/cookies/recovery | C7 authorized, high-risk owner |
 | `org_ops` | `gpt-6.1-terra` | medium | inherit parent | Build/CI/backup/operator code | Targeted script and measured problem |
-| `org_review` | `gpt-6.1-sol` | medium | read-only | Independent falsification of integrated changes | Required meaningful second-pass review |
-| `org_critical` | `gpt-6.1-sol` | high | read-only | Exception-only serious P0/P1 or C11 veto | Requires `ESCALATION_REASON` or C11 |
+| `org_review` | `gpt-6.1-sol` | medium | parent-inherited; behavioral read-only | Independent falsification of integrated changes | Required meaningful second-pass review |
+| `org_critical` | `gpt-6.1-sol` | high | parent-inherited; behavioral read-only | Exception-only serious P0/P1 or C11 veto | Requires `ESCALATION_REASON` or C11 |
 
 **Reasoning controls are literal values**, not assumed equivalent to model capability or model-specific pricing. `org_ledger` and `org_auth` at Sol-medium require full explicit contracts, mathematical assertions and actual MySQL negative tests. If these fail to support safe decisions, use the expensive Sol-high reviewer on only that unresolved scope. Do not use high to compensate for an ambiguous prompt. A low-cost worker does not decide final security architecture or release.
 
@@ -110,3 +110,7 @@ The independent critic should read exact source/test receipts and challenge at l
 ## 8. Explicit Superpowers native/GOAT supersession and source proof
 
 This policy is extended by docs/execution/14_SUPERPOWERS_SOURCE_AUDIT_AND_CONFLICTS.md, 15_GOAT_MODEL_EFFORT_ROUTING_AND_COST_VALIDATION.md and 16_SUPERPOWERS_ADAPTED_ROOT_CODEX_HANDOFF.md. The cheaper `executing-plans` / Native approach **is preferred** for tightly coupled work rather than automatically launching 1 implementer + 1 reviewer on every task. Use a tested, zero-extra-agent rules router to choose both model and reasoning effort; verify actual runtime allowlist, current branch, task source and contract, and measure total attempts+retries+reviews. Keep TDD per task and fresh independent integrated review; high-risk stock/security matters receive specific test and critique before acceptance. 2026 Daniyar "GOAT" dollar estimates are from a simulated workload, not a verified result for this repo; direct video review is NOT_RUN.
+
+## Verified Codex custom-role permission correction, 2026-11-19
+
+Primary reference: https://learn.chatgpt.com/docs/agent-configuration/subagents and https://learn.chatgpt.com/docs/config-file/config-reference. Standalone custom agent files cannot override parent sandbox_mode, approval_policy, provider or MCP. Earlier repo TOML review roles included sandbox_mode=read-only, which could mislead readers into believing isolation was enforced. These declarations have now been removed from all role files. Review roles explicitly instruct no writes; actual parent/session sandbox must be read-only to enforce that property, and coordinator must recheck exact Git diff after reviewers. When not verified use READ_ONLY_INSTRUCTIONS, not SANDBOX_READ_ONLY_VERIFIED. Codex runtime and effective permissions still NOT_RUN here.
