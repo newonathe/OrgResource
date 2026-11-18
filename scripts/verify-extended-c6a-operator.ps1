@@ -305,8 +305,11 @@ GRANT ALL ON $restored.* TO 'c6_migrate'@'127.0.0.1';
     & "$bin/mysqladmin.exe" --no-defaults --protocol=tcp --host=127.0.0.1 "--port=$target" --user=root --skip-password shutdown *> $null
     Assert-Native 'Disposable target shutdown while Java is live'
     if (-not $originalTarget.Process.WaitForExit(15000)) { throw 'Disposable target did not stop.' }
-    $interrupted = Invoke-WebRequest -Uri "$base/api/v2/auth/csrf" -SkipHttpErrorCheck -TimeoutSec 25
+    # Spring Session and the servlet error path may make separate 10-second pool acquisitions.
+    $interrupted = Invoke-WebRequest -Uri "$base/api/v2/auth/csrf" -SkipHttpErrorCheck -TimeoutSec 75
     if ($interrupted.StatusCode -lt 500) { throw 'A database-backed CSRF initialization succeeded during the outage.' }
+    if ($script:app.HasExited) { throw 'Java exited during the MySQL outage.' }
+    Write-Output "Stopped target MySQL refused CSRF initialization with HTTP $($interrupted.StatusCode)."
     $target = Start-C6aMysql 'target' $target
     Assert-WebRead
     Write-Output 'Java remained live through target MySQL unavailability and accepted a new authenticated browser session after restart.'
