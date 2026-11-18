@@ -44,11 +44,11 @@ At the start of **every** phase, root must first construct a source inventory an
 | --- | --- | --- | --- | --- | --- |
 | `org_map` | `gpt-6-luna` | low | read-only | Metadata inventory/CSV if script fails | Optional, normally **no agent** |
 | `org_source` | `gpt-6-luna` | medium | read-only | Source-grounded academic/public org fact inventory | Only when source interpretation benefits from language model |
-| `org_api` | `gpt-6.1-terra` | medium | workspace-write | Assigned Extended API/DTO/services, **not** stock/crypto | After exact contract freeze |
-| `org_ui` | `gpt-6.1-terra` | medium | workspace-write | Assigned React pages/client/accessibility | After API contract freeze |
-| `org_ledger` | `gpt-6.1-sol` | medium | workspace-write | SQL, holds, movement, migration, replay | Precise invariant and safe branch defined |
-| `org_auth` | `gpt-6.1-sol` | medium | workspace-write | Identity/tenancy/cookies/recovery | C7 authorized, high-risk owner |
-| `org_ops` | `gpt-6.1-terra` | medium | workspace-write | Build/CI/backup/operator code | Targeted script and measured problem |
+| `org_api` | `gpt-6.1-terra` | medium | inherit parent | Assigned Extended API/DTO/services, **not** stock/crypto | After exact contract freeze |
+| `org_ui` | `gpt-6.1-terra` | medium | inherit parent | Assigned React pages/client/accessibility | After API contract freeze |
+| `org_ledger` | `gpt-6.1-sol` | medium | inherit parent | SQL, holds, movement, migration, replay | Precise invariant and safe branch defined |
+| `org_auth` | `gpt-6.1-sol` | medium | inherit parent | Identity/tenancy/cookies/recovery | C7 authorized, high-risk owner |
+| `org_ops` | `gpt-6.1-terra` | medium | inherit parent | Build/CI/backup/operator code | Targeted script and measured problem |
 | `org_review` | `gpt-6.1-sol` | medium | read-only | Independent falsification of integrated changes | Required meaningful second-pass review |
 | `org_critical` | `gpt-6.1-sol` | high | read-only | Exception-only serious P0/P1 or C11 veto | Requires `ESCALATION_REASON` or C11 |
 
