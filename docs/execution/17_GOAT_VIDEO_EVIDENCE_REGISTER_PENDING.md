@@ -42,3 +42,15 @@ No large extraction should be committed into OrgResource or used as pretense of 
 ## E. Decision while video is inaccessible
 
 The GOAT concept is being treated as an **externally sourced, unproven optimization hypothesis**; the cost figures are **NOT_BENCHMARK**. The source-grounded Superpowers design merits a **policy-only** OrgResource adaptation now, which can be accepted/rejected independently of proving the video frames. All video-specific visual assertions are explicitly **OPEN / NOT_RUN** until source inspection becomes possible. No false frame-by-frame statement is allowed in PR, phase report or user reply.
+
+## F. Additional direct-video recovery attempts — 2026-11-19
+
+- Project Files conversation listing explicitly returned the original filename, file ID `file_00000000b2708207a4062d07d33e4a1c`, MIME `video/mp4`, and recorded size **6,527,447 bytes**. This establishes metadata for the uploaded asset, not decoded content.
+- `files.materialize` returned the backed raw file to `/mnt/data/files/Daniyar_AI_Engineer_Big_Tech_video_no_watermark (1).mp4`, representation raw_file and size 6,527,447 bytes. This establishes tool-managed materialization metadata, but container/ffprobe still returned `ClientError` when asked to inspect the bytes.
+- `files.read` on that exact file ID returned the literal response `No content (images or text) could be read from document ...`. It did not provide video frames, audio or a transcript.
+- Alternative supported video-analysis tool was investigated. `mcp__Higgsfield__media_upload_and_confirm` on the exact ChatGPT file reference was rejected with `BLOCKED_FILE_REFERENCE: this file is unavailable for connector egress`. No external upload, transcription, scene analysis, or video-analysis job was completed.
+- Because of these barriers, the frame count, frame texts, audio statements, duration, frame sampling, and exact relation of public GOAT caption to the uploaded MP4 remain **NOT_RUN / NOT_INSPECTED**. This is an evidence blocker that a written plan cannot remove. Do NOT assert a frame-by-frame review in any PR, release report or reply.
+
+**Evidence status refinement:** The original asset's metadata is CONFIRMED through Files; its decoded pixels/audio are NOT_INSPECTED. `ffprobe`, local frame analysis and any audio transcription remain NOT_RUN. A third-party video analysis should only be attempted after file-egress support and privacy/permission boundaries are verified.
+
+**Next unblocked option:** Process the original local MP4 using the already specified ffprobe/ffmpeg sequence on a functioning local Codex/workstation environment, extract timestamp-aligned distinct frames and audio, then independently critique every GOAT model/effort/cost claim. Until then the creator caption is **external claim evidence only**; the routing method remains an unbenchmarked design choice.
