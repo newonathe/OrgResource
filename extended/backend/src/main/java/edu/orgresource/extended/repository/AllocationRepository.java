@@ -50,7 +50,8 @@ public interface AllocationRepository extends JpaRepository<Allocation, Long> {
             + "JOIN resource r ON r.id=q.resource_id AND r.organization_id=q.organization_id "
             + "WHERE a.status='ISSUED' AND r.type='REUSABLE' AND a.sms_consent=TRUE "
             + "AND a.phone_ciphertext IS NOT NULL "
-            + "AND (a.reminder_outcome='NONE' OR (a.reminder_outcome='KEY_UNAVAILABLE' AND a.phone_key_id=:availableKeyId)) "
+            + "AND (a.reminder_outcome='NONE' OR (a.reminder_outcome='KEY_UNAVAILABLE' "
+            + "AND CAST(a.phone_key_id AS BINARY)=CAST(:availableKeyId AS BINARY))) "
             + "AND p.end_at>=:sampledNow AND p.end_at<:dueBefore "
             + "ORDER BY p.end_at,a.id", nativeQuery = true)
     List<ReminderCandidate> findReminderCandidates(@Param("sampledNow") LocalDateTime sampledNow,

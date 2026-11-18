@@ -2513,6 +2513,9 @@ class C1IdentityAcceptanceTest {
                 .stream().anyMatch(row -> row.getAllocationId() == unavailableKey));
         assertFalse(allocationRepository.findReminderCandidates(now, now.plusHours(24), "c7-other-key", reminderPage)
                 .stream().anyMatch(row -> row.getAllocationId() == unavailableKey));
+        String alternateCase = contactCipher.availableKeyId().toUpperCase(java.util.Locale.ROOT);
+        assertFalse(allocationRepository.findReminderCandidates(now, now.plusHours(24), alternateCase, reminderPage)
+                .stream().anyMatch(row -> row.getAllocationId() == unavailableKey));
         assertFalse(allocationRepository.findReminderCandidates(now, now.plusHours(24), null, reminderPage)
                 .stream().anyMatch(row -> row.getAllocationId() == unavailableKey));
         assertTrue(reminderService.claimOne(unavailableKey, now), "A temporary key outage may be retried after key configuration is restored.");
@@ -3021,7 +3024,7 @@ class C1IdentityAcceptanceTest {
         HttpResponse<String> secondTransfer = post(ownerSession, root + "/transfer-ownership",
                 GSON.toJson(new TransferRequest(admin.membershipPublicId, owner.password)));
         assertEquals(201, secondTransfer.statusCode());
-        UUID secondTransferId = UUID.fromString(json(secondTransfer).getAsJsonObject("data").get("id").getAsString());
+        String secondTransferId = json(secondTransfer).getAsJsonObject("data").get("id").getAsString();
         String acceptance = GSON.toJson(new TransferIdRequest(secondTransferId));
         assertEquals(428, post(adminSession, root + "/accept-transfer", acceptance).statusCode());
         assertEquals(200, post(ownerSession, target + "/role", grant, "\"v0\"").statusCode());
