@@ -130,10 +130,11 @@ public class ReportingComponent {
     }
 
     private long requireScope(UUID pathOrganization) {
-        Membership membership = organization.requirePathOrganization(pathOrganization, false,
-                Membership.Role.OWNER, Membership.Role.ADMIN);
+        Membership membership = organization.requirePathOrganization(pathOrganization, false);
         if (!organization.currentOrganizationId().equals(membership.organizationId))
             throw new C1ApiException(404, "NOT_FOUND", "The requested organization was not found.");
+        if (membership.role != Membership.Role.OWNER && membership.role != Membership.Role.ADMIN)
+            throw new C1ApiException(403, "FORBIDDEN", "The current membership cannot perform this action.");
         return membership.organizationId;
     }
 

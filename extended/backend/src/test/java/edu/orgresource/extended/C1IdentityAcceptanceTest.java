@@ -2660,6 +2660,11 @@ class C1IdentityAcceptanceTest {
         assertEquals(404, post(foreignSession, root + "/exports", exportBody).statusCode());
         Session ownerSession = login(owner.username, owner.password);
         assertEquals(403, post(ownerSession, root + "/exports", exportBody, "", origin()).statusCode());
+        addMembership(foreign.orgDbId, owner.userDbId, Membership.Role.MEMBER);
+        String unselectedWorkspace = "/api/v2/orgs/" + foreign.orgPublicId;
+        assertEquals(404, get(ownerSession.client, unselectedWorkspace + "/audit").statusCode());
+        assertEquals(404, get(ownerSession.client, unselectedWorkspace + "/activity").statusCode());
+        assertEquals(404, post(ownerSession, unselectedWorkspace + "/exports", exportBody).statusCode());
         for (Membership.Role role : List.of(Membership.Role.MEMBER, Membership.Role.LEAD, Membership.Role.CUSTODIAN, Membership.Role.ADMIN)) {
             Fixture actor = fixtureInOrg(owner.orgDbId, role);
             Session session = login(actor.username, actor.password);

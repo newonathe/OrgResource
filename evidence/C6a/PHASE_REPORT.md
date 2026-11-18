@@ -21,13 +21,35 @@ Reporting reads the two immutable fact families with current role and workspace 
 - [Full Extended scope gap and conflict register](FULL_EXTENDED_SCOPE_GAP_REGISTER.md)
 - [Independent acceptance receipts](INDEPENDENT_ACCEPTANCE.md)
 
-## Current execution boundary
+## Changes and security boundary
 
-The review and testing sequence is ongoing at this source snapshot. The initial local worktree evidence passed 47 Java/MySQL tests, 24 frontend unit tests, 48 academic Newman requests and 90 assertions, and 12 packaged browser journeys. The independent operator attempt found a fresh bootstrap failure despite the integration gate. Final code/CI, restricted backup and exact release artifact acceptance require their own receipts.
+- Backend: `ReportingResource.java`, `ReportingComponent.java` and `C1JerseyConfiguration.java` register and implement the three tenant reports. `C1IdentityAcceptanceTest.java` adds role, cursor, failed-query, bounded export, CSV and snapshot checks on actual MySQL. `C1Application.java` and `C1SecurityConfiguration.java` separate offline bootstrap from servlet security and scheduled workers.
+- React: `App.tsx` and `AcademicShell.tsx` add scoped navigation. `api/client.ts`, `api/extended.ts` and `pages/ReportingPages.tsx` handle real reads and downloads. `e2e/orgresource.spec.ts` covers the connected reporting journey, generated files, responsive widths and keyboard activation.
+- Operations: `extended-c-backup.ps1`, `package-extended-c.ps1`, `verify-extended-c1.ps1`, `verify-extended-c6a-operator.ps1` and `run-extended-c3-newman.ps1` implement staged publication, scoped protected-login recovery and both Extended Newman gates. The new reporting collection is separate from the 28-route compatibility collection. `.github/workflows/verify.yml` adds independent frozen Course A and Extended runtime checks. The release and reporting manuals plus these seven evidence files document the changes.
+- OWNER and ADMIN require an active account, active membership and explicit selection to read audit or activity. The export POST also requires current CSRF and same origin. The queries are bounded and scoped, and the runtime database account is granted append-only access to the two fact tables. Actor and target internal identifiers and all contact/identity secrets are excluded. Event IDs encode the fact source and row number and must be treated as public references without authorization value. Sequential event numbers can reveal coarse global growth across gaps. If hiding that signal becomes a requirement, use a dedicated design decision for stable opaque IDs and cursor rotation.
+
+## Defects and falsification
+
+- The earlier packaged JAR did not complete a fresh offline-bootstrap probe within its initial timeout. A subsequent controlled probe identified servlet-only security attempting to initialize without an HTTP server. The narrow web condition preserves runtime security and lets the bootstrap process exit. The operator drill also checks that a refused second bootstrap leaves expired receipt fixture rows untouched.
+- A missing protected-login entry formerly risked an unintended connection fallback. A partially privileged identity could see only part of the schema. The scripts now check the named login and all expected tables. The test deliberately creates a partial SQL import on a separately named disposable target.
+- Earlier packaging wrote directly to the final destination. The new package uses a sibling staging directory and publishes only after validation. An invalid child JDK path on a committed implementation caused exit 1. The final destination and marker stayed absent.
+- The frozen Course A reference collection is explicitly documented as unordered in `postman/README.md`. Making its Manila pre-request script Newman-compatible exposed the expected sequence conflict in CI. D04 deleted the record later passed to P01, which returned 404. Removed the temporary adapter and used the six existing ordered acceptance collections in independent frozen Java 8 CI. The reference collection, environment and frozen Java and React trees were preserved. [First hosted attempt](https://github.com/newonathe/OrgResource/actions/runs/44392680547) [Second hosted attempt](https://github.com/newonathe/OrgResource/actions/runs/44393852292)
+
+## Runtime and release receipts
+
+Source candidate `63ad94c43d5230d9c9c1cbe68fa2b8db88c99947` was pushed to the verified feature branch. [Draft PR #20](https://github.com/newonathe/OrgResource/pull/20) [Exact-source hosted CI](https://github.com/newonathe/OrgResource/actions/runs/44395027563)
+
+The separate [acceptance receipts](INDEPENDENT_ACCEPTANCE.md) record the exact command outcomes, evidence locations, artifact SHA-256 values and independent environment boundaries.
 
 Fresh full and production-only npm audits returned zero findings from the unchanged Extended lockfile on November 19, 2026. Picomatch remained 4.0.7. The earlier advisory is now marked withdrawn. This updates the advisory status and does not establish a source patch or a production release decision. [GitHub advisory](https://github.com/advisories/GHSA-fc5q-39xc-vjpf)
 
 Primary external sources retrieved November 19, 2026 were the MySQL 8.0 login-path documentation and RFC 4180 CSV definition. [MySQL 8.0 reference](https://dev.mysql.com/doc/refman/8.0/en/mysql-config-editor.html) [RFC 4180](https://www.rfc-editor.org/rfc/rfc4180#section-2)
+
+## Remaining risks and decision ownership
+
+- Public release dependencies remain owner decisions. Independent off-host encrypted restore, HTTPS and real-provider acceptance were outside this local run. No paid or live traffic was authorized.
+- Pending product decisions are borrower-to-account linkage, Project LEAD assignment and record scope, export redaction for Requirements and Allocations, governance UI coverage, searchable history and retention. The [gap register](FULL_EXTENDED_SCOPE_GAP_REGISTER.md) identifies storage and integration dependencies. The user has authorized local C6a only.
+- The internal second pass used the actual source and hosted and local receipts. A separate human review and a full accessibility audit were not performed. Open course interpretation, Canvas and academic sign-off are student-owned.
 
 ## Next dependency once authorized
 
