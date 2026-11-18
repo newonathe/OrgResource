@@ -1,0 +1,10 @@
+# OrgResource project-scoped Codex subagent defaults. Proposed; only active in a
+# Codex client that loads trusted project config and supports these model IDs.
+# Read AGENTS.md and docs/execution/12_TOKEN_BUDGETED_SUBAGENT_ROUTING.md.
+# This is a maximum concurrency safeguard, not a direction to spawn 2 agents.
+# Parent orchestrator starts zero by default and may authorize at most 2 concurrent.
+[agents]
+enabled = true
+default_subagent_model = "gpt-6-luna"
+default_subagent_reasoning_effort = "low"
+max_concurrent_threads_per_session = 2
