@@ -33,8 +33,12 @@ public class C1Application {
 
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(C1Application.class);
-        if (Arrays.asList(args).contains("--bootstrap")) app.setWebApplicationType(WebApplicationType.NONE);
-        app.run(args);
+        if (Arrays.asList(args).contains("--bootstrap")) {
+            app.setWebApplicationType(WebApplicationType.NONE);
+            app.run(args).close();
+        } else {
+            app.run(args);
+        }
     }
 
     private static String requiredSetting(String key) {

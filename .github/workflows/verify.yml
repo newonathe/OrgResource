@@ -57,7 +57,10 @@ jobs:
           npm --prefix ../frontend run build
       - name: Verify backend and bundle React application against isolated MySQL
         run: bash mvnw -B -Pbundle-react-ui clean verify
-      - name: Smoke test executable JAR on Java 8
+      - name: Install Chromium for frozen Course A acceptance
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+      - name: Verify the frozen Course A packaged JAR and original collection
         run: |
           set -euo pipefail
           java -jar target/orgresource-0.1.0-SNAPSHOT.jar --spring.profiles.active=test > /tmp/orgresource-jar.log 2>&1 &
@@ -73,6 +76,10 @@ jobs:
           for route in departments projects resources requirements allocations; do
             curl --silent --fail "http://127.0.0.1:8080/api/$route" > /dev/null
           done
+          cd ..
+          npx --yes newman@6.2.3 run postman/OrgResource-Course-A-28-Routes.postman_collection.json \
+            --environment postman/OrgResource-Course-A-Local.postman_environment.json --reporters cli --bail
+          npm --prefix frontend run e2e -- --grep 'the packaged Java application serves'
       - uses: actions/upload-artifact@v4
         with:
           name: orgresource-executable-java8
@@ -190,6 +197,11 @@ jobs:
             --env-var username="$EXT_BOOTSTRAP_USERNAME" \
             --env-var password="$EXT_BOOTSTRAP_PASSWORD" \
             --env-var imagePath="$GITHUB_WORKSPACE/postman/fixtures/academic-demo-image.png"
+          npx --yes newman@6.2.3 run postman/OrgResource-Extended-C6a-Reporting.postman_collection.json \
+            --reporters cli --bail \
+            --env-var baseUrl=http://127.0.0.1:8080 \
+            --env-var username="$EXT_BOOTSTRAP_USERNAME" \
+            --env-var password="$EXT_BOOTSTRAP_PASSWORD"
           docker exec -i --env MYSQL_PWD=root_ci_only "$MYSQL_CONTAINER" mysql -uroot orgresource_c1_ci <<'SQL'
           INSERT INTO organization(public_id,slug,display_name,status,created_at,updated_at)
           VALUES(UUID_TO_BIN(UUID(),0),'c4-e2e-secondary','C4 Tenant Isolation','ACTIVE',UTC_TIMESTAMP(6),UTC_TIMESTAMP(6));
