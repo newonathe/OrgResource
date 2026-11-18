@@ -1,0 +1,347 @@
+{
+  "info": {
+    "name": "OrgResource Extended C6a — Activity, Audit and Exports",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Authenticated local reporting acceptance. Use the Extended local environment with a fictional OWNER or ADMIN. The run performs reads and synchronous exports."
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const base = pm.environment.get('baseUrl');",
+          "if (!/^http:\\/\\/127\\.0\\.0\\.1:[0-9]+$/.test(base)) throw new Error('Use a numeric HTTP loopback base URL');",
+          "pm.request.headers.upsert({ key: 'Accept', value: 'application/json, text/csv' });",
+          "if (pm.request.method === 'POST') {",
+          "  pm.request.headers.upsert({ key: 'Origin', value: base });",
+          "  const csrf = pm.environment.get('csrfToken');",
+          "  if (csrf) pm.request.headers.upsert({ key: 'X-CSRF-TOKEN', value: csrf });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "AUTH-01 CSRF",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v2/auth/csrf"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.environment.set('csrfToken', pm.response.json().data.csrfToken);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "AUTH-02 sign in",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/v2/auth/login",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"username\":\"{{username}}\",\"password\":\"{{password}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.environment.set('csrfToken', pm.response.json().data.csrfToken);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "AUTH-03 organizations",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v2/orgs"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "const org = pm.response.json().data.find(row => ['OWNER','ADMIN'].includes(row.role));",
+              "pm.test('Eligible reporting organization', () => pm.expect(org).to.exist);",
+              "if (org) pm.environment.set('organizationId', org.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "AUTH-04 select workspace",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/v2/session/active-org",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"organizationId\":\"{{organizationId}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "AUTH-05 refresh CSRF",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v2/auth/csrf"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.environment.set('csrfToken', pm.response.json().data.csrfToken);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "C6A-01 bounded audit",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v2/orgs/{{organizationId}}/audit?limit=1"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "const data = pm.response.json().data;",
+              "pm.test('Bounded redacted audit data', () => { pm.expect(data.items.length).to.be.at.most(1); pm.expect(data.items.every(row => row.source === 'AUDIT' && !('targetId' in row) && !('actorUserId' in row))).to.eql(true); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "C6A-02 bounded activity",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v2/orgs/{{organizationId}}/activity?limit=25"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Known event sources only', () => pm.expect(pm.response.json().data.items.every(row => ['AUDIT','MOVEMENT'].includes(row.source))).to.eql(true));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "C6A-03 invalid cursor",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v2/orgs/{{organizationId}}/activity?cursor=%21unusable"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+              "pm.test('Controlled cursor rejection', () => pm.expect(pm.response.json().code).to.eql('INVALID_CURSOR'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "C6A-04 CSV resources",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/v2/orgs/{{organizationId}}/exports",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"format\":\"CSV\",\"dataset\":\"RESOURCES\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('CSV attachment with stable schema', () => { pm.expect(pm.response.headers.get('Content-Disposition')).to.match(/^attachment; filename=\"orgresource-resources-\\d{8}T\\d{6}Z\\.csv\"$/); pm.expect(pm.response.text()).to.include('schemaVersion,exportedAt,id,name,type,totalQuantity\\r\\n'); pm.expect(pm.response.headers.get('Cache-Control')).to.eql('no-store'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "C6A-05 JSON audit",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/v2/orgs/{{organizationId}}/exports",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"format\":\"TENANT_JSON\",\"dataset\":\"AUDIT\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Version and tenant', () => { const result = pm.response.json(); pm.expect(result.schemaVersion).to.eql(1); pm.expect(result.dataset).to.eql('AUDIT'); pm.expect(result.organizationId).to.eql(pm.environment.get('organizationId')); pm.expect(result.rows).to.be.an('array'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "C6A-06 JSON movements",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/v2/orgs/{{organizationId}}/exports",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"format\":\"TENANT_JSON\",\"dataset\":\"MOVEMENTS\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Version and tenant', () => { const result = pm.response.json(); pm.expect(result.schemaVersion).to.eql(1); pm.expect(result.dataset).to.eql('MOVEMENTS'); pm.expect(result.organizationId).to.eql(pm.environment.get('organizationId')); pm.expect(result.rows).to.be.an('array'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "C6A-07 refuse excluded dataset",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/v2/orgs/{{organizationId}}/exports",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"format\":\"CSV\",\"dataset\":\"ALLOCATIONS\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+              "pm.test('Controlled dataset rejection', () => pm.expect(pm.response.json().code).to.eql('INVALID_EXPORT_REQUEST'));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

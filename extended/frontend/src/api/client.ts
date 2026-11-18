@@ -36,7 +36,8 @@ export async function request<T>(
   path: string,
   method: "GET" | "POST",
   body?: unknown,
-  options: { signal?: AbortSignal; headers?: Record<string, string>; multipart?: boolean } = {},
+  options: { signal?: AbortSignal; headers?: Record<string, string>; multipart?: boolean;
+    download?: (response: Response) => Promise<T> } = {},
 ): Promise<RequestResult<T>> {
   const controller = new AbortController();
   if (options.signal?.aborted) controller.abort();
@@ -50,6 +51,7 @@ export async function request<T>(
   }
   let sessionEnded = false;
   let missingOrganization = false;
+  const mutation = method === "POST" && !options.download;
   try {
     let response: Response;
     try {
@@ -63,17 +65,20 @@ export async function request<T>(
       });
     } catch (error) {
       if (controller.signal.aborted || (error instanceof DOMException && error.name === "AbortError")) throw error;
-      throw method === "POST"
+      throw mutation
         ? new ApiError(0, "POST_OUTCOME_UNCERTAIN", "The server may have completed this change, but its response was not received. Review current records or recover the operation receipt before trying again.")
         : new ApiError(0, "NETWORK_ERROR", "The OrgResource API could not be reached. Check that the backend is running, then retry.");
     }
 
   sessionEnded = response.status === 401 && !path.includes("/auth/login") && !path.includes("/auth/recover");
   const etag = response.headers.get("ETag");
+  if (response.ok && options.download) {
+    return { data: await options.download(response), etag, status: response.status };
+  }
   let text: string;
   try { text = await response.text(); }
   catch {
-    throw method === "POST"
+    throw mutation
       ? new ApiError(response.status, "POST_OUTCOME_UNCERTAIN", "The server may have completed this change, but the response could not be read. Review current records before deciding what to do next.")
       : new ApiError(response.status, "INVALID_SERVER_RESPONSE", "The server response could not be read.");
   }
@@ -81,7 +86,7 @@ export async function request<T>(
   if (text) {
     try { parsed = JSON.parse(text) as unknown; }
     catch {
-      throw method === "POST"
+      throw mutation
         ? new ApiError(response.status, "POST_OUTCOME_UNCERTAIN", "The server may have completed this change, but returned invalid confirmation data. Review current records before retrying.")
         : new ApiError(response.status, "INVALID_SERVER_RESPONSE", "The server returned a response that was not valid JSON.");
     }
@@ -90,7 +95,7 @@ export async function request<T>(
     const error = parsed && typeof parsed === "object" ? parsed as Partial<ApiErrorBody> & { data?: ApiErrorBody } : {};
     const detail = error.data ?? error;
     missingOrganization = response.status === 409 && detail.code === "ORG_CONTEXT_REQUIRED";
-    if (method === "POST" && (response.status === 408 || response.status === 425 || response.status === 429 || response.status >= 500)) {
+    if (mutation && (response.status === 408 || response.status === 425 || response.status === 429 || response.status >= 500)) {
       throw new ApiError(response.status, "POST_OUTCOME_UNCERTAIN", "The server could not confirm the outcome. Review records or recover the operation receipt before trying again.");
     }
     throw new ApiError(

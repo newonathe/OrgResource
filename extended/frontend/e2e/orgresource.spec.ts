@@ -145,6 +145,8 @@ test(`connected invitation grants only ${role} Project and inventory access`, as
     await expect(memberPage.getByRole("heading", { name: "Resource Library", level: 1 })).toBeVisible();
     await expect(memberPage.getByRole("link", { name: "Allocations", exact: true })).toHaveCount(role === "ADMIN" ? 1 : 0);
     await expect(memberPage.getByRole("link", { name: "Members and access", exact: true })).toHaveCount(role === "ADMIN" ? 1 : 0);
+    await expect(memberPage.getByRole("link", { name: "Activity", exact: true })).toHaveCount(role === "ADMIN" ? 1 : 0);
+    await expect(memberPage.getByRole("link", { name: "Exports", exact: true })).toHaveCount(role === "ADMIN" ? 1 : 0);
     await expect(memberPage.getByText("Inventory access", { exact: true })).toBeVisible();
 
     const denied = await postJson(memberPage, "/api/resources", { name: `Denied ${username}`, type: "REUSABLE", totalQuantity: 0 });
@@ -773,6 +775,46 @@ test("desktop pointer highlights follow the mouse and motion can be switched off
   await expect(shell).toHaveAttribute("data-motion", "off");
   await page.mouse.move(buttonBounds!.x + buttonBounds!.width * 0.3, buttonBounds!.y + buttonBounds!.height * 0.3);
   await expect.poll(() => magneticButton.evaluate((node) => (node as HTMLElement).style.getPropertyValue("--mag-x"))).toBe("0px");
+});
+
+test("C6a owner opens recorded events and downloads real redacted CSV and JSON files", async ({ page }) => {
+  await page.goto("/#/activity");
+  await expect(page.getByRole("heading", { name: "Activity", level: 1 })).toBeVisible();
+  await expect(page.getByText(/Recorded audit action|Stock movement/).first()).toBeVisible();
+  await page.getByLabel("Show").selectOption("audit");
+  await expect(page.getByText(/Recorded audit action/).first()).toBeVisible();
+  await expect(page.getByText(/^Stock movement ·/)).toHaveCount(0);
+  await page.getByRole("link", { name: "Exports", exact: true }).click();
+  const csvDownloaded = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Download export" }).click();
+  const csv = await csvDownloaded;
+  expect(csv.suggestedFilename()).toMatch(/^orgresource-resources-\d{8}T\d{6}Z\.csv$/);
+  expect(readFileSync((await csv.path())!, "utf8")).toContain("schemaVersion,exportedAt,id,name,type,totalQuantity\r\n");
+  await page.getByLabel("Dataset").selectOption("AUDIT");
+  await page.getByLabel("File format").selectOption("TENANT_JSON");
+  const jsonDownloaded = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Download export" }).click();
+  const json = await jsonDownloaded;
+  expect(json.suggestedFilename()).toMatch(/^orgresource-audit-\d{8}T\d{6}Z\.json$/);
+  const exported = JSON.parse(readFileSync((await json.path())!, "utf8")) as { schemaVersion: number; dataset: string; rows: object[] };
+  expect(exported.schemaVersion).toBe(1);
+  expect(exported.dataset).toBe("AUDIT");
+  expect(exported.rows.length).toBeGreaterThan(0);
+  expect(exported.rows.every(row => !("actorUserId" in row) && !("targetId" in row))).toBe(true);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  for (const width of [768, 375]) {
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto("/#/activity");
+    const newest = page.getByRole("button", { name: "Newest events" });
+    await expect(newest).toBeEnabled();
+    await newest.focus();
+    await newest.press("Enter");
+    await expect(page.getByText(/Recorded audit action|Stock movement/).first()).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
+    await page.goto("/#/exports");
+    await expect(page.getByRole("button", { name: "Download export" })).toBeEnabled();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
+  }
 });
 
 test("the packaged Java application serves React assets, hash routes, and the five JSON APIs", async ({ page }) => {

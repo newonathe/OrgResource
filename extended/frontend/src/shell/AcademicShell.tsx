@@ -11,7 +11,11 @@ function groupsFor(role: Role): { title: string; links: LinkItem[] }[] {
   const governance = role === "OWNER" || role === "ADMIN";
   return [
     { title: "Workspace", links: [{ to: "/", label: "Overview", icon: "⌂" }, ...(activity ? [{ to: "/allocations", label: "Allocations", icon: "⇄" }] : []), { to: "/resources", label: "Resource Library", icon: "◈" }, { to: "/projects", label: "Projects", icon: "▤" }] },
-    { title: "Organization", links: [{ to: "/requirements", label: "Requirements", icon: "☷" }, { to: "/departments", label: "Departments", icon: "⌘" }, ...(governance ? [{ to: "/governance", label: "Members and access", icon: "♙" }] : [])] },
+    { title: "Organization", links: [{ to: "/requirements", label: "Requirements", icon: "☷" }, { to: "/departments", label: "Departments", icon: "⌘" }, ...(governance ? [
+      { to: "/governance", label: "Members and access", icon: "♙" },
+      { to: "/activity", label: "Activity", icon: "◷" },
+      { to: "/exports", label: "Exports", icon: "↓" },
+    ] : [])] },
     { title: "System", links: [...(activity ? [{ to: "/reminders", label: "Reminder Activity", icon: "◷" }] : []), { to: "/account", label: "Account and security", icon: "◉" }, { to: "/about", label: "About", icon: "ⓘ" }] },
   ];
 }
