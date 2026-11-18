@@ -23,3 +23,12 @@
 ## Local computer-use constraint
 
 - Never invoke the in-app Browser or Chrome-control plugins on this Windows installation. The embedded Chromium GPU process crashes when an in-app browser session starts. Use command-line Playwright or non-GUI checks for local web verification. Retry browser plugins only after the user confirms an app update fixed the GPU crash.
+
+## Continuous source-completeness and independent-evidence gate — EVERY future cycle
+
+- **Mandatory read-first policy:** [`docs/QUALITY_EVIDENCE_CONTINUOUS_GATE.md`](docs/QUALITY_EVIDENCE_CONTINUOUS_GATE.md). Apply it to every audit, research pass, plan, implementation, PR, correction, test, CI, migration, package, and release, not only final acceptance.
+- Before editing, enumerate and reconcile the exact current Git refs/PRs, source authorities, all changed paths and material transitive dependencies; maintain an explicit reviewed/not-reviewed source register and requirement→implementation→test→evidence matrix. Review real source, not summaries alone.
+- Socratically challenge each significant file/route/role/SQL/DTO/state change with concrete failure and adversarial tests, including cross-tenant behavior, concurrency, lost response, restart, boundary validation, integrity, privacy, rollback, compatibility, accessibility and operator recovery.
+- Never use absolute labels such as `no gaps`, `100% comprehensive`, `fully proven` or `production-ready` without bounded acceptance definitions and independent evidence. Mark SOURCE_ONLY, REPORTED_ONLY, NOT_RUN, BLOCKED, test failures, deferred decisions and incomplete file inspections truthfully. Green CI alone is not proof of every property.
+- Every implementation-phase report must record per-file review depth, reviewed ranges, exact SHAs, reproducible commands and observed results, evidence gaps and independently critical second-pass review. The next Codex prompt must carry this gate forward explicitly. Do not shorten or skip mandatory criteria merely because the task is large; report material blockers and request specific owner authority when needed.
+- This policy supplements all existing Course A immutability, academic integrity, privacy and no-merge/no-paid/no-deploy/no-live-SMS boundaries. It does not rewrite historical evidence or constitute automatic GitHub branch protection.
