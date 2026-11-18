@@ -75,6 +75,13 @@ public class C1OrganizationContext {
         return membership;
     }
 
+    public Membership requireCurrentReadRole(long orgId, Membership.Role... roles) {
+        Membership membership = requireMembership(orgId, false);
+        if (Arrays.stream(roles).noneMatch(role -> role == membership.role))
+            throw new C1ApiException(403, "FORBIDDEN", "The current membership cannot view this data.");
+        return membership;
+    }
+
     private Membership requireMembership(long orgId, boolean mutation) {
         ExtendedUserPrincipal principal = principal();
         UserAccount account = accounts.findById(principal.accountId()).orElseThrow(C1OrganizationContext::unauthenticated);

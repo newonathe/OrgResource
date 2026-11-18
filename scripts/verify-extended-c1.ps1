@@ -5,7 +5,7 @@ $ProgressPreference = 'SilentlyContinue'
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $experiment = Join-Path $repoRoot 'extended\backend'
-$frontend = Join-Path $repoRoot 'frontend'
+$frontend = Join-Path $repoRoot 'extended\frontend'
 $pom = Join-Path $experiment 'pom.xml'
 $mvnw = Join-Path $repoRoot 'backend\mvnw.cmd'
 $mysqlHome = if ($env:MYSQL_HOME) { $env:MYSQL_HOME } else { Join-Path $env:ProgramFiles 'MySQL\MySQL Server 8.0' }
@@ -27,7 +27,7 @@ $environmentNames = @(
     'EXT_BOOTSTRAP_SLUG', 'EXT_BOOTSTRAP_ORG_NAME', 'EXT_BOOTSTRAP_USERNAME',
     'EXT_BOOTSTRAP_DISPLAY_NAME', 'EXT_BOOTSTRAP_PASSWORD',
     'EXT_CONTACT_ENCRYPTION_KEY',
-    'EXT_SMS_ENABLED', 'EXT_SCHEDULER_DELAY_MS', 'EXT_SERVER_PORT',
+    'EXT_SMS_ENABLED', 'EXT_REMINDER_MODE', 'EXT_SCHEDULER_DELAY_MS', 'EXT_SERVER_PORT',
     'SPRING_PROFILES_ACTIVE'
 )
 
@@ -301,6 +301,7 @@ FLUSH PRIVILEGES;
         [Array]::Clear($contactKeyBytes, 0, $contactKeyBytes.Length)
     }
     $env:EXT_SMS_ENABLED = 'false'
+    $env:EXT_REMINDER_MODE = 'DISABLED'
     $env:EXT_SCHEDULER_DELAY_MS = '60000'
     $env:EXT_SERVER_PORT = [string]$appPort
     $env:SPRING_PROFILES_ACTIVE = 'c1-test'
@@ -340,6 +341,75 @@ FLUSH PRIVILEGES;
     $ownerSession = New-C1OwnerSession
     $orgId = $ownerSession.OrgId
     if ([string]::IsNullOrWhiteSpace($orgId)) { throw 'Bootstrap OWNER session did not select its organization.' }
+
+    # C4-A2: prove current-role authorization for a durable movement receipt across prune and JVM restart.
+    $receiptInvitation = Invoke-C1Post $ownerSession "/api/v2/orgs/$orgId/invitations" @{ role = 'CUSTODIAN' }
+    if ($receiptInvitation.StatusCode -ne 201) { throw 'C4 receipt test could not create a fictional CUSTODIAN invitation.' }
+    $receiptUsername = 'c4-receipt-' + (New-RandomHex -Bytes 6)
+    $receiptPassword = 'Custodian-C4-' + (New-RandomHex -Bytes 24)
+    $receiptDisplayName = 'C4 Receipt Custodian'
+    $receiptAnonymous = New-C1AnonymousSession
+    $receiptRedemption = Invoke-C1Post $receiptAnonymous '/api/v2/invitations/redeem' @{
+        bearerToken = [string]$receiptInvitation.Data.bearerToken; username = $receiptUsername
+        password = $receiptPassword; displayName = $receiptDisplayName
+    }
+    if ($receiptRedemption.StatusCode -ne 201) { throw 'C4 receipt test could not redeem the fictional CUSTODIAN invitation.' }
+    $c4CustodianSession = New-C1Session $receiptUsername $receiptPassword
+    $receiptResourceName = 'C4 receipt resource ' + [guid]::NewGuid().ToString('N')
+    $receiptResource = Invoke-C1Post $ownerSession '/api/resources' @{
+        name = $receiptResourceName; type = 'CONSUMABLE'; totalQuantity = 0
+    }
+    if ($receiptResource.StatusCode -ne 201) { throw 'C4 receipt test could not create its fictional zero-stock Resource.' }
+    $receiptResourceId = [long](($receiptResource.Raw | ConvertFrom-Json).id)
+    $receiptResources = Invoke-C1Get $c4CustodianSession "/api/v2/orgs/$orgId/resources?limit=100"
+    $receiptResourceRow = @($receiptResources.Data.items | Where-Object { $_.name -eq $receiptResourceName } | Select-Object -First 1)
+    if ($receiptResources.StatusCode -ne 200 -or $receiptResourceRow.Count -ne 1) {
+        throw 'C4 CUSTODIAN could not read the Resource public ID for its authorized stock operation.'
+    }
+    $receiptResourcePath = "/api/v2/orgs/$orgId/resources/$($receiptResourceRow[0].id)"
+    $receiptResourceState = Invoke-C1Get $c4CustodianSession $receiptResourcePath
+    $c4OperationId = [guid]::NewGuid().ToString()
+    $c4OperationBody = @{ operationId = $c4OperationId; quantity = 1 }
+    $c4OperationKey = New-RandomHex
+    $c4Committed = Invoke-C1Post $c4CustodianSession "$receiptResourcePath/receive" $c4OperationBody `
+        $receiptResourceState.ETag $c4OperationKey
+    if ($c4Committed.StatusCode -ne 201) { throw 'C4 CUSTODIAN stock receipt did not commit before role demotion.' }
+    $c4OperationPath = "/api/v2/orgs/$orgId/operations/$c4OperationId"
+    $receiptMembers = Invoke-C1Get $ownerSession "/api/v2/orgs/$orgId/members"
+    $receiptMember = @($receiptMembers.Data.items | Where-Object { $_.displayName -eq $receiptDisplayName -and $_.role -eq 'CUSTODIAN' } | Select-Object -First 1)
+    if ($receiptMembers.StatusCode -ne 200 -or $receiptMember.Count -ne 1) { throw 'C4 receipt test could not resolve the CUSTODIAN membership.' }
+    $demoted = Invoke-C1Post $ownerSession "/api/v2/orgs/$orgId/members/$($receiptMember[0].id)/role" `
+        @{ role = 'MEMBER' } ('"v' + [long]$receiptMember[0].version + '"')
+    if ($demoted.StatusCode -ne 200) { throw 'Owner could not demote the fictional CUSTODIAN through the governance API.' }
+    if ((Invoke-C1Get $c4CustodianSession $c4OperationPath).StatusCode -ne 403) {
+        throw 'A demoted original actor retained access to a permanent movement receipt.'
+    }
+    $expireReceipt = @"
+USE orgresource_c1_acceptance;
+UPDATE idempotency_key SET created_at=UTC_TIMESTAMP(6)-INTERVAL 25 HOUR, expires_at=UTC_TIMESTAMP(6)-INTERVAL 1 HOUR
+WHERE operation_public_id=UUID_TO_BIN('$c4OperationId',0);
+"@
+    Invoke-MysqlBootstrap $expireReceipt
+    if ((Invoke-C1Get $c4CustodianSession $c4OperationPath).StatusCode -ne 403) {
+        throw 'A demoted original actor recovered a movement receipt after the HTTP receipt expired.'
+    }
+    $pruneReceipt = @"
+USE orgresource_c1_acceptance;
+DELETE FROM idempotency_key WHERE operation_public_id=UUID_TO_BIN('$c4OperationId',0) AND expires_at<=UTC_TIMESTAMP(6);
+"@
+    Invoke-MysqlBootstrap $pruneReceipt
+    if ((Invoke-C1Get $c4CustodianSession $c4OperationPath).StatusCode -ne 403) {
+        throw 'A demoted original actor recovered a movement receipt after the HTTP receipt was pruned.'
+    }
+    $c4MovementReceipt = Invoke-C1Get $ownerSession $c4OperationPath
+    if ($c4MovementReceipt.StatusCode -ne 200 -or $c4MovementReceipt.Data.kind -ne 'RECEIPT') {
+        throw 'An active OWNER could not recover permanent movement history after HTTP receipt pruning.'
+    }
+    $c4Movements = Invoke-C1Get $ownerSession "$receiptResourcePath/movements?limit=10"
+    if ($c4Movements.StatusCode -ne 200 -or @($c4Movements.Data.items).Count -ne 1) {
+        throw 'Pruning the HTTP receipt removed or duplicated permanent stock movement history.'
+    }
+    $receiptAnonymous.Client.Dispose()
 
     $invite = Invoke-C1Post $ownerSession "/api/v2/orgs/$orgId/invitations" @{ role = 'ADMIN' }
     if ($invite.StatusCode -ne 201) { throw 'Packaged JAR failed to create the fictional ADMIN invitation.' }
@@ -511,6 +581,18 @@ FLUSH PRIVILEGES;
         $receiptAfterRestart.Data.resourceId -ne [string]$resource[0].id) {
         throw 'Packaged C2 operation receipt was not recoverable after restart.'
     }
+    if ((Invoke-C1Get $c4CustodianSession '/api/v2/session').StatusCode -ne 200 -or
+            (Invoke-C1Get $c4CustodianSession $c4OperationPath).StatusCode -ne 403) {
+        throw 'The packaged JVM restart changed the demoted CUSTODIAN role or exposed its permanent receipt.'
+    }
+    $authorizedAfterRestart = Invoke-C1Get $persistedSession $c4OperationPath
+    if ($authorizedAfterRestart.StatusCode -ne 200 -or $authorizedAfterRestart.Data.kind -ne 'RECEIPT') {
+        throw 'The active OWNER could not recover the permanent receipt after HTTP prune and JVM restart.'
+    }
+    $receiptMovementsAfterRestart = Invoke-C1Get $persistedSession "$receiptResourcePath/movements?limit=10"
+    if ($receiptMovementsAfterRestart.StatusCode -ne 200 -or @($receiptMovementsAfterRestart.Data.items).Count -ne 1) {
+        throw 'The permanent stock movement ledger did not survive receipt pruning and JVM restart.'
+    }
     $restartReplay = Invoke-C1Post $persistedSession "$resourcePath/receive" $operationBody '"v0"' $operationKey
     if ($restartReplay.StatusCode -ne 201 -or $restartReplay.Data.totalQuantity -ne 12) {
         throw 'Packaged C2 idempotent replay after restart changed the committed receipt.'
@@ -540,15 +622,58 @@ FLUSH PRIVILEGES;
     }
     $replay.Client.Dispose()
     $adminSession.Client.Dispose()
+    $c4CustodianSession.Client.Dispose()
     $wrongPassword.Dispose()
     $verifiedLogin.Client.Dispose()
     $persistedSession.Client.Dispose()
+
+    if (-not $SkipFrontend) {
+        # Seed a second tenant only in this fresh disposable MySQL database so the packaged
+        # browser acceptance exercises real tenant switching and isolation.
+        $secondTenantSql = @"
+USE orgresource_c1_acceptance;
+INSERT INTO organization(public_id,slug,display_name,status,created_at,updated_at)
+VALUES(UUID_TO_BIN(UUID(),0),'c4-e2e-secondary','C4 Tenant Isolation','ACTIVE',UTC_TIMESTAMP(6),UTC_TIMESTAMP(6));
+SET @c4_e2e_org_id=LAST_INSERT_ID();
+INSERT INTO membership(public_id,org_id,user_id,role,status,created_at,updated_at)
+SELECT UUID_TO_BIN(UUID(),0),@c4_e2e_org_id,id,'OWNER','ACTIVE',UTC_TIMESTAMP(6),UTC_TIMESTAMP(6)
+FROM user_account WHERE username_key='$adminUsername';
+"@
+        Invoke-MysqlBootstrap $secondTenantSql
+        $tenantFixtureSession = New-C1Session $adminUsername $recoveredPassword
+        $e2eOrganizations = Invoke-C1Get $tenantFixtureSession '/api/v2/orgs'
+        $tenantFixtureSession.Client.Dispose()
+        if ($e2eOrganizations.StatusCode -ne 200 -or
+                @($e2eOrganizations.Data | Where-Object { $_.displayName -eq 'C4 Tenant Isolation' }).Count -ne 1) {
+            throw 'The isolated MySQL browser fixture did not give the acceptance account access to a second organization.'
+        }
+        $e2eEnvironmentNames = @('EXT_E2E_BASE_URL', 'EXT_E2E_USERNAME', 'EXT_E2E_PASSWORD', 'ORGRESOURCE_E2E_SCREENSHOT_DIR')
+        $e2eSavedEnvironment = @{}
+        foreach ($name in $e2eEnvironmentNames) {
+            $e2eSavedEnvironment[$name] = [Environment]::GetEnvironmentVariable($name, 'Process')
+        }
+        try {
+            $env:EXT_E2E_BASE_URL = "http://127.0.0.1:$appPort"
+            $env:EXT_E2E_USERNAME = $adminUsername
+            $env:EXT_E2E_PASSWORD = $recoveredPassword
+            $env:ORGRESOURCE_E2E_SCREENSHOT_DIR = Join-Path $repoRoot 'evidence\C4\screenshots'
+            Push-Location $frontend
+            try {
+                & npm run e2e
+                Assert-ExitCode 'packaged Java/MySQL C4 Playwright acceptance'
+            } finally { Pop-Location }
+        } finally {
+            foreach ($name in $e2eEnvironmentNames) {
+                [Environment]::SetEnvironmentVariable($name, $e2eSavedEnvironment[$name], 'Process')
+            }
+        }
+    }
     Stop-C1App
 
     if ($SkipFrontend) {
-        Write-Output 'C3 PASS: frontend gates were skipped by request; 38 MySQL-backed C1/C2/C3 tests; Maven package; packaged React/API smoke; authenticated 28-operation Newman (48 requests/90 assertions); inventory and governance; permanent receipt replay; organization-switch session/CSRF/role/12-hour expiry; image bytes and session/data/recovery after JAR restart.'
+        Write-Output 'C4-A PASS: frontend gates were skipped by request; 43 MySQL 8-backed tests; Maven package; authenticated 28-operation Newman (48 requests/90 assertions); inventory and governance; receipt authorization after demotion, expiry/prune and packaged JVM restart; image validation and persistence.'
     } else {
-        Write-Output 'C3 PASS: frontend typecheck/unit/lint/build; 38 MySQL-backed C1/C2/C3 tests; Maven package; packaged React/API smoke; authenticated 28-operation Newman (48 requests/90 assertions); inventory and governance; permanent receipt replay; organization-switch session/CSRF/role/12-hour expiry; image bytes and session/data/recovery after JAR restart.'
+        Write-Output 'C4-A PASS: Extended React typecheck/unit/lint/build; packaged-runtime Playwright workflows; 43 MySQL 8-backed tests; Maven package; authenticated 28-operation Newman (48 requests/90 assertions); inventory and governance; receipt authorization after demotion, expiry/prune and packaged JVM restart; image validation and persistence.'
     }
     Write-Output "C3 run evidence and stopped isolated datadir: $dataDirectory"
     Write-Output "Packaged JAR: $(Join-Path $experiment 'target\extended-backend-0.1.0-SNAPSHOT.jar')"

@@ -7,6 +7,10 @@
 **/test-results/
 # Full-resolution Playwright captures are local intermediates; compressed review sheets are tracked.
 /evidence/O8-O10/screenshots/raw/
+/evidence/C4/screenshots/*.png
+!/evidence/C4/screenshots/overview-desktop-dark.png
+!/evidence/C4/screenshots/resources-mobile-light.png
+!/evidence/C4/screenshots/allocations-tablet-light.png
 **/.idea/
 *.log
 

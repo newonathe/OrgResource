@@ -271,7 +271,7 @@ public class C1Service {
         if (!project.endAt.isAfter(now)) throw new C1ApiException(409, "PROJECT_ENDED", "Requirements cannot be changed after the Project ends.");
         Long coverageValue = requirements.sumCoveredQuantity(id, orgId, now);
         long coverage = coverageValue == null ? 0 : coverageValue;
-        Integer pending = requirements.maxPendingQuantity(id, AllocationStatus.PENDING);
+        Integer pending = requirements.maxPendingQuantity(id, orgId, AllocationStatus.PENDING, now);
         if (request.quantity.longValue() < Math.max(coverage, pending == null ? 0L : pending.longValue()))
             throw new C1ApiException(409, "QUANTITY_BELOW_COMMITMENTS", "quantity cannot be lower than current coverage or the largest pending Allocation.");
         requirement.quantity = request.quantity;
@@ -339,6 +339,10 @@ public class C1Service {
     @Transactional(readOnly = true)
     public List<ApiDtos.AllocationView> listAllocations(Long requirementId, AllocationStatus status) {
         Long orgId = organizationContext.currentOrganizationId();
+        organizationContext.requireCurrentReadRole(orgId,
+                edu.orgresource.extended.identity.Membership.Role.OWNER,
+                edu.orgresource.extended.identity.Membership.Role.ADMIN,
+                edu.orgresource.extended.identity.Membership.Role.CUSTODIAN);
         if (requirementId != null && requirementId <= 0) throw new C1ApiException(400, "VALIDATION_FAILED", "requirementId must be positive.");
         if (requirementId != null && requirements.findByIdAndOrganizationId(requirementId, orgId).isEmpty()) throw notFound("Requirement");
         List<Allocation> rows;

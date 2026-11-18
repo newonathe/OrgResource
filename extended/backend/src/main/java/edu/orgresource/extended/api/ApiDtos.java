@@ -84,6 +84,8 @@ public final class ApiDtos {
 
     public static class ResourceView {
         public Long id;
+        /** Stable cross-version identifier used to call the tenant-scoped inventory API. */
+        public java.util.UUID publicId;
         public String name;
         public ResourceType type;
         public Integer totalQuantity;
@@ -91,6 +93,7 @@ public final class ApiDtos {
         public ResourceView() { }
         public ResourceView(Resource resource, int availableQuantity) {
             this.id = resource.id;
+            this.publicId = resource.publicId;
             this.name = resource.name;
             this.type = resource.type;
             this.totalQuantity = resource.totalQuantity;
@@ -160,6 +163,8 @@ public final class ApiDtos {
 
     public static class AllocationView {
         public Long id;
+        /** Stable cross-version identifier used for versioned lifecycle actions. */
+        public java.util.UUID publicId;
         public Long requirementId;
         public Integer quantity;
         public String borrowerName;
@@ -173,6 +178,7 @@ public final class ApiDtos {
         public AllocationView() { }
         public AllocationView(Allocation allocation) {
             this.id = allocation.id;
+            this.publicId = allocation.publicId;
             this.requirementId = allocation.requirement.id;
             this.quantity = allocation.quantity;
             this.borrowerName = allocation.borrowerName;

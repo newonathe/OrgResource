@@ -49,14 +49,14 @@ public interface AllocationRepository extends JpaRepository<Allocation, Long> {
             + "JOIN project p ON p.id=q.project_id AND p.organization_id=q.organization_id "
             + "JOIN resource r ON r.id=q.resource_id AND r.organization_id=q.organization_id "
             + "WHERE a.status='ISSUED' AND r.type='REUSABLE' AND a.sms_consent=TRUE "
-            + "AND a.phone_ciphertext IS NOT NULL AND a.reminder_outcome='NONE' "
+            + "AND a.phone_ciphertext IS NOT NULL AND a.reminder_outcome IN ('NONE','KEY_UNAVAILABLE') "
             + "AND p.end_at>=:sampledNow AND p.end_at<:dueBefore "
             + "ORDER BY p.end_at,a.id", nativeQuery = true)
     List<ReminderCandidate> findReminderCandidates(@Param("sampledNow") LocalDateTime sampledNow,
                                                    @Param("dueBefore") LocalDateTime dueBefore,
                                                    Pageable pageable);
 
-    @Query(value = "SELECT id AS allocationId FROM allocation WHERE reminder_outcome='CLAIMED' "
+    @Query(value = "SELECT id AS allocationId FROM allocation WHERE reminder_outcome IN ('CLAIMED','DISPATCHING') "
             + "AND reminder_claimed_at<:cutoff ORDER BY reminder_claimed_at,id", nativeQuery = true)
     List<ReminderCandidate> findStaleReminderClaims(@Param("cutoff") LocalDateTime cutoff, Pageable pageable);
 
@@ -100,14 +100,15 @@ public interface AllocationRepository extends JpaRepository<Allocation, Long> {
             + "COALESCE(l.ledger_issued,0) AS ledger_issued, COALESCE(c.holds,0) AS holds, "
             + "COALESCE(c.issued,0) AS issued FROM resource r "
             + "LEFT JOIN (SELECT organization_id,resource_id,SUM(delta_total) AS ledger_total,"
-            + "SUM(delta_issued) AS ledger_issued FROM stock_movement GROUP BY organization_id,resource_id) l "
+            + "SUM(delta_issued) AS ledger_issued FROM stock_movement WHERE organization_id=:organizationId "
+            + "GROUP BY organization_id,resource_id) l "
             + "ON l.organization_id=r.organization_id AND l.resource_id=r.id "
             + "LEFT JOIN (SELECT q.organization_id,q.resource_id,"
             + "SUM(CASE WHEN a.status='APPROVED' AND p.end_at>:sampledNow THEN a.quantity ELSE 0 END) AS holds,"
             + "SUM(CASE WHEN a.status='ISSUED' THEN a.quantity ELSE 0 END) AS issued "
             + "FROM allocation a JOIN resource_requirement q ON q.id=a.requirement_id AND q.organization_id=a.organization_id "
             + "JOIN project p ON p.id=q.project_id AND p.organization_id=q.organization_id "
-            + "GROUP BY q.organization_id,q.resource_id) c "
+            + "WHERE a.organization_id=:organizationId GROUP BY q.organization_id,q.resource_id) c "
             + "ON c.organization_id=r.organization_id AND c.resource_id=r.id "
             + "WHERE r.organization_id=:organizationId ORDER BY r.id", nativeQuery = true)
     List<Object[]> findInventoryListBalances(@Param("organizationId") Long organizationId,

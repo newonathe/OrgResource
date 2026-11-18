@@ -32,9 +32,14 @@ public interface ResourceRequirementRepository extends JpaRepository<ResourceReq
     boolean existsByOrganizationIdAndResourceId(Long organizationId, Long resourceId);
     boolean existsByOrganizationIdAndProjectIdAndResourceId(Long organizationId, Long projectId, Long resourceId);
 
-    @Query("select max(a.quantity) from Allocation a where a.requirementId=:requirementId and a.status=:status")
+    @Query("select max(a.quantity) from Allocation a join a.requirement q join q.project p "
+            + "where q.id=:requirementId and a.organizationId=:organizationId "
+            + "and q.organizationId=:organizationId and p.organizationId=:organizationId "
+            + "and a.status=:status and p.endAt>:sampledNow")
     Integer maxPendingQuantity(@Param("requirementId") Long requirementId,
-                               @Param("status") edu.orgresource.extended.domain.AllocationStatus status);
+                               @Param("organizationId") Long organizationId,
+                               @Param("status") edu.orgresource.extended.domain.AllocationStatus status,
+                               @Param("sampledNow") java.time.LocalDateTime sampledNow);
 
     @Query("select coalesce(sum(case when a.status in "
             + "(edu.orgresource.extended.domain.AllocationStatus.ISSUED, edu.orgresource.extended.domain.AllocationStatus.RETURNED, "

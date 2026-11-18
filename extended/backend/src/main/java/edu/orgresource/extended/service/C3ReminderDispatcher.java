@@ -26,7 +26,7 @@ public class C3ReminderDispatcher {
     public void dispatchOne(long allocationId, LocalDateTime sampledNow, ReminderMode mode, C3ReminderTransport selectedTransport) {
         if (mode == ReminderMode.DISABLED || !reminders.claimOne(allocationId, sampledNow)) return;
         ReminderDispatch dispatch = reminders.prepareForDispatch(allocationId, sampledNow);
-        if (dispatch == null) return;
+        if (dispatch == null || !reminders.authorizeDispatch(allocationId, sampledNow)) return;
         ReminderSendResult result;
         try { result = selectedTransport.send(mode, dispatch); }
         catch (RuntimeException uncertainFailure) { result = ReminderSendResult.unknown(null); }

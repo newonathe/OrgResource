@@ -127,7 +127,7 @@
                 <directory>src/main/resources</directory>
             </resource>
             <resource>
-                <directory>${project.basedir}/../../frontend/dist</directory>
+                <directory>${project.basedir}/../frontend/dist</directory>
                 <targetPath>static</targetPath>
                 <filtering>false</filtering>
             </resource>

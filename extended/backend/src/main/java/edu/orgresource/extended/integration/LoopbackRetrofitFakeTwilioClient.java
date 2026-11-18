@@ -1,9 +1,7 @@
 package edu.orgresource.extended.integration;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.URI;
-import java.net.UnknownHostException;
 import java.time.Duration;
 
 import com.google.gson.GsonBuilder;
@@ -26,6 +24,8 @@ public final class LoopbackRetrofitFakeTwilioClient {
                 .writeTimeout(Duration.ofSeconds(3))
                 .callTimeout(Duration.ofSeconds(5))
                 .retryOnConnectionFailure(false)
+                .followRedirects(false)
+                .followSslRedirects(false)
                 .build();
         this.api = new Retrofit.Builder()
                 .baseUrl(baseUrl)
@@ -44,16 +44,9 @@ public final class LoopbackRetrofitFakeTwilioClient {
     }
 
     private static void requireLoopback(URI uri) {
-        if (uri == null || !"http".equalsIgnoreCase(uri.getScheme()) || uri.getHost() == null
+        if (uri == null || !"http".equalsIgnoreCase(uri.getScheme()) || !"127.0.0.1".equals(uri.getHost())
                 || uri.getUserInfo() != null || uri.getQuery() != null || uri.getFragment() != null) {
-            throw new IllegalArgumentException("FakeTwilio compatibility tests must use a plain loopback HTTP URL.");
-        }
-        try {
-            if (!InetAddress.getByName(uri.getHost()).isLoopbackAddress()) {
-                throw new IllegalArgumentException("FakeTwilio compatibility tests are loopback-only.");
-            }
-        } catch (UnknownHostException exception) {
-            throw new IllegalArgumentException("FakeTwilio stub host could not be resolved.");
+            throw new IllegalArgumentException("FakeTwilio compatibility tests must use a plain HTTP URL at 127.0.0.1.");
         }
     }
 }

@@ -4,6 +4,7 @@
 
 - `7f8c0746da18fd54b47f430ac1435ac36e605d67` is the immutable Course Final A source and artifact reference. Never modify its implementation, release artifacts, or academic history while working on Extended C.
 - Preserve the course stack and functionality on that source: Java 8, Spring Boot/Jersey, `javax` validation, JPA/Spring Data/MySQL, Retrofit/Gson, scheduling, and React.
+- Read the assignment, syllabus, and relevant lessons from `ChatGPT-Project-Pack/UPLOAD/` before changing a course behavior. Keep GET for retrieval, POST for submissions, Jersey controllers delegating through Spring `@Autowired` to components, JSON DTOs and controlled errors, and executable Postman cases for the course routes.
 - Distinguish Course A evidence from Extended C evidence. Do not claim Extended C has full Course A route parity unless it is independently verified.
 
 ## Extended C implementation
@@ -17,7 +18,7 @@
 - Use only fresh, disposable, loopback MySQL instances and schemas created by the guarded acceptance scripts, including their generated `orgresource_c1_*` / `orgresource_c2_*` test schemas. Never reset, migrate, or delete a shared/user-owned or Course A database.
 - Preserve unrelated work. Inspect Git status/remotes before edits; never reset, force-push, or merge automatically. Exclude secrets, databases, caches, `target/`, `dist/`, and `node_modules/` from commits.
 - Report only commands actually run and results actually observed. Mark failures, blocked checks, and unrun checks precisely. Do not claim Canvas submission, instructor approval, recording, public deployment, or real provider delivery without evidence.
-- Do not continue into C3, merge, deploy publicly, create paid resources, send real SMS, or submit Canvas without a separate explicit authorization.
+- Do not start a later implementation phase, merge, deploy publicly, create paid resources, send real SMS, or submit Canvas without separate explicit authorization.
 
 ## Local computer-use constraint
 
