@@ -52,6 +52,7 @@ Priority is lexicographic: (1) verified course compliance and academic integrity
 | 09_DEMO_SEED_ALGORITHM_AND_ACCEPTANCE.md | Deterministic historical event graph, guarded demo import, tenant/ledger invariants and DEM-* acceptance matrix |
 | 10_CODEX_DEMO_DATA_IMPLEMENTATION_PROMPT.md | Copy-ready C6-D/C8-D/C9-D/C10-D/C11-D audit, implementation, hosting and release prompts |
 | ../data/reference/ateneo-public-organizations-2026.json | Twelve real publicly listed 2026 COA-M/LIONS organization name+classification facts and individual source URLs; no real operations |
+| ../data/reference/ateneo-public-programs-2026.json | Twelve factual public program titles across six organizations, with URLs; **not** dates, asset ownership, or usage history |
 
 ## Governance and explicit authorization
 
