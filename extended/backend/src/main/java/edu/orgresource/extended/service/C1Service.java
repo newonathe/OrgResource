@@ -8,6 +8,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +48,7 @@ public class C1Service {
                      ResourceRequirementRepository requirements,
                      AllocationRepository allocations,
                      C1OrganizationContext organizationContext,
-                     Clock philippineClock,
+                     @Qualifier("businessClock") Clock philippineClock,
                      InventoryService inventory,
                      ContactCipher contactCipher) {
         this.departments = departments;

@@ -1,4 +1,6 @@
 import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { request } from "./api/client";
 import { AuthProvider, useAuth } from "./auth/AuthContext";
 import { AccountPage, GovernancePage, InvitationPage, LoginPage, OrganizationPicker, RecoveryPage } from "./auth/AuthScreens";
 import { AboutPage } from "./pages/AboutPage";
@@ -62,5 +64,18 @@ function AppRoutes() {
 }
 
 export function App() {
-  return <SettingsProvider><AuthProvider><HashRouter><AppRoutes /></HashRouter></AuthProvider></SettingsProvider>;
+  return <SettingsProvider><DemoDisclosure /><AuthProvider><HashRouter><AppRoutes /></HashRouter></AuthProvider></SettingsProvider>;
+}
+
+function DemoDisclosure() {
+  const [notice, setNotice] = useState("");
+  useEffect(() => {
+    const controller = new AbortController();
+    void request<{ synthetic: boolean; notice: string | null }>("/v2/demo/metadata", "GET", undefined, { signal: controller.signal })
+      .then(result => {
+        if (!controller.signal.aborted && result.data.synthetic && result.data.notice) setNotice(result.data.notice);
+      }).catch(() => undefined);
+    return () => controller.abort();
+  }, []);
+  return notice ? <div className="demo-disclosure" role="status">{notice}</div> : null;
 }

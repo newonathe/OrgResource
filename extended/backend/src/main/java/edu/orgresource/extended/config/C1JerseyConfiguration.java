@@ -20,6 +20,7 @@ import edu.orgresource.extended.rest.C1GovernanceResource;
 import edu.orgresource.extended.rest.C1InvitationResource;
 import edu.orgresource.extended.rest.C1SessionResource;
 import edu.orgresource.extended.rest.DepartmentResource;
+import edu.orgresource.extended.rest.DemoMetadataResource;
 import edu.orgresource.extended.rest.InventoryResource;
 import edu.orgresource.extended.rest.ProjectResource;
 import edu.orgresource.extended.rest.ProjectWorkResource;
@@ -35,6 +36,7 @@ public class C1JerseyConfiguration {
     ResourceConfig c1ResourceConfig() {
         ResourceConfig config = new ResourceConfig();
         config.register(DepartmentResource.class);
+        config.register(DemoMetadataResource.class);
         config.register(ProjectResource.class);
         config.register(ProjectWorkResource.class);
         config.register(ResourceResource.class);

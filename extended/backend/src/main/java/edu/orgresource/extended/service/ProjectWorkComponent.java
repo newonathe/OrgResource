@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +32,8 @@ public class ProjectWorkComponent {
     private final Clock clock;
 
     public ProjectWorkComponent(InventoryService inventory, C1Service domain, C1OrganizationContext context,
-            ProjectRepository projects, ResourceRepository resources, ResourceRequirementRepository requirements, Clock clock) {
+            ProjectRepository projects, ResourceRepository resources, ResourceRequirementRepository requirements,
+            @Qualifier("businessClock") Clock clock) {
         this.inventory = inventory;
         this.domain = domain;
         this.context = context;

@@ -18,6 +18,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -68,6 +69,7 @@ public class InventoryService {
     private final AllocationRepository allocations;
     private final JdbcTemplate jdbc;
     private final Clock clock;
+    private final Clock applicationClock;
     private final ObjectMapper objectMapper;
     private final Validator javaxValidator;
     private final UserAccountRepository accounts;
@@ -76,7 +78,7 @@ public class InventoryService {
     public InventoryService(OrganizationRepository organizations, MembershipRepository memberships,
             C1OrganizationContext organizationContext, ResourceRepository resources,
             ProjectRepository projects, ResourceRequirementRepository requirements,
-            AllocationRepository allocations, JdbcTemplate jdbc, Clock clock,
+            AllocationRepository allocations, JdbcTemplate jdbc, @Qualifier("businessClock") Clock clock, Clock applicationClock,
             ObjectMapper objectMapper, Validator javaxValidator, UserAccountRepository accounts, C1AuditService audit) {
         this.organizations = organizations;
         this.memberships = memberships;
@@ -87,6 +89,7 @@ public class InventoryService {
         this.allocations = allocations;
         this.jdbc = jdbc;
         this.clock = clock;
+        this.applicationClock = applicationClock;
         this.objectMapper = objectMapper;
         this.javaxValidator = javaxValidator;
         this.accounts = accounts;
@@ -97,10 +100,19 @@ public class InventoryService {
     public ApiDtos.ResourceView createLegacyResource(ApiDtos.CreateResource request) {
         long selectedOrgId = organizationContext.currentOrganizationId();
         Actor actor = lockOrganization(selectedOrgId, true);
+        LocalDateTime sampledNow = businessNow();
+        Resource resource = initializeResource(actor, request, null, UUID.randomUUID(), sampledNow);
+        return new ApiDtos.ResourceView(resource, available(resource, sampledNow));
+    }
+
+    Resource initializeResource(Actor actor, ApiDtos.CreateResource request, UUID publicId,
+            UUID operationId, LocalDateTime sampledNow) {
         requireStockRole(actor.membership);
         String name = normalizeName(request.name);
-        Resource resource = new Resource(selectedOrgId, name, name.toLowerCase(Locale.ROOT),
+        long org = actor.organization.id;
+        Resource resource = new Resource(org, name, name.toLowerCase(Locale.ROOT),
                 request.type, request.totalQuantity);
+        if (publicId != null) resource.publicId = publicId;
         validateResource(resource);
         try {
             resources.saveAndFlush(resource);
@@ -108,12 +120,11 @@ public class InventoryService {
             throw new C1ApiException(409, "RESOURCE_NAME_EXISTS", "A Resource with this name already exists.");
         }
         if (resource.totalQuantity > 0) {
-            UUID operationId = UUID.randomUUID();
             insertMovement(resource, null, actor.membership.id, operationId,
-                    fingerprint("POST:/api/resources|" + selectedOrgId + "|" + resource.id + "|" + resource.totalQuantity),
-                    "INITIAL", resource.totalQuantity, resource.totalQuantity, 0, utcNow());
+                    fingerprint("POST:/api/resources|" + org + "|" + resource.id + "|" + resource.totalQuantity),
+                    "INITIAL", resource.totalQuantity, resource.totalQuantity, 0, movementTime(sampledNow));
         }
-        return new ApiDtos.ResourceView(resource, available(resource, businessNow()));
+        return resource;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -150,7 +161,7 @@ public class InventoryService {
             insertMovement(resource, null, actor.membership.id, operationId,
                     fingerprint("POST:/api/resources/" + resourceId + "/update|" + organizationId + "|" + nameKey
                             + "|" + request.expectedTotalQuantity + "|" + request.totalQuantity),
-                    "ADJUST", Math.abs(delta), delta, 0, utcNow());
+                    "ADJUST", Math.abs(delta), delta, 0, movementTime(sampledNow));
         }
         return new ApiDtos.ResourceView(resource, available(resource, sampledNow));
     }
@@ -206,7 +217,7 @@ public class InventoryService {
         resource.totalQuantity += body.quantity;
         resources.saveAndFlush(resource);
         insertMovement(resource, null, actor.membership.id, body.operationId, bodyHash,
-                "RECEIPT", body.quantity, body.quantity, 0, utcNow());
+                "RECEIPT", body.quantity, body.quantity, 0, movementTime(sampledNow));
         int available = available(resource, sampledNow);
         return complete(claim, requestId, 201,
                 new InventoryDtos.OperationView(body.operationId, "RECEIPT", resource.publicId, null,
@@ -243,7 +254,7 @@ public class InventoryService {
         resource.totalQuantity = body.newTotalQuantity;
         resources.saveAndFlush(resource);
         insertMovement(resource, null, actor.membership.id, body.operationId, bodyHash,
-                "ADJUST", Math.abs(delta), delta, 0, utcNow());
+                "ADJUST", Math.abs(delta), delta, 0, movementTime(sampledNow));
         int available = available(resource, sampledNow);
         return complete(claim, requestId, 200,
                 new InventoryDtos.OperationView(body.operationId, "ADJUST", resource.publicId, null,
@@ -632,6 +643,17 @@ public class InventoryService {
         byte[] bodyHash = fingerprint(route + "|" + requirementPublicId + "|" + borrowerPublicId + "|" + quantity + "|" + operationId);
         IdempotencyClaim claim = accessClaim(actor, route, idempotencyKey, bodyHash, operationId);
         if (claim.replay != null) return claim.replay;
+        Allocation allocation = persistLinkedRequest(actor, observed, project, borrowerPublicId, quantity, null);
+        audit.append(org, actor.userId, "LINKED_ALLOCATION_CREATED", "allocation", allocation.publicId.toString());
+        return complete(claim, requestId, 201, new LinkedAllocationView(allocation.publicId, requirementPublicId,
+                borrowerPublicId, allocation.borrowerName, allocation.quantity, allocation.status.name(), allocation.version),
+                etag(allocation.version));
+    }
+
+    Allocation persistLinkedRequest(Actor actor, ResourceRequirement observed, Project project, UUID borrowerPublicId,
+            int quantity, UUID allocationPublicId) {
+        long org = actor.organization.id;
+        requireProjectWriter(actor.membership, project);
         Resource resource = resources.lockById(observed.resourceId, org).orElseThrow(InventoryService::notFound);
         ResourceRequirement requirement = requirements.lockById(observed.id, org).orElseThrow(InventoryService::notFound);
         LocalDateTime now = businessNow();
@@ -649,13 +671,27 @@ public class InventoryService {
         if (account == null || displayIdentity.status != Membership.Status.ACTIVE)
             throw new C1ApiException(409, "BORROWER_NOT_ELIGIBLE", "Choose an active borrower in this organization.");
         Allocation allocation = new Allocation(org, requirement, quantity, account.displayName, false, now);
+        if (allocationPublicId != null) allocation.publicId = allocationPublicId;
         allocation.borrowerMembershipId = borrower == null ? null : borrower.id;
         allocation.requestedByMembershipId = actor.membership.id;
-        allocations.saveAndFlush(allocation);
-        audit.append(org, actor.userId, "LINKED_ALLOCATION_CREATED", "allocation", allocation.publicId.toString());
-        return complete(claim, requestId, 201, new LinkedAllocationView(allocation.publicId, requirement.publicId,
-                borrowerPublicId, allocation.borrowerName, allocation.quantity, allocation.status.name(), allocation.version),
-                etag(allocation.version));
+        return allocations.saveAndFlush(allocation);
+    }
+
+    Allocation applyHistoricalDemoAction(Actor actor, UUID allocationPublicId, UUID operationId, String action, String planSha) {
+        requireStockRole(actor.membership);
+        long org = actor.organization.id;
+        AllocationSnapshot snapshot = allocations.findOperationSnapshotByPublicId(allocationPublicId, org)
+                .map(row -> new AllocationSnapshot(row.getAllocationId(), row.getProjectId(), row.getResourceId(),
+                        row.getRequirementId(), row.getRequirementQuantity())).orElseThrow(InventoryService::notFound);
+        if ("EXPIRE".equals(action)) {
+            if (!expireIfEligible(org, snapshot.allocationId, businessNow()))
+                throw new C1ApiException(409, "INVALID_ALLOCATION_STATE", "The planned Allocation cannot expire at this business time.");
+            return allocations.findByIdAndOrganizationId(snapshot.allocationId, org).orElseThrow(InventoryService::notFound);
+        }
+        LockedAllocation locked = lockAllocation(snapshot, org);
+        applyTransition(actor, locked, InventoryAction.valueOf(action), operationId,
+                fingerprint("c8-demo|" + planSha + "|" + action + "|" + allocationPublicId + "|" + operationId));
+        return locked.allocation;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -823,7 +859,7 @@ public class InventoryService {
                 allocation.issuedAt = now;
                 allocations.saveAndFlush(allocation);
                 insertMovement(resource, allocation, actor.membership.id, operationId, bodyHash,
-                        "ISSUE", allocation.quantity, 0, allocation.quantity, utcNow());
+                        "ISSUE", allocation.quantity, 0, allocation.quantity, movementTime(now));
             }
             case RETURN -> {
                 requireState(allocation, AllocationStatus.ISSUED);
@@ -832,7 +868,7 @@ public class InventoryService {
                 allocation.returnedAt = now;
                 allocations.saveAndFlush(allocation);
                 insertMovement(resource, allocation, actor.membership.id, operationId, bodyHash,
-                        "RETURN", allocation.quantity, 0, -allocation.quantity, utcNow());
+                        "RETURN", allocation.quantity, 0, -allocation.quantity, movementTime(now));
             }
             case CONSUME -> {
                 requireState(allocation, AllocationStatus.APPROVED);
@@ -846,7 +882,7 @@ public class InventoryService {
                 resources.saveAndFlush(resource);
                 allocations.saveAndFlush(allocation);
                 insertMovement(resource, allocation, actor.membership.id, operationId, bodyHash,
-                        "CONSUME", allocation.quantity, -allocation.quantity, 0, utcNow());
+                        "CONSUME", allocation.quantity, -allocation.quantity, 0, movementTime(now));
             }
             case CANCEL -> {
                 if (allocation.status != AllocationStatus.PENDING && allocation.status != AllocationStatus.APPROVED)
@@ -1152,7 +1188,10 @@ public class InventoryService {
     }
 
     private LocalDateTime businessNow() { return LocalDateTime.now(clock); }
-    private LocalDateTime utcNow() { return LocalDateTime.ofInstant(clock.instant(), ZoneOffset.UTC); }
+    private LocalDateTime movementTime(LocalDateTime manilaBusinessTime) {
+        return LocalDateTime.ofInstant(manilaBusinessTime.atZone(clock.getZone()).toInstant(), ZoneOffset.UTC);
+    }
+    private LocalDateTime utcNow() { return LocalDateTime.ofInstant(applicationClock.instant(), ZoneOffset.UTC); }
     public static String etag(long version) { return "\"v" + version + "\""; }
     private static C1ApiException notFound() { return new C1ApiException(404, "NOT_FOUND", "The requested record was not found."); }
     private static C1ApiException integrityFailure() { return new C1ApiException(500, "INVENTORY_INTEGRITY_FAILURE", "Inventory could not be reconciled safely."); }

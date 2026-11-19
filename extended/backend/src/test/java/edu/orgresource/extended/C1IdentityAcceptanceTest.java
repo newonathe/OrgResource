@@ -20,7 +20,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,6 +81,7 @@ import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProc
 import org.springframework.scheduling.config.ScheduledTask;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.test.context.bean.override.convention.TestBean;
 
 import javax.validation.ValidatorFactory;
 
@@ -90,6 +93,7 @@ class C1IdentityAcceptanceTest {
     private static final Gson GSON = new Gson();
     private static final String COOKIE = "ORGSESSION";
     private static final String OWNER_SLUG = "c1-seed-workspace";
+    private static final AtomicReference<Instant> SCOPED_TEST_BUSINESS_TIME = new AtomicReference<>();
 
     @LocalServerPort int port;
     @Autowired DataSource dataSource;
@@ -117,6 +121,8 @@ class C1IdentityAcceptanceTest {
     @Autowired C3ReminderService reminderService;
     @Autowired ScheduledAnnotationBeanPostProcessor scheduledTasks;
     @Autowired Clock clock;
+    @TestBean(name = "businessClock", methodName = "scopedBusinessClock")
+    Clock businessClock;
     @org.springframework.beans.factory.annotation.Value("${c1.sms.enabled:false}") boolean smsEnabled;
     @Autowired javax.validation.Validator javaxValidator;
     @Autowired ValidatorFactory javaxValidatorFactory;
@@ -126,6 +132,21 @@ class C1IdentityAcceptanceTest {
 
     private TransactionTemplate tx;
     private List<String> bootstrapCodes = List.of();
+
+    private static Clock scopedBusinessClock() {
+        return testBusinessClock(ZoneId.of("Asia/Manila"));
+    }
+
+    private static Clock testBusinessClock(ZoneId zone) {
+        return new Clock() {
+            @Override public ZoneId getZone() { return zone; }
+            @Override public Clock withZone(ZoneId changed) { return testBusinessClock(changed); }
+            @Override public Instant instant() {
+                Instant simulation = SCOPED_TEST_BUSINESS_TIME.get();
+                return simulation == null ? Instant.now() : simulation;
+            }
+        };
+    }
 
     @BeforeAll
     void requireFreshLoopbackMysqlSchema() throws Exception {
@@ -292,7 +313,7 @@ class C1IdentityAcceptanceTest {
         RuntimeException invalidRole = assertThrows(RuntimeException.class,
                 () -> jdbc.update("UPDATE membership SET role='ROOT' WHERE id=?", a.membershipDbId));
         assertNotNull(findCause(invalidRole, java.sql.SQLException.class));
-        assertEquals(6, jdbc.queryForObject("SELECT COUNT(*) FROM flyway_schema_history WHERE success=1", Integer.class));
+        assertEquals(7, jdbc.queryForObject("SELECT COUNT(*) FROM flyway_schema_history WHERE success=1", Integer.class));
     }
 
     @Test @Order(4)
@@ -784,7 +805,7 @@ class C1IdentityAcceptanceTest {
     @Test @Order(15)
     void ID15_cleanFlywayBootstrapAndEffectiveDependencyVersionsArePresent() throws Exception {
         assertEquals("1", jdbc.queryForObject("SELECT version FROM flyway_schema_history WHERE success=1 ORDER BY installed_rank LIMIT 1", String.class));
-        assertEquals(6, jdbc.queryForObject("SELECT COUNT(*) FROM flyway_schema_history WHERE success=1", Integer.class));
+        assertEquals(7, jdbc.queryForObject("SELECT COUNT(*) FROM flyway_schema_history WHERE success=1", Integer.class));
         String[] tables = jdbc.queryForList("SELECT LOWER(table_name) FROM information_schema.tables WHERE table_schema=DATABASE()", String.class).toArray(String[]::new);
         assertTrue(List.of(tables).contains("spring_session"));
         assertTrue(get(newClient(), "/").body().contains("OrgResource"));
@@ -1610,7 +1631,8 @@ class C1IdentityAcceptanceTest {
                             + "borrower_name,status,created_at) SELECT 77,UUID_TO_BIN(UUID(),0),id,77,77,1,"
                             + "'Legacy fictional label','PENDING','2039-01-01' FROM organization");
                 }
-                var current = org.flywaydb.core.Flyway.configure().dataSource(legacyUrl, user, password).load();
+                var current = org.flywaydb.core.Flyway.configure().dataSource(legacyUrl, user, password)
+                        .target(org.flywaydb.core.api.MigrationVersion.fromVersion("6")).load();
                 assertEquals(1, current.migrate().migrationsExecuted);
                 current.validate();
                 try (Connection upgraded = DriverManager.getConnection(legacyUrl, user, password);
@@ -1625,6 +1647,15 @@ class C1IdentityAcceptanceTest {
                     assertNull(rows.getObject(4));
                     assertNull(rows.getObject(5));
                     assertEquals("Legacy fictional label", rows.getString(6));
+                }
+                var provenance = org.flywaydb.core.Flyway.configure().dataSource(legacyUrl, user, password).load();
+                assertEquals(1, provenance.migrate().migrationsExecuted);
+                provenance.validate();
+                try (Connection upgraded = DriverManager.getConnection(legacyUrl, user, password);
+                     var query = upgraded.createStatement(); ResultSet rows = query.executeQuery(
+                             "SELECT COUNT(*) FROM organization WHERE demo_dataset_id IS NULL AND demo_as_of IS NULL")) {
+                    assertTrue(rows.next());
+                    assertEquals(1, rows.getInt(1));
                 }
             } finally {
                 statement.execute("DROP DATABASE `" + schema + "`");
@@ -3562,6 +3593,141 @@ class C1IdentityAcceptanceTest {
         assertEquals(404, get(scoped.client, path).statusCode());
         assertEquals(5, jdbc.queryForObject("SELECT total_quantity FROM resource WHERE id=?", Integer.class, resource));
         assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE resource_id=?", Integer.class, resource));
+    }
+
+    @Test @Order(56)
+    void C8HistoricalBusinessTimeDoesNotBackdateSessionsOrReceipts() throws Exception {
+        Fixture owner = newTenant("C8 clock isolation", Membership.Role.OWNER);
+        Instant civil = Instant.parse("2026-01-15T01:00:00Z");
+        Instant beforeWall = clock.instant();
+        SCOPED_TEST_BUSINESS_TIME.set(civil);
+        try {
+            Session actor = login(owner.username, owner.password);
+            String principal = get(actor.client, "/api/v2/session").body();
+            assertTrue(principal.contains(owner.orgPublicId.toString()));
+            long created = jdbc.queryForObject("SELECT creation_time FROM spring_session WHERE session_id=?",
+                    Long.class, actor.sessionId);
+            assertTrue(created >= beforeWall.toEpochMilli() && created <= clock.millis());
+            long department = json(post(actor, "/api/departments", GSON.toJson(new NameRequest("Fictional historical team"))))
+                    .get("id").getAsLong();
+            var projectResponse = post(actor, "/api/projects", GSON.toJson(new ProjectRequest(department,
+                    "Fictional January workshop", "2026-01-15T10:00:00", "2026-01-15T13:00:00")));
+            assertEquals(201, projectResponse.statusCode(), projectResponse.body());
+            long project = json(projectResponse).get("id").getAsLong();
+            long resource = json(post(actor, "/api/resources", GSON.toJson(new ResourceRequest(
+                    "Fictional historical projector", "REUSABLE", 4)))).get("id").getAsLong();
+            assertEquals(LocalDateTime.ofInstant(civil, ZoneOffset.UTC), jdbc.queryForObject(
+                    "SELECT occurred_at FROM stock_movement WHERE resource_id=? AND kind='INITIAL'", LocalDateTime.class, resource));
+            long requirement = json(post(actor, "/api/requirements", GSON.toJson(new RequirementRequest(project, resource, 2))))
+                    .get("id").getAsLong();
+            long allocation = json(post(actor, "/api/allocations", GSON.toJson(new AllocationRequest(
+                    requirement, 2, "Fictional historical borrower", null, false)))).get("id").getAsLong();
+            UUID allocationKey = allocationRepository.findById(allocation).orElseThrow().publicId;
+            String allocationPath = "/api/v2/orgs/" + owner.orgPublicId + "/allocations/" + allocationKey;
+            assertEquals(200, modernPost(actor, allocationPath + "/approve", GSON.toJson(new OperationRequest(UUID.randomUUID())),
+                    "\"v0\"", UUID.randomUUID().toString()).statusCode());
+            Instant issueAt = civil.plusSeconds(3600);
+            SCOPED_TEST_BUSINESS_TIME.set(issueAt);
+            UUID issueId = UUID.randomUUID();
+            var issued = modernPost(actor, allocationPath + "/issue", GSON.toJson(new OperationRequest(issueId)),
+                    "\"v1\"", UUID.randomUUID().toString());
+            assertEquals(200, issued.statusCode(), issued.body());
+            assertEquals(LocalDateTime.ofInstant(issueAt, ZoneOffset.UTC), jdbc.queryForObject(
+                    "SELECT occurred_at FROM stock_movement WHERE allocation_id=? AND kind='ISSUE'", LocalDateTime.class, allocation));
+            assertEquals(LocalDateTime.parse("2026-01-15T10:00:00"), jdbc.queryForObject(
+                    "SELECT issued_at FROM allocation WHERE id=?", LocalDateTime.class, allocation));
+            LocalDateTime recordedAt = jdbc.queryForObject(
+                    "SELECT created_at FROM idempotency_key WHERE operation_public_id=UUID_TO_BIN(?,0)", LocalDateTime.class, issueId.toString());
+            assertFalse(recordedAt.isBefore(LocalDateTime.ofInstant(beforeWall.minusSeconds(1), ZoneOffset.UTC)));
+            assertFalse(recordedAt.isAfter(now().plusSeconds(1)));
+            assertEquals(2, jdbc.queryForObject("SELECT SUM(delta_issued) FROM stock_movement WHERE allocation_id=?", Integer.class, allocation));
+            assertEquals(200, get(actor.client, "/api/v2/session").statusCode());
+        } finally {
+            SCOPED_TEST_BUSINESS_TIME.set(null);
+        }
+    }
+
+    @Test @Order(57)
+    void C8LeadMutationAndDemotionSerializeOnTheCurrentOrganization() throws Exception {
+        Fixture owner = newTenant("C8 assignment race", Membership.Role.OWNER);
+        Fixture lead = fixtureInOrg(owner.orgDbId, Membership.Role.LEAD);
+        Session officer = login(owner.username, owner.password), actor = login(lead.username, lead.password);
+        String root = "/api/v2/orgs/" + owner.orgPublicId;
+        long department = json(post(officer, "/api/departments", GSON.toJson(new NameRequest("Fictional race team"))))
+                .get("id").getAsLong();
+        String from = "2040-11-01T10:00:00", until = "2040-11-01T13:00:00";
+        long project = json(post(officer, "/api/projects", GSON.toJson(new ProjectRequest(department,
+                "Fictional race original", from, until)))).get("id").getAsLong();
+        String path = root + "/projects/" + projectRepository.findById(project).orElseThrow().publicId;
+        assertEquals(200, modernPost(officer, path + "/lead-assignment",
+                leadAssignment(UUID.randomUUID().toString(), lead.membershipPublicId), "\"v0\"", UUID.randomUUID().toString()).statusCode());
+        String target = root + "/members/" + lead.membershipPublicId + "/role";
+        String change = GSON.toJson(new ProjectUpdateRequest("Fictional race changed", from, until));
+        var workers = Executors.newFixedThreadPool(2);
+        CountDownLatch start = new CountDownLatch(1);
+        try {
+            var edited = workers.submit(() -> {
+                assertTrue(start.await(15, TimeUnit.SECONDS));
+                return post(actor, path + "/update", change, "\"v1\"").statusCode();
+            });
+            var demoted = workers.submit(() -> {
+                assertTrue(start.await(15, TimeUnit.SECONDS));
+                return post(officer, target, GSON.toJson(new RoleRequest("MEMBER")), "\"v0\"").statusCode();
+            });
+            start.countDown();
+            assertEquals(200, demoted.get(15, TimeUnit.SECONDS));
+            int editedStatus = edited.get(15, TimeUnit.SECONDS);
+            assertTrue(Set.of(200, 403).contains(editedStatus), "The edit must finish before demotion or be refused.");
+            Project persisted = projectRepository.findById(project).orElseThrow();
+            assertNull(persisted.leadMembershipId);
+            assertEquals(editedStatus == 200 ? "Fictional race changed" : "Fictional race original", persisted.name);
+            assertEquals(editedStatus == 200 ? 3 : 2, persisted.version);
+            assertEquals(403, post(actor, path + "/update", change, "\"v" + persisted.version + "\"").statusCode());
+        } finally {
+            workers.shutdownNow();
+        }
+    }
+
+    @Test @Order(58)
+    void C8DemoDisclosureIsServerBackedAndAppearsInBothExportFormats() throws Exception {
+        Fixture ordinary = newTenant("C8 ordinary reporting", Membership.Role.OWNER);
+        Fixture demo = newTenant("C8 fictional demo reporting", Membership.Role.OWNER);
+        Session ordinaryActor = login(ordinary.username, ordinary.password), demoActor = login(demo.username, demo.password);
+        String metadata = "/api/v2/demo/metadata";
+        var before = get(newClient(), metadata);
+        assertEquals(200, before.statusCode(), before.body());
+        assertFalse(json(before).getAsJsonObject("data").get("synthetic").getAsBoolean());
+        String label = "orgresource-c8-plan-v1-012345678901-abcdefabcdef";
+        jdbc.update("UPDATE organization SET demo_dataset_id=?,demo_reference_key='fictional-demo-entry',"
+                + "demo_source_sha=REPEAT('a',64),demo_plan_sha=REPEAT('b',64),demo_as_of='2026-11-19' WHERE id=?",
+                label, demo.orgDbId);
+        assertFalse(json(get(newClient(), metadata)).getAsJsonObject("data").get("synthetic").getAsBoolean(),
+                "Partially imported data is not advertised.");
+        tx.executeWithoutResult(status -> {
+            var operator = accounts.saveAndFlush(new UserAccount("c8-demo-operator", "Fictional local demo operator", now()));
+            credentials.saveAndFlush(new LocalCredential(operator.id, passwordEncoder.encode(UUID.randomUUID().toString()), now()));
+        });
+        assertFalse(json(get(newClient(), metadata)).getAsJsonObject("data").get("synthetic").getAsBoolean(),
+                "An operator credential alone cannot advertise an incomplete demo cohort.");
+        String resource = GSON.toJson(new ResourceRequest("Fictional disclosure resource", "REUSABLE", 1));
+        assertEquals(201, post(demoActor, "/api/resources", resource).statusCode());
+        assertEquals(201, post(ordinaryActor, "/api/resources", resource).statusCode());
+        String demoExports = "/api/v2/orgs/" + demo.orgPublicId + "/exports";
+        String jsonInput = "{\"format\":\"TENANT_JSON\",\"dataset\":\"RESOURCES\"}";
+        var labelled = post(demoActor, demoExports, jsonInput);
+        assertEquals(200, labelled.statusCode(), labelled.body());
+        var disclosure = json(labelled).getAsJsonObject("demoProvenance");
+        assertTrue(disclosure.get("synthetic").getAsBoolean());
+        assertEquals(label, disclosure.get("datasetId").getAsString());
+        assertTrue(disclosure.get("notice").getAsString().contains("operations, dates, accounts, inventories and transaction history are simulated"));
+        var csv = post(demoActor, demoExports, "{\"format\":\"CSV\",\"dataset\":\"RESOURCES\"}");
+        assertEquals(200, csv.statusCode());
+        assertTrue(csv.body().contains("synthetic,demoDataset,demonstrationAsOf,demoNotice"));
+        assertTrue(csv.body().contains(label));
+        var ordinaryExport = post(ordinaryActor, "/api/v2/orgs/" + ordinary.orgPublicId + "/exports", jsonInput);
+        assertEquals(200, ordinaryExport.statusCode());
+        assertFalse(json(ordinaryExport).has("demoProvenance"));
+        assertEquals(404, post(ordinaryActor, demoExports, jsonInput).statusCode());
     }
 
     private String leadAssignment(String operationId, UUID leadMembershipId) {

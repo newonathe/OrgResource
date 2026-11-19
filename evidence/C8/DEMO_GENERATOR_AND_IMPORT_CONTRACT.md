@@ -8,4 +8,14 @@ Run `python scripts/generate-c8-demo.py --source <local-manifest.json> --source-
 
 Two runs produced a 19,265,850-byte plan with SHA-256 `3b0f54da85cadb77cd7d8ab2d50c1fdb4b4ee36710b803cf904227e13f08927c`. It contains 96 profiles, 248 Departments, 713 Projects, 1,312 Resources, 2,139 Requirements, 462 fictional persona definitions, 21,060 Allocation requests and 67,370 ordered business actions. All six terminal status families and all twelve calendar months are represented.
 
-**Remaining C8-D gates.** The planned data has yet to be imported. Actual capacity and correctness require a guarded fresh MySQL target, historical business-clock isolation from sessions and security, replay through the real operations, independent SQL reconciliation, local UI/API/export disclosure, backup and restore. The plan is neither a SQL dump nor a measurement of MySQL, import or backup size.
+## Guarded replay and verification
+
+The dedicated Java 21 command `java -jar <packaged-jar> --c8-local-demo-import` uses the approved plan digest and a fresh numeric-loopback MySQL schema named `orgresource_c8_demo_<random suffix>`. It verifies the empty schema before starting Spring or Flyway. Its protected process settings are `EXT_C8_DEMO_TARGET`, `EXT_C8_DEMO_CONFIRM_TARGET` with the value `IMPORT <schema>`, `EXT_C8_DEMO_PORT`, `EXT_C8_DEMO_PLAN`, `EXT_C8_DEMO_PLAN_SHA256`, `EXT_C8_DEMO_OWNER_PASSWORD`, `EXT_DB_USER`, `EXT_DB_PASSWORD`, `EXT_DB_MIGRATION_USER` and `EXT_DB_MIGRATION_PASSWORD`. Use distinct provisioning and migration credentials restricted to the disposable schema.
+
+The offline process leaves session and receipt time on the application clock, evaluates Projects on the simulated Manila clock and stores ledger timestamps in UTC. Replay calls the existing inventory invariants and appends audit records. Each workspace imports in its own transaction and is checked through SQL. The one local operator credential is installed only after all workspaces and counts reconcile. A partial run retains evidence in the isolated datadir and requires a new confirmed empty target to retry.
+
+`pwsh -NoProfile -File scripts/verify-c8-demo-import.ps1 -Plan <local-plan> -Sha256 <digest>` provisions a separate loopback MySQL instance, verifies the full logical fixture, checks refusal of a repeated import, measures the existing 64 MiB backup ceiling and restores through the existing authenticated backup script to a separate process. Both databases are stopped by the verifier. Existing completed disposable evidence can be reopened explicitly using `-ReuseProofFolder`.
+
+The runtime derives the demo label from persisted provenance. A completed demo is labelled on the login and workspace views. Both export formats carry synthetic provenance for imported demo organizations. Regular workspaces retain their existing exports. Historical clock and concurrent LEAD-demotion acceptance run in the ordinary HTTP/MySQL regression suite.
+
+**Gate status.** A generated plan is neither a SQL dump nor a measurement of MySQL, import or backup size. The final local acceptance report records actual loaded figures, recovery and hosted checks separately.
