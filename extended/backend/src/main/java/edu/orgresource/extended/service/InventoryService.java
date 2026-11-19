@@ -37,12 +37,15 @@ import edu.orgresource.extended.domain.Project;
 import edu.orgresource.extended.domain.Resource;
 import edu.orgresource.extended.domain.ResourceRequirement;
 import edu.orgresource.extended.domain.ResourceType;
+import edu.orgresource.extended.identity.C1AuditService;
 import edu.orgresource.extended.identity.C1HttpResponses;
 import edu.orgresource.extended.identity.IdentityDtos;
 import edu.orgresource.extended.identity.Membership;
 import edu.orgresource.extended.identity.MembershipRepository;
 import edu.orgresource.extended.identity.Organization;
 import edu.orgresource.extended.identity.OrganizationRepository;
+import edu.orgresource.extended.identity.UserAccount;
+import edu.orgresource.extended.identity.UserAccountRepository;
 import edu.orgresource.extended.repository.AllocationRepository;
 import edu.orgresource.extended.repository.ProjectRepository;
 import edu.orgresource.extended.repository.ResourceRepository;
@@ -52,6 +55,7 @@ import edu.orgresource.extended.security.C1OrganizationContext;
 @Service
 public class InventoryService {
     private static final int MAX_MOVEMENT_PAGE = 100;
+    private static final String LEAD_ASSIGNMENT_ROUTE = "project-lead-assignment/";
     private final OrganizationRepository organizations;
     private final MembershipRepository memberships;
     private final C1OrganizationContext organizationContext;
@@ -63,12 +67,14 @@ public class InventoryService {
     private final Clock clock;
     private final ObjectMapper objectMapper;
     private final Validator javaxValidator;
+    private final UserAccountRepository accounts;
+    private final C1AuditService audit;
 
     public InventoryService(OrganizationRepository organizations, MembershipRepository memberships,
             C1OrganizationContext organizationContext, ResourceRepository resources,
             ProjectRepository projects, ResourceRequirementRepository requirements,
             AllocationRepository allocations, JdbcTemplate jdbc, Clock clock,
-            ObjectMapper objectMapper, Validator javaxValidator) {
+            ObjectMapper objectMapper, Validator javaxValidator, UserAccountRepository accounts, C1AuditService audit) {
         this.organizations = organizations;
         this.memberships = memberships;
         this.organizationContext = organizationContext;
@@ -80,6 +86,8 @@ public class InventoryService {
         this.clock = clock;
         this.objectMapper = objectMapper;
         this.javaxValidator = javaxValidator;
+        this.accounts = accounts;
+        this.audit = audit;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -471,16 +479,86 @@ public class InventoryService {
         return new InventoryDtos.AllocationPage(List.copyOf(states), next);
     }
 
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public ProjectAccessView projectAccess(UUID organizationPublicId, UUID projectPublicId) {
+        Membership member = organizationContext.requirePathOrganization(organizationPublicId, false,
+                Membership.Role.OWNER, Membership.Role.ADMIN, Membership.Role.CUSTODIAN, Membership.Role.LEAD);
+        Project project = projects.findByPublicIdAndOrganizationId(projectPublicId, member.organizationId)
+                .orElseThrow(InventoryService::notFound);
+        if (member.role == Membership.Role.LEAD && !member.id.equals(project.leadMembershipId)) throw notFound();
+        return projectAccessView(project);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public OperationResponse assignProjectLead(UUID organizationPublicId, UUID projectPublicId, UUID leadPublicId,
+            UUID operationId, String idempotencyKey, String ifMatch, String requestId) {
+        Actor actor = lockPathOrganization(organizationPublicId, true);
+        requireProjectManager(actor.membership);
+        Project project = projects.lockByPublicId(projectPublicId, actor.organization.id).orElseThrow(InventoryService::notFound);
+        String route = LEAD_ASSIGNMENT_ROUTE + projectPublicId;
+        byte[] bodyHash = fingerprint(route + "|" + operationId + "|" + leadPublicId + "|" + ifMatch);
+        validateIdempotencyKey(idempotencyKey);
+        Optional<Receipt> earlier = findReceiptByOperation(actor.organization.id, operationId);
+        if (earlier.isPresent()) {
+            Receipt receipt = earlier.get();
+            if (receipt.actorUserId != actor.userId || !receipt.route.equals(route)
+                    || !Arrays.equals(receipt.bodyHash, bodyHash))
+                throw new C1ApiException(409, "OPERATION_ID_REUSED", "This operationId is already bound to a different request.");
+            if (receipt.expiresAt.isBefore(utcNow()))
+                throw new C1ApiException(409, "IDEMPOTENCY_KEY_EXPIRED", "The operation receipt has expired.");
+            return receipt.response();
+        }
+        if (findMovementByOperation(actor.organization.id, operationId).isPresent())
+            throw new C1ApiException(409, "OPERATION_ID_REUSED", "This operationId is already bound to a stock movement.");
+        IdempotencyClaim claim = claim(actor, route, idempotencyKey, bodyHash, operationId);
+        if (claim.replay != null) return claim.replay;
+        requireVersion(ifMatch, project.version);
+        Membership target = leadPublicId == null ? null : memberships
+                .findByOrganizationIdAndPublicId(actor.organization.id, leadPublicId)
+                .orElseThrow(InventoryService::notFound);
+        if (target != null && (target.role != Membership.Role.LEAD || !isEffectiveMember(target)))
+            throw new C1ApiException(409, "LEAD_NOT_ELIGIBLE", "Choose an active LEAD in this organization.");
+        Long targetId = target == null ? null : target.id;
+        if (!java.util.Objects.equals(project.leadMembershipId, targetId)) {
+            project.leadMembershipId = targetId;
+            projects.saveAndFlush(project);
+            audit.append(actor.organization.id, actor.userId, "PROJECT_LEAD_CHANGED", "project", project.publicId.toString());
+        }
+        return complete(claim, requestId, 200, projectAccessView(project), etag(project.version));
+    }
+
+    private ProjectAccessView projectAccessView(Project project) {
+        UUID lead = project.leadMembershipId == null ? null : memberships.findById(project.leadMembershipId)
+                .filter(row -> row.organizationId.equals(project.organizationId) && row.role == Membership.Role.LEAD
+                        && isEffectiveMember(row)).map(row -> row.publicId).orElse(null);
+        return new ProjectAccessView(project.publicId, project.name, project.startAt.toString(),
+                project.endAt.toString(), lead, project.version);
+    }
+
+    private boolean isEffectiveMember(Membership member) {
+        return member.status == Membership.Status.ACTIVE && accounts.findById(member.userId)
+                .filter(account -> account.status == UserAccount.Status.ACTIVE).isPresent();
+    }
+
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public String operationReceipt(UUID organizationPublicId, UUID operationId, String requestId) {
         Actor actor = lockPathOrganization(organizationPublicId, false);
-        requireStockRole(actor.membership);
-        Optional<MovementFact> movement = findMovementByOperation(actor.organization.id, operationId);
-        if (movement.isPresent()) {
-            MovementFact fact = movement.get();
-            return durableMovementResponse(fact, requestId).json;
+        if (isStockRole(actor.membership.role)) {
+            Optional<MovementFact> movement = findMovementByOperation(actor.organization.id, operationId);
+            if (movement.isPresent()) return durableMovementResponse(movement.get(), requestId).json;
+        } else if (actor.membership.role != Membership.Role.ADMIN) {
+            requireStockRole(actor.membership);
         }
-        Receipt receipt = findReceiptByOperation(actor.organization.id, operationId).orElseThrow(InventoryService::notFound);
+        Optional<Receipt> existing = findReceiptByOperation(actor.organization.id, operationId);
+        boolean leadAssignment = existing.isPresent() && existing.get().route.startsWith(LEAD_ASSIGNMENT_ROUTE);
+        if (leadAssignment) {
+            requireProjectManager(actor.membership);
+            Receipt assignment = existing.get();
+            UUID projectPublicId = UUID.fromString(assignment.route.substring(LEAD_ASSIGNMENT_ROUTE.length()));
+            if (assignment.actorUserId != actor.userId
+                    || projects.findByPublicIdAndOrganizationId(projectPublicId, actor.organization.id).isEmpty()) throw notFound();
+        } else requireStockRole(actor.membership);
+        Receipt receipt = existing.orElseThrow(InventoryService::notFound);
         if (receipt.expiresAt.isBefore(utcNow()))
             throw new C1ApiException(409, "IDEMPOTENCY_KEY_EXPIRED", "The operation receipt has expired.");
         try {
@@ -693,8 +771,7 @@ public class InventoryService {
                 organizationId, operationId.toString());
     }
 
-    private OperationResponse complete(IdempotencyClaim claim, String requestId, int status,
-            InventoryDtos.OperationView data, String etag) {
+    private OperationResponse complete(IdempotencyClaim claim, String requestId, int status, Object data, String etag) {
         String responseJson = toJson(new IdentityDtos.Envelope<>(data, requestId));
         int updated = jdbc.update("UPDATE idempotency_key SET state='COMPLETED',http_status=?,response_json=?,response_etag=? "
                 + "WHERE id=? AND state='PROCESSING'", status, responseJson, etag, claim.id);
@@ -792,6 +869,11 @@ public class InventoryService {
             throw new C1ApiException(403, "FORBIDDEN", "The current membership cannot perform stock operations.");
     }
 
+    private static void requireProjectManager(Membership membership) {
+        if (membership.role != Membership.Role.OWNER && membership.role != Membership.Role.ADMIN)
+            throw new C1ApiException(403, "FORBIDDEN", "Only owners and administrators can assign Project leads.");
+    }
+
     private static boolean isStockRole(Membership.Role role) {
         return role == Membership.Role.OWNER || role == Membership.Role.CUSTODIAN;
     }
@@ -842,6 +924,7 @@ public class InventoryService {
 
     public enum InventoryAction { APPROVE, ISSUE, RETURN, CONSUME, CANCEL }
     public record OperationResponse(int status, String json, String etag) { }
+    public record ProjectAccessView(UUID id, String name, String startAt, String endAt, UUID leadMembershipId, long version) { }
     private record Actor(Organization organization, Membership membership, long userId) { }
     private record Balance(long ledgerTotal, long ledgerIssued, long holds, long issued) { }
     private record ResourcePageRow(UUID publicId, String name, String type, int totalQuantity, long version,

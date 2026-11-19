@@ -1,5 +1,7 @@
 package edu.orgresource.extended.domain;
 
+import java.util.UUID;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -23,6 +25,9 @@ public class ResourceRequirement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
+
+    @Column(name = "public_id", nullable = false, unique = true, columnDefinition = "BINARY(16)", updatable = false)
+    public UUID publicId = UUID.randomUUID();
 
     @Column(name = "organization_id", nullable = false)
     public Long organizationId;

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.orgresource.extended.api.C1ApiException;
+import edu.orgresource.extended.repository.ProjectRepository;
 import edu.orgresource.extended.security.C1IdentityNormalization;
 
 @Service
@@ -20,6 +21,7 @@ public class C1AccountService {
     private final RecoveryCodeRepository recovery;
     private final MembershipRepository memberships;
     private final OrganizationRepository organizations;
+    private final ProjectRepository projects;
     private final PasswordEncoder encoder;
     private final C1AuditService audit;
     private final Clock clock;
@@ -27,10 +29,11 @@ public class C1AccountService {
 
     public C1AccountService(UserAccountRepository accounts, LocalCredentialRepository credentials,
             RecoveryCodeRepository recovery, MembershipRepository memberships, OrganizationRepository organizations,
-            PasswordEncoder encoder, C1AuditService audit, Clock clock) {
+            PasswordEncoder encoder, C1AuditService audit, Clock clock, ProjectRepository projects) {
         this.accounts = accounts; this.credentials = credentials; this.recovery = recovery;
         this.memberships = memberships; this.organizations = organizations; this.encoder = encoder;
         this.audit = audit; this.clock = clock;
+        this.projects = projects;
         this.dummyHash = encoder.encode("C1 recovery timing padding only");
     }
 
@@ -119,6 +122,8 @@ public class C1AccountService {
             if (member != null && member.status == Membership.Status.ACTIVE
                     && member.role == Membership.Role.OWNER && remaining <= 1)
                 throw new C1ApiException(409, "LAST_OWNER", "Account cannot be disabled while it is the only active owner of an organization.");
+            if (member != null && member.role == Membership.Role.LEAD)
+                projects.clearAssignments(orgId, member.id);
         }
         account.status = UserAccount.Status.DISABLED;
         account.credentialVersion++;

@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.orgresource.extended.api.C1RequestValidator;
+import edu.orgresource.extended.api.C1ApiException;
 import edu.orgresource.extended.api.InventoryDtos;
 import edu.orgresource.extended.identity.C1HttpResponses;
 import edu.orgresource.extended.service.InventoryService;
@@ -36,6 +37,38 @@ public class InventoryResource {
     @Autowired InventoryService inventory;
     @Autowired C1RequestValidator validator;
     @Autowired ObjectMapper objectMapper;
+
+    @GET @Path("/projects/{projectId}")
+    public Response projectAccess(@PathParam("organizationId") UUID organizationId,
+            @PathParam("projectId") UUID projectId, @Context HttpServletRequest request) {
+        var project = inventory.projectAccess(organizationId, projectId);
+        return Response.fromResponse(C1HttpResponses.envelope(200, project, request, true))
+                .header("ETag", "\"v" + project.version() + "\"").build();
+    }
+
+    @POST @Path("/projects/{projectId}/lead-assignment") @Consumes(MediaType.APPLICATION_JSON)
+    public Response assignLead(@PathParam("organizationId") UUID organizationId,
+            @PathParam("projectId") UUID projectId, JsonNode body,
+            @HeaderParam("Idempotency-Key") String idempotencyKey,
+            @HeaderParam("If-Match") String ifMatch, @Context HttpServletRequest request) {
+        if (body == null || !body.isObject() || body.size() != 2 || !body.has("leadMembershipId")
+                || !body.hasNonNull("operationId"))
+            throw new C1ApiException(400, "VALIDATION_FAILED", "Supply operationId and leadMembershipId. Set leadMembershipId to null to clear.");
+        UUID lead = body.get("leadMembershipId").isNull() ? null : requestUuid(body.get("leadMembershipId"), "leadMembershipId");
+        UUID operationId = requestUuid(body.get("operationId"), "operationId");
+        String requestId = C1HttpResponses.requestId(request);
+        return operation(inventory.assignProjectLead(organizationId, projectId, lead, operationId,
+                idempotencyKey, ifMatch, requestId), requestId);
+    }
+
+    private static UUID requestUuid(JsonNode value, String field) {
+        try {
+            if (value.isTextual() && value.asText().length() == 36) return UUID.fromString(value.asText());
+        } catch (IllegalArgumentException invalid) {
+            // Return the same controlled error for a malformed or missing UUID.
+        }
+        throw new C1ApiException(400, "VALIDATION_FAILED", field + " must be a UUID.");
+    }
 
     @POST @Path("/resources/{resourceId}/receive") @Consumes(MediaType.APPLICATION_JSON)
     public Response receive(@PathParam("organizationId") UUID organizationId,

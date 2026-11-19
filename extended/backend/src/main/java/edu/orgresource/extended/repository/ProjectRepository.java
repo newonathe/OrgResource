@@ -2,11 +2,13 @@ package edu.orgresource.extended.repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -26,6 +28,17 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     List<Project> workspaceCalendar(@Param("org") long org, @Param("now") java.time.LocalDateTime now, Pageable pageable);
 
     Optional<Project> findByIdAndOrganizationId(Long id, Long organizationId);
+
+    Optional<Project> findByPublicIdAndOrganizationId(UUID publicId, Long organizationId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select p from Project p where p.publicId=:publicId and p.organizationId=:org")
+    Optional<Project> lockByPublicId(@Param("publicId") UUID publicId, @Param("org") long organizationId);
+
+    @Modifying(flushAutomatically = true)
+    @Query("update Project p set p.leadMembershipId=null, p.version=p.version+1 "
+            + "where p.organizationId=:org and p.leadMembershipId=:member")
+    int clearAssignments(@Param("org") long organizationId, @Param("member") long membershipId);
 
     @EntityGraph(attributePaths = {"department"})
     @Query("select p from Project p where p.organizationId=:org and p.id>:after "

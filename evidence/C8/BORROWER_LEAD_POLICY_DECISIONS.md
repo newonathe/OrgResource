@@ -1,6 +1,6 @@
-# Proposed C8 borrower and assigned LEAD policy
+# C8 borrower and assigned LEAD policy
 
-Status **OWNER APPROVAL REQUIRED**. This proposal specifies decisions DEC-02, DEC-03 and the affected DEC-04 operations. Current text-label borrowers and current role grants remain in force until these changes are approved and accepted. Course Final A, the 28 academic compatibility operations, and selected-workspace Reporting retain their existing contracts.
+Status **OWNER APPROVED NOVEMBER 19, 2026**. This policy specifies decisions DEC-02, DEC-03 and the affected DEC-04 operations. Implementation and verification proceed in dependency-ordered batches. Course Final A, the 28 academic compatibility operations, and selected-workspace Reporting retain their existing contracts.
 
 ## Identity and assignment
 
@@ -25,7 +25,7 @@ LEAD creation of a Project stays with OWNER and ADMIN. LEAD cancellation in the 
 
 ## API and failures
 
-- Place the proposed additive routes under `/api/v2/orgs/{orgId}`. Follow the active path membership convention for these routes. Add `POST /projects/{projectId}/lead-assignment` with `{leadMembershipId}` or explicit null to clear. Require the current Project ETag and use the existing modern mutation receipt and replay conventions. Project update cannot write the assignment field.
+- Place the additive routes under `/api/v2/orgs/{orgId}`. Follow the active path membership convention for these routes. `POST /projects/{projectId}/lead-assignment` accepts `{operationId,leadMembershipId}` with a UUID operationId and explicit null to clear. Require the current Project ETag and Idempotency-Key. The operation identifier follows the existing modern mutation receipt convention. Project update cannot write the assignment field.
 - Add `GET /borrowers?projectId=…&limit=…&cursor=…&search=…`. Require an authorized Project for every lookup. An assigned LEAD may use the currently assigned Project only. Eligible options contain `membershipId` and `displayName` only. There is no Project-participant model in this proposal. Options are active organization memberships eligible for borrowing under that Project, scoped to its authorized lookup. If Project-specific eligibility is required, approve that relationship before implementation. Cap the page at the existing v2 workspace maximum and bind its cursor to organization, Project and search.
 - Define the organization-path Project and Requirement read and mutation grants as above. Scope every LEAD list in SQL by the actual Project association. For Allocations, add the linked borrower field to the modern create operation and use the redacted scoped officer view for assigned Project rows. Provide a separate bounded self view at `GET /borrowed-allocations` and `GET /borrowed-allocations/{allocationId}`, plus a consent revocation action on that self path. Use existing consent-clearing behavior and side effects. Reject a client-supplied borrower name snapshot.
 - Apply the existing modern error envelope. Anonymous requests return 401. Conceal inaccessible organizations and out-of-scope rows behind 404. An active member lacking the action grant receives 403 where the route may disclose that resource. Invalid field shape returns 400. An existing same-org borrower or candidate LEAD with ineligible state returns a controlled 409 after authorization. Versioned writes use 428 for missing and 412 for stale ETags. Reject a foreign membership as 404. Redact roster and sensitive values from errors, receipts, logs and exports.
@@ -34,7 +34,7 @@ LEAD creation of a Project stays with OWNER and ADMIN. LEAD cancellation in the 
 
 Exercise actual HTTP and MySQL for officer assignment and clear, demotion/reactivation, transfer during a concurrent mutation, and stale ETag or replay after revocation. Cover two tenants, two Projects and two distinct same-name borrowers. Prove authorized LEAD read/edit/request succeeds in one Project and fails in the other, including pagination and cursor reuse. Prove self reads and consent revocation, denial of every other borrower's record, and unchanged actor/history/custody after suspension or a denied write. Cover directory field minimization, absence of contact/provider values, legacy compatibility, retention across restart, preserved stock invariants, and packaged React journeys for both roles.
 
-## Source and choices requiring approval
+## Source and owner decisions
 
 - C7 owner decisions DEC-02/03/04 establish the existing restrictions. The CP35 candidate defines the assigned LEAD, authorization by operation and borrower snapshots. CP41 calls for minimal, bounded borrower discovery and lists denial proof cases UI41-01/02. Candidate refs were read at `dfda643`. Neither candidate authorizes changing production permissions.
-- The proposed choices are OWNER/ADMIN assignment, clearing on loss of eligibility, pending-only LEAD cancellation, Project-required borrower discovery for officers too, and a separate minimal borrower self view. Approve these choices and the linked borrower workflow before enabling the expanded role policy.
+- The approved choices are OWNER/ADMIN assignment, clearing on loss of eligibility, pending-only LEAD cancellation, Project-required borrower discovery for officers too, and a separate minimal borrower self view.
