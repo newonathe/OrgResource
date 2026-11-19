@@ -131,6 +131,10 @@ public class C1Service {
         requireManager(orgId);
         requirePositiveId(id, "Project");
         Project project = projects.lockById(id, orgId).orElseThrow(() -> notFound("Project"));
+        return new ApiDtos.ProjectView(saveProjectFields(project, request));
+    }
+
+    Project saveProjectFields(Project project, ApiDtos.ProjectUpdate request) {
         String name = displayName(request.name);
         LocalDateTime startAt = parseDateTime(request.startAt);
         LocalDateTime endAt = parseDateTime(request.endAt);
@@ -139,13 +143,13 @@ public class C1Service {
         if (datesChanged) {
             if (!startAt.isAfter(LocalDateTime.now(philippineClock)))
                 throw new C1ApiException(400, "INVALID_PROJECT_PERIOD", "Project startAt must be in the future when dates change.");
-            if (allocations.countHistoricallyApprovedByProject(orgId, id) > 0)
+            if (allocations.countHistoricallyApprovedByProject(project.organizationId, project.id) > 0)
                 throw new C1ApiException(409, "PROJECT_DATES_LOCKED", "Project dates cannot change after an Allocation has been approved.");
         }
         project.name = name;
         project.startAt = startAt;
         project.endAt = endAt;
-        return new ApiDtos.ProjectView(projects.saveAndFlush(project));
+        return projects.saveAndFlush(project);
     }
 
     @Transactional
@@ -154,7 +158,11 @@ public class C1Service {
         requireManager(orgId);
         requirePositiveId(id, "Project");
         Project project = projects.lockById(id, orgId).orElseThrow(() -> notFound("Project"));
-        if (requirements.existsByOrganizationIdAndProjectId(orgId, id))
+        return removeProject(project);
+    }
+
+    ApiDtos.MessageView removeProject(Project project) {
+        if (requirements.existsByOrganizationIdAndProjectId(project.organizationId, project.id))
             throw new C1ApiException(409, "DEPENDENCY_EXISTS", "Project still has ResourceRequirements.");
         projects.delete(project);
         projects.flush();
@@ -255,9 +263,12 @@ public class C1Service {
                 .orElseThrow(() -> notFound("Project"));
         Resource resource = resources.findByIdAndOrganizationId(request.resourceId, orgId)
                 .orElseThrow(() -> notFound("Resource"));
-        ResourceRequirement saved = requirements.saveAndFlush(
-                new ResourceRequirement(orgId, project, resource, request.quantity));
+        ResourceRequirement saved = saveNewRequirement(project, resource, request.quantity);
         return requirementView(saved, LocalDateTime.now(philippineClock));
+    }
+
+    ResourceRequirement saveNewRequirement(Project project, Resource resource, int quantity) {
+        return requirements.saveAndFlush(new ResourceRequirement(project.organizationId, project, resource, quantity));
     }
 
     @Transactional
@@ -265,22 +276,32 @@ public class C1Service {
         Long orgId = organizationContext.requireMutationOrganizationId();
         requireManager(orgId);
         requirePositiveId(id, "Requirement");
-        if (request.quantity == null || request.quantity < 1 || request.quantity > 1000000)
-            throw new C1ApiException(400, "VALIDATION_FAILED", "quantity must be from 1 to 1000000.");
+        validateRequirementQuantity(request.quantity);
         ResourceRequirement initial = requirements.findDetailedByIdAndOrganizationId(id, orgId)
                 .orElseThrow(() -> notFound("Requirement"));
         Project project = projects.lockById(initial.projectId, orgId).orElseThrow(() -> notFound("Project"));
         resources.lockById(initial.resourceId, orgId).orElseThrow(() -> notFound("Resource"));
         ResourceRequirement requirement = requirements.lockById(id, orgId).orElseThrow(() -> notFound("Requirement"));
         LocalDateTime now = LocalDateTime.now(philippineClock);
+        return requirementView(saveRequirementQuantity(project, requirement, request.quantity, now), now);
+    }
+
+    ResourceRequirement saveRequirementQuantity(Project project, ResourceRequirement requirement, Integer quantity, LocalDateTime now) {
+        validateRequirementQuantity(quantity);
+        long id = requirement.id, orgId = requirement.organizationId;
         if (!project.endAt.isAfter(now)) throw new C1ApiException(409, "PROJECT_ENDED", "Requirements cannot be changed after the Project ends.");
         Long coverageValue = requirements.sumCoveredQuantity(id, orgId, now);
         long coverage = coverageValue == null ? 0 : coverageValue;
         Integer pending = requirements.maxPendingQuantity(id, orgId, AllocationStatus.PENDING, now);
-        if (request.quantity.longValue() < Math.max(coverage, pending == null ? 0L : pending.longValue()))
+        if (quantity.longValue() < Math.max(coverage, pending == null ? 0L : pending.longValue()))
             throw new C1ApiException(409, "QUANTITY_BELOW_COMMITMENTS", "quantity cannot be lower than current coverage or the largest pending Allocation.");
-        requirement.quantity = request.quantity;
-        return requirementView(requirements.saveAndFlush(requirement), now);
+        requirement.quantity = quantity;
+        return requirements.saveAndFlush(requirement);
+    }
+
+    private static void validateRequirementQuantity(Integer quantity) {
+        if (quantity == null || quantity < 1 || quantity > 1000000)
+            throw new C1ApiException(400, "VALIDATION_FAILED", "quantity must be from 1 to 1000000.");
     }
 
     @Transactional
@@ -293,7 +314,11 @@ public class C1Service {
         projects.lockById(initial.projectId, orgId).orElseThrow(() -> notFound("Project"));
         resources.lockById(initial.resourceId, orgId).orElseThrow(() -> notFound("Resource"));
         ResourceRequirement requirement = requirements.lockById(id, orgId).orElseThrow(() -> notFound("Requirement"));
-        if (allocations.existsByOrganizationIdAndRequirementId(orgId, id))
+        return removeRequirement(requirement);
+    }
+
+    ApiDtos.MessageView removeRequirement(ResourceRequirement requirement) {
+        if (allocations.existsByOrganizationIdAndRequirementId(requirement.organizationId, requirement.id))
             throw new C1ApiException(409, "DEPENDENCY_EXISTS", "Requirement still has Allocation history.");
         requirements.delete(requirement);
         requirements.flush();
@@ -530,7 +555,7 @@ public class C1Service {
                 row -> new ApiDtos.WorkspaceAllocationView(row, context.get(row.requirement.id), sampledNow));
     }
 
-    private Map<Long, Integer> requirementCoverage(long org, List<Long> ids, LocalDateTime sampledNow) {
+    Map<Long, Integer> requirementCoverage(long org, List<Long> ids, LocalDateTime sampledNow) {
         return requirements.sumPageCoverage(ids, org, sampledNow).stream()
                 .collect(Collectors.toMap(row -> ((Number) row[0]).longValue(),
                         row -> Math.toIntExact(((Number) row[1]).longValue())));

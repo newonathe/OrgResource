@@ -17,6 +17,32 @@ import jakarta.persistence.LockModeType;
 
 public interface ResourceRequirementRepository extends JpaRepository<ResourceRequirement, Long> {
     Optional<ResourceRequirement> findByPublicIdAndOrganizationId(java.util.UUID publicId, Long organizationId);
+
+    interface ProjectWorkRow {
+        long getId();
+        java.util.UUID getPublicId();
+        java.util.UUID getProjectPublicId();
+        java.util.UUID getResourcePublicId();
+        String getProjectName();
+        String getResourceName();
+        ResourceType getResourceType();
+        int getQuantity();
+        long getVersion();
+    }
+
+    String PROJECT_WORK_ROWS = "select q.id as id,q.publicId as publicId,p.publicId as projectPublicId, "
+            + "r.publicId as resourcePublicId,p.name as projectName,r.name as resourceName,r.type as resourceType, "
+            + "q.quantity as quantity,q.version as version from ResourceRequirement q join q.project p join q.resource r "
+            + "where q.organizationId=:org and p.organizationId=:org and r.organizationId=:org "
+            + "and (:lead is null or p.leadMembershipId=:lead) ";
+
+    @Query(PROJECT_WORK_ROWS + "and q.id>:after and (:project is null or p.publicId=:project) order by q.id")
+    List<ProjectWorkRow> findProjectWorkPage(@Param("org") long org, @Param("lead") Long lead,
+            @Param("project") java.util.UUID project, @Param("after") long after, Pageable limit);
+
+    @Query(PROJECT_WORK_ROWS + "and q.publicId=:publicId")
+    Optional<ProjectWorkRow> findProjectWorkRow(@Param("org") long org, @Param("lead") Long lead,
+            @Param("publicId") java.util.UUID publicId);
     @EntityGraph(attributePaths = {"project", "resource"})
     List<ResourceRequirement> findByOrganizationIdOrderById(Long organizationId);
     @EntityGraph(attributePaths = {"project", "resource"})

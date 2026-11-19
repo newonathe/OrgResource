@@ -19,10 +19,10 @@ public interface MembershipRepository extends JpaRepository<Membership, Long> {
     @Query("select m.id as id,m.publicId as membershipId,u.displayName as displayName "
             + "from Membership m join UserAccount u on u.id=m.userId "
             + "where m.organizationId=:org and m.status=:membershipStatus and u.status=:accountStatus and m.id>:after "
-            + "and (:search is null or locate(:search,lower(u.displayName))>0) order by m.id")
+            + "and (:role is null or m.role=:role) and (:search is null or locate(:search,lower(u.displayName))>0) order by m.id")
     List<BorrowerRow> findBorrowerOptions(@Param("org") long organizationId, @Param("after") long after,
             @Param("search") String search, @Param("membershipStatus") Membership.Status membershipStatus,
-            @Param("accountStatus") UserAccount.Status accountStatus, Pageable limit);
+            @Param("accountStatus") UserAccount.Status accountStatus, @Param("role") Membership.Role role, Pageable limit);
 
     Optional<Membership> findByOrganizationIdAndUserId(Long organizationId, Long userId);
     Optional<Membership> findByOrganizationIdAndPublicId(Long organizationId, java.util.UUID publicId);

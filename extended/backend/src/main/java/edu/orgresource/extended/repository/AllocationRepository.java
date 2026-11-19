@@ -48,6 +48,29 @@ public interface AllocationRepository extends JpaRepository<Allocation, Long> {
     Optional<BorrowedRow> findBorrowed(@Param("org") long org, @Param("member") long member,
             @Param("id") java.util.UUID id);
 
+    interface ProjectAllocationRow {
+        long getId();
+        java.util.UUID getPublicId();
+        java.util.UUID getRequirementPublicId();
+        String getResourceName();
+        String getBorrowerName();
+        int getQuantity();
+        AllocationStatus getStatus();
+        Long getRequester();
+        LocalDateTime getApprovedAt();
+        long getVersion();
+    }
+
+    @Query("select a.id as id,a.publicId as publicId,q.publicId as requirementPublicId,r.name as resourceName, "
+            + "a.borrowerName as borrowerName,a.quantity as quantity,a.status as status, "
+            + "a.requestedByMembershipId as requester,a.approvedAt as approvedAt,a.version as version "
+            + "from Allocation a join a.requirement q join q.resource r join q.project p where a.organizationId=:org "
+            + "and q.organizationId=:org and r.organizationId=:org and p.organizationId=:org "
+            + "and (:lead is null or p.leadMembershipId=:lead) and p.id=:project "
+            + "and a.resourceId=r.id and a.id>:after order by a.id")
+    List<ProjectAllocationRow> findProjectAllocations(@Param("org") long org, @Param("project") long projectId,
+            @Param("lead") Long lead, @Param("after") long after, Pageable limit);
+
     interface ExpiryCandidate { Long getOrganizationId(); Long getAllocationId(); }
     interface ReminderCandidate { Long getAllocationId(); }
     @EntityGraph(attributePaths = {"requirement.project"})

@@ -3,7 +3,7 @@ import type { WorkspacePage } from "./api/client";
 import { explainError } from "./domain";
 import { Button, PageNavigation } from "./ui";
 
-interface RelatedSelectProps<T extends { id: number }> {
+interface RelatedSelectProps<T extends { id: number | string }> {
   id: string;
   label: string;
   selection: T | null;
@@ -11,11 +11,12 @@ interface RelatedSelectProps<T extends { id: number }> {
   load: (cursor: string | null, search: string, signal: AbortSignal) => Promise<WorkspacePage<T>>;
   optionLabel: (item: T) => string;
   allLabel?: string;
+  chooseFirst?: boolean;
   reload?: number;
 }
 
-export function RelatedSelect<T extends { id: number }>({
-  id, label, selection, onChange, load, optionLabel, allLabel, reload = 0,
+export function RelatedSelect<T extends { id: number | string }>({
+  id, label, selection, onChange, load, optionLabel, allLabel, chooseFirst = true, reload = 0,
 }: RelatedSelectProps<T>) {
   const [search, setSearch] = useState("");
   const [cursors, setCursors] = useState<(string | null)[]>([null]);
@@ -38,9 +39,9 @@ export function RelatedSelect<T extends { id: number }>({
 
   useEffect(() => {
     if (allLabel || !result) return;
-    const current = selection ? result.items.find(row => row.id === selection.id) : result.items[0];
+    const current = selection ? result.items.find(row => row.id === selection.id) : chooseFirst ? result.items[0] : null;
     if (current && current !== selection) onChange(current);
-  }, [allLabel, onChange, result, selection]);
+  }, [allLabel, chooseFirst, onChange, result, selection]);
 
   const rows = result?.items ?? [];
   const options = selection && !rows.some(row => row.id === selection.id) ? [selection, ...rows] : rows;

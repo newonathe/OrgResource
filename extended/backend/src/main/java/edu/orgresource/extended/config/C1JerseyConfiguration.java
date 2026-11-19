@@ -22,6 +22,7 @@ import edu.orgresource.extended.rest.C1SessionResource;
 import edu.orgresource.extended.rest.DepartmentResource;
 import edu.orgresource.extended.rest.InventoryResource;
 import edu.orgresource.extended.rest.ProjectResource;
+import edu.orgresource.extended.rest.ProjectWorkResource;
 import edu.orgresource.extended.rest.ReportingResource;
 import edu.orgresource.extended.rest.ResourceRequirementResource;
 import edu.orgresource.extended.rest.ResourceResource;
@@ -35,6 +36,7 @@ public class C1JerseyConfiguration {
         ResourceConfig config = new ResourceConfig();
         config.register(DepartmentResource.class);
         config.register(ProjectResource.class);
+        config.register(ProjectWorkResource.class);
         config.register(ResourceResource.class);
         config.register(ResourceRequirementResource.class);
         config.register(AllocationResource.class);

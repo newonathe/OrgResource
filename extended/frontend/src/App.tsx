@@ -6,6 +6,7 @@ import { AllocationsPage } from "./pages/AllocationsPage";
 import { DepartmentsPage } from "./pages/DepartmentsPage";
 import { OverviewPage } from "./pages/OverviewPage";
 import { ProjectsPage } from "./pages/ProjectsPage";
+import { BorrowedAllocationsPage, ProjectWorkPage } from "./pages/ProjectWorkPages";
 import { RemindersPage } from "./pages/RemindersPage";
 import { RequirementsPage } from "./pages/RequirementsPage";
 import { ResourcesPage } from "./pages/ResourcesPage";
@@ -27,6 +28,9 @@ function WorkspaceRoutes() {
         <Route path="/" element={<OverviewPage />} />
         <Route path="/allocations" element={canViewActivity ? <AllocationsPage /> : <ForbiddenPage />} />
         <Route path="/projects" element={<ProjectsPage />} />
+        <Route path="/project-work" element={canGovern || organization.role === "LEAD"
+          ? <ProjectWorkPage orgId={organization.id} role={organization.role} /> : <ForbiddenPage />} />
+        <Route path="/borrowed" element={<BorrowedAllocationsPage orgId={organization.id} />} />
         <Route path="/requirements" element={<RequirementsPage />} />
         <Route path="/departments" element={<DepartmentsPage />} />
         <Route path="/resources" element={<ResourcesPage />} />

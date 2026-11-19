@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { readFileSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type APIRequest, type Page } from "@playwright/test";
 
 const screenshotDir = resolve(process.env.ORGRESOURCE_E2E_SCREENSHOT_DIR ?? "../../evidence/C4/screenshots");
 mkdirSync(screenshotDir, { recursive: true });
@@ -65,6 +65,28 @@ async function postJson(page: Page, route: string, body: unknown) {
   const csrfToken = csrfPayload.data?.csrfToken ?? csrfPayload.csrfToken;
   expect(csrfToken).toBeTruthy();
   return page.request.post(route, { data: body, headers: { "X-CSRF-TOKEN": csrfToken!, Origin: new URL(page.url()).origin } });
+}
+
+async function inviteFictionalAccount(page: Page, requests: APIRequest, orgPath: string, role: "MEMBER" | "LEAD",
+  username: string, displayName: string) {
+  const invited = await postJson(page, orgPath + "/invitations", { role });
+  expect(invited.status(), "create a fictional invitation").toBe(201);
+  const { data } = await invited.json() as { data: { bearerToken: string } };
+  const origin = new URL(page.url()).origin;
+  const isolated = await requests.newContext({ baseURL: origin });
+  try {
+    const csrf = await isolated.get("/api/v2/auth/csrf");
+    expect(csrf.status()).toBe(200);
+    const { data: { csrfToken } } = await csrf.json() as { data: { csrfToken: string } };
+    const redeemed = await isolated.post("/api/v2/invitations/redeem", {
+      data: { bearerToken: data.bearerToken, username, displayName, password: username + "-Local!25" },
+      headers: { "X-CSRF-TOKEN": csrfToken, Origin: origin },
+    });
+    expect(redeemed.status(), "redeem a fictional invitation").toBe(201);
+    return await isolated.storageState();
+  } finally {
+    await isolated.dispose();
+  }
 }
 
 test("a lost create confirmation keeps its draft, refreshes the saved row, and never retries automatically", async ({ page }) => {
@@ -837,28 +859,12 @@ test("C8 traverses memberships and recorded activity using bounded pages", async
   const { activeOrgId } = await getJson<{ activeOrgId: string }>(page, "/api/v2/session");
   expect(activeOrgId).toBeTruthy();
   const orgPath = "/api/v2/orgs/" + activeOrgId;
-  const origin = new URL(page.url()).origin;
   const prefix = "c8-roster-" + Date.now().toString(36);
   const fixtures: string[] = [];
   for (let index = 1; index <= 26; index++) {
-    const invited = await postJson(page, orgPath + "/invitations", { role: "MEMBER" });
-    expect(invited.status(), "create fictional roster invitation").toBe(201);
-    const { data } = await invited.json() as { data: { bearerToken: string } };
-    const isolated = await playwright.request.newContext({ baseURL: origin });
-    try {
-      const csrf = await isolated.get("/api/v2/auth/csrf");
-      expect(csrf.status()).toBe(200);
-      const { data: { csrfToken } } = await csrf.json() as { data: { csrfToken: string } };
-      const displayName = "Fictional " + prefix + " member " + index;
-      const redeemed = await isolated.post("/api/v2/invitations/redeem", {
-        data: { bearerToken: data.bearerToken, username: prefix + "-" + index, displayName, password: prefix + "-Local!25" },
-        headers: { "X-CSRF-TOKEN": csrfToken, Origin: origin },
-      });
-      expect(redeemed.status(), "redeem fictional roster invitation").toBe(201);
-      fixtures.push(displayName);
-    } finally {
-      await isolated.dispose();
-    }
+    const displayName = "Fictional " + prefix + " member " + index;
+    await inviteFictionalAccount(page, playwright.request, orgPath, "MEMBER", prefix + "-" + index, displayName);
+    fixtures.push(displayName);
   }
   const seen: string[] = [];
   const memberRead = new Set<string>();
@@ -926,6 +932,80 @@ test("C8 traverses memberships and recorded activity using bounded pages", async
   await expect(older).toBeDisabled();
   await page.getByRole("button", { name: "Newest events" }).click();
   await expect(activity.getByRole("status")).toHaveText("Page 1 · 50 shown");
+});
+
+test("C8 linked borrower and assigned LEAD complete the packaged Project work journey", async ({ page, browser, playwright }) => {
+  test.setTimeout(90_000);
+  const { activeOrgId } = await getJson<{ activeOrgId: string }>(page, "/api/v2/session");
+  const orgPath = "/api/v2/orgs/" + activeOrgId;
+  const prefix = "c8-scoped-" + Date.now().toString(36);
+  const leadName = "Fictional " + prefix + " lead";
+  const borrowerName = "Fictional " + prefix + " borrower";
+  const leadState = await inviteFictionalAccount(page, playwright.request, orgPath, "LEAD", prefix + "-lead", leadName);
+  const borrowerState = await inviteFictionalAccount(page, playwright.request, orgPath, "MEMBER", prefix + "-borrower", borrowerName);
+  const department = await postJson(page, "/api/departments", { name: prefix + " department" });
+  expect(department.status()).toBe(201);
+  const { id: departmentId } = await department.json() as { id: number };
+  const projectName = prefix + " Project", unassignedName = prefix + " private scope";
+  for (const name of [projectName, unassignedName]) {
+    const project = await postJson(page, "/api/projects", { departmentId, name,
+      startAt: "2040-11-20T10:00:00", endAt: "2040-11-20T13:00:00" });
+    expect(project.status()).toBe(201);
+  }
+  const resourceName = prefix + " projector";
+  expect((await postJson(page, "/api/resources", { name: resourceName, type: "REUSABLE", totalQuantity: 6 })).status()).toBe(201);
+  await page.goto("/#/project-work");
+  await page.getByRole("button", { name: "Open " + projectName, exact: true }).click();
+  await page.getByRole("searchbox", { name: "Find eligible project lead" }).fill(prefix);
+  await page.getByLabel("Eligible Project lead", { exact: true }).selectOption({ label: leadName });
+  await page.getByRole("button", { name: "Assign Project lead" }).click();
+  await expect(page.getByText("Project lead assigned.", { exact: true })).toBeVisible();
+
+  const leadContext = await browser.newContext({ storageState: leadState });
+  const borrowerContext = await browser.newContext({ storageState: borrowerState });
+  try {
+    const lead = await leadContext.newPage();
+    await lead.goto("/#/project-work");
+    await lead.getByRole("button", { name: "Open workspace", exact: true }).click();
+    await expect(lead.getByRole("navigation", { name: "Project work pages" }).getByRole("status"))
+      .toHaveText("Page 1 · 1 shown · End of results");
+    await expect(lead.getByRole("button", { name: "Open " + unassignedName, exact: true })).toHaveCount(0);
+    await lead.getByRole("button", { name: "Open " + projectName, exact: true }).click();
+    await lead.getByRole("searchbox", { name: "Find resource for requirement" }).fill(prefix);
+    await lead.getByLabel("Resource for Requirement", { exact: true }).selectOption({ label: resourceName });
+    await lead.getByLabel("Required quantity", { exact: true }).fill("3");
+    await lead.getByRole("button", { name: "Add Project Requirement" }).click();
+    await expect(lead.getByText("Requirement saved.", { exact: true })).toBeVisible();
+    await lead.getByRole("button", { name: "Request " + resourceName, exact: true }).click();
+    await lead.getByRole("searchbox", { name: "Find borrower membership" }).fill(prefix);
+    await expect(lead.getByRole("button", { name: "Save linked request" })).toBeDisabled();
+    await lead.getByLabel("Borrower membership", { exact: true }).selectOption({ label: borrowerName });
+    await lead.getByRole("button", { name: "Save linked request" }).click();
+    await expect(lead.getByText("Allocation request saved.", { exact: true })).toBeVisible();
+    await expect(lead.getByRole("button", { name: "Cancel pending request" })).toBeEnabled();
+    await expect(lead.getByRole("button", { name: /approve|issue/i })).toHaveCount(0);
+
+    const borrowerPage = await borrowerContext.newPage();
+    await borrowerPage.goto("/#/borrowed");
+    await borrowerPage.getByRole("button", { name: "Open workspace", exact: true }).click();
+    await expect(borrowerPage.getByRole("heading", { name: "My borrowed resources", level: 1 })).toBeVisible();
+    await expect(borrowerPage.getByText(resourceName, { exact: true })).toBeVisible();
+    await expect(borrowerPage.getByRole("link", { name: "Project work", exact: true })).toHaveCount(0);
+    borrowerPage.once("dialog", dialog => void dialog.accept());
+    await borrowerPage.getByRole("button", { name: "Withdraw SMS consent" }).click();
+    await expect(borrowerPage.getByText("SMS consent withdrawn.", { exact: true })).toBeVisible();
+
+    page.once("dialog", dialog => void dialog.accept());
+    await page.getByRole("button", { name: "Clear Project lead" }).click();
+    await expect(page.getByText("Project lead cleared.", { exact: true })).toBeVisible();
+    await lead.reload();
+    await expect(lead.getByText("No Projects are available for this membership.", { exact: true })).toBeVisible();
+    await borrowerPage.reload();
+    await expect(borrowerPage.getByText(resourceName, { exact: true })).toBeVisible();
+  } finally {
+    await leadContext.close();
+    await borrowerContext.close();
+  }
 });
 
 test("the packaged Java application serves React assets, hash routes, and the five JSON APIs", async ({ page }) => {

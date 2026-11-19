@@ -3479,6 +3479,91 @@ class C1IdentityAcceptanceTest {
         assertEquals(borrower.membershipDbId, jdbc.queryForObject("SELECT borrower_membership_id FROM allocation WHERE id=?", Long.class, allocationId));
     }
 
+    @Test @Order(55)
+    void C8AssignedLeadUsesOnlyTheirProjectAndOwnPendingAllocationActions() throws Exception {
+        Fixture owner = newTenant("C8 work scope", Membership.Role.OWNER);
+        Fixture lead = fixtureInOrg(owner.orgDbId, Membership.Role.LEAD);
+        Fixture borrower = fixtureInOrg(owner.orgDbId, Membership.Role.MEMBER);
+        Session officer = login(owner.username, owner.password);
+        Session scoped = login(lead.username, lead.password);
+        String root = "/api/v2/orgs/" + owner.orgPublicId;
+        long department = json(post(officer, "/api/departments", GSON.toJson(new NameRequest("Fictional scope department"))))
+                .get("id").getAsLong();
+        String from = "2040-11-01T10:00:00", until = "2040-11-01T13:00:00";
+        long one = json(post(officer, "/api/projects",
+                GSON.toJson(new ProjectRequest(department, "Fictional assigned Project", from, until)))).get("id").getAsLong();
+        long two = json(post(officer, "/api/projects",
+                GSON.toJson(new ProjectRequest(department, "Fictional other Project", from, until)))).get("id").getAsLong();
+        UUID project = projectRepository.findById(one).orElseThrow().publicId;
+        UUID otherProject = projectRepository.findById(two).orElseThrow().publicId;
+        String path = root + "/projects/" + project;
+        assertEquals(200, modernPost(officer, path + "/lead-assignment",
+                leadAssignment(UUID.randomUUID().toString(), lead.membershipPublicId), "\"v0\"", UUID.randomUUID().toString()).statusCode());
+        var list = workspacePage(scoped, root + "/projects?limit=1");
+        assertEquals(1, list.getAsJsonArray("items").size());
+        assertTrue(list.get("nextCursor").isJsonNull());
+        assertEquals(project.toString(), list.getAsJsonArray("items").get(0).getAsJsonObject().get("id").getAsString());
+        String update = GSON.toJson(java.util.Map.of("name", "Fictional scoped rename", "startAt", from, "endAt", until));
+        assertEquals(404, post(scoped, root + "/projects/" + otherProject + "/update", update, "\"v0\"").statusCode());
+        assertEquals(428, post(scoped, path + "/update", update).statusCode());
+        var projectWrite = post(scoped, path + "/update", update, "\"v1\"");
+        assertEquals(200, projectWrite.statusCode(), projectWrite.body());
+        assertEquals("\"v2\"", projectWrite.headers().firstValue("ETag").orElseThrow());
+
+        long resource = json(post(officer, "/api/resources", GSON.toJson(
+                new ResourceRequest("Fictional shared Resource", "REUSABLE", 5)))).get("id").getAsLong();
+        UUID resourceKey = resourceRepository.findById(resource).orElseThrow().publicId;
+        String requirementPath = root + "/requirements";
+        String reqBody = GSON.toJson(java.util.Map.of("projectId", project, "resourceId", resourceKey, "quantity", 5));
+        assertEquals(404, post(scoped, requirementPath, reqBody.replace(project.toString(), otherProject.toString())).statusCode());
+        var requirement = post(scoped, requirementPath, reqBody);
+        assertEquals(201, requirement.statusCode(), requirement.body());
+        String req = json(requirement).getAsJsonObject("data").get("id").getAsString();
+        assertEquals(1, workspacePage(scoped, requirementPath).getAsJsonArray("items").size());
+        assertEquals(404, get(scoped.client, requirementPath + "?projectId=" + otherProject).statusCode());
+        assertEquals(200, get(scoped.client, requirementPath + "/" + req).statusCode());
+        assertEquals(412, post(scoped, requirementPath + "/" + req + "/update", "{\"quantity\":4}", "\"v9\"").statusCode());
+        assertEquals(200, post(scoped, requirementPath + "/" + req + "/update", "{\"quantity\":4}", "\"v0\"").statusCode());
+        assertEquals(409, post(scoped, path + "/delete", null, "\"v2\"").statusCode());
+
+        String request = GSON.toJson(java.util.Map.of("operationId", UUID.randomUUID(), "requirementId", req,
+                "quantity", 2, "borrowerMembershipId", borrower.membershipPublicId));
+        var ownCreated = modernPost(scoped, root + "/allocations", request, null, UUID.randomUUID().toString());
+        assertEquals(201, ownCreated.statusCode(), ownCreated.body());
+        var officerCreated = modernPost(officer, root + "/allocations", GSON.toJson(java.util.Map.of(
+                "operationId", UUID.randomUUID(), "requirementId", req, "quantity", 1, "borrowerMembershipId", borrower.membershipPublicId)),
+                null, UUID.randomUUID().toString());
+        assertEquals(201, officerCreated.statusCode(), officerCreated.body());
+        String own = json(ownCreated).getAsJsonObject("data").get("id").getAsString();
+        String other = json(officerCreated).getAsJsonObject("data").get("id").getAsString();
+        String ownPath = root + "/allocations/" + own, otherPath = root + "/allocations/" + other;
+        var projectPage = workspacePage(scoped, path + "/allocations?limit=1");
+        assertTrue(projectPage.getAsJsonArray("items").get(0).getAsJsonObject().get("canCancel").getAsBoolean());
+        String continuation = projectPage.get("nextCursor").getAsString();
+        var last = workspacePage(scoped, path + "/allocations?limit=1&cursor=" + continuation);
+        assertEquals(other, last.getAsJsonArray("items").get(0).getAsJsonObject().get("id").getAsString());
+        assertFalse(last.getAsJsonArray("items").get(0).getAsJsonObject().get("canCancel").getAsBoolean());
+        assertTrue(last.get("nextCursor").isJsonNull());
+        assertEquals(404, get(scoped.client, root + "/projects/" + otherProject + "/allocations?cursor=" + continuation).statusCode());
+        assertEquals(200, get(scoped.client, ownPath).statusCode());
+        String cancelOperation = UUID.randomUUID().toString();
+        String cancelBody = "{\"operationId\":\"" + cancelOperation + "\"}", cancelKey = UUID.randomUUID().toString();
+        assertEquals(403, modernPost(scoped, ownPath + "/approve", cancelBody, "\"v0\"", cancelKey).statusCode());
+        assertEquals(404, modernPost(scoped, otherPath + "/cancel", cancelBody, "\"v0\"", cancelKey).statusCode());
+        assertEquals(404, post(scoped, otherPath + "/delete", null, "\"v0\"").statusCode());
+        assertEquals(200, modernPost(scoped, ownPath + "/cancel", cancelBody, "\"v0\"", cancelKey).statusCode());
+        assertEquals(200, get(scoped.client, root + "/operations/" + cancelOperation).statusCode());
+        assertEquals(200, post(scoped, ownPath + "/delete", null, "\"v1\"").statusCode());
+        assertEquals(404, get(scoped.client, ownPath).statusCode());
+        assertEquals(409, post(scoped, requirementPath + "/" + req + "/delete", null, "\"v1\"").statusCode());
+        assertEquals(200, post(officer, otherPath + "/delete", null, "\"v0\"").statusCode());
+        assertEquals(200, post(scoped, requirementPath + "/" + req + "/delete", null, "\"v1\"").statusCode());
+        assertEquals(200, post(scoped, path + "/delete", null, "\"v2\"").statusCode());
+        assertEquals(404, get(scoped.client, path).statusCode());
+        assertEquals(5, jdbc.queryForObject("SELECT total_quantity FROM resource WHERE id=?", Integer.class, resource));
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE resource_id=?", Integer.class, resource));
+    }
+
     private String leadAssignment(String operationId, UUID leadMembershipId) {
         JsonObject request = new JsonObject();
         request.addProperty("operationId", operationId);

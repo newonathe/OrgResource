@@ -77,6 +77,20 @@ public class InventoryResource {
         return C1HttpResponses.envelope(200, inventory.borrowerOptions(organizationId, projectId, limit, cursor, search), request, true);
     }
 
+    @GET @Path("/projects/{projectId}/allocations")
+    public Response projectAllocations(@PathParam("organizationId") UUID organizationId,
+            @PathParam("projectId") UUID projectId, @DefaultValue("50") @QueryParam("limit") int limit,
+            @QueryParam("cursor") String cursor, @Context HttpServletRequest request) {
+        return C1HttpResponses.envelope(200, inventory.projectAllocations(organizationId, projectId, limit, cursor), request, true);
+    }
+
+    @GET @Path("/projects/{projectId}/lead-options")
+    public Response leadOptions(@PathParam("organizationId") UUID organizationId,
+            @PathParam("projectId") UUID projectId, @DefaultValue("50") @QueryParam("limit") int limit,
+            @QueryParam("cursor") String cursor, @QueryParam("search") String search, @Context HttpServletRequest request) {
+        return C1HttpResponses.envelope(200, inventory.leadOptions(organizationId, projectId, limit, cursor, search), request, true);
+    }
+
     @POST @Path("/allocations") @Consumes(MediaType.APPLICATION_JSON)
     public Response createLinkedAllocation(@PathParam("organizationId") UUID organizationId, JsonNode body,
             @HeaderParam("Idempotency-Key") String idempotencyKey, @Context HttpServletRequest request) {
@@ -115,6 +129,13 @@ public class InventoryResource {
         String requestId = C1HttpResponses.requestId(request);
         return operation(inventory.revokeBorrowerConsent(organizationId, allocationId, body.operationId,
                 idempotencyKey, ifMatch, requestId), requestId);
+    }
+
+    @POST @Path("/allocations/{allocationId}/delete")
+    public Response deleteProjectAllocation(@PathParam("organizationId") UUID organizationId,
+            @PathParam("allocationId") UUID allocationId, @HeaderParam("If-Match") String ifMatch,
+            @Context HttpServletRequest request) {
+        return C1HttpResponses.envelope(200, inventory.deleteProjectAllocation(organizationId, allocationId, ifMatch), request, true);
     }
 
     @POST @Path("/resources/{resourceId}/receive") @Consumes(MediaType.APPLICATION_JSON)

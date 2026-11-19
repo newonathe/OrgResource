@@ -31,6 +31,23 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     Optional<Project> findByPublicIdAndOrganizationId(UUID publicId, Long organizationId);
 
+    interface ProjectWorkRow {
+        long getId();
+        UUID getPublicId();
+        String getName();
+        java.time.LocalDateTime getStartAt();
+        java.time.LocalDateTime getEndAt();
+        UUID getLeadMembershipId();
+        long getVersion();
+    }
+
+    @Query("select p.id as id,p.publicId as publicId,p.name as name,p.startAt as startAt,p.endAt as endAt, "
+            + "m.publicId as leadMembershipId,p.version as version from Project p "
+            + "left join Membership m on m.organizationId=p.organizationId and m.id=p.leadMembershipId "
+            + "where p.organizationId=:org and p.id>:after and (:lead is null or p.leadMembershipId=:lead) order by p.id")
+    List<ProjectWorkRow> findProjectWorkPage(@Param("org") long org, @Param("lead") Long lead,
+            @Param("after") long after, Pageable limit);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select p from Project p where p.publicId=:publicId and p.organizationId=:org")
     Optional<Project> lockByPublicId(@Param("publicId") UUID publicId, @Param("org") long organizationId);
