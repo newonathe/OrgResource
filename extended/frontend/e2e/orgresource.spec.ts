@@ -155,15 +155,23 @@ test(`connected invitation grants only ${role} Project and inventory access`, as
     const projects = await getJson<Array<{ id: number; name: string }>>(memberPage, "/api/projects");
     const withRequirement = projects.find(project => requirements.some(row => row.projectId === project.id));
     expect(withRequirement).toBeDefined();
-    let allocationReads = 0;
-    memberPage.on("request", request => { if (new URL(request.url()).pathname === "/api/allocations") allocationReads++; });
+    const historyReads: URL[] = [];
+    memberPage.on("request", request => {
+      if (request.method() !== "GET") return;
+      const url = new URL(request.url());
+      if (url.pathname === "/api/allocations" || url.pathname === "/api/v2/workspace/allocations") historyReads.push(url);
+    });
     await memberPage.goto("/#/projects");
     await memberPage.getByRole("button", { name: `View ${withRequirement!.name}`, exact: true }).click();
     const dialog = memberPage.getByRole("dialog");
     await expect(dialog.getByRole("heading", { name: role === "ADMIN" ? "Requirements and allocation history" : "Requirements", exact: true })).toBeVisible();
     await expect(dialog.getByText(/required · .* covered · .* shortage/).first()).toBeVisible();
-    expect(allocationReads).toBe(role === "ADMIN" ? 1 : 0);
-    if (role === "ADMIN") await expect(dialog.locator(".sheet-batches").first()).toBeVisible();
+    expect(historyReads).toHaveLength(role === "ADMIN" ? 1 : 0);
+    if (role === "ADMIN") {
+      expect(historyReads[0].pathname).toBe("/api/v2/workspace/allocations");
+      expect(historyReads[0].searchParams.get("projectId")).toBe(String(withRequirement!.id));
+      await expect(dialog.locator(".sheet-batches").first()).toBeVisible();
+    }
     await memberPage.goto("/#/resources");
 
     const savedSession = await getJson<{ activeOrgId: string | null }>(memberPage, "/api/v2/session");
