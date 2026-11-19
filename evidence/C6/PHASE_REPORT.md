@@ -1,3 +1,5 @@
+> **LATEST C6 STATUS — 2026-11-19 PHT:** The repository is now **PUBLIC** according to a fresh GitHub API read, superseding earlier “private” observations; the C6 auditor did not change visibility. A fresh Actions run, [#44431604781](https://github.com/newonathe/OrgResource/actions/runs/44431604781), executed and PASSED Java8/MySQL, Java21/MySQL/Newman/Playwright, and React jobs on commit **6be8165**. This supersedes earlier statements that no CI runner could start **for that exact run only**. Source review grew from 55 to 110 selected paths. **Final C6 acceptance remains BLOCKED** on public dissemination privacy/copyright/history, independent source critique, full semantic source/ZIP closure and other mandatory non-CI gates. Read [CI_SUCCESS_RECEIPT_2026_11_19.md](CI_SUCCESS_RECEIPT_2026_11_19.md) before older status paragraphs below.
+
 # C6 PHASE_REPORT — bounded read-only source-audit progress, not phase acceptance
 
 Edition 2026-11-19 PHT. **STATUS = C6 IN PROGRESS / SOURCE_ONLY / REQUIRED CHECKS NOT_RUN**. This is not a finished C6 quality gate, not a successful Java build, and not approval for C7. Owner explicitly authorized next phase C6 by saying "do the next phase"; then stated intent to make GitHub public to bypass private monthly CI quota. No separate authority exists to change public visibility, create a public mirror, merge or modify application.
@@ -107,3 +109,50 @@ Edition 2026-11-19 PHT. **STATUS = C6 IN PROGRESS / SOURCE_ONLY / REQUIRED CHECK
 | GitHub repo public change | None | **PUBLICATION BLOCKED pending owner/legal/privacy review** |
 
 **Final C6 acceptance after continuing work:** **BLOCKED / IN PROGRESS**, not COMPLETE. The source-planning artifacts are now much more mature; no claim of product completion, all-source semantic review, actual tests, independent reviewer, history secret clearance or deployed product is made. Prioritized next safe C6 tasks remain course ZIP raw verification, full active transitive DTO/repository/role matrix closure and actual tests/independent critic on correct runtime; only then owner may approve C7. No C7 code or public action is authorized by this addendum.
+
+## I. Latest bounded C6 work — source fields, roles, and verified runtime receipts
+
+### Newly created source/acceptance matrices
+
+| Path | Actual content checked / assertion | Execution semantics |
+| --- | --- | --- |
+| COURSE_A_FIVE_ENTITY_FIELD_SCHEMA_SOURCE.csv | 37 fields across immutable Department (3), Project (5), Resource (7), ResourceRequirement (4), Allocation (18); corrected annotation parser to isolate each field's annotation span | Structural Java8/JPA field declarations only; effective MySQL schema test in CI passes overall, exact 37-field per-column audit still separate |
+| COURSE_A_DTO_FIELD_CONTRACTS.csv | 68 publicly declared Java8 request/response DTO fields in 18 classes, including 22 direct required-field annotations | Field mapping only; not every negative HTTP scenario executed |
+| EXTENDED_DTO_FIELDS_AND_RECORDS.csv | 194 Extended Java21 public class/record components across 55 DTO types from academic, identity and inventory source | Source extraction only; records and JSON contracts not fully end-to-end checked |
+| EXTENDED_FIVE_ROLE_65_ENDPOINT_ACCEPTANCE_PLAN.csv | 65 Jersey methods × OWNER/ADMIN/CUSTODIAN/LEAD/MEMBER = 325 provisional permission cases, with business preconditions and tenant/suspension stress gates | NOT RUN as a 325-case suite. Model allows 64 OWNER endpoints due separate ADMIN-only transfer acceptance; this is a source rule, not a runtime green test |
+| CI_SUCCESS_RECEIPT_2026_11_19.md | Current GitHub Actions run #44431604781: Course A 61 Java tests, 15 React tests; Extended 44 Java, 24 React, 48 Newman requests/90 assertions, 11 Playwright; all reported no fails, Maven BUILD SUCCESS in actual logs | **VERIFIED ACTUAL GITHUB CI** at SHA 6be8165, not latest documentation HEAD or full security/release proof |
+
+### Current coverage and work type
+
+- Original source manifest: **2,611** recorded original filesystem/ZIP paths parsed, direct shape/metadata only; source ZIP byte integrity/re-hash NOT RUN.
+- Initial PR23 parent source tree: **699 Git blobs**, complete metadata inventory at SHA d794e8d2..., semantic inspection not equivalent to inventory.
+- This C6 branch has **723 tracked blobs** after 24 new audit documents at the updated snapshot; all new files are under evidence/C6, no app code, test suite, workflow, or original course content changed.
+- Selected Git source register: **110 directly re-opened source paths** and relevant fields/ranges reviewed, compared with 55 earlier; no assertion that all 110 were fully semantically audited or that 699 remaining metadata files can be ignored.
+- The C6 milestone is **NOT a customer/real-organization launch**: 96 unique sourced organization reference names exist in JSON planning files; 13/13 static schema alignment checks passed, but generated MySQL history, public host, importer, large-page browsing, multi-host backup and independent real-world acceptance **do not exist as tested work in this phase**.
+- `C1SameOriginFilter` requires same-origin header on every non-safe API method, which must be verified behind an exact, explicitly trusted HTTPS reverse proxy; `C1AttemptThrottle` is in-memory, resets on restart. Both are C7 public-host design/security gates, not CI-proven internet security.
+- C5 test class has 44 order-annotated JUnit tests under PER_CLASS lifecycle; fresh run passed as configured, but reordering/individual isolation remains separately unproven.
+
+### CI source-identity comparison (important)
+
+The successful CI branch SHA **6be816575c7c4c515c16054f3cdae36674af194a** was compared against packaged Extended C5 code SHA **14576b57fff44c6f0112fd37d8c237ca0122efb4**, and GitHub's compare returned **zero changed app source, Postman, and workflow files**. Successful Actions performed actual steps on this unchanged implementation plus evolving documentation. Do not treat jobs queued after 6be816 as already successful, even when the application diff is unchanged.
+
+### Current public repository P0 and next decision
+
+A later direct repository GET returned **private=false, visibility=public** while this audit was in progress. The older publication gate, which assumed an impending transition, now records the exposure as **active**. It did not authorize the change. Public exposure of class corpus, transcripts, a personal context dossier, binary archives and Git reachable history requires a **deliberate owner privacy, copyright, credential and history review**. Recommended owner action: restrict repository visibility immediately pending clearance, investigate any real sensitive data/permissions and any third-party copies, and authorize a clean-source CI mirror only after source-ownership clearance. No unauthorized visibility edit, history rewrite, credential rotation, third-party contact, purchase, hosting, SMS or Canvas action was performed by this audit.
+
+### Latest C6 acceptance table
+
+| Gate | Evidence category | Status |
+| --- | --- | --- |
+| Academic 28 POST/GET/Jersey→component→Postman source trace | 28/28 structural mapping | SOURCE VERIFIED |
+| Academic Java8 MySQL/JAR and Extended Java21 MySQL/Newman/Chromium/React | Full three-job Actions #44431604781 logs and step summaries | **VERIFIED CI** on one exact unchanged-code SHA |
+| Domain entity and DTO field inventories | 37+68+194 declarations and test references | SOURCE VERIFIED; exhaustive field-level negative tests OPEN |
+| Extended HTTP route/role plan | 65 operations, 325 role cells | SOURCE-BASED PLAN; negative matrix NOT_RUN |
+| Original source archive | 2,611 path-level metadata and source pointers | METADATA COMPLETE, bytewise/unseen items OPEN |
+| Demo public references | 96 source keys, 13/13 structural checks, selected 2026 links | SOURCE ONLY; simulated large history/host NOT_IMPLEMENTED |
+| Production privacy and repository dissemination | Repo GET now PUBLIC; private materials present | **P0 ACTIVE PUBLICATION EXPOSURE** |
+| Independent source critic with separate agent/test reproduction | Same-author skeptical review only | NOT_RUN |
+| Performance, fresh npm advisory audit, real TLS and off-host restore | No valid receipts | NOT_RUN |
+| Instructor/Canvas/peer review/authorship/recording | Student-only | NOT_VERIFIED |
+
+**BINDING FINAL C6 VERDICT AS OF THIS ADDENDUM:** **BLOCKED FOR FULL ACCEPTANCE.** CI passes are now real and narrow; source audit is meaningfully advanced. Mandatory publication/privacy/rights and independent criticism plus remaining source/runtime gate work prevent claiming this entire phase, hosted demo, public repository, or academic submission is complete. Do not begin C7 implementation or public-host deployment from a documentation-only continuation instruction alone.
