@@ -7,3 +7,10 @@
 - Local `pwsh -NoLogo -NoProfile -File scripts/verify-extended-c1.ps1 -SkipFrontend` completed Java/MySQL Maven verification with 54 tests, zero failures or skips. Earlier attempts found a Jakarta Response API mismatch and MySQL rejection of a UUID default. The successful source uses `Response.fromResponse` and explicit IDs in direct fixture inserts.
 
 This checkpoint enables Project assignment, Project detail for assigned leads, and assignment receipt recovery. Borrower and full Project/Requirement/Allocation workflows have their own acceptance gates.
+
+## Linked borrower checkpoint
+
+- The borrower directory checks current organization, role and Project assignment before returning a page of two-field account options. The cursor is bound to the Project and search. A linked request requires an active same-organization borrower for a reusable Resource and records borrower and requester memberships separately. Display labels come from the account. The modern request accepts no contact values or injected snapshot.
+- The bounded self view exposes only the linked borrower's own Allocation fields. Consent withdrawal reuses the contact-clearing behavior inside the existing lock order. It checks the current borrower link before returning a replay or receipt. A suspended membership loses access and retains the historical link.
+- `C8BorrowerAccessBindsIdentityAndHidesDirectoryAndContacts` passed against real HTTP/MySQL. It covers independent identities sharing one displayed name, cross-project and cross-tenant directory denial, input injection, borrower and actor persistence, single request replay, redaction, stale versions, encrypted contact clearing, receipt ownership and suspension. The encrypted destination fixture was fictional. The physical stock movement count remained unchanged.
+- `pwsh -NoLogo -NoProfile -File scripts/verify-extended-c1.ps1 -SkipFrontend` passed 55 Java tests, both Newman collections with 60 requests and 110 assertions, and packaged inventory, governance, replay and image checks. Frontend and recovery gates were skipped in this backend-only run.

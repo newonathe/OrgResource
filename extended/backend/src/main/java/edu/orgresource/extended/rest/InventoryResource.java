@@ -70,6 +70,53 @@ public class InventoryResource {
         throw new C1ApiException(400, "VALIDATION_FAILED", field + " must be a UUID.");
     }
 
+    @GET @Path("/borrowers")
+    public Response borrowerOptions(@PathParam("organizationId") UUID organizationId,
+            @QueryParam("projectId") UUID projectId, @DefaultValue("50") @QueryParam("limit") int limit,
+            @QueryParam("cursor") String cursor, @QueryParam("search") String search, @Context HttpServletRequest request) {
+        return C1HttpResponses.envelope(200, inventory.borrowerOptions(organizationId, projectId, limit, cursor, search), request, true);
+    }
+
+    @POST @Path("/allocations") @Consumes(MediaType.APPLICATION_JSON)
+    public Response createLinkedAllocation(@PathParam("organizationId") UUID organizationId, JsonNode body,
+            @HeaderParam("Idempotency-Key") String idempotencyKey, @Context HttpServletRequest request) {
+        if (body == null || !body.isObject() || !body.hasNonNull("operationId") || !body.hasNonNull("requirementId")
+                || !body.hasNonNull("quantity") || !body.get("quantity").isIntegralNumber() || !body.get("quantity").canConvertToInt()
+                || body.size() != (body.has("borrowerMembershipId") ? 4 : 3))
+            throw new C1ApiException(400, "VALIDATION_FAILED", "Supply operationId, requirementId, quantity and optional borrowerMembershipId.");
+        UUID borrower = body.hasNonNull("borrowerMembershipId") ? requestUuid(body.get("borrowerMembershipId"), "borrowerMembershipId") : null;
+        String requestId = C1HttpResponses.requestId(request);
+        return operation(inventory.createLinkedAllocation(organizationId, requestUuid(body.get("requirementId"), "requirementId"),
+                borrower, body.get("quantity").intValue(), requestUuid(body.get("operationId"), "operationId"),
+                idempotencyKey, requestId), requestId);
+    }
+
+    @GET @Path("/borrowed-allocations")
+    public Response borrowedList(@PathParam("organizationId") UUID organizationId,
+            @DefaultValue("50") @QueryParam("limit") int limit, @QueryParam("cursor") String cursor,
+            @Context HttpServletRequest request) {
+        return C1HttpResponses.envelope(200, inventory.borrowedPage(organizationId, limit, cursor), request, true);
+    }
+
+    @GET @Path("/borrowed-allocations/{allocationId}")
+    public Response borrowedDetail(@PathParam("organizationId") UUID organizationId,
+            @PathParam("allocationId") UUID allocationId, @Context HttpServletRequest request) {
+        var allocation = inventory.borrowed(organizationId, allocationId);
+        return Response.fromResponse(C1HttpResponses.envelope(200, allocation, request, true))
+                .header("ETag", "\"v" + allocation.version() + "\"").build();
+    }
+
+    @POST @Path("/borrowed-allocations/{allocationId}/revoke-sms-consent") @Consumes(MediaType.APPLICATION_JSON)
+    public Response revokeBorrowerConsent(@PathParam("organizationId") UUID organizationId,
+            @PathParam("allocationId") UUID allocationId, InventoryDtos.AllocationOperationRequest body,
+            @HeaderParam("Idempotency-Key") String idempotencyKey, @HeaderParam("If-Match") String ifMatch,
+            @Context HttpServletRequest request) {
+        validator.validate(body);
+        String requestId = C1HttpResponses.requestId(request);
+        return operation(inventory.revokeBorrowerConsent(organizationId, allocationId, body.operationId,
+                idempotencyKey, ifMatch, requestId), requestId);
+    }
+
     @POST @Path("/resources/{resourceId}/receive") @Consumes(MediaType.APPLICATION_JSON)
     public Response receive(@PathParam("organizationId") UUID organizationId,
             @PathParam("resourceId") UUID resourceId, InventoryDtos.ReceiveRequest body,

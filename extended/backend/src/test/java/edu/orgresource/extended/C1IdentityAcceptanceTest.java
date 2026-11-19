@@ -3375,6 +3375,110 @@ class C1IdentityAcceptanceTest {
         assertEquals(403, modernPost(adminSession, assignment, body, "\"v0\"", key).statusCode());
     }
 
+    @Test @Order(54)
+    void C8BorrowerAccessBindsIdentityAndHidesDirectoryAndContacts() throws Exception {
+        Fixture owner = newTenant("C8 borrowers", Membership.Role.OWNER);
+        Fixture assigned = fixtureInOrg(owner.orgDbId, Membership.Role.LEAD);
+        Fixture borrower = fixtureInOrg(owner.orgDbId, Membership.Role.MEMBER);
+        Fixture sameName = fixtureInOrg(owner.orgDbId, Membership.Role.MEMBER);
+        Fixture away = newTenant("C8 borrowers elsewhere", Membership.Role.OWNER);
+        Session officer = login(owner.username, owner.password);
+        Session lead = login(assigned.username, assigned.password);
+        Session self = login(borrower.username, borrower.password);
+        Session other = login(sameName.username, sameName.password);
+        Session outsider = login(away.username, away.password);
+        String root = "/api/v2/orgs/" + owner.orgPublicId;
+        long department = json(post(officer, "/api/departments", GSON.toJson(new NameRequest("C8 fictional borrower team"))))
+                .get("id").getAsLong();
+        long project = json(post(officer, "/api/projects", GSON.toJson(new ProjectRequest(department,
+                "Fictional light workshop", "2040-11-01T10:00:00", "2040-11-01T13:00:00")))).get("id").getAsLong();
+        long otherProject = json(post(officer, "/api/projects", GSON.toJson(new ProjectRequest(department,
+                "Fictional sound workshop", "2040-11-01T10:00:00", "2040-11-01T13:00:00")))).get("id").getAsLong();
+        UUID projectKey = projectRepository.findById(project).orElseThrow().publicId;
+        UUID otherKey = projectRepository.findById(otherProject).orElseThrow().publicId;
+        String assignment = root + "/projects/" + projectKey + "/lead-assignment";
+        assertEquals(200, modernPost(officer, assignment, leadAssignment(UUID.randomUUID().toString(), assigned.membershipPublicId),
+                "\"v0\"", UUID.randomUUID().toString()).statusCode());
+        String directory = root + "/borrowers?projectId=" + projectKey;
+        String directoryOther = root + "/borrowers?projectId=" + otherKey;
+        var first = get(lead.client, directory + "&limit=1");
+        assertEquals(200, first.statusCode(), first.body());
+        String next = json(first).getAsJsonObject("data").get("nextCursor").getAsString();
+        assertEquals(404, get(officer.client, directoryOther + "&limit=1&cursor=" + next).statusCode());
+        assertEquals(404, get(lead.client, directoryOther).statusCode());
+        assertEquals(403, get(self.client, directory).statusCode());
+        assertEquals(404, get(outsider.client, directory).statusCode());
+        var duplicates = json(get(lead.client, directory + "&search=fictional+member")).getAsJsonObject("data").getAsJsonArray("items");
+        assertEquals(2, duplicates.size());
+        for (var entry : duplicates) {
+            assertEquals(Set.of("membershipId", "displayName"), entry.getAsJsonObject().keySet());
+            assertEquals("Fictional MEMBER", entry.getAsJsonObject().get("displayName").getAsString());
+        }
+
+        long resource = json(post(officer, "/api/resources", GSON.toJson(new ResourceRequest(
+                "Fictional lights", "REUSABLE", 8)))).get("id").getAsLong();
+        long requirement = json(post(officer, "/api/requirements", GSON.toJson(new RequirementRequest(
+                project, resource, 4)))).get("id").getAsLong();
+        UUID requirementKey = UUID.fromString(jdbc.queryForObject("SELECT BIN_TO_UUID(public_id,0) FROM resource_requirement WHERE id=?",
+                String.class, requirement));
+        String operationId = UUID.randomUUID().toString(), idemKey = UUID.randomUUID().toString();
+        JsonObject input = new JsonObject();
+        input.addProperty("operationId", operationId);
+        input.addProperty("requirementId", requirementKey.toString());
+        input.addProperty("quantity", 2);
+        assertEquals(400, modernPost(lead, root + "/allocations", input.toString(), null, idemKey).statusCode());
+        input.addProperty("borrowerMembershipId", away.membershipPublicId.toString());
+        assertEquals(404, modernPost(lead, root + "/allocations", input.toString(), null, idemKey).statusCode());
+        input.addProperty("borrowerMembershipId", borrower.membershipPublicId.toString());
+        input.addProperty("borrowerNameSnapshot", "Injected label");
+        assertEquals(400, modernPost(lead, root + "/allocations", input.toString(), null, idemKey).statusCode());
+        input.remove("borrowerNameSnapshot");
+        var created = modernPost(lead, root + "/allocations", input.toString(), null, idemKey);
+        assertEquals(201, created.statusCode(), created.body());
+        var linked = json(created).getAsJsonObject("data");
+        UUID allocationKey = UUID.fromString(linked.get("id").getAsString());
+        long allocationId = jdbc.queryForObject("SELECT id FROM allocation WHERE public_id=UUID_TO_BIN(?,0)", Long.class, allocationKey.toString());
+        assertEquals(borrower.membershipDbId, jdbc.queryForObject("SELECT borrower_membership_id FROM allocation WHERE id=?", Long.class, allocationId));
+        assertEquals(assigned.membershipDbId, jdbc.queryForObject("SELECT requested_by_membership_id FROM allocation WHERE id=?", Long.class, allocationId));
+        assertEquals("Fictional MEMBER", linked.get("borrowerNameSnapshot").getAsString());
+        assertEquals(linked, json(modernPost(lead, root + "/allocations", input.toString(), null, idemKey)).get("data"));
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE requirement_id=?", Integer.class, requirement));
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE resource_id=?", Integer.class, resource));
+
+        String borrowedRoute = root + "/borrowed-allocations";
+        String borrowedItem = borrowedRoute + "/" + allocationKey;
+        assertEquals(1, json(get(self.client, borrowedRoute)).getAsJsonObject("data").getAsJsonArray("items").size());
+        assertTrue(json(get(other.client, borrowedRoute)).getAsJsonObject("data").getAsJsonArray("items").isEmpty());
+        assertEquals(404, get(other.client, borrowedItem).statusCode());
+        assertEquals(404, get(outsider.client, borrowedItem).statusCode());
+        var view = get(self.client, borrowedItem);
+        assertEquals(200, view.statusCode());
+        assertTrue(view.body().contains("Fictional light workshop"));
+        assertFalse(view.body().matches("(?is).*(phone|borrowerName|actor|provider|ciphertext).*"));
+        assertEquals("\"v0\"", view.headers().firstValue("ETag").orElseThrow());
+
+        var syntheticContact = contactCipher.encrypt(owner.orgDbId, allocationKey, "+15555550193");
+        jdbc.update("UPDATE allocation SET sms_consent=TRUE,phone_ciphertext=?,phone_nonce=?,phone_key_id=?,reminder_outcome='CLAIMED',"
+                        + "reminder_claimed_at=? WHERE id=?", syntheticContact.ciphertext(), syntheticContact.nonce(),
+                syntheticContact.keyId(), java.sql.Timestamp.valueOf(now()), allocationId);
+        String revoke = borrowedItem + "/revoke-sms-consent";
+        String revokeOp = UUID.randomUUID().toString(), revokeKey = UUID.randomUUID().toString();
+        String revokeBody = "{\"operationId\":\"" + revokeOp + "\"}";
+        assertEquals(404, modernPost(other, revoke, revokeBody, "\"v0\"", revokeKey).statusCode());
+        assertEquals(412, modernPost(self, revoke, revokeBody, "\"v8\"", revokeKey).statusCode());
+        assertEquals(200, modernPost(self, revoke, revokeBody, "\"v0\"", revokeKey).statusCode());
+        assertEquals(200, modernPost(self, revoke, revokeBody, "\"v0\"", revokeKey).statusCode());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE id=? AND sms_consent=FALSE AND phone_ciphertext IS NULL "
+                + "AND phone_nonce IS NULL AND phone_key_id IS NULL AND reminder_outcome='SUPPRESSED' AND status='PENDING'",
+                Integer.class, allocationId));
+        assertEquals(200, get(self.client, root + "/operations/" + revokeOp).statusCode());
+        assertEquals(403, get(other.client, root + "/operations/" + revokeOp).statusCode());
+        assertEquals(200, post(officer, root + "/members/" + borrower.membershipPublicId + "/suspend", "{}", "\"v0\"").statusCode());
+        assertEquals(404, get(self.client, borrowedItem).statusCode());
+        assertEquals(404, get(self.client, root + "/operations/" + revokeOp).statusCode());
+        assertEquals(borrower.membershipDbId, jdbc.queryForObject("SELECT borrower_membership_id FROM allocation WHERE id=?", Long.class, allocationId));
+    }
+
     private String leadAssignment(String operationId, UUID leadMembershipId) {
         JsonObject request = new JsonObject();
         request.addProperty("operationId", operationId);

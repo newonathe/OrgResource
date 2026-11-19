@@ -56,6 +56,8 @@ import edu.orgresource.extended.security.C1OrganizationContext;
 public class InventoryService {
     private static final int MAX_MOVEMENT_PAGE = 100;
     private static final String LEAD_ASSIGNMENT_ROUTE = "project-lead-assignment/";
+    private static final String ALLOCATION_LINK_ROUTE = "linked-allocation-create/";
+    private static final String BORROWER_CONSENT_ROUTE = "borrower-consent/";
     private final OrganizationRepository organizations;
     private final MembershipRepository memberships;
     private final C1OrganizationContext organizationContext;
@@ -310,14 +312,18 @@ public class InventoryService {
                 .map(s -> new AllocationSnapshot(allocationId, s.getProjectId(), s.getResourceId(), s.getRequirementId(), s.getRequirementQuantity()))
                 .orElseThrow(InventoryService::notFound);
         LockedAllocation locked = lockAllocation(snapshot, organizationId);
-        locked.allocation.smsConsent = false;
-        locked.allocation.phoneCiphertext = null;
-        locked.allocation.phoneNonce = null;
-        locked.allocation.phoneKeyId = null;
-        if (locked.allocation.reminderOutcome == edu.orgresource.extended.domain.ReminderOutcome.CLAIMED)
-            locked.allocation.reminderOutcome = edu.orgresource.extended.domain.ReminderOutcome.SUPPRESSED;
+        clearSmsConsent(locked.allocation);
         allocations.saveAndFlush(locked.allocation);
         return new ApiDtos.AllocationView(locked.allocation, locked.project.endAt, businessNow());
+    }
+
+    private static void clearSmsConsent(Allocation allocation) {
+        allocation.smsConsent = false;
+        allocation.phoneCiphertext = null;
+        allocation.phoneNonce = null;
+        allocation.phoneKeyId = null;
+        if (allocation.reminderOutcome == edu.orgresource.extended.domain.ReminderOutcome.CLAIMED)
+            allocation.reminderOutcome = edu.orgresource.extended.domain.ReminderOutcome.SUPPRESSED;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -489,6 +495,110 @@ public class InventoryService {
         return projectAccessView(project);
     }
 
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public ApiDtos.WorkspacePage<BorrowerOption> borrowerOptions(UUID organizationPublicId, UUID projectPublicId,
+            int limit, String cursor, String search) {
+        Membership member = organizationContext.requirePathOrganization(organizationPublicId, false,
+                Membership.Role.OWNER, Membership.Role.ADMIN, Membership.Role.CUSTODIAN, Membership.Role.LEAD);
+        if (projectPublicId == null) throw new C1ApiException(400, "VALIDATION_FAILED", "projectId is required.");
+        Project project = projects.findByPublicIdAndOrganizationId(projectPublicId, member.organizationId)
+                .orElseThrow(InventoryService::notFound);
+        if (member.role == Membership.Role.LEAD && !member.id.equals(project.leadMembershipId)) throw notFound();
+        if (search != null && search.length() > 100)
+            throw new C1ApiException(400, "VALIDATION_FAILED", "Search must be at most 100 characters.");
+        String term = search == null || search.isBlank() ? null : search.strip().toLowerCase(Locale.ROOT);
+        var page = WorkspacePageWindow.of(limit, cursor, member.organizationId, "borrowers",
+                projectPublicId + "|" + (term == null ? "0" : "1" + term));
+        var rows = memberships.findBorrowerOptions(member.organizationId, page.after(), term,
+                Membership.Status.ACTIVE, UserAccount.Status.ACTIVE, page.queryLimit());
+        return page.result(rows, MembershipRepository.BorrowerRow::getId,
+                row -> new BorrowerOption(row.getMembershipId(), row.getDisplayName()));
+    }
+
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public ApiDtos.WorkspacePage<BorrowedView> borrowedPage(UUID organizationPublicId, int limit, String cursor) {
+        Membership member = organizationContext.requirePathOrganization(organizationPublicId, false);
+        var page = WorkspacePageWindow.of(limit, cursor, member.organizationId, "borrowed", member.publicId.toString());
+        return page.result(allocations.findBorrowedPage(member.organizationId, member.id, page.after(), page.queryLimit()),
+                AllocationRepository.BorrowedRow::getId, InventoryService::borrowedView);
+    }
+
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public BorrowedView borrowed(UUID organizationPublicId, UUID allocationPublicId) {
+        Membership member = organizationContext.requirePathOrganization(organizationPublicId, false);
+        return borrowedFor(member, allocationPublicId);
+    }
+
+    private BorrowedView borrowedFor(Membership member, UUID allocationPublicId) {
+        return allocations.findBorrowed(member.organizationId, member.id, allocationPublicId)
+                .map(InventoryService::borrowedView).orElseThrow(InventoryService::notFound);
+    }
+
+    private static BorrowedView borrowedView(AllocationRepository.BorrowedRow row) {
+        return new BorrowedView(row.getPublicId(), row.getProjectName(), row.getResourceName(), row.getQuantity(),
+                row.getStatus().name(), row.getCreatedAt(), row.getApprovedAt(), row.getIssuedAt(),
+                row.getReturnedAt(), row.getConsumedAt(), row.getCancelledAt(), row.getVersion());
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public OperationResponse createLinkedAllocation(UUID organizationPublicId, UUID requirementPublicId, UUID borrowerPublicId,
+            int quantity, UUID operationId, String idempotencyKey, String requestId) {
+        Actor actor = lockPathOrganization(organizationPublicId, true);
+        requireProjectWriterRole(actor.membership);
+        long org = actor.organization.id;
+        ResourceRequirement observed = requirements.findByPublicIdAndOrganizationId(requirementPublicId, org)
+                .orElseThrow(InventoryService::notFound);
+        Project project = projects.lockById(observed.projectId, org).orElseThrow(InventoryService::notFound);
+        requireProjectWriter(actor.membership, project);
+        String route = ALLOCATION_LINK_ROUTE + project.publicId;
+        byte[] bodyHash = fingerprint(route + "|" + requirementPublicId + "|" + borrowerPublicId + "|" + quantity + "|" + operationId);
+        IdempotencyClaim claim = accessClaim(actor, route, idempotencyKey, bodyHash, operationId);
+        if (claim.replay != null) return claim.replay;
+        Resource resource = resources.lockById(observed.resourceId, org).orElseThrow(InventoryService::notFound);
+        ResourceRequirement requirement = requirements.lockById(observed.id, org).orElseThrow(InventoryService::notFound);
+        LocalDateTime now = businessNow();
+        if (!project.endAt.isAfter(now))
+            throw new C1ApiException(409, "PROJECT_ENDED", "An ended Project cannot receive an Allocation.");
+        if (quantity < 1 || quantity > requirement.quantity)
+            throw new C1ApiException(400, "VALIDATION_FAILED", "quantity must be positive and cannot exceed the Requirement quantity.");
+        if (borrowerPublicId == null && resource.type == ResourceType.REUSABLE)
+            throw new C1ApiException(400, "VALIDATION_FAILED", "A reusable Allocation requires a borrower membership.");
+        Membership borrower = borrowerPublicId == null ? null : memberships.findByOrganizationIdAndPublicId(org, borrowerPublicId)
+                .orElseThrow(InventoryService::notFound);
+        Membership displayIdentity = borrower == null ? actor.membership : borrower;
+        UserAccount account = accounts.findById(displayIdentity.userId)
+                .filter(user -> user.status == UserAccount.Status.ACTIVE).orElse(null);
+        if (account == null || displayIdentity.status != Membership.Status.ACTIVE)
+            throw new C1ApiException(409, "BORROWER_NOT_ELIGIBLE", "Choose an active borrower in this organization.");
+        Allocation allocation = new Allocation(org, requirement, quantity, account.displayName, false, now);
+        allocation.borrowerMembershipId = borrower == null ? null : borrower.id;
+        allocation.requestedByMembershipId = actor.membership.id;
+        allocations.saveAndFlush(allocation);
+        audit.append(org, actor.userId, "LINKED_ALLOCATION_CREATED", "allocation", allocation.publicId.toString());
+        return complete(claim, requestId, 201, new LinkedAllocationView(allocation.publicId, requirement.publicId,
+                borrowerPublicId, allocation.borrowerName, allocation.quantity, allocation.status.name(), allocation.version),
+                etag(allocation.version));
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public OperationResponse revokeBorrowerConsent(UUID organizationPublicId, UUID allocationPublicId, UUID operationId,
+            String idempotencyKey, String ifMatch, String requestId) {
+        Actor actor = lockPathOrganization(organizationPublicId, true);
+        borrowedFor(actor.membership, allocationPublicId);
+        AllocationSnapshot snapshot = allocations.findOperationSnapshotByPublicId(allocationPublicId, actor.organization.id)
+                .map(row -> new AllocationSnapshot(row.getAllocationId(), row.getProjectId(), row.getResourceId(),
+                        row.getRequirementId(), row.getRequirementQuantity())).orElseThrow(InventoryService::notFound);
+        LockedAllocation locked = lockAllocation(snapshot, actor.organization.id);
+        if (!actor.membership.id.equals(locked.allocation.borrowerMembershipId)) throw notFound();
+        String route = BORROWER_CONSENT_ROUTE + allocationPublicId;
+        IdempotencyClaim claim = accessClaim(actor, route, idempotencyKey, fingerprint(route + "|" + operationId + "|" + ifMatch), operationId);
+        if (claim.replay != null) return claim.replay;
+        requireVersion(ifMatch, locked.allocation.version);
+        clearSmsConsent(locked.allocation);
+        allocations.saveAndFlush(locked.allocation);
+        return complete(claim, requestId, 200, borrowedFor(actor.membership, allocationPublicId), etag(locked.allocation.version));
+    }
+
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public OperationResponse assignProjectLead(UUID organizationPublicId, UUID projectPublicId, UUID leadPublicId,
             UUID operationId, String idempotencyKey, String ifMatch, String requestId) {
@@ -497,20 +607,7 @@ public class InventoryService {
         Project project = projects.lockByPublicId(projectPublicId, actor.organization.id).orElseThrow(InventoryService::notFound);
         String route = LEAD_ASSIGNMENT_ROUTE + projectPublicId;
         byte[] bodyHash = fingerprint(route + "|" + operationId + "|" + leadPublicId + "|" + ifMatch);
-        validateIdempotencyKey(idempotencyKey);
-        Optional<Receipt> earlier = findReceiptByOperation(actor.organization.id, operationId);
-        if (earlier.isPresent()) {
-            Receipt receipt = earlier.get();
-            if (receipt.actorUserId != actor.userId || !receipt.route.equals(route)
-                    || !Arrays.equals(receipt.bodyHash, bodyHash))
-                throw new C1ApiException(409, "OPERATION_ID_REUSED", "This operationId is already bound to a different request.");
-            if (receipt.expiresAt.isBefore(utcNow()))
-                throw new C1ApiException(409, "IDEMPOTENCY_KEY_EXPIRED", "The operation receipt has expired.");
-            return receipt.response();
-        }
-        if (findMovementByOperation(actor.organization.id, operationId).isPresent())
-            throw new C1ApiException(409, "OPERATION_ID_REUSED", "This operationId is already bound to a stock movement.");
-        IdempotencyClaim claim = claim(actor, route, idempotencyKey, bodyHash, operationId);
+        IdempotencyClaim claim = accessClaim(actor, route, idempotencyKey, bodyHash, operationId);
         if (claim.replay != null) return claim.replay;
         requireVersion(ifMatch, project.version);
         Membership target = leadPublicId == null ? null : memberships
@@ -546,8 +643,6 @@ public class InventoryService {
         if (isStockRole(actor.membership.role)) {
             Optional<MovementFact> movement = findMovementByOperation(actor.organization.id, operationId);
             if (movement.isPresent()) return durableMovementResponse(movement.get(), requestId).json;
-        } else if (actor.membership.role != Membership.Role.ADMIN) {
-            requireStockRole(actor.membership);
         }
         Optional<Receipt> existing = findReceiptByOperation(actor.organization.id, operationId);
         boolean leadAssignment = existing.isPresent() && existing.get().route.startsWith(LEAD_ASSIGNMENT_ROUTE);
@@ -557,6 +652,21 @@ public class InventoryService {
             UUID projectPublicId = UUID.fromString(assignment.route.substring(LEAD_ASSIGNMENT_ROUTE.length()));
             if (assignment.actorUserId != actor.userId
                     || projects.findByPublicIdAndOrganizationId(projectPublicId, actor.organization.id).isEmpty()) throw notFound();
+        } else if (existing.isPresent() && existing.get().actorUserId == actor.userId
+                && existing.get().route.startsWith(ALLOCATION_LINK_ROUTE)) {
+            requireProjectWriterRole(actor.membership);
+            UUID projectPublicId = UUID.fromString(existing.get().route.substring(ALLOCATION_LINK_ROUTE.length()));
+            Project project = projects.findByPublicIdAndOrganizationId(projectPublicId, actor.organization.id)
+                    .orElseThrow(InventoryService::notFound);
+            requireProjectWriter(actor.membership, project);
+        } else if (existing.isPresent() && existing.get().actorUserId == actor.userId
+                && existing.get().route.startsWith(BORROWER_CONSENT_ROUTE)) {
+            UUID allocationPublicId = UUID.fromString(existing.get().route.substring(BORROWER_CONSENT_ROUTE.length()));
+            borrowedFor(actor.membership, allocationPublicId);
+        } else if (existing.isPresent() && (existing.get().route.startsWith(ALLOCATION_LINK_ROUTE)
+                || existing.get().route.startsWith(BORROWER_CONSENT_ROUTE))) {
+            requireStockRole(actor.membership);
+            throw notFound();
         } else requireStockRole(actor.membership);
         Receipt receipt = existing.orElseThrow(InventoryService::notFound);
         if (receipt.expiresAt.isBefore(utcNow()))
@@ -719,6 +829,23 @@ public class InventoryService {
         return new IdempotencyClaim(null, receipt.response());
     }
 
+    private IdempotencyClaim accessClaim(Actor actor, String route, String key, byte[] bodyHash, UUID operationId) {
+        validateIdempotencyKey(key);
+        Optional<Receipt> earlier = findReceiptByOperation(actor.organization.id, operationId);
+        if (earlier.isPresent()) {
+            Receipt receipt = earlier.get();
+            if (receipt.actorUserId != actor.userId || !receipt.route.equals(route)
+                    || !Arrays.equals(receipt.bodyHash, bodyHash))
+                throw new C1ApiException(409, "OPERATION_ID_REUSED", "This operationId is already bound to a different request.");
+            if (receipt.expiresAt.isBefore(utcNow()))
+                throw new C1ApiException(409, "IDEMPOTENCY_KEY_EXPIRED", "The operation receipt has expired.");
+            return new IdempotencyClaim(null, receipt.response());
+        }
+        if (findMovementByOperation(actor.organization.id, operationId).isPresent())
+            throw new C1ApiException(409, "OPERATION_ID_REUSED", "This operationId is already bound to a stock movement.");
+        return claim(actor, route, key, bodyHash, operationId);
+    }
+
     private OperationResponse priorOperation(long organizationId, UUID operationId, String route, byte[] bodyHash, String requestId) {
         Optional<Receipt> receipt = findReceiptByOperation(organizationId, operationId);
         if (receipt.isPresent()) {
@@ -874,6 +1001,16 @@ public class InventoryService {
             throw new C1ApiException(403, "FORBIDDEN", "Only owners and administrators can assign Project leads.");
     }
 
+    private static void requireProjectWriterRole(Membership member) {
+        if (member.role != Membership.Role.OWNER && member.role != Membership.Role.ADMIN && member.role != Membership.Role.LEAD)
+            throw new C1ApiException(403, "FORBIDDEN", "The current membership cannot manage Project work.");
+    }
+
+    private static void requireProjectWriter(Membership member, Project project) {
+        requireProjectWriterRole(member);
+        if (member.role == Membership.Role.LEAD && !member.id.equals(project.leadMembershipId)) throw notFound();
+    }
+
     private static boolean isStockRole(Membership.Role role) {
         return role == Membership.Role.OWNER || role == Membership.Role.CUSTODIAN;
     }
@@ -925,6 +1062,12 @@ public class InventoryService {
     public enum InventoryAction { APPROVE, ISSUE, RETURN, CONSUME, CANCEL }
     public record OperationResponse(int status, String json, String etag) { }
     public record ProjectAccessView(UUID id, String name, String startAt, String endAt, UUID leadMembershipId, long version) { }
+    public record BorrowerOption(UUID membershipId, String displayName) { }
+    public record LinkedAllocationView(UUID id, UUID requirementId, UUID borrowerMembershipId,
+            String borrowerNameSnapshot, int quantity, String status, long version) { }
+    public record BorrowedView(UUID id, String projectName, String resourceName, int quantity, String status,
+            LocalDateTime createdAt, LocalDateTime approvedAt, LocalDateTime issuedAt, LocalDateTime returnedAt,
+            LocalDateTime consumedAt, LocalDateTime cancelledAt, long version) { }
     private record Actor(Organization organization, Membership membership, long userId) { }
     private record Balance(long ledgerTotal, long ledgerIssued, long holds, long issued) { }
     private record ResourcePageRow(UUID publicId, String name, String type, int totalQuantity, long version,

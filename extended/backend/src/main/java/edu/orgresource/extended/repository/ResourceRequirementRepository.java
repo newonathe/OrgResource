@@ -16,6 +16,7 @@ import edu.orgresource.extended.domain.ResourceType;
 import jakarta.persistence.LockModeType;
 
 public interface ResourceRequirementRepository extends JpaRepository<ResourceRequirement, Long> {
+    Optional<ResourceRequirement> findByPublicIdAndOrganizationId(java.util.UUID publicId, Long organizationId);
     @EntityGraph(attributePaths = {"project", "resource"})
     List<ResourceRequirement> findByOrganizationIdOrderById(Long organizationId);
     @EntityGraph(attributePaths = {"project", "resource"})
