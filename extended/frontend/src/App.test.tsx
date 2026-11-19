@@ -17,6 +17,10 @@ function authenticatedFetch(role: "OWNER" | "ADMIN" | "CUSTODIAN" | "LEAD" | "ME
     if (url === "/api/v2/auth/csrf") return envelope({ csrfToken: csrf });
     if (url === "/api/v2/session") return envelope({ accountId: "account-a", displayName: "Fictional Operator", activeOrgId, memberships: [] });
     if (url === "/api/v2/orgs" && method === "GET") return envelope([{ id: "org-a", slug: "fictional", displayName: "Fictional Organization", role }]);
+    if (url === "/api/v2/workspace/overview") return envelope({
+      sampledAt: "2026-11-19T10:00:00", departmentCount: departments.length, projectActiveCount: 0,
+      resourceTypeCount: 0, requirementShortageCount: 0, resourcePreview: [], calendarPreview: [], allocations: null,
+    });
     if (url.startsWith("/api/v2/workspace/") && method === "GET") {
       return envelope({ items: url.startsWith("/api/v2/workspace/departments") ? departments : [], nextCursor: null });
     }

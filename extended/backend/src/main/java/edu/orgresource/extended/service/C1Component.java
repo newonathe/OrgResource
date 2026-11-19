@@ -14,11 +14,13 @@ import edu.orgresource.extended.domain.ResourceType;
 public class C1Component {
     @Autowired private C1Service service;
 
+    public ApiDtos.WorkspaceOverview workspaceOverview() { return service.workspaceOverview(); }
+
     public ApiDtos.WorkspacePage<ApiDtos.DepartmentView> departmentPage(String search, int limit, String cursor) {
         return service.departmentPage(search, limit, cursor);
     }
-    public ApiDtos.WorkspacePage<ApiDtos.ProjectView> projectPage(Long departmentId, String search, int limit, String cursor) {
-        return service.projectPage(departmentId, search, limit, cursor);
+    public ApiDtos.WorkspacePage<ApiDtos.ProjectView> projectPage(Long departmentId, String search, String period, int limit, String cursor) {
+        return service.projectPage(departmentId, search, period, limit, cursor);
     }
     public ApiDtos.WorkspacePage<ApiDtos.ResourceView> resourcePage(ResourceType type, String search, int limit, String cursor) {
         return service.resourcePage(type, search, limit, cursor);
@@ -26,9 +28,9 @@ public class C1Component {
     public ApiDtos.WorkspacePage<ApiDtos.RequirementView> requirementPage(Long projectId, String search, int limit, String cursor) {
         return service.requirementPage(projectId, search, limit, cursor);
     }
-    public ApiDtos.WorkspacePage<ApiDtos.AllocationView> allocationPage(Long requirementId, AllocationStatus status,
+    public ApiDtos.WorkspacePage<ApiDtos.AllocationView> allocationPage(Long requirementId, Long projectId, AllocationStatus status,
             int limit, String cursor) {
-        return service.allocationPage(requirementId, status, limit, cursor);
+        return service.allocationPage(requirementId, projectId, status, limit, cursor);
     }
 
     public ApiDtos.DepartmentView createDepartment(ApiDtos.CreateDepartment request) { return service.createDepartment(request); }

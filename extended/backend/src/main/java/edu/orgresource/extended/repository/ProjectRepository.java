@@ -18,14 +18,24 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     List<Project> findByOrganizationIdOrderById(Long organizationId);
     @EntityGraph(attributePaths = {"department"})
     List<Project> findByOrganizationIdAndDepartmentIdOrderById(Long organizationId, Long departmentId);
+    @Query("select count(p) from Project p where p.organizationId=:org and p.startAt<=:now and p.endAt>:now")
+    long countActiveWorkspaceProjects(@Param("org") long org, @Param("now") java.time.LocalDateTime now);
+
+    @EntityGraph(attributePaths = {"department"})
+    @Query("select p from Project p where p.organizationId=:org and p.endAt>:now order by p.startAt,p.id")
+    List<Project> workspaceCalendar(@Param("org") long org, @Param("now") java.time.LocalDateTime now, Pageable pageable);
+
     Optional<Project> findByIdAndOrganizationId(Long id, Long organizationId);
 
     @EntityGraph(attributePaths = {"department"})
     @Query("select p from Project p where p.organizationId=:org and p.id>:after "
             + "and (:department is null or p.department.id=:department) "
-            + "and (:search is null or locate(:search, lower(concat(p.name, ' ', p.department.name)))>0) order by p.id")
+            + "and (:search is null or locate(:search, lower(concat(p.name, ' ', p.department.name)))>0) "
+            + "and (:period is null or (:period='ACTIVE' and p.startAt<=:now and p.endAt>:now) "
+            + "or (:period='UPCOMING' and p.startAt>:now) or (:period='ENDED' and p.endAt<=:now)) order by p.id")
     List<Project> findWorkspacePage(@Param("org") long org, @Param("after") long after,
-            @Param("department") Long department, @Param("search") String search, Pageable pageable);
+            @Param("department") Long department, @Param("search") String search, @Param("period") String period,
+            @Param("now") java.time.LocalDateTime now, Pageable pageable);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select p from Project p where p.id = :id and p.organizationId = :organizationId")

@@ -24,7 +24,7 @@ export function ProjectsPage() {
   const [periodFilter, setPeriodFilter] = useState("ALL");
   const [search, setSearch] = useState("");
   const [reload, setReload] = useState(0);
-  const { cursor, page, move } = usePageCursors(JSON.stringify([departmentFilter, search]));
+  const { cursor, page, move } = usePageCursors(JSON.stringify([departmentFilter, periodFilter, search]));
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const goToPage = (next: string | null) => { setLoadState("loading"); move(next); };
   const [departmentId, setDepartmentId] = useState("");
@@ -39,6 +39,9 @@ export function ProjectsPage() {
   const [selected, setSelected] = useState<Project | null>(null);
   const [detailRequirements, setDetailRequirements] = useState<ResourceRequirement[]>([]);
   const [detailAllocations, setDetailAllocations] = useState<Allocation[]>([]);
+  const historyPage = usePageCursors(String(selected?.id ?? ""));
+  const historyCursor = historyPage.cursor;
+  const [nextHistoryCursor, setNextHistoryCursor] = useState<string | null>(null);
   const [detailResources, setDetailResources] = useState<Resource[]>([]);
   const [detailState, setDetailState] = useState<"loading" | "error" | "ready">("loading");
   const [detailError, setDetailError] = useState("");
@@ -52,30 +55,32 @@ export function ProjectsPage() {
   useEffect(() => {
     const controller = new AbortController();
     const filterId = departmentFilter === "ALL" ? undefined : Number(departmentFilter);
-    Promise.all([workspaceApi.projects(cursor, { departmentId: filterId, search }, controller.signal), api.departments(controller.signal)]).then(([result, departmentRows]) => {
+    Promise.all([workspaceApi.projects(cursor, { departmentId: filterId, search, period: periodFilter === "ALL" ? undefined : periodFilter }, controller.signal), api.departments(controller.signal)]).then(([result, departmentRows]) => {
       setProjects(result.items); setNextCursor(result.nextCursor); setDepartments(departmentRows); setLoadState("ready"); setLoadError("");
     }).catch((reason: unknown) => {
       if (reason instanceof DOMException && reason.name === "AbortError") return;
       setLoadError(explainError(reason)); setLoadState("error");
     });
     return () => controller.abort();
-  }, [cursor, departmentFilter, search, reload]);
+  }, [cursor, departmentFilter, periodFilter, search, reload]);
 
   useEffect(() => {
     if (!selected) return;
     const controller = new AbortController();
     const history = canReadAllocations
-      ? api.allocations({}, controller.signal).then(rows => ({ rows, error: "" })).catch((reason: unknown) => ({ rows: [], error: explainError(reason) }))
-      : Promise.resolve({ rows: [], error: "" });
+      ? workspaceApi.allocations(historyCursor, { projectId: selected.id }, controller.signal)
+        .then(result => ({ rows: result.items, next: result.nextCursor, error: "" }))
+        .catch((reason: unknown) => ({ rows: [], next: null, error: explainError(reason) }))
+      : Promise.resolve({ rows: [], next: null, error: "" });
     Promise.all([
       api.requirements(selected.id, controller.signal),
       api.resources(undefined, controller.signal),
       history,
     ]).then(([requirements, resources, allocations]) => {
       if (controller.signal.aborted) return;
-      const requirementIds = new Set(requirements.map(row => row.id));
       setDetailRequirements(requirements);
-      setDetailAllocations(allocations.rows.filter(row => requirementIds.has(row.requirementId)));
+      setDetailAllocations(allocations.rows);
+      setNextHistoryCursor(allocations.next);
       setHistoryError(allocations.error);
       setDetailResources(resources); setDetailState("ready"); setDetailError("");
     }).catch((reason: unknown) => {
@@ -83,7 +88,7 @@ export function ProjectsPage() {
       setDetailError(explainError(reason)); setDetailState("error");
     });
     return () => controller.abort();
-  }, [selected, detailReload, canReadAllocations]);
+  }, [selected, detailReload, canReadAllocations, historyCursor]);
 
   const ordered = projects;
   const selectedDepartmentId = departmentId || String(departments[0]?.id ?? "");
@@ -159,7 +164,7 @@ export function ProjectsPage() {
           <PanelHeading kicker="Activity calendar" title="Project schedule"><Button variant="quiet" disabled={loadState === "loading"} onClick={refresh}>Refresh</Button></PanelHeading>
           <div className="search-filter-bar project-filters"><label htmlFor="project-search">Search projects</label><input id="project-search" type="search" value={search} maxLength={100} onChange={(event) => { setLoadState("loading"); setSearch(event.target.value); }} placeholder="Name or department" />
             <label htmlFor="project-department-filter">Department</label><select id="project-department-filter" value={departmentFilter} onChange={(event) => { setLoadState("loading"); setDepartmentFilter(event.target.value); }}><option value="ALL">All departments</option>{departments.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select>
-            <label htmlFor="project-period-filter">Period</label><select id="project-period-filter" value={periodFilter} onChange={(event) => setPeriodFilter(event.target.value)}><option value="ALL">All periods</option><option value="UPCOMING">Upcoming</option><option value="ACTIVE">Active</option><option value="ENDED">Ended</option></select></div>
+            <label htmlFor="project-period-filter">Period</label><select id="project-period-filter" value={periodFilter} onChange={(event) => { setLoadState("loading"); setPeriodFilter(event.target.value); }}><option value="ALL">All periods</option><option value="UPCOMING">Upcoming</option><option value="ACTIVE">Active</option><option value="ENDED">Ended</option></select></div>
           <LoadState state={loadState} error={loadError} onRetry={refresh}>
             {projects.length === 0 ? <div className="state-block state-empty"><span className="empty-symbol" aria-hidden="true">▤</span><h3>No projects yet</h3><p>Choose a department and create the first scheduled activity.</p></div>
               : ordered.length === 0 ? <div className="state-block state-empty"><h3>No matching projects</h3><p>Change the search or filters to view other records.</p></div>
@@ -198,9 +203,15 @@ export function ProjectsPage() {
             {canReadAllocations && historyError && <Notice tone="warning">Allocation history could not be loaded. <Button onClick={refreshDetails}>Retry history</Button></Notice>}
             {detailRows.length === 0 ? <p className="quiet-note">This Project has no Requirements.</p> : <div className="sheet-record-list">{detailRows.map(({ requirement, resource, batches }) => <article key={requirement.id}>
               <div><strong>{resource?.name ?? `Resource ${requirement.resourceId}`}</strong><small>{requirement.quantity} required · {requirement.allocatedQuantity} covered · {requirement.shortageQuantity} shortage</small></div>
-              {canReadAllocations && !historyError && <div className="sheet-batches">{batches.length ? batches.map((batch) => <span key={batch.id}>A{batch.id} · {batch.quantity} · {batch.status.toLowerCase()}</span>) : <span>No Allocation batches</span>}</div>}
+              {canReadAllocations && !historyError && <div className="sheet-batches">{batches.length ? batches.map((batch) => <span key={batch.id}>A{batch.id} · {batch.quantity} · {batch.status.toLowerCase()}</span>) : <span>No Allocation batches on this page</span>}</div>}
             </article>)}</div>}
           </LoadState>
+          {canReadAllocations && <PageNavigation label="Project Allocation history pages" page={historyPage.page}
+            count={detailState === "ready" && !historyError ? detailAllocations.length : 0}
+            loading={detailState === "loading"} unavailable={detailState === "error" || !!historyError}
+            hasNext={detailState === "ready" && !!nextHistoryCursor}
+            onPrevious={() => { setDetailState("loading"); historyPage.move(null); }}
+            onNext={() => { if (nextHistoryCursor) { setDetailState("loading"); historyPage.move(nextHistoryCursor); } }} />}
         </section>
       </DetailSheet>}
     </section>

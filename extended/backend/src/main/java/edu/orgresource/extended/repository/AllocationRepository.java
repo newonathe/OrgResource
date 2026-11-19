@@ -27,14 +27,46 @@ public interface AllocationRepository extends JpaRepository<Allocation, Long> {
     @EntityGraph(attributePaths = {"requirement.project"})
     List<Allocation> findByOrganizationIdAndRequirementIdAndStatusOrderById(Long organizationId,
             Long requirementId, AllocationStatus status);
+    interface WorkspaceCounts {
+        Long getPending();
+        Long getIssued();
+        Long getOverdue();
+        Long getConsumed();
+    }
+
+    @Query("select coalesce(sum(case when a.status=:pending then 1 else 0 end),0) as pending, "
+            + "coalesce(sum(case when a.status=:issued then 1 else 0 end),0) as issued, "
+            + "coalesce(sum(case when a.status=:issued and p.endAt<=:now then 1 else 0 end),0) as overdue, "
+            + "coalesce(sum(case when a.status=:consumed then 1 else 0 end),0) as consumed "
+            + "from Allocation a join a.requirement q join q.project p where a.organizationId=:org")
+    WorkspaceCounts countWorkspaceStatuses(@Param("org") long org, @Param("now") LocalDateTime now,
+            @Param("pending") AllocationStatus pending, @Param("issued") AllocationStatus issued,
+            @Param("consumed") AllocationStatus consumed);
+
+    interface WorkspaceRecent {
+        Long getId();
+        String getBorrowerName();
+        Integer getQuantity();
+        AllocationStatus getStatus();
+        String getResourceName();
+        LocalDateTime getCreatedAt();
+    }
+
+    @Query("select a.id as id,a.borrowerName as borrowerName,a.quantity as quantity,a.status as status, "
+            + "q.resource.name as resourceName,a.createdAt as createdAt from Allocation a join a.requirement q "
+            + "where a.organizationId=:org order by a.createdAt desc,a.id desc")
+    List<WorkspaceRecent> workspaceRecent(@Param("org") long org, Pageable pageable);
+
     boolean existsByOrganizationIdAndRequirementId(Long organizationId, Long requirementId);
 
     @EntityGraph(attributePaths = {"requirement", "requirement.project"})
     @Query("select a from Allocation a where a.organizationId=:org and a.id>:after "
             + "and (:requirement is null or a.requirement.id=:requirement) "
+            + "and (:project is null or a.requirement.project.id=:project) "
             + "and (:status is null or a.status=:status) order by a.id")
     List<Allocation> findWorkspacePage(@Param("org") long org, @Param("after") long after,
-            @Param("requirement") Long requirement, @Param("status") AllocationStatus status, Pageable pageable);
+            @Param("requirement") Long requirement, @Param("project") Long project,
+            @Param("status") AllocationStatus status, Pageable pageable);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select a from Allocation a where a.id=:id")

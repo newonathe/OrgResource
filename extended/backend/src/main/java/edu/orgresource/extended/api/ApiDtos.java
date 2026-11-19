@@ -24,6 +24,23 @@ public final class ApiDtos {
 
     public record WorkspacePage<T>(java.util.List<T> items, String nextCursor) { }
 
+    public record OverviewProject(ProjectView project, String departmentName, boolean active) { }
+
+    public record OverviewRecentAllocation(Long id, String borrowerName, int quantity, String status, String resourceName,
+            String createdAt) {
+        public OverviewRecentAllocation(Long id, String borrowerName, int quantity, AllocationStatus status, String resourceName,
+                LocalDateTime createdAt) {
+            this(id, borrowerName, quantity, status.name(), resourceName, createdAt.format(LOCAL_DATE_TIME));
+        }
+    }
+
+    public record OverviewAllocations(long pending, long issued, long overdue, long consumed,
+            java.util.List<OverviewRecentAllocation> recent) { }
+
+    public record WorkspaceOverview(String sampledAt, long departmentCount, long projectActiveCount,
+            long resourceTypeCount, long requirementShortageCount, java.util.List<ResourceView> resourcePreview,
+            java.util.List<OverviewProject> calendarPreview, OverviewAllocations allocations) { }
+
     public static class CreateDepartment {
         @NotBlank @Size(max = 100) public String name;
         public CreateDepartment() { }

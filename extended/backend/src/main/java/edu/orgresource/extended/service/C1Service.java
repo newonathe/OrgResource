@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +20,6 @@ import edu.orgresource.extended.domain.Project;
 import edu.orgresource.extended.domain.Resource;
 import edu.orgresource.extended.domain.ResourceRequirement;
 import edu.orgresource.extended.domain.ResourceType;
-import edu.orgresource.extended.domain.AllocationStatus;
 import edu.orgresource.extended.repository.AllocationRepository;
 import edu.orgresource.extended.repository.DepartmentRepository;
 import edu.orgresource.extended.repository.ProjectRepository;
@@ -417,6 +417,33 @@ public class C1Service {
     }
 
     @Transactional(readOnly = true)
+    public ApiDtos.WorkspaceOverview workspaceOverview() {
+        long org = organizationContext.currentOrganizationId();
+        LocalDateTime now = LocalDateTime.now(philippineClock);
+        var role = organizationContext.requireCurrentMembership(org).role;
+        ApiDtos.OverviewAllocations allocationSummary = switch (role) {
+            case OWNER, ADMIN, CUSTODIAN -> {
+                var counts = allocations.countWorkspaceStatuses(org, now, AllocationStatus.PENDING, AllocationStatus.ISSUED,
+                        AllocationStatus.CONSUMED);
+                var recent = allocations.workspaceRecent(org, PageRequest.of(0, 5)).stream().map(row ->
+                        new ApiDtos.OverviewRecentAllocation(row.getId(), row.getBorrowerName(), row.getQuantity(),
+                                row.getStatus(), row.getResourceName(), row.getCreatedAt())).toList();
+                yield new ApiDtos.OverviewAllocations(counts.getPending(), counts.getIssued(), counts.getOverdue(),
+                        counts.getConsumed(), recent);
+            }
+            case LEAD, MEMBER -> null;
+        };
+        return new ApiDtos.WorkspaceOverview(now.toString(), departments.countByOrganizationId(org),
+                projects.countActiveWorkspaceProjects(org, now), resources.countWorkspaceTypes(org),
+                requirements.countWorkspaceShortages(org, now),
+                resourcePage(org, null, null, 5, null, now).items(),
+                projects.workspaceCalendar(org, now, PageRequest.of(0, 10)).stream().map(project ->
+                        new ApiDtos.OverviewProject(new ApiDtos.ProjectView(project), project.department.name,
+                                !project.startAt.isAfter(now))).toList(),
+                allocationSummary);
+    }
+
+    @Transactional(readOnly = true)
     public ApiDtos.WorkspacePage<ApiDtos.DepartmentView> departmentPage(String search, int limit, String cursor) {
         long org = organizationContext.currentOrganizationId();
         String term = normalizedSearch(search);
@@ -426,27 +453,33 @@ public class C1Service {
     }
 
     @Transactional(readOnly = true)
-    public ApiDtos.WorkspacePage<ApiDtos.ProjectView> projectPage(Long departmentId, String search, int limit, String cursor) {
+    public ApiDtos.WorkspacePage<ApiDtos.ProjectView> projectPage(Long departmentId, String search, String period, int limit, String cursor) {
         long org = organizationContext.currentOrganizationId();
         if (departmentId != null) {
             if (departmentId <= 0) throw new C1ApiException(400, "VALIDATION_FAILED", "departmentId must be positive.");
             if (departments.findByIdAndOrganizationId(departmentId, org).isEmpty()) throw notFound("Department");
         }
         String term = normalizedSearch(search);
-        WorkspacePageWindow page = WorkspacePageWindow.of(limit, cursor, org, "projects", departmentId + "|" + searchScope(term));
-        return page.result(projects.findWorkspacePage(org, page.after(), departmentId, term, page.queryLimit()),
+        if (period != null && !List.of("ACTIVE", "UPCOMING", "ENDED").contains(period))
+            throw new C1ApiException(400, "VALIDATION_FAILED", "period must be ACTIVE, UPCOMING or ENDED.");
+        WorkspacePageWindow page = WorkspacePageWindow.of(limit, cursor, org, "projects", departmentId + "|" + period + "|" + searchScope(term));
+        return page.result(projects.findWorkspacePage(org, page.after(), departmentId, term, period,
+                LocalDateTime.now(philippineClock), page.queryLimit()),
                 project -> project.id, ApiDtos.ProjectView::new);
     }
 
     @Transactional(readOnly = true)
     public ApiDtos.WorkspacePage<ApiDtos.ResourceView> resourcePage(ResourceType type, String search, int limit, String cursor) {
-        long org = organizationContext.currentOrganizationId();
+        return resourcePage(organizationContext.currentOrganizationId(), type, search, limit, cursor, LocalDateTime.now(philippineClock));
+    }
+
+    private ApiDtos.WorkspacePage<ApiDtos.ResourceView> resourcePage(long org, ResourceType type, String search, int limit,
+            String cursor, LocalDateTime sampledNow) {
         String normalizedSearch = normalizedSearch(search);
         WorkspacePageWindow page = WorkspacePageWindow.of(limit, cursor, org, "resources", type + "|" + searchScope(normalizedSearch));
         List<ResourceRepository.WorkspaceRow> rows = resources.findWorkspacePage(org, page.after(), type,
                 normalizedSearch, page.queryLimit());
         if (rows.isEmpty()) return new ApiDtos.WorkspacePage<>(List.of(), null);
-        LocalDateTime sampledNow = LocalDateTime.now(philippineClock);
         var balances = allocations.findInventoryPageBalances(org,
                 page.visible(rows).stream().map(ResourceRepository.WorkspaceRow::getId).toList(), sampledNow);
         var byId = balances.stream().collect(Collectors.toMap(row -> ((Number) row[0]).longValue(), row -> row));
@@ -474,11 +507,16 @@ public class C1Service {
     }
 
     @Transactional(readOnly = true)
-    public ApiDtos.WorkspacePage<ApiDtos.AllocationView> allocationPage(Long requirementId, AllocationStatus status,
+    public ApiDtos.WorkspacePage<ApiDtos.AllocationView> allocationPage(Long requirementId, Long projectId, AllocationStatus status,
             int limit, String cursor) {
         long org = allocationReadScope(requirementId);
-        WorkspacePageWindow page = WorkspacePageWindow.of(limit, cursor, org, "allocations", requirementId + "|" + status);
-        var rows = allocations.findWorkspacePage(org, page.after(), requirementId, status, page.queryLimit());
+        if (projectId != null) {
+            if (projectId <= 0) throw new C1ApiException(400, "VALIDATION_FAILED", "projectId must be positive.");
+            if (projects.findByIdAndOrganizationId(projectId, org).isEmpty()) throw notFound("Project");
+        }
+        WorkspacePageWindow page = WorkspacePageWindow.of(limit, cursor, org, "allocations",
+                requirementId + "|" + projectId + "|" + status);
+        var rows = allocations.findWorkspacePage(org, page.after(), requirementId, projectId, status, page.queryLimit());
         LocalDateTime sampledNow = LocalDateTime.now(philippineClock);
         return page.result(rows, row -> row.id, row -> new ApiDtos.AllocationView(row, row.requirement.project.endAt, sampledNow));
     }

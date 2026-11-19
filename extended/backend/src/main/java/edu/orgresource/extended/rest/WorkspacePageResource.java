@@ -23,6 +23,11 @@ import jakarta.ws.rs.core.Response;
 public class WorkspacePageResource {
     @Autowired private C1Component component;
 
+    @GET @Path("/overview")
+    public Response overview(@Context HttpServletRequest request) {
+        return C1HttpResponses.envelope(200, component.workspaceOverview(), request, true);
+    }
+
     @GET @Path("/departments")
     public Response departments(@QueryParam("search") String search,
             @DefaultValue("50") @QueryParam("limit") int limit, @QueryParam("cursor") String cursor,
@@ -32,10 +37,10 @@ public class WorkspacePageResource {
 
     @GET @Path("/projects")
     public Response projects(@QueryParam("departmentId") Long departmentId,
-            @QueryParam("search") String search,
+            @QueryParam("search") String search, @QueryParam("period") String period,
             @DefaultValue("50") @QueryParam("limit") int limit, @QueryParam("cursor") String cursor,
             @Context HttpServletRequest request) {
-        return C1HttpResponses.envelope(200, component.projectPage(departmentId, search, limit, cursor), request, true);
+        return C1HttpResponses.envelope(200, component.projectPage(departmentId, search, period, limit, cursor), request, true);
     }
 
     @GET @Path("/resources")
@@ -54,9 +59,10 @@ public class WorkspacePageResource {
     }
 
     @GET @Path("/allocations")
-    public Response allocations(@QueryParam("requirementId") Long requirementId, @QueryParam("status") AllocationStatus status,
+    public Response allocations(@QueryParam("requirementId") Long requirementId, @QueryParam("projectId") Long projectId,
+            @QueryParam("status") AllocationStatus status,
             @DefaultValue("50") @QueryParam("limit") int limit, @QueryParam("cursor") String cursor,
             @Context HttpServletRequest request) {
-        return C1HttpResponses.envelope(200, component.allocationPage(requirementId, status, limit, cursor), request, true);
+        return C1HttpResponses.envelope(200, component.allocationPage(requirementId, projectId, status, limit, cursor), request, true);
     }
 }

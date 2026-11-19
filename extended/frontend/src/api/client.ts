@@ -8,6 +8,7 @@ import type {
   ResourceAvailability,
   ResourceRequirement,
   ResourceType,
+  WorkspaceOverview,
 } from "./types";
 
 export class ApiError extends Error {
@@ -192,13 +193,20 @@ function workspacePage<T>(path: string, cursor: string | null, filters: Workspac
 }
 
 export const workspaceApi = {
+  overview: (signal?: AbortSignal) => request<WorkspaceOverview>("/v2/workspace/overview", "GET", undefined, { signal })
+    .then(({ data }) => {
+      if (typeof data?.departmentCount !== "number" || !Array.isArray(data.resourcePreview) || !Array.isArray(data.calendarPreview)) {
+        throw new ApiError(502, "INVALID_SERVER_RESPONSE", "The server returned an invalid Overview snapshot.");
+      }
+      return data;
+    }),
   departments: (cursor: string | null, search?: string, signal?: AbortSignal) => workspacePage<Department>("departments", cursor, { search }, signal),
-  projects: (cursor: string | null, filters: { departmentId?: number; search?: string }, signal?: AbortSignal) =>
+  projects: (cursor: string | null, filters: { departmentId?: number; search?: string; period?: string }, signal?: AbortSignal) =>
     workspacePage<Project>("projects", cursor, filters, signal),
   resources: (cursor: string | null, filters: { type?: ResourceType; search?: string }, signal?: AbortSignal) =>
     workspacePage<Resource>("resources", cursor, filters, signal),
   requirements: (cursor: string | null, filters: { projectId?: number; search?: string }, signal?: AbortSignal) =>
     workspacePage<ResourceRequirement>("requirements", cursor, filters, signal),
-  allocations: (cursor: string | null, filters: { requirementId?: number; status?: Allocation["status"] }, signal?: AbortSignal) =>
+  allocations: (cursor: string | null, filters: { requirementId?: number; projectId?: number; status?: Allocation["status"] }, signal?: AbortSignal) =>
     workspacePage<Allocation>("allocations", cursor, filters, signal),
 };

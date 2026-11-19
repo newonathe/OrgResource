@@ -62,6 +62,11 @@ public interface ResourceRequirementRepository extends JpaRepository<ResourceReq
                             @Param("organizationId") Long organizationId,
                             @Param("sampledNow") java.time.LocalDateTime sampledNow);
 
+    @Query("select count(q) from ResourceRequirement q where q.organizationId=:org and q.quantity > "
+            + "(select coalesce(" + COVERAGE_TOTAL + ",0) from Allocation a join a.requirement ref join ref.project p "
+            + "where ref.id=q.id and a.organizationId=:org)")
+    long countWorkspaceShortages(@Param("org") long org, @Param("sampledNow") LocalDateTime sampledNow);
+
     @Query("select q.id, " + COVERAGE_TOTAL + " from Allocation a join a.requirement q join q.project p "
             + "where q.id in :ids and a.organizationId=:organizationId group by q.id")
     List<Object[]> sumPageCoverage(@Param("ids") List<Long> ids, @Param("organizationId") long organizationId,

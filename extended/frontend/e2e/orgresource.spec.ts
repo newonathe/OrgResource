@@ -725,25 +725,32 @@ test("captures the all-page responsive light/dark screenshot matrix", async ({ p
   await page.screenshot({ path: resolve(screenshotDir, "detail-resource-light.png"), fullPage: false });
   await page.getByRole("button", { name: "Close dialog" }).click();
 
-  await page.route("**/api/departments", async (route) => {
-    await page.waitForTimeout(1_000);
-    await route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
+  const departmentPage = "**/api/v2/workspace/departments*";
+  let completeEmptyPage!: () => void;
+  const waitForScreenshot = new Promise<void>(finish => { completeEmptyPage = finish; });
+  await page.route(departmentPage, async route => {
+    await waitForScreenshot;
+    await route.fulfill({ status: 200, json: { data: { items: [], nextCursor: null } } });
   });
-  await page.goto("/#/departments");
-  await expect(page.getByRole("status")).toContainText("Loading current records");
-  await page.screenshot({ path: resolve(screenshotDir, "state-departments-loading.png"), fullPage: false });
+  try {
+    await page.goto("/#/departments");
+    await expect(page.locator('.state-block[role="status"]')).toContainText("Loading current records");
+    await page.screenshot({ path: resolve(screenshotDir, "state-departments-loading.png"), fullPage: false });
+  } finally {
+    completeEmptyPage();
+  }
   await expect(page.getByText("No departments yet")).toBeVisible();
   await page.screenshot({ path: resolve(screenshotDir, "state-departments-empty.png"), fullPage: true });
-  await page.unroute("**/api/departments");
+  await page.unroute(departmentPage);
 
-  await page.route("**/api/departments", async (route) => {
-    await route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ code: "TEST_UNAVAILABLE", message: "Test-only unavailable response." }) });
+  await page.route(departmentPage, async route => {
+    await route.fulfill({ status: 503, json: { code: "TEST_UNAVAILABLE", message: "Test-only unavailable response." } });
   });
   await page.goto("/#/about");
   await page.goto("/#/departments");
   await expect(page.getByRole("alert")).toContainText("Test-only unavailable response");
   await page.screenshot({ path: resolve(screenshotDir, "state-departments-error.png"), fullPage: false });
-  await page.unroute("**/api/departments");
+  await page.unroute(departmentPage);
 });
 
 test("desktop pointer highlights follow the mouse and motion can be switched off", async ({ page }) => {

@@ -3160,6 +3160,9 @@ class C1IdentityAcceptanceTest {
         assertEquals(3, requirement.get("allocatedQuantity").getAsInt());
         assertEquals(17, requirement.get("shortageQuantity").getAsInt());
         assertEquals(404, get(foreignActor.client, root + "/projects?departmentId=" + departmentId).statusCode());
+        assertEquals(1, workspacePage(actor, root + "/projects?period=UPCOMING").getAsJsonArray("items").size());
+        assertTrue(workspacePage(actor, root + "/projects?period=ACTIVE").getAsJsonArray("items").isEmpty());
+        assertEquals(400, get(actor.client, root + "/projects?period=unknown").statusCode());
         assertEquals(401, get(newClient(), stock).statusCode());
 
         insertWorkspaceResources(owner.orgDbId, 1, 100);
@@ -3178,7 +3181,10 @@ class C1IdentityAcceptanceTest {
         assertEquals(400, get(actor.client, root + "/resources?limit=101").statusCode());
 
         // Commit a new batch between requests and continue from the same original keyset boundary.
-        insertWorkspaceResources(owner.orgDbId, 101, 1000);
+        var concurrentInsert = java.util.concurrent.CompletableFuture.runAsync(
+                () -> insertWorkspaceResources(owner.orgDbId, 101, 1000));
+        assertEquals(firstPage, workspacePage(actor, stock));
+        concurrentInsert.get(20, TimeUnit.SECONDS);
         List<Long> seenResources = new java.util.ArrayList<>();
         firstPage.getAsJsonArray("items").forEach(item -> seenResources.add(item.getAsJsonObject().get("id").getAsLong()));
         readWorkspacePages(actor, stock, firstCursor, seenResources);
@@ -3196,6 +3202,37 @@ class C1IdentityAcceptanceTest {
         assertEquals(jdbc.queryForList("SELECT id FROM allocation WHERE organization_id=? AND status='PENDING' ORDER BY id",
                 Long.class, owner.orgDbId), seenAllocations);
         assertEquals(1001, seenAllocations.size());
+        assertEquals(100, workspacePage(actor, requests + "&projectId=" + projectId).getAsJsonArray("items").size());
+        assertEquals(404, get(foreignActor.client, requests + "&projectId=" + projectId).statusCode());
+        assertEquals(404, get(actor.client, requests + "&projectId=" + projectId + "&cursor="
+                + workspacePage(actor, requests).get("nextCursor").getAsString()).statusCode());
+        JsonObject overview = workspacePage(actor, root + "/overview");
+        assertEquals(1, overview.get("departmentCount").getAsLong());
+        assertEquals(0, overview.get("projectActiveCount").getAsLong());
+        assertEquals(2, overview.get("resourceTypeCount").getAsLong());
+        assertEquals(1, overview.get("requirementShortageCount").getAsLong());
+        assertEquals(5, overview.getAsJsonArray("resourcePreview").size());
+        assertEquals(1, overview.getAsJsonArray("calendarPreview").size());
+        JsonObject allocationSummary = overview.getAsJsonObject("allocations");
+        assertEquals(1001, allocationSummary.get("pending").getAsLong());
+        assertEquals(0, allocationSummary.get("issued").getAsLong());
+        assertEquals(0, allocationSummary.get("overdue").getAsLong());
+        assertEquals(0, allocationSummary.get("consumed").getAsLong());
+        assertEquals(5, allocationSummary.getAsJsonArray("recent").size());
+        assertTrue(allocationSummary.getAsJsonArray("recent").asList().stream()
+                .allMatch(item -> item.getAsJsonObject().get("resourceName").getAsString().equals("C8 flagship resource")));
+        assertEquals(0, workspacePage(foreignActor, root + "/overview").getAsJsonObject("allocations").get("pending").getAsLong());
+
+        var resourcePlan = jdbc.queryForMap(
+                "EXPLAIN SELECT id FROM resource WHERE organization_id=? AND id>? ORDER BY id LIMIT 101", owner.orgDbId, resourceId);
+        var allocationPlan = jdbc.queryForMap(
+                "EXPLAIN SELECT id FROM allocation WHERE organization_id=? AND id>? AND status='PENDING' ORDER BY id LIMIT 101",
+                owner.orgDbId, approvedId);
+        assertNotNull(resourcePlan.get("type"));
+        assertNotNull(allocationPlan.get("type"));
+        System.out.printf("C8 MySQL keyset EXPLAIN: resource (access=%s index=%s est=%s); allocation (access=%s index=%s est=%s)%n",
+                resourcePlan.get("type"), resourcePlan.get("key"), resourcePlan.get("rows"),
+                allocationPlan.get("type"), allocationPlan.get("key"), allocationPlan.get("rows"));
         assertEquals(37, workspacePage(actor, stock + "&search=FLAGSHIP").getAsJsonArray("items")
                 .get(0).getAsJsonObject().get("availableQuantity").getAsInt());
         assertEquals(40, jdbc.queryForObject("SELECT total_quantity FROM resource WHERE id=?", Integer.class, resourceId));
@@ -3206,6 +3243,9 @@ class C1IdentityAcceptanceTest {
         String memberPath = "/api/v2/orgs/" + owner.orgPublicId + "/members/" + custodian.membershipPublicId;
         assertEquals(200, post(actor, memberPath + "/role", GSON.toJson(new RoleRequest("MEMBER")), "\"v0\"").statusCode());
         assertEquals(403, get(otherRole.client, requests + "&cursor=" + allocationCursor).statusCode());
+        JsonObject memberOverview = workspacePage(otherRole, root + "/overview");
+        assertTrue(memberOverview.get("allocations").isJsonNull(), "No borrower metrics or rows are returned to a MEMBER");
+        assertEquals(1, memberOverview.get("requirementShortageCount").getAsLong());
     }
 
     private void insertWorkspaceResources(long org, int first, int last) {

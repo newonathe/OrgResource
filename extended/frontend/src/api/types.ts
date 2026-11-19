@@ -68,3 +68,28 @@ export interface ApiErrorBody {
 export interface DeleteResponse {
   message: "Record deleted.";
 }
+
+
+export interface WorkspaceOverview {
+  sampledAt: string;
+  departmentCount: number;
+  projectActiveCount: number;
+  resourceTypeCount: number;
+  requirementShortageCount: number;
+  resourcePreview: Resource[];
+  calendarPreview: { project: Project; departmentName: string; active: boolean }[];
+  allocations: {
+    pending: number;
+    issued: number;
+    overdue: number;
+    consumed: number;
+    recent: {
+      id: number;
+      borrowerName: string;
+      quantity: number;
+      status: AllocationStatus;
+      resourceName: string;
+      createdAt: string;
+    }[];
+  } | null;
+}

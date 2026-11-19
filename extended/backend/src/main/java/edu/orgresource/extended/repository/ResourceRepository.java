@@ -16,6 +16,9 @@ import jakarta.persistence.LockModeType;
 public interface ResourceRepository extends JpaRepository<Resource, Long> {
     List<Resource> findByOrganizationIdOrderById(Long organizationId);
     List<Resource> findByOrganizationIdAndTypeOrderById(Long organizationId, ResourceType type);
+    @Query("select count(distinct r.type) from Resource r where r.organizationId=:org")
+    long countWorkspaceTypes(@Param("org") long org);
+
     Optional<Resource> findByIdAndOrganizationId(Long id, Long organizationId);
     Optional<Resource> findByPublicIdAndOrganizationId(java.util.UUID publicId, Long organizationId);
     boolean existsByOrganizationIdAndNameKey(Long organizationId, String nameKey);

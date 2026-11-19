@@ -14,6 +14,7 @@ import edu.orgresource.extended.domain.Department;
 
 public interface DepartmentRepository extends JpaRepository<Department, Long> {
     List<Department> findByOrganizationIdOrderById(Long organizationId);
+    long countByOrganizationId(Long organizationId);
     Optional<Department> findByIdAndOrganizationId(Long id, Long organizationId);
     boolean existsByOrganizationIdAndNameKey(Long organizationId, String nameKey);
     boolean existsByOrganizationIdAndNameKeyAndIdNot(Long organizationId, String nameKey, Long id);
