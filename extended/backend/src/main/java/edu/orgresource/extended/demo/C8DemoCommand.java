@@ -8,6 +8,7 @@ import java.security.MessageDigest;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Locale;
 import java.util.UUID;
 
 import org.springframework.boot.SpringApplication;
@@ -101,26 +102,45 @@ public final class C8DemoCommand {
         var reader = new ObjectMapper().reader().with(JsonParser.Feature.STRICT_DUPLICATE_DETECTION)
                 .with(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
         JsonNode plan = reader.readTree(raw);
-        if (!"orgresource-c8-plan-v1".equals(plan.path("generator").asText())
-                || !"LOCAL_ONLY_DRY_RUN".equals(plan.path("scope").asText()) || !plan.path("synthetic").asBoolean()
-                || !AS_OF.toString().equals(plan.path("window").path("as_of").asText())
-                || !plan.path("dataset_id").asText().matches("orgresource-c8-plan-v1-[0-9a-f]{12}-[0-9a-f]{12}")
+        String scope = plan.path("scope").asText();
+        var profile = switch (scope) {
+            case "LOCAL_ONLY_DRY_RUN" -> new FixtureProfile("", 96, 21060, 0);
+            case "LOCAL_ONLY_SMALL_TEST" -> new FixtureProfile("small", 3, 36, 12);
+            case "LOCAL_ONLY_INTERMEDIATE_TEST" -> new FixtureProfile("intermediate", 8, 960, 120);
+            default -> throw new IllegalArgumentException("Unsupported local demo profile.");
+        };
+        String suffix = profile.testName().isEmpty() ? "" : "-" + profile.testName();
+        if (!"orgresource-c8-plan-v1".equals(plan.path("generator").asText()) || !plan.path("synthetic").isBoolean()
+                || !plan.path("synthetic").asBoolean() || !AS_OF.toString().equals(plan.path("window").path("as_of").asText())
+                || !plan.path("dataset_id").asText().matches("orgresource-c8-plan-v1-[0-9a-f]{12}-[0-9a-f]{12}" + suffix)
                 || !plan.path("source_sha256").asText().matches("[0-9a-f]{64}")
-                || !plan.path("organizations").isArray() || plan.path("organizations").size() != 96)
-            throw new IllegalArgumentException("The file is not the approved local C8 full plan.");
+                || !plan.path("organizations").isArray() || plan.path("organizations").size() != profile.organizations())
+            throw new IllegalArgumentException("The file does not match the declared local C8 plan profile.");
         var ids = new HashSet<UUID>();
         var keys = new HashSet<String>();
         int requests = 0;
+        int index = 0;
         for (JsonNode organization : plan.path("organizations")) {
+            index++;
             String key = organization.path("reference_key").asText(), label = organization.path("directory_label").asText();
             if (!key.matches("[a-z0-9-]{3,128}") || !keys.add(key)
                     || !ids.add(UUID.fromString(organization.path("id").asText()))
                     || label.isBlank() || label.codePointCount(0, label.length()) > 120
                     || label.codePoints().anyMatch(Character::isISOControl))
                 throw new IllegalArgumentException("The demo plan contains a duplicate or invalid organization reference.");
-            requests = Math.addExact(requests, organization.path("allocations").size());
+            int organizationRequests = organization.path("allocations").size();
+            if (!profile.testName().isEmpty()) {
+                String ordinal = String.format(Locale.ROOT, "%02d", index);
+                if (!key.equals("fictional-" + profile.testName() + "-" + ordinal)
+                        || !label.equals("Fictional Workspace " + ordinal)
+                        || organizationRequests != profile.requestsPerWorkspace())
+                    throw new IllegalArgumentException("Test profiles require the fixed fictional labels and workload.");
+            }
+            requests = Math.addExact(requests, organizationRequests);
         }
-        if (requests != 21060) throw new IllegalArgumentException("The plan does not contain the approved workload floor.");
+        if (requests != profile.requests()) throw new IllegalArgumentException("The plan does not match the approved workload.");
         return plan;
     }
+
+    private record FixtureProfile(String testName, int organizations, int requests, int requestsPerWorkspace) { }
 }

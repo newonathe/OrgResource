@@ -26,7 +26,23 @@ public interface MembershipRepository extends JpaRepository<Membership, Long> {
 
     Optional<Membership> findByOrganizationIdAndUserId(Long organizationId, Long userId);
     Optional<Membership> findByOrganizationIdAndPublicId(Long organizationId, java.util.UUID publicId);
-    List<Membership> findByUserIdAndStatusOrderByOrganizationId(Long userId, Membership.Status status);
+    interface AccountOrganizationRow {
+        java.util.UUID getMembershipId();
+        java.util.UUID getOrganizationId();
+        String getSlug();
+        String getDisplayName();
+        Organization.Status getOrganizationStatus();
+        Membership.Role getRole();
+        Membership.Status getMembershipStatus();
+        long getVersion();
+    }
+
+    @Query("select m.publicId as membershipId,o.publicId as organizationId,o.slug as slug,o.displayName as displayName, "
+            + "o.status as organizationStatus,m.role as role,m.status as membershipStatus,m.version as version "
+            + "from Membership m join Organization o on o.id=m.organizationId "
+            + "where m.userId=:userId and m.status=:status order by o.id")
+    List<AccountOrganizationRow> findAccountOrganizations(@Param("userId") long userId,
+                                                            @Param("status") Membership.Status status);
     List<Membership> findByOrganizationIdAndStatusOrderById(Long organizationId, Membership.Status status);
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select m from Membership m where m.organizationId = :org and m.id in :ids order by m.id")

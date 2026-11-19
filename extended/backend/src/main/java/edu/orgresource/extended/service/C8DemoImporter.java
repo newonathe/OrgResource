@@ -90,21 +90,25 @@ public class C8DemoImporter {
         LocalDateTime wall = LocalDateTime.ofInstant(wallClock.instant(), ZoneOffset.UTC);
         UserAccount operator = transaction.execute(status -> accounts.saveAndFlush(
                 new UserAccount(OPERATOR, "Local demo operator", wall)));
+        JsonNode workspaces = plan.path("organizations");
+        int expectedRequests = 0;
         int imported = 0;
-        for (JsonNode slice : plan.path("organizations")) {
+        for (JsonNode slice : workspaces) {
+            expectedRequests += slice.path("allocations").size();
             transaction.executeWithoutResult(status -> importOrganization(slice, plan, planSha, operator, wall));
             imported++;
-            if (imported % 12 == 0) System.out.println("Reconciled local demo workspaces: " + imported + " / 96");
+            if (imported % 12 == 0) System.out.println("Reconciled local demo workspaces: " + imported + " / " + workspaces.size());
         }
+        int totalRequests = expectedRequests;
         transaction.executeWithoutResult(status -> {
-            assertCount(96, "SELECT COUNT(*) FROM organization WHERE demo_plan_sha=?", planSha);
-            assertCount(21060, "SELECT COUNT(*) FROM allocation");
+            assertCount(workspaces.size(), "SELECT COUNT(*) FROM organization WHERE demo_plan_sha=?", planSha);
+            assertCount(totalRequests, "SELECT COUNT(*) FROM allocation");
             assertCount(0, "SELECT COUNT(*) FROM allocation WHERE sms_consent OR phone_ciphertext IS NOT NULL");
             for (var state : plan.path("final_states").properties())
                 assertCount(state.getValue().intValue(), "SELECT COUNT(*) FROM allocation WHERE status=?", state.getKey());
             credentials.saveAndFlush(new LocalCredential(operator.id, passwords.encode(ownerPassword), wall));
         });
-        System.out.println("C8 local demo import reconciled. 96 workspaces and 21060 fictional requests. Account: " + OPERATOR);
+        System.out.printf("C8 local demo import reconciled. %d workspaces and %d fictional requests.%n", workspaces.size(), totalRequests);
     }
 
     private void importOrganization(JsonNode slice, JsonNode plan, String planSha, UserAccount operator, LocalDateTime wall) {

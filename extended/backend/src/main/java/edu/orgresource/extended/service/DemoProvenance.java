@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DemoProvenance {
-    public static final String NOTICE = "DEMO ENVIRONMENT — Public directory labels. All operations, dates, accounts, inventories and transaction history are simulated. No affiliation, adoption or endorsement is implied.";
+    public static final String NOTICE = "DEMO ENVIRONMENT — Any real organization labels come from public listings. All operations, dates, accounts, inventories and transaction history are simulated. No affiliation, adoption or endorsement is implied.";
     private final JdbcTemplate jdbc;
 
     public DemoProvenance(JdbcTemplate jdbc) {
@@ -16,7 +16,10 @@ public class DemoProvenance {
         return jdbc.query("""
                 SELECT demo_dataset_id,demo_as_of FROM organization o WHERE demo_dataset_id IS NOT NULL
                 AND (SELECT COUNT(*) FROM organization cohort WHERE cohort.demo_dataset_id=o.demo_dataset_id
-                    AND cohort.demo_plan_sha=o.demo_plan_sha)=96
+                    AND cohort.demo_plan_sha=o.demo_plan_sha)=CASE
+                        WHEN o.demo_dataset_id LIKE '%-small' THEN 3
+                        WHEN o.demo_dataset_id LIKE '%-intermediate' THEN 8
+                        ELSE 96 END
                 AND EXISTS (SELECT 1 FROM user_account u JOIN local_credential c ON c.user_id=u.id
                     WHERE u.username_key='c8-demo-operator' AND u.status='ACTIVE')
                 ORDER BY id LIMIT 1

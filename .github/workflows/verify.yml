@@ -173,6 +173,35 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Verify Extended C Java 21 backend against isolated MySQL
         run: bash ./backend/mvnw -B -f extended/backend/pom.xml clean verify
+      - name: Replay and reconcile the fictional C8 small profile
+        env:
+          MYSQL_CONTAINER: ${{ job.services.mysql.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          schema=orgresource_c8_demo_ci_fixture
+          runtime_password="$(openssl rand -hex 24)"
+          migration_password="$(openssl rand -hex 24)"
+          owner_password="$(openssl rand -hex 24)"
+          for password in "$runtime_password" "$migration_password" "$owner_password"; do echo "::add-mask::$password"; done
+          mysql_ci() { docker exec -i --env MYSQL_PWD="$EXT_DB_MIGRATION_PASSWORD" "$MYSQL_CONTAINER" mysql -uroot "$@"; }
+          mysql_ci <<SQL
+          CREATE DATABASE $schema CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+          CREATE USER 'c8_ci_runtime'@'%' IDENTIFIED BY '$runtime_password';
+          CREATE USER 'c8_ci_migrator'@'%' IDENTIFIED BY '$migration_password';
+          GRANT SELECT,INSERT,UPDATE,DELETE ON $schema.* TO 'c8_ci_runtime'@'%';
+          GRANT ALL PRIVILEGES ON $schema.* TO 'c8_ci_migrator'@'%';
+          SQL
+          plan="$RUNNER_TEMP/c8-fictional-plan.json"
+          python3 scripts/generate-c8-demo.py --profile small --seed c8-fixture-proof-v1 --output "$plan"
+          digest="$(sha256sum "$plan" | cut -d' ' -f1)"
+          EXT_C8_DEMO_TARGET="$schema" EXT_C8_DEMO_CONFIRM_TARGET="IMPORT $schema" EXT_C8_DEMO_PORT=3306 \
+            EXT_C8_DEMO_PLAN="$plan" EXT_C8_DEMO_PLAN_SHA256="$digest" EXT_C8_DEMO_OWNER_PASSWORD="$owner_password" \
+            EXT_DB_USER=c8_ci_runtime EXT_DB_PASSWORD="$runtime_password" \
+            EXT_DB_MIGRATION_USER=c8_ci_migrator EXT_DB_MIGRATION_PASSWORD="$migration_password" \
+            java -jar extended/backend/target/extended-backend-0.1.0-SNAPSHOT.jar --c8-local-demo-import
+          counts="$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT (SELECT COUNT(*) FROM organization),(SELECT COUNT(*) FROM allocation),(SELECT COUNT(*) FROM stock_movement),(SELECT COUNT(*) FROM local_credential);')"
+          [ "$counts" = $'3\t36\t40\t1' ]
       - name: Run authenticated Newman and browser acceptance against packaged JAR
         env:
           MYSQL_CONTAINER: ${{ job.services.mysql.id }}

@@ -21,6 +21,10 @@ EXPECTED_TIERS = {
     "STANDARD_COA_DIRECTORY": 56,
     "STANDARD_LIONS_DIRECTORY": 24,
 }
+TEST_PROFILES = {
+    "small": (3, {"departments": 1, "personas": 4, "projects": 2, "resource_types": 5, "allocation_requests": 12}),
+    "intermediate": (8, {"departments": 2, "personas": 5, "projects": 6, "resource_types": 20, "allocation_requests": 120}),
+}
 TEAM_NAMES = ("Equipment", "Training", "Community", "Media", "Operations", "Logistics")
 REUSABLE_NAMES = ("Portable projector", "Audio kit", "Folding stand", "Tool case", "Display frame")
 CONSUMABLE_NAMES = ("Card sleeves", "Paper sheets", "Label strips", "Packing tape", "Marker set")
@@ -236,7 +240,21 @@ def verify_organization(org):
     return Counter(states.values())
 
 
-def build(source, source_hash, seed):
+def test_source(profile):
+    count, volumes = TEST_PROFILES[profile]
+    tier = profile.upper() + "_TEST"
+    return {
+        "organization_references": [
+            {"reference_key": f"fictional-{profile}-{index:02d}", "directory_label": f"Fictional Workspace {index:02d}",
+             "tier": tier} for index in range(1, count + 1)
+        ],
+        "tiers": {tier: {key: [value, value] for key, value in volumes.items()}},
+        "demo_window": {"start": OPEN.isoformat(), "end": CLOSE.isoformat(), "as_of": AS_OF.isoformat(),
+                        "zone": "Asia/Manila"},
+    }
+
+
+def build(source, source_hash, seed, profile):
     orgs = [organization_plan(row, source["tiers"][row["tier"]], seed)
             for row in sorted(source["organization_references"], key=lambda item: item["reference_key"])]
     statuses = Counter()
@@ -246,24 +264,35 @@ def build(source, source_hash, seed):
         months.update(event["occurred_at"][:7] for event in org["events"])
     counts = {kind: sum(len(org[kind]) for org in orgs) for kind in (
         "departments", "personas", "projects", "resources", "requirements", "allocations", "events")}
-    if counts["allocations"] != 21060 or len(months) != 12 or len(statuses) != 6:
+    if profile == "full" and (counts["allocations"] != 21060 or len(months) != 12 or len(statuses) != 6):
         raise ValueError("The dry run missed a workload, calendar or state gate.")
+    suffix = "" if profile == "full" else f"-{profile}"
     return {"generator": VERSION, "source_sha256": source_hash, "seed": seed,
-            "dataset_id": f"{VERSION}-{source_hash[:12]}-{hashlib.sha256(seed.encode()).hexdigest()[:12]}",
-            "scope": "LOCAL_ONLY_DRY_RUN", "synthetic": True, "window": source["demo_window"],
+            "dataset_id": f"{VERSION}-{source_hash[:12]}-{hashlib.sha256(seed.encode()).hexdigest()[:12]}{suffix}",
+            "scope": "LOCAL_ONLY_DRY_RUN" if profile == "full" else f"LOCAL_ONLY_{profile.upper()}_TEST", "synthetic": True, "window": source["demo_window"],
             "counts": counts, "final_states": dict(statuses), "organizations": orgs}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--source", type=Path, required=True)
-    parser.add_argument("--source-sha256", required=True)
+    parser.add_argument("--profile", choices=("full", *TEST_PROFILES), default="full")
+    parser.add_argument("--source", type=Path)
+    parser.add_argument("--source-sha256")
     parser.add_argument("--seed", required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     if not (1 <= len(args.seed) <= 80 and args.seed.isascii() and args.seed.isprintable()):
         raise ValueError("The seed must be 1–80 printable ASCII characters.")
-    plan = build(read_source(args.source, args.source_sha256), args.source_sha256, args.seed)
+    if args.profile == "full":
+        if not args.source or not args.source_sha256:
+            parser.error("The full profile requires the approved local source and its SHA-256.")
+        source, digest = read_source(args.source, args.source_sha256), args.source_sha256
+    else:
+        if args.source or args.source_sha256:
+            parser.error("Test profiles use only fully fictional workspace labels.")
+        source = test_source(args.profile)
+        digest = hashlib.sha256(canonical(source)).hexdigest()
+    plan = build(source, digest, args.seed, args.profile)
     payload = canonical(plan)
     if args.output.exists():
         if args.output.read_bytes() != payload:

@@ -122,15 +122,11 @@ public class C1SessionService {
 
     @Transactional(readOnly = true)
     public List<IdentityDtos.OrganizationView> organizations(long accountId) {
-        List<IdentityDtos.OrganizationView> result = new ArrayList<>();
-        for (Membership membership : memberships.findByUserIdAndStatusOrderByOrganizationId(
-                accountId, Membership.Status.ACTIVE)) {
-            Organization organization = organizations.findById(membership.organizationId).orElse(null);
-            if (organization != null && organization.status == Organization.Status.ACTIVE)
-                result.add(new IdentityDtos.OrganizationView(organization.publicId, organization.slug,
-                        organization.displayName, membership.role.name()));
-        }
-        return List.copyOf(result);
+        return memberships.findAccountOrganizations(accountId, Membership.Status.ACTIVE).stream()
+                .filter(row -> row.getOrganizationStatus() == Organization.Status.ACTIVE)
+                .map(row -> new IdentityDtos.OrganizationView(row.getOrganizationId(), row.getSlug(),
+                        row.getDisplayName(), row.getRole().name()))
+                .toList();
     }
 
     @Transactional
@@ -151,12 +147,9 @@ public class C1SessionService {
 
     public IdentityDtos.SessionView sessionView(UserAccount account, HttpServletRequest request) {
         List<IdentityDtos.MemberView> memberViews = new ArrayList<>();
-        for (Membership membership : memberships.findByUserIdAndStatusOrderByOrganizationId(
-                account.id, Membership.Status.ACTIVE)) {
-            Organization organization = organizations.findById(membership.organizationId).orElse(null);
-            if (organization == null) continue;
-            memberViews.add(new IdentityDtos.MemberView(membership.publicId, organization.publicId,
-                    account.usernameKey, account.displayName, membership.role.name(), membership.status.name(), membership.version));
+        for (var row : memberships.findAccountOrganizations(account.id, Membership.Status.ACTIVE)) {
+            memberViews.add(new IdentityDtos.MemberView(row.getMembershipId(), row.getOrganizationId(),
+                    account.usernameKey, account.displayName, row.getRole().name(), row.getMembershipStatus().name(), row.getVersion()));
         }
         memberViews.sort(Comparator.comparing(view -> view.organizationId().toString()));
         UUID activeOrg = null;

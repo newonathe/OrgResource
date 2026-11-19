@@ -8,6 +8,18 @@ param(
 $ErrorActionPreference = 'Stop'
 $Plan = (Resolve-Path -LiteralPath $Plan).Path
 if ((Get-FileHash -LiteralPath $Plan -Algorithm SHA256).Hash -ne $Sha256) { throw 'The source plan checksum differs.' }
+$totals = [Text.Json.JsonDocument]::Parse([IO.File]::ReadAllText($Plan))
+try {
+    $root = $totals.RootElement
+    $workspaceCount = $root.GetProperty('organizations').GetArrayLength()
+    $profile = $root.GetProperty('scope').GetString()
+    $expected = @{}
+    foreach ($kind in @('personas','departments','projects','resources','requirements','allocations')) {
+        $expected[$kind] = $root.GetProperty('counts').GetProperty($kind).GetInt32()
+    }
+    $states = @{}
+    foreach ($state in $root.GetProperty('final_states').EnumerateObject()) { $states[$state.Name] = $state.Value.GetInt32() }
+} finally { $totals.Dispose() }
 $repo = Split-Path -Parent $PSScriptRoot
 $jar = Join-Path $repo 'extended/backend/target/extended-backend-0.1.0-SNAPSHOT.jar'
 if (!(Test-Path -LiteralPath $jar -PathType Leaf)) { throw 'Build and verify the Extended Java 21 JAR first.' }
@@ -24,8 +36,8 @@ if ($ReuseProofFolder) {
     $leaf = Split-Path -Leaf $rootDirectory
     if ($leaf -notmatch '^OrgResource-C8-Demo-([a-f0-9]{12})$') { throw 'Select a guarded disposable demo proof folder.' }
     $suffix = $Matches[1]
-    $expected = Join-Path ([IO.Path]::GetTempPath()) $leaf
-    if ($rootDirectory -ne $expected -or
+    $expectedDirectory = Join-Path ([IO.Path]::GetTempPath()) $leaf
+    if ($rootDirectory -ne $expectedDirectory -or
         !(Select-String -LiteralPath (Join-Path $rootDirectory 'import.log') -SimpleMatch 'C8 local demo import reconciled.')) {
         throw 'The demo proof folder is outside the temporary directory or lacks its completed import log.'
     }
@@ -116,21 +128,41 @@ GRANT SELECT,INSERT,UPDATE,DELETE ON $target.* TO 'c8_demo_runtime'@'127.0.0.1';
         $env:EXT_DB_PASSWORD = $appPassword
         $env:EXT_DB_MIGRATION_USER = 'c8_demo_migrator'
         $env:EXT_DB_MIGRATION_PASSWORD = $migrationPassword
+        if ($profile -eq 'LOCAL_ONLY_SMALL_TEST') {
+            $blocked = Join-Path $rootDirectory 'corrupt-plan-refusal.log'
+            $env:EXT_C8_DEMO_PLAN_SHA256 = '0' * 64
+            & $java -Xmx256m -jar $jar --c8-local-demo-import *> $blocked
+            if ($LASTEXITCODE -eq 0 -or !(Select-String -LiteralPath $blocked -SimpleMatch 'differs from the approved SHA-256')) {
+                throw 'The wrong plan digest did not fail closed.'
+            }
+            Assert-DatabaseCount 'SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE();' 0
+            $env:EXT_C8_DEMO_PLAN_SHA256 = $Sha256
+            Invoke-RootSql "USE $target; CREATE TABLE c8_guard_fixture (id INT PRIMARY KEY); INSERT INTO c8_guard_fixture VALUES (1);"
+            $blocked = Join-Path $rootDirectory 'nonempty-target-refusal.log'
+            & $java -Xmx256m -jar $jar --c8-local-demo-import *> $blocked
+            if ($LASTEXITCODE -eq 0 -or !(Select-String -LiteralPath $blocked -SimpleMatch 'already contains tables or does not match')) {
+                throw 'The partially provisioned target did not fail closed.'
+            }
+            Assert-DatabaseCount 'SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE();' 1
+            Assert-DatabaseCount 'SELECT COUNT(*) FROM c8_guard_fixture WHERE id=1;' 1
+            Invoke-RootSql "USE $target; DROP TABLE c8_guard_fixture;"
+            Write-Output 'Wrong plan digest and partially provisioned disposable target failed closed before any migrations.'
+        }
         $output = Join-Path $rootDirectory 'import.log'
         Write-Output "Guarded import proof log $output"
         $timer.Start()
         & $java -Xmx768m -jar $jar --c8-local-demo-import *> $output
-        Require-NativeExit 'Guarded full historical import'
+        Require-NativeExit 'Guarded historical import'
         $timer.Stop()
     }
-    Assert-DatabaseCount "SELECT COUNT(*) FROM organization WHERE demo_plan_sha='$Sha256';" 96
-    Assert-DatabaseCount 'SELECT COUNT(*) FROM membership;' 462
+    Assert-DatabaseCount "SELECT COUNT(*) FROM organization WHERE demo_plan_sha='$Sha256';" $workspaceCount
+    Assert-DatabaseCount 'SELECT COUNT(*) FROM membership;' $expected.personas
     Assert-DatabaseCount 'SELECT COUNT(*) FROM local_credential;' 1
-    Assert-DatabaseCount 'SELECT COUNT(*) FROM department;' 248
-    Assert-DatabaseCount 'SELECT COUNT(*) FROM project;' 713
-    Assert-DatabaseCount 'SELECT COUNT(*) FROM resource;' 1312
-    Assert-DatabaseCount 'SELECT COUNT(*) FROM resource_requirement;' 2139
-    Assert-DatabaseCount 'SELECT COUNT(*) FROM allocation;' 21060
+    Assert-DatabaseCount 'SELECT COUNT(*) FROM department;' $expected.departments
+    Assert-DatabaseCount 'SELECT COUNT(*) FROM project;' $expected.projects
+    Assert-DatabaseCount 'SELECT COUNT(*) FROM resource;' $expected.resources
+    Assert-DatabaseCount 'SELECT COUNT(*) FROM resource_requirement;' $expected.requirements
+    Assert-DatabaseCount 'SELECT COUNT(*) FROM allocation;' $expected.allocations
     Assert-DatabaseCount 'SELECT COUNT(*) FROM allocation WHERE sms_consent OR phone_ciphertext IS NOT NULL;' 0
     Assert-DatabaseCount @'
 SELECT COUNT(*) FROM resource r
@@ -155,18 +187,14 @@ SELECT COUNT(*) FROM resource_requirement q JOIN (
     GROUP BY a.organization_id,a.requirement_id) c ON c.organization_id=q.organization_id AND c.requirement_id=q.id
 WHERE c.covered>q.quantity;
 '@ 0
-    $totals = [Text.Json.JsonDocument]::Parse([IO.File]::ReadAllText($Plan))
-    try {
-        $states = $totals.RootElement.GetProperty('final_states')
-        $expectedMovements = 1312 + $states.GetProperty('CONSUMED').GetInt32() +
-            $states.GetProperty('ISSUED').GetInt32() + 2 * $states.GetProperty('RETURNED').GetInt32()
-        Assert-DatabaseCount 'SELECT COUNT(*) FROM stock_movement;' $expectedMovements
-        foreach ($state in @('APPROVED','CANCELLED','CONSUMED','ISSUED','PENDING','RETURNED')) {
-            Assert-DatabaseCount "SELECT COUNT(*) FROM allocation WHERE status='$state';" $states.GetProperty($state).GetInt32()
-        }
-    } finally { $totals.Dispose() }
-    if ($ReuseProofFolder) { Write-Output 'Full independent SQL counts and Allocation states passed after MySQL restart.' }
-    else { Write-Output "Full independent SQL counts and Allocation states passed in $($timer.Elapsed.TotalSeconds) import seconds." }
+    $expectedMovements = $expected.resources + [int]$states['CONSUMED'] + [int]$states['ISSUED'] + 2 * [int]$states['RETURNED']
+    Assert-DatabaseCount 'SELECT COUNT(*) FROM stock_movement;' $expectedMovements
+    foreach ($state in @('APPROVED','CANCELLED','CONSUMED','ISSUED','PENDING','RETURNED')) {
+        Assert-DatabaseCount "SELECT COUNT(*) FROM allocation WHERE status='$state';" ([int]$states[$state])
+    }
+    Write-Output "Reconciled $workspaceCount workspaces, $($expected.allocations) Allocation requests and $expectedMovements ledger rows."
+    if ($ReuseProofFolder) { Write-Output 'Independent SQL counts and Allocation states passed after MySQL restart.' }
+    else { Write-Output "Independent SQL counts and Allocation states passed in $($timer.Elapsed.TotalSeconds) import seconds." }
 
     if (!$ReuseProofFolder) {
         $blocked = Join-Path $rootDirectory 'repeat-refusal.log'
@@ -174,7 +202,11 @@ WHERE c.covered>q.quantity;
         if ($LASTEXITCODE -eq 0 -or !(Select-String -LiteralPath $blocked -SimpleMatch 'already contains tables or does not match')) {
             throw 'A repeated import did not refuse the populated schema before writes.'
         }
-        Assert-DatabaseCount 'SELECT COUNT(*) FROM allocation;' 21060
+        Assert-DatabaseCount 'SELECT COUNT(*) FROM allocation;' $expected.allocations
+    }
+    if ($profile -ne 'LOCAL_ONLY_DRY_RUN') {
+        Write-Output "Import proof logs and stopped disposable MySQL datadir $rootDirectory"
+        return
     }
     $measure = [Diagnostics.Stopwatch]::StartNew()
     $dumpArgs = @('--no-defaults','--protocol=tcp','--host=127.0.0.1',"--port=$databasePort",'--user=root',
@@ -205,8 +237,8 @@ SELECT COUNT(*),BIT_XOR(CRC32(CONCAT(public_id,':',demo_reference_key,':',demo_p
     if (@(Compare-Object @(Invoke-RootSql $fingerprint) @(Invoke-RootSql $fingerprint $restorePort)).Count) {
         throw 'Restored row counts, stock sums, or logical checksums differ.'
     }
-    Assert-DatabaseCount 'SELECT COUNT(*) FROM allocation;' 21060 $restorePort
-    Write-Output "Separate MySQL encrypted full-fixture backup and restore passed in $($recovery.Elapsed.TotalSeconds) seconds."
+    Assert-DatabaseCount 'SELECT COUNT(*) FROM allocation;' $expected.allocations $restorePort
+    Write-Output "Separate MySQL encrypted fixture backup and restore passed in $($recovery.Elapsed.TotalSeconds) seconds."
     Write-Output "Import proof logs and stopped disposable MySQL datadir $rootDirectory"
 } finally {
     if (Test-Path -LiteralPath $sqlDump -PathType Leaf) { Remove-Item -LiteralPath $sqlDump }
