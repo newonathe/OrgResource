@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import edu.orgresource.extended.domain.ReminderMode;
 import edu.orgresource.extended.repository.AllocationRepository;
+import edu.orgresource.extended.security.ContactCipher;
 import edu.orgresource.extended.service.C3ReminderDispatcher;
 import edu.orgresource.extended.service.C3ReminderService;
 import edu.orgresource.extended.service.InventoryService;
@@ -27,13 +28,15 @@ public class C1ReminderScheduler {
     private final InventoryService inventory;
     private final C3ReminderService reminders;
     private final C3ReminderDispatcher dispatcher;
+    private final ContactCipher contactCipher;
     private final JdbcTemplate jdbc;
     private final Clock philippineClock;
     private final int batchSize;
     private final ReminderMode reminderMode;
 
     public C1ReminderScheduler(AllocationRepository allocations, InventoryService inventory,
-            C3ReminderService reminders, C3ReminderDispatcher dispatcher, JdbcTemplate jdbc, Clock philippineClock,
+            C3ReminderService reminders, C3ReminderDispatcher dispatcher, ContactCipher contactCipher,
+            JdbcTemplate jdbc, Clock philippineClock,
             @Value("${c1.scheduler.batch-size:100}") int batchSize,
             @Value("${c1.reminder.mode:DISABLED}") String mode,
             @Value("${c1.sms.enabled:false}") boolean legacySmsEnabled) {
@@ -42,6 +45,7 @@ public class C1ReminderScheduler {
         this.inventory = inventory;
         this.reminders = reminders;
         this.dispatcher = dispatcher;
+        this.contactCipher = contactCipher;
         this.jdbc = jdbc;
         this.philippineClock = philippineClock;
         this.batchSize = batchSize;
@@ -91,7 +95,8 @@ public class C1ReminderScheduler {
 
         int remindersProcessed = 0;
         if (reminderMode != ReminderMode.DISABLED) {
-            for (AllocationRepository.ReminderCandidate candidate : allocations.findReminderCandidates(now, now.plusHours(24), page)) {
+            for (AllocationRepository.ReminderCandidate candidate : allocations.findReminderCandidates(
+                    now, now.plusHours(24), contactCipher.availableKeyId(), page)) {
                 try {
                     dispatcher.dispatchOne(candidate.getAllocationId(), now, reminderMode);
                     remindersProcessed++;

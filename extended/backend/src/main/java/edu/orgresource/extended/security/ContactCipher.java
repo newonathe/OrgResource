@@ -57,9 +57,11 @@ public final class ContactCipher {
 
     public String decrypt(long organizationId, UUID allocationPublicId, byte[] ciphertext,
                           byte[] nonce, String storedKeyId) {
-        requireKey();
-        if (ciphertext == null || nonce == null || !keyId.equals(storedKeyId))
+        if (ciphertext == null || nonce == null || nonce.length != NONCE_BYTES
+                || storedKeyId == null || !storedKeyId.matches("[A-Za-z0-9._-]{1,64}"))
             throw new C1ApiException(500, "CONTACT_INTEGRITY_FAILURE", "Stored contact data could not be verified.");
+        requireKey();
+        if (!keyId.equals(storedKeyId)) throw encryptionFailure();
         try {
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(key, "AES"), new GCMParameterSpec(TAG_BITS, nonce));
@@ -69,6 +71,8 @@ public final class ContactCipher {
             throw new C1ApiException(500, "CONTACT_INTEGRITY_FAILURE", "Stored contact data could not be verified.");
         }
     }
+
+    public String availableKeyId() { return key == null ? null : keyId; }
 
     private void requireKey() {
         if (key == null) throw new C1ApiException(503, "CONTACT_ENCRYPTION_UNAVAILABLE",

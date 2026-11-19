@@ -110,8 +110,6 @@ public class C1GovernanceService {
         List<Membership> locked = lockMemberships(org.id, actor.id, target.id);
         actor = byId(locked, actor.id); target = byId(locked, target.id);
         requireActorCurrent(org, actor, true);
-        requireTargetAccountActive(target);
-        requireVersion(ifMatch, target.version);
         if (actor.id.equals(target.id)) throw forbidden();
         if (target.role == Membership.Role.OWNER || newRole == Membership.Role.OWNER) throw forbidden();
         if (actor.role == Membership.Role.OWNER) {
@@ -119,6 +117,8 @@ public class C1GovernanceService {
         } else if (actor.role == Membership.Role.ADMIN) {
             if (target.role == Membership.Role.ADMIN || newRole == Membership.Role.ADMIN) throw forbidden();
         } else throw forbidden();
+        requireTargetAccountActive(target);
+        requireVersion(ifMatch, target.version);
         target.role = newRole;
         target.updatedAt = now();
         memberships.saveAndFlush(target);
@@ -135,11 +135,11 @@ public class C1GovernanceService {
         List<Membership> locked = lockMemberships(org.id, actor.id, target.id);
         actor = byId(locked, actor.id); target = byId(locked, target.id);
         requireActorCurrent(org, actor, true);
-        requireTargetAccountActive(target);
-        requireVersion(ifMatch, target.version);
         if (actor.id.equals(target.id) || target.role == Membership.Role.OWNER) throw forbidden();
         if (actor.role != Membership.Role.OWNER && actor.role != Membership.Role.ADMIN) throw forbidden();
         if (actor.role == Membership.Role.ADMIN && target.role == Membership.Role.ADMIN) throw forbidden();
+        requireTargetAccountActive(target);
+        requireVersion(ifMatch, target.version);
         if (target.status != Membership.Status.ACTIVE) throw conflict("MEMBERSHIP_NOT_ACTIVE", "Only an active membership can be suspended.");
         target.status = Membership.Status.SUSPENDED;
         target.updatedAt = now();
@@ -190,10 +190,10 @@ public class C1GovernanceService {
         if (to.userId != actorId) throw notFound();
         requireActorCurrent(org, to, true);
         requireTargetAccountActive(from);
-        requireVersion(ifMatch, found.version);
         if (to.role != Membership.Role.ADMIN || from.role != Membership.Role.OWNER
                 || from.status != Membership.Status.ACTIVE || to.status != Membership.Status.ACTIVE)
             throw notFound();
+        requireVersion(ifMatch, found.version);
         if (found.status != OwnershipTransfer.Status.PENDING || !found.expiresAt.isAfter(now()))
             throw conflict("TRANSFER_NOT_ACTIVE", "The ownership transfer is no longer active.");
         LocalDateTime now = now();
@@ -212,9 +212,9 @@ public class C1GovernanceService {
         Membership actor = lockActor(org, actorId, true);
         OwnershipTransfer transfer = transfers.lockByOrgAndPublicId(org.id, transferPublicId)
                 .orElseThrow(C1GovernanceService::notFound);
-        requireVersion(ifMatch, transfer.version);
         if (actor.role != Membership.Role.OWNER || actor.id.longValue() != transfer.fromMembershipId)
             throw forbidden();
+        requireVersion(ifMatch, transfer.version);
         if (transfer.status != OwnershipTransfer.Status.PENDING || !transfer.expiresAt.isAfter(now()))
             throw conflict("TRANSFER_NOT_ACTIVE", "Only an active pending ownership transfer can be revoked.");
         transfer.status = OwnershipTransfer.Status.REVOKED;

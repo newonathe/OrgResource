@@ -39,7 +39,6 @@ public class C1AccountService {
         C1BootstrapService.validatePassword(newPassword);
         String username = C1IdentityNormalization.username(usernameInput);
         UserAccount account = accounts.lockByUsernameKey(username).orElse(null);
-        if (account == null) { encoder.matches(rawCode == null ? "" : rawCode, dummyHash); return false; }
         if (account == null || account.status != UserAccount.Status.ACTIVE || rawCode == null) {
             encoder.matches(rawCode == null ? "" : rawCode, dummyHash); return false;
         }
@@ -49,12 +48,12 @@ public class C1AccountService {
             encoder.matches(rawCode, dummyHash);
             return false;
         }
-        code.usedAt = now;
-        recovery.save(code);
         LocalCredential credential = credentials.lockByUserId(account.id).orElse(null);
         if (credential == null) { encoder.matches(rawCode, dummyHash); return false; }
         credential.passwordHash = encoder.encode(newPassword);
         credential.changedAt = now;
+        code.usedAt = now;
+        recovery.save(code);
         account.credentialVersion++;
         account.updatedAt = now;
         credentials.save(credential);

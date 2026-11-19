@@ -125,8 +125,12 @@ public class ReportingComponent {
         } catch (JsonProcessingException invalid) {
             throw new IllegalStateException("Export serialization failed.", invalid);
         }
-        if (bytes.length > MAX_EXPORT_BYTES) throw exportTooLarge();
+        requireExportByteLimit(bytes.length);
         return new ExportFile(format, dataset, at, bytes);
+    }
+
+    static void requireExportByteLimit(int bytes) {
+        if (bytes > MAX_EXPORT_BYTES) throw exportTooLarge();
     }
 
     private long requireScope(UUID pathOrganization) {
