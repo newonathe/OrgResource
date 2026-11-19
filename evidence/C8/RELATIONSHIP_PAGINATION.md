@@ -4,6 +4,12 @@
 - Requirements uses searchable paged Project and Resource selectors. Allocations uses a paged Requirement chooser for create and filtering. Reminders loads issued Allocations and displays the associated Project deadline from the page.
 - Workspace results carry the related labels. The server limits relationship and coverage queries to the visible page IDs. React preserves the current selection across searches and pages, cancels stale reads and offers a retry when the page fails.
 
+## Governance and Activity
+
+- Members and access requests 25 rows from the existing organization-scoped membership endpoint. Owners and admins can move to earlier or later pages and recover a failed page. Role changes use the existing membership ETag and refresh the current page. For ownership transfer, an owner can locate an active administrator on a later page and select them there. Selecting a recipient leaves the existing password and two-person transfer contract in place.
+- Activity loads 50 rows per reporting request. The browser uses the result cursor for older rows and retains the preceding page positions for newer rows. It starts from the newest page on feed changes and reports the end when the server returns no cursor. A failed read can be retried at the same position.
+- Current organization and role checks remain in the existing Java services. The memberships view follows the path organization contract and Activity follows the selected organization contract. Cursor history and pending reads are scoped to the authenticated workspace.
+
 ## Verification
 
 Run `pwsh -NoLogo -NoProfile -File scripts/verify-extended-c1.ps1 -VerifyRecovery` from the repository root on Windows. The local November 19 run passed all 53 Maven tests, 25 Vitest tests, 13 connected packaged Chromium tests, the independent Vite and restored-package smokes, and both Newman collections with 60 requests and 110 assertions. Recovery verified 18 tables, retired sessions, durable replay and archive/key rejection in a separate MySQL process. The application used disposable fictional data and the verifier stopped its isolated processes.

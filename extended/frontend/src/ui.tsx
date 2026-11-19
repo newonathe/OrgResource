@@ -176,6 +176,9 @@ export function usePageCursors(scope: string) {
   return {
     cursor: current.at(-1) ?? null,
     page: current.length,
+    reset() {
+      setHistory({ scope, cursors: [null] });
+    },
     move(next: string | null) {
       setHistory(previous => {
         const cursors = previous.scope === scope ? previous.cursors : [null];

@@ -832,6 +832,102 @@ test("C6a owner opens recorded events and downloads real redacted CSV and JSON f
   }
 });
 
+test("C8 traverses memberships and recorded activity using bounded pages", async ({ page, playwright }) => {
+  test.setTimeout(90_000);
+  const { activeOrgId } = await getJson<{ activeOrgId: string }>(page, "/api/v2/session");
+  expect(activeOrgId).toBeTruthy();
+  const orgPath = "/api/v2/orgs/" + activeOrgId;
+  const origin = new URL(page.url()).origin;
+  const prefix = "c8-roster-" + Date.now().toString(36);
+  const fixtures: string[] = [];
+  for (let index = 1; index <= 26; index++) {
+    const invited = await postJson(page, orgPath + "/invitations", { role: "MEMBER" });
+    expect(invited.status(), "create fictional roster invitation").toBe(201);
+    const { data } = await invited.json() as { data: { bearerToken: string } };
+    const isolated = await playwright.request.newContext({ baseURL: origin });
+    try {
+      const csrf = await isolated.get("/api/v2/auth/csrf");
+      expect(csrf.status()).toBe(200);
+      const { data: { csrfToken } } = await csrf.json() as { data: { csrfToken: string } };
+      const displayName = "Fictional " + prefix + " member " + index;
+      const redeemed = await isolated.post("/api/v2/invitations/redeem", {
+        data: { bearerToken: data.bearerToken, username: prefix + "-" + index, displayName, password: prefix + "-Local!25" },
+        headers: { "X-CSRF-TOKEN": csrfToken, Origin: origin },
+      });
+      expect(redeemed.status(), "redeem fictional roster invitation").toBe(201);
+      fixtures.push(displayName);
+    } finally {
+      await isolated.dispose();
+    }
+  }
+  const seen: string[] = [];
+  const memberRead = new Set<string>();
+  page.on("request", request => {
+    const url = new URL(request.url());
+    if (request.method() === "GET" && url.pathname === orgPath + "/members") {
+      memberRead.add(url.searchParams.get("limit") ?? "unbounded");
+    }
+  });
+
+  await page.goto("/#/governance");
+  const members = page.getByRole("navigation", { name: "Membership pages" });
+  const nextMember = members.getByRole("button", { name: "Next page" });
+  const previousMember = members.getByRole("button", { name: "Previous page" });
+  const memberNames = page.locator(".governance-grid .member-list article strong");
+  await expect(members.getByRole("status")).toHaveText("Page 1 · 25 shown");
+  await expect(previousMember).toBeDisabled();
+  seen.push(...await memberNames.allTextContents());
+  expect(seen).not.toContain(fixtures.at(-1));
+  await nextMember.focus();
+  await page.keyboard.press("Enter");
+  await expect(members.getByRole("status")).toContainText("Page 2");
+  await expect(members.getByRole("status")).toContainText("End of results");
+  seen.push(...await memberNames.allTextContents());
+  expect(seen.filter(name => name.startsWith("Fictional " + prefix))).toEqual(fixtures);
+  expect(memberRead).toEqual(new Set(["25"]));
+  await expect(nextMember).toBeDisabled();
+
+  const lastMember = page.locator(".member-row").filter({ has: page.getByText(fixtures.at(-1)!, { exact: true }) });
+  await lastMember.getByLabel("Role").selectOption("ADMIN");
+  await expect(page.getByText("Membership role updated.")).toBeVisible();
+  const recipients = page.getByLabel("Recipient membership");
+  await expect(recipients.getByRole("option", { name: fixtures.at(-1), exact: true })).toHaveCount(1);
+  await expect(members.getByRole("status")).toContainText("Page 2");
+  await previousMember.click();
+  await expect(members.getByRole("status")).toHaveText("Page 1 · 25 shown");
+  await expect(recipients.getByRole("option", { name: fixtures.at(-1), exact: true })).toHaveCount(0);
+
+  await page.goto("/#/activity");
+  const activity = page.getByRole("navigation", { name: "Activity pages" });
+  const older = activity.getByRole("button", { name: "Next page" });
+  const newer = activity.getByRole("button", { name: "Previous page" });
+  const events = page.locator(".member-list > li");
+  await expect(activity.getByRole("status")).toHaveText("Page 1 · 50 shown");
+  await expect(events).toHaveCount(50);
+  const firstEvents = await events.allTextContents();
+  await older.click();
+  await expect(activity.getByRole("status")).toContainText("Page 2 ·");
+  expect(await events.allTextContents()).not.toEqual(firstEvents);
+  await newer.click();
+  await expect(activity.getByRole("status")).toHaveText("Page 1 · 50 shown");
+  expect(await events.allTextContents()).toEqual(firstEvents);
+  await older.click();
+  await expect(activity.getByRole("status")).toContainText("Page 2 ·");
+  await page.getByLabel("Show").selectOption("audit");
+  await expect(activity.getByRole("status")).toHaveText("Page 1 · 50 shown");
+  await expect(newer).toBeDisabled();
+  await expect(page.getByText(/^Stock movement ·/)).toHaveCount(0);
+
+  for (let pageNumber = 2; pageNumber <= 15 && await older.isEnabled(); pageNumber++) {
+    await older.click();
+    await expect(activity.getByRole("status")).toContainText("Page " + pageNumber + " ·");
+  }
+  await expect(activity.getByRole("status")).toContainText("End of results");
+  await expect(older).toBeDisabled();
+  await page.getByRole("button", { name: "Newest events" }).click();
+  await expect(activity.getByRole("status")).toHaveText("Page 1 · 50 shown");
+});
+
 test("the packaged Java application serves React assets, hash routes, and the five JSON APIs", async ({ page }) => {
   test.skip(!process.env.EXT_E2E_BASE_URL, "Packaged Java entry assets require an explicit packaged origin.");
   const assetResponses: Array<{ path: string; status: number }> = [];
