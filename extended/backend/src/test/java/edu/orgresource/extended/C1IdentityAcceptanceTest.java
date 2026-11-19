@@ -3765,14 +3765,14 @@ class C1IdentityAcceptanceTest {
             var mixed = get(newClient(), metadata);
             assertEquals(503, mixed.statusCode(), "A complete small cohort mixed with ordinary workspaces must fail closed.");
             assertFalse(mixed.body().contains(label));
-            String resource = GSON.toJson(new ResourceRequest("Fictional disclosure resource", "REUSABLE", 1));
-            assertEquals(201, post(demoActor, "/api/resources", resource).statusCode());
-            assertEquals(201, post(ordinaryActor, "/api/resources", resource).statusCode());
             String demoExports = "/api/v2/orgs/" + demo.orgPublicId + "/exports";
-            var emptyCsv = post(demoActor, demoExports, "{\"format\":\"CSV\",\"dataset\":\"ALLOCATIONS\"}");
+            var emptyCsv = post(demoActor, demoExports, "{\"format\":\"CSV\",\"dataset\":\"MOVEMENTS\"}");
             assertEquals(200, emptyCsv.statusCode(), emptyCsv.body());
             assertEquals(1, emptyCsv.body().lines().count());
             assertTrue(emptyCsv.body().contains("synthetic,demoDataset,demonstrationAsOf,demoNotice"));
+            String resource = GSON.toJson(new ResourceRequest("Fictional disclosure resource", "REUSABLE", 1));
+            assertEquals(201, post(demoActor, "/api/resources", resource).statusCode());
+            assertEquals(201, post(ordinaryActor, "/api/resources", resource).statusCode());
             String jsonInput = "{\"format\":\"TENANT_JSON\",\"dataset\":\"RESOURCES\"}";
             var labelled = post(demoActor, demoExports, jsonInput);
             assertEquals(200, labelled.statusCode(), labelled.body());
