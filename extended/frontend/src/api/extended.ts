@@ -86,7 +86,12 @@ export const inventoryApi = {
   resource: (orgId: string, resourceId: string) => request<InventoryResource>(`/api/v2/orgs/${encodeURIComponent(orgId)}/resources/${encodeURIComponent(resourceId)}`, "GET"),
   allocations: (orgId: string, limit = 100) => data<AllocationPage>(`/api/v2/orgs/${encodeURIComponent(orgId)}/allocations?limit=${Math.max(1, Math.min(100, limit))}`),
   allocation: (orgId: string, allocationId: string) => request<AllocationState>(`/api/v2/orgs/${encodeURIComponent(orgId)}/allocations/${encodeURIComponent(allocationId)}`, "GET"),
-  movements: (orgId: string, resourceId: string, limit = 50) => data<MovementPage>(`/api/v2/orgs/${encodeURIComponent(orgId)}/resources/${encodeURIComponent(resourceId)}/movements?limit=${Math.max(1, Math.min(100, limit))}`),
+  movements: (orgId: string, resourceId: string, limit = 50, cursor?: string | null, signal?: AbortSignal) => {
+    const query = new URLSearchParams({ limit: String(limit) });
+    if (cursor) query.set("after", cursor);
+    const path = "/api/v2/orgs/" + encodeURIComponent(orgId) + "/resources/" + encodeURIComponent(resourceId) + "/movements?" + query;
+    return request<MovementPage>(path, "GET", undefined, { signal }).then(result => result.data);
+  },
   receipt: (orgId: string, operationId: string) => request<OperationReceipt | OperationView>(`/api/v2/orgs/${encodeURIComponent(orgId)}/operations/${encodeURIComponent(operationId)}`, "GET"),
   removeImage: (orgId: string, resourceId: string, etag: string) =>
     request<InventoryResource>(`/api/v2/orgs/${encodeURIComponent(orgId)}/resources/${encodeURIComponent(resourceId)}/image/delete`, "POST", undefined, { headers: { "If-Match": etag } }),

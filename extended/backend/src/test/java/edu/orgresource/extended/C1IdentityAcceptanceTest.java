@@ -3032,6 +3032,207 @@ class C1IdentityAcceptanceTest {
         assertEquals(Membership.Role.OWNER, memberships.findById(owner.membershipDbId).orElseThrow().role);
     }
 
+    @Test @Order(51)
+    void C8ScopeUsesPathMembershipForStockAndSelectedWorkspaceForReportingAndLegacy() throws Exception {
+        Fixture home = newTenant("C8-scope-home", Membership.Role.OWNER);
+        Fixture target = newTenant("C8-scope-target", Membership.Role.OWNER);
+        Fixture outsider = newTenant("C8-scope-outsider", Membership.Role.OWNER);
+        addMembership(target.orgDbId, home.userDbId, Membership.Role.CUSTODIAN);
+        Fixture member = fixtureInOrg(target.orgDbId, Membership.Role.MEMBER);
+        Fixture lead = fixtureInOrg(target.orgDbId, Membership.Role.LEAD);
+        Session selectedHome = login(home.username, home.password);
+        assertEquals(home.orgPublicId.toString(), selectedHome.activeOrgId);
+        Session targetOwner = login(target.username, target.password);
+        assertEquals(target.orgPublicId.toString(), targetOwner.activeOrgId);
+        HttpResponse<String> created = post(targetOwner, "/api/resources",
+                GSON.toJson(new ResourceRequest("Fictional C8 target stock", "REUSABLE", 0)));
+        assertEquals(201, created.statusCode());
+        JsonObject row = json(created);
+        long resourceId = row.get("id").getAsLong();
+        String root = "/api/v2/orgs/" + target.orgPublicId;
+        String item = root + "/resources/" + row.get("publicId").getAsString();
+        long[] homeBefore = stockFactCounts(home.orgDbId);
+        long[] targetBefore = stockFactCounts(target.orgDbId);
+
+        HttpResponse<String> read = get(selectedHome.client, item);
+        assertEquals(200, read.statusCode());
+        assertEquals(200, get(selectedHome.client, item + "/movements").statusCode());
+        assertEquals(404, get(selectedHome.client, root + "/activity").statusCode());
+        assertEquals(403, get(selectedHome.client, root + "/members").statusCode());
+        assertFalse(get(selectedHome.client, "/api/resources").body().contains("Fictional C8 target stock"));
+        assertEquals(404, get(selectedHome.client, "/api/resources/" + resourceId + "/availability").statusCode());
+        assertEquals(401, get(newClient(), item).statusCode());
+        assertEquals(404, get(login(outsider.username, outsider.password).client, item).statusCode());
+        for (Fixture lowRole : List.of(member, lead)) {
+            Session actor = login(lowRole.username, lowRole.password);
+            assertEquals(403, get(actor.client, item).statusCode());
+            assertEquals(403, get(actor.client, item + "/movements").statusCode());
+            assertEquals(403, modernPost(actor, item + "/receive", GSON.toJson(new ReceiveRequest(UUID.randomUUID(), 2)),
+                    read.headers().firstValue("ETag").orElseThrow(), C1Secrets.bearerToken()).statusCode());
+        }
+        assertArrayEquals(homeBefore, stockFactCounts(home.orgDbId));
+        assertArrayEquals(targetBefore, stockFactCounts(target.orgDbId));
+        assertEquals(0, jdbc.queryForObject("SELECT total_quantity FROM resource WHERE id=?", Integer.class, resourceId));
+
+        UUID unselectedOperation = UUID.randomUUID();
+        assertEquals(201, modernPost(selectedHome, item + "/receive", GSON.toJson(new ReceiveRequest(unselectedOperation, 2)),
+                read.headers().firstValue("ETag").orElseThrow(), C1Secrets.bearerToken()).statusCode());
+        assertEquals(200, get(selectedHome.client, root + "/operations/" + unselectedOperation).statusCode());
+        long[] targetAfterUnselected = stockFactCounts(target.orgDbId);
+        assertEquals(targetBefore[0] + 1, targetAfterUnselected[0]);
+        assertEquals(targetBefore[1] + 1, targetAfterUnselected[1]);
+        assertEquals(2, jdbc.queryForObject("SELECT total_quantity FROM resource WHERE id=?", Integer.class, resourceId));
+        assertArrayEquals(homeBefore, stockFactCounts(home.orgDbId));
+
+        assertEquals(200, post(selectedHome, "/api/v2/session/active-org",
+                GSON.toJson(new OrgRequest(target.orgPublicId))).statusCode());
+        refreshCsrf(selectedHome);
+        assertTrue(get(selectedHome.client, "/api/resources").body().contains("Fictional C8 target stock"));
+        assertEquals(403, get(selectedHome.client, root + "/activity").statusCode());
+        assertEquals(200, get(targetOwner.client, root + "/activity").statusCode());
+        String etag = get(selectedHome.client, item).headers().firstValue("ETag").orElseThrow();
+        assertEquals(201, modernPost(selectedHome, item + "/receive", GSON.toJson(new ReceiveRequest(UUID.randomUUID(), 3)),
+                etag, C1Secrets.bearerToken()).statusCode());
+        assertEquals(5, jdbc.queryForObject("SELECT total_quantity FROM resource WHERE id=?", Integer.class, resourceId));
+        long[] afterSwitch = stockFactCounts(target.orgDbId);
+        assertEquals(targetAfterUnselected[0] + 1, afterSwitch[0]);
+        assertEquals(targetAfterUnselected[1] + 1, afterSwitch[1]);
+
+        Membership current = memberships.findByOrganizationIdAndUserId(target.orgDbId, home.userDbId).orElseThrow();
+        String membershipPath = root + "/members/" + current.publicId;
+        assertEquals(200, post(targetOwner, membershipPath + "/role", GSON.toJson(new RoleRequest("MEMBER")), "\"v0\"").statusCode());
+        long[] afterRoleChange = stockFactCounts(target.orgDbId);
+        assertEquals(403, get(selectedHome.client, item).statusCode());
+        assertEquals(403, get(selectedHome.client, item + "/movements").statusCode());
+        assertEquals(403, get(selectedHome.client, root + "/operations/" + unselectedOperation).statusCode());
+        assertEquals(403, modernPost(selectedHome, item + "/receive", GSON.toJson(new ReceiveRequest(UUID.randomUUID(), 1)),
+                etag, C1Secrets.bearerToken()).statusCode());
+        assertArrayEquals(afterRoleChange, stockFactCounts(target.orgDbId));
+
+        assertEquals(200, post(targetOwner, membershipPath + "/suspend", null, "\"v1\"").statusCode());
+        long[] afterSuspension = stockFactCounts(target.orgDbId);
+        assertEquals(404, get(selectedHome.client, item).statusCode());
+        assertEquals(404, get(selectedHome.client, item + "/movements").statusCode());
+        assertEquals(404, get(selectedHome.client, root + "/operations/" + unselectedOperation).statusCode());
+        assertEquals(404, modernPost(selectedHome, item + "/receive", GSON.toJson(new ReceiveRequest(UUID.randomUUID(), 1)),
+                etag, C1Secrets.bearerToken()).statusCode());
+        assertEquals(404, get(selectedHome.client, root + "/activity").statusCode());
+        assertArrayEquals(afterSuspension, stockFactCounts(target.orgDbId));
+        assertEquals(5, jdbc.queryForObject("SELECT total_quantity FROM resource WHERE id=?", Integer.class, resourceId));
+        assertArrayEquals(homeBefore, stockFactCounts(home.orgDbId));
+    }
+
+    private long[] stockFactCounts(long organizationId) {
+        return new long[]{
+            jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=?", Long.class, organizationId),
+            jdbc.queryForObject("SELECT COUNT(*) FROM idempotency_key WHERE organization_id=?", Long.class, organizationId),
+            jdbc.queryForObject("SELECT COUNT(*) FROM audit_event WHERE org_id=?", Long.class, organizationId)
+        };
+    }
+
+    @Test @Order(52)
+    void C8WorkspacePagesReturnEveryResourceAndAllocationWithScopedContinuation() throws Exception {
+        Fixture owner = newTenant("C8-pages-owner", Membership.Role.OWNER);
+        Fixture foreign = newTenant("C8-pages-foreign", Membership.Role.OWNER);
+        Fixture custodian = fixtureInOrg(owner.orgDbId, Membership.Role.CUSTODIAN);
+        Session actor = login(owner.username, owner.password);
+        Session foreignActor = login(foreign.username, foreign.password);
+        String root = "/api/v2/workspace";
+        String stock = root + "/resources?limit=100";
+        String requests = root + "/allocations?status=PENDING&limit=100";
+
+        long departmentId = json(post(actor, "/api/departments", GSON.toJson(new NameRequest("C8 fixture team")))).get("id").getAsLong();
+        long projectId = json(post(actor, "/api/projects", GSON.toJson(new ProjectRequest(departmentId,
+                "C8 fictional project", "2040-12-10T10:00:00", "2040-12-10T11:00:00")))).get("id").getAsLong();
+        long resourceId = json(post(actor, "/api/resources", GSON.toJson(new ResourceRequest(
+                "C8 flagship resource", "REUSABLE", 40)))).get("id").getAsLong();
+        long requirementId = json(post(actor, "/api/requirements", GSON.toJson(new RequirementRequest(
+                projectId, resourceId, 20)))).get("id").getAsLong();
+        long approvedId = json(post(actor, "/api/allocations", GSON.toJson(new AllocationRequest(
+                requirementId, 3, "Fictional fixture operator", null, false)))).get("id").getAsLong();
+        assertEquals(200, post(actor, "/api/allocations/" + approvedId + "/approve", null).statusCode());
+
+        assertEquals(departmentId, workspacePage(actor, root + "/departments").getAsJsonArray("items").get(0).getAsJsonObject().get("id").getAsLong());
+        assertEquals(projectId, workspacePage(actor, root + "/projects?departmentId=" + departmentId)
+                .getAsJsonArray("items").get(0).getAsJsonObject().get("id").getAsLong());
+        JsonObject requirement = workspacePage(actor, root + "/requirements?projectId=" + projectId)
+                .getAsJsonArray("items").get(0).getAsJsonObject();
+        assertEquals(3, requirement.get("allocatedQuantity").getAsInt());
+        assertEquals(17, requirement.get("shortageQuantity").getAsInt());
+        assertEquals(404, get(foreignActor.client, root + "/projects?departmentId=" + departmentId).statusCode());
+        assertEquals(401, get(newClient(), stock).statusCode());
+
+        insertWorkspaceResources(owner.orgDbId, 1, 100);
+        JsonObject firstPage = workspacePage(actor, stock);
+        assertEquals(100, firstPage.getAsJsonArray("items").size());
+        assertEquals(37, firstPage.getAsJsonArray("items").get(0).getAsJsonObject().get("availableQuantity").getAsInt());
+        assertEquals(1, workspacePage(actor, stock + "&search=C8+FLAGSHIP").getAsJsonArray("items").size());
+        String firstCursor = firstPage.get("nextCursor").getAsString();
+        JsonObject terminal = workspacePage(actor, stock + "&cursor=" + firstCursor);
+        assertEquals(1, terminal.getAsJsonArray("items").size());
+        assertTrue(terminal.get("nextCursor").isJsonNull());
+        assertEquals(404, get(foreignActor.client, stock + "&cursor=" + firstCursor).statusCode());
+        assertEquals(404, get(actor.client, stock + "&type=CONSUMABLE&cursor=" + firstCursor).statusCode());
+        assertEquals(404, get(actor.client, root + "/departments?cursor=" + firstCursor).statusCode());
+        assertEquals(400, get(actor.client, stock + "&cursor=invalid").statusCode());
+        assertEquals(400, get(actor.client, root + "/resources?limit=101").statusCode());
+
+        // Commit a new batch between requests and continue from the same original keyset boundary.
+        insertWorkspaceResources(owner.orgDbId, 101, 1000);
+        List<Long> seenResources = new java.util.ArrayList<>();
+        firstPage.getAsJsonArray("items").forEach(item -> seenResources.add(item.getAsJsonObject().get("id").getAsLong()));
+        readWorkspacePages(actor, stock, firstCursor, seenResources);
+        assertEquals(jdbc.queryForList("SELECT id FROM resource WHERE organization_id=? ORDER BY id", Long.class, owner.orgDbId), seenResources);
+        assertEquals(1001, seenResources.size());
+
+        var pendingFixtures = java.util.stream.IntStream.range(0, 1001)
+                .mapToObj(index -> new Object[]{owner.orgDbId, requirementId, resourceId, "Fictional borrower " + index, java.sql.Timestamp.valueOf(now())})
+                .toList();
+        jdbc.batchUpdate("INSERT INTO allocation(public_id,organization_id,requirement_id,resource_id,quantity,borrower_name,status,created_at) "
+                + "VALUES(UUID_TO_BIN(UUID(),0),?,?,?,1,?,'PENDING',?)", pendingFixtures);
+
+        List<Long> seenAllocations = new java.util.ArrayList<>();
+        readWorkspacePages(actor, requests, null, seenAllocations);
+        assertEquals(jdbc.queryForList("SELECT id FROM allocation WHERE organization_id=? AND status='PENDING' ORDER BY id",
+                Long.class, owner.orgDbId), seenAllocations);
+        assertEquals(1001, seenAllocations.size());
+        assertEquals(37, workspacePage(actor, stock + "&search=FLAGSHIP").getAsJsonArray("items")
+                .get(0).getAsJsonObject().get("availableQuantity").getAsInt());
+        assertEquals(40, jdbc.queryForObject("SELECT total_quantity FROM resource WHERE id=?", Integer.class, resourceId));
+
+        Session otherRole = login(custodian.username, custodian.password);
+        String allocationCursor = workspacePage(otherRole, requests).get("nextCursor").getAsString();
+        assertEquals(404, get(actor.client, root + "/allocations?cursor=" + allocationCursor).statusCode());
+        String memberPath = "/api/v2/orgs/" + owner.orgPublicId + "/members/" + custodian.membershipPublicId;
+        assertEquals(200, post(actor, memberPath + "/role", GSON.toJson(new RoleRequest("MEMBER")), "\"v0\"").statusCode());
+        assertEquals(403, get(otherRole.client, requests + "&cursor=" + allocationCursor).statusCode());
+    }
+
+    private void insertWorkspaceResources(long org, int first, int last) {
+        var rows = java.util.stream.IntStream.rangeClosed(first, last)
+                .mapToObj(index -> new Object[]{org, "Fictional C8 item " + index, "fictional c8 item " + index}).toList();
+        jdbc.batchUpdate("INSERT INTO resource(public_id,organization_id,name,name_key,type,total_quantity) "
+                + "VALUES(UUID_TO_BIN(UUID(),0),?,?,?,'CONSUMABLE',0)", rows);
+    }
+
+    private JsonObject workspacePage(Session actor, String path) throws Exception {
+        HttpResponse<String> response = get(actor.client, path);
+        assertEquals(200, response.statusCode(), response.body());
+        return json(response).getAsJsonObject("data");
+    }
+
+    private void readWorkspacePages(Session actor, String path, String cursor, List<Long> items) throws Exception {
+        for (int page = 0; page < 20; page++) {
+            JsonObject result = workspacePage(actor, cursor == null ? path : path + "&cursor=" + cursor);
+            var rows = result.getAsJsonArray("items");
+            assertTrue(rows.size() <= 100);
+            rows.forEach(item -> items.add(item.getAsJsonObject().get("id").getAsLong()));
+            if (result.get("nextCursor").isJsonNull()) return;
+            cursor = result.get("nextCursor").getAsString();
+        }
+        fail("Workspace paging did not reach an explicit end.");
+    }
+
     private LocalDateTime now() { return LocalDateTime.ofInstant(clock.instant(), ZoneOffset.UTC); }
     private Set<String> actualSchemaColumns(String table) {
         return Set.copyOf(jdbc.queryForList("SELECT LOWER(column_name) FROM information_schema.columns WHERE table_schema=DATABASE() AND LOWER(table_name)=?", String.class, table));

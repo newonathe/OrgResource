@@ -29,6 +29,13 @@ public interface AllocationRepository extends JpaRepository<Allocation, Long> {
             Long requirementId, AllocationStatus status);
     boolean existsByOrganizationIdAndRequirementId(Long organizationId, Long requirementId);
 
+    @EntityGraph(attributePaths = {"requirement", "requirement.project"})
+    @Query("select a from Allocation a where a.organizationId=:org and a.id>:after "
+            + "and (:requirement is null or a.requirement.id=:requirement) "
+            + "and (:status is null or a.status=:status) order by a.id")
+    List<Allocation> findWorkspacePage(@Param("org") long org, @Param("after") long after,
+            @Param("requirement") Long requirement, @Param("status") AllocationStatus status, Pageable pageable);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select a from Allocation a where a.id=:id")
     Optional<Allocation> lockById(@Param("id") Long id);
@@ -99,23 +106,33 @@ public interface AllocationRepository extends JpaRepository<Allocation, Long> {
     Optional<Allocation> lockByPublicIdAndOrganizationId(@Param("publicId") java.util.UUID publicId,
                                                           @Param("organizationId") Long organizationId);
 
-    @Query(value = "SELECT r.id AS resource_id, COALESCE(l.ledger_total,0) AS ledger_total, "
+    String INVENTORY_BALANCE_PROJECTION = "SELECT r.id AS resource_id, COALESCE(l.ledger_total,0) AS ledger_total, "
             + "COALESCE(l.ledger_issued,0) AS ledger_issued, COALESCE(c.holds,0) AS holds, "
-            + "COALESCE(c.issued,0) AS issued FROM resource r "
-            + "LEFT JOIN (SELECT organization_id,resource_id,SUM(delta_total) AS ledger_total,"
-            + "SUM(delta_issued) AS ledger_issued FROM stock_movement WHERE organization_id=:organizationId "
-            + "GROUP BY organization_id,resource_id) l "
-            + "ON l.organization_id=r.organization_id AND l.resource_id=r.id "
-            + "LEFT JOIN (SELECT q.organization_id,q.resource_id,"
+            + "COALESCE(c.issued,0) AS issued FROM resource r ";
+    String INVENTORY_LEDGER_AGGREGATE = "LEFT JOIN (SELECT organization_id,resource_id,SUM(delta_total) AS ledger_total,"
+            + "SUM(delta_issued) AS ledger_issued FROM stock_movement WHERE organization_id=:organizationId ";
+    String INVENTORY_LEDGER_JOIN = "GROUP BY organization_id,resource_id) l "
+            + "ON l.organization_id=r.organization_id AND l.resource_id=r.id ";
+    String INVENTORY_CUSTODY_AGGREGATE = "LEFT JOIN (SELECT q.organization_id,q.resource_id,"
             + "SUM(CASE WHEN a.status='APPROVED' AND p.end_at>:sampledNow THEN a.quantity ELSE 0 END) AS holds,"
             + "SUM(CASE WHEN a.status='ISSUED' THEN a.quantity ELSE 0 END) AS issued "
             + "FROM allocation a JOIN resource_requirement q ON q.id=a.requirement_id AND q.organization_id=a.organization_id "
             + "JOIN project p ON p.id=q.project_id AND p.organization_id=q.organization_id "
-            + "WHERE a.organization_id=:organizationId GROUP BY q.organization_id,q.resource_id) c "
-            + "ON c.organization_id=r.organization_id AND c.resource_id=r.id "
+            + "WHERE a.organization_id=:organizationId ";
+    String INVENTORY_CUSTODY_JOIN = "GROUP BY q.organization_id,q.resource_id) c "
+            + "ON c.organization_id=r.organization_id AND c.resource_id=r.id ";
+
+    @Query(value = INVENTORY_BALANCE_PROJECTION + INVENTORY_LEDGER_AGGREGATE + INVENTORY_LEDGER_JOIN
+            + INVENTORY_CUSTODY_AGGREGATE + INVENTORY_CUSTODY_JOIN
             + "WHERE r.organization_id=:organizationId ORDER BY r.id", nativeQuery = true)
     List<Object[]> findInventoryListBalances(@Param("organizationId") Long organizationId,
                                              @Param("sampledNow") LocalDateTime sampledNow);
+
+    @Query(value = INVENTORY_BALANCE_PROJECTION + INVENTORY_LEDGER_AGGREGATE + "AND resource_id IN (:ids) "
+            + INVENTORY_LEDGER_JOIN + INVENTORY_CUSTODY_AGGREGATE + "AND q.resource_id IN (:ids) "
+            + INVENTORY_CUSTODY_JOIN + "WHERE r.organization_id=:organizationId AND r.id IN (:ids)", nativeQuery = true)
+    List<Object[]> findInventoryPageBalances(@Param("organizationId") long organizationId,
+            @Param("ids") List<Long> ids, @Param("sampledNow") LocalDateTime sampledNow);
 
     @Query("select a from Allocation a join a.requirement q join q.project p "
             + "where a.organizationId = :organizationId and a.status = :pending and p.endAt <= :sampledNow")

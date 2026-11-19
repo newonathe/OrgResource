@@ -207,8 +207,8 @@ test("switching organizations hides old tenant data, cancels stale reads, and de
   let releaseDelayedRead!: () => void;
   const delayedRead = new Promise<void>(resolve => { releaseDelayedRead = resolve; });
   const staleRequestFailed = page.waitForEvent("requestfailed", request =>
-    new URL(request.url()).pathname === "/api/resources");
-  await page.route("**/api/resources", async route => {
+    new URL(request.url()).pathname === "/api/v2/workspace/resources");
+  await page.route("**/api/v2/workspace/resources*", async route => {
     if (!delayedReadStarted && route.request().method() === "GET") {
       delayedReadStarted = true;
       await delayedRead;
@@ -849,4 +849,50 @@ test("the packaged Java application serves React assets, hash routes, and the fi
     const rows = await getJson<unknown[]>(page, `/api/${route}`);
     expect(Array.isArray(rows), `/api/${route} returns a JSON array`).toBe(true);
   }
+});
+
+test("Resource Library traverses 101 matching resources with bounded server pages", async ({ page }) => {
+  test.setTimeout(90_000);
+  const prefix = "C8 page fixture " + Date.now().toString(36);
+  const expected = Array.from({ length: 101 }, (_, index) => prefix + " item " + String(index + 1).padStart(3, "0"));
+  for (const name of expected) {
+    const created = await postJson(page, "/api/resources", { name, type: "CONSUMABLE", totalQuantity: 0 });
+    expect(created.status()).toBe(201);
+  }
+
+  const legacyReads: string[] = [];
+  const usedCursors = new Set<string>();
+  page.on("request", request => {
+    if (request.method() !== "GET") return;
+    const url = new URL(request.url());
+    if (url.pathname === "/api/resources") legacyReads.push(url.pathname);
+    const cursor = url.searchParams.get("cursor");
+    if (url.pathname === "/api/v2/workspace/resources" && cursor) usedCursors.add(cursor);
+  });
+  await page.goto("/#/resources");
+  await page.getByRole("searchbox", { name: "Search resources" }).fill(prefix);
+  const table = page.getByRole("table");
+  const nav = page.getByRole("navigation", { name: "Resource pages" });
+  const next = nav.getByRole("button", { name: "Next page" });
+  const previous = nav.getByRole("button", { name: "Previous page" });
+  await expect(nav.getByRole("status")).toHaveText("Page 1 · 50 shown");
+  await expect(previous).toBeDisabled();
+  const seen: string[] = [];
+  for (const [pageNumber, size] of [[1, 50], [2, 50], [3, 1]]) {
+    await expect(nav.getByRole("status")).toContainText("Page " + pageNumber + " · " + size + " shown");
+    const names = await table.locator("tbody tr td:first-child strong").allTextContents();
+    expect(names).toHaveLength(size);
+    seen.push(...names);
+    if (pageNumber !== 3) {
+      await next.focus();
+      await page.keyboard.press("Enter");
+    }
+  }
+  expect(seen).toEqual(expected);
+  expect(usedCursors.size).toBe(2);
+  expect(legacyReads).toEqual([]);
+  await expect(next).toBeDisabled();
+  await expect(nav.getByRole("status")).toContainText("End of results");
+  await previous.click();
+  await expect(nav.getByRole("status")).toHaveText("Page 2 · 50 shown");
 });

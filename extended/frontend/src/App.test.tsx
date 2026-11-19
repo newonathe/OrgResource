@@ -17,6 +17,9 @@ function authenticatedFetch(role: "OWNER" | "ADMIN" | "CUSTODIAN" | "LEAD" | "ME
     if (url === "/api/v2/auth/csrf") return envelope({ csrfToken: csrf });
     if (url === "/api/v2/session") return envelope({ accountId: "account-a", displayName: "Fictional Operator", activeOrgId, memberships: [] });
     if (url === "/api/v2/orgs" && method === "GET") return envelope([{ id: "org-a", slug: "fictional", displayName: "Fictional Organization", role }]);
+    if (url.startsWith("/api/v2/workspace/") && method === "GET") {
+      return envelope({ items: url.startsWith("/api/v2/workspace/departments") ? departments : [], nextCursor: null });
+    }
     if (url === "/api/departments" && method === "GET") return jsonResponse(departments);
     if (url === "/api/departments" && method === "POST") {
       if ((init?.headers as Record<string, string>)["X-CSRF-TOKEN"] !== csrf) return jsonResponse({ code: "CSRF", message: "Bad token." }, 403);
@@ -105,7 +108,7 @@ describe("Extended C authentication and organization shell", () => {
     window.location.hash = "#/departments";
     const authenticated = authenticatedFetch();
     vi.stubGlobal("fetch", vi.fn((input: RequestInfo | URL, init?: RequestInit) =>
-      String(input) === "/api/departments"
+      String(input).startsWith("/api/v2/workspace/departments")
         ? Promise.resolve(jsonResponse({ code: "ORG_CONTEXT_REQUIRED", message: "Select an organization." }, 409))
         : authenticated(input, init)));
     render(<App />);

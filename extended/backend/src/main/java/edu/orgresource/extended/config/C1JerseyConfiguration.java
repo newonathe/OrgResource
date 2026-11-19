@@ -26,6 +26,7 @@ import edu.orgresource.extended.rest.ReportingResource;
 import edu.orgresource.extended.rest.ResourceRequirementResource;
 import edu.orgresource.extended.rest.ResourceResource;
 import edu.orgresource.extended.rest.V2DepartmentResource;
+import edu.orgresource.extended.rest.WorkspacePageResource;
 
 @Configuration
 public class C1JerseyConfiguration {
@@ -38,6 +39,7 @@ public class C1JerseyConfiguration {
         config.register(ResourceRequirementResource.class);
         config.register(AllocationResource.class);
         config.register(V2DepartmentResource.class);
+        config.register(WorkspacePageResource.class);
         config.register(C1AuthResource.class);
         config.register(C1SessionResource.class);
         config.register(C1GovernanceResource.class);

@@ -7,10 +7,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import edu.orgresource.extended.api.ApiDtos;
+import edu.orgresource.extended.domain.AllocationStatus;
+import edu.orgresource.extended.domain.ResourceType;
 
 @Component
 public class C1Component {
     @Autowired private C1Service service;
+
+    public ApiDtos.WorkspacePage<ApiDtos.DepartmentView> departmentPage(String search, int limit, String cursor) {
+        return service.departmentPage(search, limit, cursor);
+    }
+    public ApiDtos.WorkspacePage<ApiDtos.ProjectView> projectPage(Long departmentId, String search, int limit, String cursor) {
+        return service.projectPage(departmentId, search, limit, cursor);
+    }
+    public ApiDtos.WorkspacePage<ApiDtos.ResourceView> resourcePage(ResourceType type, String search, int limit, String cursor) {
+        return service.resourcePage(type, search, limit, cursor);
+    }
+    public ApiDtos.WorkspacePage<ApiDtos.RequirementView> requirementPage(Long projectId, String search, int limit, String cursor) {
+        return service.requirementPage(projectId, search, limit, cursor);
+    }
+    public ApiDtos.WorkspacePage<ApiDtos.AllocationView> allocationPage(Long requirementId, AllocationStatus status,
+            int limit, String cursor) {
+        return service.allocationPage(requirementId, status, limit, cursor);
+    }
 
     public ApiDtos.DepartmentView createDepartment(ApiDtos.CreateDepartment request) { return service.createDepartment(request); }
     public List<ApiDtos.DepartmentView> listDepartments() { return service.listDepartments(); }

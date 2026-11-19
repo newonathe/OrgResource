@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { api } from "../api/client";
+import { useEffect, useState, type FormEvent } from "react";
+import { workspaceApi, api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import type { Allocation, Department, Project, Resource, ResourceRequirement } from "../api/types";
 import { explainError, formatManila, inputDateTime, isUncertain, projectPeriod, toDateTimeInput } from "../domain";
-import { Button, DetailSheet, GlassPanel, LoadState, Modal, MutationReviewNotice, Notice, PageHeader, PanelHeading, StatusBadge } from "../ui";
+import { Button, DetailSheet, GlassPanel, LoadState, Modal, MutationReviewNotice, Notice, PageHeader, PageNavigation, PanelHeading, usePageCursors, StatusBadge } from "../ui";
 
 function defaultStart(): string {
   const d = new Date(Date.now() + 48 * 60 * 60 * 1000);
@@ -24,6 +24,9 @@ export function ProjectsPage() {
   const [periodFilter, setPeriodFilter] = useState("ALL");
   const [search, setSearch] = useState("");
   const [reload, setReload] = useState(0);
+  const { cursor, page, move } = usePageCursors(JSON.stringify([departmentFilter, search]));
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const goToPage = (next: string | null) => { setLoadState("loading"); move(next); };
   const [departmentId, setDepartmentId] = useState("");
   const [name, setName] = useState("");
   const [startAt, setStartAt] = useState(defaultStart);
@@ -49,14 +52,14 @@ export function ProjectsPage() {
   useEffect(() => {
     const controller = new AbortController();
     const filterId = departmentFilter === "ALL" ? undefined : Number(departmentFilter);
-    Promise.all([api.projects(filterId, controller.signal), api.departments(controller.signal)]).then(([rows, departmentRows]) => {
-      setProjects(rows); setDepartments(departmentRows); setLoadState("ready"); setLoadError("");
+    Promise.all([workspaceApi.projects(cursor, { departmentId: filterId, search }, controller.signal), api.departments(controller.signal)]).then(([result, departmentRows]) => {
+      setProjects(result.items); setNextCursor(result.nextCursor); setDepartments(departmentRows); setLoadState("ready"); setLoadError("");
     }).catch((reason: unknown) => {
       if (reason instanceof DOMException && reason.name === "AbortError") return;
       setLoadError(explainError(reason)); setLoadState("error");
     });
     return () => controller.abort();
-  }, [departmentFilter, reload]);
+  }, [cursor, departmentFilter, search, reload]);
 
   useEffect(() => {
     if (!selected) return;
@@ -82,11 +85,7 @@ export function ProjectsPage() {
     return () => controller.abort();
   }, [selected, detailReload, canReadAllocations]);
 
-  const ordered = useMemo(() => projects.filter((project) => {
-    const department = departments.find((item) => item.id === project.departmentId)?.name ?? "";
-    const queryMatch = `${project.name} ${department}`.toLowerCase().includes(search.trim().toLowerCase());
-    return queryMatch && (periodFilter === "ALL" || projectPeriod(project) === periodFilter);
-  }).sort((a, b) => a.startAt.localeCompare(b.startAt) || a.id - b.id), [projects, departments, search, periodFilter]);
+  const ordered = projects;
   const selectedDepartmentId = departmentId || String(departments[0]?.id ?? "");
   const refresh = () => { setLoadState("loading"); setReload((value) => value + 1); };
   const refreshDetails = () => { setDetailState("loading"); setDetailReload((value) => value + 1); };
@@ -158,7 +157,7 @@ export function ProjectsPage() {
 
         <GlassPanel className="list-panel" tilt={false}>
           <PanelHeading kicker="Activity calendar" title="Project schedule"><Button variant="quiet" disabled={loadState === "loading"} onClick={refresh}>Refresh</Button></PanelHeading>
-          <div className="search-filter-bar project-filters"><label htmlFor="project-search">Search projects</label><input id="project-search" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Name or department" />
+          <div className="search-filter-bar project-filters"><label htmlFor="project-search">Search projects</label><input id="project-search" type="search" value={search} maxLength={100} onChange={(event) => { setLoadState("loading"); setSearch(event.target.value); }} placeholder="Name or department" />
             <label htmlFor="project-department-filter">Department</label><select id="project-department-filter" value={departmentFilter} onChange={(event) => { setLoadState("loading"); setDepartmentFilter(event.target.value); }}><option value="ALL">All departments</option>{departments.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select>
             <label htmlFor="project-period-filter">Period</label><select id="project-period-filter" value={periodFilter} onChange={(event) => setPeriodFilter(event.target.value)}><option value="ALL">All periods</option><option value="UPCOMING">Upcoming</option><option value="ACTIVE">Active</option><option value="ENDED">Ended</option></select></div>
           <LoadState state={loadState} error={loadError} onRetry={refresh}>
@@ -175,6 +174,9 @@ export function ProjectsPage() {
                   </article>;
                 })}</div>}
           </LoadState>
+          <PageNavigation label="Project pages" page={page} count={loadState === "ready" ? projects.length : 0}
+            hasNext={loadState === "ready" && nextCursor !== null} loading={loadState === "loading"} unavailable={loadState === "error"}
+            onPrevious={() => goToPage(null)} onNext={() => { if (nextCursor) goToPage(nextCursor); }} />
           <p className="list-footnote">Active means start ≤ current Philippine time &lt; end. Period labels are calculated for display.</p>
         </GlassPanel>
       </div>

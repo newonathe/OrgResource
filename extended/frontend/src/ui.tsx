@@ -170,6 +170,35 @@ export function StatusBadge({ children, tone = "neutral" }: { children: ReactNod
   return <span className={`status-badge badge-${tone}`}>{children}</span>;
 }
 
+export function usePageCursors(scope: string) {
+  const [history, setHistory] = useState<{ scope: string; cursors: (string | null)[] }>({ scope, cursors: [null] });
+  const current = history.scope === scope ? history.cursors : [null];
+  return {
+    cursor: current.at(-1) ?? null,
+    page: current.length,
+    move(next: string | null) {
+      setHistory(previous => {
+        const cursors = previous.scope === scope ? previous.cursors : [null];
+        const nextCursors = next === null ? cursors.slice(0, Math.max(1, cursors.length - 1)) : [...cursors, next];
+        return { scope, cursors: nextCursors };
+      });
+    },
+  };
+}
+
+export function PageNavigation({ label, page, count, hasNext, loading, unavailable = false, onPrevious, onNext }: {
+  label: string; page: number; count: number; hasNext: boolean; loading: boolean; unavailable?: boolean;
+  onPrevious: () => void; onNext: () => void;
+}) {
+  return <nav className="row-actions page-navigation" aria-label={label} aria-busy={loading}>
+    <Button type="button" disabled={loading || page === 1} onClick={onPrevious}>Previous page</Button>
+    <span className="quiet-note" role="status">
+      {loading ? "Loading page…" : unavailable ? "Page unavailable" : "Page " + page + " · " + count + (hasNext ? " shown" : " shown · End of results")}
+    </span>
+    <Button type="button" disabled={loading || !hasNext} onClick={onNext}>Next page</Button>
+  </nav>;
+}
+
 export function LoadState({ state, error, onRetry, empty, children }: {
   state: "loading" | "error" | "ready";
   error?: string;

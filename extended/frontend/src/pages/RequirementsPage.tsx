@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { api } from "../api/client";
+import { workspaceApi, api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import type { Project, Resource, ResourceRequirement } from "../api/types";
 import { explainError, formatManila, isUncertain, projectPeriod } from "../domain";
-import { Button, GlassPanel, LoadState, Modal, MutationReviewNotice, Notice, PageHeader, PanelHeading, StatusBadge } from "../ui";
+import { Button, GlassPanel, LoadState, Modal, MutationReviewNotice, Notice, PageHeader, PageNavigation, PanelHeading, usePageCursors, StatusBadge } from "../ui";
 
 export function RequirementsPage() {
   const { session, organizations } = useAuth();
@@ -17,6 +17,9 @@ export function RequirementsPage() {
   const [projectFilter, setProjectFilter] = useState("ALL");
   const [search, setSearch] = useState("");
   const [reload, setReload] = useState(0);
+  const { cursor, page, move } = usePageCursors(JSON.stringify([projectFilter, search]));
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const goToPage = (next: string | null) => { setLoadState("loading"); move(next); };
   const [projectId, setProjectId] = useState("");
   const [resourceId, setResourceId] = useState("");
   const [quantity, setQuantity] = useState("1");
@@ -31,24 +34,19 @@ export function RequirementsPage() {
   useEffect(() => {
     const controller = new AbortController();
     const filterId = projectFilter === "ALL" ? undefined : Number(projectFilter);
-    Promise.all([api.requirements(filterId, controller.signal), api.projects(undefined, controller.signal), api.resources(undefined, controller.signal)])
-      .then(([requirementRows, projectRows, resourceRows]) => {
-        setRequirements(requirementRows); setProjects(projectRows); setResources(resourceRows); setLoadState("ready"); setLoadError("");
+    Promise.all([workspaceApi.requirements(cursor, { projectId: filterId, search }, controller.signal), api.projects(undefined, controller.signal), api.resources(undefined, controller.signal)])
+      .then(([result, projectRows, resourceRows]) => {
+        setRequirements(result.items); setNextCursor(result.nextCursor); setProjects(projectRows); setResources(resourceRows); setLoadState("ready"); setLoadError("");
       }).catch((reason: unknown) => {
         if (reason instanceof DOMException && reason.name === "AbortError") return;
         setLoadError(explainError(reason)); setLoadState("error");
       });
     return () => controller.abort();
-  }, [projectFilter, reload]);
+  }, [cursor, projectFilter, search, reload]);
 
   const projectMap = useMemo(() => new Map(projects.map((item) => [item.id, item])), [projects]);
   const resourceMap = useMemo(() => new Map(resources.map((item) => [item.id, item])), [resources]);
-  const ordered = useMemo(() => requirements.filter((item) => {
-    const project = projectMap.get(item.projectId);
-    const resource = resourceMap.get(item.resourceId);
-    return `${project?.name ?? ""} ${resource?.name ?? ""}`.toLowerCase().includes(search.trim().toLowerCase());
-  }).sort((a, b) => (projectMap.get(a.projectId)?.name ?? "").localeCompare(projectMap.get(b.projectId)?.name ?? "") || a.id - b.id),
-  [requirements, projectMap, resourceMap, search]);
+  const ordered = requirements;
   const selectedProjectId = projectId || String(projects[0]?.id ?? "");
   const selectedResourceId = resourceId || String(resources[0]?.id ?? "");
   const refresh = () => { setLoadState("loading"); setReload((value) => value + 1); };
@@ -109,7 +107,7 @@ export function RequirementsPage() {
         </GlassPanel> : <GlassPanel className="form-panel" tilt={false}><PanelHeading kicker="Read only" title="Requirement access" /><p>Your role can inspect current coverage and shortage but cannot change project requirements.</p></GlassPanel>}
         <GlassPanel className="list-panel" tilt={false}>
           <PanelHeading kicker="Coverage ledger" title="Project requirements"><Button variant="quiet" disabled={loadState === "loading"} onClick={refresh}>Refresh</Button></PanelHeading>
-          <div className="search-filter-bar requirement-filters"><label htmlFor="requirement-search">Search</label><input id="requirement-search" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Project or Resource" />
+          <div className="search-filter-bar requirement-filters"><label htmlFor="requirement-search">Search</label><input id="requirement-search" type="search" value={search} maxLength={100} onChange={(event) => { setLoadState("loading"); setSearch(event.target.value); }} placeholder="Project or Resource" />
             <label htmlFor="requirement-project-filter">Project</label><select id="requirement-project-filter" value={projectFilter} onChange={(event) => { setLoadState("loading"); setProjectFilter(event.target.value); }}><option value="ALL">All projects</option>{projects.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></div>
           <LoadState state={loadState} error={loadError} onRetry={refresh}>
             {requirements.length === 0 ? <div className="state-block state-empty"><span className="empty-symbol" aria-hidden="true">☷</span><h3>No requirements yet</h3><p>Choose a Project and Resource to record planned demand.</p></div>
@@ -128,6 +126,9 @@ export function RequirementsPage() {
                   </article>;
                 })}</div>}
           </LoadState>
+          <PageNavigation label="Requirement pages" page={page} count={loadState === "ready" ? requirements.length : 0}
+            hasNext={loadState === "ready" && nextCursor !== null} loading={loadState === "loading"} unavailable={loadState === "error"}
+            onPrevious={() => goToPage(null)} onNext={() => { if (nextCursor) goToPage(nextCursor); }} />
           <p className="list-footnote">Coverage and shortage are the backend’s current calculation. Pending requests do not count as fulfilled coverage.</p>
         </GlassPanel>
       </div>

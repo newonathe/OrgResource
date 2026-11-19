@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { api } from "../api/client";
+import { api, workspaceApi } from "../api/client";
 import type { Allocation, Project, Resource, ResourceRequirement } from "../api/types";
 import { explainError, formatManila, manilaWallTime, reminderLabel, reminderWindow } from "../domain";
-import { Button, GlassPanel, LoadState, Notice, PageHeader, PanelHeading, StatusBadge } from "../ui";
+import { Button, GlassPanel, LoadState, Notice, PageHeader, PageNavigation, PanelHeading, StatusBadge, usePageCursors } from "../ui";
 
 export function RemindersPage() {
   const [allocations, setAllocations] = useState<Allocation[]>([]);
@@ -12,6 +12,9 @@ export function RemindersPage() {
   const [state, setState] = useState<"loading" | "error" | "ready">("loading");
   const [error, setError] = useState("");
   const [reload, setReload] = useState(0);
+  const { cursor, page, move } = usePageCursors("issued-reminders");
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const openPage = (next: string | null) => { setState("loading"); move(next); };
   const [now, setNow] = useState(manilaWallTime());
   const [updatedAt, setUpdatedAt] = useState("");
 
@@ -21,16 +24,16 @@ export function RemindersPage() {
   }, []);
   useEffect(() => {
     const controller = new AbortController();
-    Promise.all([api.allocations({}, controller.signal), api.projects(undefined, controller.signal), api.resources(undefined, controller.signal), api.requirements(undefined, controller.signal)])
-      .then(([allocationRows, projectRows, resourceRows, requirementRows]) => {
-        setAllocations(allocationRows); setProjects(projectRows); setResources(resourceRows); setRequirements(requirementRows);
+    Promise.all([workspaceApi.allocations(cursor, { status: "ISSUED" }, controller.signal), api.projects(undefined, controller.signal), api.resources(undefined, controller.signal), api.requirements(undefined, controller.signal)])
+      .then(([result, projectRows, resourceRows, requirementRows]) => {
+        setAllocations(result.items); setNextCursor(result.nextCursor); setProjects(projectRows); setResources(resourceRows); setRequirements(requirementRows);
         setUpdatedAt(manilaWallTime()); setError(""); setState("ready");
       }).catch((reason: unknown) => {
         if (reason instanceof DOMException && reason.name === "AbortError") return;
         setError(explainError(reason)); setState("error");
       });
     return () => controller.abort();
-  }, [reload]);
+  }, [cursor, reload]);
   const refresh = () => { setState("loading"); setReload((value) => value + 1); };
 
   const requirementMap = useMemo(() => new Map(requirements.map((item) => [item.id, item])), [requirements]);
@@ -54,20 +57,23 @@ export function RemindersPage() {
   return (
     <section className="page-shell" aria-labelledby="reminder-activity-title">
       <PageHeader eyebrow="System · scheduled activity" title="Reminder Activity" description="See upcoming return windows and outcomes recorded by the backend reminder scheduler."
-        action={<div className="header-stat"><span>{state === "ready" ? issued.length : "—"}</span><small>issued reusable batches</small></div>} />
+        action={<div className="header-stat"><span>{state === "ready" ? issued.length : "—"}</span><small>issued batches in view</small></div>} />
       {unavailableCount > 0 && <Notice tone="warning">The Project period for {unavailableCount} issued batch{unavailableCount === 1 ? "" : "es"} could not be resolved. Those rows are not counted as due or overdue.</Notice>}
       <div className="overview-toolbar"><span>Updated: <strong>{updatedAt ? formatManila(updatedAt) : "Loading"}</strong></span><Button variant="quiet" disabled={state === "loading"} onClick={refresh}>Refresh</Button></div>
       <LoadState state={state} error={error} onRetry={refresh}>
-        {issued.length === 0 ? <GlassPanel className="state-block state-empty"><span className="empty-symbol" aria-hidden="true">◷</span><h3>No issued reusable batches</h3><p>When an Allocation is issued, the backend determines whether a scheduled reminder is eligible.</p></GlassPanel>
+        {issued.length === 0 ? <GlassPanel className="state-block state-empty"><span className="empty-symbol" aria-hidden="true">◷</span><h3>No issued reusable batches on this page</h3><p>When an Allocation is issued, the backend determines whether a scheduled reminder is eligible.</p></GlassPanel>
           : <div className="reminder-groups">
             <GlassPanel className="reminder-group" tilt={false}><PanelHeading kicker="Next 24 hours" title="Return window approaching"><span className="group-count">{dueSoon.length}</span></PanelHeading>
-              {dueSoon.length === 0 ? <p className="panel-copy">No issued reusable batch is due within the upcoming 24 hours.</p> : <ReminderList rows={dueSoon} />}</GlassPanel>
+              {dueSoon.length === 0 ? <p className="panel-copy">No batch on this page is due within 24 hours.</p> : <ReminderList rows={dueSoon} />}</GlassPanel>
             <GlassPanel className="reminder-group" tilt={false}><PanelHeading kicker="Project end passed" title="Overdue issued batches"><span className="group-count overdue-count">{overdue.length}</span></PanelHeading>
-              {overdue.length === 0 ? <p className="panel-copy">No currently issued reusable batch has passed its Project end.</p> : <ReminderList rows={overdue} overdue />}</GlassPanel>
-            <GlassPanel className="reminder-group reminder-all" tilt={false}><PanelHeading kicker="Backend records" title="All issued reusable batches" />
+              {overdue.length === 0 ? <p className="panel-copy">No batch on this page has passed its Project end.</p> : <ReminderList rows={overdue} overdue />}</GlassPanel>
+            <GlassPanel className="reminder-group reminder-all" tilt={false}><PanelHeading kicker="Backend records" title="Issued reusable batches on this page" />
               <ReminderList rows={issued} /></GlassPanel>
           </div>}
       </LoadState>
+      <PageNavigation label="Reminder pages" page={page} count={state === "ready" ? issued.length : 0}
+        hasNext={state === "ready" && nextCursor !== null} loading={state === "loading"} unavailable={state === "error"}
+        onPrevious={() => openPage(null)} onNext={() => { if (nextCursor) openPage(nextCursor); }} />
       <p className="list-footnote">Reminder outcomes describe request processing. “Accepted by local simulator” and “Provider accepted request” do not prove handset delivery. This screen has no manual send action.</p>
     </section>
   );

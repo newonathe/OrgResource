@@ -22,6 +22,8 @@ public final class ApiDtos {
     private static final DateTimeFormatter LOCAL_DATE_TIME = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     private ApiDtos() { }
 
+    public record WorkspacePage<T>(java.util.List<T> items, String nextCursor) { }
+
     public static class CreateDepartment {
         @NotBlank @Size(max = 100) public String name;
         public CreateDepartment() { }
@@ -93,11 +95,14 @@ public final class ApiDtos {
         public Integer availableQuantity;
         public ResourceView() { }
         public ResourceView(Resource resource, int availableQuantity) {
-            this.id = resource.id;
-            this.publicId = resource.publicId;
-            this.name = resource.name;
-            this.type = resource.type;
-            this.totalQuantity = resource.totalQuantity;
+            this(resource.id, resource.publicId, resource.name, resource.type, resource.totalQuantity, availableQuantity);
+        }
+        public ResourceView(Long id, java.util.UUID publicId, String name, ResourceType type, int totalQuantity, int availableQuantity) {
+            this.id = id;
+            this.publicId = publicId;
+            this.name = name;
+            this.type = type;
+            this.totalQuantity = totalQuantity;
             this.availableQuantity = availableQuantity;
         }
     }

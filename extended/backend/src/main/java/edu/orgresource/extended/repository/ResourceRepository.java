@@ -3,6 +3,7 @@ package edu.orgresource.extended.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -19,6 +20,20 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
     Optional<Resource> findByPublicIdAndOrganizationId(java.util.UUID publicId, Long organizationId);
     boolean existsByOrganizationIdAndNameKey(Long organizationId, String nameKey);
     boolean existsByOrganizationIdAndNameKeyAndIdNot(Long organizationId, String nameKey, Long id);
+
+    interface WorkspaceRow {
+        Long getId();
+        java.util.UUID getPublicId();
+        String getName();
+        ResourceType getType();
+        Integer getTotalQuantity();
+    }
+
+    @Query("select r.id as id, r.publicId as publicId, r.name as name, r.type as type, r.totalQuantity as totalQuantity "
+            + "from Resource r where r.organizationId=:org and r.id>:after and (:type is null or r.type=:type) "
+            + "and (:search is null or locate(:search, r.nameKey)>0) order by r.id")
+    List<WorkspaceRow> findWorkspacePage(@Param("org") long org, @Param("after") long after,
+            @Param("type") ResourceType type, @Param("search") String search, Pageable pageable);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select r from Resource r where r.id = :id and r.organizationId = :organizationId")

@@ -1,0 +1,12 @@
+# C7 to C8 reconciliation
+
+GitHub audit on November 19, 2026 verified that PR #22 remained a draft from `b4ca5cd1b8a2a128f997f4dbd5e6848cf2b39d0b` to C6a `856f73baeb76cab09f880ac1a3ca64c649eb481e`. Exact application `85f6c1e0314797244784bc846a13089cfdeec271` differed only by one technical summary. The prior implementation and summary heads each had all three hosted jobs green. C8 branches from the reviewed C7 draft head. [Application CI](https://github.com/newonathe/OrgResource/actions/runs/44404787878) · [C7 draft-head CI](https://github.com/newonathe/OrgResource/actions/runs/44473845511).
+
+PR #19 quality policy `29efe862` is an ancestor. Planning PR #21 `6036f2d1a02aaecd6fa916c95718a3ee77083d80`, methods PR #23 `d794e8d2a9db1167729a54dcab844f03642d2c36`, and audit PR #24 `727c270f0a5f2d34bb3b049124d2d5cfca218f35` remain source authorities for their respective planning or evidence claims. None supplies a new implementation parent.
+
+## Workspace contract
+
+- The earlier approved C4 report explicitly permits a dual member to use the path-scoped v2 inventory API of either organization. CP32 §6 allows path membership/role with optional selected context, and CP35 distinguishes workspace selection from authorization for a path. The C1/C2 adopted constraints forbid *implicit selection* and require selection on legacy numeric routes.
+- C6a Reporting narrowed its own OWNER/ADMIN reporting, activity and exports to the selected workspace. This extra safeguard stops a one-workspace reporting request from revealing data or membership in a different workspace. Preserve it. These paths return 409 for missing context where applicable and 404 for an unselected workspace. Neither C6a nor C7 changed pre-existing path inventory or governance.
+- C8 follows existing path membership for inventory and governance. This requires current target membership, the target role and scoped objects independent of the user's role in the selected workspace. The new workspace pages inherit selection and permissions from their academic counterparts. The React workspace derives inventory paths from its selected organization, tears down on organization switch, aborts pending requests, and discards response bodies that finish decoding afterward.
+- Test `C8ScopeUsesPathMembershipForStockAndSelectedWorkspaceForReportingAndLegacy` proves the behavior with fictional MySQL fixtures, actual HTTP, ETags, stock movements, receipts, and database counts, including downgrade and suspension. The existing 28-operation collection continues to cover the compatibility route family.

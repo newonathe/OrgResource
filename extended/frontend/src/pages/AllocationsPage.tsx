@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useSearchParams } from "react-router-dom";
-import { api, ApiError } from "../api/client";
+import { workspaceApi, api, ApiError } from "../api/client";
 import { inventoryApi, newOperationIdentity, type OperationIdentity } from "../api/extended";
 import { useAuth } from "../auth/AuthContext";
 import type { Allocation, AllocationStatus, Project, Resource, ResourceRequirement } from "../api/types";
 import { allocationActions, explainError, formatManila, isFictionalTestPhone, isUncertain, reminderLabel, type AllocationAction } from "../domain";
-import { Button, DetailSheet, GlassPanel, LoadState, Modal, MutationReviewNotice, Notice, PageHeader, PanelHeading, StatusBadge } from "../ui";
+import { Button, DetailSheet, GlassPanel, LoadState, Modal, MutationReviewNotice, Notice, PageHeader, PageNavigation, PanelHeading, usePageCursors, StatusBadge } from "../ui";
 
 type ActionName = AllocationAction;
 interface PendingAction { allocation: Allocation; action: ActionName }
@@ -50,6 +50,9 @@ export function AllocationsPage() {
   })();
   const [requirementFilter, setRequirementFilter] = useState("ALL");
   const [reload, setReload] = useState(0);
+  const { cursor, page, move } = usePageCursors(JSON.stringify([statusFilter, requirementFilter]));
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const goToPage = (next: string | null) => { setLoadState("loading"); move(next); };
   const [requirementId, setRequirementId] = useState("");
   const [quantity, setQuantity] = useState("1");
   const [borrowerName, setBorrowerName] = useState("");
@@ -73,16 +76,16 @@ export function AllocationsPage() {
       requirementId: requirementFilter === "ALL" ? undefined : Number(requirementFilter),
     };
     Promise.all([
-      api.allocations(filters, controller.signal), api.requirements(undefined, controller.signal),
+      workspaceApi.allocations(cursor, filters, controller.signal), api.requirements(undefined, controller.signal),
       api.projects(undefined, controller.signal), api.resources(undefined, controller.signal),
-    ]).then(([allocationRows, requirementRows, projectRows, resourceRows]) => {
-      setAllocations(allocationRows); setRequirements(requirementRows); setProjects(projectRows); setResources(resourceRows); setLoadState("ready"); setLoadError("");
+    ]).then(([result, requirementRows, projectRows, resourceRows]) => {
+      setAllocations(result.items); setNextCursor(result.nextCursor); setRequirements(requirementRows); setProjects(projectRows); setResources(resourceRows); setLoadState("ready"); setLoadError("");
     }).catch((reason: unknown) => {
       if (reason instanceof DOMException && reason.name === "AbortError") return;
       setLoadError(explainError(reason)); setLoadState("error");
     });
     return () => controller.abort();
-  }, [statusFilter, requirementFilter, reload]);
+  }, [cursor, statusFilter, requirementFilter, reload]);
 
   const requirementMap = useMemo(() => new Map(requirements.map((item) => [item.id, item])), [requirements]);
   const projectMap = useMemo(() => new Map(projects.map((item) => [item.id, item])), [projects]);
@@ -244,6 +247,9 @@ export function AllocationsPage() {
                 </article>;
               })}</div>}
           </LoadState>
+          <PageNavigation label="Allocation pages" page={page} count={loadState === "ready" ? allocations.length : 0}
+            hasNext={loadState === "ready" && nextCursor !== null} loading={loadState === "loading"} unavailable={loadState === "error"}
+            onPrevious={() => goToPage(null)} onNext={() => { if (nextCursor) goToPage(nextCursor); }} />
         </GlassPanel>
       </div>
 
