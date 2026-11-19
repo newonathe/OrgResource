@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { App } from "./App";
 
 function jsonResponse(data: unknown, status = 200): Response {
@@ -48,7 +48,7 @@ function authenticatedFetch(role: "OWNER" | "ADMIN" | "CUSTODIAN" | "LEAD" | "ME
   });
 }
 
-afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); window.location.hash = ""; });
+afterEach(() => { cleanup(); vi.useRealTimers(); vi.restoreAllMocks(); vi.unstubAllGlobals(); window.location.hash = ""; });
 
 describe("Workspace provenance", () => {
   it.each([
@@ -56,6 +56,8 @@ describe("Workspace provenance", () => {
     ["aborted request", () => Promise.reject(new DOMException("Request aborted", "AbortError"))],
     ["malformed JSON", () => Promise.resolve(new Response("{invalid"))],
     ["invalid metadata", () => Promise.resolve(envelope({ ...syntheticMetadata, notice: "" }))],
+    ["missing ordinary fields", () => Promise.resolve(envelope({ synthetic: false }))],
+    ["array metadata", () => Promise.resolve(envelope([]))],
   ] as const)("holds the shell on %s and requires an explicit retry", async (_failure, respond) => {
     const authenticated = authenticatedFetch();
     let attempts = 0;
@@ -69,6 +71,19 @@ describe("Workspace provenance", () => {
     await screen.findByRole("heading", { name: "Overview" });
     expect(attempts).toBe(2);
     expect(screen.queryByText(/DEMO ENVIRONMENT/)).not.toBeInTheDocument();
+  });
+
+  it("aborts a stalled classification and keeps workspace routes hidden", async () => {
+    vi.useFakeTimers();
+    const pending = vi.fn((_url: RequestInfo | URL, options?: RequestInit) => new Promise<Response>((_, reject) =>
+      options?.signal?.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")), { once: true })));
+    vi.stubGlobal("fetch", pending);
+    render(<App />);
+    expect(screen.getByRole("status")).toHaveTextContent("Checking workspace classification");
+    await act(async () => { await vi.advanceTimersByTimeAsync(10000); });
+    expect(screen.getByRole("alert")).toHaveTextContent("Workspace classification unavailable");
+    expect(pending).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole("navigation", { name: "Main navigation" })).not.toBeInTheDocument();
   });
 
   it("waits for delayed synthetic metadata before accessing the login", async () => {

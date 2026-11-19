@@ -72,7 +72,7 @@ type Environment = { status: "checking" } | { status: "unavailable" } | { status
 function classifyEnvironment(data: unknown): Environment {
   if (typeof data !== "object" || data === null || !("synthetic" in data)) return { status: "unavailable" };
   const payload = data as Record<string, unknown>;
-  if (payload.synthetic === false && payload.notice == null && payload.datasetId == null && payload.demonstrationAsOf == null)
+  if (payload.synthetic === false && payload.notice === null && payload.datasetId === null && payload.demonstrationAsOf === null)
     return { status: "ready", notice: null };
   if (payload.synthetic === true && typeof payload.notice === "string" && payload.notice.startsWith("DEMO ENVIRONMENT")
       && typeof payload.datasetId === "string" && payload.datasetId.trim()

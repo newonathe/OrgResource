@@ -3737,7 +3737,10 @@ class C1IdentityAcceptanceTest {
         String metadata = "/api/v2/demo/metadata";
         var before = get(newClient(), metadata);
         assertEquals(200, before.statusCode(), before.body());
-        assertFalse(json(before).getAsJsonObject("data").get("synthetic").getAsBoolean());
+        var ordinaryClassification = json(before).getAsJsonObject("data");
+        assertEquals(Set.of("synthetic", "datasetId", "demonstrationAsOf", "notice"), ordinaryClassification.keySet());
+        assertFalse(ordinaryClassification.get("synthetic").getAsBoolean());
+        for (String field : List.of("datasetId", "demonstrationAsOf", "notice")) assertTrue(ordinaryClassification.get(field).isJsonNull());
         String label = "orgresource-c8-plan-v1-012345678901-abcdefabcdef-small";
         try {
             jdbc.update("UPDATE organization SET demo_dataset_id=?,demo_reference_key='fictional-demo-entry',"
@@ -3766,6 +3769,10 @@ class C1IdentityAcceptanceTest {
             assertEquals(201, post(demoActor, "/api/resources", resource).statusCode());
             assertEquals(201, post(ordinaryActor, "/api/resources", resource).statusCode());
             String demoExports = "/api/v2/orgs/" + demo.orgPublicId + "/exports";
+            var emptyCsv = post(demoActor, demoExports, "{\"format\":\"CSV\",\"dataset\":\"ALLOCATIONS\"}");
+            assertEquals(200, emptyCsv.statusCode(), emptyCsv.body());
+            assertEquals(1, emptyCsv.body().lines().count());
+            assertTrue(emptyCsv.body().contains("synthetic,demoDataset,demonstrationAsOf,demoNotice"));
             String jsonInput = "{\"format\":\"TENANT_JSON\",\"dataset\":\"RESOURCES\"}";
             var labelled = post(demoActor, demoExports, jsonInput);
             assertEquals(200, labelled.statusCode(), labelled.body());
