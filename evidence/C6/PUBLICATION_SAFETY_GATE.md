@@ -1,3 +1,5 @@
+> **LATEST STATUS CORRECTION — 2026-11-19 PHT:** A later direct GitHub repository API read returned **private=false, visibility=public**, and [run #44431604781](https://github.com/newonathe/OrgResource/actions/runs/44431604781) subsequently executed all three CI jobs successfully. All statements below saying “private=true” or anticipating “before changing visibility” describe the earlier snapshot and are now **STALE**. This audit did **not** change repository visibility. Publication is an **ACTIVE P0 privacy/copyright/history exposure under owner review**, regardless of successful CI; review GitHub Settings to restrict access pending verified rights/privacy/secret/history clearance. Details: [CI receipt](CI_SUCCESS_RECEIPT_2026_11_19.md). No student identifiers or actual sensitive strings are repeated in this correction.
+
 # C6 PUBLICATION_SAFETY_GATE — publication BLOCKED pending private-data and rights audit
 
 Date: 2026-11-19 PHT. Stage: read-only C6 source review. Status: PUBLICATION_RISK_P0_BLOCKED, NOT a completed secret scan. No visibility change made.
