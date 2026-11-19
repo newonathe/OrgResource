@@ -870,9 +870,11 @@ test("Resource Library traverses 101 matching resources with bounded server page
   test.setTimeout(90_000);
   const prefix = "C8 page fixture " + Date.now().toString(36);
   const expected = Array.from({ length: 101 }, (_, index) => prefix + " item " + String(index + 1).padStart(3, "0"));
+  const resourceIds: number[] = [];
   for (const name of expected) {
     const created = await postJson(page, "/api/resources", { name, type: "CONSUMABLE", totalQuantity: 0 });
     expect(created.status()).toBe(201);
+    resourceIds.push((await created.json() as { id: number }).id);
   }
 
   const legacyReads: string[] = [];
@@ -880,7 +882,7 @@ test("Resource Library traverses 101 matching resources with bounded server page
   page.on("request", request => {
     if (request.method() !== "GET") return;
     const url = new URL(request.url());
-    if (url.pathname === "/api/resources") legacyReads.push(url.pathname);
+    if (/^\/api\/(departments|projects|resources|requirements|allocations)$/.test(url.pathname)) legacyReads.push(url.pathname);
     const cursor = url.searchParams.get("cursor");
     if (url.pathname === "/api/v2/workspace/resources" && cursor) usedCursors.add(cursor);
   });
@@ -910,4 +912,64 @@ test("Resource Library traverses 101 matching resources with bounded server page
   await expect(nav.getByRole("status")).toContainText("End of results");
   await previous.click();
   await expect(nav.getByRole("status")).toHaveText("Page 2 · 50 shown");
+
+  const department = await postJson(page, "/api/departments", { name: prefix + " department" });
+  expect(department.status()).toBe(201);
+  const departmentId = (await department.json() as { id: number }).id;
+  const projectName = prefix + " project";
+  const project = await postJson(page, "/api/projects", {
+    departmentId, name: projectName, startAt: "2040-12-10T10:00:00", endAt: "2040-12-10T11:00:00",
+  });
+  expect(project.status()).toBe(201);
+  const projectId = (await project.json() as { id: number }).id;
+  for (const resourceId of resourceIds.slice(0, 51)) {
+    const requirement = await postJson(page, "/api/requirements", { projectId, resourceId, quantity: 2 });
+    expect(requirement.status()).toBe(201);
+  }
+
+  await page.goto("/#/requirements");
+  await page.getByRole("searchbox", { name: "Find resource", exact: true }).fill(prefix);
+  const resourceChoices = page.getByRole("navigation", { name: "Resource choices" });
+  await expect(resourceChoices.getByRole("status")).toHaveText("Page 1 · 50 shown");
+  await resourceChoices.getByRole("button", { name: "Next page" }).click();
+  await expect(resourceChoices.getByRole("status")).toHaveText("Page 2 · 50 shown");
+  const chosenResource = page.locator("#requirement-resource");
+  await chosenResource.selectOption(String(resourceIds[50]));
+  await resourceChoices.getByRole("button", { name: "Previous page" }).click();
+  await expect(resourceChoices.getByRole("status")).toHaveText("Page 1 · 50 shown");
+  await expect(chosenResource).toHaveValue(String(resourceIds[50]));
+
+  await page.goto("/#/projects");
+  await page.getByRole("searchbox", { name: "Search projects" }).fill(projectName);
+  await page.getByRole("button", { name: "View " + projectName, exact: true }).click();
+  const details = page.getByRole("dialog");
+  const requirements = details.getByRole("navigation", { name: "Project Requirement pages" });
+  const history = details.getByRole("navigation", { name: "Project Allocation history pages" });
+  await expect(requirements.getByRole("status")).toHaveText("Page 1 · 50 shown");
+  await expect(history.getByRole("status")).toHaveText("Page 1 · 0 shown · End of results");
+  await requirements.getByRole("button", { name: "Next page" }).click();
+  await expect(requirements.getByRole("status")).toHaveText("Page 2 · 1 shown · End of results");
+  await expect(details.getByText(expected[50], { exact: true })).toBeVisible();
+  await expect(history.getByRole("status")).toHaveText("Page 1 · 0 shown · End of results");
+
+  await page.goto("/#/allocations");
+  const findRequirement = page.getByRole("searchbox", { name: "Find project requirement", exact: true });
+  await findRequirement.fill(expected[50]);
+  const requirementOption = page.locator("#allocation-requirement option").filter({ hasText: expected[50] });
+  await expect(requirementOption).toHaveCount(1);
+  const chosenRequirementId = await requirementOption.getAttribute("value");
+  expect(chosenRequirementId).toBeTruthy();
+  await page.locator("#allocation-requirement").selectOption(chosenRequirementId!);
+  await page.getByLabel("Borrower name", { exact: true }).fill("Fictional linked-choice borrower");
+  const allocationPost = page.waitForResponse(response => response.request().method() === "POST"
+    && new URL(response.url()).pathname === "/api/allocations");
+  await page.getByRole("button", { name: "Submit request", exact: true }).click();
+  const saved = await allocationPost;
+  expect(saved.status()).toBe(201);
+  expect((await saved.json() as { requirementId: number }).requirementId).toBe(Number(chosenRequirementId));
+
+  await page.goto("/#/reminders");
+  await expect(page.getByRole("heading", { name: "Reminder Activity" })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Reminder pages" }).getByRole("status")).toContainText("Page 1");
+  expect(legacyReads).toEqual([]);
 });

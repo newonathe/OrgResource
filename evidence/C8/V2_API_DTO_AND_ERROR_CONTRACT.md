@@ -5,10 +5,10 @@ The five new list operations are GET under `/api/v2/workspace`. Jersey delegates
 | Route suffix | Query filters | Authorization | Item |
 |---|---|---|---|
 | departments | search by normalized name | Selected current membership | DepartmentView |
-| projects | departmentId, period (ACTIVE/UPCOMING/ENDED), search by project or department | Selected current membership | ProjectView |
+| projects | departmentId, period (ACTIVE/UPCOMING/ENDED), search by project or department | Selected current membership | ProjectView plus departmentName |
 | resources | type, search by normalized name | Selected current membership | ResourceView with server-calculated availability |
-| requirements | projectId, search by project or resource | Selected current membership | RequirementView with coverage and shortage |
-| allocations | requirementId, projectId, status | Selected OWNER, ADMIN or CUSTODIAN | AllocationView without contact value |
+| requirements | projectId, search by project or resource | Selected current membership | RequirementView with coverage, shortage, Project/Resource labels, resourceType, projectStartAt and projectEndAt |
+| allocations | requirementId, projectId, status | Selected OWNER, ADMIN or CUSTODIAN | AllocationView plus the nested workspace Requirement view, without contact value |
 
 All support limit default 50, maximum 100, and cursor. The database returns up to limit plus one rows ordered by immutable numeric primary key ascending. The extra row only signals continuation; the cursor position is the last returned item. A new greater-key row can appear in later pages. Rows committed later with keys behind the current boundary are visible after refresh from page one. This is live keyset traversal. It has no cross-request database snapshot.
 
@@ -33,3 +33,5 @@ The resource page selects scalar columns and never includes the image BLOB. Its 
 GET `/api/v2/workspace/overview` returns tenant-wide counts for Departments, active Projects, Resource types and Requirements with shortages. It samples the Manila business clock once in a consistent read transaction. Resource capacity is the first five reconciled records by ID. Calendar preview contains up to ten non-ended Projects by start time and ID. OWNER, ADMIN and CUSTODIAN receive tenant-wide Allocation status counts and the latest five batches by creation time and ID. MEMBER and LEAD receive null for the entire Allocation block. Preview limits are visible in React and lead to the corresponding full paged list. These fields contain neither contacts nor provider details.
 
 The Allocation page's projectId filter scopes through the persisted Requirement, and the server checks the selected tenant's Project before executing the page query. The Project dialog uses this filter for independent history navigation. Project period filters use the existing start-inclusive, end-exclusive contract and have their own cursor binding.
+
+The Project dialog also pages Requirements independently using projectId. The workspace Requirement projection joins scalar Project and Resource fields under the same organization, with no image payload. Allocation context is fetched and coverage computed using only the unique Requirement IDs from the current Allocation page. The React relationship selectors use the matching workspace list with server search, cursor navigation and a retained current selection. The 28 academic compatibility routes and responses are unchanged.

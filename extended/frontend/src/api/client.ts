@@ -9,6 +9,9 @@ import type {
   ResourceRequirement,
   ResourceType,
   WorkspaceOverview,
+  WorkspaceProject,
+  WorkspaceRequirement,
+  WorkspaceAllocation,
 } from "./types";
 
 export class ApiError extends Error {
@@ -202,11 +205,11 @@ export const workspaceApi = {
     }),
   departments: (cursor: string | null, search?: string, signal?: AbortSignal) => workspacePage<Department>("departments", cursor, { search }, signal),
   projects: (cursor: string | null, filters: { departmentId?: number; search?: string; period?: string }, signal?: AbortSignal) =>
-    workspacePage<Project>("projects", cursor, filters, signal),
+    workspacePage<WorkspaceProject>("projects", cursor, filters, signal),
   resources: (cursor: string | null, filters: { type?: ResourceType; search?: string }, signal?: AbortSignal) =>
     workspacePage<Resource>("resources", cursor, filters, signal),
   requirements: (cursor: string | null, filters: { projectId?: number; search?: string }, signal?: AbortSignal) =>
-    workspacePage<ResourceRequirement>("requirements", cursor, filters, signal),
+    workspacePage<WorkspaceRequirement>("requirements", cursor, filters, signal),
   allocations: (cursor: string | null, filters: { requirementId?: number; projectId?: number; status?: Allocation["status"] }, signal?: AbortSignal) =>
-    workspacePage<Allocation>("allocations", cursor, filters, signal),
+    workspacePage<WorkspaceAllocation>("allocations", cursor, filters, signal),
 };

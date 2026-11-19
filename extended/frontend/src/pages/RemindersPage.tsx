@@ -1,14 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
-import { api, workspaceApi } from "../api/client";
-import type { Allocation, Project, Resource, ResourceRequirement } from "../api/types";
+import { useEffect, useState } from "react";
+import { workspaceApi } from "../api/client";
+import type { WorkspaceAllocation } from "../api/types";
 import { explainError, formatManila, manilaWallTime, reminderLabel, reminderWindow } from "../domain";
-import { Button, GlassPanel, LoadState, Notice, PageHeader, PageNavigation, PanelHeading, StatusBadge, usePageCursors } from "../ui";
+import { Button, GlassPanel, LoadState, PageHeader, PageNavigation, PanelHeading, StatusBadge, usePageCursors } from "../ui";
 
 export function RemindersPage() {
-  const [allocations, setAllocations] = useState<Allocation[]>([]);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [resources, setResources] = useState<Resource[]>([]);
-  const [requirements, setRequirements] = useState<ResourceRequirement[]>([]);
+  const [allocations, setAllocations] = useState<WorkspaceAllocation[]>([]);
   const [state, setState] = useState<"loading" | "error" | "ready">("loading");
   const [error, setError] = useState("");
   const [reload, setReload] = useState(0);
@@ -24,9 +21,9 @@ export function RemindersPage() {
   }, []);
   useEffect(() => {
     const controller = new AbortController();
-    Promise.all([workspaceApi.allocations(cursor, { status: "ISSUED" }, controller.signal), api.projects(undefined, controller.signal), api.resources(undefined, controller.signal), api.requirements(undefined, controller.signal)])
-      .then(([result, projectRows, resourceRows, requirementRows]) => {
-        setAllocations(result.items); setNextCursor(result.nextCursor); setProjects(projectRows); setResources(resourceRows); setRequirements(requirementRows);
+    workspaceApi.allocations(cursor, { status: "ISSUED" }, controller.signal)
+      .then(result => {
+        setAllocations(result.items); setNextCursor(result.nextCursor);
         setUpdatedAt(manilaWallTime()); setError(""); setState("ready");
       }).catch((reason: unknown) => {
         if (reason instanceof DOMException && reason.name === "AbortError") return;
@@ -36,29 +33,15 @@ export function RemindersPage() {
   }, [cursor, reload]);
   const refresh = () => { setState("loading"); setReload((value) => value + 1); };
 
-  const requirementMap = useMemo(() => new Map(requirements.map((item) => [item.id, item])), [requirements]);
-  const projectMap = useMemo(() => new Map(projects.map((item) => [item.id, item])), [projects]);
-  const resourceMap = useMemo(() => new Map(resources.map((item) => [item.id, item])), [resources]);
-  const plus24h = manilaWallTime(new Date(Date.parse(`${now}+08:00`) + 24 * 60 * 60 * 1000));
-  const issued = allocations.filter((allocation) => {
-    if (allocation.status !== "ISSUED") return false;
-    const requirement = requirementMap.get(allocation.requirementId);
-    return resourceMap.get(requirement?.resourceId ?? -1)?.type === "REUSABLE";
-  }).map((allocation) => {
-    const requirement = requirementMap.get(allocation.requirementId);
-    const project = projectMap.get(requirement?.projectId ?? -1);
-    const resource = resourceMap.get(requirement?.resourceId ?? -1);
-    return { allocation, project, resource };
-  });
-  const dueSoon = issued.filter(({ project }) => !!project && reminderWindow(project.endAt, now, plus24h) === "DUE_SOON");
-  const overdue = issued.filter(({ project }) => !!project && reminderWindow(project.endAt, now, plus24h) === "OVERDUE");
-  const unavailableCount = issued.filter(({ project }) => !project).length;
+  const plus24h = manilaWallTime(new Date(Date.parse(now + "+08:00") + 24 * 60 * 60 * 1000));
+  const issued = allocations.filter(allocation => allocation.requirement.resourceType === "REUSABLE");
+  const dueSoon = issued.filter(allocation => reminderWindow(allocation.requirement.projectEndAt, now, plus24h) === "DUE_SOON");
+  const overdue = issued.filter(allocation => reminderWindow(allocation.requirement.projectEndAt, now, plus24h) === "OVERDUE");
 
   return (
     <section className="page-shell" aria-labelledby="reminder-activity-title">
       <PageHeader eyebrow="System · scheduled activity" title="Reminder Activity" description="See upcoming return windows and outcomes recorded by the backend reminder scheduler."
         action={<div className="header-stat"><span>{state === "ready" ? issued.length : "—"}</span><small>issued batches in view</small></div>} />
-      {unavailableCount > 0 && <Notice tone="warning">The Project period for {unavailableCount} issued batch{unavailableCount === 1 ? "" : "es"} could not be resolved. Those rows are not counted as due or overdue.</Notice>}
       <div className="overview-toolbar"><span>Updated: <strong>{updatedAt ? formatManila(updatedAt) : "Loading"}</strong></span><Button variant="quiet" disabled={state === "loading"} onClick={refresh}>Refresh</Button></div>
       <LoadState state={state} error={error} onRetry={refresh}>
         {issued.length === 0 ? <GlassPanel className="state-block state-empty"><span className="empty-symbol" aria-hidden="true">◷</span><h3>No issued reusable batches on this page</h3><p>When an Allocation is issued, the backend determines whether a scheduled reminder is eligible.</p></GlassPanel>
@@ -80,12 +63,12 @@ export function RemindersPage() {
 }
 
 function ReminderList({ rows, overdue = false }: {
-  rows: Array<{ allocation: Allocation; project?: Project; resource?: Resource }>;
+  rows: WorkspaceAllocation[];
   overdue?: boolean;
 }) {
-  return <div className="reminder-list">{rows.map(({ allocation, project, resource }) => <article className="reminder-row" key={allocation.id}>
-    <div className="reminder-date"><span aria-hidden="true">◷</span><strong>{project ? formatManila(project.endAt) : "Project unavailable"}</strong></div>
-    <div className="reminder-main"><strong>{resource?.name ?? "Resource unavailable"} · {allocation.quantity} units</strong><small>Allocation A{allocation.id} · {allocation.borrowerName}{project ? ` · ${project.name}` : ""}</small></div>
+  return <div className="reminder-list">{rows.map(allocation => <article className="reminder-row" key={allocation.id}>
+    <div className="reminder-date"><span aria-hidden="true">◷</span><strong>{formatManila(allocation.requirement.projectEndAt)}</strong></div>
+    <div className="reminder-main"><strong>{allocation.requirement.resourceName} · {allocation.quantity} units</strong><small>Allocation A{allocation.id} · {allocation.borrowerName} · {allocation.requirement.projectName}</small></div>
     <div className="reminder-status"><StatusBadge tone={overdue ? "danger" : allocation.reminderOutcome === "SIMULATED" || allocation.reminderOutcome === "PROVIDER_ACCEPTED" ? "success" : allocation.reminderOutcome === "UNKNOWN" ? "warning" : "neutral"}>{reminderLabel(allocation.reminderOutcome)}</StatusBadge>
       <small>{allocation.reminderAttempted ? "Attempt recorded" : "No attempt recorded"}</small></div>
     <div className="reminder-consent"><span>Consent</span><strong>{allocation.smsConsent ? "Granted" : "Not granted"}</strong><span>Contact</span><strong>{allocation.contactPresent ? "Present · redacted" : "None"}</strong></div>

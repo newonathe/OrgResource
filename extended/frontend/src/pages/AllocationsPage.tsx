@@ -1,14 +1,15 @@
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useSearchParams } from "react-router-dom";
 import { workspaceApi, api, ApiError } from "../api/client";
 import { inventoryApi, newOperationIdentity, type OperationIdentity } from "../api/extended";
 import { useAuth } from "../auth/AuthContext";
-import type { Allocation, AllocationStatus, Project, Resource, ResourceRequirement } from "../api/types";
+import { RelatedSelect } from "../RelatedSelect";
+import type { Allocation, AllocationStatus, WorkspaceAllocation, WorkspaceRequirement } from "../api/types";
 import { allocationActions, explainError, formatManila, isFictionalTestPhone, isUncertain, reminderLabel, type AllocationAction } from "../domain";
 import { Button, DetailSheet, GlassPanel, LoadState, Modal, MutationReviewNotice, Notice, PageHeader, PageNavigation, PanelHeading, usePageCursors, StatusBadge } from "../ui";
 
 type ActionName = AllocationAction;
-interface PendingAction { allocation: Allocation; action: ActionName }
+interface PendingAction { allocation: WorkspaceAllocation; action: ActionName }
 const statusOptions: AllocationStatus[] = ["PENDING", "APPROVED", "ISSUED", "RETURNED", "CONSUMED", "CANCELLED"];
 
 function actionLabel(action: ActionName): string {
@@ -31,6 +32,9 @@ function actionDescription(action: ActionName, allocation: Allocation, resourceN
   }
 }
 
+const loadRequirements = (cursor: string | null, search: string, signal: AbortSignal) =>
+  workspaceApi.requirements(cursor, { search }, signal);
+
 export function AllocationsPage() {
   const { session, organizations } = useAuth();
   const activeOrgId = session?.activeOrgId ?? "";
@@ -38,33 +42,31 @@ export function AllocationsPage() {
   const canCreateAllocation = activeRole === "OWNER" || activeRole === "ADMIN";
   const canOperateStock = activeRole === "OWNER" || activeRole === "CUSTODIAN";
   const [searchParams, setSearchParams] = useSearchParams();
-  const [allocations, setAllocations] = useState<Allocation[]>([]);
-  const [requirements, setRequirements] = useState<ResourceRequirement[]>([]);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [resources, setResources] = useState<Resource[]>([]);
+  const [allocations, setAllocations] = useState<WorkspaceAllocation[]>([]);
   const [loadState, setLoadState] = useState<"loading" | "error" | "ready">("loading");
   const [loadError, setLoadError] = useState("");
   const statusFilter = (() => {
     const requested = searchParams.get("status");
     return statusOptions.includes(requested as AllocationStatus) ? requested as AllocationStatus : "ALL";
   })();
-  const [requirementFilter, setRequirementFilter] = useState("ALL");
+  const [requirementFilter, setRequirementFilter] = useState<WorkspaceRequirement | null>(null);
+  const requirementFilterId = requirementFilter?.id;
   const [reload, setReload] = useState(0);
-  const { cursor, page, move } = usePageCursors(JSON.stringify([statusFilter, requirementFilter]));
+  const { cursor, page, move } = usePageCursors(JSON.stringify([statusFilter, requirementFilterId]));
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const goToPage = (next: string | null) => { setLoadState("loading"); move(next); };
-  const [requirementId, setRequirementId] = useState("");
+  const [selectedRequirement, setSelectedRequirement] = useState<WorkspaceRequirement | null>(null);
   const [quantity, setQuantity] = useState("1");
   const [borrowerName, setBorrowerName] = useState("");
   const [smsConsent, setSmsConsent] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
-  const [selected, setSelected] = useState<Allocation | null>(null);
+  const [selected, setSelected] = useState<WorkspaceAllocation | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [postReviewRequired, setPostReviewRequired] = useState(false);
-  const [uncertainOperation, setUncertainOperation] = useState<{ allocation: Allocation; action: ActionName; identity: OperationIdentity; etag: string } | null>(null);
+  const [uncertainOperation, setUncertainOperation] = useState<{ allocation: WorkspaceAllocation; action: ActionName; identity: OperationIdentity; etag: string } | null>(null);
   const [receiptRetryAllowed, setReceiptRetryAllowed] = useState(false);
   const [receiptRecoveryMessage, setReceiptRecoveryMessage] = useState("");
   const [receiptRecoveryBusy, setReceiptRecoveryBusy] = useState(false);
@@ -73,33 +75,18 @@ export function AllocationsPage() {
     const controller = new AbortController();
     const filters = {
       status: statusFilter === "ALL" ? undefined : statusFilter as AllocationStatus,
-      requirementId: requirementFilter === "ALL" ? undefined : Number(requirementFilter),
+      requirementId: requirementFilterId,
     };
-    Promise.all([
-      workspaceApi.allocations(cursor, filters, controller.signal), api.requirements(undefined, controller.signal),
-      api.projects(undefined, controller.signal), api.resources(undefined, controller.signal),
-    ]).then(([result, requirementRows, projectRows, resourceRows]) => {
-      setAllocations(result.items); setNextCursor(result.nextCursor); setRequirements(requirementRows); setProjects(projectRows); setResources(resourceRows); setLoadState("ready"); setLoadError("");
+    workspaceApi.allocations(cursor, filters, controller.signal).then(result => {
+      setAllocations(result.items); setNextCursor(result.nextCursor); setLoadState("ready"); setLoadError("");
     }).catch((reason: unknown) => {
       if (reason instanceof DOMException && reason.name === "AbortError") return;
       setLoadError(explainError(reason)); setLoadState("error");
     });
     return () => controller.abort();
-  }, [cursor, statusFilter, requirementFilter, reload]);
+  }, [cursor, statusFilter, requirementFilterId, reload]);
 
-  const requirementMap = useMemo(() => new Map(requirements.map((item) => [item.id, item])), [requirements]);
-  const projectMap = useMemo(() => new Map(projects.map((item) => [item.id, item])), [projects]);
-  const resourceMap = useMemo(() => new Map(resources.map((item) => [item.id, item])), [resources]);
-  const selectedRequirementId = requirementId || String(requirements[0]?.id ?? "");
-  const selectedRequirement = requirementMap.get(Number(selectedRequirementId));
-  const resourceNameFor = (allocation: Allocation) => {
-    const requirement = requirementMap.get(allocation.requirementId);
-    return resourceMap.get(requirement?.resourceId ?? -1)?.name ?? `Resource ${requirement?.resourceId ?? "unknown"}`;
-  };
-  const projectFor = (allocation: Allocation) => {
-    const requirement = requirementMap.get(allocation.requirementId);
-    return projectMap.get(requirement?.projectId ?? -1);
-  };
+  const selectedRequirementId = selectedRequirement?.id;
   const refresh = () => { setLoadState("loading"); setReload((value) => value + 1); };
 
   async function createAllocation(event: FormEvent<HTMLFormElement>) {
@@ -197,13 +184,9 @@ export function AllocationsPage() {
         {canCreateAllocation ? <GlassPanel className="form-panel allocation-create-panel" tilt={false}>
           <PanelHeading kicker="New request" title="Request a resource" />
           <form className="stack-form" onSubmit={createAllocation}>
-            <label htmlFor="allocation-requirement">Project Requirement</label><select id="allocation-requirement" value={selectedRequirementId} onChange={(event) => setRequirementId(event.target.value)} required>
-              {requirements.length === 0 && <option value="">No Requirements available</option>}{requirements.map((item) => {
-                const project = projectMap.get(item.projectId); const resource = resourceMap.get(item.resourceId);
-                return <option key={item.id} value={item.id}>{project?.name ?? `Project ${item.projectId}`} · {resource?.name ?? `Resource ${item.resourceId}`} · {item.shortageQuantity} short</option>;
-              })}
-            </select>
-            {selectedRequirement && <div className="selection-summary"><span>Current server shortage</span><strong>{selectedRequirement.shortageQuantity.toLocaleString()} units</strong></div>}
+            <RelatedSelect id="allocation-requirement" label="Project Requirement" selection={selectedRequirement}
+              onChange={setSelectedRequirement} load={loadRequirements}
+              optionLabel={row => row.projectName + " · " + row.resourceName + " · " + row.shortageQuantity + " short"} reload={reload} />
             <label htmlFor="allocation-quantity">Quantity requested</label><input id="allocation-quantity" type="number" min="1" max="1000000" step="1" value={quantity} onChange={(event) => setQuantity(event.target.value)} required />
             <label htmlFor="allocation-borrower">Borrower name</label><input id="allocation-borrower" maxLength={100} value={borrowerName} onChange={(event) => setBorrowerName(event.target.value)} required />
             <label className="checkbox-field"><input type="checkbox" checked={smsConsent} onChange={(event) => setSmsConsent(event.target.checked)} /> <span>Give consent for a local reminder simulation</span></label>
@@ -226,21 +209,21 @@ export function AllocationsPage() {
             if (value === "ALL") params.delete("status"); else params.set("status", value);
             setSearchParams(params);
           }}><option value="ALL">All statuses</option>{statusOptions.map((status) => <option key={status} value={status}>{status}</option>)}</select>
-            <label htmlFor="allocation-requirement-filter">Requirement</label><select id="allocation-requirement-filter" value={requirementFilter} onChange={(event) => { setLoadState("loading"); setRequirementFilter(event.target.value); }}><option value="ALL">All requirements</option>{requirements.map((item) => <option key={item.id} value={item.id}>Q{item.id} · {resourceMap.get(item.resourceId)?.name ?? `Resource ${item.resourceId}`}</option>)}</select></div>
+            <RelatedSelect id="allocation-requirement-filter" label="Filter by Requirement" selection={requirementFilter}
+              onChange={row => { setLoadState("loading"); setRequirementFilter(row); }} load={loadRequirements}
+              optionLabel={row => "Q" + row.id + " · " + row.resourceName} allLabel="All requirements" reload={reload} /></div>
           <LoadState state={loadState} error={loadError} onRetry={refresh}>
             {allocations.length === 0 ? <div className="state-block state-empty"><span className="empty-symbol" aria-hidden="true">⇄</span><h3>No Allocation batches</h3><p>Requests will appear here after the server confirms them.</p></div>
               : <div className="allocation-list">{allocations.map((allocation) => {
-                const requirement = requirementMap.get(allocation.requirementId); const resource = resourceMap.get(requirement?.resourceId ?? -1);
-                const project = projectFor(allocation); const relationshipUnavailable = !requirement || !resource;
-                const allowed = !canOperateStock || relationshipUnavailable ? [] : allocationActions(allocation, resource.type);
+                const requirement = allocation.requirement;
+                const allowed = canOperateStock ? allocationActions(allocation, requirement.resourceType) : [];
                 return <article className="allocation-card" key={allocation.id}>
                   {allocation.expiredPendingCleanup && <div className="expired-banner">Project ended · expiry cleanup is pending</div>}
-                  {relationshipUnavailable && <Notice tone="warning">Requirement or Resource details are unavailable. Refresh the page before taking an Allocation action.</Notice>}
-                  <div className="allocation-card-heading"><div className="allocation-card-mark" aria-hidden="true">⇄</div><div className="allocation-card-title"><p className="section-kicker">{project?.name ?? `Project ${requirement?.projectId ?? "unknown"}`}</p><h3>{allocation.borrowerName}</h3><span>{resource?.name ?? `Resource ${requirement?.resourceId ?? "unknown"}`} · {allocation.quantity.toLocaleString()} units</span></div><StatusBadge tone={allocation.status === "PENDING" ? "warning" : allocation.status === "APPROVED" || allocation.status === "ISSUED" ? "blue" : allocation.status === "RETURNED" || allocation.status === "CONSUMED" ? "success" : "neutral"}>{allocation.status.toLowerCase()}</StatusBadge></div>
-                  <div className="allocation-meta"><span>Project period <strong>{project ? `${formatManila(project.startAt)} — ${formatManila(project.endAt)}` : "Details unavailable"}</strong></span><span>Requirement <strong>{requirement ? `${requirement.quantity} required · ${requirement.allocatedQuantity} covered` : `Q${allocation.requirementId}`}</strong></span><span>Created <strong>{formatManila(allocation.createdAt)}</strong></span></div>
+                  <div className="allocation-card-heading"><div className="allocation-card-mark" aria-hidden="true">⇄</div><div className="allocation-card-title"><p className="section-kicker">{requirement.projectName}</p><h3>{allocation.borrowerName}</h3><span>{requirement.resourceName} · {allocation.quantity.toLocaleString()} units</span></div><StatusBadge tone={allocation.status === "PENDING" ? "warning" : allocation.status === "APPROVED" || allocation.status === "ISSUED" ? "blue" : allocation.status === "RETURNED" || allocation.status === "CONSUMED" ? "success" : "neutral"}>{allocation.status.toLowerCase()}</StatusBadge></div>
+                  <div className="allocation-meta"><span>Project period <strong>{formatManila(requirement.projectStartAt) + " — " + formatManila(requirement.projectEndAt)}</strong></span><span>Requirement <strong>{requirement.quantity + " required · " + requirement.allocatedQuantity + " covered"}</strong></span><span>Created <strong>{formatManila(allocation.createdAt)}</strong></span></div>
                   <div className="allocation-privacy"><span>Reminder contact: <strong>{allocation.contactPresent ? "Present (redacted)" : "Not recorded"}</strong></span><span>Consent: <strong>{allocation.smsConsent ? "Granted" : "Not granted"}</strong></span><span>Reminder: <strong>{reminderLabel(allocation.reminderOutcome)}</strong></span></div>
                   <div className="allocation-card-footer"><Button variant="quiet" aria-label={`Details for Allocation ${allocation.id}`} onClick={() => setSelected(allocation)}>Details</Button>
-                    {canOperateStock && allocation.smsConsent && allocation.contactPresent && <Button variant="quiet" aria-label={`Withdraw reminder consent for Allocation ${allocation.id}`} disabled={busy || postReviewRequired || relationshipUnavailable} onClick={() => setPendingAction({ allocation, action: "revoke" })}>Withdraw consent</Button>}
+                    {canOperateStock && allocation.smsConsent && allocation.contactPresent && <Button variant="quiet" aria-label={`Withdraw reminder consent for Allocation ${allocation.id}`} disabled={busy || postReviewRequired} onClick={() => setPendingAction({ allocation, action: "revoke" })}>Withdraw consent</Button>}
                     <div className="row-actions">{allowed.map((action) => <Button key={action} variant={action === "consume" || action === "delete" ? "danger" : action === "approve" ? "primary" : "secondary"} disabled={busy || postReviewRequired}
                       aria-label={`${actionLabel(action)} for Allocation ${allocation.id}`} onClick={() => setPendingAction({ allocation, action })}>{actionLabel(action)}</Button>)}</div>
                   </div>
@@ -254,11 +237,11 @@ export function AllocationsPage() {
       </div>
 
       {pendingAction && <Modal title={actionLabel(pendingAction.action)} onClose={() => { if (!busy) setPendingAction(null); }}>
-        <p className="modal-copy">{actionDescription(pendingAction.action, pendingAction.allocation, resourceNameFor(pendingAction.allocation))}</p>
+        <p className="modal-copy">{actionDescription(pendingAction.action, pendingAction.allocation, pendingAction.allocation.requirement.resourceName)}</p>
         <div className="modal-actions"><Button variant="quiet" disabled={busy} onClick={() => setPendingAction(null)}>Go back</Button><Button variant={pendingAction.action === "consume" || pendingAction.action === "delete" || pendingAction.action === "cancel" ? "danger" : "primary"} disabled={busy || postReviewRequired} onClick={() => void performAction()}>{busy ? "Waiting for server…" : confirmationLabel(pendingAction.action)}</Button></div>
       </Modal>}
       {selected && <DetailSheet title={`Allocation A${selected.id}`} onClose={() => setSelected(null)}>
-        <div className="detail-grid"><div><span>Borrower</span><strong>{selected.borrowerName}</strong></div><div><span>Resource</span><strong>{resourceNameFor(selected)}</strong></div><div><span>Quantity</span><strong>{selected.quantity.toLocaleString()} whole units</strong></div><div><span>Status</span><strong>{selected.status}</strong></div><div><span>Consent</span><strong>{selected.smsConsent ? "Granted" : "Not granted"} · {selected.contactPresent ? "contact redacted" : "no contact"}</strong></div><div><span>Reminder outcome</span><strong>{reminderLabel(selected.reminderOutcome)}</strong></div></div>
+        <div className="detail-grid"><div><span>Borrower</span><strong>{selected.borrowerName}</strong></div><div><span>Resource</span><strong>{selected.requirement.resourceName}</strong></div><div><span>Quantity</span><strong>{selected.quantity.toLocaleString()} whole units</strong></div><div><span>Status</span><strong>{selected.status}</strong></div><div><span>Consent</span><strong>{selected.smsConsent ? "Granted" : "Not granted"} · {selected.contactPresent ? "contact redacted" : "no contact"}</strong></div><div><span>Reminder outcome</span><strong>{reminderLabel(selected.reminderOutcome)}</strong></div></div>
         {selected.expiredPendingCleanup && <Notice tone="warning">The Project has ended. Cleanup is pending; the backend remains authoritative for the next transition.</Notice>}
         <section className="sheet-section"><h3>Lifecycle history</h3><dl className="timeline-list">{[["Created", selected.createdAt], ["Approved", selected.approvedAt], ["Issued", selected.issuedAt], ["Returned", selected.returnedAt], ["Consumed", selected.consumedAt], ["Cancelled", selected.cancelledAt]].map(([label, time]) => <div key={label}><dt>{label}</dt><dd>{formatManila(time)}</dd></div>)}</dl>
           {selected.cancellationReason && <p className="quiet-note">Cancellation reason: {selected.cancellationReason}</p>}

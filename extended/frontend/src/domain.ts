@@ -40,7 +40,7 @@ export function formatManila(value: string | null | undefined): string {
   }).format(date);
 }
 
-export function projectPeriod(project: Project, now = manilaWallTime()): "UPCOMING" | "ACTIVE" | "ENDED" {
+export function projectPeriod(project: Pick<Project, "startAt" | "endAt">, now = manilaWallTime()): "UPCOMING" | "ACTIVE" | "ENDED" {
   if (project.startAt > now) return "UPCOMING";
   if (project.endAt > now) return "ACTIVE";
   return "ENDED";

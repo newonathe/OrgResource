@@ -619,3 +619,8 @@ button { color: inherit; }
   .recovery-code-list ol, .recovery-code-list ul { grid-template-columns: 1fr; }
   .row-actions { width: 100%; flex-wrap: wrap; }
 }
+
+.related-select { display: grid; gap: .4rem; min-width: 0; }
+.related-select :is(input, select) { width: 100%; min-width: 0; }
+.search-filter-bar > .related-select { grid-column: 1 / -1; }
+.stack-form .related-select label { color: var(--body-text); font-size: 14px; font-weight: 680; }

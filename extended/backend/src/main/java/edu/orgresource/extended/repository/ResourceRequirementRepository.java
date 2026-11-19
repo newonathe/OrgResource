@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import edu.orgresource.extended.domain.ResourceRequirement;
+import edu.orgresource.extended.domain.ResourceType;
 import jakarta.persistence.LockModeType;
 
 public interface ResourceRequirementRepository extends JpaRepository<ResourceRequirement, Long> {
@@ -26,12 +27,31 @@ public interface ResourceRequirementRepository extends JpaRepository<ResourceReq
     Optional<ResourceRequirement> findDetailedByIdAndOrganizationId(@Param("id") Long id,
                                                                      @Param("organizationId") Long organizationId);
 
-    @EntityGraph(attributePaths = {"project", "resource"})
-    @Query("select q from ResourceRequirement q where q.organizationId=:org and q.id>:after "
-            + "and (:project is null or q.project.id=:project) "
-            + "and (:search is null or locate(:search, lower(concat(q.project.name, ' ', q.resource.name)))>0) order by q.id")
-    List<ResourceRequirement> findWorkspacePage(@Param("org") long org, @Param("after") long after,
+    interface WorkspaceRow {
+        Long getId();
+        Long getProjectId();
+        Long getResourceId();
+        Integer getQuantity();
+        String getProjectName();
+        String getResourceName();
+        ResourceType getResourceType();
+        LocalDateTime getProjectStartAt();
+        LocalDateTime getProjectEndAt();
+    }
+
+    String WORKSPACE_ROW = "select q.id as id, p.id as projectId, r.id as resourceId, q.quantity as quantity, "
+            + "p.name as projectName, r.name as resourceName, r.type as resourceType, "
+            + "p.startAt as projectStartAt, p.endAt as projectEndAt "
+            + "from ResourceRequirement q join q.project p join q.resource r "
+            + "where q.organizationId=:org and p.organizationId=:org and r.organizationId=:org ";
+
+    @Query(WORKSPACE_ROW + "and q.id>:after and (:project is null or p.id=:project) "
+            + "and (:search is null or locate(:search, lower(concat(p.name, ' ', r.name)))>0) order by q.id")
+    List<WorkspaceRow> findWorkspacePage(@Param("org") long org, @Param("after") long after,
             @Param("project") Long project, @Param("search") String search, Pageable pageable);
+
+    @Query(WORKSPACE_ROW + "and q.id in :ids")
+    List<WorkspaceRow> findWorkspaceRelationships(@Param("org") long org, @Param("ids") List<Long> ids);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select q from ResourceRequirement q where q.id = :id and q.organizationId = :organizationId")

@@ -93,3 +93,20 @@ export interface WorkspaceOverview {
     }[];
   } | null;
 }
+
+
+export interface WorkspaceProject extends Project {
+  departmentName: string;
+}
+
+export interface WorkspaceRequirement extends ResourceRequirement {
+  projectName: string;
+  resourceName: string;
+  resourceType: ResourceType;
+  projectStartAt: string;
+  projectEndAt: string;
+}
+
+export interface WorkspaceAllocation extends Allocation {
+  requirement: WorkspaceRequirement;
+}

@@ -3159,6 +3159,12 @@ class C1IdentityAcceptanceTest {
                 .getAsJsonArray("items").get(0).getAsJsonObject();
         assertEquals(3, requirement.get("allocatedQuantity").getAsInt());
         assertEquals(17, requirement.get("shortageQuantity").getAsInt());
+        assertEquals("C8 fictional project", requirement.get("projectName").getAsString());
+        assertEquals("C8 flagship resource", requirement.get("resourceName").getAsString());
+        assertEquals("REUSABLE", requirement.get("resourceType").getAsString());
+        assertEquals("2040-12-10T11:00:00", requirement.get("projectEndAt").getAsString());
+        assertEquals("C8 fixture team", workspacePage(actor, root + "/projects")
+                .getAsJsonArray("items").get(0).getAsJsonObject().get("departmentName").getAsString());
         assertEquals(404, get(foreignActor.client, root + "/projects?departmentId=" + departmentId).statusCode());
         assertEquals(1, workspacePage(actor, root + "/projects?period=UPCOMING").getAsJsonArray("items").size());
         assertTrue(workspacePage(actor, root + "/projects?period=ACTIVE").getAsJsonArray("items").isEmpty());
@@ -3246,6 +3252,24 @@ class C1IdentityAcceptanceTest {
         JsonObject memberOverview = workspacePage(otherRole, root + "/overview");
         assertTrue(memberOverview.get("allocations").isJsonNull(), "No borrower metrics or rows are returned to a MEMBER");
         assertEquals(1, memberOverview.get("requirementShortageCount").getAsLong());
+
+        JsonObject pending = workspacePage(actor, requests)
+                .getAsJsonArray("items").get(0).getAsJsonObject();
+        assertEquals(requirement, pending.getAsJsonObject("requirement"));
+        assertFalse(pending.has("phoneNumber"));
+        var relatedResources = jdbc.queryForList("SELECT id FROM resource WHERE organization_id=? AND id<>? ORDER BY id LIMIT 100",
+                Long.class, owner.orgDbId, resourceId);
+        jdbc.batchUpdate("INSERT INTO resource_requirement(organization_id,project_id,resource_id,quantity,version) VALUES(?,?,?,2,0)",
+                relatedResources.stream().map(id -> new Object[]{owner.orgDbId, projectId, id}).toList());
+        String relatedPath = root + "/requirements?projectId=" + projectId + "&limit=50";
+        var relatedIds = new java.util.ArrayList<Long>();
+        readWorkspacePages(actor, relatedPath, null, relatedIds);
+        assertEquals(jdbc.queryForList("SELECT id FROM resource_requirement WHERE organization_id=? AND project_id=? ORDER BY id",
+                Long.class, owner.orgDbId, projectId), relatedIds);
+        assertEquals(101, relatedIds.size());
+        assertEquals(404, get(foreignActor.client, relatedPath).statusCode());
+        String nextRequirementPage = workspacePage(actor, relatedPath).get("nextCursor").getAsString();
+        assertEquals(404, get(actor.client, root + "/requirements?limit=50&cursor=" + nextRequirementPage).statusCode());
     }
 
     private void insertWorkspaceResources(long org, int first, int last) {

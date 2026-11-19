@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
@@ -453,7 +454,7 @@ public class C1Service {
     }
 
     @Transactional(readOnly = true)
-    public ApiDtos.WorkspacePage<ApiDtos.ProjectView> projectPage(Long departmentId, String search, String period, int limit, String cursor) {
+    public ApiDtos.WorkspacePage<ApiDtos.WorkspaceProjectView> projectPage(Long departmentId, String search, String period, int limit, String cursor) {
         long org = organizationContext.currentOrganizationId();
         if (departmentId != null) {
             if (departmentId <= 0) throw new C1ApiException(400, "VALIDATION_FAILED", "departmentId must be positive.");
@@ -465,7 +466,7 @@ public class C1Service {
         WorkspacePageWindow page = WorkspacePageWindow.of(limit, cursor, org, "projects", departmentId + "|" + period + "|" + searchScope(term));
         return page.result(projects.findWorkspacePage(org, page.after(), departmentId, term, period,
                 LocalDateTime.now(philippineClock), page.queryLimit()),
-                project -> project.id, ApiDtos.ProjectView::new);
+                project -> project.id, ApiDtos.WorkspaceProjectView::new);
     }
 
     @Transactional(readOnly = true)
@@ -489,7 +490,7 @@ public class C1Service {
     }
 
     @Transactional(readOnly = true)
-    public ApiDtos.WorkspacePage<ApiDtos.RequirementView> requirementPage(Long projectId, String search, int limit, String cursor) {
+    public ApiDtos.WorkspacePage<ApiDtos.WorkspaceRequirementView> requirementPage(Long projectId, String search, int limit, String cursor) {
         long org = organizationContext.currentOrganizationId();
         if (projectId != null) {
             if (projectId <= 0) throw new C1ApiException(400, "VALIDATION_FAILED", "projectId must be positive.");
@@ -497,17 +498,16 @@ public class C1Service {
         }
         String term = normalizedSearch(search);
         WorkspacePageWindow page = WorkspacePageWindow.of(limit, cursor, org, "requirements", projectId + "|" + searchScope(term));
-        List<ResourceRequirement> rows = requirements.findWorkspacePage(org, page.after(), projectId, term, page.queryLimit());
+        var rows = requirements.findWorkspacePage(org, page.after(), projectId, term, page.queryLimit());
         if (rows.isEmpty()) return new ApiDtos.WorkspacePage<>(List.of(), null);
-        var covered = requirements.sumPageCoverage(page.visible(rows).stream().map(row -> row.id).toList(), org,
-                LocalDateTime.now(philippineClock));
-        var byId = covered.stream().collect(Collectors.toMap(row -> ((Number) row[0]).longValue(),
-                row -> Math.toIntExact(((Number) row[1]).longValue())));
-        return page.result(rows, row -> row.id, row -> new ApiDtos.RequirementView(row, byId.getOrDefault(row.id, 0)));
+        var covered = requirementCoverage(org, page.visible(rows).stream()
+                .map(ResourceRequirementRepository.WorkspaceRow::getId).toList(), LocalDateTime.now(philippineClock));
+        return page.result(rows, ResourceRequirementRepository.WorkspaceRow::getId,
+                row -> workspaceRequirement(row, covered));
     }
 
     @Transactional(readOnly = true)
-    public ApiDtos.WorkspacePage<ApiDtos.AllocationView> allocationPage(Long requirementId, Long projectId, AllocationStatus status,
+    public ApiDtos.WorkspacePage<ApiDtos.WorkspaceAllocationView> allocationPage(Long requirementId, Long projectId, AllocationStatus status,
             int limit, String cursor) {
         long org = allocationReadScope(requirementId);
         if (projectId != null) {
@@ -517,8 +517,30 @@ public class C1Service {
         WorkspacePageWindow page = WorkspacePageWindow.of(limit, cursor, org, "allocations",
                 requirementId + "|" + projectId + "|" + status);
         var rows = allocations.findWorkspacePage(org, page.after(), requirementId, projectId, status, page.queryLimit());
+        if (rows.isEmpty()) return new ApiDtos.WorkspacePage<>(List.of(), null);
         LocalDateTime sampledNow = LocalDateTime.now(philippineClock);
-        return page.result(rows, row -> row.id, row -> new ApiDtos.AllocationView(row, row.requirement.project.endAt, sampledNow));
+        List<Long> requirementIds = page.visible(rows).stream().map(row -> row.requirement.id).distinct().toList();
+        var covered = requirementCoverage(org, requirementIds, sampledNow);
+        var context = requirements.findWorkspaceRelationships(org, requirementIds).stream()
+                .collect(Collectors.toMap(ResourceRequirementRepository.WorkspaceRow::getId,
+                        row -> workspaceRequirement(row, covered)));
+        if (context.size() != requirementIds.size())
+            throw new C1ApiException(500, "INVENTORY_INTEGRITY_FAILURE", "An Allocation relationship is unavailable.");
+        return page.result(rows, row -> row.id,
+                row -> new ApiDtos.WorkspaceAllocationView(row, context.get(row.requirement.id), sampledNow));
+    }
+
+    private Map<Long, Integer> requirementCoverage(long org, List<Long> ids, LocalDateTime sampledNow) {
+        return requirements.sumPageCoverage(ids, org, sampledNow).stream()
+                .collect(Collectors.toMap(row -> ((Number) row[0]).longValue(),
+                        row -> Math.toIntExact(((Number) row[1]).longValue())));
+    }
+
+    private static ApiDtos.WorkspaceRequirementView workspaceRequirement(ResourceRequirementRepository.WorkspaceRow row,
+            Map<Long, Integer> covered) {
+        return new ApiDtos.WorkspaceRequirementView(row.getId(), row.getProjectId(), row.getResourceId(), row.getQuantity(),
+                covered.getOrDefault(row.getId(), 0), row.getProjectName(), row.getResourceName(), row.getResourceType(),
+                row.getProjectStartAt(), row.getProjectEndAt());
     }
 
     private static String normalizedSearch(String search) {
