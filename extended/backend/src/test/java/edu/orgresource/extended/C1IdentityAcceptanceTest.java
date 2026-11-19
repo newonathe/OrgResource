@@ -3603,11 +3603,15 @@ class C1IdentityAcceptanceTest {
         SCOPED_TEST_BUSINESS_TIME.set(civil);
         try {
             Session actor = login(owner.username, owner.password);
-            String principal = get(actor.client, "/api/v2/session").body();
-            assertTrue(principal.contains(owner.orgPublicId.toString()));
-            long created = jdbc.queryForObject("SELECT creation_time FROM spring_session WHERE session_id=?",
-                    Long.class, actor.sessionId);
-            assertTrue(created >= beforeWall.toEpochMilli() && created <= clock.millis());
+            var principal = get(actor.client, "/api/v2/session");
+            assertEquals(200, principal.statusCode(), principal.body());
+            assertTrue(principal.body().contains(owner.orgPublicId.toString()));
+            var storedSession = springSessions.findById(actor.sessionId);
+            assertNotNull(storedSession);
+            Long authenticatedAt = storedSession.getAttribute(
+                    edu.orgresource.extended.security.C1AccountSessionFilter.SESSION_CREATED_AT);
+            assertNotNull(authenticatedAt);
+            assertTrue(authenticatedAt >= beforeWall.toEpochMilli() && authenticatedAt <= clock.millis());
             long department = json(post(actor, "/api/departments", GSON.toJson(new NameRequest("Fictional historical team"))))
                     .get("id").getAsLong();
             var projectResponse = post(actor, "/api/projects", GSON.toJson(new ProjectRequest(department,
