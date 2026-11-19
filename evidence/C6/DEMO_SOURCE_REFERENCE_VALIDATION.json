@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "as_of_date": "2026-11-19",
+  "type": "C6_SOURCE_SCHEMA_VALIDATION_ONLY",
+  "files": [
+    {
+      "path": "data/reference/ateneo-recweek-2026-expanded-directory.json",
+      "git_blob_sha": "6e458a5e5d568192d32c648e92107e374e37bdd0"
+    },
+    {
+      "path": "data/demo/ateneo-volume-profiles-2026.json",
+      "git_blob_sha": "3d797bd78981fa9e9ed9ec0d95c21293ae6b8cab"
+    },
+    {
+      "path": "data/reference/ateneo-v1-v2-reference-aliases.json",
+      "git_blob_sha": "97be85caa09b42699577d9d124cd0cc1e99ea643"
+    },
+    {
+      "path": "data/reference/ateneo-misa-sanggunian-public-context-2026.json",
+      "git_blob_sha": "690466a226bb4bf966930a3cbcb52e51ae4536de"
+    },
+    {
+      "path": "data/reference/ateneo-public-programs-2026.json",
+      "git_blob_sha": "a479f3853284247b790c4c4ad01343a9370b8a12"
+    }
+  ],
+  "checks": {
+    "reference_count_72_plus_24": true,
+    "unique_source_keys": true,
+    "profile_matches_source_names_and_count": true,
+    "featured_keys_resolve": true,
+    "flagship_keys_resolve": true,
+    "sanggunian_student_government": true,
+    "misa_source_coa_record": true,
+    "historic_not_in_demo": true,
+    "v1_aliases_resolve": true,
+    "source_public_programs_bound_to_references": true,
+    "context_records_bound_to_references": true,
+    "no_verified_rank_claim": true,
+    "all_usage_synthetic_only": true
+  },
+  "checks_passed": 13,
+  "checks_total": 13,
+  "category_counts": {
+    "coa_m_directory_2026": 72,
+    "lions_identified_2026": 24,
+    "historical_only_excluded": 8,
+    "all_source_reference_entries": 96
+  },
+  "tier_counts": {
+    "FEATURED_SHOWCASE": 14,
+    "STANDARD_COA_DIRECTORY": 56,
+    "FLAGSHIP_MISA": 1,
+    "FLAGSHIP_SANGGUNIAN": 1,
+    "STANDARD_LIONS_DIRECTORY": 24
+  },
+  "source_count_conflicts": "2026 COA-M homepage claims 55 accredited orgs; 2026 COA-M profile says 53; undated secondary page says 56. The 2026 COA-M directory contains additional student-government/umbrella/publication/service entries. Directory entries are not accreditation certifications and roster total != accredited member total.",
+  "simulation_range": {
+    "start": "2025-12-01",
+    "end": "2026-11-18",
+    "time_zone": "Asia/Manila"
+  },
+  "planned_flagship_ranges": [
+    {
+      "reference_key": "coa-misa",
+      "allocation_requests_design_range": [
+        2000,
+        4000
+      ]
+    },
+    {
+      "reference_key": "sanggunian-student-government",
+      "allocation_requests_design_range": [
+        2500,
+        4500
+      ]
+    }
+  ],
+  "fact_check_boundaries": [
+    "The RecWeek 2026 primary pages were not newly fetched from the public website in this pass; previous repository archive references are not reverified here",
+    "No public member count/popularity rank is asserted",
+    "No original 11-month fixture, MySQL importer, hosted deployment, authentic member inventory, or actual operational history exists as evidence in this check",
+    "Source-linked public program titles are NOT proof of event date, custody, transactions or endorsement",
+    "MISA's public About page was accessible as cached content but not a fresh 2026 primary verification"
+  ],
+  "runtime_evidence": "NOT_RUN",
+  "real_data_provenance": "PUBLIC_NAMES_AND_ORG_CONTEXT_ONLY; ALL_USAGE_SIMULATED",
+  "errors": []
+}
