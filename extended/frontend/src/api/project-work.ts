@@ -11,7 +11,7 @@ export type ProjectAllocation = Versioned & {
   canCancel: boolean; canDelete: boolean;
 };
 export type BorrowedAllocation = Versioned & {
-  projectName: string; resourceName: string; quantity: number; status: string; createdAt: string;
+  projectName: string; resourceName: string; quantity: number; status: string; createdAt: string; smsConsent: boolean;
 };
 export type MembershipOption = { id: string; displayName: string };
 

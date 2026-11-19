@@ -3488,25 +3488,62 @@ class C1IdentityAcceptanceTest {
         assertFalse(view.body().matches("(?is).*(phone|borrowerName|actor|provider|ciphertext).*"));
         assertEquals("\"v0\"", view.headers().firstValue("ETag").orElseThrow());
 
+        assertFalse(json(view).getAsJsonObject("data").get("smsConsent").getAsBoolean());
+        String revoke = borrowedItem + "/revoke-sms-consent";
+        String noOpBody = GSON.toJson(new OperationRequest(UUID.randomUUID()));
+        String noOpKey = UUID.randomUUID().toString();
+        var noOp = modernPost(self, revoke, noOpBody, "\"v0\"", noOpKey);
+        assertEquals(200, noOp.statusCode(), noOp.body());
+        assertFalse(json(noOp).getAsJsonObject("data").get("smsConsent").getAsBoolean());
+        assertEquals("\"v0\"", noOp.headers().firstValue("ETag").orElseThrow());
+        assertEquals(json(noOp).get("data"), json(modernPost(self, revoke, noOpBody, "\"v0\"", noOpKey)).get("data"));
+
         var syntheticContact = contactCipher.encrypt(owner.orgDbId, allocationKey, "+15555550193");
         jdbc.update("UPDATE allocation SET sms_consent=TRUE,phone_ciphertext=?,phone_nonce=?,phone_key_id=?,reminder_outcome='CLAIMED',"
                         + "reminder_claimed_at=? WHERE id=?", syntheticContact.ciphertext(), syntheticContact.nonce(),
                 syntheticContact.keyId(), java.sql.Timestamp.valueOf(now()), allocationId);
-        String revoke = borrowedItem + "/revoke-sms-consent";
+        var active = json(get(self.client, borrowedItem)).getAsJsonObject("data");
+        assertTrue(active.get("smsConsent").getAsBoolean());
+        assertFalse(active.toString().matches("(?is).*(phone|borrowerName|actor|provider|ciphertext).*"));
         String revokeOp = UUID.randomUUID().toString(), revokeKey = UUID.randomUUID().toString();
         String revokeBody = "{\"operationId\":\"" + revokeOp + "\"}";
         assertEquals(404, modernPost(other, revoke, revokeBody, "\"v0\"", revokeKey).statusCode());
         assertEquals(412, modernPost(self, revoke, revokeBody, "\"v8\"", revokeKey).statusCode());
-        assertEquals(200, modernPost(self, revoke, revokeBody, "\"v0\"", revokeKey).statusCode());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE id=? AND version=0 AND sms_consent=TRUE "
+                + "AND phone_ciphertext IS NOT NULL AND reminder_outcome='CLAIMED'", Integer.class, allocationId));
+        assertEquals(0, jdbc.queryForObject("SELECT COUNT(*) FROM idempotency_key WHERE operation_public_id=UUID_TO_BIN(?,0)",
+                Integer.class, revokeOp));
+        var revoked = modernPost(self, revoke, revokeBody, "\"v0\"", revokeKey);
+        assertEquals(200, revoked.statusCode(), revoked.body());
+        assertFalse(json(revoked).getAsJsonObject("data").get("smsConsent").getAsBoolean());
         assertEquals(200, modernPost(self, revoke, revokeBody, "\"v0\"", revokeKey).statusCode());
         assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE id=? AND sms_consent=FALSE AND phone_ciphertext IS NULL "
                 + "AND phone_nonce IS NULL AND phone_key_id IS NULL AND reminder_outcome='SUPPRESSED' AND status='PENDING'",
                 Integer.class, allocationId));
         assertEquals(200, get(self.client, root + "/operations/" + revokeOp).statusCode());
         assertEquals(403, get(other.client, root + "/operations/" + revokeOp).statusCode());
+        String currentVersion = revoked.headers().firstValue("ETag").orElseThrow();
+        var redundant = modernPost(self, revoke, GSON.toJson(new OperationRequest(UUID.randomUUID())),
+                currentVersion, UUID.randomUUID().toString());
+        assertEquals(200, redundant.statusCode());
+        assertEquals(currentVersion, redundant.headers().firstValue("ETag").orElseThrow());
+        assertEquals(json(revoked).get("data"), json(redundant).get("data"));
+
+        // Reinstall an active fictional fixture state before suspending the borrower.
+        jdbc.update("UPDATE allocation SET sms_consent=TRUE,phone_ciphertext=?,phone_nonce=?,phone_key_id=? WHERE id=?",
+                syntheticContact.ciphertext(), syntheticContact.nonce(), syntheticContact.keyId(), allocationId);
         assertEquals(200, post(officer, root + "/members/" + borrower.membershipPublicId + "/suspend", "{}", "\"v0\"").statusCode());
         assertEquals(404, get(self.client, borrowedItem).statusCode());
         assertEquals(404, get(self.client, root + "/operations/" + revokeOp).statusCode());
+        UUID suspendedOperation = UUID.randomUUID();
+        assertEquals(404, modernPost(self, revoke, GSON.toJson(new OperationRequest(suspendedOperation)),
+                currentVersion, UUID.randomUUID().toString()).statusCode());
+        assertEquals(404, modernPost(self, revoke, revokeBody, "\"v0\"", revokeKey).statusCode());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE id=? AND sms_consent=TRUE "
+                + "AND phone_ciphertext IS NOT NULL AND status='PENDING'", Integer.class, allocationId));
+        assertEquals(0, jdbc.queryForObject("SELECT COUNT(*) FROM idempotency_key WHERE operation_public_id=UUID_TO_BIN(?,0)",
+                Integer.class, suspendedOperation.toString()));
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE resource_id=?", Integer.class, resource));
         assertEquals(borrower.membershipDbId, jdbc.queryForObject("SELECT borrower_membership_id FROM allocation WHERE id=?", Long.class, allocationId));
     }
 
@@ -3701,37 +3738,58 @@ class C1IdentityAcceptanceTest {
         var before = get(newClient(), metadata);
         assertEquals(200, before.statusCode(), before.body());
         assertFalse(json(before).getAsJsonObject("data").get("synthetic").getAsBoolean());
-        String label = "orgresource-c8-plan-v1-012345678901-abcdefabcdef";
-        jdbc.update("UPDATE organization SET demo_dataset_id=?,demo_reference_key='fictional-demo-entry',"
-                + "demo_source_sha=REPEAT('a',64),demo_plan_sha=REPEAT('b',64),demo_as_of='2026-11-19' WHERE id=?",
-                label, demo.orgDbId);
-        assertFalse(json(get(newClient(), metadata)).getAsJsonObject("data").get("synthetic").getAsBoolean(),
-                "Partially imported data is not advertised.");
-        tx.executeWithoutResult(status -> {
-            var operator = accounts.saveAndFlush(new UserAccount("c8-demo-operator", "Fictional local demo operator", now()));
-            credentials.saveAndFlush(new LocalCredential(operator.id, passwordEncoder.encode(UUID.randomUUID().toString()), now()));
-        });
-        assertFalse(json(get(newClient(), metadata)).getAsJsonObject("data").get("synthetic").getAsBoolean(),
-                "An operator credential alone cannot advertise an incomplete demo cohort.");
-        String resource = GSON.toJson(new ResourceRequest("Fictional disclosure resource", "REUSABLE", 1));
-        assertEquals(201, post(demoActor, "/api/resources", resource).statusCode());
-        assertEquals(201, post(ordinaryActor, "/api/resources", resource).statusCode());
-        String demoExports = "/api/v2/orgs/" + demo.orgPublicId + "/exports";
-        String jsonInput = "{\"format\":\"TENANT_JSON\",\"dataset\":\"RESOURCES\"}";
-        var labelled = post(demoActor, demoExports, jsonInput);
-        assertEquals(200, labelled.statusCode(), labelled.body());
-        var disclosure = json(labelled).getAsJsonObject("demoProvenance");
-        assertTrue(disclosure.get("synthetic").getAsBoolean());
-        assertEquals(label, disclosure.get("datasetId").getAsString());
-        assertTrue(disclosure.get("notice").getAsString().contains("operations, dates, accounts, inventories and transaction history are simulated"));
-        var csv = post(demoActor, demoExports, "{\"format\":\"CSV\",\"dataset\":\"RESOURCES\"}");
-        assertEquals(200, csv.statusCode());
-        assertTrue(csv.body().contains("synthetic,demoDataset,demonstrationAsOf,demoNotice"));
-        assertTrue(csv.body().contains(label));
-        var ordinaryExport = post(ordinaryActor, "/api/v2/orgs/" + ordinary.orgPublicId + "/exports", jsonInput);
-        assertEquals(200, ordinaryExport.statusCode());
-        assertFalse(json(ordinaryExport).has("demoProvenance"));
-        assertEquals(404, post(ordinaryActor, demoExports, jsonInput).statusCode());
+        String label = "orgresource-c8-plan-v1-012345678901-abcdefabcdef-small";
+        try {
+            jdbc.update("UPDATE organization SET demo_dataset_id=?,demo_reference_key='fictional-demo-entry',"
+                    + "demo_source_sha=REPEAT('a',64),demo_plan_sha=REPEAT('b',64),demo_as_of='2026-11-19' WHERE id=?",
+                    label, demo.orgDbId);
+            var partial = get(newClient(), metadata);
+            assertEquals(503, partial.statusCode(), "Partially tagged activity must never be classified as ordinary.");
+            assertTrue(partial.body().contains("DEMO_CLASSIFICATION_UNAVAILABLE"));
+            assertFalse(partial.body().contains(label));
+            tx.executeWithoutResult(status -> {
+                var operator = accounts.saveAndFlush(new UserAccount("c8-demo-operator", "Fictional local demo operator", now()));
+                credentials.saveAndFlush(new LocalCredential(operator.id, passwordEncoder.encode(UUID.randomUUID().toString()), now()));
+            });
+            assertEquals(503, get(newClient(), metadata).statusCode(),
+                    "An operator credential alone cannot advertise an incomplete demo cohort.");
+            for (int sequenced = 2; sequenced <= 3; ++sequenced) {
+                var extra = newTenant("C8 fictional mixed cohort " + sequenced, Membership.Role.OWNER);
+                jdbc.update("UPDATE organization SET demo_dataset_id=?,demo_reference_key=?,"
+                                + "demo_source_sha=REPEAT('a',64),demo_plan_sha=REPEAT('b',64),demo_as_of='2026-11-19' WHERE id=?",
+                        label, "fictional-mixed-entry-" + sequenced, extra.orgDbId);
+            }
+            var mixed = get(newClient(), metadata);
+            assertEquals(503, mixed.statusCode(), "A complete small cohort mixed with ordinary workspaces must fail closed.");
+            assertFalse(mixed.body().contains(label));
+            String resource = GSON.toJson(new ResourceRequest("Fictional disclosure resource", "REUSABLE", 1));
+            assertEquals(201, post(demoActor, "/api/resources", resource).statusCode());
+            assertEquals(201, post(ordinaryActor, "/api/resources", resource).statusCode());
+            String demoExports = "/api/v2/orgs/" + demo.orgPublicId + "/exports";
+            String jsonInput = "{\"format\":\"TENANT_JSON\",\"dataset\":\"RESOURCES\"}";
+            var labelled = post(demoActor, demoExports, jsonInput);
+            assertEquals(200, labelled.statusCode(), labelled.body());
+            var disclosure = json(labelled).getAsJsonObject("demoProvenance");
+            assertTrue(disclosure.get("synthetic").getAsBoolean());
+            assertEquals(label, disclosure.get("datasetId").getAsString());
+            assertTrue(disclosure.get("notice").getAsString().contains("operations, dates, accounts, inventories and transaction history are simulated"));
+            var csv = post(demoActor, demoExports, "{\"format\":\"CSV\",\"dataset\":\"RESOURCES\"}");
+            assertEquals(200, csv.statusCode());
+            assertTrue(csv.body().contains("synthetic,demoDataset,demonstrationAsOf,demoNotice"));
+            assertTrue(csv.body().contains(label));
+            var ordinaryExport = post(ordinaryActor, "/api/v2/orgs/" + ordinary.orgPublicId + "/exports", jsonInput);
+            assertEquals(200, ordinaryExport.statusCode());
+            assertFalse(json(ordinaryExport).has("demoProvenance"));
+            assertEquals(404, post(ordinaryActor, demoExports, jsonInput).statusCode());
+        } finally {
+            jdbc.update("UPDATE organization SET demo_dataset_id=NULL,demo_reference_key=NULL,demo_source_sha=NULL,"
+                    + "demo_plan_sha=NULL,demo_as_of=NULL WHERE demo_dataset_id=?", label);
+            jdbc.update("DELETE c FROM local_credential c JOIN user_account u ON u.id=c.user_id WHERE u.username_key='c8-demo-operator'");
+            jdbc.update("DELETE FROM user_account WHERE username_key='c8-demo-operator'");
+        }
+        var recovered = get(newClient(), metadata);
+        assertEquals(200, recovered.statusCode());
+        assertFalse(json(recovered).getAsJsonObject("data").get("synthetic").getAsBoolean());
     }
 
     private String leadAssignment(String operationId, UUID leadMembershipId) {

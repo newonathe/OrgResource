@@ -114,6 +114,18 @@ test("a lost create confirmation keeps its draft, refreshes the saved row, and n
   expect(postCount).toBe(1);
 });
 
+test("a packaged workspace withholds activity until provenance is verified", async ({ page }) => {
+  const metadataPath = "**/api/v2/demo/metadata";
+  await page.route(metadataPath, route => route.fulfill({ status: 500, json: { code: "TEST_UNAVAILABLE" } }));
+  await page.reload();
+  await expect(page.getByRole("alert")).toContainText("Workspace classification unavailable");
+  await expect(page.getByRole("navigation", { name: "Main navigation" })).toHaveCount(0);
+  await page.unroute(metadataPath);
+  await page.getByRole("button", { name: "Retry classification" }).click();
+  await expect(page.getByRole("heading", { name: "Overview", level: 1 })).toBeVisible();
+  await expect(page.getByText(/^DEMO ENVIRONMENT/)).toHaveCount(0);
+});
+
 test("Allocation status filters follow browser back and forward navigation", async ({ page }) => {
   await page.goto("/#/allocations");
   const status = page.getByLabel("Status", { exact: true });
@@ -991,9 +1003,8 @@ test("C8 linked borrower and assigned LEAD complete the packaged Project work jo
     await expect(borrowerPage.getByRole("heading", { name: "My borrowed resources", level: 1 })).toBeVisible();
     await expect(borrowerPage.getByText(resourceName, { exact: true })).toBeVisible();
     await expect(borrowerPage.getByRole("link", { name: "Project work", exact: true })).toHaveCount(0);
-    borrowerPage.once("dialog", dialog => void dialog.accept());
-    await borrowerPage.getByRole("button", { name: "Withdraw SMS consent" }).click();
-    await expect(borrowerPage.getByText("SMS consent withdrawn.", { exact: true })).toBeVisible();
+    await expect(borrowerPage.getByText("No active SMS reminder consent.", { exact: true })).toBeVisible();
+    await expect(borrowerPage.getByRole("button", { name: "Withdraw SMS consent" })).toHaveCount(0);
 
     page.once("dialog", dialog => void dialog.accept());
     await page.getByRole("button", { name: "Clear Project lead" }).click();

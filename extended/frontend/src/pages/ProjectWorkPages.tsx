@@ -247,11 +247,14 @@ export function BorrowedAllocationsPage({ orgId }: { orgId: string }) {
         <ul className="member-list">{view.rows.map(row => <li className="member-row" key={row.id}>
           <div><strong>{row.resourceName}</strong><p>{row.projectName} · {row.quantity} units · {formatManila(row.createdAt)}</p>
             <StatusBadge>{row.status}</StatusBadge></div>
-          <Button disabled={actions.disabled} onClick={() => {
-            if (!window.confirm("Withdraw SMS consent for this Allocation?")) return;
-            const operationId = crypto.randomUUID();
-            void actions.run(() => projectWorkApi.revokeConsent(orgId, row, operationId, crypto.randomUUID()), "SMS consent withdrawn.", operationId);
-          }}>Withdraw SMS consent</Button>
+          <div>
+            <p>{row.smsConsent === true ? "SMS reminder consent is active." : "No active SMS reminder consent."}</p>
+            {row.smsConsent === true && <Button disabled={actions.disabled} onClick={() => {
+              if (!window.confirm("Withdraw SMS consent for this Allocation?")) return;
+              const operationId = crypto.randomUUID();
+              void actions.run(() => projectWorkApi.revokeConsent(orgId, row, operationId, crypto.randomUUID()), "SMS consent withdrawn.", operationId);
+            }}>Withdraw SMS consent</Button>}
+          </div>
         </li>)}</ul>
       </WorkRows>
     </GlassPanel>

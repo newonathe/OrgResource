@@ -626,7 +626,7 @@ public class InventoryService {
     private static BorrowedView borrowedView(AllocationRepository.BorrowedRow row) {
         return new BorrowedView(row.getPublicId(), row.getProjectName(), row.getResourceName(), row.getQuantity(),
                 row.getStatus().name(), row.getCreatedAt(), row.getApprovedAt(), row.getIssuedAt(),
-                row.getReturnedAt(), row.getConsumedAt(), row.getCancelledAt(), row.getVersion());
+                row.getReturnedAt(), row.getConsumedAt(), row.getCancelledAt(), row.getSmsConsent(), row.getVersion());
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -1205,7 +1205,7 @@ public class InventoryService {
             String borrowerNameSnapshot, int quantity, String status, long version) { }
     public record BorrowedView(UUID id, String projectName, String resourceName, int quantity, String status,
             LocalDateTime createdAt, LocalDateTime approvedAt, LocalDateTime issuedAt, LocalDateTime returnedAt,
-            LocalDateTime consumedAt, LocalDateTime cancelledAt, long version) { }
+            LocalDateTime consumedAt, LocalDateTime cancelledAt, boolean smsConsent, long version) { }
     public record AllocationChangeView(UUID id, int quantity, String status, long version) { }
     public record ProjectAllocationView(UUID id, UUID requirementId, String resourceName, String borrowerNameSnapshot,
             int quantity, String status, long version, boolean canCancel, boolean canDelete) { }

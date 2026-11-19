@@ -29,13 +29,14 @@ public interface AllocationRepository extends JpaRepository<Allocation, Long> {
         java.time.LocalDateTime getReturnedAt();
         java.time.LocalDateTime getConsumedAt();
         java.time.LocalDateTime getCancelledAt();
+        boolean getSmsConsent();
         long getVersion();
     }
 
     String BORROWED_ROWS = "select a.id as id,a.publicId as publicId,p.name as projectName,r.name as resourceName, "
             + "a.quantity as quantity,a.status as status,a.createdAt as createdAt,a.approvedAt as approvedAt, "
             + "a.issuedAt as issuedAt,a.returnedAt as returnedAt,a.consumedAt as consumedAt, "
-            + "a.cancelledAt as cancelledAt,a.version as version from Allocation a "
+            + "a.cancelledAt as cancelledAt,a.smsConsent as smsConsent,a.version as version from Allocation a "
             + "join a.requirement q join q.project p join q.resource r where a.organizationId=:org "
             + "and q.organizationId=:org and p.organizationId=:org and r.organizationId=:org "
             + "and r.id=a.resourceId and a.borrowerMembershipId=:member ";

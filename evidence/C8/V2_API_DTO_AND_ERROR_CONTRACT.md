@@ -35,3 +35,9 @@ GET `/api/v2/workspace/overview` returns tenant-wide counts for Departments, act
 The Allocation page's projectId filter scopes through the persisted Requirement, and the server checks the selected tenant's Project before executing the page query. The Project dialog uses this filter for independent history navigation. Project period filters use the existing start-inclusive, end-exclusive contract and have their own cursor binding.
 
 The Project dialog also pages Requirements independently using projectId. The workspace Requirement projection joins scalar Project and Resource fields under the same organization, with no image payload. Allocation context is fetched and coverage computed using only the unique Requirement IDs from the current Allocation page. The React relationship selectors use the matching workspace list with server search, cursor navigation and a retained current selection. The 28 academic compatibility routes and responses are unchanged.
+
+## Borrower consent and demo classification
+
+The organization-path borrower GETs and consent-withdrawal response include `smsConsent`, a boolean on the borrower's own Allocation. The response omits phone data, ciphertext, provider information and other actors. Linked creation starts with `smsConsent: false`. A fresh valid withdrawal against already inactive consent returns the current state without changing the Allocation version or stock. Exact retries use the existing actor-scoped receipt. Current eligibility and ownership still apply to replay.
+
+GET `/api/v2/demo/metadata` confirms an ordinary database or returns the notice for one complete, dedicated synthetic cohort. It returns `503 DEMO_CLASSIFICATION_UNAVAILABLE` for partially imported or mixed data. The workspace shell waits for valid classification and offers a retry on failure.
