@@ -26,6 +26,11 @@
 - Report only commands actually run and results actually observed. Mark failures, blocked checks, and unrun checks precisely. Do not claim Canvas submission, instructor approval, recording, public deployment, or real provider delivery without evidence.
 - Do not start a later implementation phase, merge, deploy publicly, create paid resources, send real SMS, or submit Canvas without separate explicit authorization.
 
+## Git delivery by default
+
+- Commit and push every authorized, repository-safe OrgResource change to the current feature branch or draft PR branch before reporting completion. This includes tested partial progress, with any open acceptance gates stated in its report. A task-specific instruction to keep changes local takes precedence.
+- Review the staged diff, run the relevant checks, and verify that the remote branch resolves to the pushed commit. Leave secrets, restricted source material, raw local evidence, generated data, archives and unrelated work outside the push. A push does not authorize a merge, force-push, visibility change, deployment, release or submission.
+
 ## Local computer-use constraint
 
 - Never invoke the in-app Browser or Chrome-control plugins on this Windows installation. The embedded Chromium GPU process crashes when an in-app browser session starts. Use command-line Playwright or non-GUI checks for local web verification. Retry browser plugins only after the user confirms an app update fixed the GPU crash.
