@@ -1,8 +1,10 @@
 package edu.orgresource.extended.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Lock;
@@ -10,9 +12,37 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import edu.orgresource.extended.domain.ResourceRequirement;
+import edu.orgresource.extended.domain.ResourceType;
 import jakarta.persistence.LockModeType;
 
 public interface ResourceRequirementRepository extends JpaRepository<ResourceRequirement, Long> {
+    Optional<ResourceRequirement> findByPublicIdAndOrganizationId(java.util.UUID publicId, Long organizationId);
+
+    interface ProjectWorkRow {
+        long getId();
+        java.util.UUID getPublicId();
+        java.util.UUID getProjectPublicId();
+        java.util.UUID getResourcePublicId();
+        String getProjectName();
+        String getResourceName();
+        ResourceType getResourceType();
+        int getQuantity();
+        long getVersion();
+    }
+
+    String PROJECT_WORK_ROWS = "select q.id as id,q.publicId as publicId,p.publicId as projectPublicId, "
+            + "r.publicId as resourcePublicId,p.name as projectName,r.name as resourceName,r.type as resourceType, "
+            + "q.quantity as quantity,q.version as version from ResourceRequirement q join q.project p join q.resource r "
+            + "where q.organizationId=:org and p.organizationId=:org and r.organizationId=:org "
+            + "and (:lead is null or p.leadMembershipId=:lead) ";
+
+    @Query(PROJECT_WORK_ROWS + "and q.id>:after and (:project is null or p.publicId=:project) order by q.id")
+    List<ProjectWorkRow> findProjectWorkPage(@Param("org") long org, @Param("lead") Long lead,
+            @Param("project") java.util.UUID project, @Param("after") long after, Pageable limit);
+
+    @Query(PROJECT_WORK_ROWS + "and q.publicId=:publicId")
+    Optional<ProjectWorkRow> findProjectWorkRow(@Param("org") long org, @Param("lead") Long lead,
+            @Param("publicId") java.util.UUID publicId);
     @EntityGraph(attributePaths = {"project", "resource"})
     List<ResourceRequirement> findByOrganizationIdOrderById(Long organizationId);
     @EntityGraph(attributePaths = {"project", "resource"})
@@ -23,6 +53,32 @@ public interface ResourceRequirementRepository extends JpaRepository<ResourceReq
             + "where q.id = :id and q.organizationId = :organizationId")
     Optional<ResourceRequirement> findDetailedByIdAndOrganizationId(@Param("id") Long id,
                                                                      @Param("organizationId") Long organizationId);
+
+    interface WorkspaceRow {
+        Long getId();
+        Long getProjectId();
+        Long getResourceId();
+        Integer getQuantity();
+        String getProjectName();
+        String getResourceName();
+        ResourceType getResourceType();
+        LocalDateTime getProjectStartAt();
+        LocalDateTime getProjectEndAt();
+    }
+
+    String WORKSPACE_ROW = "select q.id as id, p.id as projectId, r.id as resourceId, q.quantity as quantity, "
+            + "p.name as projectName, r.name as resourceName, r.type as resourceType, "
+            + "p.startAt as projectStartAt, p.endAt as projectEndAt "
+            + "from ResourceRequirement q join q.project p join q.resource r "
+            + "where q.organizationId=:org and p.organizationId=:org and r.organizationId=:org ";
+
+    @Query(WORKSPACE_ROW + "and q.id>:after and (:project is null or p.id=:project) "
+            + "and (:search is null or locate(:search, lower(concat(p.name, ' ', r.name)))>0) order by q.id")
+    List<WorkspaceRow> findWorkspacePage(@Param("org") long org, @Param("after") long after,
+            @Param("project") Long project, @Param("search") String search, Pageable pageable);
+
+    @Query(WORKSPACE_ROW + "and q.id in :ids")
+    List<WorkspaceRow> findWorkspaceRelationships(@Param("org") long org, @Param("ids") List<Long> ids);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select q from ResourceRequirement q where q.id = :id and q.organizationId = :organizationId")
@@ -41,13 +97,25 @@ public interface ResourceRequirementRepository extends JpaRepository<ResourceReq
                                @Param("status") edu.orgresource.extended.domain.AllocationStatus status,
                                @Param("sampledNow") java.time.LocalDateTime sampledNow);
 
-    @Query("select coalesce(sum(case when a.status in "
+    String COVERAGE_TOTAL = "sum(case when a.status in "
             + "(edu.orgresource.extended.domain.AllocationStatus.ISSUED, edu.orgresource.extended.domain.AllocationStatus.RETURNED, "
             + "edu.orgresource.extended.domain.AllocationStatus.CONSUMED) then a.quantity "
             + "when a.status = edu.orgresource.extended.domain.AllocationStatus.APPROVED and p.endAt > :sampledNow "
-            + "then a.quantity else 0 end), 0) from Allocation a join a.requirement q join q.project p "
+            + "then a.quantity else 0 end)";
+
+    @Query("select coalesce(" + COVERAGE_TOTAL + ", 0) from Allocation a join a.requirement q join q.project p "
             + "where q.id = :requirementId and a.organizationId = :organizationId")
     Long sumCoveredQuantity(@Param("requirementId") Long requirementId,
                             @Param("organizationId") Long organizationId,
                             @Param("sampledNow") java.time.LocalDateTime sampledNow);
+
+    @Query("select count(q) from ResourceRequirement q where q.organizationId=:org and q.quantity > "
+            + "(select coalesce(" + COVERAGE_TOTAL + ",0) from Allocation a join a.requirement ref join ref.project p "
+            + "where ref.id=q.id and a.organizationId=:org)")
+    long countWorkspaceShortages(@Param("org") long org, @Param("sampledNow") LocalDateTime sampledNow);
+
+    @Query("select q.id, " + COVERAGE_TOTAL + " from Allocation a join a.requirement q join q.project p "
+            + "where q.id in :ids and a.organizationId=:organizationId group by q.id")
+    List<Object[]> sumPageCoverage(@Param("ids") List<Long> ids, @Param("organizationId") long organizationId,
+            @Param("sampledNow") LocalDateTime sampledNow);
 }

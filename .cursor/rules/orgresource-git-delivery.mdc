@@ -1,0 +1,8 @@
+---
+description: Commit, push, and verify authorized OrgResource repository changes by default.
+alwaysApply: true
+---
+
+# Git delivery
+
+Follow [AGENTS.md](../../AGENTS.md#git-delivery-by-default). Commit and push repository-safe work to the authorized feature or draft PR branch, then verify the remote SHA. Respect task-specific instructions to keep work local and the existing privacy and release boundaries.

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { App } from "./App";
 
 function jsonResponse(data: unknown, status = 200): Response {
@@ -8,15 +8,27 @@ function jsonResponse(data: unknown, status = 200): Response {
 function envelope(data: unknown, status = 200) {
   return jsonResponse({ data, requestId: "test-request" }, status);
 }
+const ordinaryMetadata = { synthetic: false, datasetId: null, demonstrationAsOf: null, notice: null };
+const syntheticMetadata = { synthetic: true, datasetId: "orgresource-c8-plan-v1-012345678901-abcdefabcdef-small",
+  demonstrationAsOf: "2026-11-19", notice: "DEMO ENVIRONMENT — All operational activity is simulated." };
+
 function authenticatedFetch(role: "OWNER" | "ADMIN" | "CUSTODIAN" | "LEAD" | "MEMBER" = "OWNER") {
   let activeOrgId: string | null = "org-a";
   let csrf = "csrf-initial";
   let departments: Array<{ id: number; name: string }> = [];
   return vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input); const method = init?.method ?? "GET";
+    if (url === "/api/v2/demo/metadata") return envelope(ordinaryMetadata);
     if (url === "/api/v2/auth/csrf") return envelope({ csrfToken: csrf });
     if (url === "/api/v2/session") return envelope({ accountId: "account-a", displayName: "Fictional Operator", activeOrgId, memberships: [] });
     if (url === "/api/v2/orgs" && method === "GET") return envelope([{ id: "org-a", slug: "fictional", displayName: "Fictional Organization", role }]);
+    if (url === "/api/v2/workspace/overview") return envelope({
+      sampledAt: "2026-11-19T10:00:00", departmentCount: departments.length, projectActiveCount: 0,
+      resourceTypeCount: 0, requirementShortageCount: 0, resourcePreview: [], calendarPreview: [], allocations: null,
+    });
+    if (url.startsWith("/api/v2/workspace/") && method === "GET") {
+      return envelope({ items: url.startsWith("/api/v2/workspace/departments") ? departments : [], nextCursor: null });
+    }
     if (url === "/api/departments" && method === "GET") return jsonResponse(departments);
     if (url === "/api/departments" && method === "POST") {
       if ((init?.headers as Record<string, string>)["X-CSRF-TOKEN"] !== csrf) return jsonResponse({ code: "CSRF", message: "Bad token." }, 403);
@@ -36,7 +48,91 @@ function authenticatedFetch(role: "OWNER" | "ADMIN" | "CUSTODIAN" | "LEAD" | "ME
   });
 }
 
-afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
+afterEach(() => { cleanup(); vi.useRealTimers(); vi.restoreAllMocks(); vi.unstubAllGlobals(); window.location.hash = ""; });
+
+describe("Workspace provenance", () => {
+  it.each([
+    ["server failure", () => Promise.resolve(jsonResponse({ code: "TEMPORARY" }, 500))],
+    ["aborted request", () => Promise.reject(new DOMException("Request aborted", "AbortError"))],
+    ["malformed JSON", () => Promise.resolve(new Response("{invalid"))],
+    ["invalid metadata", () => Promise.resolve(envelope({ ...syntheticMetadata, notice: "" }))],
+    ["missing ordinary fields", () => Promise.resolve(envelope({ synthetic: false }))],
+    ["array metadata", () => Promise.resolve(envelope([]))],
+  ] as const)("holds the shell on %s and requires an explicit retry", async (_failure, respond) => {
+    const authenticated = authenticatedFetch();
+    let attempts = 0;
+    vi.stubGlobal("fetch", vi.fn((url: RequestInfo | URL, init?: RequestInit) =>
+      String(url) === "/api/v2/demo/metadata" && ++attempts === 1 ? respond() : authenticated(url, init)));
+    render(<App />);
+    await screen.findByRole("alert");
+    expect(authenticated).not.toHaveBeenCalled();
+    expect(screen.queryByRole("navigation", { name: "Main navigation" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Retry classification" }));
+    await screen.findByRole("heading", { name: "Overview" });
+    expect(attempts).toBe(2);
+    expect(screen.queryByText(/DEMO ENVIRONMENT/)).not.toBeInTheDocument();
+  });
+
+  it("aborts a stalled classification and keeps workspace routes hidden", async () => {
+    vi.useFakeTimers();
+    const pending = vi.fn((_url: RequestInfo | URL, options?: RequestInit) => new Promise<Response>((_, reject) =>
+      options?.signal?.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")), { once: true })));
+    vi.stubGlobal("fetch", pending);
+    render(<App />);
+    expect(screen.getByRole("status")).toHaveTextContent("Checking workspace classification");
+    await act(async () => { await vi.advanceTimersByTimeAsync(10000); });
+    expect(screen.getByRole("alert")).toHaveTextContent("Workspace classification unavailable");
+    expect(pending).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole("navigation", { name: "Main navigation" })).not.toBeInTheDocument();
+  });
+
+  it("waits for delayed synthetic metadata before accessing the login", async () => {
+    window.location.hash = "#/login";
+    let deliver!: (response: Response) => void;
+    const delayed = new Promise<Response>(resolve => { deliver = resolve; });
+    const loginRead = vi.fn((url: RequestInfo | URL) => Promise.resolve(String(url) === "/api/v2/auth/csrf"
+      ? envelope({ csrfToken: "pre-auth" }) : jsonResponse({ code: "AUTH_REQUIRED" }, 401)));
+    vi.stubGlobal("fetch", vi.fn((url: RequestInfo | URL) =>
+      String(url) === "/api/v2/demo/metadata" ? delayed : loginRead(url)));
+    render(<App />);
+    expect(screen.getByRole("status")).toHaveTextContent("Checking workspace classification");
+    expect(screen.queryByRole("button", { name: "Sign in" })).not.toBeInTheDocument();
+    expect(loginRead).not.toHaveBeenCalled();
+    deliver(envelope(syntheticMetadata));
+    await screen.findByRole("heading", { name: "Welcome back" });
+    expect(screen.getByText(syntheticMetadata.notice)).toBeVisible();
+  });
+});
+
+describe("Borrower reminder consent", () => {
+  it("allows withdrawal only when the server reports active consent", async () => {
+    window.location.hash = "#/borrowed";
+    const authenticated = authenticatedFetch("MEMBER");
+    let active = true;
+    let withdrawals = 0;
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+    vi.stubGlobal("fetch", vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      if (url.startsWith("/api/v2/orgs/org-a/borrowed-allocations?")) return Promise.resolve(envelope({
+        items: [{ id: "batch-a", version: active ? 1 : 2, resourceName: "Fictional projector", projectName: "Fictional workshop", quantity: 1,
+          createdAt: "2026-11-19T10:00:00", status: "PENDING", smsConsent: active }], nextCursor: null,
+      }));
+      if (url.endsWith("/borrowed-allocations/batch-a/revoke-sms-consent")) {
+        expect(init?.method).toBe("POST");
+        withdrawals++;
+        active = false;
+        return Promise.resolve(envelope({ id: "batch-a", version: 2, smsConsent: false }));
+      }
+      return authenticated(input, init);
+    }));
+    render(<App />);
+    await screen.findByText("SMS reminder consent is active.");
+    fireEvent.click(screen.getByRole("button", { name: "Withdraw SMS consent" }));
+    await screen.findByText("No active SMS reminder consent.");
+    expect(screen.queryByRole("button", { name: "Withdraw SMS consent" })).not.toBeInTheDocument();
+    expect(withdrawals).toBe(1);
+  });
+});
 
 describe("Extended C authentication and organization shell", () => {
   it("logs in with CSRF, explicitly selects an organization and restores the server session", async () => {
@@ -45,6 +141,7 @@ describe("Extended C authentication and organization shell", () => {
     let csrf = "pre-auth";
     const controlled = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input); const method = init?.method ?? "GET";
+      if (url === "/api/v2/demo/metadata") return envelope(ordinaryMetadata);
       if (url === "/api/v2/auth/csrf") return envelope({ csrfToken: csrf });
       if (url === "/api/v2/session") return authenticated
         ? envelope({ accountId: "a1", displayName: "Fictional Operator", activeOrgId, memberships: [] })
@@ -105,7 +202,7 @@ describe("Extended C authentication and organization shell", () => {
     window.location.hash = "#/departments";
     const authenticated = authenticatedFetch();
     vi.stubGlobal("fetch", vi.fn((input: RequestInfo | URL, init?: RequestInit) =>
-      String(input) === "/api/departments"
+      String(input).startsWith("/api/v2/workspace/departments")
         ? Promise.resolve(jsonResponse({ code: "ORG_CONTEXT_REQUIRED", message: "Select an organization." }, 409))
         : authenticated(input, init)));
     render(<App />);

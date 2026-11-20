@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.orgresource.extended.api.C1ApiException;
+import edu.orgresource.extended.repository.ProjectRepository;
 
 @Service
 public class C1GovernanceService {
@@ -24,6 +25,7 @@ public class C1GovernanceService {
     private final UserAccountRepository accounts;
     private final LocalCredentialRepository credentials;
     private final MembershipRepository memberships;
+    private final ProjectRepository projects;
     private final InvitationRepository invitations;
     private final OwnershipTransferRepository transfers;
     private final C1AuditService audit;
@@ -34,12 +36,13 @@ public class C1GovernanceService {
     public C1GovernanceService(OrganizationRepository organizations, UserAccountRepository accounts,
             LocalCredentialRepository credentials, MembershipRepository memberships,
             InvitationRepository invitations, OwnershipTransferRepository transfers, RecoveryCodeRepository recoveryCodes,
-            C1AuditService audit, PasswordEncoder passwords, Clock clock,
+            C1AuditService audit, PasswordEncoder passwords, Clock clock, ProjectRepository projects,
             @Value("${c1.transfer.lifetime:24h}") Duration transferLifetime) {
         this.organizations = organizations; this.accounts = accounts; this.credentials = credentials;
         this.memberships = memberships; this.invitations = invitations; this.transfers = transfers;
         this.recoveryCodes = recoveryCodes;
         this.audit = audit; this.passwords = passwords; this.clock = clock; this.transferLifetime = transferLifetime;
+        this.projects = projects;
     }
 
     @Transactional(readOnly = true)
@@ -119,6 +122,8 @@ public class C1GovernanceService {
         } else throw forbidden();
         requireTargetAccountActive(target);
         requireVersion(ifMatch, target.version);
+        if (target.role == Membership.Role.LEAD && newRole != Membership.Role.LEAD)
+            projects.clearAssignments(org.id, target.id);
         target.role = newRole;
         target.updatedAt = now();
         memberships.saveAndFlush(target);
@@ -141,6 +146,7 @@ public class C1GovernanceService {
         requireTargetAccountActive(target);
         requireVersion(ifMatch, target.version);
         if (target.status != Membership.Status.ACTIVE) throw conflict("MEMBERSHIP_NOT_ACTIVE", "Only an active membership can be suspended.");
+        if (target.role == Membership.Role.LEAD) projects.clearAssignments(org.id, target.id);
         target.status = Membership.Status.SUSPENDED;
         target.updatedAt = now();
         memberships.saveAndFlush(target);

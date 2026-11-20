@@ -1,0 +1,10 @@
+---
+description: Apply GOAT model and effort routing and the OrgResource Superpowers workflow on every repository task.
+alwaysApply: true
+---
+
+# OrgResource workflow
+
+Read [AGENTS.md](../../AGENTS.md) and its quality gate. For each coherent task, select the executor, model, reasoning effort and verification depth from the [GOAT routing skill](../../.agents/skills/orgresource-goat/SKILL.md). Use deterministic tools for exact checks.
+
+Load the matching repository Superpowers skill for planning, implementation, debugging, review or verification. Use only available models and authorized delegation. Keep evidence tied to the exact source and acceptance scope.

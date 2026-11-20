@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { readFileSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type APIRequest, type Page } from "@playwright/test";
 
 const screenshotDir = resolve(process.env.ORGRESOURCE_E2E_SCREENSHOT_DIR ?? "../../evidence/C4/screenshots");
 mkdirSync(screenshotDir, { recursive: true });
@@ -67,6 +67,28 @@ async function postJson(page: Page, route: string, body: unknown) {
   return page.request.post(route, { data: body, headers: { "X-CSRF-TOKEN": csrfToken!, Origin: new URL(page.url()).origin } });
 }
 
+async function inviteFictionalAccount(page: Page, requests: APIRequest, orgPath: string, role: "MEMBER" | "LEAD",
+  username: string, displayName: string) {
+  const invited = await postJson(page, orgPath + "/invitations", { role });
+  expect(invited.status(), "create a fictional invitation").toBe(201);
+  const { data } = await invited.json() as { data: { bearerToken: string } };
+  const origin = new URL(page.url()).origin;
+  const isolated = await requests.newContext({ baseURL: origin });
+  try {
+    const csrf = await isolated.get("/api/v2/auth/csrf");
+    expect(csrf.status()).toBe(200);
+    const { data: { csrfToken } } = await csrf.json() as { data: { csrfToken: string } };
+    const redeemed = await isolated.post("/api/v2/invitations/redeem", {
+      data: { bearerToken: data.bearerToken, username, displayName, password: username + "-Local!25" },
+      headers: { "X-CSRF-TOKEN": csrfToken, Origin: origin },
+    });
+    expect(redeemed.status(), "redeem a fictional invitation").toBe(201);
+    return await isolated.storageState();
+  } finally {
+    await isolated.dispose();
+  }
+}
+
 test("a lost create confirmation keeps its draft, refreshes the saved row, and never retries automatically", async ({ page }) => {
   const name = `O11 uncertain ${Date.now().toString(36)}`;
   let postCount = 0;
@@ -90,6 +112,18 @@ test("a lost create confirmation keeps its draft, refreshes the saved row, and n
   await page.getByRole("button", { name: "I reviewed the current records" }).click();
   await expect(page.getByRole("button", { name: "Add department" })).toBeEnabled();
   expect(postCount).toBe(1);
+});
+
+test("a packaged workspace withholds activity until provenance is verified", async ({ page }) => {
+  const metadataPath = "**/api/v2/demo/metadata";
+  await page.route(metadataPath, route => route.fulfill({ status: 500, json: { code: "TEST_UNAVAILABLE" } }));
+  await page.reload();
+  await expect(page.getByRole("alert")).toContainText("Workspace classification unavailable");
+  await expect(page.getByRole("navigation", { name: "Main navigation" })).toHaveCount(0);
+  await page.unroute(metadataPath);
+  await page.getByRole("button", { name: "Retry classification" }).click();
+  await expect(page.getByRole("heading", { name: "Overview", level: 1 })).toBeVisible();
+  await expect(page.getByText(/^DEMO ENVIRONMENT/)).toHaveCount(0);
 });
 
 test("Allocation status filters follow browser back and forward navigation", async ({ page }) => {
@@ -155,15 +189,23 @@ test(`connected invitation grants only ${role} Project and inventory access`, as
     const projects = await getJson<Array<{ id: number; name: string }>>(memberPage, "/api/projects");
     const withRequirement = projects.find(project => requirements.some(row => row.projectId === project.id));
     expect(withRequirement).toBeDefined();
-    let allocationReads = 0;
-    memberPage.on("request", request => { if (new URL(request.url()).pathname === "/api/allocations") allocationReads++; });
+    const historyReads: URL[] = [];
+    memberPage.on("request", request => {
+      if (request.method() !== "GET") return;
+      const url = new URL(request.url());
+      if (url.pathname === "/api/allocations" || url.pathname === "/api/v2/workspace/allocations") historyReads.push(url);
+    });
     await memberPage.goto("/#/projects");
     await memberPage.getByRole("button", { name: `View ${withRequirement!.name}`, exact: true }).click();
     const dialog = memberPage.getByRole("dialog");
     await expect(dialog.getByRole("heading", { name: role === "ADMIN" ? "Requirements and allocation history" : "Requirements", exact: true })).toBeVisible();
     await expect(dialog.getByText(/required · .* covered · .* shortage/).first()).toBeVisible();
-    expect(allocationReads).toBe(role === "ADMIN" ? 1 : 0);
-    if (role === "ADMIN") await expect(dialog.locator(".sheet-batches").first()).toBeVisible();
+    expect(historyReads).toHaveLength(role === "ADMIN" ? 1 : 0);
+    if (role === "ADMIN") {
+      expect(historyReads[0].pathname).toBe("/api/v2/workspace/allocations");
+      expect(historyReads[0].searchParams.get("projectId")).toBe(String(withRequirement!.id));
+      await expect(dialog.locator(".sheet-batches").first()).toBeVisible();
+    }
     await memberPage.goto("/#/resources");
 
     const savedSession = await getJson<{ activeOrgId: string | null }>(memberPage, "/api/v2/session");
@@ -207,8 +249,8 @@ test("switching organizations hides old tenant data, cancels stale reads, and de
   let releaseDelayedRead!: () => void;
   const delayedRead = new Promise<void>(resolve => { releaseDelayedRead = resolve; });
   const staleRequestFailed = page.waitForEvent("requestfailed", request =>
-    new URL(request.url()).pathname === "/api/resources");
-  await page.route("**/api/resources", async route => {
+    new URL(request.url()).pathname === "/api/v2/workspace/resources");
+  await page.route("**/api/v2/workspace/resources*", async route => {
     if (!delayedReadStarted && route.request().method() === "GET") {
       delayedReadStarted = true;
       await delayedRead;
@@ -725,25 +767,32 @@ test("captures the all-page responsive light/dark screenshot matrix", async ({ p
   await page.screenshot({ path: resolve(screenshotDir, "detail-resource-light.png"), fullPage: false });
   await page.getByRole("button", { name: "Close dialog" }).click();
 
-  await page.route("**/api/departments", async (route) => {
-    await page.waitForTimeout(1_000);
-    await route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
+  const departmentPage = "**/api/v2/workspace/departments*";
+  let completeEmptyPage!: () => void;
+  const waitForScreenshot = new Promise<void>(finish => { completeEmptyPage = finish; });
+  await page.route(departmentPage, async route => {
+    await waitForScreenshot;
+    await route.fulfill({ status: 200, json: { data: { items: [], nextCursor: null } } });
   });
-  await page.goto("/#/departments");
-  await expect(page.getByRole("status")).toContainText("Loading current records");
-  await page.screenshot({ path: resolve(screenshotDir, "state-departments-loading.png"), fullPage: false });
+  try {
+    await page.goto("/#/departments");
+    await expect(page.locator('.state-block[role="status"]')).toContainText("Loading current records");
+    await page.screenshot({ path: resolve(screenshotDir, "state-departments-loading.png"), fullPage: false });
+  } finally {
+    completeEmptyPage();
+  }
   await expect(page.getByText("No departments yet")).toBeVisible();
   await page.screenshot({ path: resolve(screenshotDir, "state-departments-empty.png"), fullPage: true });
-  await page.unroute("**/api/departments");
+  await page.unroute(departmentPage);
 
-  await page.route("**/api/departments", async (route) => {
-    await route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ code: "TEST_UNAVAILABLE", message: "Test-only unavailable response." }) });
+  await page.route(departmentPage, async route => {
+    await route.fulfill({ status: 503, json: { code: "TEST_UNAVAILABLE", message: "Test-only unavailable response." } });
   });
   await page.goto("/#/about");
   await page.goto("/#/departments");
   await expect(page.getByRole("alert")).toContainText("Test-only unavailable response");
   await page.screenshot({ path: resolve(screenshotDir, "state-departments-error.png"), fullPage: false });
-  await page.unroute("**/api/departments");
+  await page.unroute(departmentPage);
 });
 
 test("desktop pointer highlights follow the mouse and motion can be switched off", async ({ page }) => {
@@ -817,6 +866,159 @@ test("C6a owner opens recorded events and downloads real redacted CSV and JSON f
   }
 });
 
+test("C8 traverses memberships and recorded activity using bounded pages", async ({ page, playwright }) => {
+  test.setTimeout(90_000);
+  const { activeOrgId } = await getJson<{ activeOrgId: string }>(page, "/api/v2/session");
+  expect(activeOrgId).toBeTruthy();
+  const orgPath = "/api/v2/orgs/" + activeOrgId;
+  const prefix = "c8-roster-" + Date.now().toString(36);
+  const fixtures: string[] = [];
+  for (let index = 1; index <= 26; index++) {
+    const displayName = "Fictional " + prefix + " member " + index;
+    await inviteFictionalAccount(page, playwright.request, orgPath, "MEMBER", prefix + "-" + index, displayName);
+    fixtures.push(displayName);
+  }
+  const seen: string[] = [];
+  const memberRead = new Set<string>();
+  page.on("request", request => {
+    const url = new URL(request.url());
+    if (request.method() === "GET" && url.pathname === orgPath + "/members") {
+      memberRead.add(url.searchParams.get("limit") ?? "unbounded");
+    }
+  });
+
+  await page.goto("/#/governance");
+  const members = page.getByRole("navigation", { name: "Membership pages" });
+  const nextMember = members.getByRole("button", { name: "Next page" });
+  const previousMember = members.getByRole("button", { name: "Previous page" });
+  const memberNames = page.locator(".governance-grid .member-list article strong");
+  await expect(members.getByRole("status")).toHaveText("Page 1 · 25 shown");
+  await expect(previousMember).toBeDisabled();
+  seen.push(...await memberNames.allTextContents());
+  expect(seen).not.toContain(fixtures.at(-1));
+  await nextMember.focus();
+  await page.keyboard.press("Enter");
+  await expect(members.getByRole("status")).toContainText("Page 2");
+  await expect(members.getByRole("status")).toContainText("End of results");
+  seen.push(...await memberNames.allTextContents());
+  expect(seen.filter(name => name.startsWith("Fictional " + prefix))).toEqual(fixtures);
+  expect(memberRead).toEqual(new Set(["25"]));
+  await expect(nextMember).toBeDisabled();
+
+  const lastMember = page.locator(".member-row").filter({ has: page.getByText(fixtures.at(-1)!, { exact: true }) });
+  await lastMember.getByLabel("Role").selectOption("ADMIN");
+  await expect(page.getByText("Membership role updated.")).toBeVisible();
+  const recipients = page.getByLabel("Recipient membership");
+  await expect(recipients.getByRole("option", { name: fixtures.at(-1), exact: true })).toHaveCount(1);
+  await expect(members.getByRole("status")).toContainText("Page 2");
+  await previousMember.click();
+  await expect(members.getByRole("status")).toHaveText("Page 1 · 25 shown");
+  await expect(recipients.getByRole("option", { name: fixtures.at(-1), exact: true })).toHaveCount(0);
+
+  await page.goto("/#/activity");
+  const activity = page.getByRole("navigation", { name: "Activity pages" });
+  const older = activity.getByRole("button", { name: "Next page" });
+  const newer = activity.getByRole("button", { name: "Previous page" });
+  const events = page.locator(".member-list > li");
+  await expect(activity.getByRole("status")).toHaveText("Page 1 · 50 shown");
+  await expect(events).toHaveCount(50);
+  const firstEvents = await events.allTextContents();
+  await older.click();
+  await expect(activity.getByRole("status")).toContainText("Page 2 ·");
+  expect(await events.allTextContents()).not.toEqual(firstEvents);
+  await newer.click();
+  await expect(activity.getByRole("status")).toHaveText("Page 1 · 50 shown");
+  expect(await events.allTextContents()).toEqual(firstEvents);
+  await older.click();
+  await expect(activity.getByRole("status")).toContainText("Page 2 ·");
+  await page.getByLabel("Show").selectOption("audit");
+  await expect(activity.getByRole("status")).toHaveText("Page 1 · 50 shown");
+  await expect(newer).toBeDisabled();
+  await expect(page.getByText(/^Stock movement ·/)).toHaveCount(0);
+
+  for (let pageNumber = 2; pageNumber <= 15 && await older.isEnabled(); pageNumber++) {
+    await older.click();
+    await expect(activity.getByRole("status")).toContainText("Page " + pageNumber + " ·");
+  }
+  await expect(activity.getByRole("status")).toContainText("End of results");
+  await expect(older).toBeDisabled();
+  await page.getByRole("button", { name: "Newest events" }).click();
+  await expect(activity.getByRole("status")).toHaveText("Page 1 · 50 shown");
+});
+
+test("C8 linked borrower and assigned LEAD complete the packaged Project work journey", async ({ page, browser, playwright }) => {
+  test.setTimeout(90_000);
+  const { activeOrgId } = await getJson<{ activeOrgId: string }>(page, "/api/v2/session");
+  const orgPath = "/api/v2/orgs/" + activeOrgId;
+  const prefix = "c8-scoped-" + Date.now().toString(36);
+  const leadName = "Fictional " + prefix + " lead";
+  const borrowerName = "Fictional " + prefix + " borrower";
+  const leadState = await inviteFictionalAccount(page, playwright.request, orgPath, "LEAD", prefix + "-lead", leadName);
+  const borrowerState = await inviteFictionalAccount(page, playwright.request, orgPath, "MEMBER", prefix + "-borrower", borrowerName);
+  const department = await postJson(page, "/api/departments", { name: prefix + " department" });
+  expect(department.status()).toBe(201);
+  const { id: departmentId } = await department.json() as { id: number };
+  const projectName = prefix + " Project", unassignedName = prefix + " private scope";
+  for (const name of [projectName, unassignedName]) {
+    const project = await postJson(page, "/api/projects", { departmentId, name,
+      startAt: "2040-11-20T10:00:00", endAt: "2040-11-20T13:00:00" });
+    expect(project.status()).toBe(201);
+  }
+  const resourceName = prefix + " projector";
+  expect((await postJson(page, "/api/resources", { name: resourceName, type: "REUSABLE", totalQuantity: 6 })).status()).toBe(201);
+  await page.goto("/#/project-work");
+  await page.getByRole("button", { name: "Open " + projectName, exact: true }).click();
+  await page.getByRole("searchbox", { name: "Find eligible project lead" }).fill(prefix);
+  await page.getByLabel("Eligible Project lead", { exact: true }).selectOption({ label: leadName });
+  await page.getByRole("button", { name: "Assign Project lead" }).click();
+  await expect(page.getByText("Project lead assigned.", { exact: true })).toBeVisible();
+
+  const leadContext = await browser.newContext({ storageState: leadState });
+  const borrowerContext = await browser.newContext({ storageState: borrowerState });
+  try {
+    const lead = await leadContext.newPage();
+    await lead.goto("/#/project-work");
+    await lead.getByRole("button", { name: "Open workspace", exact: true }).click();
+    await expect(lead.getByRole("navigation", { name: "Project work pages" }).getByRole("status"))
+      .toHaveText("Page 1 · 1 shown · End of results");
+    await expect(lead.getByRole("button", { name: "Open " + unassignedName, exact: true })).toHaveCount(0);
+    await lead.getByRole("button", { name: "Open " + projectName, exact: true }).click();
+    await lead.getByRole("searchbox", { name: "Find resource for requirement" }).fill(prefix);
+    await lead.getByLabel("Resource for Requirement", { exact: true }).selectOption({ label: resourceName });
+    await lead.getByLabel("Required quantity", { exact: true }).fill("3");
+    await lead.getByRole("button", { name: "Add Project Requirement" }).click();
+    await expect(lead.getByText("Requirement saved.", { exact: true })).toBeVisible();
+    await lead.getByRole("button", { name: "Request " + resourceName, exact: true }).click();
+    await lead.getByRole("searchbox", { name: "Find borrower membership" }).fill(prefix);
+    await expect(lead.getByRole("button", { name: "Save linked request" })).toBeDisabled();
+    await lead.getByLabel("Borrower membership", { exact: true }).selectOption({ label: borrowerName });
+    await lead.getByRole("button", { name: "Save linked request" }).click();
+    await expect(lead.getByText("Allocation request saved.", { exact: true })).toBeVisible();
+    await expect(lead.getByRole("button", { name: "Cancel pending request" })).toBeEnabled();
+    await expect(lead.getByRole("button", { name: /approve|issue/i })).toHaveCount(0);
+
+    const borrowerPage = await borrowerContext.newPage();
+    await borrowerPage.goto("/#/borrowed");
+    await borrowerPage.getByRole("button", { name: "Open workspace", exact: true }).click();
+    await expect(borrowerPage.getByRole("heading", { name: "My borrowed resources", level: 1 })).toBeVisible();
+    await expect(borrowerPage.getByText(resourceName, { exact: true })).toBeVisible();
+    await expect(borrowerPage.getByRole("link", { name: "Project work", exact: true })).toHaveCount(0);
+    await expect(borrowerPage.getByText("No active SMS reminder consent.", { exact: true })).toBeVisible();
+    await expect(borrowerPage.getByRole("button", { name: "Withdraw SMS consent" })).toHaveCount(0);
+
+    page.once("dialog", dialog => void dialog.accept());
+    await page.getByRole("button", { name: "Clear Project lead" }).click();
+    await expect(page.getByText("Project lead cleared.", { exact: true })).toBeVisible();
+    await lead.reload();
+    await expect(lead.getByText("No Projects are available for this membership.", { exact: true })).toBeVisible();
+    await borrowerPage.reload();
+    await expect(borrowerPage.getByText(resourceName, { exact: true })).toBeVisible();
+  } finally {
+    await leadContext.close();
+    await borrowerContext.close();
+  }
+});
+
 test("the packaged Java application serves React assets, hash routes, and the five JSON APIs", async ({ page }) => {
   test.skip(!process.env.EXT_E2E_BASE_URL, "Packaged Java entry assets require an explicit packaged origin.");
   const assetResponses: Array<{ path: string; status: number }> = [];
@@ -849,4 +1051,112 @@ test("the packaged Java application serves React assets, hash routes, and the fi
     const rows = await getJson<unknown[]>(page, `/api/${route}`);
     expect(Array.isArray(rows), `/api/${route} returns a JSON array`).toBe(true);
   }
+});
+
+test("Resource Library traverses 101 matching resources with bounded server pages", async ({ page }) => {
+  test.setTimeout(90_000);
+  const prefix = "C8 page fixture " + Date.now().toString(36);
+  const expected = Array.from({ length: 101 }, (_, index) => prefix + " item " + String(index + 1).padStart(3, "0"));
+  const resourceIds: number[] = [];
+  for (const name of expected) {
+    const created = await postJson(page, "/api/resources", { name, type: "CONSUMABLE", totalQuantity: 0 });
+    expect(created.status()).toBe(201);
+    resourceIds.push((await created.json() as { id: number }).id);
+  }
+
+  const legacyReads: string[] = [];
+  const usedCursors = new Set<string>();
+  page.on("request", request => {
+    if (request.method() !== "GET") return;
+    const url = new URL(request.url());
+    if (/^\/api\/(departments|projects|resources|requirements|allocations)$/.test(url.pathname)) legacyReads.push(url.pathname);
+    const cursor = url.searchParams.get("cursor");
+    if (url.pathname === "/api/v2/workspace/resources" && cursor) usedCursors.add(cursor);
+  });
+  await page.goto("/#/resources");
+  await page.getByRole("searchbox", { name: "Search resources" }).fill(prefix);
+  const table = page.getByRole("table");
+  const nav = page.getByRole("navigation", { name: "Resource pages" });
+  const next = nav.getByRole("button", { name: "Next page" });
+  const previous = nav.getByRole("button", { name: "Previous page" });
+  await expect(nav.getByRole("status")).toHaveText("Page 1 · 50 shown");
+  await expect(previous).toBeDisabled();
+  const seen: string[] = [];
+  for (const [pageNumber, size] of [[1, 50], [2, 50], [3, 1]]) {
+    await expect(nav.getByRole("status")).toContainText("Page " + pageNumber + " · " + size + " shown");
+    const names = await table.locator("tbody tr td:first-child strong").allTextContents();
+    expect(names).toHaveLength(size);
+    seen.push(...names);
+    if (pageNumber !== 3) {
+      await next.focus();
+      await page.keyboard.press("Enter");
+    }
+  }
+  expect(seen).toEqual(expected);
+  expect(usedCursors.size).toBe(2);
+  expect(legacyReads).toEqual([]);
+  await expect(next).toBeDisabled();
+  await expect(nav.getByRole("status")).toContainText("End of results");
+  await previous.click();
+  await expect(nav.getByRole("status")).toHaveText("Page 2 · 50 shown");
+
+  const department = await postJson(page, "/api/departments", { name: prefix + " department" });
+  expect(department.status()).toBe(201);
+  const departmentId = (await department.json() as { id: number }).id;
+  const projectName = prefix + " project";
+  const project = await postJson(page, "/api/projects", {
+    departmentId, name: projectName, startAt: "2040-12-10T10:00:00", endAt: "2040-12-10T11:00:00",
+  });
+  expect(project.status()).toBe(201);
+  const projectId = (await project.json() as { id: number }).id;
+  for (const resourceId of resourceIds.slice(0, 51)) {
+    const requirement = await postJson(page, "/api/requirements", { projectId, resourceId, quantity: 2 });
+    expect(requirement.status()).toBe(201);
+  }
+
+  await page.goto("/#/requirements");
+  await page.getByRole("searchbox", { name: "Find resource", exact: true }).fill(prefix);
+  const resourceChoices = page.getByRole("navigation", { name: "Resource choices" });
+  await expect(resourceChoices.getByRole("status")).toHaveText("Page 1 · 50 shown");
+  await resourceChoices.getByRole("button", { name: "Next page" }).click();
+  await expect(resourceChoices.getByRole("status")).toHaveText("Page 2 · 50 shown");
+  const chosenResource = page.locator("#requirement-resource");
+  await chosenResource.selectOption(String(resourceIds[50]));
+  await resourceChoices.getByRole("button", { name: "Previous page" }).click();
+  await expect(resourceChoices.getByRole("status")).toHaveText("Page 1 · 50 shown");
+  await expect(chosenResource).toHaveValue(String(resourceIds[50]));
+
+  await page.goto("/#/projects");
+  await page.getByRole("searchbox", { name: "Search projects" }).fill(projectName);
+  await page.getByRole("button", { name: "View " + projectName, exact: true }).click();
+  const details = page.getByRole("dialog");
+  const requirements = details.getByRole("navigation", { name: "Project Requirement pages" });
+  const history = details.getByRole("navigation", { name: "Project Allocation history pages" });
+  await expect(requirements.getByRole("status")).toHaveText("Page 1 · 50 shown");
+  await expect(history.getByRole("status")).toHaveText("Page 1 · 0 shown · End of results");
+  await requirements.getByRole("button", { name: "Next page" }).click();
+  await expect(requirements.getByRole("status")).toHaveText("Page 2 · 1 shown · End of results");
+  await expect(details.getByText(expected[50], { exact: true })).toBeVisible();
+  await expect(history.getByRole("status")).toHaveText("Page 1 · 0 shown · End of results");
+
+  await page.goto("/#/allocations");
+  const findRequirement = page.getByRole("searchbox", { name: "Find project requirement", exact: true });
+  await findRequirement.fill(expected[50]);
+  const requirementOption = page.locator("#allocation-requirement option").filter({ hasText: expected[50] });
+  await expect(requirementOption).toHaveCount(1);
+  const chosenRequirementId = await requirementOption.getAttribute("value");
+  expect(chosenRequirementId).toBeTruthy();
+  await page.locator("#allocation-requirement").selectOption(chosenRequirementId!);
+  await page.getByLabel("Borrower name", { exact: true }).fill("Fictional linked-choice borrower");
+  const allocationPost = page.waitForResponse(response => response.request().method() === "POST"
+    && new URL(response.url()).pathname === "/api/allocations");
+  await page.getByRole("button", { name: "Submit request", exact: true }).click();
+  const saved = await allocationPost;
+  expect(saved.status()).toBe(201);
+  expect((await saved.json() as { requirementId: number }).requirementId).toBe(Number(chosenRequirementId));
+
+  await page.goto("/#/reminders");
+  await expect(page.getByRole("heading", { name: "Reminder Activity" })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Reminder pages" }).getByRole("status")).toContainText("Page 1");
+  expect(legacyReads).toEqual([]);
 });

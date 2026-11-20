@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -31,12 +32,13 @@ public class C1ReminderScheduler {
     private final ContactCipher contactCipher;
     private final JdbcTemplate jdbc;
     private final Clock philippineClock;
+    private final Clock businessClock;
     private final int batchSize;
     private final ReminderMode reminderMode;
 
     public C1ReminderScheduler(AllocationRepository allocations, InventoryService inventory,
             C3ReminderService reminders, C3ReminderDispatcher dispatcher, ContactCipher contactCipher,
-            JdbcTemplate jdbc, Clock philippineClock,
+            JdbcTemplate jdbc, Clock philippineClock, @Qualifier("businessClock") Clock businessClock,
             @Value("${c1.scheduler.batch-size:100}") int batchSize,
             @Value("${c1.reminder.mode:DISABLED}") String mode,
             @Value("${c1.sms.enabled:false}") boolean legacySmsEnabled) {
@@ -48,6 +50,7 @@ public class C1ReminderScheduler {
         this.contactCipher = contactCipher;
         this.jdbc = jdbc;
         this.philippineClock = philippineClock;
+        this.businessClock = businessClock;
         this.batchSize = batchSize;
         try { this.reminderMode = ReminderMode.valueOf(mode); }
         catch (RuntimeException invalid) { throw new IllegalStateException("c1.reminder.mode must be DISABLED, FAKE_TWILIO, or TWILIO_VIRTUAL."); }
@@ -64,11 +67,12 @@ public class C1ReminderScheduler {
             return new WorkResult(0, 0, 0);
         }
         LocalDateTime now = LocalDateTime.now(philippineClock);
+        LocalDateTime projectNow = LocalDateTime.now(businessClock);
         PageRequest page = PageRequest.of(0, batchSize);
         int expiredCount = 0;
-        for (AllocationRepository.ExpiryCandidate candidate : allocations.findExpiredCandidates(now, page)) {
+        for (AllocationRepository.ExpiryCandidate candidate : allocations.findExpiredCandidates(projectNow, page)) {
             try {
-                if (inventory.expireIfEligible(candidate.getOrganizationId(), candidate.getAllocationId(), now)) expiredCount++;
+                if (inventory.expireIfEligible(candidate.getOrganizationId(), candidate.getAllocationId(), projectNow)) expiredCount++;
             } catch (RuntimeException failure) {
                 LOG.warn("Expiry processing failed for Allocation {} ({}).", candidate.getAllocationId(), failure.getClass().getSimpleName());
             }

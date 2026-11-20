@@ -53,8 +53,14 @@ public class Allocation {
     public Integer quantity;
 
     @NotNull
-    @Column(name = "borrower_name", nullable = false, length = 100)
+    @Column(name = "borrower_name", nullable = false, length = 120, updatable = false)
     public String borrowerName;
+
+    @Column(name = "borrower_membership_id", updatable = false)
+    public Long borrowerMembershipId;
+
+    @Column(name = "requested_by_membership_id", updatable = false)
+    public Long requestedByMembershipId;
 
     @Column(name = "phone_ciphertext", columnDefinition = "VARBINARY(512)")
     public byte[] phoneCiphertext;

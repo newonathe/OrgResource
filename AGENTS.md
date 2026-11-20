@@ -1,5 +1,11 @@
 # OrgResource implementation rules
 
+## GOAT and Superpowers — every repository task
+
+- Apply the [GOAT routing skill](.agents/skills/orgresource-goat/SKILL.md) at intake and when evidence changes task risk. Choose the executor, model family, supported reasoning effort, and verification depth for each coherent task. Prefer deterministic commands for exact checks. Route bounded work to Luna, scoped React/API/build tasks to Terra, cross-file engineering and independent review to Sol, and high-impact synthesis or unresolved critical decisions to Astra when the runtime offers those choices.
+- Work inline by default. Use a separate reviewer where the quality gate requires independence and authorization permits it. Assign disjoint work to additional agents only when authorized and materially helpful. Check the available model IDs and efforts at dispatch. Escalate the failing slice from evidence. Keep acceptance criteria fixed.
+- Apply the matching repository Superpowers skill for [planning](.agents/skills/orgresource-superpowers-plan/SKILL.md), [implementation](.agents/skills/orgresource-superpowers-implement/SKILL.md), [debugging](.agents/skills/orgresource-superpowers-debug/SKILL.md), [review](.agents/skills/orgresource-superpowers-review/SKILL.md), or [verification](.agents/skills/orgresource-superpowers-verify/SKILL.md). The skills are adaptations of the pinned upstream Superpowers workflow. Current user authority, course constraints and the quality gate govern their use.
+
 ## Protected Course Final A
 
 - `7f8c0746da18fd54b47f430ac1435ac36e605d67` is the immutable Course Final A source and artifact reference. Never modify its implementation, release artifacts, or academic history while working on Extended C.
@@ -19,6 +25,11 @@
 - Preserve unrelated work. Inspect Git status/remotes before edits; never reset, force-push, or merge automatically. Exclude secrets, databases, caches, `target/`, `dist/`, and `node_modules/` from commits.
 - Report only commands actually run and results actually observed. Mark failures, blocked checks, and unrun checks precisely. Do not claim Canvas submission, instructor approval, recording, public deployment, or real provider delivery without evidence.
 - Do not start a later implementation phase, merge, deploy publicly, create paid resources, send real SMS, or submit Canvas without separate explicit authorization.
+
+## Git delivery by default
+
+- Commit and push every authorized, repository-safe OrgResource change to the current feature branch or draft PR branch before reporting completion. This includes tested partial progress, with any open acceptance gates stated in its report. A task-specific instruction to keep changes local takes precedence.
+- Review the staged diff, run the relevant checks, and verify that the remote branch resolves to the pushed commit. Leave secrets, restricted source material, raw local evidence, generated data, archives and unrelated work outside the push. A push does not authorize a merge, force-push, visibility change, deployment, release or submission.
 
 ## Local computer-use constraint
 

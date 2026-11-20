@@ -1,4 +1,6 @@
 import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
+import { useEffect, useState, type ReactNode } from "react";
+import { request } from "./api/client";
 import { AuthProvider, useAuth } from "./auth/AuthContext";
 import { AccountPage, GovernancePage, InvitationPage, LoginPage, OrganizationPicker, RecoveryPage } from "./auth/AuthScreens";
 import { AboutPage } from "./pages/AboutPage";
@@ -6,12 +8,13 @@ import { AllocationsPage } from "./pages/AllocationsPage";
 import { DepartmentsPage } from "./pages/DepartmentsPage";
 import { OverviewPage } from "./pages/OverviewPage";
 import { ProjectsPage } from "./pages/ProjectsPage";
+import { BorrowedAllocationsPage, ProjectWorkPage } from "./pages/ProjectWorkPages";
 import { RemindersPage } from "./pages/RemindersPage";
 import { RequirementsPage } from "./pages/RequirementsPage";
 import { ResourcesPage } from "./pages/ResourcesPage";
 import { ActivityPage, ExportsPage } from "./pages/ReportingPages";
 import { AcademicShell } from "./shell/AcademicShell";
-import { SettingsProvider } from "./ui";
+import { Button, SettingsProvider } from "./ui";
 
 function WorkspaceRoutes() {
   const { ready, session, organizations, error } = useAuth();
@@ -27,6 +30,9 @@ function WorkspaceRoutes() {
         <Route path="/" element={<OverviewPage />} />
         <Route path="/allocations" element={canViewActivity ? <AllocationsPage /> : <ForbiddenPage />} />
         <Route path="/projects" element={<ProjectsPage />} />
+        <Route path="/project-work" element={canGovern || organization.role === "LEAD"
+          ? <ProjectWorkPage orgId={organization.id} role={organization.role} /> : <ForbiddenPage />} />
+        <Route path="/borrowed" element={<BorrowedAllocationsPage orgId={organization.id} />} />
         <Route path="/requirements" element={<RequirementsPage />} />
         <Route path="/departments" element={<DepartmentsPage />} />
         <Route path="/resources" element={<ResourcesPage />} />
@@ -58,5 +64,48 @@ function AppRoutes() {
 }
 
 export function App() {
-  return <SettingsProvider><AuthProvider><HashRouter><AppRoutes /></HashRouter></AuthProvider></SettingsProvider>;
+  return <SettingsProvider><DemoDisclosure><AuthProvider><HashRouter><AppRoutes /></HashRouter></AuthProvider></DemoDisclosure></SettingsProvider>;
+}
+
+type Environment = { status: "checking" } | { status: "unavailable" } | { status: "ready"; notice: string | null };
+
+function classifyEnvironment(data: unknown): Environment {
+  if (typeof data !== "object" || data === null || !("synthetic" in data)) return { status: "unavailable" };
+  const payload = data as Record<string, unknown>;
+  if (payload.synthetic === false && payload.notice === null && payload.datasetId === null && payload.demonstrationAsOf === null)
+    return { status: "ready", notice: null };
+  if (payload.synthetic === true && typeof payload.notice === "string" && payload.notice.startsWith("DEMO ENVIRONMENT")
+      && typeof payload.datasetId === "string" && payload.datasetId.trim()
+      && typeof payload.demonstrationAsOf === "string" && /^\d{4}-\d{2}-\d{2}$/.test(payload.demonstrationAsOf))
+    return { status: "ready", notice: payload.notice };
+  return { status: "unavailable" };
+}
+
+function DemoDisclosure({ children }: { children: ReactNode }) {
+  const [attempt, setAttempt] = useState(0);
+  const [environment, setEnvironment] = useState<Environment>({ status: "checking" });
+  useEffect(() => {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => {
+      controller.abort();
+      setEnvironment({ status: "unavailable" });
+    }, 10000);
+    void request<unknown>("/v2/demo/metadata", "GET", undefined, { signal: controller.signal })
+      .then(result => {
+        if (!controller.signal.aborted) setEnvironment(classifyEnvironment(result.data));
+      }).catch(() => {
+        if (!controller.signal.aborted) setEnvironment({ status: "unavailable" });
+      }).finally(() => window.clearTimeout(timeout));
+    return () => {
+      controller.abort();
+      window.clearTimeout(timeout);
+    };
+  }, [attempt]);
+  if (environment.status === "checking") return <main className="boot-state" role="status">Checking workspace classification…</main>;
+  if (environment.status === "unavailable") return <main className="boot-state">
+    <section role="alert"><h1>Workspace classification unavailable</h1>
+      <p>Workspace access will resume after the server confirms whether this environment contains simulated data.</p></section>
+    <Button onClick={() => { setEnvironment({ status: "checking" }); setAttempt(value => value + 1); }}>Retry classification</Button>
+  </main>;
+  return <>{environment.notice && <div className="demo-disclosure" role="status">{environment.notice}</div>}{children}</>;
 }

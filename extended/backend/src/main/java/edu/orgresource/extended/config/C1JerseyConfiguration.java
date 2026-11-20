@@ -20,12 +20,15 @@ import edu.orgresource.extended.rest.C1GovernanceResource;
 import edu.orgresource.extended.rest.C1InvitationResource;
 import edu.orgresource.extended.rest.C1SessionResource;
 import edu.orgresource.extended.rest.DepartmentResource;
+import edu.orgresource.extended.rest.DemoMetadataResource;
 import edu.orgresource.extended.rest.InventoryResource;
 import edu.orgresource.extended.rest.ProjectResource;
+import edu.orgresource.extended.rest.ProjectWorkResource;
 import edu.orgresource.extended.rest.ReportingResource;
 import edu.orgresource.extended.rest.ResourceRequirementResource;
 import edu.orgresource.extended.rest.ResourceResource;
 import edu.orgresource.extended.rest.V2DepartmentResource;
+import edu.orgresource.extended.rest.WorkspacePageResource;
 
 @Configuration
 public class C1JerseyConfiguration {
@@ -33,11 +36,14 @@ public class C1JerseyConfiguration {
     ResourceConfig c1ResourceConfig() {
         ResourceConfig config = new ResourceConfig();
         config.register(DepartmentResource.class);
+        config.register(DemoMetadataResource.class);
         config.register(ProjectResource.class);
+        config.register(ProjectWorkResource.class);
         config.register(ResourceResource.class);
         config.register(ResourceRequirementResource.class);
         config.register(AllocationResource.class);
         config.register(V2DepartmentResource.class);
+        config.register(WorkspacePageResource.class);
         config.register(C1AuthResource.class);
         config.register(C1SessionResource.class);
         config.register(C1GovernanceResource.class);
