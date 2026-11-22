@@ -564,8 +564,12 @@ test("connected O8–O10 workflows persist through the isolated Java/MySQL backe
   await page.getByRole("button", { name: "Add requirement" }).click();
   await expect(page.getByText("Requirement saved.")).toBeVisible();
   const requirements = await getJson<Array<{ id: number; projectId: number; resourceId: number; quantity: number; allocatedQuantity: number; shortageQuantity: number }>>(page, "/api/requirements");
-  const reusableRequirement = requirements.find((item) => item.projectId === updatedProject.id && item.resourceId === reusableId)!;
-  const consumableRequirement = requirements.find((item) => item.projectId === updatedProject.id && item.resourceId === consumableId)!;
+  const reusableRequirement = requirements.find((item) => item.projectId === updatedProject.id && item.resourceId === reusableId);
+  const consumableRequirement = requirements.find((item) => item.projectId === updatedProject.id && item.resourceId === consumableId);
+  // Assert the actual committed API state before doing unrelated cleanup. A success toast
+  // alone is not proof that the specific Project/Resource pair was persisted.
+  expect(reusableRequirement, `Missing reusable Requirement for project ${updatedProject.id}, resource ${reusableId}; persisted pairs: ${requirements.map((item) => `${item.projectId}/${item.resourceId}`).join(", ")}`).toBeDefined();
+  expect(consumableRequirement, `Missing consumable Requirement for project ${updatedProject.id}, resource ${consumableId}; persisted pairs: ${requirements.map((item) => `${item.projectId}/${item.resourceId}`).join(", ")}`).toBeDefined();
 
   const temporaryProjectStart = manilaWallTime(4 * 24 * 60 * 60 * 1000);
   const temporaryProjectEnd = manilaWallTime(4 * 24 * 60 * 60 * 1000 + 60 * 60 * 1000);
@@ -606,6 +610,12 @@ test("connected O8–O10 workflows persist through the isolated Java/MySQL backe
   await page.getByRole("link", { name: "Resource Library", exact: true }).click();
   await page.getByRole("button", { name: `Delete ${temporaryResource.name}` }).click();
   await confirm(page, /Delete resource/, "Confirm delete");
+
+  // Deleting a separate temporary Requirement must not erase either main Requirement.
+  const retainedRequirements = await getJson<Array<{ id: number; projectId: number; resourceId: number }>>(page, "/api/requirements");
+  expect(retainedRequirements.map((item) => item.id)).toEqual(expect.arrayContaining([
+    reusableRequirement!.id, consumableRequirement!.id,
+  ]));
 
   // Let the server's real Asia/Manila active-window check turn true before allocation approval.
   await page.getByRole("link", { name: "Allocations", exact: true }).click();
