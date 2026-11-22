@@ -145,6 +145,7 @@ export function OrganizationPicker() {
 
 export function AccountPage() {
   const { signOut, reload } = useAuth();
+  const { motionEnabled, setMotionEnabled } = useSettings();
   const [account, setAccount] = useState<{ username: string; displayName: string; status: string } | null>(null);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -164,6 +165,14 @@ export function AccountPage() {
   const disable = () => { if (!window.confirm("Disable this account and sign out all sessions? This cannot be undone from this screen.")) return; void perform(async () => { await identityApi.disableAccount(currentPassword); await signOut(); }, "Account disabled."); };
   return <section className="page-shell"><PageHeader eyebrow="Account · session" title="Account and security" description="Manage your own password, one-time recovery codes, and server sessions." />
     {error && <Notice tone="danger">{error}</Notice>}{message && <Notice tone="success">{message}</Notice>}
+    <GlassPanel className="form-panel account-preferences" tilt={false}>
+      <PanelHeading kicker="Display preferences" title="Interface motion" />
+      <div className="account-preference-control">
+        <div><p>Animations and pointer effects</p><p className="quiet-note">Changes apply immediately and are saved in this browser. Your device's reduced-motion preference still takes priority.</p></div>
+        <Button type="button" variant="secondary" role="switch" aria-label="Interface motion" aria-checked={motionEnabled}
+          onClick={() => setMotionEnabled(!motionEnabled)}>Motion {motionEnabled ? "On" : "Off"}</Button>
+      </div>
+    </GlassPanel>
     <div className="account-grid"><GlassPanel className="form-panel" tilt={false}><PanelHeading kicker="Server account" title={account?.displayName ?? "Account"} /><dl className="account-details"><div><dt>Username</dt><dd>{account?.username ?? "Loading…"}</dd></div><div><dt>Status</dt><dd>{account?.status ?? "—"}</dd></div><div><dt>Session</dt><dd>HttpOnly cookie · 12-hour absolute lifetime</dd></div></dl><Button onClick={() => void signOut()}>Sign out</Button></GlassPanel>
       <GlassPanel className="form-panel" tilt={false}><PanelHeading kicker="Credentials" title="Change password" /><form className="auth-form" onSubmit={changePassword}><label>Current password<input type="password" autoComplete="current-password" required value={currentPassword} onChange={event => setCurrentPassword(event.target.value)} /></label><label>New password<input type="password" autoComplete="new-password" minLength={15} maxLength={1024} required value={newPassword} onChange={event => setNewPassword(event.target.value)} /></label><Button variant="primary" disabled={busy}>{busy ? "Saving…" : "Change password"}</Button></form></GlassPanel>
       <GlassPanel className="form-panel" tilt={false}><PanelHeading kicker="Recovery" title="Rotate recovery codes" /><p>Rotation replaces all previous codes. New values are shown once in this browser session.</p><label>Confirm current password<input type="password" autoComplete="current-password" value={currentPassword} onChange={event => setCurrentPassword(event.target.value)} /></label><Button disabled={busy || !currentPassword} onClick={rotate}>Generate new codes</Button>{codes && <ol className="recovery-code-list">{codes.map(code => <li key={code}><code>{code}</code></li>)}</ol>}</GlassPanel>

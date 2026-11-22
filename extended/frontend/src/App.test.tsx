@@ -158,6 +158,39 @@ describe("Borrower reminder consent", () => {
   });
 });
 
+describe("Account display preferences", () => {
+  it("controls and remembers motion from Account Settings while staying synced with the toolbar", async () => {
+    window.location.hash = "#/account";
+    window.localStorage.setItem("orgresource-motion", "off");
+    vi.stubGlobal("fetch", authenticatedFetch());
+    render(<App />);
+    await screen.findByRole("heading", { name: "Account and security", level: 1 });
+
+    const motion = screen.getByRole("switch", { name: "Interface motion" });
+    const shell = document.querySelector(".app-shell");
+    expect(motion).toHaveAttribute("aria-checked", "false");
+    expect(motion).toHaveTextContent("Motion Off");
+    expect(shell).toHaveAttribute("data-motion", "off");
+
+    fireEvent.click(motion);
+    expect(motion).toHaveAttribute("aria-checked", "true");
+    expect(motion).toHaveTextContent("Motion On");
+    expect(shell).toHaveAttribute("data-motion", "on");
+    expect(window.localStorage.getItem("orgresource-motion")).toBe("on");
+    expect(screen.getByRole("button", { name: "Motion on" })).toHaveAttribute("aria-pressed", "true");
+
+    fireEvent.click(screen.getByRole("button", { name: "Motion on" }));
+    expect(motion).toHaveAttribute("aria-checked", "false");
+    expect(shell).toHaveAttribute("data-motion", "off");
+    expect(window.localStorage.getItem("orgresource-motion")).toBe("off");
+
+    cleanup();
+    render(<App />);
+    await screen.findByRole("heading", { name: "Account and security", level: 1 });
+    expect(screen.getByRole("switch", { name: "Interface motion" })).toHaveAttribute("aria-checked", "false");
+  });
+});
+
 describe("Extended C authentication and organization shell", () => {
   it("logs in with CSRF, explicitly selects an organization and restores the server session", async () => {
     let authenticated = false;
