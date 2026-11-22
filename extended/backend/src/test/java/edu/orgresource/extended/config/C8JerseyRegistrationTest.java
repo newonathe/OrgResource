@@ -68,10 +68,15 @@ class C8JerseyRegistrationTest {
                 Produces produces = method.getAnnotation(Produces.class);
                 if (produces == null) produces = type.getAnnotation(Produces.class);
                 assertNotNull(produces, "Missing response media type: " + type.getSimpleName() + "." + method.getName());
-                assertTrue(Set.of(produces.value()).contains(MediaType.APPLICATION_JSON),
-                        "Expected JSON-compatible response contract: " + type.getSimpleName() + "." + method.getName());
                 Path suffix = method.getAnnotation(Path.class);
                 String fullPath = "/api" + root.value() + (suffix == null ? "" : suffix.value());
+                Set<String> mediaTypes = Set.of(produces.value());
+                if ("GET /api/resources/{id}/image".equals(verb + " " + fullPath)) {
+                    assertEquals(Set.of("image/png", "image/jpeg"), mediaTypes, "Image endpoint must return image bytes");
+                } else {
+                    assertTrue(mediaTypes.contains(MediaType.APPLICATION_JSON),
+                            "Expected JSON-compatible response contract: " + type.getSimpleName() + "." + method.getName());
+                }
                 assertTrue(keys.add(verb + " " + fullPath), "Duplicate HTTP route: " + verb + " " + fullPath);
                 perClass++;
             }
