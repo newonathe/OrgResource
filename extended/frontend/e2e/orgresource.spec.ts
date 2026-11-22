@@ -114,11 +114,31 @@ test("a lost create confirmation keeps its draft, refreshes the saved row, and n
   expect(postCount).toBe(1);
 });
 
+test("refresh recovers automatically after temporary classification endpoint failures", async ({ page }) => {
+  const metadataPath = "**/api/v2/demo/metadata";
+  let calls = 0;
+  await page.route(metadataPath, async route => {
+    calls += 1;
+    if (calls <= 2) await route.fulfill({ status: 503, json: { code: "STARTING_UP" } });
+    else await route.continue();
+  });
+  try {
+    await page.reload();
+    await expect(page.getByRole("heading", { name: "Overview", level: 1 })).toBeVisible({ timeout: 30_000 });
+    expect(calls).toBeGreaterThanOrEqual(3);
+    await expect(page.getByRole("alert")).toHaveCount(0);
+  } finally {
+    await page.unroute(metadataPath);
+  }
+});
+
 test("a packaged workspace withholds activity until provenance is verified", async ({ page }) => {
   const metadataPath = "**/api/v2/demo/metadata";
-  await page.route(metadataPath, route => route.fulfill({ status: 500, json: { code: "TEST_UNAVAILABLE" } }));
+  await page.route(metadataPath, route => route.fulfill({ status: 200, json: {
+    data: { synthetic: true, datasetId: null, demonstrationAsOf: null, notice: "" },
+  } }));
   await page.reload();
-  await expect(page.getByRole("alert")).toContainText("Workspace classification unavailable");
+  await expect(page.getByRole("alert")).toContainText("The server could not confirm the workspace classification");
   await expect(page.getByRole("navigation", { name: "Main navigation" })).toHaveCount(0);
   await page.unroute(metadataPath);
   await page.getByRole("button", { name: "Retry classification" }).click();

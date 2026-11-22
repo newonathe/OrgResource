@@ -1,6 +1,6 @@
 import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
 import { useEffect, useState, type ReactNode } from "react";
-import { request } from "./api/client";
+import { ApiError, request } from "./api/client";
 import { AuthProvider, useAuth } from "./auth/AuthContext";
 import { AccountPage, GovernancePage, InvitationPage, LoginPage, OrganizationPicker, RecoveryPage } from "./auth/AuthScreens";
 import { AboutPage } from "./pages/AboutPage";
@@ -67,7 +67,15 @@ export function App() {
   return <SettingsProvider><DemoDisclosure><AuthProvider><HashRouter><AppRoutes /></HashRouter></AuthProvider></DemoDisclosure></SettingsProvider>;
 }
 
-type Environment = { status: "checking" } | { status: "unavailable" } | { status: "ready"; notice: string | null };
+type Environment =
+  | { status: "checking"; attempt: number }
+  | { status: "unavailable" }
+  | { status: "ready"; notice: string | null };
+
+// Shared-CPU hosting can return temporary 5xx while waking. Retry only the
+// public, idempotent metadata GET; unverified provenance must never open the app.
+const CLASSIFICATION_REQUEST_TIMEOUT_MS = 12_000;
+const CLASSIFICATION_STARTUP_BUDGET_MS = 120_000;
 
 function classifyEnvironment(data: unknown): Environment {
   if (typeof data !== "object" || data === null || !("synthetic" in data)) return { status: "unavailable" };
@@ -81,31 +89,78 @@ function classifyEnvironment(data: unknown): Environment {
   return { status: "unavailable" };
 }
 
+function WorkspaceClassificationGate({ environment, retry }: { environment: Exclude<Environment, { status: "ready" }>; retry(): void }) {
+  const checking = environment.status === "checking";
+  return <main className="workspace-gate" aria-busy={checking}>
+    <section className="workspace-gate-panel" aria-label="Secure workspace startup">
+      <div className="workspace-gate-brand"><span aria-hidden="true">◈</span><strong>OrgResource</strong></div>
+      <p className="workspace-gate-eyebrow">Secure organization workspace</p>
+      <h1>{checking ? "Connecting to your workspace" : "Workspace verification unavailable"}</h1>
+      {checking
+        ? <>
+          <p className="workspace-gate-description">We're verifying the workspace classification before restoring your session. On shared hosting, the server may need time to start.</p>
+          <p className="workspace-gate-status" role="status" aria-live="polite">
+            <span className="workspace-gate-spinner" aria-hidden="true" />
+            Checking workspace classification…{environment.attempt > 1 ? " Reconnecting (attempt " + environment.attempt + ")." : ""}
+          </p>
+        </>
+        : <>
+          <p className="workspace-gate-description" role="alert">The server could not confirm the workspace classification. Your workspace remains protected until it can be verified.</p>
+          <Button variant="primary" onClick={retry}>Retry classification</Button>
+        </>}
+    </section>
+  </main>;
+}
+
 function DemoDisclosure({ children }: { children: ReactNode }) {
   const [attempt, setAttempt] = useState(0);
-  const [environment, setEnvironment] = useState<Environment>({ status: "checking" });
+  const [environment, setEnvironment] = useState<Environment>({ status: "checking", attempt: 1 });
+
   useEffect(() => {
-    const controller = new AbortController();
-    const timeout = window.setTimeout(() => {
-      controller.abort();
-      setEnvironment({ status: "unavailable" });
-    }, 10000);
-    void request<unknown>("/v2/demo/metadata", "GET", undefined, { signal: controller.signal })
-      .then(result => {
-        if (!controller.signal.aborted) setEnvironment(classifyEnvironment(result.data));
-      }).catch(() => {
-        if (!controller.signal.aborted) setEnvironment({ status: "unavailable" });
-      }).finally(() => window.clearTimeout(timeout));
+    let cancelled = false;
+    let currentController: AbortController | null = null;
+    let retryTimer: number | null = null;
+    const startedAt = Date.now();
+    let tries = 0;
+
+    const verify = async () => {
+      if (cancelled) return;
+      tries += 1;
+      setEnvironment({ status: "checking", attempt: tries });
+      const controller = new AbortController();
+      currentController = controller;
+      const timeout = window.setTimeout(() => controller.abort(), CLASSIFICATION_REQUEST_TIMEOUT_MS);
+      try {
+        const result = await request<unknown>("/v2/demo/metadata", "GET", undefined, { signal: controller.signal });
+        if (!cancelled) setEnvironment(classifyEnvironment(result.data));
+      } catch (cause) {
+        if (cancelled) return;
+        const retriable = controller.signal.aborted ||
+          (cause instanceof ApiError && (cause.status === 0 || cause.status === 408 || cause.status === 429 || cause.status >= 500));
+        const delay = Math.min(6_000, 2_000 + tries * 750);
+        if (!retriable || Date.now() - startedAt + delay >= CLASSIFICATION_STARTUP_BUDGET_MS) {
+          setEnvironment({ status: "unavailable" });
+        } else {
+          retryTimer = window.setTimeout(() => {
+            retryTimer = null;
+            void verify();
+          }, delay);
+        }
+      } finally {
+        window.clearTimeout(timeout);
+        if (currentController === controller) currentController = null;
+      }
+    };
+
+    void verify();
     return () => {
-      controller.abort();
-      window.clearTimeout(timeout);
+      cancelled = true;
+      currentController?.abort();
+      if (retryTimer !== null) window.clearTimeout(retryTimer);
     };
   }, [attempt]);
-  if (environment.status === "checking") return <main className="boot-state" role="status">Checking workspace classification…</main>;
-  if (environment.status === "unavailable") return <main className="boot-state">
-    <section role="alert"><h1>Workspace classification unavailable</h1>
-      <p>Workspace access will resume after the server confirms whether this environment contains simulated data.</p></section>
-    <Button onClick={() => { setEnvironment({ status: "checking" }); setAttempt(value => value + 1); }}>Retry classification</Button>
-  </main>;
+
+  if (environment.status !== "ready") return <WorkspaceClassificationGate environment={environment}
+    retry={() => { setEnvironment({ status: "checking", attempt: 1 }); setAttempt(value => value + 1); }} />;
   return <>{environment.notice && <div className="demo-disclosure" role="status">{environment.notice}</div>}{children}</>;
 }

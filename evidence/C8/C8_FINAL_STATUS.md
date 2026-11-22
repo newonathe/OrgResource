@@ -13,3 +13,15 @@ C9 remains on hold. Public release, hosting, live messaging, reuse of restricted
 A fresh source-level enumeration found 93 distinct HTTP method/path declarations across 15 Jersey resource classes. The tracked inventory and independent-test-required review ledger now live at [C8_ROUTE_INVENTORY.json](C8_ROUTE_INVENTORY.json) and [C8_ROUTE_REVIEW_LEDGER.md](C8_ROUTE_REVIEW_LEDGER.md); CI checks annotation drift via scripts/verify-c8-routes.mjs. This static test does not establish packaged route registration, a route policy oracle, positive/negative HTTP cases, denied-write DB postconditions, or independent review. **C8 remains BLOCKED.**
 
 The prior exact-feature-sha GitHub Actions run at c0409a98a3bd passed all three jobs (Java 8, Extended C and React): https://github.com/newonathe/OrgResource/actions/runs/45062378023 . This does not yet establish that the new inventory check passed on its subsequent commit. Northflank separately reported a successful build of staging SHA 89c28614e24f; which container is currently running still needs inspection. Detailed restricted C8 receipts remain local-only; do not relabel earlier unrun cases as passed.
+
+## Authorization boundary checkpoint (2026-11-23)
+
+At feature SHA `5a14714e868c4fa9588b213f555f461f640bb690`, the Java 21 isolated MySQL CI step passed the added source-derived **88 protected Jersey route anonymous HTTP denial** integration test (see [run 45065909845](https://github.com/newonathe/OrgResource/actions/runs/45065909845)). The test supplies pre-auth CSRF on protected POSTs and verifies 401/AUTH_REQUIRED, a secret-nondisclosing envelope and unchanged business-table counts. This is **a single authentication-boundary negative class**; it is not evidence of successful operations, full role-policy mapping, tenant/object denials or independent authorization review. Public routes (5) remain outside this loop. Exact full CI job outcome was pending at the status-write time.
+
+A source-reviewed pre-execution policy oracle for 20 Identity/Governance operations is recorded in [C8_IDENTITY_GOVERNANCE_ORACLE_2026-11-23.md](C8_IDENTITY_GOVERNANCE_ORACLE_2026-11-23.md); separate review and actual route-specific receipts are open. **C8 remains BLOCKED.** Do not retroactively change historical IR4 ledger cases.
+
+## 2026-11-23 incremental source review and hosted UI issue
+
+- Source policy oracles now documented for 31/93 annotated operations: 20 identity/governance + 8 Project Work + 3 Reporting; 62 routes remain to source-review. Counts are preparatory review only; individual receipts and independent acceptance remain UNMAPPED.
+- Prior C8 governance refusal and 88-route anonymous barrier tests were fully green at bb3f1a8d ([run](https://github.com/newonathe/OrgResource/actions/runs/45067408499)). C8 remains BLOCKED despite these tests.
+- Hosted hard-refresh loading display was nearly blank and used a single 10-second metadata timeout. UX/transient-retry correction e72e32b2 was pushed to feature, not yet verified full-green or deployed at this note. Strict demo classification remains fail-closed; hosted workspaces must not show before public metadata confirmation.

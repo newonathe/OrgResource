@@ -52,7 +52,7 @@ afterEach(() => { cleanup(); vi.useRealTimers(); vi.restoreAllMocks(); vi.unstub
 
 describe("Workspace provenance", () => {
   it.each([
-    ["server failure", () => Promise.resolve(jsonResponse({ code: "TEMPORARY" }, 500))],
+    ["forbidden metadata", () => Promise.resolve(jsonResponse({ code: "FORBIDDEN" }, 403))],
     ["aborted request", () => Promise.reject(new DOMException("Request aborted", "AbortError"))],
     ["malformed JSON", () => Promise.resolve(new Response("{invalid"))],
     ["invalid metadata", () => Promise.resolve(envelope({ ...syntheticMetadata, notice: "" }))],
@@ -80,9 +80,33 @@ describe("Workspace provenance", () => {
     vi.stubGlobal("fetch", pending);
     render(<App />);
     expect(screen.getByRole("status")).toHaveTextContent("Checking workspace classification");
-    await act(async () => { await vi.advanceTimersByTimeAsync(10000); });
-    expect(screen.getByRole("alert")).toHaveTextContent("Workspace classification unavailable");
-    expect(pending).toHaveBeenCalledTimes(1);
+    await act(async () => { await vi.advanceTimersByTimeAsync(140000); });
+    expect(screen.getByRole("alert")).toHaveTextContent("The server could not confirm the workspace classification");
+    expect(pending.mock.calls.length).toBeGreaterThan(1);
+    expect(screen.queryByRole("navigation", { name: "Main navigation" })).not.toBeInTheDocument();
+  });
+
+  it("recovers from a cold backend without bypassing provenance verification", async () => {
+    const authenticated = authenticatedFetch();
+    let attempts = 0;
+    vi.stubGlobal("fetch", vi.fn((url: RequestInfo | URL, init?: RequestInit) => {
+      if (String(url) === "/api/v2/demo/metadata" && ++attempts < 3)
+        return Promise.resolve(jsonResponse({ code: "TEMPORARILY_UNAVAILABLE" }, 503));
+      return authenticated(url, init);
+    }));
+    render(<App />);
+    expect(screen.queryByRole("navigation", { name: "Main navigation" })).not.toBeInTheDocument();
+    await screen.findByRole("heading", { name: "Overview" }, { timeout: 15_000 });
+    expect(attempts).toBe(3);
+    expect(screen.queryByRole("heading", { name: "Workspace verification unavailable" })).not.toBeInTheDocument();
+  }, 15_000);
+
+  it("renders a readable standalone boot panel before metadata arrives", () => {
+    vi.stubGlobal("fetch", vi.fn(() => new Promise<Response>(() => undefined)));
+    render(<App />);
+    expect(screen.getByRole("heading", { name: "Connecting to your workspace" })).toBeVisible();
+    expect(screen.getByRole("region", { name: "Secure workspace startup" })).toHaveClass("workspace-gate-panel");
+    expect(screen.getByRole("status")).toHaveTextContent("Checking workspace classification");
     expect(screen.queryByRole("navigation", { name: "Main navigation" })).not.toBeInTheDocument();
   });
 

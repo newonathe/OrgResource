@@ -129,6 +129,7 @@ class C1IdentityAcceptanceTest {
     @Autowired Validator jakartaValidator;
     @Autowired jakarta.validation.ValidatorFactory jakartaValidatorFactory;
     @Autowired org.springframework.security.web.SecurityFilterChain securityFilterChain;
+    @Autowired org.glassfish.jersey.server.ResourceConfig c8JerseyResourceConfig;
 
     private TransactionTemplate tx;
     private List<String> bootstrapCodes = List.of();
@@ -3841,6 +3842,155 @@ class C1IdentityAcceptanceTest {
     private static Throwable findCause(Throwable failure, Class<? extends Throwable> type) {
         for (Throwable cause = failure; cause != null; cause = cause.getCause()) if (type.isInstance(cause)) return cause;
         return null;
+    }
+
+
+    @Test @Order(59)
+    void C8AnonymousGateCoversEveryProtectedRegisteredJerseyOperationWithoutBusinessWrites() throws Exception {
+        // An isolated HTTP authentication-boundary check. The separately reviewed
+        // role/tenant/object/field policies are NOT implied by anonymous 401 results.
+        HttpClient anonymous = newClient();
+        HttpResponse<String> csrfResponse = get(anonymous, "/api/v2/auth/csrf");
+        assertEquals(200, csrfResponse.statusCode());
+        String csrf = json(csrfResponse).getAsJsonObject("data").get("csrfToken").getAsString();
+        assertFalse(csrf.isBlank());
+
+        Set<String> publicRoutes = Set.of(
+                "GET /api/v2/auth/csrf",
+                "GET /api/v2/demo/metadata",
+                "POST /api/v2/auth/login",
+                "POST /api/v2/auth/recover",
+                "POST /api/v2/invitations/redeem");
+        Set<String> actualRoutes = new java.util.HashSet<>();
+        int[] before = new int[] {
+            jdbc.queryForObject("SELECT COUNT(*) FROM organization", Integer.class),
+            jdbc.queryForObject("SELECT COUNT(*) FROM resource", Integer.class),
+            jdbc.queryForObject("SELECT COUNT(*) FROM allocation", Integer.class),
+            jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement", Integer.class)
+        };
+        int protectedCount = 0;
+        for (Class<?> resource : c8JerseyResourceConfig.getClasses()) {
+            jakarta.ws.rs.Path root = resource.getAnnotation(jakarta.ws.rs.Path.class);
+            if (root == null || !resource.getPackageName().equals("edu.orgresource.extended.rest")) continue;
+            for (java.lang.reflect.Method method : resource.getDeclaredMethods()) {
+                String verb = null;
+                for (java.lang.annotation.Annotation annotation : method.getAnnotations()) {
+                    jakarta.ws.rs.HttpMethod http = annotation.annotationType().getAnnotation(jakarta.ws.rs.HttpMethod.class);
+                    if (http == null) continue;
+                    assertNull(verb, "Unexpected multiple HTTP verbs on " + method);
+                    verb = http.value();
+                }
+                if (verb == null) continue;
+                jakarta.ws.rs.Path suffix = method.getAnnotation(jakarta.ws.rs.Path.class);
+                String route = "/api" + root.value() + (suffix == null ? "" : suffix.value());
+                String signature = verb + " " + route;
+                assertTrue(actualRoutes.add(signature), "Duplicate registered operation: " + signature);
+                if (publicRoutes.contains(signature)) continue;
+
+                // Exercise actual authenticated filter chain before Jersey argument parsing.
+                // Legacy numeric paths use 1; modern opaque IDs use well-formed UUIDs.
+                String path = route.replace("{id}", "1")
+                        .replaceAll("\\{[^}]+\\}", "00000000-0000-4000-8000-000000000001");
+                HttpResponse<String> response;
+                if ("GET".equals(verb)) {
+                    response = get(anonymous, path);
+                } else {
+                    assertEquals("POST", verb, "New HTTP verb requires explicit test support: " + signature);
+                    HttpRequest request = HttpRequest.newBuilder(URI.create(base() + path))
+                            .header("Origin", origin())
+                            .header("X-CSRF-TOKEN", csrf)
+                            .header("Content-Type", "application/json")
+                            .POST(HttpRequest.BodyPublishers.ofString("{}")).build();
+                    response = anonymous.send(request, HttpResponse.BodyHandlers.ofString());
+                }
+                assertEquals(401, response.statusCode(), "Anonymous route " + signature + " returned " + response.body());
+                assertEquals("AUTH_REQUIRED", json(response).get("code").getAsString(),
+                        "Expected a non-disclosing authenticated-filter denial on " + signature);
+                assertFalse(response.body().contains("passwordHash"),
+                        "Anonymous refusal must not leak account secrets: " + signature);
+                protectedCount++;
+            }
+        }
+        assertEquals(93, actualRoutes.size(), "Audit exactly the registered C8 route surface");
+        assertTrue(actualRoutes.containsAll(publicRoutes), "Public route skip set must match actual handlers");
+        assertEquals(88, protectedCount, "Every non-public registered endpoint must be denied to anonymous users");
+        assertArrayEquals(before, new int[] {
+            jdbc.queryForObject("SELECT COUNT(*) FROM organization", Integer.class),
+            jdbc.queryForObject("SELECT COUNT(*) FROM resource", Integer.class),
+            jdbc.queryForObject("SELECT COUNT(*) FROM allocation", Integer.class),
+            jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement", Integer.class)
+        }, "Anonymous route probes must leave business tables unchanged");
+    }
+
+
+    @Test @Order(60)
+    void C8GovernanceDenialsLeaveExistingRecordsAndAuditStateUnchanged() throws Exception {
+        // Every refusal below targets an existing fictional membership/invitation with a
+        // correct anti-CSRF token. Responses alone would not prove transaction safety.
+        Fixture owner = newTenant("C8-governance-denial", Membership.Role.OWNER);
+        Fixture admin = fixtureInOrg(owner.orgDbId, Membership.Role.ADMIN);
+        Fixture member = fixtureInOrg(owner.orgDbId, Membership.Role.MEMBER);
+        Fixture stranger = newTenant("C8-governance-stranger", Membership.Role.OWNER);
+        Session ownerSession = login(owner.username, owner.password);
+        Session adminSession = login(admin.username, admin.password);
+        Session memberSession = login(member.username, member.password);
+        Session outsiderSession = login(stranger.username, stranger.password);
+        String root = "/api/v2/orgs/" + owner.orgPublicId;
+        HttpResponse<String> invitation = post(ownerSession, root + "/invitations",
+                GSON.toJson(new RoleRequest("MEMBER")));
+        assertEquals(201, invitation.statusCode(), invitation.body());
+        UUID invitationId = UUID.fromString(json(invitation).getAsJsonObject("data").get("id").getAsString());
+
+        long initialInvitations = jdbc.queryForObject("SELECT COUNT(*) FROM invitation WHERE org_id=?",
+                Long.class, owner.orgDbId);
+        long initialTransfers = jdbc.queryForObject("SELECT COUNT(*) FROM ownership_transfer WHERE org_id=?",
+                Long.class, owner.orgDbId);
+        long initialAudits = jdbc.queryForObject("SELECT COUNT(*) FROM audit_event WHERE org_id=?",
+                Long.class, owner.orgDbId);
+        Membership membership = memberships.findById(member.membershipDbId).orElseThrow();
+        long memberVersion = membership.version;
+        var invitationBefore = invitations.findByOrganizationIdAndPublicId(owner.orgDbId, invitationId).orElseThrow();
+        long invitationVersion = invitationBefore.version;
+        assertEquals(Invitation.Status.INVITED, invitationBefore.status);
+
+        assertEquals(403, post(memberSession, root + "/invitations",
+                GSON.toJson(new RoleRequest("MEMBER"))).statusCode(),
+                "Non-managers cannot grant invitations");
+        assertEquals(404, post(outsiderSession, root + "/invitations/" + invitationId + "/revoke",
+                "", "\"v0\"").statusCode(), "A foreign organization cannot revoke an existing invitation");
+        assertEquals(403, post(memberSession, root + "/invitations/" + invitationId + "/revoke",
+                "", "\"v0\"").statusCode(), "Members cannot revoke active invitations");
+        String memberRolePath = root + "/members/" + member.membershipPublicId + "/role";
+        assertEquals(403, post(adminSession, memberRolePath,
+                GSON.toJson(new RoleRequest("ADMIN")), "\"v0\"").statusCode(),
+                "An administrator cannot elevate a member to administrator");
+        assertEquals(404, post(outsiderSession, memberRolePath,
+                GSON.toJson(new RoleRequest("CUSTODIAN")), "\"v0\"").statusCode(),
+                "Foreign members have no role administration rights");
+        assertEquals(412, post(ownerSession, memberRolePath,
+                GSON.toJson(new RoleRequest("LEAD")), "\"v999\"").statusCode(),
+                "A stale If-Match must not modify a valid target");
+        assertEquals(403, post(memberSession, root + "/members/" + owner.membershipPublicId + "/suspend",
+                "", "\"v0\"").statusCode(),
+                "A member cannot suspend the owner");
+        assertEquals(403, post(memberSession, root + "/transfer-ownership",
+                GSON.toJson(new TransferRequest(admin.membershipPublicId, member.password))).statusCode(),
+                "Only an owner may initiate an ownership transfer");
+
+        Membership memberAfter = memberships.findById(member.membershipDbId).orElseThrow();
+        assertEquals(Membership.Role.MEMBER, memberAfter.role);
+        assertEquals(Membership.Status.ACTIVE, memberAfter.status);
+        assertEquals(memberVersion, memberAfter.version);
+        Invitation invitationAfter = invitations.findByOrganizationIdAndPublicId(owner.orgDbId, invitationId).orElseThrow();
+        assertEquals(Invitation.Status.INVITED, invitationAfter.status);
+        assertEquals(invitationVersion, invitationAfter.version);
+        assertEquals(initialInvitations, jdbc.queryForObject(
+                "SELECT COUNT(*) FROM invitation WHERE org_id=?", Long.class, owner.orgDbId));
+        assertEquals(initialTransfers, jdbc.queryForObject(
+                "SELECT COUNT(*) FROM ownership_transfer WHERE org_id=?", Long.class, owner.orgDbId));
+        assertEquals(initialAudits, jdbc.queryForObject(
+                "SELECT COUNT(*) FROM audit_event WHERE org_id=?", Long.class, owner.orgDbId));
+        assertEquals(1, memberships.countEffectiveActiveOwners(owner.orgDbId));
     }
 
     private record Fixture(long orgDbId, UUID orgPublicId, long userDbId, String username, String password,
