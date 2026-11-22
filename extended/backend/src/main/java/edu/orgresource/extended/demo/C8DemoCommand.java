@@ -90,7 +90,7 @@ public final class C8DemoCommand {
         }
     }
 
-    private static JsonNode readPlan(Path path, String digest) throws Exception {
+    static JsonNode readPlan(Path path, String digest) throws Exception {
         if (!digest.matches("[0-9a-f]{64}") || Files.size(path) > MAX_PLAN_BYTES)
             throw new IllegalArgumentException("The approved plan digest or size is invalid.");
         byte[] raw;

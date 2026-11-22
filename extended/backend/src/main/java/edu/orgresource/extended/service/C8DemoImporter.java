@@ -111,6 +111,80 @@ public class C8DemoImporter {
         System.out.printf("C8 local demo import reconciled. %d workspaces and %d fictional requests.%n", workspaces.size(), totalRequests);
     }
 
+    /**
+     * Acceptance-only additive replay into an already populated database.
+     * This method has NO live hosted command entry point. A separate private,
+     * backup-verified, manually authorized hosted importer is still required.
+     */
+    public void importAdditionalPlanForIsolatedProof(JsonNode plan, String planSha,
+            UUID originalOrganizationId, UUID existingOwnerId) {
+        if (organizations.count() < 1 || accounts.count() < 1
+                || jdbc.queryForObject("SELECT MAX(CAST(version AS UNSIGNED)) FROM flyway_schema_history WHERE success=1", Integer.class) != 7)
+            throw new IllegalStateException("The additive proof requires an existing V7 organization schema.");
+        if (plan == null || !plan.path("synthetic").asBoolean(false) || !plan.path("organizations").isArray())
+            throw new IllegalArgumentException("A verified synthetic plan is required.");
+        UserAccount owner = accounts.findByPublicId(existingOwnerId).orElseThrow(
+                () -> new IllegalStateException("The original owner account is missing."));
+        Organization original = organizations.findByPublicId(originalOrganizationId).orElseThrow(
+                () -> new IllegalStateException("The original organization is missing."));
+        if (owner.status != UserAccount.Status.ACTIVE || original.status != Organization.Status.ACTIVE
+                || credentials.findByUserId(owner.id).isEmpty())
+            throw new IllegalStateException("The original owner is not currently active and credentialed.");
+        Membership prior = memberships.findByOrganizationIdAndUserId(original.id, owner.id).orElseThrow(
+                () -> new IllegalStateException("The original owner membership is missing."));
+        if (prior.status != Membership.Status.ACTIVE || prior.role != Membership.Role.OWNER)
+            throw new IllegalStateException("The original active OWNER role must be preserved.");
+        assertCount(0, "SELECT COUNT(*) FROM organization WHERE demo_dataset_id IS NOT NULL");
+        long originalMembers = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM membership WHERE org_id=?", Long.class, original.id);
+        long originalResources = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM resource WHERE organization_id=?", Long.class, original.id);
+        long originalAllocations = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM allocation WHERE organization_id=?", Long.class, original.id);
+        long originalMovements = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM stock_movement WHERE organization_id=?", Long.class, original.id);
+        long originalAudits = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM audit_event WHERE org_id=?", Long.class, original.id);
+        var keys = new HashSet<UUID>();
+        for (JsonNode slice : array(plan, "organizations")) {
+            UUID key = id(slice, "id");
+            if (!keys.add(key) || organizations.findByPublicId(key).isPresent())
+                throw new IllegalStateException("The synthetic cohort conflicts with an existing organization.");
+        }
+        LocalDateTime wall = LocalDateTime.ofInstant(wallClock.instant(), ZoneOffset.UTC);
+        int requests = 0, actions = 0;
+        for (JsonNode slice : array(plan, "organizations")) {
+            requests = Math.addExact(requests, array(slice, "allocations").size());
+            actions = Math.addExact(actions, array(slice, "events").size());
+            transaction.executeWithoutResult(status -> importOrganization(slice, plan, planSha, owner, wall));
+        }
+        long expectedRequests = requests, expectedActions = actions;
+        assertCount(keys.size(), "SELECT COUNT(*) FROM organization WHERE demo_plan_sha=?", planSha);
+        assertCount(expectedRequests, """
+                SELECT COUNT(*) FROM allocation a JOIN organization o ON o.id=a.organization_id
+                WHERE o.demo_plan_sha=?
+                """, planSha);
+        assertCount(expectedActions, """
+                SELECT COUNT(*) FROM audit_event a JOIN organization o ON o.id=a.org_id
+                WHERE o.demo_plan_sha=? AND a.action LIKE 'C8_DEMO_%'
+                """, planSha);
+        assertCount(keys.size(), """
+                SELECT COUNT(*) FROM membership m JOIN organization o ON o.id=m.org_id
+                WHERE o.demo_plan_sha=? AND m.user_id=? AND m.role='OWNER' AND m.status='ACTIVE'
+                """, planSha, owner.id);
+        assertCount(0, """
+                SELECT COUNT(*) FROM allocation a JOIN organization o ON o.id=a.organization_id
+                WHERE o.demo_plan_sha=? AND (a.sms_consent OR a.phone_ciphertext IS NOT NULL)
+                """, planSha);
+        assertCount(originalMembers, "SELECT COUNT(*) FROM membership WHERE org_id=?", original.id);
+        assertCount(originalResources, "SELECT COUNT(*) FROM resource WHERE organization_id=?", original.id);
+        assertCount(originalAllocations, "SELECT COUNT(*) FROM allocation WHERE organization_id=?", original.id);
+        assertCount(originalMovements, "SELECT COUNT(*) FROM stock_movement WHERE organization_id=?", original.id);
+        assertCount(originalAudits, "SELECT COUNT(*) FROM audit_event WHERE org_id=?", original.id);
+        System.out.printf("Isolated additive C8 proof: %d fictional workspaces, %d requests, %d actions, original organization preserved by counts.%n",
+                keys.size(), requests, actions);
+    }
+
     private void importOrganization(JsonNode slice, JsonNode plan, String planSha, UserAccount operator, LocalDateTime wall) {
         UUID organizationKey = id(slice, "id");
         Organization org = new Organization("demo-" + organizationKey, text(slice, "directory_label"), wall);
