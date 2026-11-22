@@ -63,6 +63,11 @@ counts="$(mysql_ci --batch --skip-column-names "$schema" -e \
 owner_count="$(mysql_ci --batch --skip-column-names "$schema" -e \
   "SELECT COUNT(*) FROM membership m JOIN user_account u ON u.id=m.user_id JOIN organization o ON o.id=m.org_id WHERE u.username_key='additive-original-owner' AND m.role='OWNER' AND o.demo_plan_sha IS NOT NULL;")"
 [ "$owner_count" = "3" ]
+# Fictional historical events must never be attributed to the real current owner.
+simulated_history="$(mysql_ci --batch --skip-column-names "$schema" -e "SELECT COUNT(*) FROM audit_event a JOIN user_account u ON u.id=a.actor_user_id WHERE u.username_key='c8-demo-historical-actor' AND a.action LIKE 'C8_DEMO_%';")"
+[ "$simulated_history" = "40" ]
+real_owner_history="$(mysql_ci --batch --skip-column-names "$schema" -e "SELECT COUNT(*) FROM audit_event a JOIN user_account u ON u.id=a.actor_user_id WHERE u.username_key='additive-original-owner' AND a.action LIKE 'C8_DEMO_%';")"
+[ "$real_owner_history" = "0" ]
 [ "$(snapshot_original)" = "$original_sha_before" ]
 if EXT_C8_PROOF_SCHEMA="$schema" EXT_C8_PROOF_CONFIRM="TEST ADDITIVE $schema" \
   EXT_C8_PROOF_PORT=3306 EXT_C8_DEMO_PLAN="$plan" EXT_C8_DEMO_PLAN_SHA256="$digest" \

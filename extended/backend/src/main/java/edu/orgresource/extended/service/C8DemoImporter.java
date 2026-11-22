@@ -145,6 +145,10 @@ public class C8DemoImporter {
                 "SELECT COUNT(*) FROM stock_movement WHERE organization_id=?", Long.class, original.id);
         long originalAudits = jdbc.queryForObject(
                 "SELECT COUNT(*) FROM audit_event WHERE org_id=?", Long.class, original.id);
+        // The real account receives current access; its identity must not be
+        // used as an actor for fictional historical stock or audit operations.
+        if (accounts.findByUsernameKey("c8-demo-historical-actor").isPresent())
+            throw new IllegalStateException("The isolated historical persona identity already exists.");
         var keys = new HashSet<UUID>();
         for (JsonNode slice : array(plan, "organizations")) {
             UUID key = id(slice, "id");
@@ -152,11 +156,28 @@ public class C8DemoImporter {
                 throw new IllegalStateException("The synthetic cohort conflicts with an existing organization.");
         }
         LocalDateTime wall = LocalDateTime.ofInstant(wallClock.instant(), ZoneOffset.UTC);
+        UserAccount historicalActor = transaction.execute(status -> accounts.saveAndFlush(
+                new UserAccount("c8-demo-historical-actor", "Simulated historical actor", wall)));
         int requests = 0, actions = 0;
         for (JsonNode slice : array(plan, "organizations")) {
             requests = Math.addExact(requests, array(slice, "allocations").size());
             actions = Math.addExact(actions, array(slice, "events").size());
-            transaction.executeWithoutResult(status -> importOrganization(slice, plan, planSha, owner, wall));
+            transaction.executeWithoutResult(status -> {
+                // The simulation is performed as a synthetic OWNER. Current
+                // owner access is granted only after history is fully replayed.
+                importOrganization(slice, plan, planSha, historicalActor, wall);
+                Organization imported = organizations.findByPublicId(id(slice, "id")).orElseThrow();
+                Membership syntheticOwner = memberships.findByOrganizationIdAndUserId(imported.id, historicalActor.id)
+                        .orElseThrow(() -> new IllegalStateException("The simulated actor membership was lost."));
+                if (syntheticOwner.role != Membership.Role.OWNER)
+                    throw new IllegalStateException("The simulated actor was not an OWNER during replay.");
+                syntheticOwner.role = Membership.Role.MEMBER;
+                memberships.saveAndFlush(syntheticOwner);
+                memberships.saveAndFlush(new Membership(imported.id, owner.id, Membership.Role.OWNER, wall));
+                assertCount(1, """
+                        SELECT COUNT(*) FROM membership WHERE org_id=? AND role='OWNER' AND status='ACTIVE'
+                        """, imported.id);
+            });
         }
         long expectedRequests = requests, expectedActions = actions;
         assertCount(keys.size(), "SELECT COUNT(*) FROM organization WHERE demo_plan_sha=?", planSha);
@@ -172,6 +193,14 @@ public class C8DemoImporter {
                 SELECT COUNT(*) FROM membership m JOIN organization o ON o.id=m.org_id
                 WHERE o.demo_plan_sha=? AND m.user_id=? AND m.role='OWNER' AND m.status='ACTIVE'
                 """, planSha, owner.id);
+        assertCount(keys.size(), """
+                SELECT COUNT(*) FROM membership m JOIN organization o ON o.id=m.org_id
+                WHERE o.demo_plan_sha=? AND m.user_id=? AND m.role='MEMBER' AND m.status='ACTIVE'
+                """, planSha, historicalActor.id);
+        assertCount(expectedActions, """
+                SELECT COUNT(*) FROM audit_event a JOIN organization o ON o.id=a.org_id
+                WHERE o.demo_plan_sha=? AND a.action LIKE 'C8_DEMO_%' AND a.actor_user_id=?
+                """, planSha, historicalActor.id);
         assertCount(0, """
                 SELECT COUNT(*) FROM allocation a JOIN organization o ON o.id=a.organization_id
                 WHERE o.demo_plan_sha=? AND (a.sms_consent OR a.phone_ciphertext IS NOT NULL)
