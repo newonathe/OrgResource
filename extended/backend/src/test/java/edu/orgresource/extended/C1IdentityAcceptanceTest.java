@@ -3922,6 +3922,77 @@ class C1IdentityAcceptanceTest {
         }, "Anonymous route probes must leave business tables unchanged");
     }
 
+
+    @Test @Order(60)
+    void C8GovernanceDenialsLeaveExistingRecordsAndAuditStateUnchanged() throws Exception {
+        // Every refusal below targets an existing fictional membership/invitation with a
+        // correct anti-CSRF token. Responses alone would not prove transaction safety.
+        Fixture owner = newTenant("C8-governance-denial", Membership.Role.OWNER);
+        Fixture admin = fixtureInOrg(owner.orgDbId, Membership.Role.ADMIN);
+        Fixture member = fixtureInOrg(owner.orgDbId, Membership.Role.MEMBER);
+        Fixture stranger = newTenant("C8-governance-stranger", Membership.Role.OWNER);
+        Session ownerSession = login(owner.username, owner.password);
+        Session adminSession = login(admin.username, admin.password);
+        Session memberSession = login(member.username, member.password);
+        Session outsiderSession = login(stranger.username, stranger.password);
+        String root = "/api/v2/orgs/" + owner.orgPublicId;
+        HttpResponse<String> invitation = post(ownerSession, root + "/invitations",
+                GSON.toJson(new RoleRequest("MEMBER")));
+        assertEquals(201, invitation.statusCode(), invitation.body());
+        UUID invitationId = UUID.fromString(json(invitation).getAsJsonObject("data").get("id").getAsString());
+
+        long initialInvitations = jdbc.queryForObject("SELECT COUNT(*) FROM invitation WHERE organization_id=?",
+                Long.class, owner.orgDbId);
+        long initialTransfers = jdbc.queryForObject("SELECT COUNT(*) FROM ownership_transfer WHERE organization_id=?",
+                Long.class, owner.orgDbId);
+        long initialAudits = jdbc.queryForObject("SELECT COUNT(*) FROM audit_event WHERE org_id=?",
+                Long.class, owner.orgDbId);
+        Membership membership = memberships.findById(member.membershipDbId).orElseThrow();
+        long memberVersion = membership.version;
+        var invitationBefore = invitations.findByOrganizationIdAndPublicId(owner.orgDbId, invitationId).orElseThrow();
+        long invitationVersion = invitationBefore.version;
+        assertEquals(Invitation.Status.INVITED, invitationBefore.status);
+
+        assertEquals(403, post(memberSession, root + "/invitations",
+                GSON.toJson(new RoleRequest("MEMBER"))).statusCode(),
+                "Non-managers cannot grant invitations");
+        assertEquals(404, post(outsiderSession, root + "/invitations/" + invitationId + "/revoke",
+                "", "\"v0\"").statusCode(), "A foreign organization cannot revoke an existing invitation");
+        assertEquals(403, post(memberSession, root + "/invitations/" + invitationId + "/revoke",
+                "", "\"v0\"").statusCode(), "Members cannot revoke active invitations");
+        String memberRolePath = root + "/members/" + member.membershipPublicId + "/role";
+        assertEquals(403, post(adminSession, memberRolePath,
+                GSON.toJson(new RoleRequest("ADMIN")), "\"v0\"").statusCode(),
+                "An administrator cannot elevate a member to administrator");
+        assertEquals(404, post(outsiderSession, memberRolePath,
+                GSON.toJson(new RoleRequest("CUSTODIAN")), "\"v0\"").statusCode(),
+                "Foreign members have no role administration rights");
+        assertEquals(412, post(ownerSession, memberRolePath,
+                GSON.toJson(new RoleRequest("LEAD")), "\"v999\"").statusCode(),
+                "A stale If-Match must not modify a valid target");
+        assertEquals(403, post(memberSession, root + "/members/" + owner.membershipPublicId + "/suspend",
+                "", "\"v0\"").statusCode(),
+                "A member cannot suspend the owner");
+        assertEquals(403, post(memberSession, root + "/transfer-ownership",
+                GSON.toJson(new TransferRequest(admin.membershipPublicId, member.password))).statusCode(),
+                "Only an owner may initiate an ownership transfer");
+
+        Membership memberAfter = memberships.findById(member.membershipDbId).orElseThrow();
+        assertEquals(Membership.Role.MEMBER, memberAfter.role);
+        assertEquals(Membership.Status.ACTIVE, memberAfter.status);
+        assertEquals(memberVersion, memberAfter.version);
+        Invitation invitationAfter = invitations.findByOrganizationIdAndPublicId(owner.orgDbId, invitationId).orElseThrow();
+        assertEquals(Invitation.Status.INVITED, invitationAfter.status);
+        assertEquals(invitationVersion, invitationAfter.version);
+        assertEquals(initialInvitations, jdbc.queryForObject(
+                "SELECT COUNT(*) FROM invitation WHERE organization_id=?", Long.class, owner.orgDbId));
+        assertEquals(initialTransfers, jdbc.queryForObject(
+                "SELECT COUNT(*) FROM ownership_transfer WHERE organization_id=?", Long.class, owner.orgDbId));
+        assertEquals(initialAudits, jdbc.queryForObject(
+                "SELECT COUNT(*) FROM audit_event WHERE org_id=?", Long.class, owner.orgDbId));
+        assertEquals(1, memberships.countEffectiveActiveOwners(owner.orgDbId));
+    }
+
     private record Fixture(long orgDbId, UUID orgPublicId, long userDbId, String username, String password,
                           long membershipDbId, UUID membershipPublicId, List<String> recoveryCodes) { }
     private static final class Session {
