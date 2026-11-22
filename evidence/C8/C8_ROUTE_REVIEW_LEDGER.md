@@ -2,6 +2,9 @@
 
 **As of:** 2026-11-23 (Asia/Manila) — **SOURCE INVENTORY VERIFIED; TECHNICAL ACCEPTANCE BLOCKED.**
 
+
+**Source-review supplement:** [Project Work + Reporting oracle (11 routes)](C8_PROJECT_WORK_REPORTING_ORACLE_2026-11-23.md). Together with the [20-route identity/governance oracle](C8_IDENTITY_GOVERNANCE_ORACLE_2026-11-23.md), this is **31 source-oracled/93**, not 31 independently accepted. The remaining **62** still need source oracles. For ALL 93, independently verified positive/meaningful denial receipts and MySQL effects remain unmapped until reconciled from approved local evidence; C8 remains BLOCKED. The hosted classification startup fix is separate availability work and cannot count toward authorization acceptance.
+
 This document inventories 93 source-annotated Jersey endpoints. It is not proof of packaged registration, authenticated behavior, row-level scope, or route authorization. The bounded contract remains [BOUNDED_AUTHORIZATION_CONTRACT_V1.md](BOUNDED_AUTHORIZATION_CONTRACT_V1.md), and acceptance remains [C8_FINAL_STATUS.md](C8_FINAL_STATUS.md).
 
 

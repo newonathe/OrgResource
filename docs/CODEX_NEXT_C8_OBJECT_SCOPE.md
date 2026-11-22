@@ -10,7 +10,7 @@ Continue immediately from the current verified C8 authentication and governance 
 
 - `NEXT_CHAT_START_HERE.md`, `AGENTS.md`, `evidence/C8/BOUNDED_AUTHORIZATION_CONTRACT_V1.md`
 - `evidence/C8/C8_ROUTE_INVENTORY.json`, `evidence/C8/C8_ROUTE_REVIEW_LEDGER.md`
-- `evidence/C8/C8_IDENTITY_GOVERNANCE_ORACLE_2026-11-23.md`, `evidence/C8/C8_FINAL_STATUS.md`
+- `evidence/C8/C8_IDENTITY_GOVERNANCE_ORACLE_2026-11-23.md, evidence/C8/C8_PROJECT_WORK_REPORTING_ORACLE_2026-11-23.md`, `evidence/C8/C8_FINAL_STATUS.md`
 - `extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java` (ID01–ID17, C2/C3/C7 and C8Scope–C8DemoDisclosure, new anonymous/governance tests)
 - `extended/backend/src/main/java/edu/orgresource/extended/config/C1JerseyConfiguration.java`
 - `extended/backend/src/main/java/edu/orgresource/extended/security/C1SecurityConfiguration.java`, `C1OrganizationContext.java`
@@ -22,7 +22,7 @@ Before doing anything, fetch current GitHub feature/staging HEAD, PR #25 base, a
 ## Scope and sequence
 
 1. Verify the existing **93 Jersey registered operations**, **5 public** and **88 protected** routes against the tracked source inventory, relevant HTTP tests and latest exact-SHA CI. The anonymous gate is one refusal class only. Confirm the last governance existing-target denial test actually passed.
-2. Review the **remaining 73** routes not yet covered by the 20-operation identity/governance source policy oracle. Work family by family, starting with **InventoryResource (24), ProjectWorkResource (8), AllocationResource (9), ReportingResource (3)**. Then cover DepartmentResource (4), ProjectResource (4), ResourceRequirementResource (4), ResourceResource (7), V2DepartmentResource (3), WorkspacePageResource (6), and DemoMetadataResource (1). Together these sum to 73.
+2. Review the **remaining 62** routes not yet covered by the 20-operation identity/governance and 11-operation Project Work/Reporting source policy oracles. Work family by family, starting with **InventoryResource (24), AllocationResource (9)**. Then cover DepartmentResource (4), ProjectResource (4), ResourceRequirementResource (4), ResourceResource (7), V2DepartmentResource (3), WorkspacePageResource (6), and DemoMetadataResource (1). Together these sum to 62. Reconcile the already drafted Project Work (8) and Reporting (3) oracles against real receipts before claiming acceptance.
 3. For every operation, write the source-based oracle **before** running the request: public/authenticated, selected vs path organization, role, active membership and user, existing target and object scope, allowed fields, lifecycle/version/If-Match, expected HTTP status/code and response data, exact permitted database effects, missing/stale/replayed/foreign target behavior.
 4. Reconcile existing ID/C2–C8/Jersey/Playwright/Newman receipts with each oracle by **exact source SHA, actual fixture, command, observed status, body/redaction and database postcondition**. Do not reclassify historical 22,073 unrun matrix cases as passed; bounded v1 is authoritative, but no mandatory behavior is waived.
 5. Implement narrowly targeted missing positive and meaningful negative tests on an **isolated MySQL 8** schema and packaged Java 21 backend. For each protected operation include authorized success and refusal with a **real existing fictional object**; for high-risk writes assert unchanged relevant SQL rows/versions, stock movements, audit events and receipts where policy requires it. Use varying identities: foreign tenant, MEMBER, unassigned LEAD, assigned LEAD, revoked membership, CUSTODIAN, ADMIN, OWNER, borrower linked/unlinked. Include consent/contact redaction, selected-vs-path org, stale If-Match, duplicate request IDs, concurrency/restart/rollback/expiry when relevant.
@@ -38,7 +38,7 @@ Never merge PR #25 to main; reset or migrate the existing Northflank owner datab
 ## Exit packet
 
 - Source and final CI SHA + links; full changed-file review and protected Course A comparison
-- 93-operation route policy and evidence matrix; 20+73 source review outcome
+- 93-operation route policy and evidence matrix; 20+11+62 source review outcome
 - Meaningful per-operation positive/negative/DB receipt mapping, tested tenant/role/object factors
 - New defects corrected with before/after evidence; unresolved blockers and independent-review status
 - Running hosting SHA verification status and demo import readiness (separate)
