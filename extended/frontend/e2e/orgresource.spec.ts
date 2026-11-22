@@ -570,6 +570,10 @@ test("connected O8–O10 workflows persist through the isolated Java/MySQL backe
   // alone is not proof that the specific Project/Resource pair was persisted.
   expect(reusableRequirement, `Missing reusable Requirement for project ${updatedProject.id}, resource ${reusableId}; persisted pairs: ${requirements.map((item) => `${item.projectId}/${item.resourceId}`).join(", ")}`).toBeDefined();
   expect(consumableRequirement, `Missing consumable Requirement for project ${updatedProject.id}, resource ${consumableId}; persisted pairs: ${requirements.map((item) => `${item.projectId}/${item.resourceId}`).join(", ")}`).toBeDefined();
+  // Explicit guard also narrows TypeScript beyond Playwright's runtime assertion.
+  if (!reusableRequirement || !consumableRequirement) {
+    throw new Error("Persisted Requirement identity could not be established for the current Project.");
+  }
 
   const temporaryProjectStart = manilaWallTime(4 * 24 * 60 * 60 * 1000);
   const temporaryProjectEnd = manilaWallTime(4 * 24 * 60 * 60 * 1000 + 60 * 60 * 1000);
