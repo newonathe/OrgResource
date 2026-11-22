@@ -1,0 +1,566 @@
+{
+  "schema_version": 1,
+  "scope": "Source-declared Jersey resources under extended/backend/src/main/java/edu/orgresource/extended/rest",
+  "description": "Source-only inventory. Does not establish runtime registration, authorization policy or request acceptance.",
+  "expected_route_count": 93,
+  "routes": [
+    {
+      "verb": "POST",
+      "path": "/api/allocations/{id}/approve",
+      "java_class": "AllocationResource",
+      "java_method": "approve"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/allocations/{id}/cancel",
+      "java_class": "AllocationResource",
+      "java_method": "cancel"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/allocations/{id}/consume",
+      "java_class": "AllocationResource",
+      "java_method": "consume"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/allocations/{id}/delete",
+      "java_class": "AllocationResource",
+      "java_method": "delete"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/allocations/{id}/issue",
+      "java_class": "AllocationResource",
+      "java_method": "issue"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/allocations/{id}/return",
+      "java_class": "AllocationResource",
+      "java_method": "returnAllocation"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/allocations/{id}/revoke-sms-consent",
+      "java_class": "AllocationResource",
+      "java_method": "revokeSmsConsent"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/allocations",
+      "java_class": "AllocationResource",
+      "java_method": "list"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/allocations",
+      "java_class": "AllocationResource",
+      "java_method": "create"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/departments/{id}/delete",
+      "java_class": "DepartmentResource",
+      "java_method": "delete"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/departments/{id}/update",
+      "java_class": "DepartmentResource",
+      "java_method": "update"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/departments",
+      "java_class": "DepartmentResource",
+      "java_method": "list"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/departments",
+      "java_class": "DepartmentResource",
+      "java_method": "create"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/projects/{id}/delete",
+      "java_class": "ProjectResource",
+      "java_method": "delete"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/projects/{id}/update",
+      "java_class": "ProjectResource",
+      "java_method": "update"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/projects",
+      "java_class": "ProjectResource",
+      "java_method": "list"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/projects",
+      "java_class": "ProjectResource",
+      "java_method": "create"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/requirements/{id}/delete",
+      "java_class": "ResourceRequirementResource",
+      "java_method": "delete"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/requirements/{id}/update",
+      "java_class": "ResourceRequirementResource",
+      "java_method": "update"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/requirements",
+      "java_class": "ResourceRequirementResource",
+      "java_method": "list"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/requirements",
+      "java_class": "ResourceRequirementResource",
+      "java_method": "create"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/resources/{id}/availability",
+      "java_class": "ResourceResource",
+      "java_method": "availability"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/resources/{id}/delete",
+      "java_class": "ResourceResource",
+      "java_method": "delete"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/resources/{id}/image",
+      "java_class": "ResourceResource",
+      "java_method": "getImage"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/resources/{id}/image",
+      "java_class": "ResourceResource",
+      "java_method": "uploadImage"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/resources/{id}/update",
+      "java_class": "ResourceResource",
+      "java_method": "update"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/resources",
+      "java_class": "ResourceResource",
+      "java_method": "list"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/resources",
+      "java_class": "ResourceResource",
+      "java_method": "create"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/account/disable",
+      "java_class": "C1SessionResource",
+      "java_method": "disable"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/account/password",
+      "java_class": "C1SessionResource",
+      "java_method": "changePassword"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/account/recovery-codes/rotate",
+      "java_class": "C1SessionResource",
+      "java_method": "rotateRecoveryCodes"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/account",
+      "java_class": "C1SessionResource",
+      "java_method": "account"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/auth/csrf",
+      "java_class": "C1AuthResource",
+      "java_method": "csrf"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/auth/login",
+      "java_class": "C1AuthResource",
+      "java_method": "login"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/auth/logout",
+      "java_class": "C1AuthResource",
+      "java_method": "logout"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/auth/recover",
+      "java_class": "C1AuthResource",
+      "java_method": "recover"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/csrf",
+      "java_class": "V2DepartmentResource",
+      "java_method": "csrf"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/demo/metadata",
+      "java_class": "DemoMetadataResource",
+      "java_method": "get"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/departments/{id}",
+      "java_class": "V2DepartmentResource",
+      "java_method": "getDepartment"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/departments",
+      "java_class": "V2DepartmentResource",
+      "java_method": "createDepartment"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/invitations/redeem",
+      "java_class": "C1InvitationResource",
+      "java_method": "redeem"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/orgs/{organizationId}/activity",
+      "java_class": "ReportingResource",
+      "java_method": "activity"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{organizationId}/allocations/{allocationId}/approve",
+      "java_class": "InventoryResource",
+      "java_method": "approve"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{organizationId}/allocations/{allocationId}/cancel",
+      "java_class": "InventoryResource",
+      "java_method": "cancel"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{organizationId}/allocations/{allocationId}/consume",
+      "java_class": "InventoryResource",
+      "java_method": "consume"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{organizationId}/allocations/{allocationId}/delete",
+      "java_class": "InventoryResource",
+      "java_method": "deleteProjectAllocation"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{organizationId}/allocations/{allocationId}/issue",
+      "java_class": "InventoryResource",
+      "java_method": "issue"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{organizationId}/allocations/{allocationId}/return",
+      "java_class": "InventoryResource",
+      "java_method": "returnAllocation"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/orgs/{organizationId}/allocations/{allocationId}",
+      "java_class": "InventoryResource",
+      "java_method": "allocationState"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/orgs/{organizationId}/allocations",
+      "java_class": "InventoryResource",
+      "java_method": "allocationPage"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{organizationId}/allocations",
+      "java_class": "InventoryResource",
+      "java_method": "createLinkedAllocation"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/orgs/{organizationId}/audit",
+      "java_class": "ReportingResource",
+      "java_method": "audit"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{organizationId}/borrowed-allocations/{allocationId}/revoke-sms-consent",
+      "java_class": "InventoryResource",
+      "java_method": "revokeBorrowerConsent"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/orgs/{organizationId}/borrowed-allocations/{allocationId}",
+      "java_class": "InventoryResource",
+      "java_method": "borrowedDetail"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/orgs/{organizationId}/borrowed-allocations",
+      "java_class": "InventoryResource",
+      "java_method": "borrowedList"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/orgs/{organizationId}/borrowers",
+      "java_class": "InventoryResource",
+      "java_method": "borrowerOptions"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{organizationId}/exports",
+      "java_class": "ReportingResource",
+      "java_method": "export"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/orgs/{organizationId}/operations/{operationId}",
+      "java_class": "InventoryResource",
+      "java_method": "operationReceipt"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/orgs/{organizationId}/projects/{projectId}/allocations",
+      "java_class": "InventoryResource",
+      "java_method": "projectAllocations"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{organizationId}/projects/{projectId}/delete",
+      "java_class": "ProjectWorkResource",
+      "java_method": "deleteProject"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{organizationId}/projects/{projectId}/lead-assignment",
+      "java_class": "InventoryResource",
+      "java_method": "assignLead"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/orgs/{organizationId}/projects/{projectId}/lead-options",
+      "java_class": "InventoryResource",
+      "java_method": "leadOptions"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{organizationId}/projects/{projectId}/update",
+      "java_class": "ProjectWorkResource",
+      "java_method": "updateProject"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/orgs/{organizationId}/projects/{projectId}",
+      "java_class": "InventoryResource",
+      "java_method": "projectAccess"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/orgs/{organizationId}/projects",
+      "java_class": "ProjectWorkResource",
+      "java_method": "projects"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{organizationId}/requirements/{requirementId}/delete",
+      "java_class": "ProjectWorkResource",
+      "java_method": "deleteRequirement"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{organizationId}/requirements/{requirementId}/update",
+      "java_class": "ProjectWorkResource",
+      "java_method": "updateRequirement"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/orgs/{organizationId}/requirements/{requirementId}",
+      "java_class": "ProjectWorkResource",
+      "java_method": "requirement"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/orgs/{organizationId}/requirements",
+      "java_class": "ProjectWorkResource",
+      "java_method": "requirements"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{organizationId}/requirements",
+      "java_class": "ProjectWorkResource",
+      "java_method": "createRequirement"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{organizationId}/resources/{resourceId}/adjust",
+      "java_class": "InventoryResource",
+      "java_method": "adjust"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{organizationId}/resources/{resourceId}/image/delete",
+      "java_class": "InventoryResource",
+      "java_method": "removeResourceImage"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/orgs/{organizationId}/resources/{resourceId}/movements",
+      "java_class": "InventoryResource",
+      "java_method": "movements"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{organizationId}/resources/{resourceId}/receive",
+      "java_class": "InventoryResource",
+      "java_method": "receive"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/orgs/{organizationId}/resources/{resourceId}",
+      "java_class": "InventoryResource",
+      "java_method": "resourceState"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/orgs/{organizationId}/resources",
+      "java_class": "InventoryResource",
+      "java_method": "resourcePage"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{orgId}/accept-transfer",
+      "java_class": "C1GovernanceResource",
+      "java_method": "acceptTransfer"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{orgId}/invitations/{invitationId}/revoke",
+      "java_class": "C1GovernanceResource",
+      "java_method": "revokeInvitation"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{orgId}/invitations",
+      "java_class": "C1GovernanceResource",
+      "java_method": "invite"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{orgId}/members/{memberId}/role",
+      "java_class": "C1GovernanceResource",
+      "java_method": "changeRole"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{orgId}/members/{memberId}/suspend",
+      "java_class": "C1GovernanceResource",
+      "java_method": "suspend"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/orgs/{orgId}/members",
+      "java_class": "C1GovernanceResource",
+      "java_method": "members"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{orgId}/transfer-ownership",
+      "java_class": "C1GovernanceResource",
+      "java_method": "startTransfer"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/orgs/{orgId}/transfers/{transferId}/revoke",
+      "java_class": "C1GovernanceResource",
+      "java_method": "revokeTransfer"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/orgs",
+      "java_class": "C1SessionResource",
+      "java_method": "organizations"
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v2/session/active-org",
+      "java_class": "C1SessionResource",
+      "java_method": "activeOrganization"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/session",
+      "java_class": "C1SessionResource",
+      "java_method": "session"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/workspace/allocations",
+      "java_class": "WorkspacePageResource",
+      "java_method": "allocations"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/workspace/departments",
+      "java_class": "WorkspacePageResource",
+      "java_method": "departments"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/workspace/overview",
+      "java_class": "WorkspacePageResource",
+      "java_method": "overview"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/workspace/projects",
+      "java_class": "WorkspacePageResource",
+      "java_method": "projects"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/workspace/requirements",
+      "java_class": "WorkspacePageResource",
+      "java_method": "requirements"
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v2/workspace/resources",
+      "java_class": "WorkspacePageResource",
+      "java_method": "resources"
+    }
+  ]
+}

@@ -7,3 +7,9 @@ The restricted evidence packet contains the exact route inventory, local Java 21
 The first two CI attempts on the contract commit failed while extracting the Java 8 download, before Java tests began. Both Extended and React jobs passed. The workflow now verifies the official Temurin Java 8 archive against its published SHA-256 before handing it to setup-java and checks out the exact PR head for all three jobs. [Provisioning failures](https://github.com/newonathe/OrgResource/actions/runs/44727842454) · [Draft PR #25](https://github.com/newonathe/OrgResource/pull/25)
 
 C9 remains on hold. Public release, hosting, live messaging, reuse of restricted course materials and academic submission remain separate.
+
+## 2026-11-23 continuation (does not close C8)
+
+A fresh source-level enumeration found 93 distinct HTTP method/path declarations across 15 Jersey resource classes. The tracked inventory and independent-test-required review ledger now live at [C8_ROUTE_INVENTORY.json](C8_ROUTE_INVENTORY.json) and [C8_ROUTE_REVIEW_LEDGER.md](C8_ROUTE_REVIEW_LEDGER.md); CI checks annotation drift via scripts/verify-c8-routes.mjs. This static test does not establish packaged route registration, a route policy oracle, positive/negative HTTP cases, denied-write DB postconditions, or independent review. **C8 remains BLOCKED.**
+
+The prior exact-feature-sha GitHub Actions run at c0409a98a3bd passed all three jobs (Java 8, Extended C and React): https://github.com/newonathe/OrgResource/actions/runs/45062378023 . This does not yet establish that the new inventory check passed on its subsequent commit. Northflank separately reported a successful build of staging SHA 89c28614e24f; which container is currently running still needs inspection. Detailed restricted C8 receipts remain local-only; do not relabel earlier unrun cases as passed.
