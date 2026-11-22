@@ -3,7 +3,7 @@
 **As of:** 2026-11-23 (Asia/Manila) — **SOURCE INVENTORY VERIFIED; TECHNICAL ACCEPTANCE BLOCKED.**
 
 
-**Source-review supplement:** [Project Work + Reporting oracle (11 routes)](C8_PROJECT_WORK_REPORTING_ORACLE_2026-11-23.md). Together with the [20-route identity/governance oracle](C8_IDENTITY_GOVERNANCE_ORACLE_2026-11-23.md), this is **31 source-oracled/93**, not 31 independently accepted. The remaining **62** still need source oracles. For ALL 93, independently verified positive/meaningful denial receipts and MySQL effects remain unmapped until reconciled from approved local evidence; C8 remains BLOCKED. The hosted classification startup fix is separate availability work and cannot count toward authorization acceptance.
+**Latest source-only coverage, 2026-11-23:** [Inventory + Allocation oracle (33 method/path pairs)](C8_INVENTORY_ALLOCATION_SOURCE_ORACLE_2026-11-23.md), source reviewed at SHA `5b1c4826`. Added to [Project Work + Reporting (11)](C8_PROJECT_WORK_REPORTING_ORACLE_2026-11-23.md) and [identity/governance (20)](C8_IDENTITY_GOVERNANCE_ORACLE_2026-11-23.md), this yields **64/93 SOURCE-ORACLED, zero accepted on the strength of these drafts, 29 still missing source policy oracles**. These 33 were matched to the existing JSON annotated inventory; packaged route registration is not proven by this comparison. For **all 93**, meaningful authorized/denied HTTP, exact MySQL before/after effects, restricted IR4 receipt reconciliation and independent review remain UNMAPPED / NOT_RUN in this work. **C8 BLOCKED.** Prior C8 browser CI failure is tracked in [cycle 1](C8_CYCLE_01_REQUIREMENT_POST_DIAGNOSTIC_2026-11-23.md). No hosted classification fix can substitute for authorization acceptance.
 
 This document inventories 93 source-annotated Jersey endpoints. It is not proof of packaged registration, authenticated behavior, row-level scope, or route authorization. The bounded contract remains [BOUNDED_AUTHORIZATION_CONTRACT_V1.md](BOUNDED_AUTHORIZATION_CONTRACT_V1.md), and acceptance remains [C8_FINAL_STATUS.md](C8_FINAL_STATUS.md).
 
@@ -12,7 +12,7 @@ This document inventories 93 source-annotated Jersey endpoints. It is not proof 
 
 Private IR4 case ledger and independent receipts were not made available in this chat. Previously reported passes should be mapped to concrete scenarios and exact SHAs by an authorized reviewer before reuse.
 
-Source-of-truth JSON: [C8_ROUTE_INVENTORY.json](C8_ROUTE_INVENTORY.json). CI drift check: [verify-c8-routes.mjs](../../scripts/verify-c8-routes.mjs). **Every route below has review state UNREVIEWED, positive/negative receipts UNMAPPED, database postconditions UNMAPPED and independent reviewer NONE.** These labels do not assert that past tests were absent; their mapping remains unverified.
+Source-of-truth JSON: [C8_ROUTE_INVENTORY.json](C8_ROUTE_INVENTORY.json). CI drift check: [verify-c8-routes.mjs](../../scripts/verify-c8-routes.mjs). **The 64 source-oracled routes have SOURCE_ONLY policy drafts; the remaining 29 are UNREVIEWED for policies. Every route below still has positive/negative receipts UNMAPPED, database postconditions UNMAPPED and independent reviewer NONE for this bounded acceptance ledger.** These labels do not assert that past tests were absent; their mapping remains unverified.
 
 | Class | HTTP | Route | Java handler | Triage hint (not a permission oracle) |
 | --- | --- | --- | --- | --- |

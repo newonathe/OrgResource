@@ -1,5 +1,21 @@
 # OrgResource — next tasks, remaining work and delivery gates
 
+## Latest execution addendum — two bounded cycles, 2026-11-23
+
+**Current PR #25 source audit head before this synchronization:** `5b1c4826d8d5f91faab1eb609ad29c94fdec033b` (subsequent documentation commit will advance it). No merge, no staging deployment, no production MySQL changes.
+
+- [x] **CYCLE 1 — diagnostic code pushed:** `afd5682b7b230fb82d694d83028c37f90224240d` adds exact browser POST 201/selected project-resource pair checks without changing application logic. [Evidence and open diagnostic](../../evidence/C8/C8_CYCLE_01_REQUIREMENT_POST_DIAGNOSTIC_2026-11-23.md). Original [CI 45070699372](https://github.com/newonathe/OrgResource/actions/runs/45070699372) FAILED at the prior Playwright requirement-persist poll. Follow-up [CI 45071413400](https://github.com/newonathe/OrgResource/actions/runs/45071413400) **still IN_PROGRESS** when this addendum was authored (Course A/React jobs succeeded; Extended packaged browser pending). **NOT a confirmed backend repair.**
+- [x] **CYCLE 2 — 33 route policy rows SOURCE_ONLY:** [24 InventoryResource + 9 AllocationResource oracle](../../evidence/C8/C8_INVENTORY_ALLOCATION_SOURCE_ORACLE_2026-11-23.md) pushed at `5b1c4826`. All 33 exact HTTP method/path keys matched the existing 93-route source inventory; not runtime-accepted. Draft policy coverage increases **31 → 64 of 93**; remaining source-oracle routes **62 → 29**.
+- [ ] **NEXT-01:** Inspect the final exact-code-SHA CI #45071413400, trace, POST/response details; if the browser test still fails, diagnose and reproduce before any smallest product fix. A lone green rerun does not prove nonflakiness.
+- [ ] **NEXT-02:** Execute the 14 named stock-route authorization cases `I11/I12/I15–I19 + L03–L09`, match actual tests/SQL to source oracle, positive+meaningful denied existing-target cases, current MySQL postconditions. Independent review REQUIRED.
+- [ ] **NEXT-03:** Source-oracle remaining **29**: Department 4, Project 4, ResourceRequirement 4, Resource 7, V2Department 3, WorkspacePage 6, DemoMetadata 1. Reconcile earlier 31 and newly drafted 33 with independently verified per-route acceptance.
+- [ ] **NEXT-04:** Keep C8 BLOCKED; verify final three-job CI on pushed SHA, independently review, update PR, and wait for owner authorization before C9. Finish Course A Canvas/Dec 5 academic obligations separately.
+- [ ] **OWNER ONLY:** Private credential rotation, actual hosted image/refresh verification and rights/restore gate before 96-org demo import. No secrets to GitHub.
+
+**Next copy-ready batch:** [C8 stock evidence prompt](2026-11-23_CODEX_NEXT_C8_STOCK_EVIDENCE.md). **Status: SOURCE_ONLY/NOT_RUN, not formal C8 acceptance.**
+
+---
+
 **Snapshot:** 2026-11-23, Asia/Manila. **Type:** public-safe planning handoff; no new implementation or runtime tests performed by this document.
 **Repository:** `newonathe/OrgResource` | **C8 draft:** [PR #25](https://github.com/newonathe/OrgResource/pull/25) | **reviewed feature head:** `a51f3477abbbbe02b9b70e6dd0686d73c90222a2` | **base:** C7 branch `b4ca5cd1b8a2a128f997f4dbd5e6848cf2b39d0b`.
 **Latest observed feature CI:** [45069688159](https://github.com/newonathe/OrgResource/actions/runs/45069688159), `success` on the reviewed head, three jobs. Green CI is not authorization or release acceptance.
