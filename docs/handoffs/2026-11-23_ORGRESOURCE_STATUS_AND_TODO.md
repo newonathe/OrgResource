@@ -1,5 +1,14 @@
 # OrgResource — next tasks, remaining work and delivery gates
 
+## Account Settings motion preference — user-requested side task (2026-11-23)
+
+- [x] **Source pushed** [`35a8ba989`](https://github.com/newonathe/OrgResource/commit/35a8ba989b6a74d56074d4f1f75e4fa34c62aa8c): Account and Security now exposes an accessible **Interface motion** On/Off switch. The Account switch and existing toolbar button use the same `useSettings()` state; choice persists locally as `orgresource-motion` and disables workspace transitions/animations without overriding the OS reduced-motion preference. Source: `extended/frontend/src/auth/AuthScreens.tsx`, `styles.css`.
+- [x] **Regression authored:** `extended/frontend/src/App.test.tsx` covers initial off state, account switch on, synchronized toolbar off, and persistence after rerender. **Test execution at this exact SHA: pending until CI finishes** ([run 45074645222](https://github.com/newonathe/OrgResource/actions/runs/45074645222)); do not claim passed on source inspection alone.
+- [ ] **Verify final CI at source SHA `35a8ba989`**: three-job status, React Vitest/TS/lint/build, Extended packaged browser, separate Course A. Correct a specific reproducible failure only.
+- [ ] **Hosted visibility:** Verify whether the Northflank running image actually includes that SHA, then check Account Settings and toolbar on desktop/mobile after a hard-refresh. **NOT_DEPLOYED / NOT_VERIFIED by this session.** Device/browser-local preference is **not** a cross-device account server setting.
+- [ ] **Keep P0 priority:** exact approved 96-org Northflank additive demo remains first. Do not let this display task trigger hosted imports, merges, deployments, real messages, expenses or bypass safety gates.
+
+
 ## P0 EXECUTION CHECKPOINT (2026-11-23)
 
 - [x] Mixed complete 96-org classifier, all 3 CI jobs green at `6c7fb265` ([45072962828](https://github.com/newonathe/OrgResource/actions/runs/45072962828)).

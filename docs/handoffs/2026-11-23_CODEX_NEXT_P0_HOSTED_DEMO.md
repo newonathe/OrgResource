@@ -1,5 +1,8 @@
 # Next Codex handoff — P0 exact Northflank demo population
 
+**Additional user-requested side task:** Motion On/Off was added to Account Settings at `35a8ba989` with a source-level React regression. Confirm [CI 45074645222](https://github.com/newonathe/OrgResource/actions/runs/45074645222) on that exact SHA, then independently confirm appearance on Northflank after an authorized deployment. This preference uses browser-local storage, not a server account field. P0 live 96-org demo remains the primary work; no merge or deploy is implied.
+
+
 **Date:** 2026-11-23 Asia/Manila. **Mode:** carry out the next smallest safe tested slices in Codex / GitHub CI, then update issue #26, this tracker, and an exact new prompt. **Feature branch:** `feat/extended-c-c8-domain-workflows-2026-11-19`; **starting observed code head:** `af479c9f34de04a471c39b92b15d93046829f156` (fetch current remote again). **Draft PR:** #25. **Frozen Course A:** `7f8c0746da18fd54b47f430ac1435ac36e605d67` unchanged. **No merge/deploy/live DB/paid plan/live SMS authority implicit.**
 
 ## Objective
