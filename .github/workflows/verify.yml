@@ -274,7 +274,21 @@ jobs:
             java -Xmx768m -jar extended/backend/target/extended-backend-0.1.0-SNAPSHOT.jar --c8-additive-demo-isolated-proof
           counts="$(mysql_ci --batch --skip-column-names "$schema" -e \
             'SELECT (SELECT COUNT(*) FROM organization),(SELECT COUNT(*) FROM organization WHERE demo_plan_sha IS NOT NULL),(SELECT COUNT(*) FROM allocation),(SELECT COUNT(*) FROM stock_movement),(SELECT COUNT(*) FROM local_credential);')"
-          [ "$counts" = 
+          expected="$(printf '4\\t3\\t36\\t40\\t1')"
+          [ "$counts" = "$expected" ]
+          owner_count="$(mysql_ci --batch --skip-column-names "$schema" -e "SELECT COUNT(*) FROM membership m JOIN user_account u ON u.id=m.user_id JOIN organization o ON o.id=m.org_id WHERE u.username_key='additive-original-owner' AND m.role='OWNER' AND o.demo_plan_sha IS NOT NULL;")"
+          [ "$owner_count" = "3" ]
+          if EXT_C8_PROOF_SCHEMA="$schema" EXT_C8_PROOF_CONFIRM="TEST ADDITIVE $schema" EXT_C8_PROOF_PORT=3306 \\
+            EXT_C8_DEMO_PLAN="$plan" EXT_C8_DEMO_PLAN_SHA256="$digest" \\
+            EXT_C8_PROOF_ORIGINAL_ORG_ID="$original_org" EXT_C8_PROOF_OWNER_ACCOUNT_ID="$owner_id" \\
+            EXT_DB_USER=c8_additive_runtime EXT_DB_PASSWORD="$runtime_password" \\
+            java -Xmx768m -jar extended/backend/target/extended-backend-0.1.0-SNAPSHOT.jar --c8-additive-demo-isolated-proof > "$RUNNER_TEMP/c8-additive-repeat-refusal.log" 2>&1; then
+            echo "Repeated additive import unexpectedly succeeded" >&2
+            exit 1
+          fi
+          [ "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT COUNT(*) FROM allocation;')" = "36" ]
+          echo "Isolated additive proof retained the original owner and rejected replay."
+      - name: Run authenticated Newman and browser acceptance against packaged JAR
         env:
           MYSQL_CONTAINER: ${{ job.services.mysql.id }}
           ORGRESOURCE_E2E_SCREENSHOT_DIR: ${{ runner.temp }}/orgresource-c4-screenshots
