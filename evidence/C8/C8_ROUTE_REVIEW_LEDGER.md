@@ -4,6 +4,9 @@
 
 This document inventories 93 source-annotated Jersey endpoints. It is not proof of packaged registration, authenticated behavior, row-level scope, or route authorization. The bounded contract remains [BOUNDED_AUTHORIZATION_CONTRACT_V1.md](BOUNDED_AUTHORIZATION_CONTRACT_V1.md), and acceptance remains [C8_FINAL_STATUS.md](C8_FINAL_STATUS.md).
 
+
+**2026-11-23 coverage supplement:** [20 identity/governance operations source policy oracle](C8_IDENTITY_GOVERNANCE_ORACLE_2026-11-23.md). A new dynamic HTTP integration test exercised 88 protected operations anonymously with 401 and unchanged business table counts on source SHA `5a14714e868c` ([backend step in run 45065909845](https://github.com/newonathe/OrgResource/actions/runs/45065909845)); the whole CI run was not finished when recorded. This is one shared anonymous-denial factor, **not** per-route authorized behavior or independent policy acceptance. Existing per-operation receipt states stay UNMAPPED pending review.
+
 Private IR4 case ledger and independent receipts were not made available in this chat. Previously reported passes should be mapped to concrete scenarios and exact SHAs by an authorized reviewer before reuse.
 
 Source-of-truth JSON: [C8_ROUTE_INVENTORY.json](C8_ROUTE_INVENTORY.json). CI drift check: [verify-c8-routes.mjs](../../scripts/verify-c8-routes.mjs). **Every route below has review state UNREVIEWED, positive/negative receipts UNMAPPED, database postconditions UNMAPPED and independent reviewer NONE.** These labels do not assert that past tests were absent; their mapping remains unverified.

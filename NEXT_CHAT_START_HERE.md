@@ -1,5 +1,13 @@
 # OrgResource — START HERE for the next chat or Codex session
 
+## C8 next verification checkpoint — 2026-11-23 (source at `5a14714e868c`)
+
+- **Stage promotion complete:** `8d849c256e163783639408e322cbf9bfc96a0226` carries the previous three-job-green registration/Playwright/Java-8 batch to `deploy/northflank-c8-staging`. GitHub Northflank service **build succeeded**; the exact running container SHA and hosted browser smoke are still unverified.
+- **New coverage on feature:** `C1IdentityAcceptanceTest.C8AnonymousGateCoversEveryProtectedRegisteredJerseyOperationWithoutBusinessWrites` dynamically finds the 93 registered route declarations and probes **88 protected operations** with an unauthenticated browser client, valid pre-login CSRF for writes, 401 AUTH_REQUIRED response, non-disclosure and unchanged organization/resource/allocation/stock_movement row counts. The other **five public operations are not claimed covered by this test**; their separate acceptance remains in prior ID/Invitations cases.
+- **Direct execution receipt:** [GitHub run 45065909845](https://github.com/newonathe/OrgResource/actions/runs/45065909845), `Verify Extended C Java 21 backend against isolated MySQL` step passed with this test at `5a14714e868c`. The full Newman/Playwright job was still running at this report snapshot; check latest status before claiming full green.
+- **Source-reviewed governance oracle:** [C8_IDENTITY_GOVERNANCE_ORACLE_2026-11-23.md](evidence/C8/C8_IDENTITY_GOVERNANCE_ORACLE_2026-11-23.md) covers 20 of 93 operations as an independently **unaccepted** policy draft. Read underlying service and routes; validate each candidate receipt and denied-write postcondition.
+- **Still open:** owner-approved bounded policy oracle for remaining 73 operations; meaningful authorized and role/object/tenant negative checks per route; verified SQL effects; protected local IR4 receipt reconciliation; genuine separate review; hosted runtime verification; safe additive 96-org demo and private secret rotation. C8 remains BLOCKED. No live DB was modified in this batch.
+
 **Date/authority:** 2026-11-23 Asia/Manila. **PUBLIC-SAFE CONTINUATION RECORD.**
 This is a current pointer, not a replacement for source code, course assignments, independent test receipts or live GitHub/hosting checks. Each new session must fetch current Git refs and test results. Original private source material, secrets, full local C8 evidence and account recovery codes are deliberately excluded.
 
