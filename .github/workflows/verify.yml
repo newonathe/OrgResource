@@ -240,7 +240,8 @@ jobs:
         shell: bash
         run: |
           bash -n scripts/verify-c8-additive-isolated.sh
-          bash scripts/verify-c8-additive-isolated.sh
+          bash scripts/verify-c8-additive-isolated.sh small
+          bash scripts/verify-c8-additive-isolated.sh intermediate
       - name: Run authenticated Newman and browser acceptance against packaged JAR
         env:
           MYSQL_CONTAINER: ${{ job.services.mysql.id }}

@@ -31,8 +31,11 @@ public final class C8AdditiveProofCommand {
                 + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
         String digest = required(env, "EXT_C8_DEMO_PLAN_SHA256");
         JsonNode plan = C8DemoCommand.readPlan(Path.of(required(env, "EXT_C8_DEMO_PLAN")), digest);
-        if (!"LOCAL_ONLY_SMALL_TEST".equals(plan.path("scope").asText()) || plan.path("organizations").size() != 3)
-            throw new IllegalArgumentException("This acceptance-only command permits precisely three fictional test workspaces.");
+        String scope = plan.path("scope").asText();
+        int count = plan.path("organizations").size();
+        if (!(("LOCAL_ONLY_SMALL_TEST".equals(scope) && count == 3)
+                || ("LOCAL_ONLY_INTERMEDIATE_TEST".equals(scope) && count == 8)))
+            throw new IllegalArgumentException("This acceptance-only command permits only three or eight fictional test workspaces.");
         UUID originalOrg = UUID.fromString(required(env, "EXT_C8_PROOF_ORIGINAL_ORG_ID"));
         UUID owner = UUID.fromString(required(env, "EXT_C8_PROOF_OWNER_ACCOUNT_ID"));
         app.setWebApplicationType(WebApplicationType.NONE);
