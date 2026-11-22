@@ -665,6 +665,12 @@ button { color: inherit; }
 
 /* Pre-auth markup is outside .app-shell, so it needs standalone contrast. */
 .workspace-gate {
+  --ink: #10263d;
+  --navy: #214c78;
+  --glass-strong: #fff;
+  --line: #c5d2da;
+  --gold: #b48335;
+  --body-text: #344e63;
   min-height: 100vh;
   display: flex;
   align-items: center;

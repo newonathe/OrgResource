@@ -106,7 +106,7 @@ function WorkspaceClassificationGate({ environment, retry }: { environment: Excl
         </>
         : <>
           <p className="workspace-gate-description" role="alert">The server could not confirm the workspace classification. Your workspace remains protected until it can be verified.</p>
-          <Button onClick={retry}>Retry classification</Button>
+          <Button variant="primary" onClick={retry}>Retry classification</Button>
         </>}
     </section>
   </main>;

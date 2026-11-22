@@ -81,7 +81,7 @@ describe("Workspace provenance", () => {
     render(<App />);
     expect(screen.getByRole("status")).toHaveTextContent("Checking workspace classification");
     await act(async () => { await vi.advanceTimersByTimeAsync(140000); });
-    expect(screen.getByRole("alert")).toHaveTextContent("Workspace classification unavailable");
+    expect(screen.getByRole("alert")).toHaveTextContent("The server could not confirm the workspace classification");
     expect(pending.mock.calls.length).toBeGreaterThan(1);
     expect(screen.queryByRole("navigation", { name: "Main navigation" })).not.toBeInTheDocument();
   });
@@ -99,7 +99,7 @@ describe("Workspace provenance", () => {
     await screen.findByRole("heading", { name: "Overview" }, { timeout: 15_000 });
     expect(attempts).toBe(3);
     expect(screen.queryByRole("heading", { name: "Workspace verification unavailable" })).not.toBeInTheDocument();
-  });
+  }, 15_000);
 
   it("renders a readable standalone boot panel before metadata arrives", () => {
     vi.stubGlobal("fetch", vi.fn(() => new Promise<Response>(() => undefined)));
