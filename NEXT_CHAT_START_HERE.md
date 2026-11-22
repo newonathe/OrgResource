@@ -1,5 +1,13 @@
 # OrgResource — START HERE for the next chat or Codex session
 
+## 2026-11-23 release verification — hosted refresh UX
+
+- Full exact-source GitHub Actions PASS on d16485790539618373577d52ea7322453c903655: [run 45069092871](https://github.com/newonathe/OrgResource/actions/runs/45069092871), all three jobs including Java 8, Extended C Java/MySQL/Newman/Playwright, React. The new transient-classification-retry Playwright case passed, and the fail-closed malformed-classification browser test passed.
+- Controlled selective promotion pushed to Northflank staging branch commit **32a4687bd745bfd37b547867e5a72ae1ea623794**. Paths include frontend startup UI, CSS, related unit/Playwright tests, prior C8 governance test and current public-safe handoff/oracles. Staging branch history preserved; no main merge.
+- At verification, Northflank was **building**, status pending; a successful GitHub CI run and staging branch pointer do not prove the service build succeeded or the live container switched. Check [service build](https://app.northflank.com/t/newonathes-team/project/default/services/orgresource/builds/solid-beginning-6417), actual running container revision, and a real hard-refresh + DevTools Network/status before marking the user-visible defect resolved.
+- Current UI behavior after promotion: high-contrast branded loading card, bounded retry of transient read-only classification GET for up to about 120 seconds, explicit fail-closed error and Retry classification if unverified. If it remains blocked, inspect the public /api/v2/demo/metadata request **without sharing session cookies, credentials or tokens**.
+- C8 is still BLOCKED on per-route authorized/denied role+object+tenant proof, DB receipts and independent review; the source-authored Project Work/Reporting 11-route oracle is preparation only. 96-org hosted import NOT_RUN. No live MySQL or app schema change.
+
 ## Hosted refresh gate fix and next C8 source review (2026-11-23)
 
 - User screenshot after hard refresh: nearly empty pale gray canvas with faint white “Checking workspace classification…” centered. Confirmed source: App.tsx DemoDisclosure blocked all content during public GET /api/v2/demo/metadata; the prior 10-second timeout did not handle slow Northflank starts well, and .boot-state referenced a CSS variable defined only inside .app-shell. This is a **loading/availability UX defect**, not evidence of a credential failure or permission bypass.

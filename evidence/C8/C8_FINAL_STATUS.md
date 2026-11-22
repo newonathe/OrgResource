@@ -25,3 +25,7 @@ A source-reviewed pre-execution policy oracle for 20 Identity/Governance operati
 - Source policy oracles now documented for 31/93 annotated operations: 20 identity/governance + 8 Project Work + 3 Reporting; 62 routes remain to source-review. Counts are preparatory review only; individual receipts and independent acceptance remain UNMAPPED.
 - Prior C8 governance refusal and 88-route anonymous barrier tests were fully green at bb3f1a8d ([run](https://github.com/newonathe/OrgResource/actions/runs/45067408499)). C8 remains BLOCKED despite these tests.
 - Hosted hard-refresh loading display was nearly blank and used a single 10-second metadata timeout. UX/transient-retry correction e72e32b2 was pushed to feature, not yet verified full-green or deployed at this note. Strict demo classification remains fail-closed; hosted workspaces must not show before public metadata confirmation.
+
+## Hosted refresh CI/release result (2026-11-23)
+
+Feature source d16485790539618373577d52ea7322453c903655 passed all three GitHub Actions jobs ([run 45069092871](https://github.com/newonathe/OrgResource/actions/runs/45069092871)), including browser recovery after temporary provenance endpoint 503 and fail-closed rejection of malformed classification. The tested fix was selectively promoted as staging commit 32a4687bd745bfd37b547867e5a72ae1ea623794. Northflank build status was still pending at this note; running image and user hard-refresh proof remain unverified. UI fix does not close C8 authorization. Formal gate remains BLOCKED.
