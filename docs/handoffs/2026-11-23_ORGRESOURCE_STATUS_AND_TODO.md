@@ -1,5 +1,25 @@
 # OrgResource — next tasks, remaining work and delivery gates
 
+## USER-ORDERED P0 — Populate existing Northflank with exact approved 96-workspace demo
+
+**Latest owner decision, 2026-11-23:** This is the active main engineering priority. [Issue #26](https://github.com/newonathe/OrgResource/issues/26) and [runnable/preflight safety runbook](../deployment/P0_NORTHFLANK_DEMO_POPULATION_2026-11-23.md). C8 14-route stock evidence work stays open, but follows prerequisites for this hosted demo. **LIVE_IMPORT_NOT_RUN.**
+
+- [x] Source finding: original `--c8-local-demo-import` is fresh-schema-only; existing Northflank DB is populated. Never use it there.
+- [x] Source change `6c7fb265`: complete SHA-verified mixed-original/demo cohort classifier with fail-closed cases + tests; awaits exact runtime proof.
+- [x] Source change `aa757ef9`: dedicated **read-only** target and exact-private-plan preflight CLI + negative tests; awaits CI and actual DB execution.
+- [ ] Check CI at both commits and fix only real build/test defects; verify final SHA and original unit + browser suites.
+- [ ] Secure exact private manifest/plan in authorized operator runtime; SHA-256 verify `57f1f0c6...` and `3b0f54da...`. Do not commit.
+- [ ] Verify actual Northflank MySQL/schema, running image, original OWNER+org with **read-only** preflight.
+- [ ] Complete native backup, off-host encrypted backup and independent isolated RESTORE with original-row/owner login proof.
+- [ ] Build distinct additive importer preserving existing owner/org, safely replaying 96 workspaces (3/8 isolated test first, full approved fixture only after).
+- [ ] Test idempotency/refusal on repeated/partial import, synthetic provenance, all stock/receipts/role isolation, resource capacity and original data unchanged.
+- [ ] Obtain independent review; perform a controlled manual Northflank job only with real verified prerequisites; inspect actual website and log counts.
+- [ ] Course A separate owner Canvas/demo/authorship obligations; no impact on immutable source.
+
+**Note:** Code pushes, feature CI and a preflight are not proof that data exists on the deployed website. No Northflank database mutation was performed by this assistant session.
+
+---
+
 ## Latest execution addendum — two bounded cycles, 2026-11-23
 
 **Current PR #25 source audit head before this synchronization:** `5b1c4826d8d5f91faab1eb609ad29c94fdec033b` (subsequent documentation commit will advance it). No merge, no staging deployment, no production MySQL changes.

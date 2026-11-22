@@ -34,3 +34,8 @@ The generated full fixture is approximately 19.3 MB of plan JSON, 96 workspaces,
 (a) Reproduce original local fixture validation; (b) test separate importer on isolated cloned staging database; (c) compare before/after database snapshots and all invariants; (d) approve production-safe bounded execution; (e) execute operator-controlled job once; (f) independently verify app UI, 96 names, tenancy and simulated provenance; (g) record restoration procedure.
 
 **Current status:** Manifest not mounted here; no cloud backup/restore proved; no additive importer exists; no cloud import performed. It would be inaccurate to claim the live site is populated.
+
+
+## 2026-11-23 user reprioritization and concrete next work
+
+Main P0 is now exact approved demo data on the **existing Northflank deployment**, safely preserving original owner and organization. [Canonical issue #26](https://github.com/newonathe/OrgResource/issues/26) and [current safety/preflight runbook](P0_NORTHFLANK_DEMO_POPULATION_2026-11-23.md). A fail-closed mixed-cohort classifier and nonmutating preflight code were pushed as feature commits `6c7fb265` and `aa757ef9`; their execution/CI status must be verified against current refs. **No additive importer or live database mutation was executed by those commits.** Do not automatically promote them to staging; check existing tests that deliberately reject incomplete mixed cohorts and retain all original organizations and permissions.

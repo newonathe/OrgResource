@@ -1,5 +1,16 @@
 # OrgResource — START HERE for the next chat or Codex session
 
+## P0 USER PRIORITY OVERRIDE — Northflank live approved 96-workspace demo (2026-11-23)
+
+**This now precedes the optional C8 14-stock-route batch.** Owner wants *the existing deployed Northflank application*, preserving current owner/original workspaces and data, populated with the exact approved directory cohort and fictional histories. Canonical [P0 issue #26](https://github.com/newonathe/OrgResource/issues/26) and [safety/progress runbook](docs/deployment/P0_NORTHFLANK_DEMO_POPULATION_2026-11-23.md). No unauthorized shortcuts.
+
+- Approved source manifest SHA: `57f1f0c680041c39dcf7644a1acca5fcc75dc7d525262547842389da7540b9a2`; full plan SHA: `3b0f54da85cadb77cd7d8ab2d50c1fdb4b4ee36710b803cf904227e13f08927c`. The exact private source/plan are **not mounted in the current GitHub-only session** and must not be recreated from guesses.
+- Source code pushed: `6c7fb265` guard for complete SHA-verified *mixed* 96-org classification with original owner account retained, and `aa757ef9` separate READ-ONLY `--c8-hosted-demo-preflight`. **Neither executes an import.** These commits require exact GitHub CI and isolated MySQL proof before staging.
+- Remaining P0 blockers: no authenticated Northflank/DB control in this session; no private plan bytes; no verified hosted backup/off-host restore; separate additive importer/isolated clone test still missing; hosting resource/cost check outstanding. No hosted DB write or deploy done.
+- **Next tasks:** first diagnose green/red CI for `aa757ef9`; then implement/test separate non-web additive importer in isolated MySQL using *preexisting* owner+org, 3/8 fictional test profiles and later privately verified full plan; independently restore the existing Northflank DB in isolation; only then manual controlled job/hosted verification. Do not push the private plan or credentials; do not merge/release/send SMS/spend; retain frozen Course A and independent C8 route gate.
+- Existing C8 64/93 source policy oracle and 29 remaining are still open, **temporarily lower priority** than safe demo population. C8 remains BLOCKED. Academic Canvas/Dec 5 deadline is a separate mandatory owner task.
+
+
 ## NEWEST: 2026-11-23 two-cycle execution continuation (source-audit SHA `5b1c4826`)
 
 - PR #25 remains **DRAFT and C8 BLOCKED**. Cycle 1 changed only the packaged browser test at code SHA [`afd5682b7`](https://github.com/newonathe/OrgResource/commit/afd5682b7b230fb82d694d83028c37f90224240d): before polling `GET /api/requirements`, it now checks exact selected IDs and POST 201 JSON IDs for reusable and consumable creates. It is a **diagnostic**, not an implemented backend fix. Source/report: [C8 cycle 1](evidence/C8/C8_CYCLE_01_REQUIREMENT_POST_DIAGNOSTIC_2026-11-23.md).
