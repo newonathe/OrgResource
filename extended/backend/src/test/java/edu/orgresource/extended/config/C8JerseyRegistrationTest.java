@@ -53,9 +53,6 @@ class C8JerseyRegistrationTest {
             Class<?> type = expected.getKey();
             Path root = type.getAnnotation(Path.class);
             assertNotNull(root, "Missing resource @Path: " + type.getSimpleName());
-            Produces produces = type.getAnnotation(Produces.class);
-            assertNotNull(produces, "Missing response media type: " + type.getSimpleName());
-            assertTrue(Set.of(produces.value()).contains(MediaType.APPLICATION_JSON));
             int perClass = 0;
             for (Method method : type.getDeclaredMethods()) {
                 String verb = null;
@@ -66,6 +63,13 @@ class C8JerseyRegistrationTest {
                     verb = http.value();
                 }
                 if (verb == null) continue;
+                // Jersey allows @Produces on the class or an individual method.
+                // ReportingResource intentionally negotiates JSON and CSV per handler.
+                Produces produces = method.getAnnotation(Produces.class);
+                if (produces == null) produces = type.getAnnotation(Produces.class);
+                assertNotNull(produces, "Missing response media type: " + type.getSimpleName() + "." + method.getName());
+                assertTrue(Set.of(produces.value()).contains(MediaType.APPLICATION_JSON),
+                        "Expected JSON-compatible response contract: " + type.getSimpleName() + "." + method.getName());
                 Path suffix = method.getAnnotation(Path.class);
                 String fullPath = "/api" + root.value() + (suffix == null ? "" : suffix.value());
                 assertTrue(keys.add(verb + " " + fullPath), "Duplicate HTTP route: " + verb + " " + fullPath);
