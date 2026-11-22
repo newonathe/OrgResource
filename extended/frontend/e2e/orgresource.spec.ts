@@ -558,11 +558,19 @@ test("connected O8–O10 workflows persist through the isolated Java/MySQL backe
   await page.getByLabel("Quantity required").fill("4");
   await page.getByRole("button", { name: "Add requirement" }).click();
   await expect(page.getByText("Requirement saved.")).toBeVisible();
+  // The toast can temporarily reflect the prior mutation; wait for the exact
+  // committed server record before starting the next UI mutation.
+  await expect.poll(async () => (await getJson<Array<{ projectId: number; resourceId: number }>>(page, "/api/requirements"))
+    .filter((item) => item.projectId === updatedProject.id && item.resourceId === reusableId).length,
+    { message: "Reusable Requirement must be persisted before creating the next one", timeout: 15_000 }).toBe(1);
   await page.locator("#requirement-project").selectOption(String(updatedProject.id));
   await page.locator("#requirement-resource").selectOption(String(consumableId));
   await page.getByLabel("Quantity required").fill("3");
   await page.getByRole("button", { name: "Add requirement" }).click();
   await expect(page.getByText("Requirement saved.")).toBeVisible();
+  await expect.poll(async () => (await getJson<Array<{ projectId: number; resourceId: number }>>(page, "/api/requirements"))
+    .filter((item) => item.projectId === updatedProject.id && item.resourceId === consumableId).length,
+    { message: "Consumable Requirement must be persisted before checking allocations", timeout: 15_000 }).toBe(1);
   const requirements = await getJson<Array<{ id: number; projectId: number; resourceId: number; quantity: number; allocatedQuantity: number; shortageQuantity: number }>>(page, "/api/requirements");
   const reusableRequirement = requirements.find((item) => item.projectId === updatedProject.id && item.resourceId === reusableId);
   const consumableRequirement = requirements.find((item) => item.projectId === updatedProject.id && item.resourceId === consumableId);
