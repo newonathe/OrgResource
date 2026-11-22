@@ -1,5 +1,7 @@
 # OrgResource implementation rules
 
+> **CURRENT STATE (read first):** [NEXT_CHAT_START_HERE.md](NEXT_CHAT_START_HERE.md) is the dated public-safe C8/Northflank continuation record. Fetch live GitHub heads and CI anew before changing code; the historical root README describes Course A and must not be mistaken for the hosted Extended C application. Private credentials, recovery codes, original restricted evidence, and the approved local demo manifest must never be committed.
+
 ## GOAT and Superpowers — every repository task
 
 - Apply the [GOAT routing skill](.agents/skills/orgresource-goat/SKILL.md) at intake and when evidence changes task risk. Choose the executor, model family, supported reasoning effort, and verification depth for each coherent task. Prefer deterministic commands for exact checks. Route bounded work to Luna, scoped React/API/build tasks to Terra, cross-file engineering and independent review to Sol, and high-impact synthesis or unresolved critical decisions to Astra when the runtime offers those choices.

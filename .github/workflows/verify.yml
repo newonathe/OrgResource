@@ -161,6 +161,8 @@ jobs:
           node-version: '24'
           cache: npm
           cache-dependency-path: extended/frontend/package-lock.json
+      - name: Check tracked 93-route C8 source inventory
+        run: node scripts/verify-c8-routes.mjs
       - name: Generate ephemeral contact-encryption test key
         shell: bash
         run: |
@@ -201,6 +203,11 @@ jobs:
           plan="$RUNNER_TEMP/c8-fictional-plan.json"
           python3 scripts/generate-c8-demo.py --profile small --seed c8-fixture-proof-v1 --output "$plan"
           digest="$(sha256sum "$plan" | cut -d' ' -f1)"
+          python3 scripts/preflight-c8-demo-plan.py --plan "$plan" --sha256 "$digest" --profile small
+          if python3 scripts/preflight-c8-demo-plan.py --plan "$plan" --sha256 "$(printf '%064d' 0)" --profile small; then
+            echo "Incorrect fixture hash unexpectedly passed C8 preflight" >&2
+            exit 1
+          fi
           EXT_C8_DEMO_TARGET="$schema" EXT_C8_DEMO_CONFIRM_TARGET="IMPORT $schema" EXT_C8_DEMO_PORT=3306 \
             EXT_C8_DEMO_PLAN="$plan" EXT_C8_DEMO_PLAN_SHA256="$digest" EXT_C8_DEMO_OWNER_PASSWORD="$owner_password" \
             EXT_DB_USER=c8_ci_runtime EXT_DB_PASSWORD="$runtime_password" \

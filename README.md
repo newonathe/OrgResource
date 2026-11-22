@@ -1,5 +1,7 @@
 # OrgResource
 
+> **Current multi-organization staging / C8 development (November 23, 2026):** [NEXT_CHAT_START_HERE.md](NEXT_CHAT_START_HERE.md). This README chiefly documents frozen Course Final A. Extended C is separately implemented under extended/, has a working Northflank staging deployment and remains **C8 technically blocked** pending the bounded authorization acceptance and independent review. Successful login and green CI do not mean production approval.
+
 OrgResource is a local academic application for planning one student organization’s projects, resource requirements, inventory commitments, and allocation history. It is a CSCI 180.05 course project, not an Ateneo-endorsed or production campus service.
 
 ## Current implementation
