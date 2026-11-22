@@ -83,9 +83,9 @@ export function ProjectWorkPage({ orgId, role }: { orgId: string; role: Role }) 
   return <section className="page-shell">
     <PageHeader eyebrow="Organization" title="Project work"
       description={role === "LEAD" ? "Manage the Projects assigned to your membership." : "Manage Project assignments, Requirements and linked requests."} />
-    <GlassPanel tilt={false}>
+    <GlassPanel tilt={false} className="project-work-panel">
       <PanelHeading title="Available Projects" />
-      <WorkRows view={list} label="Project work pages" empty="No Projects are available for this membership.">
+      <WorkRows view={list} label="Project work pages" empty={role === "LEAD" ? "No Projects are assigned to this membership yet. Ask an owner or admin to assign you a Project." : "No Projects are available yet. Create a fictional Project from Projects to begin."}>
         <ul className="member-list">{list.rows.map(project => <li className="member-row" key={project.id}>
           <div><strong>{project.name}</strong><p>{formatManila(project.startAt)} to {formatManila(project.endAt)}</p></div>
           <Button onClick={() => setSelected(project)}>Open {project.name}</Button>
@@ -148,7 +148,7 @@ function ProjectWorkspace({ orgId, role, project, onUpdate }: {
 
   return <div className="page-shell">
     {actions.feedback(!allocations.loading && !requirements.loading)}
-    <GlassPanel tilt={false}>
+    <GlassPanel tilt={false} className="project-work-panel">
       <PanelHeading title={project.name}><Button disabled={blocked}
         onClick={() => void actions.run(async () => onUpdate(await projectWorkApi.project(orgId, id)), "Project refreshed.")}>Refresh Project</Button></PanelHeading>
       <form className="auth-form" onSubmit={editProject} key={project.version}>
@@ -163,7 +163,7 @@ function ProjectWorkspace({ orgId, role, project, onUpdate }: {
           }}>Delete Project</Button></div>
       </form>
     </GlassPanel>
-    {role !== "LEAD" && <GlassPanel tilt={false}>
+    {role !== "LEAD" && <GlassPanel tilt={false} className="project-work-panel">
       <PanelHeading title="Assigned lead" /><p>{project.leadMembershipId ? "This Project has an assigned lead." : "No lead is assigned."}</p>
       <RelatedSelect id="project-lead" label="Eligible Project lead" load={loadLeads} selection={lead} onChange={setLead}
         optionLabel={item => item.displayName} chooseFirst={false} />
@@ -172,7 +172,7 @@ function ProjectWorkspace({ orgId, role, project, onUpdate }: {
           Clear Project lead
         </Button></div>
     </GlassPanel>}
-    <GlassPanel tilt={false}>
+    <GlassPanel tilt={false} className="project-work-panel">
       <PanelHeading title="Project Requirements" />
       <form className="auth-form" onSubmit={event => {
         event.preventDefault();
@@ -202,7 +202,7 @@ function ProjectWorkspace({ orgId, role, project, onUpdate }: {
         </li>)}</ul>
       </WorkRows>
     </GlassPanel>
-    {requirement && <GlassPanel tilt={false}><PanelHeading title={"Request " + requirement.resourceName} />
+    {requirement && <GlassPanel tilt={false} className="project-work-panel"><PanelHeading title={"Request " + requirement.resourceName} />
       <form className="auth-form" onSubmit={createRequest}>
         <RelatedSelect id="linked-borrower" label="Borrower membership" selection={borrower} onChange={setBorrower}
           load={loadBorrowers} optionLabel={item => item.displayName} chooseFirst={false}
@@ -212,7 +212,7 @@ function ProjectWorkspace({ orgId, role, project, onUpdate }: {
         <Button disabled={blocked || (!borrower && requirement.resourceType === "REUSABLE")}>Save linked request</Button>
       </form>
     </GlassPanel>}
-    <GlassPanel tilt={false}><PanelHeading title="Project Allocations" />
+    <GlassPanel tilt={false} className="project-work-panel"><PanelHeading title="Project Allocations" />
       <WorkRows view={allocations} label="Project work Allocation pages" empty="No Allocation requests on this Project page.">
         <ul className="member-list">{allocations.rows.map(row => <li className="member-row" key={row.id}>
           <div><strong>{row.resourceName}</strong><p>{row.borrowerNameSnapshot} · {row.quantity} units</p>
@@ -242,7 +242,7 @@ export function BorrowedAllocationsPage({ orgId }: { orgId: string }) {
   return <section className="page-shell">
     <PageHeader eyebrow="Account" title="My borrowed resources" description="Allocations linked to your membership in this workspace." />
     {actions.feedback(!view.loading && !view.error)}
-    <GlassPanel tilt={false}><PanelHeading title="My Allocations" />
+    <GlassPanel tilt={false} className="project-work-panel"><PanelHeading title="My Allocations" />
       <WorkRows view={view} label="Borrowed Allocation pages" empty="No Allocations are linked to this membership.">
         <ul className="member-list">{view.rows.map(row => <li className="member-row" key={row.id}>
           <div><strong>{row.resourceName}</strong><p>{row.projectName} · {row.quantity} units · {formatManila(row.createdAt)}</p>

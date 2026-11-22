@@ -1160,3 +1160,30 @@ test("Resource Library traverses 101 matching resources with bounded server page
   await expect(page.getByRole("navigation", { name: "Reminder pages" }).getByRole("status")).toContainText("Page 1");
   expect(legacyReads).toEqual([]);
 });
+
+
+test("Project work panels contain headings at desktop and mobile sizes", async ({ page }) => {
+  for (const viewport of [{ width: 860, height: 510 }, { width: 375, height: 667 }]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/#/project-work");
+    const panel = page.locator(".project-work-panel").first();
+    const heading = panel.getByRole("heading", { name: "Available Projects" });
+    await expect(heading).toBeVisible();
+    const geometry = await panel.evaluate(node => {
+      const container = node.getBoundingClientRect();
+      const title = node.querySelector("h2")!.getBoundingClientRect();
+      return { left: container.left, right: container.right, titleLeft: title.left, titleRight: title.right };
+    });
+    expect(geometry.titleLeft).toBeGreaterThanOrEqual(geometry.left + 8);
+    expect(geometry.titleRight).toBeLessThanOrEqual(geometry.right - 8);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(viewport.width);
+    if (viewport.width > 680) {
+      const sidebar = page.locator("aside.sidebar");
+      expect(await sidebar.evaluate(node => getComputedStyle(node).overflowY)).toBe("auto");
+      const accountLink = page.getByRole("navigation", { name: "Main navigation" })
+        .getByRole("link", { name: "Account and security" });
+      await accountLink.scrollIntoViewIfNeeded();
+      await expect(accountLink).toBeInViewport();
+    }
+  }
+});

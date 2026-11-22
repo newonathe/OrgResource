@@ -631,3 +631,33 @@ button { color: inherit; }
   font-size: 0.875rem;
   line-height: 1.45;
 }
+
+/* C8 hosted UI containment: keep navigation and long organization text inside their surfaces. */
+.sidebar {
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
+}
+.sidebar-nav, .nav-group, .nav-link, .brand-lockup { min-width: 0; }
+.nav-link { max-width: 100%; }
+.nav-link .nav-icon { flex: 0 0 19px; }
+.nav-link > span:last-child { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+.brand-lockup > span:last-child { min-width: 0; overflow-wrap: anywhere; }
+:where(.page-shell, .page-heading, .panel-heading, .member-row, .top-toolbar, .main-content, .glass-panel) {
+  min-width: 0;
+}
+:where(.page-heading, .panel-heading, .member-row, .notice, .state-block, .modal-surface) {
+  overflow-wrap: anywhere;
+}
+.project-work-panel {
+  padding: clamp(16px, 2.5vw, 24px);
+}
+.project-work-panel :is(.panel-heading, .member-list, .member-row) { min-width: 0; }
+.project-work-panel .member-row > * { min-width: 0; max-width: 100%; }
+.project-work-panel .member-row .button { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+@media (max-width: 680px) {
+  .project-work-panel { padding: 15px; }
+  .mobile-more-menu, .mobile-more-menu .sidebar-nav, .mobile-more-menu .nav-group { min-width: 0; }
+}
