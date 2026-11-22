@@ -1,5 +1,12 @@
 # OrgResource — START HERE for the next chat or Codex session
 
+## Current C8 follow-on work — governance record-level refusals
+
+- New backend test: `C1IdentityAcceptanceTest.C8GovernanceDenialsLeaveExistingRecordsAndAuditStateUnchanged` (8 refusals against real fictional target records; asserts invitation, membership, audit and transfer postconditions). Created at `f490e34f`. First CI error was **test SQL using nonexistent `organization_id`**, not an authorization defect. Fixed four SQL COUNTs to actual `org_id` at source SHA `83b290cb8d1a850a364dc93519d277165788bb33`.
+- [GitHub workflow](https://github.com/newonathe/OrgResource/actions/runs/45067005618) had passed React, Java 8 and the Extended C isolated backend/MySQL tests at the time of this note; full Newman/Playwright was still running. Confirm final status independently before staging.
+- **Next bounded Codex prompt:** [docs/CODEX_NEXT_C8_OBJECT_SCOPE.md](docs/CODEX_NEXT_C8_OBJECT_SCOPE.md). It prioritizes the 73 routes outside the identity/governance source oracle, real existing-target authorized and denied object/role/tenant tests, SQL postconditions, source-to-receipt reconciliation and independent review. Preserve C8 BLOCKED until full v1 acceptance proof.
+- No live Northflank MySQL writes or migrations performed. Latest fully green staging promotion is still `8d849c256e163783639408e322cbf9bfc96a0226` (build success; running SHA/hosted smoke not verified).
+
 ## C8 next verification checkpoint — 2026-11-23 (source at `5a14714e868c`)
 
 - **Stage promotion complete:** `8d849c256e163783639408e322cbf9bfc96a0226` carries the previous three-job-green registration/Playwright/Java-8 batch to `deploy/northflank-c8-staging`. GitHub Northflank service **build succeeded**; the exact running container SHA and hosted browser smoke are still unverified.
