@@ -3941,9 +3941,9 @@ class C1IdentityAcceptanceTest {
         assertEquals(201, invitation.statusCode(), invitation.body());
         UUID invitationId = UUID.fromString(json(invitation).getAsJsonObject("data").get("id").getAsString());
 
-        long initialInvitations = jdbc.queryForObject("SELECT COUNT(*) FROM invitation WHERE organization_id=?",
+        long initialInvitations = jdbc.queryForObject("SELECT COUNT(*) FROM invitation WHERE org_id=?",
                 Long.class, owner.orgDbId);
-        long initialTransfers = jdbc.queryForObject("SELECT COUNT(*) FROM ownership_transfer WHERE organization_id=?",
+        long initialTransfers = jdbc.queryForObject("SELECT COUNT(*) FROM ownership_transfer WHERE org_id=?",
                 Long.class, owner.orgDbId);
         long initialAudits = jdbc.queryForObject("SELECT COUNT(*) FROM audit_event WHERE org_id=?",
                 Long.class, owner.orgDbId);
@@ -3985,9 +3985,9 @@ class C1IdentityAcceptanceTest {
         assertEquals(Invitation.Status.INVITED, invitationAfter.status);
         assertEquals(invitationVersion, invitationAfter.version);
         assertEquals(initialInvitations, jdbc.queryForObject(
-                "SELECT COUNT(*) FROM invitation WHERE organization_id=?", Long.class, owner.orgDbId));
+                "SELECT COUNT(*) FROM invitation WHERE org_id=?", Long.class, owner.orgDbId));
         assertEquals(initialTransfers, jdbc.queryForObject(
-                "SELECT COUNT(*) FROM ownership_transfer WHERE organization_id=?", Long.class, owner.orgDbId));
+                "SELECT COUNT(*) FROM ownership_transfer WHERE org_id=?", Long.class, owner.orgDbId));
         assertEquals(initialAudits, jdbc.queryForObject(
                 "SELECT COUNT(*) FROM audit_event WHERE org_id=?", Long.class, owner.orgDbId));
         assertEquals(1, memberships.countEffectiveActiveOwners(owner.orgDbId));
