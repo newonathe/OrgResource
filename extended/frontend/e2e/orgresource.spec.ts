@@ -575,8 +575,18 @@ test("connected O8–O10 workflows persist through the isolated Java/MySQL backe
   const updatedProject = projectRows.find((item) => item.name === updatedProjectName)!;
   await page.locator("#requirement-project").selectOption(String(updatedProject.id));
   await page.locator("#requirement-resource").selectOption(String(reusableId));
+  await expect(page.locator("#requirement-project")).toHaveValue(String(updatedProject.id));
+  await expect(page.locator("#requirement-resource")).toHaveValue(String(reusableId));
   await page.getByLabel("Quantity required").fill("4");
+  const reusableCreateResponse = page.waitForResponse(response =>
+    new URL(response.url()).pathname === "/api/requirements" && response.request().method() === "POST");
   await page.getByRole("button", { name: "Add requirement" }).click();
+  const reusableCreated = await reusableCreateResponse;
+  expect(reusableCreated.status(), "Reusable Requirement create must confirm a committed row").toBe(201);
+  const reusableBody = await reusableCreated.json() as { data?: { projectId: number; resourceId: number; quantity: number }; projectId?: number; resourceId?: number; quantity?: number };
+  expect(reusableBody.data ?? reusableBody, "Reusable Requirement confirmation must match the selected Project/Resource").toMatchObject({
+    projectId: updatedProject.id, resourceId: reusableId, quantity: 4,
+  });
   await expect(page.getByText("Requirement saved.")).toBeVisible();
   // The toast can temporarily reflect the prior mutation; wait for the exact
   // committed server record before starting the next UI mutation.
@@ -585,8 +595,18 @@ test("connected O8–O10 workflows persist through the isolated Java/MySQL backe
     { message: "Reusable Requirement must be persisted before creating the next one", timeout: 15_000 }).toBe(1);
   await page.locator("#requirement-project").selectOption(String(updatedProject.id));
   await page.locator("#requirement-resource").selectOption(String(consumableId));
+  await expect(page.locator("#requirement-project")).toHaveValue(String(updatedProject.id));
+  await expect(page.locator("#requirement-resource")).toHaveValue(String(consumableId));
   await page.getByLabel("Quantity required").fill("3");
+  const consumableCreateResponse = page.waitForResponse(response =>
+    new URL(response.url()).pathname === "/api/requirements" && response.request().method() === "POST");
   await page.getByRole("button", { name: "Add requirement" }).click();
+  const consumableCreated = await consumableCreateResponse;
+  expect(consumableCreated.status(), "Consumable Requirement create must confirm a committed row").toBe(201);
+  const consumableBody = await consumableCreated.json() as { data?: { projectId: number; resourceId: number; quantity: number }; projectId?: number; resourceId?: number; quantity?: number };
+  expect(consumableBody.data ?? consumableBody, "Consumable Requirement confirmation must match the selected Project/Resource").toMatchObject({
+    projectId: updatedProject.id, resourceId: consumableId, quantity: 3,
+  });
   await expect(page.getByText("Requirement saved.")).toBeVisible();
   await expect.poll(async () => (await getJson<Array<{ projectId: number; resourceId: number }>>(page, "/api/requirements"))
     .filter((item) => item.projectId === updatedProject.id && item.resourceId === consumableId).length,
