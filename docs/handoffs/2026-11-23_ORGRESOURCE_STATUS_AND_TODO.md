@@ -1,5 +1,21 @@
 # OrgResource — next tasks, remaining work and delivery gates
 
+## P0 EXECUTION CHECKPOINT (2026-11-23)
+
+- [x] Mixed complete 96-org classifier, all 3 CI jobs green at `6c7fb265` ([45072962828](https://github.com/newonathe/OrgResource/actions/runs/45072962828)).
+- [x] Read-only exact private-plan and hosted target preflight, all 3 CI jobs green at `aa757ef9` ([45073265542](https://github.com/newonathe/OrgResource/actions/runs/45073265542)).
+- [x] Restricted three-fictional-workspace additive source method + CI harness pushed; `af479c9f` repaired malformed CI workflow by extracting `scripts/verify-c8-additive-isolated.sh`. **This is SOURCE_CHANGED, NOT VERIFIED; CI 45073950363 pending.**
+- [ ] **P0-NEXT-01:** Inspect [45073950363](https://github.com/newonathe/OrgResource/actions/runs/45073950363) final job steps. Fix observed errors until exact-code CI and repeat-refusal + preservation pass. Previous workflow push runs 45073683279, 45073770086 and 45073796380 were FAILURES (no jobs, malformed definition).
+- [ ] **P0-NEXT-02:** Add genuine isolated 8-workspace proof with original account/org, row hashes and ledger invariants; review synthetic audit actor attribution and unique OWNER invariant.
+- [ ] **P0-NEXT-03:** Implement distinct opt-in additive hosted importer after isolated proof, with backup/restore evidence checks; keep read-only preflight and local fresh-schema importer untouched.
+- [ ] **P0-HUMAN:** Secure approved local manifest/plan SHAs, authenticated Northflank exact DB/image/grants/capacity, independent native+off-host encrypted backup and isolated restore. No live data mutation until all are verified.
+- [ ] **P0-FINAL:** Manual owner-authorized job on known target and exact artifact, 96-name/data and actual hosted UX verification, old owner/org unchanged, no SMS, audit/provenance and balances proven.
+- [ ] **ACADEMIC:** Owner checks Canvas current CSCI 180.05 deadline/recording/certification in parallel; frozen Course A unchanged.
+
+**Next copy-ready prompt:** [2026-11-23_CODEX_NEXT_P0_HOSTED_DEMO.md](2026-11-23_CODEX_NEXT_P0_HOSTED_DEMO.md). **Current verdict LIVE_IMPORT_NOT_RUN.**
+
+---
+
 ## USER-ORDERED P0 — Populate existing Northflank with exact approved 96-workspace demo
 
 **Latest owner decision, 2026-11-23:** This is the active main engineering priority. [Issue #26](https://github.com/newonathe/OrgResource/issues/26) and [runnable/preflight safety runbook](../deployment/P0_NORTHFLANK_DEMO_POPULATION_2026-11-23.md). C8 14-route stock evidence work stays open, but follows prerequisites for this hosted demo. **LIVE_IMPORT_NOT_RUN.**

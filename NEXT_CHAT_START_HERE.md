@@ -1,5 +1,13 @@
 # OrgResource — START HERE for the next chat or Codex session
 
+## 2026-11-23 P0 execution update — safe code, isolated proof not yet certified
+
+- Owner-directed [P0 issue #26](https://github.com/newonathe/OrgResource/issues/26) is first. Status **LIVE_IMPORT_NOT_RUN**, exact private full manifest/plan inaccessible to this GitHub-connected session, Northflank console/DB control and independent backup/restore NOT RUN.
+- **CI VERIFIED:** [run 45072962828](https://github.com/newonathe/OrgResource/actions/runs/45072962828) at `6c7fb265` passed all three jobs for mixed-original/demo classification; [run 45073265542](https://github.com/newonathe/OrgResource/actions/runs/45073265542) at `aa757ef9` passed all three jobs for read-only exact-source host preflight.
+- **ISOLATED ADDITIVE EXPERIMENT:** `455ca884` introduced disposable-loopback `--c8-additive-demo-isolated-proof` and a 3-workspace test. CI YAML workflow registration failed at `455ca884`, `531e7edd`, `7fe35bda` (invalid workflow, no jobs); follow-up `af479c9f34de04a471c39b92b15d93046829f156` restored previous workflow and calls standalone `scripts/verify-c8-additive-isolated.sh`. [Run 45073950363](https://github.com/newonathe/OrgResource/actions/runs/45073950363) **IN_PROGRESS** at this update. No additive test pass is yet claimed.
+- **NEXT:** See [P0 next execution prompt](docs/handoffs/2026-11-23_CODEX_NEXT_P0_HOSTED_DEMO.md). Inspect exact CI for isolated test first; fix failures, extend to 8 test workspaces, independently review original record preservation, synthetic audit identity, build separate production-safe importer, and gate any host write on exact private plan + independent off-host restore. C8 authorization separate BLOCKED; Course A academic deadline still owner-only.
+
+
 ## P0 USER PRIORITY OVERRIDE — Northflank live approved 96-workspace demo (2026-11-23)
 
 **This now precedes the optional C8 14-stock-route batch.** Owner wants *the existing deployed Northflank application*, preserving current owner/original workspaces and data, populated with the exact approved directory cohort and fictional histories. Canonical [P0 issue #26](https://github.com/newonathe/OrgResource/issues/26) and [safety/progress runbook](docs/deployment/P0_NORTHFLANK_DEMO_POPULATION_2026-11-23.md). No unauthorized shortcuts.

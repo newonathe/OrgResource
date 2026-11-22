@@ -61,3 +61,12 @@ Northflank supports [manual jobs](https://northflank.com/docs/v1/application/run
 4. When all gates pass, use a manual job rather than a web route, record proof and only then claim the live site populated.
 
 **Verdict:** `LIVE_IMPORT_NOT_RUN`. Current repository improvements are preparation; the production importer, verified private source and Northflank operator proof remain to be completed. Keep this task P0 before optional route-oracle expansion, while separately protecting Course Final A's printed December 5 deadline.
+
+
+## 2026-11-23 execution result after initial P0 documentation
+
+- Mixed original + full approved demo classifier source `6c7fb265`: exact-source [CI 45072962828](https://github.com/newonathe/OrgResource/actions/runs/45072962828) **SUCCESS all three jobs**. No host execution.
+- Read-only private-approved-plan target preflight source `aa757ef9`: exact-source [CI 45073265542](https://github.com/newonathe/OrgResource/actions/runs/45073265542) **SUCCESS all three jobs**. No remote DB queried by this ChatGPT session.
+- Additional isolated small-profile code `455ca884` and test-only `--c8-additive-demo-isolated-proof` pushed. Attempts `455ca884`, `531e7edd`, `7fe35bda` had **malformed GitHub Actions workflow registration** (no jobs). `af479c9f34de04a471c39b92b15d93046829f156` restores original workflow structure and invokes standalone `scripts/verify-c8-additive-isolated.sh`; [CI 45073950363](https://github.com/newonathe/OrgResource/actions/runs/45073950363) was **IN_PROGRESS** when recorded. This proof is **NOT YET VERIFIED**.
+- Open independent risk: replaying all historical OWNER actions with the existing human owner account could falsely imply that person performed synthetic historical actions, despite the demo notice. Production importer must separate synthetic historical actor identity from present-day owner access where feasible, while respecting one-OWNER governance invariants. No real historical actions should be represented as authentic.
+- Check [next high-priority executable prompt](../handoffs/2026-11-23_CODEX_NEXT_P0_HOSTED_DEMO.md) and [issue #26](https://github.com/newonathe/OrgResource/issues/26). **LIVE_IMPORT_NOT_RUN; no hosting mutation, no backup/restore proof.**
