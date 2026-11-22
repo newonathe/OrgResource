@@ -661,3 +661,61 @@ button { color: inherit; }
   .project-work-panel { padding: 15px; }
   .mobile-more-menu, .mobile-more-menu .sidebar-nav, .mobile-more-menu .nav-group { min-width: 0; }
 }
+
+
+/* Pre-auth markup is outside .app-shell, so it needs standalone contrast. */
+.workspace-gate {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(20px, 5vw, 48px);
+  background: radial-gradient(circle at 85% 15%, #dbe7ef 0, transparent 46%), #edf1f0;
+  color: #10263d;
+}
+.workspace-gate-panel {
+  width: min(100%, 500px);
+  min-width: 0;
+  padding: clamp(24px, 5vw, 40px);
+  border: 1px solid #c5d2da;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 18px 50px rgba(16, 38, 61, 0.10);
+}
+.workspace-gate-brand { display: flex; align-items: center; gap: 11px; color: #10263d; font-size: 1.15rem; font-weight: 800; }
+.workspace-gate-brand span { color: #276d94; font-size: 1.7rem; }
+.workspace-gate-eyebrow {
+  margin: 28px 0 7px;
+  color: #3e6984;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+.workspace-gate-panel h1 { margin: 0 0 13px; color: #10263d; font-size: clamp(1.55rem, 4vw, 2.25rem); line-height: 1.17; }
+.workspace-gate-description { margin: 0 0 22px; color: #344e63; line-height: 1.65; }
+.workspace-gate-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  color: #1e4d6c;
+  font-size: 0.89rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.workspace-gate-spinner {
+  display: inline-block;
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #acc9dc;
+  border-top-color: #235e81;
+  border-radius: 50%;
+  animation: workspace-gate-spin 0.9s linear infinite;
+}
+@keyframes workspace-gate-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .workspace-gate-spinner { animation: none; border-top-color: #235e81; }
+}
+.boot-state { color: #10263d; background: #edf1f0; }
