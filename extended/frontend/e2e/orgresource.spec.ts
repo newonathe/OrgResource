@@ -558,14 +558,30 @@ test("connected O8–O10 workflows persist through the isolated Java/MySQL backe
   await page.getByLabel("Quantity required").fill("4");
   await page.getByRole("button", { name: "Add requirement" }).click();
   await expect(page.getByText("Requirement saved.")).toBeVisible();
+  // The toast can temporarily reflect the prior mutation; wait for the exact
+  // committed server record before starting the next UI mutation.
+  await expect.poll(async () => (await getJson<Array<{ projectId: number; resourceId: number }>>(page, "/api/requirements"))
+    .filter((item) => item.projectId === updatedProject.id && item.resourceId === reusableId).length,
+    { message: "Reusable Requirement must be persisted before creating the next one", timeout: 15_000 }).toBe(1);
   await page.locator("#requirement-project").selectOption(String(updatedProject.id));
   await page.locator("#requirement-resource").selectOption(String(consumableId));
   await page.getByLabel("Quantity required").fill("3");
   await page.getByRole("button", { name: "Add requirement" }).click();
   await expect(page.getByText("Requirement saved.")).toBeVisible();
+  await expect.poll(async () => (await getJson<Array<{ projectId: number; resourceId: number }>>(page, "/api/requirements"))
+    .filter((item) => item.projectId === updatedProject.id && item.resourceId === consumableId).length,
+    { message: "Consumable Requirement must be persisted before checking allocations", timeout: 15_000 }).toBe(1);
   const requirements = await getJson<Array<{ id: number; projectId: number; resourceId: number; quantity: number; allocatedQuantity: number; shortageQuantity: number }>>(page, "/api/requirements");
-  const reusableRequirement = requirements.find((item) => item.projectId === updatedProject.id && item.resourceId === reusableId)!;
-  const consumableRequirement = requirements.find((item) => item.projectId === updatedProject.id && item.resourceId === consumableId)!;
+  const reusableRequirement = requirements.find((item) => item.projectId === updatedProject.id && item.resourceId === reusableId);
+  const consumableRequirement = requirements.find((item) => item.projectId === updatedProject.id && item.resourceId === consumableId);
+  // Assert the actual committed API state before doing unrelated cleanup. A success toast
+  // alone is not proof that the specific Project/Resource pair was persisted.
+  expect(reusableRequirement, `Missing reusable Requirement for project ${updatedProject.id}, resource ${reusableId}; persisted pairs: ${requirements.map((item) => `${item.projectId}/${item.resourceId}`).join(", ")}`).toBeDefined();
+  expect(consumableRequirement, `Missing consumable Requirement for project ${updatedProject.id}, resource ${consumableId}; persisted pairs: ${requirements.map((item) => `${item.projectId}/${item.resourceId}`).join(", ")}`).toBeDefined();
+  // Explicit guard also narrows TypeScript beyond Playwright's runtime assertion.
+  if (!reusableRequirement || !consumableRequirement) {
+    throw new Error("Persisted Requirement identity could not be established for the current Project.");
+  }
 
   const temporaryProjectStart = manilaWallTime(4 * 24 * 60 * 60 * 1000);
   const temporaryProjectEnd = manilaWallTime(4 * 24 * 60 * 60 * 1000 + 60 * 60 * 1000);
@@ -606,6 +622,12 @@ test("connected O8–O10 workflows persist through the isolated Java/MySQL backe
   await page.getByRole("link", { name: "Resource Library", exact: true }).click();
   await page.getByRole("button", { name: `Delete ${temporaryResource.name}` }).click();
   await confirm(page, /Delete resource/, "Confirm delete");
+
+  // Deleting a separate temporary Requirement must not erase either main Requirement.
+  const retainedRequirements = await getJson<Array<{ id: number; projectId: number; resourceId: number }>>(page, "/api/requirements");
+  expect(retainedRequirements.map((item) => item.id)).toEqual(expect.arrayContaining([
+    reusableRequirement!.id, consumableRequirement!.id,
+  ]));
 
   // Let the server's real Asia/Manila active-window check turn true before allocation approval.
   await page.getByRole("link", { name: "Allocations", exact: true }).click();
