@@ -138,7 +138,7 @@ test("a packaged workspace withholds activity until provenance is verified", asy
     data: { synthetic: true, datasetId: null, demonstrationAsOf: null, notice: "" },
   } }));
   await page.reload();
-  await expect(page.getByRole("alert")).toContainText("Workspace classification unavailable");
+  await expect(page.getByRole("alert")).toContainText("The server could not confirm the workspace classification");
   await expect(page.getByRole("navigation", { name: "Main navigation" })).toHaveCount(0);
   await page.unroute(metadataPath);
   await page.getByRole("button", { name: "Retry classification" }).click();
