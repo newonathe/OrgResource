@@ -85,7 +85,7 @@ export function ProjectWorkPage({ orgId, role }: { orgId: string; role: Role }) 
       description={role === "LEAD" ? "Manage the Projects assigned to your membership." : "Manage Project assignments, Requirements and linked requests."} />
     <GlassPanel tilt={false} className="project-work-panel">
       <PanelHeading title="Available Projects" />
-      <WorkRows view={list} label="Project work pages" empty={role === "LEAD" ? "No Projects are assigned to this membership yet. Ask an owner or admin to assign you a Project." : "No Projects are available yet. Create a fictional Project from Projects to begin."}>
+      <WorkRows view={list} label="Project work pages" empty={role === "LEAD" ? "No Projects are available for this membership." : "No Projects are available yet. Create a fictional Project from Projects to begin."}>
         <ul className="member-list">{list.rows.map(project => <li className="member-row" key={project.id}>
           <div><strong>{project.name}</strong><p>{formatManila(project.startAt)} to {formatManila(project.endAt)}</p></div>
           <Button onClick={() => setSelected(project)}>Open {project.name}</Button>
