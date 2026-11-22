@@ -20,11 +20,12 @@ Commit `afd5682b7b230fb82d694d83028c37f90224240d` changes **only** `extended/fro
 
 No product logic, Java, migration, stock ledger, course artifact, hosting or permissions changed. A response mismatch will now fail with the earlier actionable cause instead of an unexplained missing-row poll. It does **not** itself prove or repair a product defect.
 
-**Execution evidence:** GitHub Actions [45071413400](https://github.com/newonathe/OrgResource/actions/runs/45071413400) was **IN_PROGRESS** when this file was prepared; local runtime execution unavailable. Do not mark this cycle green until that exact SHA's final job output is checked. Independent reviewer: **NOT_RUN**.
+**Execution evidence, after initial report:** GitHub Actions [45071413400](https://github.com/newonathe/OrgResource/actions/runs/45071413400) subsequently completed **SUCCESS** at exact diagnostic code SHA `afd5682b7b230fb82d694d83028c37f90224240d`: Extended Java/MySQL 62 tests, frontend Vitest 36, Newman 90+20 assertions, packaged Playwright 18/18, and separate Java 8/MySQL and React jobs successful. This verifies one run of the stricter test, **not** a product fix, permanent flake elimination, individual C8 route authorization acceptance or independent review. Local runtime execution and independent reviewer: **NOT_RUN**.
 
 ## Next actions before trusting this test
 
-- [ ] **D1:** Inspect final run 45071413400 and packaged Playwright trace/error context. If it fails, identify actual submitted body, response status and returned pair; reproduce a deterministic defect before changing product code.
+- [x] **D1a:** Inspected final run 45071413400 job conclusion and test counts: success, 18/18 Playwright.
+- [ ] **D1b:** Retest the formerly failing Requirement create journey on fresh isolated MySQL and capture submitted JSON + returned IDs + follow-on list row; diagnose if it recurs, without weakening existing assertions.
 - [ ] **D2:** If it passes, repeat/rerun the single flaky scenario on a clean isolated MySQL environment to estimate intermittence; a single green run does not close the C8 reliability concern.
 - [ ] **D3:** Distinguish backend failure, UI selection race, wrong test expectation, and prior notification. Add a focused regression only for a supported causal defect; preserve current strict persistence assertions.
 - [ ] **D4:** Complete independent review, check exact full CI on the final pushed commit and report failures/skips.
