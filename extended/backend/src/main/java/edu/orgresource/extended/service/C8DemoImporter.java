@@ -197,10 +197,14 @@ public class C8DemoImporter {
                 SELECT COUNT(*) FROM membership m JOIN organization o ON o.id=m.org_id
                 WHERE o.demo_plan_sha=? AND m.user_id=? AND m.role='MEMBER' AND m.status='ACTIVE'
                 """, planSha, historicalActor.id);
-        assertCount(expectedActions, """
+        assertCount(expectedRequests, """
+                SELECT COUNT(*) FROM audit_event a JOIN organization o ON o.id=a.org_id
+                WHERE o.demo_plan_sha=? AND a.action='C8_DEMO_REQUEST' AND a.actor_user_id=?
+                """, planSha, historicalActor.id);
+        assertCount(0, """
                 SELECT COUNT(*) FROM audit_event a JOIN organization o ON o.id=a.org_id
                 WHERE o.demo_plan_sha=? AND a.action LIKE 'C8_DEMO_%' AND a.actor_user_id=?
-                """, planSha, historicalActor.id);
+                """, planSha, owner.id);
         assertCount(0, """
                 SELECT COUNT(*) FROM allocation a JOIN organization o ON o.id=a.organization_id
                 WHERE o.demo_plan_sha=? AND (a.sms_consent OR a.phone_ciphertext IS NOT NULL)
