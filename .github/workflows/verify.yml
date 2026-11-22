@@ -39,12 +39,31 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-      - uses: actions/setup-java@v4
+      # An Adoptium release redirect intermittently returned non-gzip HTML in CI.
+      # Keep Java 8 mandatory: only fall back to a second verified JDK vendor.
+      - name: Set up Temurin Java 8
+        id: setup_java8_temurin
+        uses: actions/setup-java@v6
+        continue-on-error: true
         with:
           distribution: temurin
           java-version: '8'
           cache: maven
           cache-dependency-path: backend/pom.xml
+      - name: Fallback to Zulu Java 8 when Temurin download fails
+        if: steps.setup_java8_temurin.outcome == 'failure'
+        uses: actions/setup-java@v6
+        with:
+          distribution: zulu
+          java-version: '8'
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+      - name: Require a real Java 8 compiler
+        run: |
+          set -euo pipefail
+          javac -version
+          javac -version 2>&1 | grep -Eq '^javac 1\\.8\\.'
+          java -version
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
