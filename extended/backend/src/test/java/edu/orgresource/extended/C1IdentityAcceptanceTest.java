@@ -129,6 +129,7 @@ class C1IdentityAcceptanceTest {
     @Autowired Validator jakartaValidator;
     @Autowired jakarta.validation.ValidatorFactory jakartaValidatorFactory;
     @Autowired org.springframework.security.web.SecurityFilterChain securityFilterChain;
+    @Autowired org.glassfish.jersey.server.ResourceConfig c8JerseyResourceConfig;
 
     private TransactionTemplate tx;
     private List<String> bootstrapCodes = List.of();
@@ -3841,6 +3842,84 @@ class C1IdentityAcceptanceTest {
     private static Throwable findCause(Throwable failure, Class<? extends Throwable> type) {
         for (Throwable cause = failure; cause != null; cause = cause.getCause()) if (type.isInstance(cause)) return cause;
         return null;
+    }
+
+
+    @Test @Order(59)
+    void C8AnonymousGateCoversEveryProtectedRegisteredJerseyOperationWithoutBusinessWrites() throws Exception {
+        // An isolated HTTP authentication-boundary check. The separately reviewed
+        // role/tenant/object/field policies are NOT implied by anonymous 401 results.
+        HttpClient anonymous = newClient();
+        HttpResponse<String> csrfResponse = get(anonymous, "/api/v2/auth/csrf");
+        assertEquals(200, csrfResponse.statusCode());
+        String csrf = json(csrfResponse).getAsJsonObject("data").get("csrfToken").getAsString();
+        assertFalse(csrf.isBlank());
+
+        Set<String> publicRoutes = Set.of(
+                "GET /api/v2/auth/csrf",
+                "GET /api/v2/demo/metadata",
+                "POST /api/v2/auth/login",
+                "POST /api/v2/auth/recover",
+                "POST /api/v2/invitations/redeem");
+        Set<String> actualRoutes = new java.util.HashSet<>();
+        int[] before = new int[] {
+            jdbc.queryForObject("SELECT COUNT(*) FROM organization", Integer.class),
+            jdbc.queryForObject("SELECT COUNT(*) FROM resource", Integer.class),
+            jdbc.queryForObject("SELECT COUNT(*) FROM allocation", Integer.class),
+            jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement", Integer.class)
+        };
+        int protectedCount = 0;
+        for (Class<?> resource : c8JerseyResourceConfig.getClasses()) {
+            jakarta.ws.rs.Path root = resource.getAnnotation(jakarta.ws.rs.Path.class);
+            if (root == null || !resource.getPackageName().equals("edu.orgresource.extended.rest")) continue;
+            for (java.lang.reflect.Method method : resource.getDeclaredMethods()) {
+                String verb = null;
+                for (java.lang.annotation.Annotation annotation : method.getAnnotations()) {
+                    jakarta.ws.rs.HttpMethod http = annotation.annotationType().getAnnotation(jakarta.ws.rs.HttpMethod.class);
+                    if (http == null) continue;
+                    assertNull(verb, "Unexpected multiple HTTP verbs on " + method);
+                    verb = http.value();
+                }
+                if (verb == null) continue;
+                jakarta.ws.rs.Path suffix = method.getAnnotation(jakarta.ws.rs.Path.class);
+                String route = "/api" + root.value() + (suffix == null ? "" : suffix.value());
+                String signature = verb + " " + route;
+                assertTrue(actualRoutes.add(signature), "Duplicate registered operation: " + signature);
+                if (publicRoutes.contains(signature)) continue;
+
+                // Exercise actual authenticated filter chain before Jersey argument parsing.
+                // Legacy numeric paths use 1; modern opaque IDs use well-formed UUIDs.
+                String path = route.replace("{id}", "1")
+                        .replaceAll("\\{[^}]+\\}", "00000000-0000-4000-8000-000000000001");
+                HttpResponse<String> response;
+                if ("GET".equals(verb)) {
+                    response = get(anonymous, path);
+                } else {
+                    assertEquals("POST", verb, "New HTTP verb requires explicit test support: " + signature);
+                    HttpRequest request = HttpRequest.newBuilder(URI.create(base() + path))
+                            .header("Origin", origin())
+                            .header("X-CSRF-TOKEN", csrf)
+                            .header("Content-Type", "application/json")
+                            .POST(HttpRequest.BodyPublishers.ofString("{}")).build();
+                    response = anonymous.send(request, HttpResponse.BodyHandlers.ofString());
+                }
+                assertEquals(401, response.statusCode(), "Anonymous route " + signature + " returned " + response.body());
+                assertEquals("AUTH_REQUIRED", json(response).get("code").getAsString(),
+                        "Expected a non-disclosing authenticated-filter denial on " + signature);
+                assertFalse(response.body().contains("passwordHash"),
+                        "Anonymous refusal must not leak account secrets: " + signature);
+                protectedCount++;
+            }
+        }
+        assertEquals(93, actualRoutes.size(), "Audit exactly the registered C8 route surface");
+        assertTrue(actualRoutes.containsAll(publicRoutes), "Public route skip set must match actual handlers");
+        assertEquals(88, protectedCount, "Every non-public registered endpoint must be denied to anonymous users");
+        assertArrayEquals(before, new int[] {
+            jdbc.queryForObject("SELECT COUNT(*) FROM organization", Integer.class),
+            jdbc.queryForObject("SELECT COUNT(*) FROM resource", Integer.class),
+            jdbc.queryForObject("SELECT COUNT(*) FROM allocation", Integer.class),
+            jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement", Integer.class)
+        }, "Anonymous route probes must leave business tables unchanged");
     }
 
     private record Fixture(long orgDbId, UUID orgPublicId, long userDbId, String username, String password,
