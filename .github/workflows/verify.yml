@@ -39,27 +39,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-      - name: Download and verify the Temurin Java 8 archive
-        run: |
-          set -euo pipefail
-          url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u514-b01/OpenJDK8U-jdk_x64_linux_hotspot_8u514b01.tar.gz
-          archive="$RUNNER_TEMP/temurin-java8.tar.gz"
-          digest=27eda854481d20806d918b30cdd417c6bed4fd15882e24f3595dc8ae7fb5d095
-          for attempt in 1 2 3; do
-            if curl --fail --silent --show-error --location --connect-timeout 15 --max-time 180 \
-                --output "$archive" "$url" &&
-                printf '%s  %s\n' "$digest" "$archive" | sha256sum --check; then
-              exit 0
-            fi
-            if [[ $attempt != 3 ]]; then sleep 2; fi
-          done
-          echo 'Temurin Java 8 download failed checksum verification after three attempts.' >&2
-          exit 1
       - uses: actions/setup-java@v4
         with:
-          distribution: jdkfile
-          jdkFile: ${{ runner.temp }}/temurin-java8.tar.gz
-          java-version: '8.0.514+1'
+          distribution: temurin
+          java-version: '8'
           cache: maven
           cache-dependency-path: backend/pom.xml
       - uses: actions/setup-node@v4
