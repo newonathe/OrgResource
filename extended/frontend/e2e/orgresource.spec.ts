@@ -573,6 +573,10 @@ test("connected O8–O10 workflows persist through the isolated Java/MySQL backe
   await page.getByRole("link", { name: "Requirements", exact: true }).click();
   projectRows = await getJson(page, "/api/projects");
   const updatedProject = projectRows.find((item) => item.name === updatedProjectName)!;
+  // RelatedSelect loads choices asynchronously and auto-selects the first row.
+  // Establish that initial state before changing both controlled selections.
+  await expect(page.locator("#requirement-project")).not.toHaveValue("");
+  await expect(page.locator("#requirement-resource")).not.toHaveValue("");
   await page.locator("#requirement-project").selectOption(String(updatedProject.id));
   await page.locator("#requirement-resource").selectOption(String(reusableId));
   await expect(page.locator("#requirement-project")).toHaveValue(String(updatedProject.id));
@@ -644,6 +648,8 @@ test("connected O8–O10 workflows persist through the isolated Java/MySQL backe
   resourceRows = await getJson(page, "/api/resources");
   const temporaryResource = resourceRows.find((item) => item.name === `${run} temporary requirement resource`)!;
   await page.getByRole("link", { name: "Requirements", exact: true }).click();
+  await expect(page.locator("#requirement-project")).not.toHaveValue("");
+  await expect(page.locator("#requirement-resource")).not.toHaveValue("");
   await page.locator("#requirement-project").selectOption(String(temporaryProject.id));
   await page.locator("#requirement-resource").selectOption(String(temporaryResource.id));
   await page.getByLabel("Quantity required").fill("1");
