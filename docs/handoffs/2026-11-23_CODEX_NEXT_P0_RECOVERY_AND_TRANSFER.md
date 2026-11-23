@@ -1,5 +1,15 @@
 # P0 Next Codex/Operator Cycle — recovery-tested demo importer, exact Northflank transfer
 
+## Latest 2026-11-23 read-only postflight checkpoint
+
+- The previous recovery/transfer handoff `3aba5d196dff860e87b0206041f526841bad6627` passed [CI 45103595836](https://github.com/newonathe/OrgResource/actions/runs/45103595836) **all three jobs**. No Northflank service or MySQL mutated.
+- `4694340b987cfc9e2a2516123c8c4370d4cef85c` introduced dedicated **SELECT-only** `--c8-hosted-demo-postflight` command, exact approved plan+fingerprint gate, independent per-organization identities/names/counts/IDs/audit/states/stock checks, plus a generic check exercised by isolated 3- and 8-workspace replay. [CI 45104273448](https://github.com/newonathe/OrgResource/actions/runs/45104273448) **FAILED** in the additive step due to a missing space in dynamically assembled SQL (actual MySQL syntax error).
+- `b8b088cd8b21e31c41ce62f003cd1203f2420af4` added a disposable **read-only check-only** CLI route, rejects a partial imported cohort, wrong fictional directory name and tampered simulated audit event, then accepts restored fixture. This is loopback-only.
+- `48a49249306b21d95f15b74e6b9b1760f922d13e` fixed the observed SQL concatenation defect. Exact [CI 45104599218](https://github.com/newonathe/OrgResource/actions/runs/45104599218) **IN PROGRESS** when recorded. Inspect its *actual* result and correct further issues without weakening SQL invariants.
+- [Updated manual Northflank job and independent postflight procedure](../deployment/P0_NORTHFLANK_MANUAL_JOB_COMMAND_2026-11-23.md). The only code/data in public GitHub is source and synthetic short fixtures; the full approved 19.3 MB plan remains **private and inaccessible in this chat**. The operator must verify original plan SHA, Northflank version/identity, full-96 restored clone, real backup+restore, resource limits and public naming rights before any live action. **LIVE_IMPORT_NOT_RUN**.
+
+
+
 **As of:** 2026-11-23, Asia/Manila. **Main user priority:** actual **existing Northflank** instance loaded with the exact approved 96 directory-label cohort and 21,060 fictional allocations/67,370 fictional business actions, original owner and existing organization preserved. **Current verdict: LIVE_IMPORT_NOT_RUN.**
 
 **PR:** [#25, DRAFT](https://github.com/newonathe/OrgResource/pull/25). **P0 issue:** [#26](https://github.com/newonathe/OrgResource/issues/26). **Latest observed feature HEAD before this handoff:** `7e040c8de3c94c857f3b9a1bcde0c2736f38e550` (always re-fetch current remote head). **Course A frozen SHA:** `7f8c0746da18fd54b47f430ac1435ac36e605d67`, must remain untouched. Never merge/deploy/spend/send SMS or mutate real MySQL without prerequisites.

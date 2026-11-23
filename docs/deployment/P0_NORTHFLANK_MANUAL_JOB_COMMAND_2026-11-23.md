@@ -74,9 +74,25 @@ java -jar "$JAR" --c8-hosted-demo-import
 
 **Critical distinction:** The backup ID, restore-evidence digest and phrase above are *operator attestations*. The Java process validates their presence/format, the exact approved plan, connected database fingerprint, existing OWNER, V7, 8.0 and zero existing demo cohort. It **cannot independently verify Northflank's backups or actual restore**: that has to be done and reviewed outside the app. These settings are never permission to skip that work. A failed or partial import must trigger a STOP and reviewed backup recovery, **not an automatic rerun**.
 
-## 3. Independent post-write checks
+## 3. Independent read-only postflight before declaring the demo complete
 
-The hosted webpage is only considered populated after all of these are observed against the **actual deployed instance**, with dated/redacted evidence and source SHA:
+**SOURCE IMPLEMENTED, CURRENT CI PENDING as of this update.** After the manual importer reports success, preserve the exact private plan in the trusted temporary job until the independent verifier has run. Execute the following **separate read-only command** in an authenticated operator session, ideally with a SELECT-only MySQL principal, against the exact same schema and server fingerprint validated before import:
+
+```sh
+# EXT_C8_DEMO_PLAN, EXT_DB_URL, EXT_DB_USER, EXT_DB_PASSWORD,
+# EXT_C8_HOSTED_EXPECTED_SCHEMA, EXT_C8_HOSTED_EXPECTED_FINGERPRINT,
+# EXT_C8_HOSTED_OWNER_PUBLIC_ID and EXT_C8_HOSTED_ORIGINAL_ORG_PUBLIC_ID
+# must all refer to the approved plan and the same target.
+java -jar "$JAR" --c8-hosted-demo-postflight
+```
+
+This direct JDBC command starts **no Spring web process, scheduler, Flyway or data-writing service** and enforces the full plan SHA `3b0f54da85cadb77cd7d8ab2d50c1fdb4b4ee36710b803cf904227e13f08927c`. It independently compares all 96 organization IDs, exact directory labels/reference keys and provenance; counts for departments/projects/resources/requirements/allocations/memberships/audits per workspace; public IDs for Projects, Resources, Requirements, Allocations and simulated persona memberships; all final states, action distributions and simulated event months; original active credentialed OWNER, exactly one active OWNER per imported org, simulated audit actor; absence of synthetic SMS contact/consent; physical inventory and Requirement coverage. It outputs sanitized totals only, e.g. `HOSTED_DEMO_POSTFLIGHT_READ_ONLY_OK` upon passing. A failed result keeps the live demo in **NOT ACCEPTED / maintenance**, never blindly rerun the importer.
+
+**Limits:** Postflight does not independently prove that original pre-existing record values were unchanged, that a Northflank native/off-host backup can be restored, that live browser sessions and tenant boundaries work, or that the exact directory labels can lawfully be publicly displayed. Compare separately captured *pre-import* original account/org/domain row hashes, real login, privacy rights, backup/restore receipt and browsers. CI's small/intermediate postflight fixture is **not** a live 96-plan or full-scale performance test.
+
+## 4. Independent post-write checks
+
+The hosted webpage is only considered populated after independent read-only postflight **and** all of these are observed against the **actual deployed instance**, with dated/redacted evidence and source SHA:
 
 1. Original owner still signs in and can access the **unchanged original** organization. Compare original owner, credentials, membership, original per-table counts/data hashes against the **pre-import baseline**, not only the total row counts.
 2. Exactly 96 additional tagged organization IDs and exactly the approved 96 directory labels (72 COA-M + 24 LIONS); original untagged organizations remain. Searchable picker should find all, select another workspace and return without cross-tenant records.
