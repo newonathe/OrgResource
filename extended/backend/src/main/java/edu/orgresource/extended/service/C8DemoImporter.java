@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import edu.orgresource.extended.api.ApiDtos;
 import edu.orgresource.extended.demo.C8DemoCommand;
+import edu.orgresource.extended.demo.C8FlywayHistory;
 import edu.orgresource.extended.demo.OfflineDemoClock;
 import edu.orgresource.extended.domain.Allocation;
 import edu.orgresource.extended.domain.Department;
@@ -84,9 +85,9 @@ public class C8DemoImporter {
     }
 
     public void importPlan(JsonNode plan, String planSha, String ownerPassword) {
-        if (organizations.count() != 0 || accounts.count() != 0
-                || jdbc.queryForObject("SELECT MAX(CAST(version AS UNSIGNED)) FROM flyway_schema_history WHERE success=1", Integer.class) != 7)
+        if (organizations.count() != 0 || accounts.count() != 0)
             throw new IllegalStateException("Apply this plan to a fresh demo schema at the expected migration.");
+        C8FlywayHistory.requireExactV7(jdbc);
         LocalDateTime wall = LocalDateTime.ofInstant(wallClock.instant(), ZoneOffset.UTC);
         UserAccount operator = transaction.execute(status -> accounts.saveAndFlush(
                 new UserAccount(OPERATOR, "Local demo operator", wall)));
@@ -143,9 +144,9 @@ public class C8DemoImporter {
             UUID originalOrganizationId, UUID existingOwnerId, int injectFailureAfter) {
         if (injectFailureAfter < 0 || injectFailureAfter > 8)
             throw new IllegalArgumentException("Isolated failure point is outside the fixed disposable fixture.");
-        if (organizations.count() < 1 || accounts.count() < 1
-                || jdbc.queryForObject("SELECT MAX(CAST(version AS UNSIGNED)) FROM flyway_schema_history WHERE success=1", Integer.class) != 7)
+        if (organizations.count() < 1 || accounts.count() < 1)
             throw new IllegalStateException("The additive proof requires an existing V7 organization schema.");
+        C8FlywayHistory.requireExactV7(jdbc);
         if (plan == null || !plan.path("synthetic").asBoolean(false) || !plan.path("organizations").isArray())
             throw new IllegalArgumentException("A verified synthetic plan is required.");
         UserAccount owner = accounts.findByPublicId(existingOwnerId).orElseThrow(
