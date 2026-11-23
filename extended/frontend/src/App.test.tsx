@@ -191,6 +191,36 @@ describe("Account display preferences", () => {
   });
 });
 
+describe("Full demo workspace selection", () => {
+  it("filters a 97-workspace roster by name and selects only the requested membership", async () => {
+    const original = authenticatedFetch();
+    const roster = Array.from({ length: 96 }, (_, index) => ({
+      id: "demo-org-" + (index + 1), slug: "demo-" + (index + 1),
+      displayName: "Fictional Demo Club " + String(index + 1).padStart(3, "0"), role: "OWNER",
+    }));
+    roster[52] = { ...roster[52], displayName: "Fictional LIONS Search Target" };
+    const base = [{ id: "org-a", slug: "original", displayName: "Original Fictional Workspace", role: "OWNER" }, ...roster];
+    const fetched = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      if (String(input) === "/api/v2/session") return Promise.resolve(envelope({
+        accountId: "account-a", displayName: "Fictional Operator", activeOrgId: null, memberships: [],
+      }));
+      if (String(input) === "/api/v2/orgs") return Promise.resolve(envelope(base));
+      return original(input, init);
+    });
+    vi.stubGlobal("fetch", fetched);
+    render(<App />);
+    expect(await screen.findByRole("heading", { name: /Choose an organization/ })).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("97 of 97 organizations shown");
+    fireEvent.change(screen.getByRole("searchbox", { name: "Find organization" }), { target: { value: "LIONS Search" } });
+    expect(screen.getByRole("status")).toHaveTextContent("1 of 97 organizations shown");
+    expect(screen.getByRole("heading", { name: "Fictional LIONS Search Target" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Original Fictional Workspace" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Open workspace" }));
+    await waitFor(() => expect(original).toHaveBeenCalledWith("/api/v2/session/active-org",
+      expect.objectContaining({ method: "POST", body: JSON.stringify({ organizationId: roster[52].id }) })));
+  });
+});
+
 describe("Extended C authentication and organization shell", () => {
   it("logs in with CSRF, explicitly selects an organization and restores the server session", async () => {
     let authenticated = false;

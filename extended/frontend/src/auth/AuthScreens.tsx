@@ -128,6 +128,10 @@ export function OrganizationPicker() {
   const { session, organizations, switchOrganization, error, clearError } = useAuth();
   const [busy, setBusy] = useState<string | null>(null);
   const [localError, setLocalError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const normalized = search.trim().toLocaleLowerCase();
+  const matching = organizations.filter(org =>
+    (org.displayName + " " + org.slug).toLocaleLowerCase().includes(normalized));
   if (!session) return <Navigate replace to="/login" />;
   const choose = async (id: string) => {
     setBusy(id); setLocalError(null); clearError();
@@ -139,7 +143,16 @@ export function OrganizationPicker() {
     <PageHeader eyebrow="Workspace selection" title={`Choose an organization, ${session.displayName}`} description="Organization data is fetched only after you explicitly select an active membership." />
     {(error || localError) && <Notice tone="danger">{localError ?? error}</Notice>}
     {organizations.length === 0 ? <Notice>No active organization memberships are available. Redeem an invitation or contact an organization owner.</Notice> :
-      <div className="organization-list">{organizations.map(org => <article className="organization-choice" key={org.id}><div><h2>{org.displayName}</h2><p>{org.slug} · <StatusBadge tone="blue">{org.role}</StatusBadge></p></div><Button variant="primary" disabled={busy !== null} onClick={() => void choose(org.id)}>{busy === org.id ? "Selecting…" : "Open workspace"}</Button></article>)}</div>}
+      <>
+        {organizations.length > 8 && <label className="organization-search-label">Find organization
+          <input type="search" value={search} autoComplete="off" placeholder="Search organization name or slug"
+            onChange={event => setSearch(event.target.value)} />
+        </label>}
+        <p className="quiet-note" role="status">{matching.length} of {organizations.length} organization{organizations.length === 1 ? "" : "s"} shown</p>
+        {matching.length === 0
+          ? <Notice>No organizations match this search. Try a different name.</Notice>
+          : <div className="organization-list">{matching.map(org => <article className="organization-choice" key={org.id}><div><h2>{org.displayName}</h2><p>{org.slug} · <StatusBadge tone="blue">{org.role}</StatusBadge></p></div><Button variant="primary" disabled={busy !== null} onClick={() => void choose(org.id)}>{busy === org.id ? "Selecting…" : "Open workspace"}</Button></article>)}</div>}
+      </>}
   </GlassPanel></AuthFrame>;
 }
 
