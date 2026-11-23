@@ -200,6 +200,14 @@ if [ "$profile" = small ]; then
     exit 1
   fi
   mysql_ci "$schema" -e "UPDATE audit_event SET action='C8_DEMO_REQUEST' WHERE id=$audit_id;"
+  # Alter a timestamp without changing its month or action count. Only the
+  # exact plan-based audit comparator should detect this.
+  mysql_ci "$schema" -e "UPDATE audit_event SET created_at=DATE_ADD(created_at, INTERVAL 1 SECOND) WHERE id=$audit_id;"
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-invalid-timestamp.log" 2>&1; then
+    echo "Independent postflight accepted a tampered in-month historical timestamp" >&2
+    exit 1
+  fi
+  mysql_ci "$schema" -e "UPDATE audit_event SET created_at=DATE_SUB(created_at, INTERVAL 1 SECOND) WHERE id=$audit_id;"
   check_postflight
 fi
 # Full source-derived SQL conservation checks across every imported tenant.

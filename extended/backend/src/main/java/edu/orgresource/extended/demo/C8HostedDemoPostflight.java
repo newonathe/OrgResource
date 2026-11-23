@@ -3,6 +3,10 @@ package edu.orgresource.extended.demo;
 import java.nio.file.Path;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -210,6 +214,7 @@ public final class C8HostedDemoPostflight {
         }
         if (!expectedMonths.equals(actualMonths))
             throw new IllegalStateException("The imported simulated calendar coverage differs from the plan.");
+        compareExactAuditHistory(db, workspaces, planSha);
         if (oneLong(db, """
                 SELECT COUNT(*) FROM audit_event a JOIN organization o ON o.id=a.org_id
                 JOIN user_account u ON u.id=a.actor_user_id
@@ -267,6 +272,73 @@ public final class C8HostedDemoPostflight {
             throw new IllegalStateException("Imported requirement coverage exceeds the approved quantity.");
         return new Summary(workspaces.size(), allocations, events);
     }
+
+
+    /**
+     * Verify every historical event against the exact approved plan. The replay
+     * does not store the plan's operation UUID on the audit row, so the stable
+     * comparison key is tenant + action + allocation target + UTC second +
+     * synthetic actor. Multiplicity detects duplicates; no actual names leak.
+     */
+    private static void compareExactAuditHistory(Connection db, JsonNode workspaces, String planSha) throws Exception {
+        var utcFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
+        var manila = ZoneId.of("Asia/Manila");
+        Map<AuditSignature, Integer> pending = new HashMap<>();
+        int plannedEvents = 0;
+        for (JsonNode org : workspaces) {
+            String reference = org.path("reference_key").asText();
+            Map<String, String> actors = new HashMap<>();
+            for (JsonNode persona : org.path("personas")) {
+                String id = persona.path("id").asText();
+                String username = "OWNER".equals(persona.path("role").asText())
+                        ? "c8-demo-historical-actor" : "demo-" + id;
+                if (actors.putIfAbsent(id, username) != null)
+                    throw new IllegalArgumentException("Repeated synthetic actor identifier.");
+            }
+            for (JsonNode event : org.path("events")) {
+                String actor = actors.get(event.path("actor_id").asText());
+                if (actor == null) throw new IllegalArgumentException("A simulated historical actor is missing.");
+                String timestamp = LocalDateTime.parse(event.path("occurred_at").asText())
+                        .atZone(manila).withZoneSameInstant(ZoneOffset.UTC).format(utcFormat);
+                AuditSignature expected = new AuditSignature(reference,
+                        "C8_DEMO_" + event.path("action").asText(),
+                        event.path("allocation_id").asText(), timestamp, actor);
+                pending.merge(expected, 1, Integer::sum);
+                plannedEvents = Math.addExact(plannedEvents, 1);
+            }
+        }
+        int counted = 0;
+        try (PreparedStatement query = db.prepareStatement("""
+                SELECT o.demo_reference_key,a.action,a.target_id,
+                       DATE_FORMAT(a.created_at,'%Y-%m-%dT%H:%i:%s.%f'),
+                       u.username_key,a.target_type,a.outcome
+                FROM audit_event a
+                JOIN organization o ON o.id=a.org_id
+                LEFT JOIN user_account u ON u.id=a.actor_user_id
+                WHERE o.demo_plan_sha=? AND a.action LIKE 'C8_DEMO_%'
+                """)) {
+            query.setString(1, planSha);
+            try (ResultSet rows = query.executeQuery()) {
+                while (rows.next()) {
+                    if (!"allocation".equals(rows.getString(6)) || !"SUCCESS".equals(rows.getString(7)))
+                        throw new IllegalStateException("The simulated history has an invalid audit target or outcome.");
+                    AuditSignature observed = new AuditSignature(rows.getString(1), rows.getString(2),
+                            rows.getString(3), rows.getString(4), rows.getString(5));
+                    Integer remaining = pending.get(observed);
+                    if (remaining == null || remaining <= 0)
+                        throw new IllegalStateException("A historical audit event differs from the approved plan.");
+                    if (remaining == 1) pending.remove(observed);
+                    else pending.put(observed, remaining - 1);
+                    counted = Math.addExact(counted, 1);
+                }
+            }
+        }
+        if (counted != plannedEvents || !pending.isEmpty())
+            throw new IllegalStateException("One or more approved simulated historical events are missing.");
+    }
+
+    private record AuditSignature(String reference, String action, String allocationId,
+                                  String utcTime, String actorUsername) { }
 
     private static void comparePublicIds(Connection db, JsonNode workspaces, String sha,
             String table, String field, boolean ignoreOriginalOwnerMembership, UUID owner) throws Exception {
