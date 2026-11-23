@@ -3,6 +3,22 @@
 **Status (2026-11-23 PHT): prepared commands, NO Northflank execution.**
 **User priority:** fill the **existing** Northflank OrgResource instance with the **exact previously approved** 96 directory labels and simulated data, while retaining the old owner and old organization. **Code branch:** `feat/extended-c-c8-domain-workflows-2026-11-19` / draft PR #25, **DO NOT merge or release without owner approval and live proof**. **P0 issue:** [#26](https://github.com/newonathe/OrgResource/issues/26). Frozen Course A untouched.
 
+## P0-00: Full-plan file exceeds Northflank's documented secret-file limit
+
+**VERIFIED EXTERNAL FACT (2026-04-27 Northflank changelog; recheck account limits at execution):** Northflank's published limit for **one secret file is 3,500 KiB** and its published API request-body limit is 10 MB ([first-party changelog](https://northflank.com/changelog/march-and-april-2026)). The exact approved plan is **19,265,850 bytes** (about 18.4 MiB). It **cannot** be submitted unchanged as one Northflank secret file or API-embedded `runtimeFiles` payload under these published limits. Never include the plan in a public GitHub commit, container image, build argument, GitHub Actions artifact, plaintext environment variable or log.
+
+**VERIFIED EXTERNAL FACT:** Northflank documents private file transfer into **running services or jobs** using the CLI/JS client: [Copy files](https://northflank.com/docs/v1/api/copy-files) and [Transfer data to/from containers](https://northflank.com/docs/v1/application/run/transfer-data-to-and-from-containers). The CLI's documented job equivalent is `northflank upload job file`; inspect `northflank upload job file --help` for the actual version/target flags instead of assuming service flags work for jobs. This does not prove the user's Northflank account, job shell or ephemeral storage has the necessary access.
+
+**DESIGN RECOMMENDATION — safe staged transfer:**
+
+1. In an approved **isolated** operator job, start a non-mutating standby process. Do not configure its startup command to import automatically. Check runtime access and file permissions, quota and costs.
+2. From the trusted operator's private computer, use authenticated Northflank CLI job-file transfer (or an equivalently private, expiring encrypted object download) to place the exact approved plan on the **temporary job filesystem**, outside source control or shared web containers. Ensure restrictive access (`umask 077`, owner-only readable), no public HTTP upload endpoint.
+3. In the job, compare full file size **19,265,850 bytes** and SHA-256 **`3b0f54da85cadb77cd7d8ab2d50c1fdb4b4ee36710b803cf904227e13f08927c`**. Check the local approved roster SHA on the operator's computer. Only after private file verification and independently restored DB clone, set `EXT_C8_DEMO_PLAN` to the verified file's absolute path and run the **read-only preflight**.
+4. Finish the independent restore/security/capacity/operator approval gates **before** manually running the write command in that same controlled environment. Remove the temporary plan and revoke temporary credentials afterward. Avoid persisting the job's unencrypted file on an enduring shared volume.
+5. If the selected Northflank job cannot be held safely between upload and manual execution, **STOP** and design a different non-mutating, privately secured staging mechanism. Do not use the secret-file workaround or start an unguarded auto-import job.
+
+No staged transfer, job control, backup, restore, or live import has been performed in this chat.
+
 ## 1. Before proceeding: hard gates
 
 - [ ] **Private source actually present:** original roster SHA-256 `57f1f0c680041c39dcf7644a1acca5fcc75dc7d525262547842389da7540b9a2`; full canonical plan SHA-256 `3b0f54da85cadb77cd7d8ab2d50c1fdb4b4ee36710b803cf904227e13f08927c`; 19,265,850 historical plan bytes. SHA check in a private operator job. No guesses, public reconstitution, real personal data or live contacts.
@@ -15,13 +31,13 @@
 
 ## 2. Prepare a sealed manual job (the owner/operator, never public CI)
 
-Northflank supports [manual jobs](https://northflank.com/docs/v1/application/run/run-an-image-once-or-on-a-schedule), [runtime encrypted secret files and variables](https://northflank.com/docs/v1/application/secure/inject-secrets), and [native DB backup or isolated fork](https://northflank.com/docs/v1/application/databases-and-persistence/backup-restore-and-import-data). These are platform capabilities; they are **not** evidence that this user's instance has a verified backup.
+Northflank supports [manual jobs](https://northflank.com/docs/v1/application/run/run-an-image-once-or-on-a-schedule), [private job-file transfers](https://northflank.com/docs/v1/api/copy-files), small [secrets/variables](https://northflank.com/docs/v1/application/secure/inject-secrets), and [native DB backup or isolated fork](https://northflank.com/docs/v1/application/databases-and-persistence/backup-restore-and-import-data). **The full 19.3 MB approved plan exceeds Northflank's documented single-secret-file limit; use an approved private file-transfer workflow, not a secret-file payload.** These are platform capabilities; none proves this account has a verified backup, storage quota or access.
 
-Create a one-shot manual job using an **audited image built from the selected PR SHA**, with the **same private schema/MySQL** as the intended existing deployment only after gates. Do **not** copy the web service's bootstrap arguments; never expose an import HTTP endpoint. Mount the private approved full-plan JSON at an absolute secret-file path, e.g. `/run/private/orgresource-c8-full-plan.json`; the example name is not an existing Northflank path. Never commit or log the plan or credentials.
+Create an owner-authorized manual **standby job with no automatic import trigger**, using an audited pinned image. Arrange the private upload of the approved JSON using the supported Northflank job-file transfer and verify it at an **absolute ephemeral path** (for example, `/tmp/orgresource-private/full-plan.json`; example only, not an existing path). The separate trusted operator then manually invokes read-only preflight and—only after all gates—manual import inside the controlled job. Do **not** copy the web service bootstrap arguments, expose an import HTTP endpoint, or commit/log the plan or credentials. Avoid putting the 19.3 MB JSON in Northflank's small secret file or API request payload.
 
 Required operator-supplied environment variables (values remain private and real):
 ```text
-EXT_C8_DEMO_PLAN                         [absolute secret file path to SHA-verified full plan]
+EXT_C8_DEMO_PLAN                         [absolute TEMPORARY operator-transferred file path to SHA-verified full plan]
 EXT_C8_HOSTED_EXPECTED_SCHEMA            [existing OrgResource MySQL schema]
 EXT_C8_HOSTED_OWNER_PUBLIC_ID            [existing active OWNER account UUID]
 EXT_C8_HOSTED_ORIGINAL_ORG_PUBLIC_ID     [existing original organization UUID]
@@ -37,7 +53,8 @@ Check the **real image's** packaged JAR path, Java 21 and private MySQL connecti
 
 **Read-only first**, in a trusted operator session:
 ```sh
-sha256sum "$EXT_C8_DEMO_PLAN"  # compare in memory with exact 3b0f54da... digest
+test "$(wc -c < "$EXT_C8_DEMO_PLAN" | tr -d ' ')" = "19265850"
+test "$(sha256sum "$EXT_C8_DEMO_PLAN" | cut -d ' ' -f1)" = "3b0f54da85cadb77cd7d8ab2d50c1fdb4b4ee36710b803cf904227e13f08927c"
 java -jar "$JAR" --c8-hosted-demo-preflight
 ```
 A genuine passing run prints `HOSTED_DEMO_PREFLIGHT_READ_ONLY_OK`, the 64-hex-character `target_fingerprint_sha256`, existing organization count and `database_writes=0`. Keep the fingerprint private but record its digest alongside the approved backup and restore receipt. **It makes no changes.**
@@ -70,4 +87,4 @@ The hosted webpage is only considered populated after all of these are observed 
 
 Do not equate CI success, a read-only preflight, a private restored clone or a code commit with `LIVE_IMPORTED`. No merge, hosting mutation, spending or real SMS has been performed by this ChatGPT session.
 
-**Independent references consulted 2026-11-23:** [Northflank manual jobs](https://northflank.com/docs/v1/application/run/run-an-image-once-or-on-a-schedule), [Northflank database backups and restores](https://northflank.com/docs/v1/application/databases-and-persistence/backup-restore-and-import-data), [MySQL version options](https://northflank.com/docs/v1/application/databases-and-persistence/deploy-a-database).
+**Independent references consulted 2026-11-23:** [Northflank secret-file limit (changelog 2026-04-27)](https://northflank.com/changelog/march-and-april-2026), [Northflank authenticated job file copy](https://northflank.com/docs/v1/api/copy-files), [Northflank manual jobs](https://northflank.com/docs/v1/application/run/run-an-image-once-or-on-a-schedule), [Northflank database backups and restores](https://northflank.com/docs/v1/application/databases-and-persistence/backup-restore-and-import-data), [MySQL version options](https://northflank.com/docs/v1/application/databases-and-persistence/deploy-a-database).
