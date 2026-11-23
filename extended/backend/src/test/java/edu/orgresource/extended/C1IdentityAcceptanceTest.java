@@ -4529,6 +4529,111 @@ class C1IdentityAcceptanceTest {
         }, "All refused ProjectWork writes must leave allocations, movements, receipts and audit untouched");
     }
 
+
+    @Test @Order(65)
+    void C8LeadOptionsFiltersActualMembershipsAndBindsDirectoryCursorsWithoutSqlWrites() throws Exception {
+        // A previously uncovered handler: /projects/{projectId}/lead-options.
+        // Lead assignment tests do not prove this separate directory endpoint.
+        Fixture home = newTenant("C8-lead-options", Membership.Role.OWNER);
+        Fixture admin = fixtureInOrg(home.orgDbId, Membership.Role.ADMIN);
+        Fixture custodian = fixtureInOrg(home.orgDbId, Membership.Role.CUSTODIAN);
+        Fixture leadOne = fixtureInOrg(home.orgDbId, Membership.Role.LEAD);
+        Fixture leadTwo = fixtureInOrg(home.orgDbId, Membership.Role.LEAD);
+        Fixture suspendedLead = fixtureInOrg(home.orgDbId, Membership.Role.LEAD);
+        Fixture member = fixtureInOrg(home.orgDbId, Membership.Role.MEMBER);
+        Fixture foreign = newTenant("C8-lead-options-foreign", Membership.Role.OWNER);
+        Session owner = login(home.username, home.password);
+        Session officer = login(admin.username, admin.password);
+        Session stock = login(custodian.username, custodian.password);
+        Session lead = login(leadOne.username, leadOne.password);
+        Session ordinary = login(member.username, member.password);
+        Session outsider = login(foreign.username, foreign.password);
+
+        long department = json(post(owner, "/api/departments",
+                GSON.toJson(new NameRequest("Fictional directory department")))).get("id").getAsLong();
+        String from = "2040-12-01T10:00:00", until = "2040-12-01T12:00:00";
+        long projectDb = json(post(owner, "/api/projects", GSON.toJson(
+                new ProjectRequest(department, "Fictional candidate project", from, until))))
+                .get("id").getAsLong();
+        long anotherProjectDb = json(post(owner, "/api/projects", GSON.toJson(
+                new ProjectRequest(department, "Fictional different project", from, until))))
+                .get("id").getAsLong();
+        long foreignDepartment = json(post(outsider, "/api/departments",
+                GSON.toJson(new NameRequest("Fictional foreign directory department")))).get("id").getAsLong();
+        long foreignProjectDb = json(post(outsider, "/api/projects", GSON.toJson(
+                new ProjectRequest(foreignDepartment, "Fictional foreign project", from, until))))
+                .get("id").getAsLong();
+        UUID project = projectRepository.findById(projectDb).orElseThrow().publicId;
+        UUID anotherProject = projectRepository.findById(anotherProjectDb).orElseThrow().publicId;
+        UUID foreignProject = projectRepository.findById(foreignProjectDb).orElseThrow().publicId;
+        String root = "/api/v2/orgs/" + home.orgPublicId;
+        String directory = root + "/projects/" + project + "/lead-options";
+        String otherDirectory = root + "/projects/" + anotherProject + "/lead-options";
+
+        // This authorized governance mutation precedes the read-only SQL
+        // snapshot; a suspended LEAD is ineligible for option discovery.
+        assertEquals(200, post(owner, root + "/members/" + suspendedLead.membershipPublicId
+                + "/suspend", "{}", "\"v0\"").statusCode());
+        String membersBefore = jdbc.queryForList(
+                "SELECT id, role, status, version FROM membership WHERE org_id=? ORDER BY id",
+                home.orgDbId).toString();
+        String projectsBefore = jdbc.queryForList(
+                "SELECT id, name, version, lead_membership_id FROM project WHERE organization_id=? ORDER BY id",
+                home.orgDbId).toString();
+        long[] homeBefore = stockFactCounts(home.orgDbId), foreignBefore = stockFactCounts(foreign.orgDbId);
+
+        var response = get(owner.client, directory);
+        assertEquals(200, response.statusCode(), response.body());
+        var items = json(response).getAsJsonObject("data").getAsJsonArray("items");
+        assertEquals(2, items.size(), "Only two currently active LEAD memberships are eligible.");
+        var found = new java.util.HashSet<String>();
+        for (var item : items) {
+            var option = item.getAsJsonObject();
+            assertEquals(Set.of("membershipId", "displayName"), option.keySet(),
+                    "Lead options must disclose no account, contact, role or provider fields.");
+            found.add(option.get("membershipId").getAsString());
+        }
+        assertEquals(Set.of(leadOne.membershipPublicId.toString(), leadTwo.membershipPublicId.toString()), found);
+        assertFalse(response.body().contains(suspendedLead.membershipPublicId.toString()));
+        assertFalse(response.body().contains(foreign.membershipPublicId.toString()));
+        assertFalse(response.body().matches("(?is).*(email|phone|ciphertext|provider|accountId).*"));
+
+        assertEquals(200, get(officer.client, directory).statusCode(), "ADMIN is an authorized reader.");
+        assertEquals(403, get(stock.client, directory).statusCode(), "CUSTODIAN cannot view lead options.");
+        assertEquals(403, get(lead.client, directory).statusCode(), "LEAD cannot view lead options.");
+        assertEquals(403, get(ordinary.client, directory).statusCode(), "MEMBER cannot view lead options.");
+        assertEquals(404, get(outsider.client, directory).statusCode(), "No foreign organization membership.");
+        assertEquals(404, get(owner.client, root + "/projects/" + foreignProject + "/lead-options").statusCode(),
+                "An actual foreign Project UUID cannot be resolved under home path.");
+
+        var first = json(get(owner.client, directory + "?limit=1")).getAsJsonObject("data");
+        assertEquals(1, first.getAsJsonArray("items").size());
+        String cursor = first.get("nextCursor").getAsString();
+        var second = json(get(owner.client, directory + "?limit=1&cursor=" + cursor))
+                .getAsJsonObject("data");
+        assertEquals(1, second.getAsJsonArray("items").size());
+        assertTrue(second.get("nextCursor").isJsonNull());
+        assertNotEquals(first.getAsJsonArray("items").get(0).getAsJsonObject().get("membershipId"),
+                second.getAsJsonArray("items").get(0).getAsJsonObject().get("membershipId"));
+        assertEquals(404, get(owner.client, otherDirectory + "?limit=1&cursor=" + cursor).statusCode(),
+                "Cursor must be bound to the specific Project even in the same organization.");
+        assertEquals(404, get(owner.client, directory + "?limit=1&search=unrelated&cursor=" + cursor).statusCode(),
+                "Cursor must be bound to the precise directory search.");
+        assertEquals(400, get(owner.client, directory + "?limit=101").statusCode());
+        assertEquals(400, get(owner.client, directory + "?cursor=%21invalid").statusCode());
+        assertTrue(json(get(owner.client, directory + "?search=no-matching-fixture-name"))
+                .getAsJsonObject("data").getAsJsonArray("items").isEmpty());
+
+        assertEquals(membersBefore, jdbc.queryForList(
+                "SELECT id, role, status, version FROM membership WHERE org_id=? ORDER BY id",
+                home.orgDbId).toString());
+        assertEquals(projectsBefore, jdbc.queryForList(
+                "SELECT id, name, version, lead_membership_id FROM project WHERE organization_id=? ORDER BY id",
+                home.orgDbId).toString());
+        assertArrayEquals(homeBefore, stockFactCounts(home.orgDbId));
+        assertArrayEquals(foreignBefore, stockFactCounts(foreign.orgDbId));
+    }
+
     private record Fixture(long orgDbId, UUID orgPublicId, long userDbId, String username, String password,
                           long membershipDbId, UUID membershipPublicId, List<String> recoveryCodes) { }
     private static final class Session {
