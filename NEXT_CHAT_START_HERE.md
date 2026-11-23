@@ -1,5 +1,12 @@
 # OrgResource — START HERE for the next chat or Codex session
 
+## P0 SECURITY GATE discovered on November 23, 2026
+
+**Northflank [official November 17 incident report](https://northflank.com/blog/incident-report-october-30-security-incident)** confirms an October 30, 2026 theft of a **subset of stored customer secrets**. It says the vulnerability was fixed, estimates 1.5% of teams/1.8% of secrets were exfiltrated, and reports no evidence of customer workload-data access. Northflank **told every customer to rotate stored secrets**, and revoked platform API tokens. [Official status](https://status.northflank.com/history/1) marks the incident resolved November 17. **Actual OrgResource account exposure/rotation is UNKNOWN.**
+
+**NEW HARD GO/NO-GO:** Before any importer job/plan transfer/deployment: owner verifies platform notices, audit logs and suspicious usage; rotates affected/possibly stored MySQL/runtime/migration/API/GitHub/service secrets via supported account tools, updates dependent services without outage, tests new credentials, and records redacted evidence. Do not paste credentials in GitHub or chat. [Operator checklist](docs/deployment/P0_NORTHFLANK_MANUAL_JOB_COMMAND_2026-11-23.md). **No access to Northflank or credentials here; nothing rotated. LIVE_IMPORT_NOT_RUN.**
+
+
 ## Latest 2026-11-23 read-only postflight checkpoint
 
 - The previous recovery/transfer handoff `3aba5d196dff860e87b0206041f526841bad6627` passed [CI 45103595836](https://github.com/newonathe/OrgResource/actions/runs/45103595836) **all three jobs**. No Northflank service or MySQL mutated.
