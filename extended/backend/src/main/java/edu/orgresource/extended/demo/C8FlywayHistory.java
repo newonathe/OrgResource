@@ -62,6 +62,7 @@ public final class C8FlywayHistory {
                     .dataSource(new SingleConnectionDataSource(db, true))
                     .locations("classpath:db/migration")
                     .createSchemas(false)
+                    .load()
                     .validateWithResult();
             if (!result.validationSuccessful)
                 throw new IllegalStateException("Flyway packaged migration validation failed.");
