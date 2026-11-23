@@ -149,12 +149,12 @@ public final class C8HostedDemoPostflight {
             String table = entities[i];
             String link = table.equals("membership") || table.equals("audit_event") ? "org_id" : "organization_id";
             String filter = table.equals("audit_event") ? " AND t.action LIKE 'C8_DEMO_%'" : "";
-            Map<String, Long> counts = grouped(db, """
-                    SELECT o.demo_reference_key,COUNT(*) FROM """ + table + """
-                     t JOIN organization o ON o.id=t.""" + link + """
-                     WHERE o.demo_plan_sha=?""" + filter + """
-                     GROUP BY o.demo_reference_key
-                    """, planSha);
+            // Table names and link columns come only from the fixed literals above.
+            // Explicit spaces avoid text-block concatenation swallowing SQL boundaries.
+            String groupedSql = "SELECT o.demo_reference_key,COUNT(*) FROM " + table
+                    + " t JOIN organization o ON o.id=t." + link
+                    + " WHERE o.demo_plan_sha=?" + filter + " GROUP BY o.demo_reference_key";
+            Map<String, Long> counts = grouped(db, groupedSql, planSha);
             for (JsonNode org : workspaces) {
                 String key = org.path("reference_key").asText();
                 int planned = org.path(fields[i]).size() + (table.equals("membership") ? 1 : 0);
