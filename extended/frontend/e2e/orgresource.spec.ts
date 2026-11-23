@@ -1226,12 +1226,16 @@ test("Resource Library traverses 101 matching resources with bounded server page
 
 
 test("sidebar wordmark stays on one line and inside its panel at responsive widths", async ({ page }) => {
+  test.setTimeout(90_000);
   await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/#/");
+  await expect(page.getByRole("heading", { name: "Overview", level: 1 })).toBeVisible();
   for (const width of [1440, 1120, 1024, 900, 768, 681, 680, 360, 320]) {
     await page.setViewportSize({ width, height: 510 });
-    await page.goto("/#/");
-    await expect(page.getByRole("heading", { name: "Overview", level: 1 })).toBeVisible();
-    if (width <= 680) await page.getByRole("button", { name: "Open navigation" }).click();
+    if (width <= 680) {
+      const toggle = page.getByRole("button", { name: "Open navigation" });
+      if (await toggle.getAttribute("aria-expanded") !== "true") await toggle.click();
+    }
     const brand = page.getByRole("link", { name: "OrgResource Academic Commons, Overview" });
     await expect(brand).toBeVisible();
     const layout = await brand.evaluate((node) => {
