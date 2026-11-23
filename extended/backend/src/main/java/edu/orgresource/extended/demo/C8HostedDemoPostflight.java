@@ -79,8 +79,7 @@ public final class C8HostedDemoPostflight {
         String asOf = plan.path("window").path("as_of").asText();
         if (workspaces.isEmpty() || source.isBlank() || dataset.isBlank() || asOf.isBlank())
             throw new IllegalArgumentException("The plan is incomplete.");
-        if (oneLong(db, "SELECT MAX(CAST(version AS UNSIGNED)) FROM flyway_schema_history WHERE success=1") != 7)
-            throw new IllegalStateException("The schema migration version changed.");
+        C8FlywayHistory.requireExactV7(db);
         if (oneLong(db, "SELECT COUNT(*) FROM organization WHERE demo_dataset_id IS NOT NULL") != workspaces.size())
             throw new IllegalStateException("A partial or unexpected demo cohort was found.");
         if (oneLong(db, """
@@ -216,6 +215,7 @@ public final class C8HostedDemoPostflight {
         if (!expectedMonths.equals(actualMonths))
             throw new IllegalStateException("The imported simulated calendar coverage differs from the plan.");
         compareExactAuditHistory(db, workspaces, planSha);
+        compareExpectedMovementKinds(db, workspaces, planSha);
         if (oneLong(db, """
                 SELECT COUNT(*) FROM audit_event a JOIN organization o ON o.id=a.org_id
                 JOIN user_account u ON u.id=a.actor_user_id
@@ -437,6 +437,49 @@ public final class C8HostedDemoPostflight {
         }
         if (!expected.isEmpty())
             throw new IllegalStateException("One or more approved " + field + " IDs were not persisted.");
+    }
+
+    /**
+     * Independent C8 simulation constraint: resource setup produces INITIAL,
+     * and only ISSUE, RETURN and CONSUME historical events create movements.
+     * Reject extras even when compensating deltas preserve the net stock total.
+     * Ordinary inventory behavior is unchanged; only C8 plan postflight uses
+     * this source-derived count and kind oracle.
+     */
+    private static void compareExpectedMovementKinds(Connection db, JsonNode workspaces, String planSha)
+            throws Exception {
+        Map<String, Long> expected = new HashMap<>();
+        for (JsonNode org : workspaces) {
+            String ref = org.path("reference_key").asText();
+            if (org.path("resources").size() > 0)
+                expected.put(ref + "\u0000INITIAL", (long) org.path("resources").size());
+            for (JsonNode event : org.path("events")) {
+                String action = event.path("action").asText();
+                if ("ISSUE".equals(action) || "RETURN".equals(action) || "CONSUME".equals(action))
+                    expected.merge(ref + "\u0000" + action, 1L, Long::sum);
+            }
+        }
+        Map<String, Long> actual = new HashMap<>();
+        try (PreparedStatement query = db.prepareStatement("""
+                SELECT o.demo_reference_key,m.kind,COUNT(*)
+                FROM stock_movement m JOIN organization o ON o.id=m.organization_id
+                WHERE o.demo_plan_sha=?
+                GROUP BY o.demo_reference_key,m.kind
+                """)) {
+            query.setString(1, planSha);
+            try (ResultSet rows = query.executeQuery()) {
+                while (rows.next()) {
+                    String kind = rows.getString(2);
+                    String key = rows.getString(1) + "\u0000" + kind;
+                    if (rows.getString(1) == null || kind == null
+                            || actual.putIfAbsent(key, rows.getLong(3)) != null)
+                        throw new IllegalStateException("C8_STOCK_MOVEMENT_HISTORY_MISMATCH: Invalid movement group.");
+                }
+            }
+        }
+        if (!expected.equals(actual))
+            throw new IllegalStateException(
+                    "C8_STOCK_MOVEMENT_HISTORY_MISMATCH: Movement kinds/counts differ from the approved simulation.");
     }
 
     private static Map<String, Long> grouped(Connection db, String sql, String sha) throws Exception {

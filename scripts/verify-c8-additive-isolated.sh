@@ -13,10 +13,12 @@ suffix="${mode//-/_}"
 schema="orgresource_c8_additive_ci_fixture_$suffix"
 runtime_user="c8_add_run_$suffix"
 migrator_user="c8_add_mig_$suffix"
+verifier_user="c8_add_ro_$suffix"
+verifier_password="$(openssl rand -hex 24)"
 runtime_password="$(openssl rand -hex 24)"
 migration_password="$(openssl rand -hex 24)"
 owner_password="$(openssl rand -hex 24)"
-for secret in "$runtime_password" "$migration_password" "$owner_password"; do
+for secret in "$runtime_password" "$migration_password" "$owner_password" "$verifier_password"; do
   echo "::add-mask::$secret"
 done
 : "${MYSQL_CONTAINER:?A disposable GitHub Actions MySQL container is required}"
@@ -28,8 +30,10 @@ mysql_ci <<SQL
 CREATE DATABASE $schema CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 CREATE USER '$runtime_user'@'%' IDENTIFIED BY '$runtime_password';
 CREATE USER '$migrator_user'@'%' IDENTIFIED BY '$migration_password';
+CREATE USER '$verifier_user'@'%' IDENTIFIED BY '$verifier_password';
 GRANT SELECT,INSERT,UPDATE,DELETE ON $schema.* TO '$runtime_user'@'%';
 GRANT ALL PRIVILEGES ON $schema.* TO '$migrator_user'@'%';
+GRANT SELECT ON $schema.* TO '$verifier_user'@'%';
 SQL
 url="jdbc:mysql://127.0.0.1:3306/$schema?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
 EXT_DB_URL="$url" EXT_DB_USER="$runtime_user" EXT_DB_PASSWORD="$runtime_password" \
@@ -116,7 +120,7 @@ check_postflight() {
   EXT_C8_PROOF_SCHEMA="$schema" EXT_C8_PROOF_CONFIRM="TEST ADDITIVE $schema" \
     EXT_C8_PROOF_PORT=3306 EXT_C8_DEMO_PLAN="$plan" EXT_C8_DEMO_PLAN_SHA256="$digest" \
     EXT_C8_PROOF_ORIGINAL_ORG_ID="$original_org" EXT_C8_PROOF_OWNER_ACCOUNT_ID="$owner_id" \
-    EXT_DB_USER="$runtime_user" EXT_DB_PASSWORD="$runtime_password" \
+    EXT_DB_USER="$verifier_user" EXT_DB_PASSWORD="$verifier_password" \
     java -Xmx768m -jar extended/backend/target/extended-backend-0.1.0-SNAPSHOT.jar \
     --c8-additive-demo-isolated-postflight
 }
@@ -293,6 +297,117 @@ if [ "$profile" = small ]; then
   mysql_ci "$schema" -e "UPDATE user_account SET display_name='Other Original User' WHERE username_key='other-original-user';"
   original_baseline VERIFY
   check_postflight
+
+  # C8 bounded negative reproductions: disposable small fixture only.
+  # Deliberately expect the verifier to reject a dirty migration-history row
+  # even when MAX(successful version) remains 7. Do not run Spring/Flyway while
+  # the deliberately failed metadata row exists.
+  c8_negative_gaps=0
+  mysql_ci "$schema" <<'SQL'
+INSERT INTO flyway_schema_history
+    (installed_rank,version,description,type,script,checksum,installed_by,execution_time,success)
+VALUES
+    (1000,'8','C8 isolated negative fixture','SQL','V8__c8_isolated_negative.sql',
+     NULL,'c8-ci-fixture',0,0);
+SQL
+  [ "$(mysql_ci --batch --skip-column-names "$schema" -e \
+    'SELECT MAX(CAST(version AS UNSIGNED)) FROM flyway_schema_history WHERE success=1;')" = "7" ]
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-dirty-migration-refusal.log" 2>&1; then
+    echo "C8_REPRO_FLYWAY_DIRTY_ACCEPTED: a failed Flyway row was ignored while MAX(success)=7." >&2
+    c8_negative_gaps=$((c8_negative_gaps+1))
+  elif ! grep -q 'C8_FLYWAY_HISTORY_INVALID' "$RUNNER_TEMP/c8-postflight-dirty-migration-refusal.log"; then
+    echo "C8_REPRO_FLYWAY_UNEXPECTED_REFUSAL: inspect the private CI diagnostic." >&2
+    exit 1
+  fi
+  mysql_ci "$schema" -e "DELETE FROM flyway_schema_history WHERE installed_rank=1000 AND script='V8__c8_isolated_negative.sql' AND success=0;"
+  check_postflight
+
+  # A recorded V7 must not mask a missing V6. Store the exact row inside this
+  # disposable schema only and restore it after the expected postflight denial.
+  mysql_ci "$schema" <<'SQL'
+CREATE TABLE c8_negative_flyway_row LIKE flyway_schema_history;
+INSERT INTO c8_negative_flyway_row SELECT * FROM flyway_schema_history WHERE version='6';
+DELETE FROM flyway_schema_history WHERE version='6';
+SQL
+  [ "$(mysql_ci --batch --skip-column-names "$schema" -e     'SELECT COUNT(*) FROM c8_negative_flyway_row;')" = "1" ]
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-missing-v6-refusal.log" 2>&1; then
+    echo "C8_REPRO_MISSING_V6_ACCEPTED: recorded V7 hid a missing V6 migration." >&2
+    c8_negative_gaps=$((c8_negative_gaps+1))
+  elif ! grep -q 'C8_FLYWAY_HISTORY_INVALID' "$RUNNER_TEMP/c8-postflight-missing-v6-refusal.log"; then
+    echo "C8_REPRO_MISSING_V6_UNEXPECTED_REFUSAL: inspect private CI diagnostic." >&2
+    exit 1
+  fi
+  mysql_ci "$schema" <<'SQL'
+INSERT INTO flyway_schema_history SELECT * FROM c8_negative_flyway_row;
+DROP TABLE c8_negative_flyway_row;
+SQL
+  check_postflight
+
+  # An intact version/script inventory with an altered CRC32 must also fail.
+  flyway_v6_checksum="$(mysql_ci --batch --skip-column-names "$schema" -e     "SELECT checksum FROM flyway_schema_history WHERE version='6' AND success=1;")"
+  [[ "$flyway_v6_checksum" =~ ^-?[0-9]+$ ]]
+  mysql_ci "$schema" -e "UPDATE flyway_schema_history SET checksum=CASE WHEN checksum=0 THEN 1 ELSE 0 END WHERE version='6';"
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-v6-checksum-refusal.log" 2>&1; then
+    echo "C8_REPRO_CHECKSUM_ACCEPTED: mismatched V6 checksum escaped postflight." >&2
+    c8_negative_gaps=$((c8_negative_gaps+1))
+  elif ! grep -q 'C8_FLYWAY_HISTORY_INVALID' "$RUNNER_TEMP/c8-postflight-v6-checksum-refusal.log"; then
+    echo "C8_REPRO_CHECKSUM_UNEXPECTED_REFUSAL: inspect private CI diagnostic." >&2
+    exit 1
+  fi
+  mysql_ci "$schema" -e "UPDATE flyway_schema_history SET checksum=$flyway_v6_checksum WHERE version='6';"
+  check_postflight
+
+  # Two schema-valid ADJUST movements for one fictional Resource, +1 then -1.
+  # All resource, hold and issued sums remain unchanged; no historical audit
+  # is added. This tests whether exact synthetic stock history is reconciled.
+  mysql_ci "$schema" <<'SQL'
+INSERT INTO stock_movement
+  (public_id,organization_id,resource_id,allocation_id,actor_membership_id,
+   operation_public_id,request_fingerprint,kind,quantity,delta_total,delta_issued,occurred_at)
+SELECT UUID_TO_BIN('00000000-0000-4000-8000-00000000c811',0),
+       r.organization_id,r.id,NULL,m.id,
+       UUID_TO_BIN('00000000-0000-4000-8000-00000000c821',0),
+       UNHEX(SHA2('c8-fixture-adjust-positive',256)),'ADJUST',1,1,0,'2026-11-19 00:00:01'
+FROM resource r JOIN organization o ON o.id=r.organization_id
+JOIN membership m ON m.org_id=o.id
+WHERE o.demo_reference_key='fictional-small-01' AND m.role='OWNER'
+ORDER BY r.id,m.id LIMIT 1;
+INSERT INTO stock_movement
+  (public_id,organization_id,resource_id,allocation_id,actor_membership_id,
+   operation_public_id,request_fingerprint,kind,quantity,delta_total,delta_issued,occurred_at)
+SELECT UUID_TO_BIN('00000000-0000-4000-8000-00000000c812',0),
+       r.organization_id,r.id,NULL,m.id,
+       UUID_TO_BIN('00000000-0000-4000-8000-00000000c822',0),
+       UNHEX(SHA2('c8-fixture-adjust-negative',256)),'ADJUST',1,-1,0,'2026-11-19 00:00:02'
+FROM resource r JOIN organization o ON o.id=r.organization_id
+JOIN membership m ON m.org_id=o.id
+WHERE o.demo_reference_key='fictional-small-01' AND m.role='OWNER'
+ORDER BY r.id,m.id LIMIT 1;
+SQL
+  [ "$(mysql_ci --batch --skip-column-names "$schema" -e \
+    "SELECT COUNT(*) FROM stock_movement WHERE operation_public_id IN
+      (UUID_TO_BIN('00000000-0000-4000-8000-00000000c821',0),
+       UUID_TO_BIN('00000000-0000-4000-8000-00000000c822',0));")" = "2" ]
+  [ "$(mysql_ci --batch --skip-column-names "$schema" -e \
+    "SELECT COALESCE(SUM(delta_total),99) FROM stock_movement WHERE operation_public_id IN
+      (UUID_TO_BIN('00000000-0000-4000-8000-00000000c821',0),
+       UUID_TO_BIN('00000000-0000-4000-8000-00000000c822',0));")" = "0" ]
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-compensating-stock-refusal.log" 2>&1; then
+    echo "C8_REPRO_EXTRA_STOCK_MOVEMENTS_ACCEPTED: two compensating, schema-valid ADJUST rows escaped postflight." >&2
+    c8_negative_gaps=$((c8_negative_gaps+1))
+  elif ! grep -q 'C8_STOCK_MOVEMENT_HISTORY_MISMATCH' "$RUNNER_TEMP/c8-postflight-compensating-stock-refusal.log"; then
+    echo "C8_REPRO_STOCK_UNEXPECTED_REFUSAL: inspect the private CI diagnostic." >&2
+    exit 1
+  fi
+  mysql_ci "$schema" -e "DELETE FROM stock_movement WHERE kind='ADJUST' AND operation_public_id IN
+      (UUID_TO_BIN('00000000-0000-4000-8000-00000000c821',0),
+       UUID_TO_BIN('00000000-0000-4000-8000-00000000c822',0));"
+  original_baseline VERIFY
+  check_postflight
+  if [ "$c8_negative_gaps" -ne 0 ]; then
+    echo "C8_POSTFLIGHT_NEGATIVE_REPRODUCTIONS_FAILED: $c8_negative_gaps expected verifier refusals were absent; no production or shared database was involved." >&2
+    exit 1
+  fi
 fi
 # Full source-derived SQL conservation checks across every imported tenant.
 expected_events="$(python3 - "$plan" <<'PY'
