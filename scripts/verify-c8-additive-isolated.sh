@@ -318,6 +318,41 @@ SQL
   mysql_ci "$schema" -e "DELETE FROM flyway_schema_history WHERE installed_rank=1000 AND script='V8__c8_isolated_negative.sql' AND success=0;"
   check_postflight
 
+  # A recorded V7 must not mask a missing V6. Store the exact row inside this
+  # disposable schema only and restore it after the expected postflight denial.
+  mysql_ci "$schema" <<'SQL'
+CREATE TABLE c8_negative_flyway_row LIKE flyway_schema_history;
+INSERT INTO c8_negative_flyway_row SELECT * FROM flyway_schema_history WHERE version='6';
+DELETE FROM flyway_schema_history WHERE version='6';
+SQL
+  [ "$(mysql_ci --batch --skip-column-names "$schema" -e     'SELECT COUNT(*) FROM c8_negative_flyway_row;')" = "1" ]
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-missing-v6-refusal.log" 2>&1; then
+    echo "C8_REPRO_MISSING_V6_ACCEPTED: recorded V7 hid a missing V6 migration." >&2
+    c8_negative_gaps=$((c8_negative_gaps+1))
+  elif ! grep -q 'C8_FLYWAY_HISTORY_INVALID' "$RUNNER_TEMP/c8-postflight-missing-v6-refusal.log"; then
+    echo "C8_REPRO_MISSING_V6_UNEXPECTED_REFUSAL: inspect private CI diagnostic." >&2
+    exit 1
+  fi
+  mysql_ci "$schema" <<'SQL'
+INSERT INTO flyway_schema_history SELECT * FROM c8_negative_flyway_row;
+DROP TABLE c8_negative_flyway_row;
+SQL
+  check_postflight
+
+  # An intact version/script inventory with an altered CRC32 must also fail.
+  flyway_v6_checksum="$(mysql_ci --batch --skip-column-names "$schema" -e     "SELECT checksum FROM flyway_schema_history WHERE version='6' AND success=1;")"
+  [[ "$flyway_v6_checksum" =~ ^-?[0-9]+$ ]]
+  mysql_ci "$schema" -e "UPDATE flyway_schema_history SET checksum=CASE WHEN checksum=0 THEN 1 ELSE 0 END WHERE version='6';"
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-v6-checksum-refusal.log" 2>&1; then
+    echo "C8_REPRO_CHECKSUM_ACCEPTED: mismatched V6 checksum escaped postflight." >&2
+    c8_negative_gaps=$((c8_negative_gaps+1))
+  elif ! grep -q 'C8_FLYWAY_HISTORY_INVALID' "$RUNNER_TEMP/c8-postflight-v6-checksum-refusal.log"; then
+    echo "C8_REPRO_CHECKSUM_UNEXPECTED_REFUSAL: inspect private CI diagnostic." >&2
+    exit 1
+  fi
+  mysql_ci "$schema" -e "UPDATE flyway_schema_history SET checksum=$flyway_v6_checksum WHERE version='6';"
+  check_postflight
+
   # Two schema-valid ADJUST movements for one fictional Resource, +1 then -1.
   # All resource, hold and issued sums remain unchanged; no historical audit
   # is added. This tests whether exact synthetic stock history is reconciled.
