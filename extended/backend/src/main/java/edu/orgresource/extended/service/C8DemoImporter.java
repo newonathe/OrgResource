@@ -112,6 +112,23 @@ public class C8DemoImporter {
     }
 
     /**
+     * The approved full plan is accepted only after the isolated target, independent
+     * restoration, authenticated owner, and exact source were checked by the
+     * non-web manual command. No web endpoint exposes this method.
+     * A failed partial run needs a backup restore before retry.
+     */
+    public void importApprovedHostedPlan(JsonNode plan, String planSha,
+            UUID originalOrganizationId, UUID existingOwnerId) {
+        if (!edu.orgresource.extended.demo.C8HostedDemoPreflight.APPROVED_FULL_PLAN_SHA.equals(planSha)
+                || !"LOCAL_ONLY_DRY_RUN".equals(plan.path("scope").asText())
+                || plan.path("organizations").size() != 96
+                || !edu.orgresource.extended.demo.C8HostedDemoPreflight.APPROVED_SOURCE_SHA
+                    .equals(plan.path("source_sha256").asText()))
+            throw new IllegalArgumentException("The hosted importer requires the exact approved 96-workspace source.");
+        importAdditionalPlanForIsolatedProof(plan, planSha, originalOrganizationId, existingOwnerId);
+    }
+
+    /**
      * Acceptance-only additive replay into an already populated database.
      * This method has NO live hosted command entry point. A separate private,
      * backup-verified, manually authorized hosted importer is still required.

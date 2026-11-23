@@ -28,9 +28,8 @@ public final class C8HostedDemoPreflight {
     private static final int MAX_BYTES = 32 * 1024 * 1024;
     private C8HostedDemoPreflight() { }
 
-    public static void run(String[] args, Map<String, String> environment) throws Exception {
-        if (args.length != 1 || !ARGUMENT.equals(args[0]))
-            throw new IllegalArgumentException("Only the dedicated read-only hosted preflight flag is permitted.");
+    /** Read-only target and full-plan validation; returns opaque target identity to a manual caller. */
+    public static Inspection inspect(Map<String, String> environment) throws Exception {
         String schema = required(environment, "EXT_C8_HOSTED_EXPECTED_SCHEMA");
         if (!schema.matches("orgresource_[a-z0-9_]{1,48}"))
             throw new IllegalArgumentException("The expected schema must be an explicit OrgResource schema.");
@@ -66,16 +65,24 @@ public final class C8HostedDemoPreflight {
             if (original != 1) throw new IllegalStateException("The expected original owner/organization pair is unavailable.");
             long organizations = singleLong(db, "SELECT COUNT(*) FROM organization");
             if (organizations == 0) throw new IllegalStateException("This command is for an already populated database.");
-            String fingerprint = sha256(schema + "\u0000" + serverUuid);
-            System.out.println("HOSTED_DEMO_PREFLIGHT_READ_ONLY_OK");
-            System.out.println("target_fingerprint_sha256=" + fingerprint);
-            System.out.println("original_organization_count=" + organizations);
-            System.out.println("flyway_version=7");
-            System.out.println("approved_full_plan=96_workspaces_21060_requests");
-            System.out.println("database_writes=0");
-            System.out.println("LIMIT: Backup and isolated restore, live job access, runtime size, additive importer and independent review are NOT verified.");
+            return new Inspection(sha256(schema + "\u0000" + serverUuid), organizations);
         }
     }
+
+    public static void run(String[] args, Map<String, String> environment) throws Exception {
+        if (args.length != 1 || !ARGUMENT.equals(args[0]))
+            throw new IllegalArgumentException("Only the dedicated read-only hosted preflight flag is permitted.");
+        Inspection result = inspect(environment);
+        System.out.println("HOSTED_DEMO_PREFLIGHT_READ_ONLY_OK");
+        System.out.println("target_fingerprint_sha256=" + result.fingerprint());
+        System.out.println("original_organization_count=" + result.organizations());
+        System.out.println("flyway_version=7");
+        System.out.println("approved_full_plan=96_workspaces_21060_requests");
+        System.out.println("database_writes=0");
+        System.out.println("LIMIT: Backup and isolated restore, live job access, runtime size, additive importer and independent review are NOT verified.");
+    }
+
+    public record Inspection(String fingerprint, long organizations) { }
 
     public static void requireApprovedPlan(Path planFile) throws Exception {
         long size = Files.size(planFile);
