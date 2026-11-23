@@ -4634,6 +4634,52 @@ class C1IdentityAcceptanceTest {
         assertArrayEquals(foreignBefore, stockFactCounts(foreign.orgDbId));
     }
 
+    @Test @Order(66)
+    void C8IdentityAccountDisableWrongPasswordAndSuccessfulNonOwnerAreAtomic() throws Exception {
+        // A deterministic positive and negative for R029. The pre-existing
+        // concurrent ownership-transfer case #12 allows a legitimate 409 and
+        // therefore does not guarantee a 204 account-disable receipt.
+        Fixture owner = newTenant("C8-disable-owner", Membership.Role.OWNER);
+        Fixture member = fixtureInOrg(owner.orgDbId, Membership.Role.MEMBER);
+        Session session = login(member.username, member.password);
+        long ownerCount = memberships.countEffectiveActiveOwners(owner.orgDbId);
+        long version = accounts.findById(member.userDbId).orElseThrow().credentialVersion;
+        String originalHash = credentials.findByUserId(member.userDbId).orElseThrow().passwordHash;
+        long audits = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM audit_event WHERE actor_user_id=? AND action='ACCOUNT_DISABLED'",
+                Long.class, member.userDbId);
+        assertEquals(0L, audits, "A fresh fictional account starts without disable audits.");
+
+        HttpResponse<String> denied = post(session, "/api/v2/account/disable",
+                GSON.toJson(new CurrentPasswordRequest("deliberately-wrong-password")));
+        assertEquals(401, denied.statusCode(), denied.body());
+        assertEquals("CURRENT_PASSWORD_INVALID", json(denied).get("code").getAsString());
+        assertEquals(UserAccount.Status.ACTIVE, accounts.findById(member.userDbId).orElseThrow().status);
+        assertEquals(version, accounts.findById(member.userDbId).orElseThrow().credentialVersion);
+        assertEquals(originalHash, credentials.findByUserId(member.userDbId).orElseThrow().passwordHash);
+        assertEquals(audits, jdbc.queryForObject(
+                "SELECT COUNT(*) FROM audit_event WHERE actor_user_id=? AND action='ACCOUNT_DISABLED'",
+                Long.class, member.userDbId));
+        assertEquals(ownerCount, memberships.countEffectiveActiveOwners(owner.orgDbId));
+        assertEquals(200, get(session.client, "/api/v2/session").statusCode(),
+                "Wrong-password denial must not revoke the valid session.");
+
+        HttpResponse<String> completed = post(session, "/api/v2/account/disable",
+                GSON.toJson(new CurrentPasswordRequest(member.password)));
+        assertEquals(204, completed.statusCode(), completed.body());
+        assertTrue(completed.body().isBlank(), "Account disable must not return private account data.");
+        assertEquals(UserAccount.Status.DISABLED, accounts.findById(member.userDbId).orElseThrow().status);
+        assertEquals(version + 1, accounts.findById(member.userDbId).orElseThrow().credentialVersion);
+        assertEquals(originalHash, credentials.findByUserId(member.userDbId).orElseThrow().passwordHash,
+                "Disabling the account must not silently rewrite its credential.");
+        assertEquals(audits + 1, jdbc.queryForObject(
+                "SELECT COUNT(*) FROM audit_event WHERE actor_user_id=? AND action='ACCOUNT_DISABLED'",
+                Long.class, member.userDbId));
+        assertEquals(ownerCount, memberships.countEffectiveActiveOwners(owner.orgDbId));
+        assertEquals(401, get(session.client, "/api/v2/session").statusCode());
+        assertEquals(401, loginStatus(member.username, member.password));
+    }
+
     private record Fixture(long orgDbId, UUID orgPublicId, long userDbId, String username, String password,
                           long membershipDbId, UUID membershipPublicId, List<String> recoveryCodes) { }
     private static final class Session {
