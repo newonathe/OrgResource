@@ -4135,6 +4135,134 @@ class C1IdentityAcceptanceTest {
                 "CUSTODIAN may create stock, while ADMIN may not");
     }
 
+
+    @Test @Order(62)
+    void C8SelectedWorkspaceSwitchDemotionAndSuspensionRecheckMembershipPerRequest() throws Exception {
+        // Reuse ONE authenticated browser session across two real fictional
+        // organizations. An old tenant cursor and an old privileged role must
+        // never survive a selected-organization switch or a role change.
+        Fixture home = newTenant("C8-switch-home", Membership.Role.OWNER);
+        Fixture away = newTenant("C8-switch-away", Membership.Role.OWNER);
+        Fixture actor = fixtureInOrg(home.orgDbId, Membership.Role.CUSTODIAN);
+        addMembership(away.orgDbId, actor.userDbId, Membership.Role.MEMBER);
+        Session homeOwner = login(home.username, home.password);
+        Session awayOwner = login(away.username, away.password);
+
+        long homeDepartment = json(post(homeOwner, "/api/departments",
+                GSON.toJson(new NameRequest("Fictional switch home Department")))).get("id").getAsLong();
+        long homeProject = json(post(homeOwner, "/api/projects", GSON.toJson(new ProjectRequest(
+                homeDepartment, "Fictional switch home Project", "2040-12-11T10:00:00",
+                "2040-12-11T14:00:00")))).get("id").getAsLong();
+        long homeResource = json(post(homeOwner, "/api/resources", GSON.toJson(new ResourceRequest(
+                "Fictional switch home Resource A", "REUSABLE", 4)))).get("id").getAsLong();
+        json(post(homeOwner, "/api/resources", GSON.toJson(new ResourceRequest(
+                "Fictional switch home Resource B", "CONSUMABLE", 0))));
+        long homeRequirement = json(post(homeOwner, "/api/requirements", GSON.toJson(
+                new RequirementRequest(homeProject, homeResource, 2)))).get("id").getAsLong();
+        long homeAllocation = json(post(homeOwner, "/api/allocations", GSON.toJson(
+                new AllocationRequest(homeRequirement, 1, "Fictional switch borrower", null, false))))
+                .get("id").getAsLong();
+        long awayResource = json(post(awayOwner, "/api/resources", GSON.toJson(new ResourceRequest(
+                "Fictional switch away Resource", "REUSABLE", 0)))).get("id").getAsLong();
+
+        Session live = login(actor.username, actor.password);
+        assertEquals(200, post(live, "/api/v2/session/active-org",
+                GSON.toJson(new OrgRequest(home.orgPublicId))).statusCode());
+        refreshCsrf(live);
+        String pagePath = "/api/v2/workspace/resources?limit=1";
+        JsonObject first = workspacePage(live, pagePath);
+        assertEquals(1, first.getAsJsonArray("items").size());
+        assertFalse(first.get("nextCursor").isJsonNull(), "Two resources require a continuation cursor");
+        String homeCursor = first.get("nextCursor").getAsString();
+        JsonObject homeAllocations = workspacePage(live, "/api/v2/workspace/allocations?limit=10");
+        assertTrue(homeAllocations.getAsJsonArray("items").asList().stream()
+                .anyMatch(item -> item.getAsJsonObject().get("id").getAsLong() == homeAllocation));
+        assertFalse(workspacePage(live, "/api/v2/workspace/overview").get("allocations").isJsonNull());
+
+        // Same browser, different selected org: the home cursor and original
+        // home resource must not produce any away-organization data.
+        assertEquals(200, post(live, "/api/v2/session/active-org",
+                GSON.toJson(new OrgRequest(away.orgPublicId))).statusCode());
+        refreshCsrf(live);
+        assertEquals(404, get(live.client, pagePath + "&cursor=" + homeCursor).statusCode(),
+                "Cursor must be bound to the organization that issued it");
+        JsonObject awayPage = workspacePage(live, "/api/v2/workspace/resources?limit=10");
+        assertTrue(awayPage.getAsJsonArray("items").asList().stream()
+                .anyMatch(item -> item.getAsJsonObject().get("id").getAsLong() == awayResource));
+        assertFalse(awayPage.getAsJsonArray("items").asList().stream()
+                .anyMatch(item -> item.getAsJsonObject().get("id").getAsLong() == homeResource));
+        assertEquals(404, get(live.client, "/api/v2/departments/" + homeDepartment).statusCode());
+        assertEquals(403, get(live.client, "/api/v2/workspace/allocations?limit=10").statusCode());
+        assertTrue(workspacePage(live, "/api/v2/workspace/overview").get("allocations").isJsonNull());
+
+        // Switching back restores legitimate home reads, never remembered
+        // CUSTODIAN capabilities after the OWNER changes the DB membership.
+        assertEquals(200, post(live, "/api/v2/session/active-org",
+                GSON.toJson(new OrgRequest(home.orgPublicId))).statusCode());
+        refreshCsrf(live);
+        assertEquals(200, get(live.client, pagePath + "&cursor=" + homeCursor).statusCode());
+        assertEquals(200, get(live.client, "/api/v2/workspace/allocations?limit=10").statusCode());
+        long[] beforeStockFacts = stockFactCounts(home.orgDbId);
+        int resourceCount = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM resource WHERE organization_id=?", Integer.class, home.orgDbId);
+        int allocationCount = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM allocation WHERE organization_id=?", Integer.class, home.orgDbId);
+        String memberPath = "/api/v2/orgs/" + home.orgPublicId + "/members/" + actor.membershipPublicId;
+        HttpResponse<String> demotion = post(homeOwner, memberPath + "/role",
+                GSON.toJson(new RoleRequest("MEMBER")), "\"v0\"");
+        assertEquals(200, demotion.statusCode(), demotion.body());
+
+        assertEquals(403, get(live.client, "/api/v2/workspace/allocations?limit=10").statusCode(),
+                "Same-session membership role must be reloaded from MySQL");
+        assertTrue(workspacePage(live, "/api/v2/workspace/overview").get("allocations").isJsonNull());
+        assertEquals(200, get(live.client, "/api/v2/workspace/resources?limit=10").statusCode(),
+                "Demotion to MEMBER preserves approved baseline browsing");
+        assertEquals(403, post(live, "/api/resources", GSON.toJson(
+                new ResourceRequest("Fictional forbidden stale Custodian", "CONSUMABLE", 0))).statusCode());
+        assertEquals(resourceCount, jdbc.queryForObject(
+                "SELECT COUNT(*) FROM resource WHERE organization_id=?", Integer.class, home.orgDbId));
+        assertEquals(allocationCount, jdbc.queryForObject(
+                "SELECT COUNT(*) FROM allocation WHERE organization_id=?", Integer.class, home.orgDbId));
+        long[] afterDemotion = stockFactCounts(home.orgDbId);
+        assertEquals(beforeStockFacts[0], afterDemotion[0], "No phantom inventory movement");
+        assertEquals(beforeStockFacts[1], afterDemotion[1], "No denied-write idempotency receipt");
+
+        HttpResponse<String> suspension = post(homeOwner, memberPath + "/suspend", null, "\"v1\"");
+        assertEquals(200, suspension.statusCode(), suspension.body());
+        for (String protectedRead : List.of(
+                "/api/departments",
+                "/api/resources",
+                "/api/v2/departments/" + homeDepartment,
+                "/api/v2/workspace/overview",
+                "/api/v2/workspace/departments?limit=10",
+                "/api/v2/workspace/projects?limit=10",
+                "/api/v2/workspace/resources?limit=10",
+                "/api/v2/workspace/requirements?limit=10",
+                "/api/v2/workspace/allocations?limit=10")) {
+            assertEquals(404, get(live.client, protectedRead).statusCode(),
+                    "Suspended selected-org membership must lose access immediately: " + protectedRead);
+        }
+        assertEquals(resourceCount, jdbc.queryForObject(
+                "SELECT COUNT(*) FROM resource WHERE organization_id=?", Integer.class, home.orgDbId));
+        assertEquals(allocationCount, jdbc.queryForObject(
+                "SELECT COUNT(*) FROM allocation WHERE organization_id=?", Integer.class, home.orgDbId));
+        long[] afterSuspension = stockFactCounts(home.orgDbId);
+        assertEquals(beforeStockFacts[0], afterSuspension[0]);
+        assertEquals(beforeStockFacts[1], afterSuspension[1]);
+        assertEquals(beforeStockFacts[2] + 2, afterSuspension[2],
+                "Only the authorized role-change and suspension events add governance audit rows");
+
+        // Account remains valid in its other ACTIVE organization; suspension
+        // is scoped to the specific membership, not an accidental global ban.
+        assertEquals(200, post(live, "/api/v2/session/active-org",
+                GSON.toJson(new OrgRequest(away.orgPublicId))).statusCode());
+        refreshCsrf(live);
+        assertTrue(workspacePage(live, "/api/v2/workspace/resources?limit=10")
+                .getAsJsonArray("items").asList().stream()
+                .anyMatch(item -> item.getAsJsonObject().get("id").getAsLong() == awayResource));
+        assertEquals(403, get(live.client, "/api/v2/workspace/allocations?limit=10").statusCode());
+    }
+
     private record Fixture(long orgDbId, UUID orgPublicId, long userDbId, String username, String password,
                           long membershipDbId, UUID membershipPublicId, List<String> recoveryCodes) { }
     private static final class Session {
