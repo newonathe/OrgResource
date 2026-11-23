@@ -1,5 +1,14 @@
 # OrgResource — START HERE for the next chat or Codex session
 
+## P0 latest: stronger plan-to-MySQL read-only integrity, 2026-11-23
+
+- **Verified baseline:** `35e2a53c572cf247ea48e91864428f19098edb89` passed [all three CI jobs #45104954191](https://github.com/newonathe/OrgResource/actions/runs/45104954191), including the isolated partial-import/restore and initial independent postflight with deliberate label/audit-action tampering. The original Course A is unchanged.
+- **New code** `94217ca8aa691ee75480194af6308e08b599cbc5`: compare **each approved simulated historical event** to stored `audit_event` tenant, action, allocation public ID, Manila-to-UTC exact microsecond timestamp, and synthetic actor username; enforce `SUCCESS` and `allocation` audit type. Reject in-month timestamp corruption. The historical operation UUID is not stored on `audit_event`, so the verifier compares a counted multiset of the complete persistable signature.
+- **New code** `33e81574c0129cfd488be2611147cb60affef3f6`: independently reconcile **each Allocation** ID, linked Requirement/Resource UUID, borrower Membership UUID, quantity and terminal state calculated from ordered original fictional events; deliberately increase an isolated Allocation quantity and prove postflight rejection. Neither addition exposes a write API. This is separate from earlier per-tenant totals, ledger/holds, and general six-state checks.
+- [CI #45105844884](https://github.com/newonathe/OrgResource/actions/runs/45105844884) (event integrity) and [CI #45105975265](https://github.com/newonathe/OrgResource/actions/runs/45105975265) (allocation integrity) **were in progress when this checkpoint was recorded**. Recheck actual jobs; fix any failure without dropping invariants. Do **not** report latest code as passing until the exact final SHA jobs pass.
+- **LIVE_IMPORT_NOT_RUN.** No Northflank host access, no exact approved 96-label private plan/manifest bytes, no user-approved deployment/backup+isolated real restore, no full-scale clone; the Northflank October 30 incident requires operator review/secret rotation. Original live account/org untouched and no merge. The compiled Postflight check is an acceptance helper, not a substitute for real host evidence.
+
+
 ## P0 SECURITY GATE discovered on November 23, 2026
 
 **Northflank [official November 17 incident report](https://northflank.com/blog/incident-report-october-30-security-incident)** confirms an October 30, 2026 theft of a **subset of stored customer secrets**. It says the vulnerability was fixed, estimates 1.5% of teams/1.8% of secrets were exfiltrated, and reports no evidence of customer workload-data access. Northflank **told every customer to rotate stored secrets**, and revoked platform API tokens. [Official status](https://status.northflank.com/history/1) marks the incident resolved November 17. **Actual OrgResource account exposure/rotation is UNKNOWN.**

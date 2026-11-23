@@ -104,6 +104,8 @@ This direct JDBC command starts **no Spring web process, scheduler, Flyway or da
 
 **Limits:** Postflight does not independently prove that original pre-existing record values were unchanged, that a Northflank native/off-host backup can be restored, that live browser sessions and tenant boundaries work, or that the exact directory labels can lawfully be publicly displayed. Compare separately captured *pre-import* original account/org/domain row hashes, real login, privacy rights, backup/restore receipt and browsers. CI's small/intermediate postflight fixture is **not** a live 96-plan or full-scale performance test.
 
+**Additional exact checks (new code `94217ca8` and `33e81574`, latest CI pending):** the independent postflight also compares each fictional historical audit entry (action, allocation ID, synthetic actor, full UTC timestamp) and each persisted Allocation (public ID, Requirement/Resource link, borrower Membership, quantity, final status). An altered timestamp within the same calendar month or a changed Allocation quantity must fail closed. These controls still do not prove the original owner/org **pre-import baseline** remained unchanged or real browser authorization works.
+
 ## 4. Independent post-write checks
 
 The hosted webpage is only considered populated after independent read-only postflight **and** all of these are observed against the **actual deployed instance**, with dated/redacted evidence and source SHA:
