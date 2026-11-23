@@ -3614,7 +3614,26 @@
           "claim_limit": "HTTP status assertion, not full per-route authorization proof"
         }
       ],
-      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE",
+      "directed_test_assertion_map": {
+        "evidence_type": "SOURCE_INSPECTED_TEST_ASSERTIONS_NOT_INDEPENDENTLY_REVIEWED",
+        "existing_exact_sha": "51b2bfff808a04800e6adba4f80811f35e7e0f06",
+        "new_test_branch": "test/c8-project-work-denied-sql-2026-11-24",
+        "new_test_order64": "PENDING_CI",
+        "positive_order_candidates": [
+          45,
+          46
+        ],
+        "negative_order_candidates": [
+          45,
+          46
+        ],
+        "database_or_field_order_candidates": [
+          46
+        ],
+        "source_reading_notes": "OWNER/ADMIN 200, MEMBER/LEAD/CUSTODIAN 403, path-vs-selected mismatch 404, other-tenant 404, invalid/tied cursor 400, audit DB SELECT privilege failure 500 with no partial success; dedicated SQL no-write before/after still review",
+        "remaining_obligations": "Reviewer must inspect exact request/status/actor/real-object and SQL/fields; missing oracle factors may require added tests; formal acceptance remains BLOCKED."
+      }
     },
     {
       "route_id": "R043",
@@ -4355,7 +4374,26 @@
           "claim_limit": "HTTP status assertion, not full per-route authorization proof"
         }
       ],
-      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE",
+      "directed_test_assertion_map": {
+        "evidence_type": "SOURCE_INSPECTED_TEST_ASSERTIONS_NOT_INDEPENDENTLY_REVIEWED",
+        "existing_exact_sha": "51b2bfff808a04800e6adba4f80811f35e7e0f06",
+        "new_test_branch": "test/c8-project-work-denied-sql-2026-11-24",
+        "new_test_order64": "PENDING_CI",
+        "positive_order_candidates": [
+          45,
+          46
+        ],
+        "negative_order_candidates": [
+          45,
+          46
+        ],
+        "database_or_field_order_candidates": [
+          46
+        ],
+        "source_reading_notes": "OWNER/ADMIN 200, other roles 403, foreign/selection mismatch 404, cursor ties and target redaction, bounds check; precise SQL no-write evidence may need confirmation",
+        "remaining_obligations": "Reviewer must inspect exact request/status/actor/real-object and SQL/fields; missing oracle factors may require added tests; formal acceptance remains BLOCKED."
+      }
     },
     {
       "route_id": "R053",
@@ -4749,7 +4787,26 @@
           "claim_limit": "HTTP status assertion, not full per-route authorization proof"
         }
       ],
-      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE",
+      "directed_test_assertion_map": {
+        "evidence_type": "SOURCE_INSPECTED_TEST_ASSERTIONS_NOT_INDEPENDENTLY_REVIEWED",
+        "existing_exact_sha": "51b2bfff808a04800e6adba4f80811f35e7e0f06",
+        "new_test_branch": "test/c8-project-work-denied-sql-2026-11-24",
+        "new_test_order64": "PENDING_CI",
+        "positive_order_candidates": [
+          45,
+          47
+        ],
+        "negative_order_candidates": [
+          45,
+          47
+        ],
+        "database_or_field_order_candidates": [
+          47
+        ],
+        "source_reading_notes": "OWNER/ADMIN allowed; foreign/role/CSRF refusals; CSV/TENANT_JSON dataset and CSV injection defenses, private field redaction, 1000-row 413, read-committed snapshot; SQL before/after denied exports not explicit",
+        "remaining_obligations": "Reviewer must inspect exact request/status/actor/real-object and SQL/fields; missing oracle factors may require added tests; formal acceptance remains BLOCKED."
+      }
     },
     {
       "route_id": "R058",
@@ -4937,7 +4994,26 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "directed_test_assertion_map": {
+        "evidence_type": "SOURCE_INSPECTED_TEST_ASSERTIONS_NOT_INDEPENDENTLY_REVIEWED",
+        "existing_exact_sha": "51b2bfff808a04800e6adba4f80811f35e7e0f06",
+        "new_test_branch": "test/c8-project-work-denied-sql-2026-11-24",
+        "new_test_order64": "PENDING_CI",
+        "positive_order_candidates": [
+          55
+        ],
+        "negative_order_candidates": [
+          55,
+          64
+        ],
+        "database_or_field_order_candidates": [
+          55,
+          64
+        ],
+        "source_reading_notes": "#55 linked Project delete 409 then cleared 200; #64 CUSTODIAN 403, unassigned LEAD 404, actual foreign Project 404, precondition refusal and two-tenant SQL snapshot",
+        "remaining_obligations": "Reviewer must inspect exact request/status/actor/real-object and SQL/fields; missing oracle factors may require added tests; formal acceptance remains BLOCKED."
+      }
     },
     {
       "route_id": "R061",
@@ -5125,7 +5201,28 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "directed_test_assertion_map": {
+        "evidence_type": "SOURCE_INSPECTED_TEST_ASSERTIONS_NOT_INDEPENDENTLY_REVIEWED",
+        "existing_exact_sha": "51b2bfff808a04800e6adba4f80811f35e7e0f06",
+        "new_test_branch": "test/c8-project-work-denied-sql-2026-11-24",
+        "new_test_order64": "PENDING_CI",
+        "positive_order_candidates": [
+          55,
+          57
+        ],
+        "negative_order_candidates": [
+          55,
+          57,
+          64
+        ],
+        "database_or_field_order_candidates": [
+          57,
+          64
+        ],
+        "source_reading_notes": "#55 assigned LEAD update 200 with ETag, missing If-Match 428, unassigned Project 404; #57 concurrent downgrade; #64 CUSTODIAN 403, real foreign 404, stale 412 + unchanged SQL",
+        "remaining_obligations": "Reviewer must inspect exact request/status/actor/real-object and SQL/fields; missing oracle factors may require added tests; formal acceptance remains BLOCKED."
+      }
     },
     {
       "route_id": "R064",
@@ -5237,7 +5334,26 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "directed_test_assertion_map": {
+        "evidence_type": "SOURCE_INSPECTED_TEST_ASSERTIONS_NOT_INDEPENDENTLY_REVIEWED",
+        "existing_exact_sha": "51b2bfff808a04800e6adba4f80811f35e7e0f06",
+        "new_test_branch": "test/c8-project-work-denied-sql-2026-11-24",
+        "new_test_order64": "PENDING_CI",
+        "positive_order_candidates": [
+          55,
+          64
+        ],
+        "negative_order_candidates": [
+          55,
+          64
+        ],
+        "database_or_field_order_candidates": [
+          64
+        ],
+        "source_reading_notes": "#55 scoped assigned LEAD project page; #64 OWNER/CUSTODIAN 200, MEMBER 403, foreign 404, unassigned LEAD empty; no-write snapshot elsewhere",
+        "remaining_obligations": "Reviewer must inspect exact request/status/actor/real-object and SQL/fields; missing oracle factors may require added tests; formal acceptance remains BLOCKED."
+      }
     },
     {
       "route_id": "R066",
@@ -5273,7 +5389,26 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "directed_test_assertion_map": {
+        "evidence_type": "SOURCE_INSPECTED_TEST_ASSERTIONS_NOT_INDEPENDENTLY_REVIEWED",
+        "existing_exact_sha": "51b2bfff808a04800e6adba4f80811f35e7e0f06",
+        "new_test_branch": "test/c8-project-work-denied-sql-2026-11-24",
+        "new_test_order64": "PENDING_CI",
+        "positive_order_candidates": [
+          55
+        ],
+        "negative_order_candidates": [
+          55,
+          64
+        ],
+        "database_or_field_order_candidates": [
+          55,
+          64
+        ],
+        "source_reading_notes": "#55 linked Requirement 409, deletion after Allocation cleanup 200; #64 CUSTODIAN 403, unassigned LEAD/real foreign 404, 428/412; unchanged MySQL rows/movement/receipt/audit",
+        "remaining_obligations": "Reviewer must inspect exact request/status/actor/real-object and SQL/fields; missing oracle factors may require added tests; formal acceptance remains BLOCKED."
+      }
     },
     {
       "route_id": "R067",
@@ -5309,7 +5444,25 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "directed_test_assertion_map": {
+        "evidence_type": "SOURCE_INSPECTED_TEST_ASSERTIONS_NOT_INDEPENDENTLY_REVIEWED",
+        "existing_exact_sha": "51b2bfff808a04800e6adba4f80811f35e7e0f06",
+        "new_test_branch": "test/c8-project-work-denied-sql-2026-11-24",
+        "new_test_order64": "PENDING_CI",
+        "positive_order_candidates": [
+          55
+        ],
+        "negative_order_candidates": [
+          55,
+          64
+        ],
+        "database_or_field_order_candidates": [
+          64
+        ],
+        "source_reading_notes": "#55 quantity update 200 with stale 412; #64 CUSTODIAN 403, unassigned LEAD/foreign Requirement 404, missing/stale 428/412; SQL stable",
+        "remaining_obligations": "Reviewer must inspect exact request/status/actor/real-object and SQL/fields; missing oracle factors may require added tests; formal acceptance remains BLOCKED."
+      }
     },
     {
       "route_id": "R068",
@@ -5345,7 +5498,26 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "directed_test_assertion_map": {
+        "evidence_type": "SOURCE_INSPECTED_TEST_ASSERTIONS_NOT_INDEPENDENTLY_REVIEWED",
+        "existing_exact_sha": "51b2bfff808a04800e6adba4f80811f35e7e0f06",
+        "new_test_branch": "test/c8-project-work-denied-sql-2026-11-24",
+        "new_test_order64": "PENDING_CI",
+        "positive_order_candidates": [
+          55,
+          64
+        ],
+        "negative_order_candidates": [
+          55,
+          64
+        ],
+        "database_or_field_order_candidates": [
+          64
+        ],
+        "source_reading_notes": "#55 assigned LEAD read 200; #64 CUSTODIAN and assigned LEAD 200 with ETag, MEMBER 403, unassigned LEAD/foreign 404",
+        "remaining_obligations": "Reviewer must inspect exact request/status/actor/real-object and SQL/fields; missing oracle factors may require added tests; formal acceptance remains BLOCKED."
+      }
     },
     {
       "route_id": "R069",
@@ -5381,7 +5553,26 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "directed_test_assertion_map": {
+        "evidence_type": "SOURCE_INSPECTED_TEST_ASSERTIONS_NOT_INDEPENDENTLY_REVIEWED",
+        "existing_exact_sha": "51b2bfff808a04800e6adba4f80811f35e7e0f06",
+        "new_test_branch": "test/c8-project-work-denied-sql-2026-11-24",
+        "new_test_order64": "PENDING_CI",
+        "positive_order_candidates": [
+          55,
+          64
+        ],
+        "negative_order_candidates": [
+          55,
+          64
+        ],
+        "database_or_field_order_candidates": [
+          64
+        ],
+        "source_reading_notes": "#55 assigned LEAD filtered page/404 for unassigned project; #64 CUSTODIAN 200, unassigned LEAD empty, MEMBER 403, outsider 404",
+        "remaining_obligations": "Reviewer must inspect exact request/status/actor/real-object and SQL/fields; missing oracle factors may require added tests; formal acceptance remains BLOCKED."
+      }
     },
     {
       "route_id": "R070",
@@ -5417,7 +5608,26 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "directed_test_assertion_map": {
+        "evidence_type": "SOURCE_INSPECTED_TEST_ASSERTIONS_NOT_INDEPENDENTLY_REVIEWED",
+        "existing_exact_sha": "51b2bfff808a04800e6adba4f80811f35e7e0f06",
+        "new_test_branch": "test/c8-project-work-denied-sql-2026-11-24",
+        "new_test_order64": "PENDING_CI",
+        "positive_order_candidates": [
+          55,
+          64
+        ],
+        "negative_order_candidates": [
+          55,
+          64
+        ],
+        "database_or_field_order_candidates": [
+          64
+        ],
+        "source_reading_notes": "#55 assigned LEAD create 201, unassigned Project 404; #64 OWNER 201, CUSTODIAN 403, unassigned LEAD 404, valid foreign Project/Resource 404; before/after SQL stable on denials",
+        "remaining_obligations": "Reviewer must inspect exact request/status/actor/real-object and SQL/fields; missing oracle factors may require added tests; formal acceptance remains BLOCKED."
+      }
     },
     {
       "route_id": "R071",
@@ -6884,5 +7094,6 @@
       "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     }
   ],
-  "methods_addendum": "Collection scripts were inspected: all 48 C3 request names map to global expected HTTP statuses; all 12 C6a request scripts assert explicit HTTP statuses. Exact CI Extended job logs report 48 requests/90 assertions (0 failures) and 12 requests/20 assertions (0 failures). Each of 35 matched distinct route signatures thus has one or more executed status assertion(s), which is a PARTIAL receipt; exact role/object/DB effects, separate review and private IR4 corroboration remain required."
+  "methods_addendum": "Collection scripts were inspected: all 48 C3 request names map to global expected HTTP statuses; all 12 C6a request scripts assert explicit HTTP statuses. Exact CI Extended job logs report 48 requests/90 assertions (0 failures) and 12 requests/20 assertions (0 failures). Each of 35 matched distinct route signatures thus has one or more executed status assertion(s), which is a PARTIAL receipt; exact role/object/DB effects, separate review and private IR4 corroboration remain required.",
+  "scope_note_projectwork": "11 ProjectWork/Reporting route entries now identify actual Java ordered assertion evidence sources. Order 64 is newly added but NOT yet CI verified. No route has an independent acceptance verdict."
 }
