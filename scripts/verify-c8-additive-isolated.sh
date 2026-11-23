@@ -71,7 +71,7 @@ echo "::add-mask::$baseline_key"
 original_baseline() {
   local mode="$1"
   local fp
-  fp="$(printf '%s\\0%s' "$schema" "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT @@server_uuid;')" | sha256sum | cut -d' ' -f1)"
+  fp="$(printf '%s\0%s' "$schema" "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT @@server_uuid;')" | sha256sum | cut -d' ' -f1)"
   EXT_C8_BASELINE_MODE="$mode" EXT_C8_BASELINE_FILE="$baseline_file" \
     EXT_C8_BASELINE_HMAC_HEX="$baseline_key" \
     EXT_C8_HOSTED_EXPECTED_SCHEMA="$schema" EXT_C8_HOSTED_EXPECTED_FINGERPRINT="$fp" \
