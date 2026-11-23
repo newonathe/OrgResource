@@ -13,10 +13,12 @@ suffix="${mode//-/_}"
 schema="orgresource_c8_additive_ci_fixture_$suffix"
 runtime_user="c8_add_run_$suffix"
 migrator_user="c8_add_mig_$suffix"
+verifier_user="c8_add_ro_$suffix"
+verifier_password="$(openssl rand -hex 24)"
 runtime_password="$(openssl rand -hex 24)"
 migration_password="$(openssl rand -hex 24)"
 owner_password="$(openssl rand -hex 24)"
-for secret in "$runtime_password" "$migration_password" "$owner_password"; do
+for secret in "$runtime_password" "$migration_password" "$owner_password" "$verifier_password"; do
   echo "::add-mask::$secret"
 done
 : "${MYSQL_CONTAINER:?A disposable GitHub Actions MySQL container is required}"
@@ -28,8 +30,10 @@ mysql_ci <<SQL
 CREATE DATABASE $schema CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 CREATE USER '$runtime_user'@'%' IDENTIFIED BY '$runtime_password';
 CREATE USER '$migrator_user'@'%' IDENTIFIED BY '$migration_password';
+CREATE USER '$verifier_user'@'%' IDENTIFIED BY '$verifier_password';
 GRANT SELECT,INSERT,UPDATE,DELETE ON $schema.* TO '$runtime_user'@'%';
 GRANT ALL PRIVILEGES ON $schema.* TO '$migrator_user'@'%';
+GRANT SELECT ON $schema.* TO '$verifier_user'@'%';
 SQL
 url="jdbc:mysql://127.0.0.1:3306/$schema?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
 EXT_DB_URL="$url" EXT_DB_USER="$runtime_user" EXT_DB_PASSWORD="$runtime_password" \
@@ -116,7 +120,7 @@ check_postflight() {
   EXT_C8_PROOF_SCHEMA="$schema" EXT_C8_PROOF_CONFIRM="TEST ADDITIVE $schema" \
     EXT_C8_PROOF_PORT=3306 EXT_C8_DEMO_PLAN="$plan" EXT_C8_DEMO_PLAN_SHA256="$digest" \
     EXT_C8_PROOF_ORIGINAL_ORG_ID="$original_org" EXT_C8_PROOF_OWNER_ACCOUNT_ID="$owner_id" \
-    EXT_DB_USER="$runtime_user" EXT_DB_PASSWORD="$runtime_password" \
+    EXT_DB_USER="$verifier_user" EXT_DB_PASSWORD="$verifier_password" \
     java -Xmx768m -jar extended/backend/target/extended-backend-0.1.0-SNAPSHOT.jar \
     --c8-additive-demo-isolated-postflight
 }
