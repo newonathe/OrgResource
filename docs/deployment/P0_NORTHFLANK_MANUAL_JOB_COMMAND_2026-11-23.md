@@ -39,6 +39,14 @@ No staged transfer, job control, backup, restore, or live import has been perfor
 
 **Evidence limitations:** this is a point-in-time original-row preservation check for the 15 identified V7 domain tables, not a complete MySQL-server snapshot. Ephemeral Spring Session tables, Flyway metadata and any future migration tables are outside the HMAC inventory; isolated full backup/restore and all live gates remain mandatory. It assumes new imported rows receive auto-increment IDs greater than the captured boundary—true of the reviewed `C8DemoImporter` path and falsifiable in isolated proof. Any unrelated original-table mutation during the import window is intentionally a NO-GO. Original-data differences are never auto-repaired.
 
+## P0-BL2: hosted importer enforces the original-data baseline (2026-11-23; CI PENDING)
+
+**New fail-closed code:** `--c8-hosted-demo-import` now **requires** `EXT_C8_BASELINE_MODE=VERIFY`, `EXT_C8_BASELINE_FILE` as the **absolute path** to the operator's privately captured mode-0600 V2 baseline, and `EXT_C8_BASELINE_HMAC_HEX` as the same privately stored 32-byte HMAC key. A missing baseline, `CAPTURE` mode, a relative filename, invalid key, wrong server/schema/owner identity, or mismatch with pre-existing V7 rows stops execution **before Spring or the import writes**. The importer invokes the separate read-only baseline verifier after the exact-plan preflight; this is distinct from attesting to an independent backup and restore.
+
+After the importer finishes or fails, it invokes V2 baseline **VERIFY again**, checking all preexisting rows across the 15 V7 persistent data tables. A mismatch prevents `HOSTED_IMPORT_COMPLETE` and requires keeping maintenance active. An interrupted import still requires restoration from the independently verified backup; V2 verification alone is not sufficient to retry. The separate SELECT-only `--c8-hosted-demo-postflight`, actual owner login, browser checks, backup proof and Northflank security rotation remain independently mandatory.
+
+**Operator rules:** Capture the baseline **before** the maintenance import and retain the same file/key for the entire job; do not capture after a partial import. Supply the key privately through the operator's secret manager and avoid writing it into a command argument, public CI, file, log or repository. Use a SELECT-only principal for independent original-data verification before/after the job; the importer necessarily uses its authorized write connection, so its internal pre/post check is defense in depth, not a privilege boundary. This change does not claim a live run or owner authorization. **Latest exact CI must be verified before stating this gate passed.**
+
 ## P0-BL: original-data before/after baseline — now tested and required
 
 **VERIFIED CODE / ISOLATED CI:** commit `a66527cb2c5a5f98167dc741cf035069c216dd1f`, [all-three-job passing run #45108552581](https://github.com/newonathe/OrgResource/actions/runs/45108552581), includes `--c8-hosted-original-baseline`. This is a dedicated read-only JDBC command, separate from the approved-plan postflight and importer. It computes HMAC-SHA256 over every column of **15 original-owner/original-organization tables** (including credentials, recovery codes, membership, invitations, audits, Projects, Resources, Allocations, ledger and idempotency keys), and stores only count and keyed fingerprints. CI verified capture/verify against small/intermediate isolated additive fixtures and refusal after an altered original organization name. A stronger credential-hash tampering test is on the new branch and must pass its own exact CI run before being marked verified.
@@ -76,6 +84,9 @@ EXT_C8_DEMO_PLAN                         [absolute TEMPORARY operator-transferre
 EXT_C8_HOSTED_EXPECTED_SCHEMA            [existing OrgResource MySQL schema]
 EXT_C8_HOSTED_OWNER_PUBLIC_ID            [existing active OWNER account UUID]
 EXT_C8_HOSTED_ORIGINAL_ORG_PUBLIC_ID     [existing original organization UUID]
+EXT_C8_BASELINE_MODE                     VERIFY  [must be pre-captured; CAPTURE mode refuses import]
+EXT_C8_BASELINE_FILE                     [absolute private 0600 V2 baseline path from PRE-import CAPTURE]
+EXT_C8_BASELINE_HMAC_HEX                 [original 32-byte hex key, privately injected]
 EXT_DB_URL                               [MySQL JDBC URL; no embedded username/password]
 EXT_DB_USER                              [existing schema-scoped operational identity]
 EXT_DB_PASSWORD                          [secret, never in scripts or repository]

@@ -1,5 +1,10 @@
 # P0 Next Codex/Operator Cycle — recovery-tested demo importer, exact Northflank transfer
 
+## New stop-before-write baseline guard in hosted importer (2026-11-23; CI PENDING)
+
+**SOURCE COMMITTED, CI PENDING:** the actual `--c8-hosted-demo-import` command now checks `EXT_C8_BASELINE_MODE=VERIFY`, an absolute private V2 capture manifest path and the matching 32-byte HMAC key before any DB connection; after the exact approved-plan preflight, it verifies all original V7 rows **before Spring can start importing**. It verifies again after success **or exception**, refuses to announce success when altered original records are detected and preserves failure evidence when the import stopped. Invalid/missing baseline and CAPTURE mode are covered by additional no-MySQL unit refusals. Read the [operator runbook](../deployment/P0_NORTHFLANK_MANUAL_JOB_COMMAND_2026-11-23.md); a read-only inside-write-process check is not a substitute for the separate SELECT-only operator verification or actual backup/restore. The feature does not change V7, org/department model, frozen Course A, or host state. **LIVE_IMPORT_NOT_RUN.**
+
+
 ## Next P0 cycle: global original-row HMAC baseline, 2026-11-23 (CI pending)
 
 **SOURCE UPDATED / CI PENDING:** the original-data baseline now includes **all pre-existing rows** across all 15 V7 domain/account tables using capture-time PK watermarks and the private HMAC key; newly created historical demo rows append above those watermarks. Version is V2, not silently compatible with V1. Isolated CI now seeds an **additional existing org and account** before capture, checks both remain unchanged after import, then proves tampering with each causes read-only mismatch. The schema and web routes remain unchanged. This is not full native backup, full 96-plan rehearsal or hosted execution. See [P0 operator runbook](../deployment/P0_NORTHFLANK_MANUAL_JOB_COMMAND_2026-11-23.md). **Check exact GitHub run before reporting green.** DEC-D01 remains proposed; the frozen Course A is unchanged.

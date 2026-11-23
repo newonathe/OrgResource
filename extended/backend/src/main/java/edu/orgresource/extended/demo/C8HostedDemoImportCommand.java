@@ -41,12 +41,17 @@ public final class C8HostedDemoImportCommand {
             throw new IllegalArgumentException("SMS and reminder processing must explicitly be disabled.");
         String profiles = env.getOrDefault("SPRING_PROFILES_ACTIVE", "");
         if (!profiles.isBlank()) throw new IllegalArgumentException("Do not inherit an application or test profile in the hosted import job.");
+        requireExistingBaselineVerification(env);
 
         // Performs exact private plan digest + count checks, and SELECT-only checks
         // against MySQL identity, migration, existing owner and zero demo rows.
         C8HostedDemoPreflight.Inspection inspected = C8HostedDemoPreflight.inspect(env);
         if (!fingerprint.equals(inspected.fingerprint()))
             throw new IllegalArgumentException("The expected fingerprint is different from the connected target.");
+        // A successful CLI CAPTURE here would be meaningless: the original
+        // HMAC manifest must already exist from before any importer writes.
+        // Refuse absent, altered, wrong-target or V1 capture before Spring starts.
+        C8HostedOriginalBaseline.run(new String[]{C8HostedOriginalBaseline.ARGUMENT}, env);
 
         String url = required(env, "EXT_DB_URL");
         String user = required(env, "EXT_DB_USER");
@@ -69,22 +74,49 @@ public final class C8HostedDemoImportCommand {
                         "spring.flyway.enabled", "false",
                         "c1.sms.enabled", "false",
                         "c1.reminder.mode", "DISABLED"))));
+        Exception executionFailure = null;
         try (ConfigurableApplicationContext context = app.run()) {
+            context.getBean(C8DemoImporter.class).importApprovedHostedPlan(plan,
+                    C8HostedDemoPreflight.APPROVED_FULL_PLAN_SHA, original, owner);
+            DemoProvenance.Metadata result = context.getBean(DemoProvenance.class).publicMetadata();
+            if (!result.synthetic() || !result.datasetId().equals(plan.path("dataset_id").asText())
+                    || !DemoProvenance.MIXED_NOTICE.equals(result.notice()))
+                throw new IllegalStateException("The completed mixed cohort failed public classification.");
+        } catch (Exception incomplete) {
+            executionFailure = incomplete;
+            System.err.println("HOSTED_IMPORT_INCOMPLETE: Keep the website in maintenance mode. " +
+                    "Investigate privately and restore the independently verified backup to a separate validated target before retry.");
+            throw incomplete;
+        } finally {
+            // Runs whether the replay completed or stopped partway through.
+            // Never permit a success message without original-data integrity.
             try {
-                context.getBean(C8DemoImporter.class).importApprovedHostedPlan(plan,
-                        C8HostedDemoPreflight.APPROVED_FULL_PLAN_SHA, original, owner);
-                DemoProvenance.Metadata result = context.getBean(DemoProvenance.class).publicMetadata();
-                if (!result.synthetic() || !result.datasetId().equals(plan.path("dataset_id").asText())
-                        || !DemoProvenance.MIXED_NOTICE.equals(result.notice()))
-                    throw new IllegalStateException("The completed mixed cohort failed public classification.");
-            } catch (Exception incomplete) {
-                System.err.println("HOSTED_IMPORT_INCOMPLETE: Keep the website in maintenance mode. " +
-                        "Investigate privately and restore the independently verified backup to a separate validated target before retry.");
-                throw incomplete;
+                C8HostedOriginalBaseline.run(new String[]{C8HostedOriginalBaseline.ARGUMENT}, env);
+            } catch (Exception mismatch) {
+                System.err.println("HOSTED_ORIGINAL_DATA_NOT_VERIFIED: Stop, keep maintenance active, " +
+                        "and investigate privately. Never retry against a partial target.");
+                if (executionFailure != null) executionFailure.addSuppressed(mismatch);
+                else throw mismatch;
             }
         }
         System.out.println("HOSTED_IMPORT_COMPLETE: 96 explicitly simulated organizations, verified against the exact plan, " +
                 "the original owner and all final state counts. Follow with independent SQL and browser acceptance.");
+    }
+
+    /**
+     * Reject any missing capture or CAPTURE-mode execution before opening a
+     * JDBC connection. The deeper V2 file/HMAC/target comparison is read-only.
+     * This is not evidence that the operator actually restored a backup.
+     */
+    static void requireExistingBaselineVerification(Map<String, String> env) {
+        if (!"VERIFY".equals(required(env, "EXT_C8_BASELINE_MODE")))
+            throw new IllegalArgumentException("Hosted import requires VERIFY of a pre-existing original-data baseline, never CAPTURE.");
+        String filename = required(env, "EXT_C8_BASELINE_FILE");
+        if (!Path.of(filename).isAbsolute())
+            throw new IllegalArgumentException("A private absolute path to the pre-import original-data baseline is required.");
+        String secret = required(env, "EXT_C8_BASELINE_HMAC_HEX");
+        if (!secret.matches("[0-9a-f]{64}"))
+            throw new IllegalArgumentException("A private 32-byte original-data HMAC key is required.");
     }
 
     private static String required(Map<String, String> env, String key) {
