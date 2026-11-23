@@ -404,6 +404,74 @@ SQL
        UUID_TO_BIN('00000000-0000-4000-8000-00000000c822',0));"
   original_baseline VERIFY
   check_postflight
+
+  # C8 historical row-identity probes. The original verifier already checks
+  # movement counts by kind and net conservation; each change below preserves
+  # both while intentionally corrupting exactly one persisted synthetic row.
+  # The privileged fixture connection is disposable; the reader remains SELECT-only.
+  initial_id="$(mysql_ci --batch --skip-column-names "$schema" -e "
+    SELECT MIN(m.id) FROM stock_movement m JOIN organization o ON o.id=m.organization_id
+    WHERE o.demo_reference_key='fictional-small-01' AND m.kind='INITIAL';")"
+  [ -n "$initial_id" ] && [ "$initial_id" != "NULL" ]
+  initial_operation="$(mysql_ci --batch --skip-column-names "$schema" \
+    -e "SELECT HEX(operation_public_id) FROM stock_movement WHERE id=$initial_id;")"
+  [[ "$initial_operation" =~ ^[0-9A-F]{32}$ ]]
+  mysql_ci "$schema" -e "
+    UPDATE stock_movement SET operation_public_id=UUID_TO_BIN('00000000-0000-4000-8000-00000000c831',0)
+    WHERE id=$initial_id;"
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-movement-operation-refusal.log" 2>&1; then
+    echo "C8_REPRO_MOVEMENT_OPERATION_ACCEPTED: stock movement UUID differs from approved replay." >&2
+    c8_negative_gaps=$((c8_negative_gaps+1))
+  elif ! grep -q 'C8_STOCK_MOVEMENT_HISTORY_MISMATCH' "$RUNNER_TEMP/c8-postflight-movement-operation-refusal.log"; then
+    echo "C8_REPRO_MOVEMENT_OPERATION_UNEXPECTED_REFUSAL: inspect private CI diagnostic." >&2
+    exit 1
+  fi
+  mysql_ci "$schema" -e "UPDATE stock_movement SET operation_public_id=UNHEX('$initial_operation') WHERE id=$initial_id;"
+  check_postflight
+
+  mysql_ci "$schema" -e "UPDATE stock_movement SET occurred_at=DATE_ADD(occurred_at,INTERVAL 1 SECOND) WHERE id=$initial_id;"
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-movement-time-refusal.log" 2>&1; then
+    echo "C8_REPRO_MOVEMENT_TIME_ACCEPTED: stock movement UTC timestamp differs from approved replay." >&2
+    c8_negative_gaps=$((c8_negative_gaps+1))
+  elif ! grep -q 'C8_STOCK_MOVEMENT_HISTORY_MISMATCH' "$RUNNER_TEMP/c8-postflight-movement-time-refusal.log"; then
+    echo "C8_REPRO_MOVEMENT_TIME_UNEXPECTED_REFUSAL: inspect private CI diagnostic." >&2
+    exit 1
+  fi
+  mysql_ci "$schema" -e "UPDATE stock_movement SET occurred_at=DATE_SUB(occurred_at,INTERVAL 1 SECOND) WHERE id=$initial_id;"
+  check_postflight
+
+  original_actor="$(mysql_ci --batch --skip-column-names "$schema" \
+    -e "SELECT actor_membership_id FROM stock_movement WHERE id=$initial_id;")"
+  alternate_actor="$(mysql_ci --batch --skip-column-names "$schema" -e "
+    SELECT MIN(mm.id) FROM membership mm JOIN stock_movement sm ON sm.organization_id=mm.org_id
+    WHERE sm.id=$initial_id AND mm.id<>$original_actor;")"
+  [ -n "$alternate_actor" ] && [ "$alternate_actor" != "NULL" ]
+  mysql_ci "$schema" -e "UPDATE stock_movement SET actor_membership_id=$alternate_actor WHERE id=$initial_id;"
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-movement-actor-refusal.log" 2>&1; then
+    echo "C8_REPRO_MOVEMENT_ACTOR_ACCEPTED: actor changed to another valid same-org membership." >&2
+    c8_negative_gaps=$((c8_negative_gaps+1))
+  elif ! grep -q 'C8_STOCK_MOVEMENT_HISTORY_MISMATCH' "$RUNNER_TEMP/c8-postflight-movement-actor-refusal.log"; then
+    echo "C8_REPRO_MOVEMENT_ACTOR_UNEXPECTED_REFUSAL: inspect private CI diagnostic." >&2
+    exit 1
+  fi
+  mysql_ci "$schema" -e "UPDATE stock_movement SET actor_membership_id=$original_actor WHERE id=$initial_id;"
+  check_postflight
+
+  original_fingerprint="$(mysql_ci --batch --skip-column-names "$schema" \
+    -e "SELECT HEX(request_fingerprint) FROM stock_movement WHERE id=$initial_id;")"
+  [[ "$original_fingerprint" =~ ^[0-9A-F]{64}$ ]]
+  mysql_ci "$schema" -e "UPDATE stock_movement SET request_fingerprint=UNHEX(SHA2('c8-negative-movement-fingerprint',256)) WHERE id=$initial_id;"
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-movement-fingerprint-refusal.log" 2>&1; then
+    echo "C8_REPRO_MOVEMENT_FINGERPRINT_ACCEPTED: recorded request fingerprint differs from replay." >&2
+    c8_negative_gaps=$((c8_negative_gaps+1))
+  elif ! grep -q 'C8_STOCK_MOVEMENT_HISTORY_MISMATCH' "$RUNNER_TEMP/c8-postflight-movement-fingerprint-refusal.log"; then
+    echo "C8_REPRO_MOVEMENT_FINGERPRINT_UNEXPECTED_REFUSAL: inspect private CI diagnostic." >&2
+    exit 1
+  fi
+  mysql_ci "$schema" -e "UPDATE stock_movement SET request_fingerprint=UNHEX('$original_fingerprint') WHERE id=$initial_id;"
+  original_baseline VERIFY
+  check_postflight
+
   if [ "$c8_negative_gaps" -ne 0 ]; then
     echo "C8_POSTFLIGHT_NEGATIVE_REPRODUCTIONS_FAILED: $c8_negative_gaps expected verifier refusals were absent; no production or shared database was involved." >&2
     exit 1
