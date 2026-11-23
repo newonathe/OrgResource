@@ -1,5 +1,8 @@
 # Next Codex handoff — P0 exact Northflank demo population
 
+**NEW start point:** latest code commit `35f96466cf04c7239f6e04e72bb1ccfd79525d40`, but always fetch live GitHub HEAD. [Independent critique](../../evidence/C8/C8_P0_96_DEMO_CYCLE_CRITIQUE_2026-11-23.md) and [operator job procedure](../deployment/P0_NORTHFLANK_MANUAL_JOB_COMMAND_2026-11-23.md). Inspect pending [CI #45097447089](https://github.com/newonathe/OrgResource/actions/runs/45097447089), then fix any real failures without weakening original-row, final-state, audit, stock/hold and requirement tests. Current user intent is full actual Northflank 96 demo, not merely a fixture or plan. No exact private source, cloud connection or restore proof in this ChatGPT session; **do not trigger live import until secured and reviewed**. Side-task Account Motion On/Off already verified at `c259759c` run #45074711543.
+
+
 **Next checkpoint after the previous plan:** `c259759c` passed all 3 CI jobs [45074711543](https://github.com/newonathe/OrgResource/actions/runs/45074711543). A full exact SHA-only **manual hosted import** entrypoint was pushed at `98a4c976`, followed by 97-org searchable picker at `a967ffff`; check exact new CI for both commits and fix actual failures. Read [operator runbook](../deployment/P0_NORTHFLANK_MANUAL_JOB_COMMAND_2026-11-23.md). The plan is *NOT IMPORTED*, no verified backup/restore or Northflank connection, and the full source remains private. Also verify the deployed web image is new enough for mixed original+demo metadata before any import; older app returns 503. Operator attestations in env are not independent restore evidence. Keep P0 issue #26 and source/SHA tracking current.
 
 

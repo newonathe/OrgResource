@@ -1,5 +1,17 @@
 # OrgResource — next tasks, remaining work and delivery gates
 
+## 2026-11-23 latest P0 cycle — full command, scalable picker, stronger isolation checks
+
+**Exact earlier full 3-job CI GREEN:** `c259759cbee3902d730bcc3c7218c98877d6a3d9` / [45074711543](https://github.com/newonathe/OrgResource/actions/runs/45074711543). **Current P0 HEAD before this doc checkpoint:** `35f96466cf04c7239f6e04e72bb1ccfd79525d40`; its new [CI 45097447089](https://github.com/newonathe/OrgResource/actions/runs/45097447089) was **IN_PROGRESS** when noted. No new green claim until exact SHA finishes.
+
+- `98a4c976` source: manual-only `--c8-hosted-demo-import` full SHA+96 plan command, read-only target fingerprint check, original credentialed owner, explicit restoration operator receipts, SMS disabled, fail closed on partial. No host execution.
+- `a967ffff` source: searchable 97-organization picker by label/slug and simulated 97-membership React test. No host observation.
+- `35f96466` source: isolated MySQL test expands original domain fixture and verifies original row hashes, 6 statuses, 67k-equivalent event counts by profile, physical stock/holds/requirement conservation, and zero SMS. **New assertions remain PENDING CI at this SHA.**
+- [Independent source critique and gates](evidence/C8/C8_P0_96_DEMO_CYCLE_CRITIQUE_2026-11-23.md). [Manual-only operator runbook](docs/deployment/P0_NORTHFLANK_MANUAL_JOB_COMMAND_2026-11-23.md). [Issue #26](https://github.com/newonathe/OrgResource/issues/26).
+- **BLOCKING** actual hosted import: approved full private plan bytes unavailable here; no authenticated Northflank control or production MySQL connection; no independently verified native+off-host backup and isolated restore; full 96 clone performance/role/stock test and reviewer NOT_RUN; deployed web app compatibility unverified. **LIVE_IMPORT_NOT_RUN.**
+- **NEXT:** check and fix pending exact CI; full 96 clone test with private plan; independently restored backup and same-size host; then manual one-shot job with explicit rollback; inspect actual deployed website. Never merge/main/release/deploy/hosted mutate without gates.
+
+
 ## P0 FOLLOW-UP — live import command + 97-workspace picker prepared (2026-11-23)
 
 - [x] Verified [CI 45074711543](https://github.com/newonathe/OrgResource/actions/runs/45074711543) at `c259759cbee3902d730bcc3c7218c98877d6a3d9`: Java 8, React and Java 21/MySQL/Newman/Playwright **all passed** with 3+8 synthetic additive tests and account motion.
