@@ -1,6 +1,7 @@
 package edu.orgresource.extended.demo;
 
 import java.nio.file.Path;
+import java.sql.DriverManager;
 import java.util.Map;
 import java.util.UUID;
 
@@ -53,6 +54,17 @@ public final class C8AdditiveProofCommand {
         try (ConfigurableApplicationContext context = app.run()) {
             context.getBean(C8DemoImporter.class).importAdditionalPlanForIsolatedProof(
                     plan, digest, originalOrg, owner, Integer.parseInt(injected));
+            try (var db = DriverManager.getConnection(url, required(env, "EXT_DB_USER"),
+                    required(env, "EXT_DB_PASSWORD"))) {
+                db.setReadOnly(true);
+                db.setTransactionIsolation(java.sql.Connection.TRANSACTION_REPEATABLE_READ);
+                db.setAutoCommit(false);
+                C8HostedDemoPostflight.Summary verified =
+                        C8HostedDemoPostflight.verify(db, plan, digest, originalOrg, owner);
+                db.rollback();
+                System.out.printf("ISOLATED_DEMO_POSTFLIGHT_READ_ONLY_OK: %d orgs, %d allocations, %d events%n",
+                        verified.organizations(), verified.allocations(), verified.events());
+            }
         }
     }
 
