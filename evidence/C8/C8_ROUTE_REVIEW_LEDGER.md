@@ -1,5 +1,10 @@
 # C8 source route and authorization evidence ledger
 
+## 2026-11-24 evidence reconciliation — read this first
+
+The latest [93-route reconciliation matrix](C8_93_ROUTE_EVIDENCE_RECONCILIATION_2026-11-24.md) and [complete machine-readable candidate index](C8_93_ROUTE_EVIDENCE_CANDIDATE_INDEX_2026-11-24.json) supersede historical **source-discovery status statements** below. At source SHA `64d44cb6d64027b2e26860f250a255b4fa3c0e1a`, **93/93 source oracles** exist, **88/88 protected anonymous and 55/55 POST CSRF/origin shared boundary checks** passed, and exact CI Newman executed **60 requests / 110 assertions, zero failed**, representing **35 distinct route signatures with verified HTTP-status-level tests**. The Java 21 MySQL suite passed 63 ordered acceptance methods. **These do not establish role/tenant/object/field and SQL receipts for every route or independent C8 approval**; those are still explicitly `NOT_RECONCILED` in the new index. Historic 64/93 or 29-unreviewed text below describes older checkpoints only. **C8 remains BLOCKED.**
+
+
 **As of:** 2026-11-23 (Asia/Manila) — **SOURCE INVENTORY VERIFIED; TECHNICAL ACCEPTANCE BLOCKED.**
 
 **CURRENT 2026-11-23 SOURCE-ONLY COMPLETION (new audit branch):** [Legacy + Workspace + metadata remaining 29-route oracle](C8_LEGACY_WORKSPACE_SOURCE_ORACLE_2026-11-23.md) covers the exact 29 previously unmapped source-declared operations, supplementing the existing 20 identity/governance, 11 Project Work/reporting, and 33 Inventory/Allocation source-policy rows. **93/93 source-level candidate policies are now mapped; this does NOT close the bounded v1 C8 gate.** Handler/path and unique-row parity is checked by `scripts/verify-c8-oracle-coverage.mjs` in CI. **Per-operation authorized HTTP positives, meaningful role/tenant/object negatives, denied-write MySQL postconditions, restricted IR4 receipt matching and independent reviewer sign-off remain OPEN/UNMAPPED.** The previous 64/93 note below is retained as a chronological prior checkpoint, not current coverage.
