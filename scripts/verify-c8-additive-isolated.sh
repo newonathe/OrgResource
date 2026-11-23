@@ -79,6 +79,14 @@ plan="$RUNNER_TEMP/c8-additive-$suffix-private.json"
 python3 scripts/generate-c8-demo.py --profile "$profile" --seed c8-fixture-proof-v1 --output "$plan"
 digest="$(sha256sum "$plan" | cut -d' ' -f1)"
 if [ "$inject_failure" -eq 1 ]; then
+  # Prove a pre-import backup can be restored independently into a NEW database.
+  # Only the disposable CI/MySQL container is used, never a live Northflank DB.
+  backup_file="$RUNNER_TEMP/c8-original-disposable-before-partial.sql"
+  docker exec -i --env MYSQL_PWD="$EXT_DB_MIGRATION_PASSWORD" "$MYSQL_CONTAINER" \
+    mysqldump -uroot --single-transaction --skip-lock-tables --hex-blob \
+    --set-gtid-purged=OFF "$schema" > "$backup_file"
+  [ -s "$backup_file" ]
+  backup_digest="$(sha256sum "$backup_file" | cut -d' ' -f1)"
   # This branch is an intentionally aborted 3-org CI fixture in its own disposable DB.
   failed_log="$RUNNER_TEMP/c8-additive-partial-injected-private.log"
   if EXT_C8_PROOF_SCHEMA="$schema" EXT_C8_PROOF_CONFIRM="TEST ADDITIVE $schema" \
@@ -111,7 +119,35 @@ if [ "$inject_failure" -eq 1 ]; then
   [ "$before" = "$after" ]
   [ "$(snapshot_original)" = "$original_sha_before" ]
   [ "$(original_domain_snapshot)" = "$original_domain_sha_before" ]
-  echo "ISOLATED_PARTIAL_FAILURE_PROOF_PASSED: original data unchanged, 1 committed demo workspace, retry refused; restore required before live rerun."
+  # The backup must be restored to an isolated target without overwriting
+  # or deleting the partially imported original; then replay must succeed there.
+  recovered_schema=orgresource_c8_additive_ci_fixture_recovered
+  mysql_ci <<SQL
+CREATE DATABASE $recovered_schema CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+GRANT SELECT,INSERT,UPDATE,DELETE ON $recovered_schema.* TO '$runtime_user'@'%';
+SQL
+  [ "$(sha256sum "$backup_file" | cut -d' ' -f1)" = "$backup_digest" ]
+  mysql_ci "$recovered_schema" < "$backup_file"
+  source_schema="$schema"
+  schema="$recovered_schema"
+  [ "$(snapshot_original)" = "$original_sha_before" ]
+  [ "$(original_domain_snapshot)" = "$original_domain_sha_before" ]
+  [ "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT COUNT(*) FROM organization WHERE demo_dataset_id IS NOT NULL;')" = "0" ]
+  EXT_C8_PROOF_SCHEMA="$schema" EXT_C8_PROOF_CONFIRM="TEST ADDITIVE $schema" \
+    EXT_C8_PROOF_PORT=3306 EXT_C8_DEMO_PLAN="$plan" EXT_C8_DEMO_PLAN_SHA256="$digest" \
+    EXT_C8_PROOF_ORIGINAL_ORG_ID="$original_org" EXT_C8_PROOF_OWNER_ACCOUNT_ID="$owner_id" \
+    EXT_DB_USER="$runtime_user" EXT_DB_PASSWORD="$runtime_password" \
+    java -Xmx768m -jar extended/backend/target/extended-backend-0.1.0-SNAPSHOT.jar \
+    --c8-additive-demo-isolated-proof
+  [ "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT COUNT(*) FROM organization WHERE demo_dataset_id IS NOT NULL;')" = "3" ]
+  [ "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT COUNT(*) FROM allocation;')" = "36" ]
+  [ "$(snapshot_original)" = "$original_sha_before" ]
+  [ "$(original_domain_snapshot)" = "$original_domain_sha_before" ]
+  schema="$source_schema"
+  [ "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT COUNT(*) FROM organization WHERE demo_dataset_id IS NOT NULL;')" = "1" ]
+  [ "$(snapshot_original)" = "$original_sha_before" ]
+  [ "$(original_domain_snapshot)" = "$original_domain_sha_before" ]
+  echo "ISOLATED_PARTIAL_RESTORE_PROOF_PASSED: original preserved, retry refused; independent restored copy imported 3 fictional workspaces, partial source left untouched."
   exit 0
 fi
 EXT_C8_PROOF_SCHEMA="$schema" EXT_C8_PROOF_CONFIRM="TEST ADDITIVE $schema" \
