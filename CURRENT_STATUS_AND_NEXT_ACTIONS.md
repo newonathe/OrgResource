@@ -1,5 +1,7 @@
 # OrgResource — current status, remaining work and Codex continuation
 
+> **ACTIONABLE FIRST READ (2026-11-23):** [DO_NOW_MUST_DO_STOP_AND_CAPABILITIES.md](DO_NOW_MUST_DO_STOP_AND_CAPABILITIES.md) — fresh priority reset, exact actions ChatGPT can execute today, host-only blockers, academic obligations and explicit STOP list. The older detailed material below is reference, not a command to restart planning. **`LIVE_IMPORT_NOT_RUN`.**
+
 **Canonical handoff: November 23, 2026 (Asia/Manila).** This is the **current priority and status register**. Read this file first in each new ChatGPT/Codex conversation, then the linked source files. Historical notes lower in `NEXT_CHAT_START_HERE.md`, old handoffs, and CI log excerpts may describe earlier pending/failed runs; **this file takes precedence for status only**, and must be refreshed against GitHub/Northflank before taking action.
 
 ## 0. Decision and scope (USER DECISION)

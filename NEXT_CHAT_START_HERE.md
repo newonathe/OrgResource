@@ -1,5 +1,7 @@
 # OrgResource — START HERE for the next chat or Codex session
 
+> **ACTIONABLE FIRST READ (2026-11-23):** [DO_NOW_MUST_DO_STOP_AND_CAPABILITIES.md](DO_NOW_MUST_DO_STOP_AND_CAPABILITIES.md) — fresh priority reset, exact actions ChatGPT can execute today, host-only blockers, academic obligations and explicit STOP list. The older detailed material below is reference, not a command to restart planning. **`LIVE_IMPORT_NOT_RUN`.**
+
 > **CURRENT SOURCE OF TRUTH (2026-11-23):** [CURRENT_STATUS_AND_NEXT_ACTIONS.md](CURRENT_STATUS_AND_NEXT_ACTIONS.md) — exact current SHA/CI evidence, verified private data manifest, P0 release gates, what ChatGPT can/cannot do and a copy-ready Codex continuation. Read this **before** the chronological notes below. **LIVE_IMPORT_NOT_RUN** as of this handoff. Historical “CI PENDING” in older sections is not current status.
 
 
