@@ -1224,6 +1224,43 @@ test("Resource Library traverses 101 matching resources with bounded server page
 });
 
 
+
+test("sidebar wordmark stays on one line and inside its panel at responsive widths", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  for (const width of [1440, 1120, 1024, 900, 768, 681, 680, 360, 320]) {
+    await page.setViewportSize({ width, height: 510 });
+    await page.goto("/#/");
+    await expect(page.getByRole("heading", { name: "Overview", level: 1 })).toBeVisible();
+    if (width <= 680) await page.getByRole("button", { name: "Open navigation" }).click();
+    const brand = page.getByRole("link", { name: "OrgResource Academic Commons, Overview" });
+    await expect(brand).toBeVisible();
+    const layout = await brand.evaluate((node) => {
+      const title = node.querySelector("strong")!;
+      const seal = node.querySelector(".brand-seal")!;
+      const text = node.querySelector(".brand-text")!;
+      const aside = node.closest("aside.sidebar")!;
+      const range = document.createRange();
+      range.selectNodeContents(title);
+      const wordRects = [...range.getClientRects()];
+      const sidebarRect = aside.getBoundingClientRect();
+      const brandRect = node.getBoundingClientRect();
+      const sealRect = seal.getBoundingClientRect();
+      const textRect = text.getBoundingClientRect();
+      return {
+        lines: wordRects.length,
+        lineWidth: wordRects[0]?.width ?? 0,
+        titleBoxWidth: title.getBoundingClientRect().width,
+        inside: brandRect.left >= sidebarRect.left - 1 && brandRect.right <= sidebarRect.right + 1 &&
+          sealRect.right <= textRect.left && wordRects.every(rect => rect.left >= textRect.left - 1 && rect.right <= textRect.right + 1),
+        horizontalOverflow: document.documentElement.scrollWidth > window.innerWidth + 1,
+      };
+    });
+    expect(layout.lines, `OrgResource should not split at ${width}px`).toBe(1);
+    expect(layout.inside, `brand seal/title clipped at ${width}px: ${JSON.stringify(layout)}`).toBe(true);
+    expect(layout.horizontalOverflow, `document overflows at ${width}px`).toBe(false);
+  }
+});
+
 test("Project work panels contain headings at desktop and mobile sizes", async ({ page }) => {
   for (const viewport of [{ width: 860, height: 510 }, { width: 375, height: 667 }]) {
     await page.setViewportSize(viewport);

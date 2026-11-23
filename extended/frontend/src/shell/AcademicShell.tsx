@@ -88,7 +88,7 @@ export function AcademicShell({ children, role, organizationName, sessionError }
       <aside className={`sidebar ${menuOpen ? "sidebar-open" : ""}`} aria-label="OrgResource navigation">
         <NavLink to="/" className="brand-lockup" aria-label="OrgResource Academic Commons, Overview" onClick={() => setMenuOpen(false)}>
           <span className="brand-seal" aria-hidden="true"><span>O</span><i>R</i></span>
-          <span><strong>OrgResource</strong><small>Academic Commons</small></span>
+          <span className="brand-text"><strong>OrgResource</strong><small>Academic Commons</small></span>
         </NavLink>
         <Navigation groups={groups} onNavigate={() => setMenuOpen(false)} />
       </aside>

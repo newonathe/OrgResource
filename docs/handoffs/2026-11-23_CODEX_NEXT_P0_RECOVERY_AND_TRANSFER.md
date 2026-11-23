@@ -1,5 +1,10 @@
 # P0 Next Codex/Operator Cycle — recovery-tested demo importer, exact Northflank transfer
 
+## Screenshot-reported sidebar wordmark defect (2026-11-23; CI PENDING)
+
+**Observed in user screenshot:** the sidebar displays “OrgResourc” on one line and “e” on the next; the circular logo and reserved vertical scrollbar leave insufficient text width. Source: `extended/frontend/src/shell/AcademicShell.tsx` + `extended/frontend/src/styles.css`. **Fix on draft PR #25:** keep “OrgResource” on one unbroken line, allocate space for the scrollbar and seal through responsive column/padding/gap/font adjustments (desktop, 1120/900 tablet, mobile drawer), and allow “Academic Commons” to wrap only at the word boundary. Added a packaged Playwright regression at widths 1440, 1120, 1024, 900, 768, 681, 680, 360, 320; it checks single-line wordmark, in-bounds logo/title and no document horizontal overflow. **Frozen Course A `frontend/` files unchanged.** This does not claim that the live host was updated. **CI result pending; verify exact SHA and repair failures.**
+
+
 ## New stop-before-write baseline guard in hosted importer (2026-11-23; CI PENDING)
 
 **SOURCE COMMITTED, CI PENDING:** the actual `--c8-hosted-demo-import` command now checks `EXT_C8_BASELINE_MODE=VERIFY`, an absolute private V2 capture manifest path and the matching 32-byte HMAC key before any DB connection; after the exact approved-plan preflight, it verifies all original V7 rows **before Spring can start importing**. It verifies again after success **or exception**, refuses to announce success when altered original records are detected and preserves failure evidence when the import stopped. Invalid/missing baseline and CAPTURE mode are covered by additional no-MySQL unit refusals. Read the [operator runbook](../deployment/P0_NORTHFLANK_MANUAL_JOB_COMMAND_2026-11-23.md); a read-only inside-write-process check is not a substitute for the separate SELECT-only operator verification or actual backup/restore. The feature does not change V7, org/department model, frozen Course A, or host state. **LIVE_IMPORT_NOT_RUN.**
