@@ -1,5 +1,10 @@
 # C8 bounded technical acceptance status
 
+## 2026-11-24 candidate evidence reconciliation
+
+**C8 STILL BLOCKED.** [Exact CI run 45220719360](https://github.com/newonathe/OrgResource/actions/runs/45220719360) succeeded for Java 8/Course A, React, and Extended C Java 21/MySQL/Newman/Playwright at SHA `64d44cb6d64027b2e26860f250a255b4fa3c0e1a`. Source-level oracles cover 93/93 routes; @Order(59) and @Order(63) passed shared anonymous and POST middleware negative classes. Two executed Extended Newman collections generated **60 requests and 110 assertions**, 0 failures; **35 method/path routes** have verified partial HTTP-status assertion evidence. The [reconciliation matrix](C8_93_ROUTE_EVIDENCE_RECONCILIATION_2026-11-24.md) maps all 93 source policies and Java/Postman candidate references, explicitly leaves route-specific authorized/denied and SQL/field acceptance `NOT_RECONCILED`, and requires independent reviewer confirmation. No C8 security sign-off, merge, live Northflank import or C9 authorization is inferred.
+
+
 **C8 BLOCKED — SPECIFIC MANDATORY PROOF OR CORRECTION REMAINS.**
 
 **November 23 source-coverage update (draft audit PR, no product runtime changes):** The added [last 29-route source oracle](C8_LEGACY_WORKSPACE_SOURCE_ORACLE_2026-11-23.md) completes the *source-only policy inventory* to **93/93 routes**, verified against the annotated inventory/handler names with a CI drift check. **This does not establish any of the required authorized HTTP, tenant/object/role refusal, denied-write SQL, independent reviewer or hosted database acceptance receipts. C8 remains BLOCKED.** Earlier chronological 31/64 source-count checkpoints below are retained for provenance.
