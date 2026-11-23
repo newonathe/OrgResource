@@ -208,6 +208,16 @@ if [ "$profile" = small ]; then
     exit 1
   fi
   mysql_ci "$schema" -e "UPDATE audit_event SET created_at=DATE_SUB(created_at, INTERVAL 1 SECOND) WHERE id=$audit_id;"
+  allocation_id="$(mysql_ci --batch --skip-column-names "$schema" -e "
+    SELECT MIN(a.id) FROM allocation a JOIN organization o ON o.id=a.organization_id
+    WHERE o.demo_plan_sha IS NOT NULL;")"
+  [ -n "$allocation_id" ] && [ "$allocation_id" != NULL ]
+  mysql_ci "$schema" -e "UPDATE allocation SET quantity=quantity+1 WHERE id=$allocation_id;"
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-invalid-allocation.log" 2>&1; then
+    echo "Independent postflight accepted a tampered Allocation quantity" >&2
+    exit 1
+  fi
+  mysql_ci "$schema" -e "UPDATE allocation SET quantity=quantity-1 WHERE id=$allocation_id;"
   check_postflight
 fi
 # Full source-derived SQL conservation checks across every imported tenant.

@@ -174,6 +174,7 @@ public final class C8HostedDemoPostflight {
         comparePublicIds(db, workspaces, planSha, "resource_requirement", "requirements", false, ownerId);
         comparePublicIds(db, workspaces, planSha, "allocation", "allocations", false, ownerId);
         comparePublicIds(db, workspaces, planSha, "membership", "personas", true, ownerId);
+        compareExactAllocations(db, workspaces, planSha);
 
         Map<String, Long> expectedStates = new HashMap<>();
         plan.path("final_states").properties().forEach(entry -> expectedStates.put(entry.getKey(), entry.getValue().longValue()));
@@ -273,6 +274,80 @@ public final class C8HostedDemoPostflight {
         return new Summary(workspaces.size(), allocations, events);
     }
 
+
+
+    /**
+     * Independent per-allocation contract, including borrower/requirement/
+     * resource links and exact final state derived from ordered plan events.
+     * Mere global counts cannot detect two swapped allocation outcomes.
+     */
+    private static void compareExactAllocations(Connection db, JsonNode workspaces, String planSha) throws Exception {
+        Map<String, AllocationSignature> expected = new HashMap<>();
+        for (JsonNode org : workspaces) {
+            String orgReference = org.path("reference_key").asText();
+            Map<String,String> finalStates = new HashMap<>();
+            for (JsonNode event : org.path("events")) {
+                String allocation = event.path("allocation_id").asText();
+                String action = event.path("action").asText();
+                String state = switch (action) {
+                    case "REQUEST" -> "PENDING";
+                    case "APPROVE" -> "APPROVED";
+                    case "ISSUE" -> "ISSUED";
+                    case "RETURN" -> "RETURNED";
+                    case "CONSUME" -> "CONSUMED";
+                    case "CANCEL", "EXPIRE" -> "CANCELLED";
+                    default -> throw new IllegalArgumentException("Unexpected synthetic allocation action.");
+                };
+                finalStates.put(allocation, state);
+            }
+            for (JsonNode allocation : org.path("allocations")) {
+                String id = allocation.path("id").asText();
+                String state = finalStates.remove(id);
+                if (state == null) throw new IllegalArgumentException("A planned Allocation is missing its state.");
+                AllocationSignature record = new AllocationSignature(orgReference, id,
+                        allocation.path("requirement_id").asText(), allocation.path("resource_id").asText(),
+                        allocation.path("borrower_id").asText(), allocation.path("quantity").asInt(-1), state);
+                if (expected.putIfAbsent(orgReference + "\u0000" + id, record) != null)
+                    throw new IllegalArgumentException("A planned Allocation ID is duplicated.");
+            }
+            if (!finalStates.isEmpty())
+                throw new IllegalArgumentException("The plan has actions for a missing Allocation.");
+        }
+        try (PreparedStatement query = db.prepareStatement("""
+                SELECT o.demo_reference_key,BIN_TO_UUID(a.public_id,0),
+                       BIN_TO_UUID(q.public_id,0),BIN_TO_UUID(r.public_id,0),
+                       BIN_TO_UUID(m.public_id,0),a.quantity,a.status
+                FROM allocation a
+                JOIN organization o ON o.id=a.organization_id
+                JOIN resource_requirement q ON q.id=a.requirement_id
+                    AND q.organization_id=a.organization_id
+                JOIN resource r ON r.id=a.resource_id
+                    AND r.organization_id=a.organization_id
+                JOIN membership m ON m.id=a.borrower_membership_id
+                    AND m.org_id=a.organization_id
+                WHERE o.demo_plan_sha=?
+                """)) {
+            query.setString(1, planSha);
+            try (ResultSet rows = query.executeQuery()) {
+                while (rows.next()) {
+                    String reference = rows.getString(1), id = rows.getString(2);
+                    AllocationSignature planned = expected.remove(reference + "\u0000" + id);
+                    if (planned == null || !planned.requirementId().equals(rows.getString(3))
+                            || !planned.resourceId().equals(rows.getString(4))
+                            || !planned.borrowerMembershipId().equals(rows.getString(5))
+                            || planned.quantity() != rows.getInt(6)
+                            || !planned.finalState().equals(rows.getString(7)))
+                        throw new IllegalStateException("Persisted allocation fields or final state differ from the approved plan.");
+                }
+            }
+        }
+        if (!expected.isEmpty())
+            throw new IllegalStateException("Some approved allocations are missing or lack correct linked membership IDs.");
+    }
+
+    private record AllocationSignature(String reference, String allocationId, String requirementId,
+                                       String resourceId, String borrowerMembershipId, int quantity,
+                                       String finalState) { }
 
     /**
      * Verify every historical event against the exact approved plan. The replay
