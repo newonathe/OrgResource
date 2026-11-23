@@ -79,8 +79,7 @@ public final class C8HostedOriginalBaseline {
                 String actualFingerprint = sha256(schema + "\u0000" + singleText(db,"SELECT @@server_uuid"));
                 if (!fingerprint.equals(actualFingerprint))
                     throw new IllegalStateException("Original-data baseline connected to a different server or schema.");
-                if (singleLong(db,"SELECT MAX(CAST(version AS UNSIGNED)) FROM flyway_schema_history WHERE success=1") != 7)
-                    throw new IllegalStateException("Only the verified Flyway V7 schema is supported.");
+                C8FlywayHistory.requireExactV7(db);
                 long originalOrg = id(db, "SELECT id FROM organization WHERE public_id=UUID_TO_BIN(?,0) AND status='ACTIVE'",
                         org);
                 long ownerAccount = id(db,"SELECT id FROM user_account WHERE public_id=UUID_TO_BIN(?,0) AND status='ACTIVE'",
