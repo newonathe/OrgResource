@@ -47,3 +47,24 @@
 ## Explicit negative conclusions
 
 No query plan, latency, archive, full private 96 rehearsal, off-host backup/restore, Northflank image, deployment or browser result is claimed **until** a linked executed result supplies it. No public database metrics or institutional participation claims. No course submission, author approval, or live adoption proof. Return to issue #34 for C8 independent review and #26 for hosted P0 prior to any release.
+
+## Actual executed CI measurement (VERIFIED CI; first code-only probe SHA)
+
+**Source SHA:** `79e98d02d21c3e042e13cf4489ca7acccb327a8f` · [GitHub Actions #45260222540](https://github.com/newonathe/OrgResource/actions/runs/45260222540) **all 3 jobs completed SUCCESS** on 2026-11-24 PHT. This is evidence for the exact script/invocation/source at that SHA; later status/handoff-only commits require their **own** exact-head CI.
+
+- **VERIFIED CI:** Java 8/Course A and React success; Extended Java21/MySQL **91 Maven tests, including 66 ordered**, no failures/errors/skips; C8 small `3/36/97` (orgs/allocations/events), intermediate `8/960/3013`, and partial restored-copy proof all passed; Newman 48 requests/90 assertions + 12/20, zero failures; Playwright 19/19. The C9 probe executed inside the existing **intermediate** stage, with forbidden non-fixture schema and writer-identity invocations verified to fail.
+- **VERIFIED CI MySQL 8.0.46 execution result:** five source-derived SQL analogues against the **one synthetic organization selected by allocation count**. Each has one warm-up and three `EXPLAIN ANALYZE` samples. The following values are *root iterator milliseconds* from one GitHub runner, not user-facing HTTP time:
+
+| SQL analogue | Median ms | Maximum ms | Primary access plan at sample |
+| --- | ---: | ---: | --- |
+| `resource_page` | 0.053 | 0.053 | `range` on `PRIMARY` (resource) |
+| `allocation_page` | 0.130 | 0.133 | `range` on `uk_allocation_org_id_resource` (allocation), `eq_ref` on PRIMARY for requirement and project |
+| `requirement_page` | 0.155 | 0.174 | `index` on `uk_requirement_id_org` (requirement), `eq_ref` on PRIMARY for project and resource |
+| `stock_ledger_aggregate` | 0.141 | 0.151 | `ref` on `ix_stock_movement_resource_page` |
+| `overview_status_counts` | 1.140 | 1.140 | `ref` requirement `uk_requirement_project_resource`, `eq_ref` project PRIMARY, `ref` allocation `uk_allocation_org_id_resource` |
+
+**Interpretation / independent critique:** The slowest *sampled SQL analogue* was overview status counts at 1.140 ms, but it processed a very small fixture, included no Hibernate/HTTP serialization, cache-control experiment, concurrency or accepted full-96 distribution, and had no preapproved SLA. An automatic index or query rewrite based on these numbers would be unjustified. SQL's optimizer-estimated row counts are not actual table reads; three samples are insufficient for a p95/p99. The test is safety/probe instrumentation, **not C9 production performance certification**.
+
+**VERIFIED EXTERNAL FACT (checked 2026-11-24):** Official [MySQL 8.0 EXPLAIN documentation](https://dev.mysql.com/doc/refman/8.0/en/explain.html) states that `EXPLAIN FORMAT=JSON` reports plan properties and `EXPLAIN ANALYZE` executes the SELECT, producing `TREE` iterator timing in milliseconds; the latter requires the statement's execution privilege. This confirms the probe's separation of estimated access plan and measured iterator time. It does not validate the user application's end-to-end latency.
+
+**Remaining gates:** latest **final documentation-and-probe SHA** exact-head CI must be checked separately; accepted exact private full-96 fixture/real Hibernate SQL/API p95/archives/off-host restore/browser-scale and independent C8 route acceptance are **NOT RUN / BLOCKED**. No speculative migration, index or cloud release is approved by this measurement.
