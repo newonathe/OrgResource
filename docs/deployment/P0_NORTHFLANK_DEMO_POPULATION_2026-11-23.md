@@ -70,3 +70,16 @@ Northflank supports [manual jobs](https://northflank.com/docs/v1/application/run
 - Additional isolated small-profile code `455ca884` and test-only `--c8-additive-demo-isolated-proof` pushed. Attempts `455ca884`, `531e7edd`, `7fe35bda` had **malformed GitHub Actions workflow registration** (no jobs). `af479c9f34de04a471c39b92b15d93046829f156` restores original workflow structure and invokes standalone `scripts/verify-c8-additive-isolated.sh`; [CI 45073950363](https://github.com/newonathe/OrgResource/actions/runs/45073950363) was **IN_PROGRESS** when recorded. This proof is **NOT YET VERIFIED**.
 - Open independent risk: replaying all historical OWNER actions with the existing human owner account could falsely imply that person performed synthetic historical actions, despite the demo notice. Production importer must separate synthetic historical actor identity from present-day owner access where feasible, while respecting one-OWNER governance invariants. No real historical actions should be represented as authentic.
 - Check [next high-priority executable prompt](../handoffs/2026-11-23_CODEX_NEXT_P0_HOSTED_DEMO.md) and [issue #26](https://github.com/newonathe/OrgResource/issues/26). **LIVE_IMPORT_NOT_RUN; no hosting mutation, no backup/restore proof.**
+
+
+## 2026-11-23 later bounded development checkpoint
+
+## P0 next hosted-import implementation checkpoint — 2026-11-23
+
+- Earlier [CI 45074711543](https://github.com/newonathe/OrgResource/actions/runs/45074711543), exact SHA `c259759cbee3902d730bcc3c7218c98877d6a3d9`, **SUCCESS** all three jobs, including motion preference and isolated 3/8 synthetic additional workspaces with preserved original owner.
+- Source commit `98a4c9765418937296d1acdf4c3ce248ccbebcc9` added **manual-only full 96 plan import command** `--c8-hosted-demo-import`, with strict exact SHA plan, read-only target inspection and fingerprint, explicit backup/restore operator attestations, SMS/reminder disabled, no test profiles, all 96 via existing domain importer, post-import public metadata check and STOP-on-partial-warning. **NOT EXECUTED ON NORTHFLANK**, CI was pending when recorded.
+- Source commit `a967fffff15ba9ba8d81e18e72b709b4c929a223` added searchable organization picker for 97 original+demo memberships and React test; CI was pending when recorded.
+- **Essential caveat:** backup ID and restore-evidence hash strings are human attestations, not proof of a verified backup/restore. The operator and independent reviewer must actually restore the off-host copy to a separate MySQL DB and check login/data before any live write.
+- **Critical deployment compatibility:** older running web image cannot classify mixed original+96 demo and can return 503. Verify/deploy compatible app under a controlled approved release and maintenance window before any bulk insert; link DB and code rollback plans.
+- [Dedicated operator manual-job runbook](docs/deployment/P0_NORTHFLANK_MANUAL_JOB_COMMAND_2026-11-23.md); [P0 issue #26](https://github.com/newonathe/OrgResource/issues/26). **LIVE_IMPORT_NOT_RUN**. Exact private source still unavailable here, Northflank connection not available. Remaining C8 review BLOCKED.
+

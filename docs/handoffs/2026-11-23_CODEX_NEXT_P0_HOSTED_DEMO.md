@@ -1,5 +1,8 @@
 # Next Codex handoff — P0 exact Northflank demo population
 
+**Next checkpoint after the previous plan:** `c259759c` passed all 3 CI jobs [45074711543](https://github.com/newonathe/OrgResource/actions/runs/45074711543). A full exact SHA-only **manual hosted import** entrypoint was pushed at `98a4c976`, followed by 97-org searchable picker at `a967ffff`; check exact new CI for both commits and fix actual failures. Read [operator runbook](../deployment/P0_NORTHFLANK_MANUAL_JOB_COMMAND_2026-11-23.md). The plan is *NOT IMPORTED*, no verified backup/restore or Northflank connection, and the full source remains private. Also verify the deployed web image is new enough for mixed original+demo metadata before any import; older app returns 503. Operator attestations in env are not independent restore evidence. Keep P0 issue #26 and source/SHA tracking current.
+
+
 **Additional user-requested side task:** Motion On/Off was added to Account Settings at `35a8ba989` with a source-level React regression. Confirm [CI 45074645222](https://github.com/newonathe/OrgResource/actions/runs/45074645222) on that exact SHA, then independently confirm appearance on Northflank after an authorized deployment. This preference uses browser-local storage, not a server account field. P0 live 96-org demo remains the primary work; no merge or deploy is implied.
 
 

@@ -1,5 +1,21 @@
 # OrgResource — next tasks, remaining work and delivery gates
 
+## P0 FOLLOW-UP — live import command + 97-workspace picker prepared (2026-11-23)
+
+- [x] Verified [CI 45074711543](https://github.com/newonathe/OrgResource/actions/runs/45074711543) at `c259759cbee3902d730bcc3c7218c98877d6a3d9`: Java 8, React and Java 21/MySQL/Newman/Playwright **all passed** with 3+8 synthetic additive tests and account motion.
+- [x] Source `98a4c976`: guarded `--c8-hosted-demo-import` full SHA-only entrypoint, separate from web app, local disposable import and dry-run preflight; backup ID/restore attestations plus exact target fingerprint mandatory in config. **CI pending**. No hosted write.
+- [x] Source `a967ffff`: search by name/slug in 97-organization picker with explicit count and React regression. **CI pending**.
+- [ ] **Check exact CI** on both commits and correct actual code/test defects, not by suppressing guards.
+- [ ] **Private source and host:** exact locally approved plan and source (sha256 checked), active Northflank access, real DB/schema/version, identity/capacity/privileges, compatible running app SHA, maintenance and rollback.
+- [ ] **Restore evidence:** completed native backup + off-host encrypted dump + independent isolated restore with original-account login/data hash checks; attestation strings do not substitute for restore.
+- [ ] **Validation:** independently replay full 96 approved plan to a restored/isolated MySQL 8 clone with real inventory/role/SQL/UX/bundle checks, before a controlled owner-authorized manual job. Resource sizing and cost approval must be grounded.
+- [ ] **Final:** real Northflank one-shot job, 96 selected names + 21,060 allocations + 67,370 actions, synthetic notices/stock/owner preservation, screenshots and logs, without sending real SMS.
+- [ ] **Academic:** frozen Course A and submission obligations remain independent.
+
+**Runbook:** [P0_NORTHFLANK_MANUAL_JOB_COMMAND_2026-11-23.md](../deployment/P0_NORTHFLANK_MANUAL_JOB_COMMAND_2026-11-23.md). **Current verdict: NOT RUN ON NORTHFLANK.**
+
+---
+
 ## Account Settings motion preference — user-requested side task (2026-11-23)
 
 - [x] **Source pushed** [`35a8ba989`](https://github.com/newonathe/OrgResource/commit/35a8ba989b6a74d56074d4f1f75e4fa34c62aa8c): Account and Security now exposes an accessible **Interface motion** On/Off switch. The Account switch and existing toolbar button use the same `useSettings()` state; choice persists locally as `orgresource-motion` and disables workspace transitions/animations without overriding the OS reduced-motion preference. Source: `extended/frontend/src/auth/AuthScreens.tsx`, `styles.css`.

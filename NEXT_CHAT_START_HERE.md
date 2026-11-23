@@ -1,5 +1,15 @@
 # OrgResource — START HERE for the next chat or Codex session
 
+## P0 next hosted-import implementation checkpoint — 2026-11-23
+
+- Earlier [CI 45074711543](https://github.com/newonathe/OrgResource/actions/runs/45074711543), exact SHA `c259759cbee3902d730bcc3c7218c98877d6a3d9`, **SUCCESS** all three jobs, including motion preference and isolated 3/8 synthetic additional workspaces with preserved original owner.
+- Source commit `98a4c9765418937296d1acdf4c3ce248ccbebcc9` added **manual-only full 96 plan import command** `--c8-hosted-demo-import`, with strict exact SHA plan, read-only target inspection and fingerprint, explicit backup/restore operator attestations, SMS/reminder disabled, no test profiles, all 96 via existing domain importer, post-import public metadata check and STOP-on-partial-warning. **NOT EXECUTED ON NORTHFLANK**, CI was pending when recorded.
+- Source commit `a967fffff15ba9ba8d81e18e72b709b4c929a223` added searchable organization picker for 97 original+demo memberships and React test; CI was pending when recorded.
+- **Essential caveat:** backup ID and restore-evidence hash strings are human attestations, not proof of a verified backup/restore. The operator and independent reviewer must actually restore the off-host copy to a separate MySQL DB and check login/data before any live write.
+- **Critical deployment compatibility:** older running web image cannot classify mixed original+96 demo and can return 503. Verify/deploy compatible app under a controlled approved release and maintenance window before any bulk insert; link DB and code rollback plans.
+- [Dedicated operator manual-job runbook](docs/deployment/P0_NORTHFLANK_MANUAL_JOB_COMMAND_2026-11-23.md); [P0 issue #26](https://github.com/newonathe/OrgResource/issues/26). **LIVE_IMPORT_NOT_RUN**. Exact private source still unavailable here, Northflank connection not available. Remaining C8 review BLOCKED.
+
+
 ## Account Settings motion preference — user-requested side task (2026-11-23)
 
 - [x] **Source pushed** [`35a8ba989`](https://github.com/newonathe/OrgResource/commit/35a8ba989b6a74d56074d4f1f75e4fa34c62aa8c): Account and Security now exposes an accessible **Interface motion** On/Off switch. The Account switch and existing toolbar button use the same `useSettings()` state; choice persists locally as `orgresource-motion` and disables workspace transitions/animations without overriding the OS reduced-motion preference. Source: `extended/frontend/src/auth/AuthScreens.tsx`, `styles.css`.
