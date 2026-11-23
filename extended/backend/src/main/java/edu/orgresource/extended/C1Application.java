@@ -12,6 +12,12 @@ import org.springframework.boot.WebApplicationType;
 import java.util.TimeZone;
 import java.util.Arrays;
 import edu.orgresource.extended.identity.C1BootstrapService;
+import edu.orgresource.extended.demo.C8DemoCommand;
+import edu.orgresource.extended.demo.C8HostedDemoPreflight;
+import edu.orgresource.extended.demo.C8HostedDemoPostflight;
+import edu.orgresource.extended.demo.C8HostedOriginalBaseline;
+import edu.orgresource.extended.demo.C8HostedDemoImportCommand;
+import edu.orgresource.extended.demo.C8AdditiveProofCommand;
 
 @SpringBootApplication
 public class C1Application {
@@ -37,9 +43,22 @@ public class C1Application {
         };
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         SpringApplication app = new SpringApplication(C1Application.class);
-        if (Arrays.asList(args).contains("--bootstrap")) {
+        if (Arrays.asList(args).contains(C8HostedOriginalBaseline.ARGUMENT)) {
+            C8HostedOriginalBaseline.run(args, System.getenv());
+        } else if (Arrays.asList(args).contains(C8HostedDemoPostflight.ARGUMENT)) {
+            C8HostedDemoPostflight.run(args, System.getenv());
+        } else if (Arrays.asList(args).contains(C8HostedDemoImportCommand.ARGUMENT)) {
+            C8HostedDemoImportCommand.run(app, args, System.getenv());
+        } else if (Arrays.asList(args).contains(C8AdditiveProofCommand.ARGUMENT)
+                || Arrays.asList(args).contains(C8AdditiveProofCommand.CHECK_ARGUMENT)) {
+            C8AdditiveProofCommand.run(app, args, System.getenv());
+        } else if (Arrays.asList(args).contains(C8HostedDemoPreflight.ARGUMENT)) {
+            C8HostedDemoPreflight.run(args, System.getenv());
+        } else if (Arrays.asList(args).contains(C8DemoCommand.ARGUMENT)) {
+            C8DemoCommand.run(app, args, System.getenv());
+        } else if (Arrays.asList(args).contains("--bootstrap")) {
             app.setWebApplicationType(WebApplicationType.NONE);
             app.run(args).close();
         } else {

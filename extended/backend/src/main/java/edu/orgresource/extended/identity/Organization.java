@@ -1,6 +1,7 @@
 package edu.orgresource.extended.identity;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -34,6 +35,17 @@ public class Organization {
     public LocalDateTime createdAt;
     @Column(name = "updated_at", nullable = false)
     public LocalDateTime updatedAt;
+
+    @Column(name = "demo_dataset_id", length = 96)
+    public String demoDatasetId;
+    @Column(name = "demo_reference_key", length = 128)
+    public String demoReferenceKey;
+    @Column(name = "demo_source_sha", columnDefinition = "CHAR(64)")
+    public String demoSourceSha;
+    @Column(name = "demo_plan_sha", columnDefinition = "CHAR(64)")
+    public String demoPlanSha;
+    @Column(name = "demo_as_of")
+    public LocalDate demoAsOf;
 
     protected Organization() { }
     public Organization(String slug, String displayName, LocalDateTime now) {

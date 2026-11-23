@@ -8,7 +8,9 @@ param(
     [Parameter(Mandatory, ParameterSetName = 'ProtectedLogin')]
     [ValidatePattern('^[A-Za-z0-9_-]{1,48}$')][string] $LoginPath,
     [Parameter(Mandatory, ParameterSetName = 'DisposableAcceptance')]
-    [switch] $DisposableAcceptance
+    [switch] $DisposableAcceptance,
+    [Parameter(Mandatory, ParameterSetName = 'DisposableDemoAcceptance')]
+    [switch] $DisposableDemoAcceptance
 )
 
 $ErrorActionPreference = 'Stop'
@@ -22,11 +24,16 @@ $requiredTables = @('account_recovery_code', 'allocation', 'audit_event', 'depar
     'idempotency_key', 'invitation', 'local_credential', 'membership', 'organization', 'ownership_transfer',
     'project', 'resource', 'resource_requirement', 'spring_session', 'spring_session_attributes', 'stock_movement', 'user_account')
 $clientUser = 'root'
+$disposable = $DisposableAcceptance -or $DisposableDemoAcceptance
 
 if (-not [Security.Cryptography.AesGcm]::IsSupported) { throw 'AES-GCM is unavailable on this runtime.' }
 if ($DisposableAcceptance -and $Schema -ne 'orgresource_c1_acceptance') {
     throw 'Disposable authentication is restricted to the guarded Extended C acceptance schema.'
 }
+if ($DisposableDemoAcceptance -and ($Schema -notmatch '^orgresource_c8_demo_([a-f0-9]{12})$' -or $Port -lt 1024)) {
+    throw 'Demo acceptance authentication requires the guarded C8 disposable schema and port.'
+}
+$demoSuffix = if ($DisposableDemoAcceptance) { $Matches[1] }
 if (-not $env:EXT_BACKUP_KEY) { throw 'Protected backup key unavailable.' }
 try { $key = [Convert]::FromBase64String($env:EXT_BACKUP_KEY) } catch { throw 'Protected backup key is invalid.' }
 if ($key.Length -ne 32) {
@@ -57,7 +64,7 @@ function Invoke-BackupMysql([string] $Tool, [string[]] $Options, [byte[]] $Input
         $null = $info.Environment.Remove($name)
     }
     $info.ArgumentList.Add('--no-defaults')
-    if ($DisposableAcceptance) {
+    if ($disposable) {
         $info.ArgumentList.Add('--user=root')
         $info.ArgumentList.Add('--skip-password')
     } else {
@@ -114,13 +121,16 @@ function Assert-BackupSchema {
     if (@(Compare-Object $requiredTables $tables).Count -ne 0) {
         throw 'Schema inventory differs from the supported Extended schema, or metadata is hidden by insufficient privileges.'
     }
+    if ($DisposableDemoAcceptance -and (Read-BackupSqlScalar 'SELECT COUNT(*) FROM organization WHERE demo_plan_sha IS NOT NULL') -ne '96') {
+        throw 'The disposable C8 backup does not contain the full imported demo cohort.'
+    }
 }
 
 $cipher = [Security.Cryptography.AesGcm]::new($key, 16)
 $sql = $null
 $dump = $null
 try {
-    if (-not $DisposableAcceptance) {
+    if (-not $disposable) {
         # The editor masks the password. Check that an explicit path exists before a
         # MySQL client could fall back to its ordinary client login group.
         $editor = Find-BackupMysqlTool 'mysql_config_editor'
@@ -133,6 +143,13 @@ try {
             throw 'Protected login path is unavailable or lacks an explicit loopback user and password.'
         }
         $clientUser = $user.Groups[1].Value
+    }
+    if ($DisposableDemoAcceptance) {
+        $serverData = (Read-BackupSqlScalar 'SELECT @@datadir').Replace('\', '/').TrimEnd('/')
+        $expectedFolder = '/OrgResource-C8-Demo-' + $demoSuffix + '/'
+        if (!(($serverData + '/').Contains($expectedFolder)) -or $serverData -notmatch '/(?:mysql|restore-mysql)$') {
+            throw 'The selected server does not use the guarded disposable C8 data directory.'
+        }
     }
     if ($Mode -eq 'Backup') {
         if ([IO.File]::Exists($archivePath)) { throw 'Choose a new archive path.' }
@@ -178,7 +195,7 @@ try {
         try { $cipher.Decrypt($nonce, $encrypted, $tag, $sql, $header) }
         catch [Security.Cryptography.CryptographicException] { throw 'Backup authentication failed. No restore SQL was sent.' }
 
-        if (-not $DisposableAcceptance -and (Read-BackupSqlScalar @'
+        if (-not $disposable -and (Read-BackupSqlScalar @'
 SELECT COUNT(*) FROM information_schema.schema_privileges
 WHERE table_schema=DATABASE() AND privilege_type='SELECT'
 AND grantee=CONCAT(QUOTE(SUBSTRING_INDEX(CURRENT_USER(),'@',1)), '@', QUOTE(SUBSTRING_INDEX(CURRENT_USER(),'@',-1)))

@@ -51,6 +51,22 @@ describe("POST response certainty", () => {
     await expect(api.departments()).rejects.toMatchObject({ code: "NETWORK_ERROR" });
   });
 
+  it("discards results that finish decoding after a workspace switch", async () => {
+    let finish!: (value: string) => void;
+    let bodyStarted!: () => void;
+    const decoding = new Promise<void>(resolve => { bodyStarted = resolve; });
+    const lateBody = new Promise<string>(resolve => { finish = resolve; });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true, status: 200, headers: new Headers(),
+      text: () => { bodyStarted(); return lateBody; },
+    }));
+    const pending = api.departments();
+    await decoding;
+    abortTenantRequests();
+    finish(JSON.stringify([{ id: 1, name: "Prior workspace" }]));
+    await expect(pending).rejects.toMatchObject({ name: "AbortError" });
+  });
+
   it("sends only same-origin session requests with in-memory CSRF and aborts pending tenant reads", async () => {
     setCsrfToken("memory-only-csrf");
     let signal: AbortSignal | null = null;

@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { api, ApiError } from "../api/client";
+import { useEffect, useState, type FormEvent } from "react";
+import { api, ApiError, workspaceApi } from "../api/client";
 import { inventoryApi, newOperationIdentity, type InventoryResource, type Movement, type OperationIdentity } from "../api/extended";
 import { useAuth } from "../auth/AuthContext";
 import type { Resource, ResourceAvailability, ResourceType } from "../api/types";
 import { explainError, isUncertain } from "../domain";
-import { Button, DetailSheet, GlassPanel, LoadState, Modal, MutationReviewNotice, Notice, PageHeader, PanelHeading, StatusBadge } from "../ui";
+import { Button, DetailSheet, GlassPanel, LoadState, Modal, MutationReviewNotice, Notice, PageHeader, PageNavigation, PanelHeading, StatusBadge, usePageCursors } from "../ui";
 
 type StockAttempt = { resourceId: string; mode: "receive" | "adjust"; value: number; etag: string; identity: OperationIdentity };
 
@@ -23,6 +23,9 @@ export function ResourcesPage() {
   const [loadError, setLoadError] = useState("");
   const [filter, setFilter] = useState<"ALL" | ResourceType>("ALL");
   const [search, setSearch] = useState("");
+  const [cursors, setCursors] = useState<(string | null)[]>([null]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const cursor = cursors.at(-1) ?? null;
   const [reload, setReload] = useState(0);
   const [newName, setNewName] = useState("");
   const [newType, setNewType] = useState<ResourceType>("REUSABLE");
@@ -40,7 +43,7 @@ export function ResourcesPage() {
   const [notice, setNotice] = useState("");
   const [postReviewRequired, setPostReviewRequired] = useState(false);
   const [inventorySnapshot, setInventorySnapshot] = useState<{ resourceId: string; value: InventoryResource; etag: string } | null>(null);
-  const [movementSnapshot, setMovementSnapshot] = useState<{ resourceId: string; items: Movement[]; nextCursor: string | null } | null>(null);
+  const [movementSnapshot, setMovementSnapshot] = useState<{ resourceId: string; cursor: string | null; items: Movement[]; nextCursor: string | null } | null>(null);
   const [inventoryErrorState, setInventoryErrorState] = useState<{ resourceId: string | null; message: string } | null>(null);
   const [stockBusy, setStockBusy] = useState(false);
   const [receiveQuantity, setReceiveQuantity] = useState("1");
@@ -56,14 +59,14 @@ export function ResourcesPage() {
 
   useEffect(() => {
     const controller = new AbortController();
-    api.resources(filter === "ALL" ? undefined : filter, controller.signal).then((rows) => {
-      setResources(rows); setLoadState("ready"); setLoadError("");
+    workspaceApi.resources(cursor, { type: filter === "ALL" ? undefined : filter, search }, controller.signal).then((page) => {
+      setResources(page.items); setNextCursor(page.nextCursor); setLoadState("ready"); setLoadError("");
     }).catch((reason: unknown) => {
       if (reason instanceof DOMException && reason.name === "AbortError") return;
       setLoadError(explainError(reason)); setLoadState("error");
     });
     return () => controller.abort();
-  }, [filter, reload]);
+  }, [cursor, filter, reload, search]);
 
   const selectedId = selected?.id;
   useEffect(() => {
@@ -80,8 +83,12 @@ export function ResourcesPage() {
   }, [selectedId, availabilityReload]);
 
   const selectedPublicId = selected?.publicId;
+  const movementPage = usePageCursors(selectedPublicId ?? "");
+  const movementCursor = movementPage.cursor;
+  const [movementError, setMovementError] = useState("");
+  const [movementReload, setMovementReload] = useState(0);
   const inventoryState = inventorySnapshot?.resourceId === selectedPublicId ? inventorySnapshot : null;
-  const movementState = movementSnapshot && movementSnapshot.resourceId === selectedPublicId ? movementSnapshot : null;
+  const movementState = movementSnapshot && movementSnapshot.resourceId === selectedPublicId && movementSnapshot.cursor === movementCursor ? movementSnapshot : null;
   const movements = movementState?.items ?? [];
   const inventoryErrorForSelection = inventoryErrorState && inventoryErrorState.resourceId === selectedPublicId ? inventoryErrorState : null;
   const inventoryError = inventoryErrorForSelection?.message ?? "";
@@ -93,12 +100,11 @@ export function ResourcesPage() {
       return;
     }
     let active = true;
-    Promise.all([inventoryApi.resource(activeOrgId, selectedPublicId), inventoryApi.movements(activeOrgId, selectedPublicId, 30)])
-      .then(([state, page]) => {
+    inventoryApi.resource(activeOrgId, selectedPublicId)
+      .then(state => {
         if (!active) return;
         if (!state.etag) throw new Error("The inventory API did not return its current ETag.");
         setInventorySnapshot({ resourceId: selectedPublicId, value: state.data, etag: state.etag });
-        setMovementSnapshot({ resourceId: selectedPublicId, items: page.items, nextCursor: page.nextCursor });
         setInventoryErrorState(null);
       })
       .catch((reason: unknown) => {
@@ -107,6 +113,20 @@ export function ResourcesPage() {
       });
     return () => { active = false; };
   }, [selectedId, selectedPublicId, activeOrgId, canOperateStock, availabilityReload]);
+
+  useEffect(() => {
+    if (!selectedPublicId || !activeOrgId || !canOperateStock) return;
+    const controller = new AbortController();
+    inventoryApi.movements(activeOrgId, selectedPublicId, 30, movementCursor, controller.signal)
+      .then(page => {
+        setMovementSnapshot({ resourceId: selectedPublicId, cursor: movementCursor, ...page });
+        setMovementError("");
+      })
+      .catch((reason: unknown) => {
+        if (!controller.signal.aborted) setMovementError(explainError(reason));
+      });
+    return () => controller.abort();
+  }, [selectedPublicId, activeOrgId, canOperateStock, movementCursor, availabilityReload, movementReload]);
 
   useEffect(() => {
     if (selectedId === undefined) return;
@@ -124,8 +144,10 @@ export function ResourcesPage() {
     return () => { controller.abort(); if (objectUrl) URL.revokeObjectURL(objectUrl); };
   }, [selectedId, imageRefresh]);
 
-  const ordered = useMemo(() => resources.filter((item) => item.name.toLowerCase().includes(search.trim().toLowerCase()))
-    .sort((a, b) => a.name.localeCompare(b.name) || a.id - b.id), [resources, search]);
+  function changePage(next: string | null) {
+    setLoadState("loading");
+    setCursors(previous => next ? [...previous, next] : previous.slice(0, -1));
+  }
   const currentAvailability = selected && availabilityResult?.resourceId === selected.id ? availabilityResult : null;
   const availabilityState = currentAvailability?.status ?? "loading";
   const refresh = () => { setLoadState("loading"); setReload((value) => value + 1); };
@@ -286,16 +308,15 @@ export function ResourcesPage() {
             <Button variant="quiet" onClick={refresh} disabled={loadState === "loading"}>Refresh</Button>
           </PanelHeading>
           <div className="search-filter-bar resource-filters">
-            <label htmlFor="resource-search">Search resources</label><input id="resource-search" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search by name" />
-            <label htmlFor="resource-filter">Type</label><select id="resource-filter" value={filter} onChange={(event) => { setLoadState("loading"); setFilter(event.target.value as "ALL" | ResourceType); }}>
+            <label htmlFor="resource-search">Search resources</label><input id="resource-search" type="search" value={search} maxLength={100} onChange={(event) => { setCursors([null]); setLoadState("loading"); setSearch(event.target.value); }} placeholder="Search by name" />
+            <label htmlFor="resource-filter">Type</label><select id="resource-filter" value={filter} onChange={(event) => { setLoadState("loading"); setCursors([null]); setFilter(event.target.value as "ALL" | ResourceType); }}>
               <option value="ALL">All types</option><option value="REUSABLE">Reusable</option><option value="CONSUMABLE">Consumable</option>
             </select>
           </div>
           <LoadState state={loadState} error={loadError} onRetry={refresh}>
-            {resources.length === 0 ? <div className="state-block state-empty"><span className="empty-symbol" aria-hidden="true">◈</span><h3>No resources in this view</h3><p>Add an item or change the current type filter.</p></div>
-              : ordered.length === 0 ? <div className="state-block state-empty"><h3>No matching resources</h3><p>Try another search term.</p></div>
+            {resources.length === 0 ? <div className="state-block state-empty"><span className="empty-symbol" aria-hidden="true">◈</span><h3>No resources in this view</h3><p>Try a different search or type filter.</p></div>
                 : <div className="table-scroll"><table className="data-table resource-table"><thead><tr><th scope="col">Resource</th><th scope="col">Type</th><th scope="col">Physical total</th><th scope="col">Available</th><th scope="col"><span className="sr-only">Actions</span></th></tr></thead>
-                  <tbody>{ordered.map((resource) => <tr key={resource.id}>
+                  <tbody>{resources.map((resource) => <tr key={resource.id}>
                     <td>{editingId === resource.id ? <form className="inline-edit resource-inline-edit" onSubmit={(event) => void saveEdit(event, resource)}>
                       <label htmlFor={`edit-resource-name-${resource.id}`}>Name</label><input id={`edit-resource-name-${resource.id}`} maxLength={100} value={editName} onChange={(event) => setEditName(event.target.value)} autoFocus required />
                       <label htmlFor={`edit-resource-quantity-${resource.id}`}>Total quantity</label><input id={`edit-resource-quantity-${resource.id}`} type="number" min="0" max="1000000" step="1" value={editQuantity} onChange={(event) => setEditQuantity(event.target.value)} required />
@@ -304,7 +325,7 @@ export function ResourcesPage() {
                         <Button variant="secondary" disabled={busy} type="button" onClick={() => setReviewRequiredId(null)}>I reviewed these current values</Button></div>}
                       <div className="row-actions"><Button variant="primary" type="submit" disabled={busy || postReviewRequired || !editName.trim() || reviewRequiredId === resource.id}>Save changes</Button>
                         <Button variant="quiet" disabled={busy} type="button" onClick={() => { setEditingId(null); setReviewRequiredId(null); }}>Cancel</Button></div>
-                    </form> : <button className="record-cell record-detail-button" type="button" onClick={() => setSelected(resource)}>
+                    </form> : <button className="record-cell record-detail-button" type="button" onClick={() => { setMovementSnapshot(null); setMovementError(""); setSelected(resource); }}>
                       <span className="record-symbol" aria-hidden="true">{resource.type === "REUSABLE" ? "↻" : "◇"}</span><span><strong>{resource.name}</strong><small>R{String(resource.id).padStart(3, "0")}</small></span>
                     </button>}</td>
                     {editingId !== resource.id && <><td><StatusBadge tone={resource.type === "REUSABLE" ? "blue" : "gold"}>{resource.type === "REUSABLE" ? "Reusable" : "Consumable"}</StatusBadge></td>
@@ -316,6 +337,10 @@ export function ResourcesPage() {
                     </>}
                   </tr>)}</tbody></table></div>}
           </LoadState>
+          {loadState !== "error" && <PageNavigation label="Resource pages" page={cursors.length}
+            count={resources.length} hasNext={nextCursor !== null} loading={loadState === "loading"}
+            onPrevious={() => changePage(null)} onNext={() => { if (nextCursor) changePage(nextCursor); }} />}
+          {loadState === "error" && cursors.length > 1 && <Button onClick={() => changePage(null)}>Previous page</Button>}
           <p className="list-footnote">Each quantity describes one Resource. Different kinds of units are never added together.</p>
         </GlassPanel>
       </div>
@@ -368,8 +393,18 @@ export function ResourcesPage() {
               <Button disabled={stockBusy || (!receiptId.trim() && !operationAttempt)}>{stockBusy ? "Checking…" : "Look up receipt"}</Button>
             </form>
             <h4>Permanent movement timeline</h4>
-            {movementState?.nextCursor && <p className="quiet-note">Showing the first 30 movement records. More records exist.</p>}
-            {movements.length === 0 ? <p className="quiet-note">No stock movements have been recorded.</p> : <div className="table-scroll"><table className="data-table"><thead><tr><th>When (UTC from server)</th><th>Movement</th><th>Quantity</th><th>Total change</th><th>Issued change</th><th>Operation</th></tr></thead><tbody>{movements.map(movement => <tr key={movement.id}><td>{movement.occurredAt}</td><td>{movement.kind}</td><td>{movement.quantity}</td><td>{movement.deltaTotal > 0 ? "+" : ""}{movement.deltaTotal}</td><td>{movement.deltaIssued > 0 ? "+" : ""}{movement.deltaIssued}</td><td><code>{movement.operationId}</code></td></tr>)}</tbody></table></div>}
+            {movementError && <Notice tone="danger">{movementError} <Button onClick={() => {
+              setMovementError(""); setMovementReload(value => value + 1);
+            }}>Retry</Button></Notice>}
+            {!movementState && !movementError && <p role="status">Loading movements…</p>}
+            {movementState && !movementError && (movements.length === 0 ? <p className="quiet-note">No stock movements have been recorded.</p> : <div className="table-scroll"><table className="data-table"><thead><tr><th>When (UTC from server)</th><th>Movement</th><th>Quantity</th><th>Total change</th><th>Issued change</th><th>Operation</th></tr></thead><tbody>{movements.map(movement => <tr key={movement.id}><td>{movement.occurredAt}</td><td>{movement.kind}</td><td>{movement.quantity}</td><td>{movement.deltaTotal > 0 ? "+" : ""}{movement.deltaTotal}</td><td>{movement.deltaIssued > 0 ? "+" : ""}{movement.deltaIssued}</td><td><code>{movement.operationId}</code></td></tr>)}</tbody></table></div>)}
+            <PageNavigation label="Stock movement pages" page={movementPage.page} count={movementError ? 0 : movements.length}
+              hasNext={!movementError && !!movementState?.nextCursor} loading={!movementState && !movementError} unavailable={!!movementError}
+              onPrevious={() => { setMovementError(""); movementPage.move(null); }}
+              onNext={() => {
+                const next = movementState?.nextCursor;
+                if (next) { setMovementError(""); movementPage.move(next); }
+              }} />
           </> : <p className="quiet-note">{inventoryError || "Loading tenant-scoped inventory state and ETag…"}</p>}
         </section>}
         {canManageLibrary && <div className="sheet-actions"><Button onClick={() => { beginEdit(selected); setSelected(null); }}>Edit resource</Button></div>}

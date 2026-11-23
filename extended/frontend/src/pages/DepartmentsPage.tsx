@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { api } from "../api/client";
+import { useEffect, useState, type FormEvent } from "react";
+import { workspaceApi, api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import type { Department } from "../api/types";
 import { explainError, isUncertain } from "../domain";
-import { Button, GlassPanel, LoadState, Modal, MutationReviewNotice, Notice, PageHeader, PanelHeading } from "../ui";
+import { Button, GlassPanel, LoadState, Modal, MutationReviewNotice, Notice, PageHeader, PageNavigation, PanelHeading, usePageCursors } from "../ui";
 
 export function DepartmentsPage() {
   const { session, organizations } = useAuth();
@@ -22,11 +22,15 @@ export function DepartmentsPage() {
   const [notice, setNotice] = useState("");
   const [postReviewRequired, setPostReviewRequired] = useState(false);
   const [reload, setReload] = useState(0);
+  const { cursor, page, move } = usePageCursors(search);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const goToPage = (next: string | null) => { setLoadState("loading"); move(next); };
 
   useEffect(() => {
     const controller = new AbortController();
-    api.departments(controller.signal).then((rows) => {
-      setDepartments(rows);
+    workspaceApi.departments(cursor, search, controller.signal).then((result) => {
+      setDepartments(result.items);
+      setNextCursor(result.nextCursor);
       setLoadState("ready");
       setLoadError("");
     }).catch((reason: unknown) => {
@@ -35,12 +39,11 @@ export function DepartmentsPage() {
       setLoadState("error");
     });
     return () => controller.abort();
-  }, [reload]);
+  }, [cursor, search, reload]);
 
   const refresh = () => { setLoadState("loading"); setReload((value) => value + 1); };
 
-  const ordered = useMemo(() => departments.filter((item) => item.name.toLowerCase().includes(search.trim().toLowerCase()))
-    .sort((a, b) => a.name.localeCompare(b.name) || a.id - b.id), [departments, search]);
+  const ordered = departments;
 
   async function submitCreate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -80,7 +83,7 @@ export function DepartmentsPage() {
   return (
     <section className="page-shell" aria-labelledby="departments-title">
       <PageHeader eyebrow="Organization · structure" title="Departments" description="Keep the organization’s working groups clear and ready for project planning."
-        action={<div className="header-stat"><span>{loadState === "ready" ? departments.length : "—"}</span><small>departments</small></div>} />
+        action={<div className="header-stat"><span>{loadState === "ready" ? departments.length : "—"}</span><small>departments in view</small></div>} />
       {notice && <Notice tone="success">{notice}</Notice>}
       {error && <Notice tone="danger">{error}</Notice>}
       <MutationReviewNotice required={postReviewRequired} ready={loadState === "ready"} onReviewed={() => setPostReviewRequired(false)} />
@@ -100,7 +103,7 @@ export function DepartmentsPage() {
           <PanelHeading kicker="Organization directory" title="Department list">
             <Button variant="quiet" onClick={refresh} disabled={loadState === "loading"}>Refresh</Button>
           </PanelHeading>
-          <div className="search-filter-bar"><label htmlFor="department-search">Search departments</label><input id="department-search" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search by name" /></div>
+          <div className="search-filter-bar"><label htmlFor="department-search">Search departments</label><input id="department-search" type="search" value={search} maxLength={100} onChange={(event) => { setLoadState("loading"); setSearch(event.target.value); }} placeholder="Search by name" /></div>
           <LoadState state={loadState} error={loadError} onRetry={refresh}>
             {departments.length === 0 ? <div className="state-block state-empty"><span className="empty-symbol" aria-hidden="true">⌘</span><h3>No departments yet</h3><p>Add the first group to start organizing project work.</p></div>
               : ordered.length === 0 ? <div className="state-block state-empty"><h3>No matching departments</h3><p>Try a different search term.</p></div>
@@ -117,6 +120,9 @@ export function DepartmentsPage() {
                     </div></td>}</>}
                   </tr>)}</tbody></table></div>}
           </LoadState>
+          <PageNavigation label="Departments pages" page={page} count={loadState === "ready" ? departments.length : 0}
+            hasNext={loadState === "ready" && nextCursor !== null} loading={loadState === "loading"} unavailable={loadState === "error"}
+            onPrevious={() => goToPage(null)} onNext={() => { if (nextCursor) goToPage(nextCursor); }} />
         </GlassPanel>
       </div>
 

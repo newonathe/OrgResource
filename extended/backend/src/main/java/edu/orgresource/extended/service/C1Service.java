@@ -5,8 +5,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +22,6 @@ import edu.orgresource.extended.domain.Project;
 import edu.orgresource.extended.domain.Resource;
 import edu.orgresource.extended.domain.ResourceRequirement;
 import edu.orgresource.extended.domain.ResourceType;
-import edu.orgresource.extended.domain.AllocationStatus;
 import edu.orgresource.extended.repository.AllocationRepository;
 import edu.orgresource.extended.repository.DepartmentRepository;
 import edu.orgresource.extended.repository.ProjectRepository;
@@ -46,7 +48,7 @@ public class C1Service {
                      ResourceRequirementRepository requirements,
                      AllocationRepository allocations,
                      C1OrganizationContext organizationContext,
-                     Clock philippineClock,
+                     @Qualifier("businessClock") Clock philippineClock,
                      InventoryService inventory,
                      ContactCipher contactCipher) {
         this.departments = departments;
@@ -130,6 +132,10 @@ public class C1Service {
         requireManager(orgId);
         requirePositiveId(id, "Project");
         Project project = projects.lockById(id, orgId).orElseThrow(() -> notFound("Project"));
+        return new ApiDtos.ProjectView(saveProjectFields(project, request));
+    }
+
+    Project saveProjectFields(Project project, ApiDtos.ProjectUpdate request) {
         String name = displayName(request.name);
         LocalDateTime startAt = parseDateTime(request.startAt);
         LocalDateTime endAt = parseDateTime(request.endAt);
@@ -138,13 +144,13 @@ public class C1Service {
         if (datesChanged) {
             if (!startAt.isAfter(LocalDateTime.now(philippineClock)))
                 throw new C1ApiException(400, "INVALID_PROJECT_PERIOD", "Project startAt must be in the future when dates change.");
-            if (allocations.countHistoricallyApprovedByProject(orgId, id) > 0)
+            if (allocations.countHistoricallyApprovedByProject(project.organizationId, project.id) > 0)
                 throw new C1ApiException(409, "PROJECT_DATES_LOCKED", "Project dates cannot change after an Allocation has been approved.");
         }
         project.name = name;
         project.startAt = startAt;
         project.endAt = endAt;
-        return new ApiDtos.ProjectView(projects.saveAndFlush(project));
+        return projects.saveAndFlush(project);
     }
 
     @Transactional
@@ -153,7 +159,11 @@ public class C1Service {
         requireManager(orgId);
         requirePositiveId(id, "Project");
         Project project = projects.lockById(id, orgId).orElseThrow(() -> notFound("Project"));
-        if (requirements.existsByOrganizationIdAndProjectId(orgId, id))
+        return removeProject(project);
+    }
+
+    ApiDtos.MessageView removeProject(Project project) {
+        if (requirements.existsByOrganizationIdAndProjectId(project.organizationId, project.id))
             throw new C1ApiException(409, "DEPENDENCY_EXISTS", "Project still has ResourceRequirements.");
         projects.delete(project);
         projects.flush();
@@ -224,21 +234,25 @@ public class C1Service {
         List<Object[]> balances = allocations.findInventoryListBalances(orgId, now);
         java.util.Map<Long, Object[]> byResource = balances.stream()
                 .collect(java.util.stream.Collectors.toMap(row -> ((Number) row[0]).longValue(), row -> row));
-        return rows.stream().map(resource -> {
-            Object[] balance = byResource.get(resource.id);
-            if (balance == null) throw new C1ApiException(500, "INVENTORY_INTEGRITY_FAILURE", "Inventory could not be reconciled safely.");
-            long ledgerTotal = ((Number) balance[1]).longValue();
-            long ledgerIssued = ((Number) balance[2]).longValue();
-            long holds = ((Number) balance[3]).longValue();
-            long issued = ((Number) balance[4]).longValue();
-            if (ledgerTotal != resource.totalQuantity.longValue() || ledgerIssued != issued)
-                throw new C1ApiException(500, "INVENTORY_INTEGRITY_FAILURE", "Inventory could not be reconciled safely.");
-            long available = resource.totalQuantity.longValue() - holds
-                    - (resource.type == ResourceType.REUSABLE ? issued : 0);
-            if (available < 0 || available > resource.totalQuantity)
-                throw new C1ApiException(500, "INVENTORY_INTEGRITY_FAILURE", "Inventory could not be reconciled safely.");
-            return new ApiDtos.ResourceView(resource, Math.toIntExact(available));
-        }).collect(Collectors.toList());
+        return rows.stream().map(resource ->
+                new ApiDtos.ResourceView(resource, reconciledAvailability(resource.totalQuantity, resource.type, byResource.get(resource.id))))
+                .toList();
+    }
+
+    private static int reconciledAvailability(int total, ResourceType type, Object[] balance) {
+        if (balance == null) throw inventoryIntegrityFailure();
+        long ledgerTotal = ((Number) balance[1]).longValue();
+        long ledgerIssued = ((Number) balance[2]).longValue();
+        long holds = ((Number) balance[3]).longValue();
+        long issued = ((Number) balance[4]).longValue();
+        if (ledgerTotal != total || ledgerIssued != issued) throw inventoryIntegrityFailure();
+        long available = total - holds - (type == ResourceType.REUSABLE ? issued : 0);
+        if (available < 0 || available > total) throw inventoryIntegrityFailure();
+        return Math.toIntExact(available);
+    }
+
+    private static C1ApiException inventoryIntegrityFailure() {
+        return new C1ApiException(500, "INVENTORY_INTEGRITY_FAILURE", "Inventory could not be reconciled safely.");
     }
 
     @Transactional
@@ -250,9 +264,12 @@ public class C1Service {
                 .orElseThrow(() -> notFound("Project"));
         Resource resource = resources.findByIdAndOrganizationId(request.resourceId, orgId)
                 .orElseThrow(() -> notFound("Resource"));
-        ResourceRequirement saved = requirements.saveAndFlush(
-                new ResourceRequirement(orgId, project, resource, request.quantity));
+        ResourceRequirement saved = saveNewRequirement(project, resource, request.quantity);
         return requirementView(saved, LocalDateTime.now(philippineClock));
+    }
+
+    ResourceRequirement saveNewRequirement(Project project, Resource resource, int quantity) {
+        return requirements.saveAndFlush(new ResourceRequirement(project.organizationId, project, resource, quantity));
     }
 
     @Transactional
@@ -260,22 +277,32 @@ public class C1Service {
         Long orgId = organizationContext.requireMutationOrganizationId();
         requireManager(orgId);
         requirePositiveId(id, "Requirement");
-        if (request.quantity == null || request.quantity < 1 || request.quantity > 1000000)
-            throw new C1ApiException(400, "VALIDATION_FAILED", "quantity must be from 1 to 1000000.");
+        validateRequirementQuantity(request.quantity);
         ResourceRequirement initial = requirements.findDetailedByIdAndOrganizationId(id, orgId)
                 .orElseThrow(() -> notFound("Requirement"));
         Project project = projects.lockById(initial.projectId, orgId).orElseThrow(() -> notFound("Project"));
         resources.lockById(initial.resourceId, orgId).orElseThrow(() -> notFound("Resource"));
         ResourceRequirement requirement = requirements.lockById(id, orgId).orElseThrow(() -> notFound("Requirement"));
         LocalDateTime now = LocalDateTime.now(philippineClock);
+        return requirementView(saveRequirementQuantity(project, requirement, request.quantity, now), now);
+    }
+
+    ResourceRequirement saveRequirementQuantity(Project project, ResourceRequirement requirement, Integer quantity, LocalDateTime now) {
+        validateRequirementQuantity(quantity);
+        long id = requirement.id, orgId = requirement.organizationId;
         if (!project.endAt.isAfter(now)) throw new C1ApiException(409, "PROJECT_ENDED", "Requirements cannot be changed after the Project ends.");
         Long coverageValue = requirements.sumCoveredQuantity(id, orgId, now);
         long coverage = coverageValue == null ? 0 : coverageValue;
         Integer pending = requirements.maxPendingQuantity(id, orgId, AllocationStatus.PENDING, now);
-        if (request.quantity.longValue() < Math.max(coverage, pending == null ? 0L : pending.longValue()))
+        if (quantity.longValue() < Math.max(coverage, pending == null ? 0L : pending.longValue()))
             throw new C1ApiException(409, "QUANTITY_BELOW_COMMITMENTS", "quantity cannot be lower than current coverage or the largest pending Allocation.");
-        requirement.quantity = request.quantity;
-        return requirementView(requirements.saveAndFlush(requirement), now);
+        requirement.quantity = quantity;
+        return requirements.saveAndFlush(requirement);
+    }
+
+    private static void validateRequirementQuantity(Integer quantity) {
+        if (quantity == null || quantity < 1 || quantity > 1000000)
+            throw new C1ApiException(400, "VALIDATION_FAILED", "quantity must be from 1 to 1000000.");
     }
 
     @Transactional
@@ -288,7 +315,11 @@ public class C1Service {
         projects.lockById(initial.projectId, orgId).orElseThrow(() -> notFound("Project"));
         resources.lockById(initial.resourceId, orgId).orElseThrow(() -> notFound("Resource"));
         ResourceRequirement requirement = requirements.lockById(id, orgId).orElseThrow(() -> notFound("Requirement"));
-        if (allocations.existsByOrganizationIdAndRequirementId(orgId, id))
+        return removeRequirement(requirement);
+    }
+
+    ApiDtos.MessageView removeRequirement(ResourceRequirement requirement) {
+        if (allocations.existsByOrganizationIdAndRequirementId(requirement.organizationId, requirement.id))
             throw new C1ApiException(409, "DEPENDENCY_EXISTS", "Requirement still has Allocation history.");
         requirements.delete(requirement);
         requirements.flush();
@@ -338,13 +369,7 @@ public class C1Service {
 
     @Transactional(readOnly = true)
     public List<ApiDtos.AllocationView> listAllocations(Long requirementId, AllocationStatus status) {
-        Long orgId = organizationContext.currentOrganizationId();
-        organizationContext.requireCurrentReadRole(orgId,
-                edu.orgresource.extended.identity.Membership.Role.OWNER,
-                edu.orgresource.extended.identity.Membership.Role.ADMIN,
-                edu.orgresource.extended.identity.Membership.Role.CUSTODIAN);
-        if (requirementId != null && requirementId <= 0) throw new C1ApiException(400, "VALIDATION_FAILED", "requirementId must be positive.");
-        if (requirementId != null && requirements.findByIdAndOrganizationId(requirementId, orgId).isEmpty()) throw notFound("Requirement");
+        long orgId = allocationReadScope(requirementId);
         List<Allocation> rows;
         if (requirementId != null && status != null)
             rows = allocations.findByOrganizationIdAndRequirementIdAndStatusOrderById(orgId, requirementId, status);
@@ -416,6 +441,151 @@ public class C1Service {
         });
         allocations.saveAllAndFlush(expired);
         return expired.size();
+    }
+
+    @Transactional(readOnly = true)
+    public ApiDtos.WorkspaceOverview workspaceOverview() {
+        long org = organizationContext.currentOrganizationId();
+        LocalDateTime now = LocalDateTime.now(philippineClock);
+        var role = organizationContext.requireCurrentMembership(org).role;
+        ApiDtos.OverviewAllocations allocationSummary = switch (role) {
+            case OWNER, ADMIN, CUSTODIAN -> {
+                var counts = allocations.countWorkspaceStatuses(org, now, AllocationStatus.PENDING, AllocationStatus.ISSUED,
+                        AllocationStatus.CONSUMED);
+                var recent = allocations.workspaceRecent(org, PageRequest.of(0, 5)).stream().map(row ->
+                        new ApiDtos.OverviewRecentAllocation(row.getId(), row.getBorrowerName(), row.getQuantity(),
+                                row.getStatus(), row.getResourceName(), row.getCreatedAt())).toList();
+                yield new ApiDtos.OverviewAllocations(counts.getPending(), counts.getIssued(), counts.getOverdue(),
+                        counts.getConsumed(), recent);
+            }
+            case LEAD, MEMBER -> null;
+        };
+        return new ApiDtos.WorkspaceOverview(now.toString(), departments.countByOrganizationId(org),
+                projects.countActiveWorkspaceProjects(org, now), resources.countWorkspaceTypes(org),
+                requirements.countWorkspaceShortages(org, now),
+                resourcePage(org, null, null, 5, null, now).items(),
+                projects.workspaceCalendar(org, now, PageRequest.of(0, 10)).stream().map(project ->
+                        new ApiDtos.OverviewProject(new ApiDtos.ProjectView(project), project.department.name,
+                                !project.startAt.isAfter(now))).toList(),
+                allocationSummary);
+    }
+
+    @Transactional(readOnly = true)
+    public ApiDtos.WorkspacePage<ApiDtos.DepartmentView> departmentPage(String search, int limit, String cursor) {
+        long org = organizationContext.currentOrganizationId();
+        String term = normalizedSearch(search);
+        WorkspacePageWindow page = WorkspacePageWindow.of(limit, cursor, org, "departments", searchScope(term));
+        return page.result(departments.findWorkspacePage(org, page.after(), term, page.queryLimit()),
+                department -> department.id, ApiDtos.DepartmentView::new);
+    }
+
+    @Transactional(readOnly = true)
+    public ApiDtos.WorkspacePage<ApiDtos.WorkspaceProjectView> projectPage(Long departmentId, String search, String period, int limit, String cursor) {
+        long org = organizationContext.currentOrganizationId();
+        if (departmentId != null) {
+            if (departmentId <= 0) throw new C1ApiException(400, "VALIDATION_FAILED", "departmentId must be positive.");
+            if (departments.findByIdAndOrganizationId(departmentId, org).isEmpty()) throw notFound("Department");
+        }
+        String term = normalizedSearch(search);
+        if (period != null && !List.of("ACTIVE", "UPCOMING", "ENDED").contains(period))
+            throw new C1ApiException(400, "VALIDATION_FAILED", "period must be ACTIVE, UPCOMING or ENDED.");
+        WorkspacePageWindow page = WorkspacePageWindow.of(limit, cursor, org, "projects", departmentId + "|" + period + "|" + searchScope(term));
+        return page.result(projects.findWorkspacePage(org, page.after(), departmentId, term, period,
+                LocalDateTime.now(philippineClock), page.queryLimit()),
+                project -> project.id, ApiDtos.WorkspaceProjectView::new);
+    }
+
+    @Transactional(readOnly = true)
+    public ApiDtos.WorkspacePage<ApiDtos.ResourceView> resourcePage(ResourceType type, String search, int limit, String cursor) {
+        return resourcePage(organizationContext.currentOrganizationId(), type, search, limit, cursor, LocalDateTime.now(philippineClock));
+    }
+
+    private ApiDtos.WorkspacePage<ApiDtos.ResourceView> resourcePage(long org, ResourceType type, String search, int limit,
+            String cursor, LocalDateTime sampledNow) {
+        String normalizedSearch = normalizedSearch(search);
+        WorkspacePageWindow page = WorkspacePageWindow.of(limit, cursor, org, "resources", type + "|" + searchScope(normalizedSearch));
+        List<ResourceRepository.WorkspaceRow> rows = resources.findWorkspacePage(org, page.after(), type,
+                normalizedSearch, page.queryLimit());
+        if (rows.isEmpty()) return new ApiDtos.WorkspacePage<>(List.of(), null);
+        var balances = allocations.findInventoryPageBalances(org,
+                page.visible(rows).stream().map(ResourceRepository.WorkspaceRow::getId).toList(), sampledNow);
+        var byId = balances.stream().collect(Collectors.toMap(row -> ((Number) row[0]).longValue(), row -> row));
+        return page.result(rows, ResourceRepository.WorkspaceRow::getId, row -> new ApiDtos.ResourceView(
+                row.getId(), row.getPublicId(), row.getName(), row.getType(), row.getTotalQuantity(),
+                reconciledAvailability(row.getTotalQuantity(), row.getType(), byId.get(row.getId()))));
+    }
+
+    @Transactional(readOnly = true)
+    public ApiDtos.WorkspacePage<ApiDtos.WorkspaceRequirementView> requirementPage(Long projectId, String search, int limit, String cursor) {
+        long org = organizationContext.currentOrganizationId();
+        if (projectId != null) {
+            if (projectId <= 0) throw new C1ApiException(400, "VALIDATION_FAILED", "projectId must be positive.");
+            if (projects.findByIdAndOrganizationId(projectId, org).isEmpty()) throw notFound("Project");
+        }
+        String term = normalizedSearch(search);
+        WorkspacePageWindow page = WorkspacePageWindow.of(limit, cursor, org, "requirements", projectId + "|" + searchScope(term));
+        var rows = requirements.findWorkspacePage(org, page.after(), projectId, term, page.queryLimit());
+        if (rows.isEmpty()) return new ApiDtos.WorkspacePage<>(List.of(), null);
+        var covered = requirementCoverage(org, page.visible(rows).stream()
+                .map(ResourceRequirementRepository.WorkspaceRow::getId).toList(), LocalDateTime.now(philippineClock));
+        return page.result(rows, ResourceRequirementRepository.WorkspaceRow::getId,
+                row -> workspaceRequirement(row, covered));
+    }
+
+    @Transactional(readOnly = true)
+    public ApiDtos.WorkspacePage<ApiDtos.WorkspaceAllocationView> allocationPage(Long requirementId, Long projectId, AllocationStatus status,
+            int limit, String cursor) {
+        long org = allocationReadScope(requirementId);
+        if (projectId != null) {
+            if (projectId <= 0) throw new C1ApiException(400, "VALIDATION_FAILED", "projectId must be positive.");
+            if (projects.findByIdAndOrganizationId(projectId, org).isEmpty()) throw notFound("Project");
+        }
+        WorkspacePageWindow page = WorkspacePageWindow.of(limit, cursor, org, "allocations",
+                requirementId + "|" + projectId + "|" + status);
+        var rows = allocations.findWorkspacePage(org, page.after(), requirementId, projectId, status, page.queryLimit());
+        if (rows.isEmpty()) return new ApiDtos.WorkspacePage<>(List.of(), null);
+        LocalDateTime sampledNow = LocalDateTime.now(philippineClock);
+        List<Long> requirementIds = page.visible(rows).stream().map(row -> row.requirement.id).distinct().toList();
+        var covered = requirementCoverage(org, requirementIds, sampledNow);
+        var context = requirements.findWorkspaceRelationships(org, requirementIds).stream()
+                .collect(Collectors.toMap(ResourceRequirementRepository.WorkspaceRow::getId,
+                        row -> workspaceRequirement(row, covered)));
+        if (context.size() != requirementIds.size())
+            throw new C1ApiException(500, "INVENTORY_INTEGRITY_FAILURE", "An Allocation relationship is unavailable.");
+        return page.result(rows, row -> row.id,
+                row -> new ApiDtos.WorkspaceAllocationView(row, context.get(row.requirement.id), sampledNow));
+    }
+
+    Map<Long, Integer> requirementCoverage(long org, List<Long> ids, LocalDateTime sampledNow) {
+        return requirements.sumPageCoverage(ids, org, sampledNow).stream()
+                .collect(Collectors.toMap(row -> ((Number) row[0]).longValue(),
+                        row -> Math.toIntExact(((Number) row[1]).longValue())));
+    }
+
+    private static ApiDtos.WorkspaceRequirementView workspaceRequirement(ResourceRequirementRepository.WorkspaceRow row,
+            Map<Long, Integer> covered) {
+        return new ApiDtos.WorkspaceRequirementView(row.getId(), row.getProjectId(), row.getResourceId(), row.getQuantity(),
+                covered.getOrDefault(row.getId(), 0), row.getProjectName(), row.getResourceName(), row.getResourceType(),
+                row.getProjectStartAt(), row.getProjectEndAt());
+    }
+
+    private static String normalizedSearch(String search) {
+        if (search != null && search.length() > 100)
+            throw new C1ApiException(400, "VALIDATION_FAILED", "Search must be at most 100 characters.");
+        return search == null || search.isBlank() ? null : nameKey(displayName(search));
+    }
+
+    private static String searchScope(String search) { return search == null ? "0" : "1" + search; }
+
+    private long allocationReadScope(Long requirementId) {
+        long orgId = organizationContext.currentOrganizationId();
+        organizationContext.requireCurrentReadRole(orgId,
+                edu.orgresource.extended.identity.Membership.Role.OWNER,
+                edu.orgresource.extended.identity.Membership.Role.ADMIN,
+                edu.orgresource.extended.identity.Membership.Role.CUSTODIAN);
+        if (requirementId != null && requirementId <= 0) throw new C1ApiException(400, "VALIDATION_FAILED", "requirementId must be positive.");
+        if (requirementId != null && requirements.findByIdAndOrganizationId(requirementId, orgId).isEmpty()) throw notFound("Requirement");
+        return orgId;
     }
 
     private ApiDtos.RequirementView requirementView(ResourceRequirement requirement, LocalDateTime now) {

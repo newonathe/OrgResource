@@ -20,7 +20,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,6 +81,7 @@ import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProc
 import org.springframework.scheduling.config.ScheduledTask;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.test.context.bean.override.convention.TestBean;
 
 import javax.validation.ValidatorFactory;
 
@@ -90,6 +93,7 @@ class C1IdentityAcceptanceTest {
     private static final Gson GSON = new Gson();
     private static final String COOKIE = "ORGSESSION";
     private static final String OWNER_SLUG = "c1-seed-workspace";
+    private static final AtomicReference<Instant> SCOPED_TEST_BUSINESS_TIME = new AtomicReference<>();
 
     @LocalServerPort int port;
     @Autowired DataSource dataSource;
@@ -117,15 +121,33 @@ class C1IdentityAcceptanceTest {
     @Autowired C3ReminderService reminderService;
     @Autowired ScheduledAnnotationBeanPostProcessor scheduledTasks;
     @Autowired Clock clock;
+    @TestBean(name = "businessClock", methodName = "scopedBusinessClock")
+    Clock businessClock;
     @org.springframework.beans.factory.annotation.Value("${c1.sms.enabled:false}") boolean smsEnabled;
     @Autowired javax.validation.Validator javaxValidator;
     @Autowired ValidatorFactory javaxValidatorFactory;
     @Autowired Validator jakartaValidator;
     @Autowired jakarta.validation.ValidatorFactory jakartaValidatorFactory;
     @Autowired org.springframework.security.web.SecurityFilterChain securityFilterChain;
+    @Autowired org.glassfish.jersey.server.ResourceConfig c8JerseyResourceConfig;
 
     private TransactionTemplate tx;
     private List<String> bootstrapCodes = List.of();
+
+    private static Clock scopedBusinessClock() {
+        return testBusinessClock(ZoneId.of("Asia/Manila"));
+    }
+
+    private static Clock testBusinessClock(ZoneId zone) {
+        return new Clock() {
+            @Override public ZoneId getZone() { return zone; }
+            @Override public Clock withZone(ZoneId changed) { return testBusinessClock(changed); }
+            @Override public Instant instant() {
+                Instant simulation = SCOPED_TEST_BUSINESS_TIME.get();
+                return simulation == null ? Instant.now() : simulation;
+            }
+        };
+    }
 
     @BeforeAll
     void requireFreshLoopbackMysqlSchema() throws Exception {
@@ -270,7 +292,7 @@ class C1IdentityAcceptanceTest {
         assertEquals(17, jdbc.queryForObject("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND engine='InnoDB' AND LOWER(table_name) IN ("
                 + "'organization','user_account','local_credential','account_recovery_code','membership','invitation','ownership_transfer','audit_event',"
                 + "'department','project','resource','resource_requirement','allocation','stock_movement','idempotency_key','spring_session','spring_session_attributes')", Integer.class));
-        assertEquals(9, jdbc.queryForObject("SELECT COUNT(*) FROM information_schema.referential_constraints WHERE constraint_schema=DATABASE() AND constraint_name LIKE 'fk_%_scope'", Integer.class));
+        assertEquals(12, jdbc.queryForObject("SELECT COUNT(*) FROM information_schema.referential_constraints WHERE constraint_schema=DATABASE() AND constraint_name LIKE 'fk_%_scope'", Integer.class));
         assertTrue(actualSchemaColumns("ownership_transfer").contains("pending_org_id"));
         assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema=DATABASE() "
                 + "AND table_name='ownership_transfer' AND index_name='uk_transfer_one_pending_per_org' AND non_unique=0", Integer.class));
@@ -287,12 +309,12 @@ class C1IdentityAcceptanceTest {
                         now(), now().plusHours(1)))));
         Department saved = tx.execute(s -> departmentRepository.saveAndFlush(new Department(
                 organizations.findByPublicId(a.orgPublicId).orElseThrow().id, "Cross tenant", "cross tenant")));
-        assertThrows(DataIntegrityViolationException.class, () -> jdbc.update("INSERT INTO project(organization_id,department_id,name,start_at,end_at) VALUES(?,?,?,?,?)",
+        assertThrows(DataIntegrityViolationException.class, () -> jdbc.update("INSERT INTO project(public_id,organization_id,department_id,name,start_at,end_at) VALUES(UUID_TO_BIN(UUID(),0),?,?,?,?,?)",
                 b.orgDbId, saved.id, "cross-tenant project", "2040-01-01 00:00:00", "2040-01-02 00:00:00"));
         RuntimeException invalidRole = assertThrows(RuntimeException.class,
                 () -> jdbc.update("UPDATE membership SET role='ROOT' WHERE id=?", a.membershipDbId));
         assertNotNull(findCause(invalidRole, java.sql.SQLException.class));
-        assertEquals(5, jdbc.queryForObject("SELECT COUNT(*) FROM flyway_schema_history WHERE success=1", Integer.class));
+        assertEquals(7, jdbc.queryForObject("SELECT COUNT(*) FROM flyway_schema_history WHERE success=1", Integer.class));
     }
 
     @Test @Order(4)
@@ -784,7 +806,7 @@ class C1IdentityAcceptanceTest {
     @Test @Order(15)
     void ID15_cleanFlywayBootstrapAndEffectiveDependencyVersionsArePresent() throws Exception {
         assertEquals("1", jdbc.queryForObject("SELECT version FROM flyway_schema_history WHERE success=1 ORDER BY installed_rank LIMIT 1", String.class));
-        assertEquals(5, jdbc.queryForObject("SELECT COUNT(*) FROM flyway_schema_history WHERE success=1", Integer.class));
+        assertEquals(7, jdbc.queryForObject("SELECT COUNT(*) FROM flyway_schema_history WHERE success=1", Integer.class));
         String[] tables = jdbc.queryForList("SELECT LOWER(table_name) FROM information_schema.tables WHERE table_schema=DATABASE()", String.class).toArray(String[]::new);
         assertTrue(List.of(tables).contains("spring_session"));
         assertTrue(get(newClient(), "/").body().contains("OrgResource"));
@@ -1582,7 +1604,8 @@ class C1IdentityAcceptanceTest {
                     seed.executeUpdate("INSERT INTO resource(id,organization_id,name,name_key,type,total_quantity) "
                             + "SELECT 77,id,'Legacy Empty Resource','legacy empty resource','REUSABLE',0 FROM organization");
                 }
-                var flyway = org.flywaydb.core.Flyway.configure().dataSource(legacyUrl, user, password).load();
+                var flyway = org.flywaydb.core.Flyway.configure().dataSource(legacyUrl, user, password)
+                        .target(org.flywaydb.core.api.MigrationVersion.fromVersion("5")).load();
                 assertEquals(3, flyway.migrate().migrationsExecuted);
                 flyway.validate();
                 assertEquals("5", flyway.info().current().getVersion().getVersion());
@@ -1596,6 +1619,44 @@ class C1IdentityAcceptanceTest {
                     assertEquals(0, rows.getInt(3));
                     assertEquals(0, rows.getInt(4));
                     assertFalse(rows.next());
+                }
+                try (Connection upgraded = DriverManager.getConnection(legacyUrl, user, password);
+                     var seed = upgraded.createStatement()) {
+                    seed.executeUpdate("INSERT INTO department(id,organization_id,name,name_key) "
+                            + "SELECT 77,id,'Legacy department','legacy department' FROM organization");
+                    seed.executeUpdate("INSERT INTO project(id,organization_id,department_id,name,start_at,end_at) "
+                            + "SELECT 77,id,77,'Legacy project','2040-01-01','2040-01-02' FROM organization");
+                    seed.executeUpdate("INSERT INTO resource_requirement(id,organization_id,project_id,resource_id,quantity) "
+                            + "SELECT 77,id,77,77,3 FROM organization");
+                    seed.executeUpdate("INSERT INTO allocation(id,public_id,organization_id,requirement_id,resource_id,quantity,"
+                            + "borrower_name,status,created_at) SELECT 77,UUID_TO_BIN(UUID(),0),id,77,77,1,"
+                            + "'Legacy fictional label','PENDING','2039-01-01' FROM organization");
+                }
+                var current = org.flywaydb.core.Flyway.configure().dataSource(legacyUrl, user, password)
+                        .target(org.flywaydb.core.api.MigrationVersion.fromVersion("6")).load();
+                assertEquals(1, current.migrate().migrationsExecuted);
+                current.validate();
+                try (Connection upgraded = DriverManager.getConnection(legacyUrl, user, password);
+                     var query = upgraded.createStatement();
+                     ResultSet rows = query.executeQuery("SELECT BIN_TO_UUID(p.public_id,0), BIN_TO_UUID(q.public_id,0), "
+                             + "p.lead_membership_id, a.borrower_membership_id, a.requested_by_membership_id, a.borrower_name "
+                             + "FROM project p JOIN resource_requirement q ON q.project_id=p.id JOIN allocation a ON a.requirement_id=q.id WHERE p.id=77")) {
+                    assertTrue(rows.next());
+                    assertNotNull(UUID.fromString(rows.getString(1)));
+                    assertNotNull(UUID.fromString(rows.getString(2)));
+                    assertNull(rows.getObject(3));
+                    assertNull(rows.getObject(4));
+                    assertNull(rows.getObject(5));
+                    assertEquals("Legacy fictional label", rows.getString(6));
+                }
+                var provenance = org.flywaydb.core.Flyway.configure().dataSource(legacyUrl, user, password).load();
+                assertEquals(1, provenance.migrate().migrationsExecuted);
+                provenance.validate();
+                try (Connection upgraded = DriverManager.getConnection(legacyUrl, user, password);
+                     var query = upgraded.createStatement(); ResultSet rows = query.executeQuery(
+                             "SELECT COUNT(*) FROM organization WHERE demo_dataset_id IS NULL AND demo_as_of IS NULL")) {
+                    assertTrue(rows.next());
+                    assertEquals(1, rows.getInt(1));
                 }
             } finally {
                 statement.execute("DROP DATABASE `" + schema + "`");
@@ -3032,6 +3093,746 @@ class C1IdentityAcceptanceTest {
         assertEquals(Membership.Role.OWNER, memberships.findById(owner.membershipDbId).orElseThrow().role);
     }
 
+    @Test @Order(51)
+    void C8ScopeUsesPathMembershipForStockAndSelectedWorkspaceForReportingAndLegacy() throws Exception {
+        Fixture home = newTenant("C8-scope-home", Membership.Role.OWNER);
+        Fixture target = newTenant("C8-scope-target", Membership.Role.OWNER);
+        Fixture outsider = newTenant("C8-scope-outsider", Membership.Role.OWNER);
+        addMembership(target.orgDbId, home.userDbId, Membership.Role.CUSTODIAN);
+        Fixture member = fixtureInOrg(target.orgDbId, Membership.Role.MEMBER);
+        Fixture lead = fixtureInOrg(target.orgDbId, Membership.Role.LEAD);
+        Session selectedHome = login(home.username, home.password);
+        assertEquals(home.orgPublicId.toString(), selectedHome.activeOrgId);
+        Session targetOwner = login(target.username, target.password);
+        assertEquals(target.orgPublicId.toString(), targetOwner.activeOrgId);
+        HttpResponse<String> created = post(targetOwner, "/api/resources",
+                GSON.toJson(new ResourceRequest("Fictional C8 target stock", "REUSABLE", 0)));
+        assertEquals(201, created.statusCode());
+        JsonObject row = json(created);
+        long resourceId = row.get("id").getAsLong();
+        String root = "/api/v2/orgs/" + target.orgPublicId;
+        String item = root + "/resources/" + row.get("publicId").getAsString();
+        long[] homeBefore = stockFactCounts(home.orgDbId);
+        long[] targetBefore = stockFactCounts(target.orgDbId);
+
+        HttpResponse<String> read = get(selectedHome.client, item);
+        assertEquals(200, read.statusCode());
+        assertEquals(200, get(selectedHome.client, item + "/movements").statusCode());
+        assertEquals(404, get(selectedHome.client, root + "/activity").statusCode());
+        assertEquals(403, get(selectedHome.client, root + "/members").statusCode());
+        assertFalse(get(selectedHome.client, "/api/resources").body().contains("Fictional C8 target stock"));
+        assertEquals(404, get(selectedHome.client, "/api/resources/" + resourceId + "/availability").statusCode());
+        assertEquals(401, get(newClient(), item).statusCode());
+        assertEquals(404, get(login(outsider.username, outsider.password).client, item).statusCode());
+        for (Fixture lowRole : List.of(member, lead)) {
+            Session actor = login(lowRole.username, lowRole.password);
+            assertEquals(403, get(actor.client, item).statusCode());
+            assertEquals(403, get(actor.client, item + "/movements").statusCode());
+            assertEquals(403, modernPost(actor, item + "/receive", GSON.toJson(new ReceiveRequest(UUID.randomUUID(), 2)),
+                    read.headers().firstValue("ETag").orElseThrow(), C1Secrets.bearerToken()).statusCode());
+        }
+        assertArrayEquals(homeBefore, stockFactCounts(home.orgDbId));
+        assertArrayEquals(targetBefore, stockFactCounts(target.orgDbId));
+        assertEquals(0, jdbc.queryForObject("SELECT total_quantity FROM resource WHERE id=?", Integer.class, resourceId));
+
+        UUID unselectedOperation = UUID.randomUUID();
+        assertEquals(201, modernPost(selectedHome, item + "/receive", GSON.toJson(new ReceiveRequest(unselectedOperation, 2)),
+                read.headers().firstValue("ETag").orElseThrow(), C1Secrets.bearerToken()).statusCode());
+        assertEquals(200, get(selectedHome.client, root + "/operations/" + unselectedOperation).statusCode());
+        long[] targetAfterUnselected = stockFactCounts(target.orgDbId);
+        assertEquals(targetBefore[0] + 1, targetAfterUnselected[0]);
+        assertEquals(targetBefore[1] + 1, targetAfterUnselected[1]);
+        assertEquals(2, jdbc.queryForObject("SELECT total_quantity FROM resource WHERE id=?", Integer.class, resourceId));
+        assertArrayEquals(homeBefore, stockFactCounts(home.orgDbId));
+
+        assertEquals(200, post(selectedHome, "/api/v2/session/active-org",
+                GSON.toJson(new OrgRequest(target.orgPublicId))).statusCode());
+        refreshCsrf(selectedHome);
+        assertTrue(get(selectedHome.client, "/api/resources").body().contains("Fictional C8 target stock"));
+        assertEquals(403, get(selectedHome.client, root + "/activity").statusCode());
+        assertEquals(200, get(targetOwner.client, root + "/activity").statusCode());
+        String etag = get(selectedHome.client, item).headers().firstValue("ETag").orElseThrow();
+        assertEquals(201, modernPost(selectedHome, item + "/receive", GSON.toJson(new ReceiveRequest(UUID.randomUUID(), 3)),
+                etag, C1Secrets.bearerToken()).statusCode());
+        assertEquals(5, jdbc.queryForObject("SELECT total_quantity FROM resource WHERE id=?", Integer.class, resourceId));
+        long[] afterSwitch = stockFactCounts(target.orgDbId);
+        assertEquals(targetAfterUnselected[0] + 1, afterSwitch[0]);
+        assertEquals(targetAfterUnselected[1] + 1, afterSwitch[1]);
+
+        Membership current = memberships.findByOrganizationIdAndUserId(target.orgDbId, home.userDbId).orElseThrow();
+        String membershipPath = root + "/members/" + current.publicId;
+        assertEquals(200, post(targetOwner, membershipPath + "/role", GSON.toJson(new RoleRequest("MEMBER")), "\"v0\"").statusCode());
+        long[] afterRoleChange = stockFactCounts(target.orgDbId);
+        assertEquals(403, get(selectedHome.client, item).statusCode());
+        assertEquals(403, get(selectedHome.client, item + "/movements").statusCode());
+        assertEquals(403, get(selectedHome.client, root + "/operations/" + unselectedOperation).statusCode());
+        assertEquals(403, modernPost(selectedHome, item + "/receive", GSON.toJson(new ReceiveRequest(UUID.randomUUID(), 1)),
+                etag, C1Secrets.bearerToken()).statusCode());
+        assertArrayEquals(afterRoleChange, stockFactCounts(target.orgDbId));
+
+        assertEquals(200, post(targetOwner, membershipPath + "/suspend", null, "\"v1\"").statusCode());
+        long[] afterSuspension = stockFactCounts(target.orgDbId);
+        assertEquals(404, get(selectedHome.client, item).statusCode());
+        assertEquals(404, get(selectedHome.client, item + "/movements").statusCode());
+        assertEquals(404, get(selectedHome.client, root + "/operations/" + unselectedOperation).statusCode());
+        assertEquals(404, modernPost(selectedHome, item + "/receive", GSON.toJson(new ReceiveRequest(UUID.randomUUID(), 1)),
+                etag, C1Secrets.bearerToken()).statusCode());
+        assertEquals(404, get(selectedHome.client, root + "/activity").statusCode());
+        assertArrayEquals(afterSuspension, stockFactCounts(target.orgDbId));
+        assertEquals(5, jdbc.queryForObject("SELECT total_quantity FROM resource WHERE id=?", Integer.class, resourceId));
+        assertArrayEquals(homeBefore, stockFactCounts(home.orgDbId));
+    }
+
+    private long[] stockFactCounts(long organizationId) {
+        return new long[]{
+            jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=?", Long.class, organizationId),
+            jdbc.queryForObject("SELECT COUNT(*) FROM idempotency_key WHERE organization_id=?", Long.class, organizationId),
+            jdbc.queryForObject("SELECT COUNT(*) FROM audit_event WHERE org_id=?", Long.class, organizationId)
+        };
+    }
+
+    @Test @Order(52)
+    void C8WorkspacePagesReturnEveryResourceAndAllocationWithScopedContinuation() throws Exception {
+        Fixture owner = newTenant("C8-pages-owner", Membership.Role.OWNER);
+        Fixture foreign = newTenant("C8-pages-foreign", Membership.Role.OWNER);
+        Fixture custodian = fixtureInOrg(owner.orgDbId, Membership.Role.CUSTODIAN);
+        Session actor = login(owner.username, owner.password);
+        Session foreignActor = login(foreign.username, foreign.password);
+        String root = "/api/v2/workspace";
+        String stock = root + "/resources?limit=100";
+        String requests = root + "/allocations?status=PENDING&limit=100";
+
+        long departmentId = json(post(actor, "/api/departments", GSON.toJson(new NameRequest("C8 fixture team")))).get("id").getAsLong();
+        long projectId = json(post(actor, "/api/projects", GSON.toJson(new ProjectRequest(departmentId,
+                "C8 fictional project", "2040-12-10T10:00:00", "2040-12-10T11:00:00")))).get("id").getAsLong();
+        long resourceId = json(post(actor, "/api/resources", GSON.toJson(new ResourceRequest(
+                "C8 flagship resource", "REUSABLE", 40)))).get("id").getAsLong();
+        long requirementId = json(post(actor, "/api/requirements", GSON.toJson(new RequirementRequest(
+                projectId, resourceId, 20)))).get("id").getAsLong();
+        long approvedId = json(post(actor, "/api/allocations", GSON.toJson(new AllocationRequest(
+                requirementId, 3, "Fictional fixture operator", null, false)))).get("id").getAsLong();
+        assertEquals(200, post(actor, "/api/allocations/" + approvedId + "/approve", null).statusCode());
+
+        assertEquals(departmentId, workspacePage(actor, root + "/departments").getAsJsonArray("items").get(0).getAsJsonObject().get("id").getAsLong());
+        assertEquals(projectId, workspacePage(actor, root + "/projects?departmentId=" + departmentId)
+                .getAsJsonArray("items").get(0).getAsJsonObject().get("id").getAsLong());
+        JsonObject requirement = workspacePage(actor, root + "/requirements?projectId=" + projectId)
+                .getAsJsonArray("items").get(0).getAsJsonObject();
+        assertEquals(3, requirement.get("allocatedQuantity").getAsInt());
+        assertEquals(17, requirement.get("shortageQuantity").getAsInt());
+        assertEquals("C8 fictional project", requirement.get("projectName").getAsString());
+        assertEquals("C8 flagship resource", requirement.get("resourceName").getAsString());
+        assertEquals("REUSABLE", requirement.get("resourceType").getAsString());
+        assertEquals("2040-12-10T11:00:00", requirement.get("projectEndAt").getAsString());
+        assertEquals("C8 fixture team", workspacePage(actor, root + "/projects")
+                .getAsJsonArray("items").get(0).getAsJsonObject().get("departmentName").getAsString());
+        assertEquals(404, get(foreignActor.client, root + "/projects?departmentId=" + departmentId).statusCode());
+        assertEquals(1, workspacePage(actor, root + "/projects?period=UPCOMING").getAsJsonArray("items").size());
+        assertTrue(workspacePage(actor, root + "/projects?period=ACTIVE").getAsJsonArray("items").isEmpty());
+        assertEquals(400, get(actor.client, root + "/projects?period=unknown").statusCode());
+        assertEquals(401, get(newClient(), stock).statusCode());
+
+        insertWorkspaceResources(owner.orgDbId, 1, 100);
+        JsonObject firstPage = workspacePage(actor, stock);
+        assertEquals(100, firstPage.getAsJsonArray("items").size());
+        assertEquals(37, firstPage.getAsJsonArray("items").get(0).getAsJsonObject().get("availableQuantity").getAsInt());
+        assertEquals(1, workspacePage(actor, stock + "&search=C8+FLAGSHIP").getAsJsonArray("items").size());
+        String firstCursor = firstPage.get("nextCursor").getAsString();
+        JsonObject terminal = workspacePage(actor, stock + "&cursor=" + firstCursor);
+        assertEquals(1, terminal.getAsJsonArray("items").size());
+        assertTrue(terminal.get("nextCursor").isJsonNull());
+        assertEquals(404, get(foreignActor.client, stock + "&cursor=" + firstCursor).statusCode());
+        assertEquals(404, get(actor.client, stock + "&type=CONSUMABLE&cursor=" + firstCursor).statusCode());
+        assertEquals(404, get(actor.client, root + "/departments?cursor=" + firstCursor).statusCode());
+        assertEquals(400, get(actor.client, stock + "&cursor=invalid").statusCode());
+        assertEquals(400, get(actor.client, root + "/resources?limit=101").statusCode());
+
+        // Commit a new batch between requests and continue from the same original keyset boundary.
+        var concurrentInsert = java.util.concurrent.CompletableFuture.runAsync(
+                () -> insertWorkspaceResources(owner.orgDbId, 101, 1000));
+        assertEquals(firstPage, workspacePage(actor, stock));
+        concurrentInsert.get(20, TimeUnit.SECONDS);
+        List<Long> seenResources = new java.util.ArrayList<>();
+        firstPage.getAsJsonArray("items").forEach(item -> seenResources.add(item.getAsJsonObject().get("id").getAsLong()));
+        readWorkspacePages(actor, stock, firstCursor, seenResources);
+        assertEquals(jdbc.queryForList("SELECT id FROM resource WHERE organization_id=? ORDER BY id", Long.class, owner.orgDbId), seenResources);
+        assertEquals(1001, seenResources.size());
+
+        var pendingFixtures = java.util.stream.IntStream.range(0, 1001)
+                .mapToObj(index -> new Object[]{owner.orgDbId, requirementId, resourceId, "Fictional borrower " + index, java.sql.Timestamp.valueOf(now())})
+                .toList();
+        jdbc.batchUpdate("INSERT INTO allocation(public_id,organization_id,requirement_id,resource_id,quantity,borrower_name,status,created_at) "
+                + "VALUES(UUID_TO_BIN(UUID(),0),?,?,?,1,?,'PENDING',?)", pendingFixtures);
+
+        List<Long> seenAllocations = new java.util.ArrayList<>();
+        readWorkspacePages(actor, requests, null, seenAllocations);
+        assertEquals(jdbc.queryForList("SELECT id FROM allocation WHERE organization_id=? AND status='PENDING' ORDER BY id",
+                Long.class, owner.orgDbId), seenAllocations);
+        assertEquals(1001, seenAllocations.size());
+        assertEquals(100, workspacePage(actor, requests + "&projectId=" + projectId).getAsJsonArray("items").size());
+        assertEquals(404, get(foreignActor.client, requests + "&projectId=" + projectId).statusCode());
+        assertEquals(404, get(actor.client, requests + "&projectId=" + projectId + "&cursor="
+                + workspacePage(actor, requests).get("nextCursor").getAsString()).statusCode());
+        JsonObject overview = workspacePage(actor, root + "/overview");
+        assertEquals(1, overview.get("departmentCount").getAsLong());
+        assertEquals(0, overview.get("projectActiveCount").getAsLong());
+        assertEquals(2, overview.get("resourceTypeCount").getAsLong());
+        assertEquals(1, overview.get("requirementShortageCount").getAsLong());
+        assertEquals(5, overview.getAsJsonArray("resourcePreview").size());
+        assertEquals(1, overview.getAsJsonArray("calendarPreview").size());
+        JsonObject allocationSummary = overview.getAsJsonObject("allocations");
+        assertEquals(1001, allocationSummary.get("pending").getAsLong());
+        assertEquals(0, allocationSummary.get("issued").getAsLong());
+        assertEquals(0, allocationSummary.get("overdue").getAsLong());
+        assertEquals(0, allocationSummary.get("consumed").getAsLong());
+        assertEquals(5, allocationSummary.getAsJsonArray("recent").size());
+        assertTrue(allocationSummary.getAsJsonArray("recent").asList().stream()
+                .allMatch(item -> item.getAsJsonObject().get("resourceName").getAsString().equals("C8 flagship resource")));
+        assertEquals(0, workspacePage(foreignActor, root + "/overview").getAsJsonObject("allocations").get("pending").getAsLong());
+
+        var resourcePlan = jdbc.queryForMap(
+                "EXPLAIN SELECT id FROM resource WHERE organization_id=? AND id>? ORDER BY id LIMIT 101", owner.orgDbId, resourceId);
+        var allocationPlan = jdbc.queryForMap(
+                "EXPLAIN SELECT id FROM allocation WHERE organization_id=? AND id>? AND status='PENDING' ORDER BY id LIMIT 101",
+                owner.orgDbId, approvedId);
+        assertNotNull(resourcePlan.get("type"));
+        assertNotNull(allocationPlan.get("type"));
+        System.out.printf("C8 MySQL keyset EXPLAIN: resource (access=%s index=%s est=%s); allocation (access=%s index=%s est=%s)%n",
+                resourcePlan.get("type"), resourcePlan.get("key"), resourcePlan.get("rows"),
+                allocationPlan.get("type"), allocationPlan.get("key"), allocationPlan.get("rows"));
+        assertEquals(37, workspacePage(actor, stock + "&search=FLAGSHIP").getAsJsonArray("items")
+                .get(0).getAsJsonObject().get("availableQuantity").getAsInt());
+        assertEquals(40, jdbc.queryForObject("SELECT total_quantity FROM resource WHERE id=?", Integer.class, resourceId));
+
+        Session otherRole = login(custodian.username, custodian.password);
+        String allocationCursor = workspacePage(otherRole, requests).get("nextCursor").getAsString();
+        assertEquals(404, get(actor.client, root + "/allocations?cursor=" + allocationCursor).statusCode());
+        String memberPath = "/api/v2/orgs/" + owner.orgPublicId + "/members/" + custodian.membershipPublicId;
+        assertEquals(200, post(actor, memberPath + "/role", GSON.toJson(new RoleRequest("MEMBER")), "\"v0\"").statusCode());
+        assertEquals(403, get(otherRole.client, requests + "&cursor=" + allocationCursor).statusCode());
+        JsonObject memberOverview = workspacePage(otherRole, root + "/overview");
+        assertTrue(memberOverview.get("allocations").isJsonNull(), "No borrower metrics or rows are returned to a MEMBER");
+        assertEquals(1, memberOverview.get("requirementShortageCount").getAsLong());
+
+        JsonObject pending = workspacePage(actor, requests)
+                .getAsJsonArray("items").get(0).getAsJsonObject();
+        assertEquals(requirement, pending.getAsJsonObject("requirement"));
+        assertFalse(pending.has("phoneNumber"));
+        var relatedResources = jdbc.queryForList("SELECT id FROM resource WHERE organization_id=? AND id<>? ORDER BY id LIMIT 100",
+                Long.class, owner.orgDbId, resourceId);
+        jdbc.batchUpdate("INSERT INTO resource_requirement(public_id,organization_id,project_id,resource_id,quantity,version) VALUES(UUID_TO_BIN(UUID(),0),?,?,?,2,0)",
+                relatedResources.stream().map(id -> new Object[]{owner.orgDbId, projectId, id}).toList());
+        String relatedPath = root + "/requirements?projectId=" + projectId + "&limit=50";
+        var relatedIds = new java.util.ArrayList<Long>();
+        readWorkspacePages(actor, relatedPath, null, relatedIds);
+        assertEquals(jdbc.queryForList("SELECT id FROM resource_requirement WHERE organization_id=? AND project_id=? ORDER BY id",
+                Long.class, owner.orgDbId, projectId), relatedIds);
+        assertEquals(101, relatedIds.size());
+        assertEquals(404, get(foreignActor.client, relatedPath).statusCode());
+        String nextRequirementPage = workspacePage(actor, relatedPath).get("nextCursor").getAsString();
+        assertEquals(404, get(actor.client, root + "/requirements?limit=50&cursor=" + nextRequirementPage).statusCode());
+    }
+
+    @Test @Order(53)
+    void C8ProjectLeadAssignmentIsVersionedScopedAndClearedOnLossOfRole() throws Exception {
+        Fixture owner = newTenant("C8-assignment", Membership.Role.OWNER);
+        Fixture lead = fixtureInOrg(owner.orgDbId, Membership.Role.LEAD);
+        Fixture admin = fixtureInOrg(owner.orgDbId, Membership.Role.ADMIN);
+        Fixture member = fixtureInOrg(owner.orgDbId, Membership.Role.MEMBER);
+        Fixture foreign = newTenant("C8-assignment-foreign", Membership.Role.OWNER);
+        Session ownerSession = login(owner.username, owner.password);
+        Session leadSession = login(lead.username, lead.password);
+        Session adminSession = login(admin.username, admin.password);
+        Session foreignSession = login(foreign.username, foreign.password);
+        String root = "/api/v2/orgs/" + owner.orgPublicId;
+        long departmentId = json(post(ownerSession, "/api/departments",
+                GSON.toJson(new NameRequest("C8 assignment department")))).get("id").getAsLong();
+        long projectId = json(post(ownerSession, "/api/projects", GSON.toJson(new ProjectRequest(departmentId,
+                "C8 authorized Project", "2040-10-20T09:00:00", "2040-10-20T12:00:00")))).get("id").getAsLong();
+        long otherProjectId = json(post(ownerSession, "/api/projects", GSON.toJson(new ProjectRequest(departmentId,
+                "C8 other Project", "2040-10-20T09:00:00", "2040-10-20T12:00:00")))).get("id").getAsLong();
+        String project = root + "/projects/" + projectRepository.findById(projectId).orElseThrow().publicId;
+        String otherProject = root + "/projects/" + projectRepository.findById(otherProjectId).orElseThrow().publicId;
+        String assignment = project + "/lead-assignment";
+        String operationId = UUID.randomUUID().toString();
+        String key = UUID.randomUUID().toString();
+        String body = leadAssignment(operationId, lead.membershipPublicId);
+
+        assertEquals(401, get(newClient(), project).statusCode());
+        assertEquals(404, get(foreignSession.client, project).statusCode());
+        assertEquals(404, get(leadSession.client, project).statusCode());
+        assertEquals(403, modernPost(leadSession, assignment, body, "\"v0\"", key).statusCode());
+        assertEquals(428, modernPost(ownerSession, assignment, body, null, key).statusCode());
+        assertEquals(412, modernPost(ownerSession, assignment, body, "\"v8\"", key).statusCode());
+        assertEquals(409, modernPost(ownerSession, assignment,
+                leadAssignment(operationId, member.membershipPublicId), "\"v0\"", key).statusCode());
+        assertEquals(404, modernPost(ownerSession, assignment,
+                leadAssignment(operationId, foreign.membershipPublicId), "\"v0\"", key).statusCode());
+        assertThrows(DataIntegrityViolationException.class, () -> jdbc.update(
+                "UPDATE project SET lead_membership_id=? WHERE id=?", foreign.membershipDbId, projectId));
+        assertNull(jdbc.queryForObject("SELECT lead_membership_id FROM project WHERE id=?", Long.class, projectId));
+
+        var saved = modernPost(adminSession, assignment, body, "\"v0\"", key);
+        assertEquals(200, saved.statusCode(), saved.body());
+        assertEquals("\"v1\"", saved.headers().firstValue("ETag").orElseThrow());
+        assertEquals(lead.membershipPublicId.toString(), json(saved).getAsJsonObject("data").get("leadMembershipId").getAsString());
+        assertEquals(json(saved).get("data"), json(modernPost(adminSession, assignment, body, "\"v0\"", key)).get("data"));
+        assertEquals(409, modernPost(adminSession, assignment, leadAssignment(operationId, null), "\"v1\"", key).statusCode());
+        String receipt = root + "/operations/" + operationId;
+        assertEquals(200, get(adminSession.client, receipt).statusCode());
+        assertEquals(404, get(ownerSession.client, receipt).statusCode());
+        assertEquals(403, get(leadSession.client, receipt).statusCode());
+        assertEquals(200, get(leadSession.client, project).statusCode());
+        assertEquals(404, get(leadSession.client, otherProject).statusCode());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM audit_event WHERE org_id=? AND action='PROJECT_LEAD_CHANGED'",
+                Integer.class, owner.orgDbId));
+
+        String leadRole = root + "/members/" + lead.membershipPublicId + "/role";
+        assertEquals(200, post(ownerSession, leadRole, GSON.toJson(new RoleRequest("MEMBER")), "\"v0\"").statusCode());
+        assertEquals(403, get(leadSession.client, project).statusCode());
+        assertEquals(200, post(ownerSession, leadRole, GSON.toJson(new RoleRequest("LEAD")), "\"v1\"").statusCode());
+        assertEquals(404, get(leadSession.client, project).statusCode());
+        var current = get(ownerSession.client, project);
+        assertEquals("\"v2\"", current.headers().firstValue("ETag").orElseThrow());
+        assertTrue(json(current).getAsJsonObject("data").get("leadMembershipId").isJsonNull());
+        assertEquals(200, modernPost(ownerSession, assignment, leadAssignment(UUID.randomUUID().toString(),
+                lead.membershipPublicId), "\"v2\"", UUID.randomUUID().toString()).statusCode());
+        assertEquals(200, modernPost(ownerSession, assignment, leadAssignment(UUID.randomUUID().toString(), null),
+                "\"v3\"", UUID.randomUUID().toString()).statusCode());
+        assertEquals(404, get(leadSession.client, project).statusCode());
+
+        String adminRole = root + "/members/" + admin.membershipPublicId + "/role";
+        assertEquals(200, post(ownerSession, adminRole, GSON.toJson(new RoleRequest("MEMBER")), "\"v0\"").statusCode());
+        assertEquals(403, get(adminSession.client, receipt).statusCode());
+        assertEquals(403, modernPost(adminSession, assignment, body, "\"v0\"", key).statusCode());
+    }
+
+    @Test @Order(54)
+    void C8BorrowerAccessBindsIdentityAndHidesDirectoryAndContacts() throws Exception {
+        Fixture owner = newTenant("C8 borrowers", Membership.Role.OWNER);
+        Fixture assigned = fixtureInOrg(owner.orgDbId, Membership.Role.LEAD);
+        Fixture borrower = fixtureInOrg(owner.orgDbId, Membership.Role.MEMBER);
+        Fixture sameName = fixtureInOrg(owner.orgDbId, Membership.Role.MEMBER);
+        Fixture away = newTenant("C8 borrowers elsewhere", Membership.Role.OWNER);
+        Session officer = login(owner.username, owner.password);
+        Session lead = login(assigned.username, assigned.password);
+        Session self = login(borrower.username, borrower.password);
+        Session other = login(sameName.username, sameName.password);
+        Session outsider = login(away.username, away.password);
+        String root = "/api/v2/orgs/" + owner.orgPublicId;
+        long department = json(post(officer, "/api/departments", GSON.toJson(new NameRequest("C8 fictional borrower team"))))
+                .get("id").getAsLong();
+        long project = json(post(officer, "/api/projects", GSON.toJson(new ProjectRequest(department,
+                "Fictional light workshop", "2040-11-01T10:00:00", "2040-11-01T13:00:00")))).get("id").getAsLong();
+        long otherProject = json(post(officer, "/api/projects", GSON.toJson(new ProjectRequest(department,
+                "Fictional sound workshop", "2040-11-01T10:00:00", "2040-11-01T13:00:00")))).get("id").getAsLong();
+        UUID projectKey = projectRepository.findById(project).orElseThrow().publicId;
+        UUID otherKey = projectRepository.findById(otherProject).orElseThrow().publicId;
+        String assignment = root + "/projects/" + projectKey + "/lead-assignment";
+        assertEquals(200, modernPost(officer, assignment, leadAssignment(UUID.randomUUID().toString(), assigned.membershipPublicId),
+                "\"v0\"", UUID.randomUUID().toString()).statusCode());
+        String directory = root + "/borrowers?projectId=" + projectKey;
+        String directoryOther = root + "/borrowers?projectId=" + otherKey;
+        var first = get(lead.client, directory + "&limit=1");
+        assertEquals(200, first.statusCode(), first.body());
+        String next = json(first).getAsJsonObject("data").get("nextCursor").getAsString();
+        assertEquals(404, get(officer.client, directoryOther + "&limit=1&cursor=" + next).statusCode());
+        assertEquals(404, get(lead.client, directoryOther).statusCode());
+        assertEquals(403, get(self.client, directory).statusCode());
+        assertEquals(404, get(outsider.client, directory).statusCode());
+        var duplicates = json(get(lead.client, directory + "&search=fictional+member")).getAsJsonObject("data").getAsJsonArray("items");
+        assertEquals(2, duplicates.size());
+        for (var entry : duplicates) {
+            assertEquals(Set.of("membershipId", "displayName"), entry.getAsJsonObject().keySet());
+            assertEquals("Fictional MEMBER", entry.getAsJsonObject().get("displayName").getAsString());
+        }
+
+        long resource = json(post(officer, "/api/resources", GSON.toJson(new ResourceRequest(
+                "Fictional lights", "REUSABLE", 8)))).get("id").getAsLong();
+        long requirement = json(post(officer, "/api/requirements", GSON.toJson(new RequirementRequest(
+                project, resource, 4)))).get("id").getAsLong();
+        UUID requirementKey = UUID.fromString(jdbc.queryForObject("SELECT BIN_TO_UUID(public_id,0) FROM resource_requirement WHERE id=?",
+                String.class, requirement));
+        String operationId = UUID.randomUUID().toString(), idemKey = UUID.randomUUID().toString();
+        JsonObject input = new JsonObject();
+        input.addProperty("operationId", operationId);
+        input.addProperty("requirementId", requirementKey.toString());
+        input.addProperty("quantity", 2);
+        assertEquals(400, modernPost(lead, root + "/allocations", input.toString(), null, idemKey).statusCode());
+        input.addProperty("borrowerMembershipId", away.membershipPublicId.toString());
+        assertEquals(404, modernPost(lead, root + "/allocations", input.toString(), null, idemKey).statusCode());
+        input.addProperty("borrowerMembershipId", borrower.membershipPublicId.toString());
+        input.addProperty("borrowerNameSnapshot", "Injected label");
+        assertEquals(400, modernPost(lead, root + "/allocations", input.toString(), null, idemKey).statusCode());
+        input.remove("borrowerNameSnapshot");
+        var created = modernPost(lead, root + "/allocations", input.toString(), null, idemKey);
+        assertEquals(201, created.statusCode(), created.body());
+        var linked = json(created).getAsJsonObject("data");
+        UUID allocationKey = UUID.fromString(linked.get("id").getAsString());
+        long allocationId = jdbc.queryForObject("SELECT id FROM allocation WHERE public_id=UUID_TO_BIN(?,0)", Long.class, allocationKey.toString());
+        assertEquals(borrower.membershipDbId, jdbc.queryForObject("SELECT borrower_membership_id FROM allocation WHERE id=?", Long.class, allocationId));
+        assertEquals(assigned.membershipDbId, jdbc.queryForObject("SELECT requested_by_membership_id FROM allocation WHERE id=?", Long.class, allocationId));
+        assertEquals("Fictional MEMBER", linked.get("borrowerNameSnapshot").getAsString());
+        assertEquals(linked, json(modernPost(lead, root + "/allocations", input.toString(), null, idemKey)).get("data"));
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE requirement_id=?", Integer.class, requirement));
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE resource_id=?", Integer.class, resource));
+
+        String borrowedRoute = root + "/borrowed-allocations";
+        String borrowedItem = borrowedRoute + "/" + allocationKey;
+        assertEquals(1, json(get(self.client, borrowedRoute)).getAsJsonObject("data").getAsJsonArray("items").size());
+        assertTrue(json(get(other.client, borrowedRoute)).getAsJsonObject("data").getAsJsonArray("items").isEmpty());
+        assertEquals(404, get(other.client, borrowedItem).statusCode());
+        assertEquals(404, get(outsider.client, borrowedItem).statusCode());
+        var view = get(self.client, borrowedItem);
+        assertEquals(200, view.statusCode());
+        assertTrue(view.body().contains("Fictional light workshop"));
+        assertFalse(view.body().matches("(?is).*(phone|borrowerName|actor|provider|ciphertext).*"));
+        assertEquals("\"v0\"", view.headers().firstValue("ETag").orElseThrow());
+
+        assertFalse(json(view).getAsJsonObject("data").get("smsConsent").getAsBoolean());
+        String revoke = borrowedItem + "/revoke-sms-consent";
+        String noOpBody = GSON.toJson(new OperationRequest(UUID.randomUUID()));
+        String noOpKey = UUID.randomUUID().toString();
+        var noOp = modernPost(self, revoke, noOpBody, "\"v0\"", noOpKey);
+        assertEquals(200, noOp.statusCode(), noOp.body());
+        assertFalse(json(noOp).getAsJsonObject("data").get("smsConsent").getAsBoolean());
+        assertEquals("\"v0\"", noOp.headers().firstValue("ETag").orElseThrow());
+        assertEquals(json(noOp).get("data"), json(modernPost(self, revoke, noOpBody, "\"v0\"", noOpKey)).get("data"));
+
+        var syntheticContact = contactCipher.encrypt(owner.orgDbId, allocationKey, "+15555550193");
+        jdbc.update("UPDATE allocation SET sms_consent=TRUE,phone_ciphertext=?,phone_nonce=?,phone_key_id=?,reminder_outcome='CLAIMED',"
+                        + "reminder_claimed_at=? WHERE id=?", syntheticContact.ciphertext(), syntheticContact.nonce(),
+                syntheticContact.keyId(), java.sql.Timestamp.valueOf(now()), allocationId);
+        var active = json(get(self.client, borrowedItem)).getAsJsonObject("data");
+        assertTrue(active.get("smsConsent").getAsBoolean());
+        assertFalse(active.toString().matches("(?is).*(phone|borrowerName|actor|provider|ciphertext).*"));
+        String revokeOp = UUID.randomUUID().toString(), revokeKey = UUID.randomUUID().toString();
+        String revokeBody = "{\"operationId\":\"" + revokeOp + "\"}";
+        assertEquals(404, modernPost(other, revoke, revokeBody, "\"v0\"", revokeKey).statusCode());
+        assertEquals(412, modernPost(self, revoke, revokeBody, "\"v8\"", revokeKey).statusCode());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE id=? AND version=0 AND sms_consent=TRUE "
+                + "AND phone_ciphertext IS NOT NULL AND reminder_outcome='CLAIMED'", Integer.class, allocationId));
+        assertEquals(0, jdbc.queryForObject("SELECT COUNT(*) FROM idempotency_key WHERE operation_public_id=UUID_TO_BIN(?,0)",
+                Integer.class, revokeOp));
+        var revoked = modernPost(self, revoke, revokeBody, "\"v0\"", revokeKey);
+        assertEquals(200, revoked.statusCode(), revoked.body());
+        assertFalse(json(revoked).getAsJsonObject("data").get("smsConsent").getAsBoolean());
+        assertEquals(200, modernPost(self, revoke, revokeBody, "\"v0\"", revokeKey).statusCode());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE id=? AND sms_consent=FALSE AND phone_ciphertext IS NULL "
+                + "AND phone_nonce IS NULL AND phone_key_id IS NULL AND reminder_outcome='SUPPRESSED' AND status='PENDING'",
+                Integer.class, allocationId));
+        assertEquals(200, get(self.client, root + "/operations/" + revokeOp).statusCode());
+        assertEquals(403, get(other.client, root + "/operations/" + revokeOp).statusCode());
+        String currentVersion = revoked.headers().firstValue("ETag").orElseThrow();
+        var redundant = modernPost(self, revoke, GSON.toJson(new OperationRequest(UUID.randomUUID())),
+                currentVersion, UUID.randomUUID().toString());
+        assertEquals(200, redundant.statusCode());
+        assertEquals(currentVersion, redundant.headers().firstValue("ETag").orElseThrow());
+        assertEquals(json(revoked).get("data"), json(redundant).get("data"));
+
+        // Reinstall an active fictional fixture state before suspending the borrower.
+        jdbc.update("UPDATE allocation SET sms_consent=TRUE,phone_ciphertext=?,phone_nonce=?,phone_key_id=? WHERE id=?",
+                syntheticContact.ciphertext(), syntheticContact.nonce(), syntheticContact.keyId(), allocationId);
+        assertEquals(200, post(officer, root + "/members/" + borrower.membershipPublicId + "/suspend", "{}", "\"v0\"").statusCode());
+        assertEquals(404, get(self.client, borrowedItem).statusCode());
+        assertEquals(404, get(self.client, root + "/operations/" + revokeOp).statusCode());
+        UUID suspendedOperation = UUID.randomUUID();
+        assertEquals(404, modernPost(self, revoke, GSON.toJson(new OperationRequest(suspendedOperation)),
+                currentVersion, UUID.randomUUID().toString()).statusCode());
+        assertEquals(404, modernPost(self, revoke, revokeBody, "\"v0\"", revokeKey).statusCode());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE id=? AND sms_consent=TRUE "
+                + "AND phone_ciphertext IS NOT NULL AND status='PENDING'", Integer.class, allocationId));
+        assertEquals(0, jdbc.queryForObject("SELECT COUNT(*) FROM idempotency_key WHERE operation_public_id=UUID_TO_BIN(?,0)",
+                Integer.class, suspendedOperation.toString()));
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE resource_id=?", Integer.class, resource));
+        assertEquals(borrower.membershipDbId, jdbc.queryForObject("SELECT borrower_membership_id FROM allocation WHERE id=?", Long.class, allocationId));
+    }
+
+    @Test @Order(55)
+    void C8AssignedLeadUsesOnlyTheirProjectAndOwnPendingAllocationActions() throws Exception {
+        Fixture owner = newTenant("C8 work scope", Membership.Role.OWNER);
+        Fixture lead = fixtureInOrg(owner.orgDbId, Membership.Role.LEAD);
+        Fixture borrower = fixtureInOrg(owner.orgDbId, Membership.Role.MEMBER);
+        Session officer = login(owner.username, owner.password);
+        Session scoped = login(lead.username, lead.password);
+        String root = "/api/v2/orgs/" + owner.orgPublicId;
+        long department = json(post(officer, "/api/departments", GSON.toJson(new NameRequest("Fictional scope department"))))
+                .get("id").getAsLong();
+        String from = "2040-11-01T10:00:00", until = "2040-11-01T13:00:00";
+        long one = json(post(officer, "/api/projects",
+                GSON.toJson(new ProjectRequest(department, "Fictional assigned Project", from, until)))).get("id").getAsLong();
+        long two = json(post(officer, "/api/projects",
+                GSON.toJson(new ProjectRequest(department, "Fictional other Project", from, until)))).get("id").getAsLong();
+        UUID project = projectRepository.findById(one).orElseThrow().publicId;
+        UUID otherProject = projectRepository.findById(two).orElseThrow().publicId;
+        String path = root + "/projects/" + project;
+        assertEquals(200, modernPost(officer, path + "/lead-assignment",
+                leadAssignment(UUID.randomUUID().toString(), lead.membershipPublicId), "\"v0\"", UUID.randomUUID().toString()).statusCode());
+        var list = workspacePage(scoped, root + "/projects?limit=1");
+        assertEquals(1, list.getAsJsonArray("items").size());
+        assertTrue(list.get("nextCursor").isJsonNull());
+        assertEquals(project.toString(), list.getAsJsonArray("items").get(0).getAsJsonObject().get("id").getAsString());
+        String update = GSON.toJson(java.util.Map.of("name", "Fictional scoped rename", "startAt", from, "endAt", until));
+        assertEquals(404, post(scoped, root + "/projects/" + otherProject + "/update", update, "\"v0\"").statusCode());
+        assertEquals(428, post(scoped, path + "/update", update).statusCode());
+        var projectWrite = post(scoped, path + "/update", update, "\"v1\"");
+        assertEquals(200, projectWrite.statusCode(), projectWrite.body());
+        assertEquals("\"v2\"", projectWrite.headers().firstValue("ETag").orElseThrow());
+
+        long resource = json(post(officer, "/api/resources", GSON.toJson(
+                new ResourceRequest("Fictional shared Resource", "REUSABLE", 5)))).get("id").getAsLong();
+        UUID resourceKey = resourceRepository.findById(resource).orElseThrow().publicId;
+        String requirementPath = root + "/requirements";
+        String reqBody = GSON.toJson(java.util.Map.of("projectId", project, "resourceId", resourceKey, "quantity", 5));
+        assertEquals(404, post(scoped, requirementPath, reqBody.replace(project.toString(), otherProject.toString())).statusCode());
+        var requirement = post(scoped, requirementPath, reqBody);
+        assertEquals(201, requirement.statusCode(), requirement.body());
+        String req = json(requirement).getAsJsonObject("data").get("id").getAsString();
+        assertEquals(1, workspacePage(scoped, requirementPath).getAsJsonArray("items").size());
+        assertEquals(404, get(scoped.client, requirementPath + "?projectId=" + otherProject).statusCode());
+        assertEquals(200, get(scoped.client, requirementPath + "/" + req).statusCode());
+        assertEquals(412, post(scoped, requirementPath + "/" + req + "/update", "{\"quantity\":4}", "\"v9\"").statusCode());
+        assertEquals(200, post(scoped, requirementPath + "/" + req + "/update", "{\"quantity\":4}", "\"v0\"").statusCode());
+        assertEquals(409, post(scoped, path + "/delete", null, "\"v2\"").statusCode());
+
+        String request = GSON.toJson(java.util.Map.of("operationId", UUID.randomUUID(), "requirementId", req,
+                "quantity", 2, "borrowerMembershipId", borrower.membershipPublicId));
+        var ownCreated = modernPost(scoped, root + "/allocations", request, null, UUID.randomUUID().toString());
+        assertEquals(201, ownCreated.statusCode(), ownCreated.body());
+        var officerCreated = modernPost(officer, root + "/allocations", GSON.toJson(java.util.Map.of(
+                "operationId", UUID.randomUUID(), "requirementId", req, "quantity", 1, "borrowerMembershipId", borrower.membershipPublicId)),
+                null, UUID.randomUUID().toString());
+        assertEquals(201, officerCreated.statusCode(), officerCreated.body());
+        String own = json(ownCreated).getAsJsonObject("data").get("id").getAsString();
+        String other = json(officerCreated).getAsJsonObject("data").get("id").getAsString();
+        String ownPath = root + "/allocations/" + own, otherPath = root + "/allocations/" + other;
+        var projectPage = workspacePage(scoped, path + "/allocations?limit=1");
+        assertTrue(projectPage.getAsJsonArray("items").get(0).getAsJsonObject().get("canCancel").getAsBoolean());
+        String continuation = projectPage.get("nextCursor").getAsString();
+        var last = workspacePage(scoped, path + "/allocations?limit=1&cursor=" + continuation);
+        assertEquals(other, last.getAsJsonArray("items").get(0).getAsJsonObject().get("id").getAsString());
+        assertFalse(last.getAsJsonArray("items").get(0).getAsJsonObject().get("canCancel").getAsBoolean());
+        assertTrue(last.get("nextCursor").isJsonNull());
+        assertEquals(404, get(scoped.client, root + "/projects/" + otherProject + "/allocations?cursor=" + continuation).statusCode());
+        assertEquals(200, get(scoped.client, ownPath).statusCode());
+        String cancelOperation = UUID.randomUUID().toString();
+        String cancelBody = "{\"operationId\":\"" + cancelOperation + "\"}", cancelKey = UUID.randomUUID().toString();
+        assertEquals(403, modernPost(scoped, ownPath + "/approve", cancelBody, "\"v0\"", cancelKey).statusCode());
+        assertEquals(404, modernPost(scoped, otherPath + "/cancel", cancelBody, "\"v0\"", cancelKey).statusCode());
+        assertEquals(404, post(scoped, otherPath + "/delete", null, "\"v0\"").statusCode());
+        assertEquals(200, modernPost(scoped, ownPath + "/cancel", cancelBody, "\"v0\"", cancelKey).statusCode());
+        assertEquals(200, get(scoped.client, root + "/operations/" + cancelOperation).statusCode());
+        assertEquals(200, post(scoped, ownPath + "/delete", null, "\"v1\"").statusCode());
+        assertEquals(404, get(scoped.client, ownPath).statusCode());
+        assertEquals(409, post(scoped, requirementPath + "/" + req + "/delete", null, "\"v1\"").statusCode());
+        assertEquals(200, post(officer, otherPath + "/delete", null, "\"v0\"").statusCode());
+        assertEquals(200, post(scoped, requirementPath + "/" + req + "/delete", null, "\"v1\"").statusCode());
+        assertEquals(200, post(scoped, path + "/delete", null, "\"v2\"").statusCode());
+        assertEquals(404, get(scoped.client, path).statusCode());
+        assertEquals(5, jdbc.queryForObject("SELECT total_quantity FROM resource WHERE id=?", Integer.class, resource));
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE resource_id=?", Integer.class, resource));
+    }
+
+    @Test @Order(56)
+    void C8HistoricalBusinessTimeDoesNotBackdateSessionsOrReceipts() throws Exception {
+        Fixture owner = newTenant("C8 clock isolation", Membership.Role.OWNER);
+        Instant civil = Instant.parse("2026-01-15T01:00:00Z");
+        Instant beforeWall = clock.instant();
+        SCOPED_TEST_BUSINESS_TIME.set(civil);
+        try {
+            Session actor = login(owner.username, owner.password);
+            var principal = get(actor.client, "/api/v2/session");
+            assertEquals(200, principal.statusCode(), principal.body());
+            assertTrue(principal.body().contains(owner.orgPublicId.toString()));
+            var storedSession = springSessions.findById(actor.sessionId);
+            assertNotNull(storedSession);
+            Long authenticatedAt = storedSession.getAttribute(
+                    edu.orgresource.extended.security.C1AccountSessionFilter.SESSION_CREATED_AT);
+            assertNotNull(authenticatedAt);
+            assertTrue(authenticatedAt >= beforeWall.toEpochMilli() && authenticatedAt <= clock.millis());
+            long department = json(post(actor, "/api/departments", GSON.toJson(new NameRequest("Fictional historical team"))))
+                    .get("id").getAsLong();
+            var projectResponse = post(actor, "/api/projects", GSON.toJson(new ProjectRequest(department,
+                    "Fictional January workshop", "2026-01-15T10:00:00", "2026-01-15T13:00:00")));
+            assertEquals(201, projectResponse.statusCode(), projectResponse.body());
+            long project = json(projectResponse).get("id").getAsLong();
+            long resource = json(post(actor, "/api/resources", GSON.toJson(new ResourceRequest(
+                    "Fictional historical projector", "REUSABLE", 4)))).get("id").getAsLong();
+            assertEquals(LocalDateTime.ofInstant(civil, ZoneOffset.UTC), jdbc.queryForObject(
+                    "SELECT occurred_at FROM stock_movement WHERE resource_id=? AND kind='INITIAL'", LocalDateTime.class, resource));
+            long requirement = json(post(actor, "/api/requirements", GSON.toJson(new RequirementRequest(project, resource, 2))))
+                    .get("id").getAsLong();
+            long allocation = json(post(actor, "/api/allocations", GSON.toJson(new AllocationRequest(
+                    requirement, 2, "Fictional historical borrower", null, false)))).get("id").getAsLong();
+            UUID allocationKey = allocationRepository.findById(allocation).orElseThrow().publicId;
+            String allocationPath = "/api/v2/orgs/" + owner.orgPublicId + "/allocations/" + allocationKey;
+            assertEquals(200, modernPost(actor, allocationPath + "/approve", GSON.toJson(new OperationRequest(UUID.randomUUID())),
+                    "\"v0\"", UUID.randomUUID().toString()).statusCode());
+            Instant issueAt = civil.plusSeconds(3600);
+            SCOPED_TEST_BUSINESS_TIME.set(issueAt);
+            UUID issueId = UUID.randomUUID();
+            var issued = modernPost(actor, allocationPath + "/issue", GSON.toJson(new OperationRequest(issueId)),
+                    "\"v1\"", UUID.randomUUID().toString());
+            assertEquals(200, issued.statusCode(), issued.body());
+            assertEquals(LocalDateTime.ofInstant(issueAt, ZoneOffset.UTC), jdbc.queryForObject(
+                    "SELECT occurred_at FROM stock_movement WHERE allocation_id=? AND kind='ISSUE'", LocalDateTime.class, allocation));
+            assertEquals(LocalDateTime.parse("2026-01-15T10:00:00"), jdbc.queryForObject(
+                    "SELECT issued_at FROM allocation WHERE id=?", LocalDateTime.class, allocation));
+            LocalDateTime recordedAt = jdbc.queryForObject(
+                    "SELECT created_at FROM idempotency_key WHERE operation_public_id=UUID_TO_BIN(?,0)", LocalDateTime.class, issueId.toString());
+            assertFalse(recordedAt.isBefore(LocalDateTime.ofInstant(beforeWall.minusSeconds(1), ZoneOffset.UTC)));
+            assertFalse(recordedAt.isAfter(now().plusSeconds(1)));
+            assertEquals(2, jdbc.queryForObject("SELECT SUM(delta_issued) FROM stock_movement WHERE allocation_id=?", Integer.class, allocation));
+            assertEquals(200, get(actor.client, "/api/v2/session").statusCode());
+        } finally {
+            SCOPED_TEST_BUSINESS_TIME.set(null);
+        }
+    }
+
+    @Test @Order(57)
+    void C8LeadMutationAndDemotionSerializeOnTheCurrentOrganization() throws Exception {
+        Fixture owner = newTenant("C8 assignment race", Membership.Role.OWNER);
+        Fixture lead = fixtureInOrg(owner.orgDbId, Membership.Role.LEAD);
+        Session officer = login(owner.username, owner.password), actor = login(lead.username, lead.password);
+        String root = "/api/v2/orgs/" + owner.orgPublicId;
+        long department = json(post(officer, "/api/departments", GSON.toJson(new NameRequest("Fictional race team"))))
+                .get("id").getAsLong();
+        String from = "2040-11-01T10:00:00", until = "2040-11-01T13:00:00";
+        long project = json(post(officer, "/api/projects", GSON.toJson(new ProjectRequest(department,
+                "Fictional race original", from, until)))).get("id").getAsLong();
+        String path = root + "/projects/" + projectRepository.findById(project).orElseThrow().publicId;
+        assertEquals(200, modernPost(officer, path + "/lead-assignment",
+                leadAssignment(UUID.randomUUID().toString(), lead.membershipPublicId), "\"v0\"", UUID.randomUUID().toString()).statusCode());
+        String target = root + "/members/" + lead.membershipPublicId + "/role";
+        String change = GSON.toJson(new ProjectUpdateRequest("Fictional race changed", from, until));
+        var workers = Executors.newFixedThreadPool(2);
+        CountDownLatch start = new CountDownLatch(1);
+        try {
+            var edited = workers.submit(() -> {
+                assertTrue(start.await(15, TimeUnit.SECONDS));
+                return post(actor, path + "/update", change, "\"v1\"").statusCode();
+            });
+            var demoted = workers.submit(() -> {
+                assertTrue(start.await(15, TimeUnit.SECONDS));
+                return post(officer, target, GSON.toJson(new RoleRequest("MEMBER")), "\"v0\"").statusCode();
+            });
+            start.countDown();
+            assertEquals(200, demoted.get(15, TimeUnit.SECONDS));
+            int editedStatus = edited.get(15, TimeUnit.SECONDS);
+            assertTrue(Set.of(200, 403).contains(editedStatus), "The edit must finish before demotion or be refused.");
+            Project persisted = projectRepository.findById(project).orElseThrow();
+            assertNull(persisted.leadMembershipId);
+            assertEquals(editedStatus == 200 ? "Fictional race changed" : "Fictional race original", persisted.name);
+            assertEquals(editedStatus == 200 ? 3 : 2, persisted.version);
+            assertEquals(403, post(actor, path + "/update", change, "\"v" + persisted.version + "\"").statusCode());
+        } finally {
+            workers.shutdownNow();
+        }
+    }
+
+    @Test @Order(58)
+    void C8DemoDisclosureIsServerBackedAndAppearsInBothExportFormats() throws Exception {
+        Fixture ordinary = newTenant("C8 ordinary reporting", Membership.Role.OWNER);
+        Fixture demo = newTenant("C8 fictional demo reporting", Membership.Role.OWNER);
+        Session ordinaryActor = login(ordinary.username, ordinary.password), demoActor = login(demo.username, demo.password);
+        String metadata = "/api/v2/demo/metadata";
+        var before = get(newClient(), metadata);
+        assertEquals(200, before.statusCode(), before.body());
+        var ordinaryClassification = json(before).getAsJsonObject("data");
+        assertEquals(Set.of("synthetic", "datasetId", "demonstrationAsOf", "notice"), ordinaryClassification.keySet());
+        assertFalse(ordinaryClassification.get("synthetic").getAsBoolean());
+        for (String field : List.of("datasetId", "demonstrationAsOf", "notice")) assertTrue(ordinaryClassification.get(field).isJsonNull());
+        String label = "orgresource-c8-plan-v1-012345678901-abcdefabcdef-small";
+        try {
+            jdbc.update("UPDATE organization SET demo_dataset_id=?,demo_reference_key='fictional-demo-entry',"
+                    + "demo_source_sha=REPEAT('a',64),demo_plan_sha=REPEAT('b',64),demo_as_of='2026-11-19' WHERE id=?",
+                    label, demo.orgDbId);
+            var partial = get(newClient(), metadata);
+            assertEquals(503, partial.statusCode(), "Partially tagged activity must never be classified as ordinary.");
+            assertTrue(partial.body().contains("DEMO_CLASSIFICATION_UNAVAILABLE"));
+            assertFalse(partial.body().contains(label));
+            tx.executeWithoutResult(status -> {
+                var operator = accounts.saveAndFlush(new UserAccount("c8-demo-operator", "Fictional local demo operator", now()));
+                credentials.saveAndFlush(new LocalCredential(operator.id, passwordEncoder.encode(UUID.randomUUID().toString()), now()));
+            });
+            assertEquals(503, get(newClient(), metadata).statusCode(),
+                    "An operator credential alone cannot advertise an incomplete demo cohort.");
+            for (int sequenced = 2; sequenced <= 3; ++sequenced) {
+                var extra = newTenant("C8 fictional mixed cohort " + sequenced, Membership.Role.OWNER);
+                jdbc.update("UPDATE organization SET demo_dataset_id=?,demo_reference_key=?,"
+                                + "demo_source_sha=REPEAT('a',64),demo_plan_sha=REPEAT('b',64),demo_as_of='2026-11-19' WHERE id=?",
+                        label, "fictional-mixed-entry-" + sequenced, extra.orgDbId);
+            }
+            var mixed = get(newClient(), metadata);
+            assertEquals(503, mixed.statusCode(), "A complete small cohort mixed with ordinary workspaces must fail closed.");
+            assertFalse(mixed.body().contains(label));
+            String demoExports = "/api/v2/orgs/" + demo.orgPublicId + "/exports";
+            var emptyCsv = post(demoActor, demoExports, "{\"format\":\"CSV\",\"dataset\":\"MOVEMENTS\"}");
+            assertEquals(200, emptyCsv.statusCode(), emptyCsv.body());
+            assertEquals(1, emptyCsv.body().lines().count());
+            assertTrue(emptyCsv.body().contains("synthetic,demoDataset,demonstrationAsOf,demoNotice"));
+            String resource = GSON.toJson(new ResourceRequest("Fictional disclosure resource", "REUSABLE", 1));
+            assertEquals(201, post(demoActor, "/api/resources", resource).statusCode());
+            assertEquals(201, post(ordinaryActor, "/api/resources", resource).statusCode());
+            String jsonInput = "{\"format\":\"TENANT_JSON\",\"dataset\":\"RESOURCES\"}";
+            var labelled = post(demoActor, demoExports, jsonInput);
+            assertEquals(200, labelled.statusCode(), labelled.body());
+            var disclosure = json(labelled).getAsJsonObject("demoProvenance");
+            assertTrue(disclosure.get("synthetic").getAsBoolean());
+            assertEquals(label, disclosure.get("datasetId").getAsString());
+            assertTrue(disclosure.get("notice").getAsString().contains("operations, dates, accounts, inventories and transaction history are simulated"));
+            var csv = post(demoActor, demoExports, "{\"format\":\"CSV\",\"dataset\":\"RESOURCES\"}");
+            assertEquals(200, csv.statusCode());
+            assertTrue(csv.body().contains("synthetic,demoDataset,demonstrationAsOf,demoNotice"));
+            assertTrue(csv.body().contains(label));
+            var ordinaryExport = post(ordinaryActor, "/api/v2/orgs/" + ordinary.orgPublicId + "/exports", jsonInput);
+            assertEquals(200, ordinaryExport.statusCode());
+            assertFalse(json(ordinaryExport).has("demoProvenance"));
+            assertEquals(404, post(ordinaryActor, demoExports, jsonInput).statusCode());
+        } finally {
+            jdbc.update("UPDATE organization SET demo_dataset_id=NULL,demo_reference_key=NULL,demo_source_sha=NULL,"
+                    + "demo_plan_sha=NULL,demo_as_of=NULL WHERE demo_dataset_id=?", label);
+            jdbc.update("DELETE c FROM local_credential c JOIN user_account u ON u.id=c.user_id WHERE u.username_key='c8-demo-operator'");
+            jdbc.update("DELETE FROM user_account WHERE username_key='c8-demo-operator'");
+        }
+        var recovered = get(newClient(), metadata);
+        assertEquals(200, recovered.statusCode());
+        assertFalse(json(recovered).getAsJsonObject("data").get("synthetic").getAsBoolean());
+    }
+
+    private String leadAssignment(String operationId, UUID leadMembershipId) {
+        JsonObject request = new JsonObject();
+        request.addProperty("operationId", operationId);
+        request.add("leadMembershipId", leadMembershipId == null
+                ? com.google.gson.JsonNull.INSTANCE : new com.google.gson.JsonPrimitive(leadMembershipId.toString()));
+        return request.toString();
+    }
+
+    private void insertWorkspaceResources(long org, int first, int last) {
+        var rows = java.util.stream.IntStream.rangeClosed(first, last)
+                .mapToObj(index -> new Object[]{org, "Fictional C8 item " + index, "fictional c8 item " + index}).toList();
+        jdbc.batchUpdate("INSERT INTO resource(public_id,organization_id,name,name_key,type,total_quantity) "
+                + "VALUES(UUID_TO_BIN(UUID(),0),?,?,?,'CONSUMABLE',0)", rows);
+    }
+
+    private JsonObject workspacePage(Session actor, String path) throws Exception {
+        HttpResponse<String> response = get(actor.client, path);
+        assertEquals(200, response.statusCode(), response.body());
+        return json(response).getAsJsonObject("data");
+    }
+
+    private void readWorkspacePages(Session actor, String path, String cursor, List<Long> items) throws Exception {
+        for (int page = 0; page < 20; page++) {
+            JsonObject result = workspacePage(actor, cursor == null ? path : path + "&cursor=" + cursor);
+            var rows = result.getAsJsonArray("items");
+            assertTrue(rows.size() <= 100);
+            rows.forEach(item -> items.add(item.getAsJsonObject().get("id").getAsLong()));
+            if (result.get("nextCursor").isJsonNull()) return;
+            cursor = result.get("nextCursor").getAsString();
+        }
+        fail("Workspace paging did not reach an explicit end.");
+    }
+
     private LocalDateTime now() { return LocalDateTime.ofInstant(clock.instant(), ZoneOffset.UTC); }
     private Set<String> actualSchemaColumns(String table) {
         return Set.copyOf(jdbc.queryForList("SELECT LOWER(column_name) FROM information_schema.columns WHERE table_schema=DATABASE() AND LOWER(table_name)=?", String.class, table));
@@ -3041,6 +3842,155 @@ class C1IdentityAcceptanceTest {
     private static Throwable findCause(Throwable failure, Class<? extends Throwable> type) {
         for (Throwable cause = failure; cause != null; cause = cause.getCause()) if (type.isInstance(cause)) return cause;
         return null;
+    }
+
+
+    @Test @Order(59)
+    void C8AnonymousGateCoversEveryProtectedRegisteredJerseyOperationWithoutBusinessWrites() throws Exception {
+        // An isolated HTTP authentication-boundary check. The separately reviewed
+        // role/tenant/object/field policies are NOT implied by anonymous 401 results.
+        HttpClient anonymous = newClient();
+        HttpResponse<String> csrfResponse = get(anonymous, "/api/v2/auth/csrf");
+        assertEquals(200, csrfResponse.statusCode());
+        String csrf = json(csrfResponse).getAsJsonObject("data").get("csrfToken").getAsString();
+        assertFalse(csrf.isBlank());
+
+        Set<String> publicRoutes = Set.of(
+                "GET /api/v2/auth/csrf",
+                "GET /api/v2/demo/metadata",
+                "POST /api/v2/auth/login",
+                "POST /api/v2/auth/recover",
+                "POST /api/v2/invitations/redeem");
+        Set<String> actualRoutes = new java.util.HashSet<>();
+        int[] before = new int[] {
+            jdbc.queryForObject("SELECT COUNT(*) FROM organization", Integer.class),
+            jdbc.queryForObject("SELECT COUNT(*) FROM resource", Integer.class),
+            jdbc.queryForObject("SELECT COUNT(*) FROM allocation", Integer.class),
+            jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement", Integer.class)
+        };
+        int protectedCount = 0;
+        for (Class<?> resource : c8JerseyResourceConfig.getClasses()) {
+            jakarta.ws.rs.Path root = resource.getAnnotation(jakarta.ws.rs.Path.class);
+            if (root == null || !resource.getPackageName().equals("edu.orgresource.extended.rest")) continue;
+            for (java.lang.reflect.Method method : resource.getDeclaredMethods()) {
+                String verb = null;
+                for (java.lang.annotation.Annotation annotation : method.getAnnotations()) {
+                    jakarta.ws.rs.HttpMethod http = annotation.annotationType().getAnnotation(jakarta.ws.rs.HttpMethod.class);
+                    if (http == null) continue;
+                    assertNull(verb, "Unexpected multiple HTTP verbs on " + method);
+                    verb = http.value();
+                }
+                if (verb == null) continue;
+                jakarta.ws.rs.Path suffix = method.getAnnotation(jakarta.ws.rs.Path.class);
+                String route = "/api" + root.value() + (suffix == null ? "" : suffix.value());
+                String signature = verb + " " + route;
+                assertTrue(actualRoutes.add(signature), "Duplicate registered operation: " + signature);
+                if (publicRoutes.contains(signature)) continue;
+
+                // Exercise actual authenticated filter chain before Jersey argument parsing.
+                // Legacy numeric paths use 1; modern opaque IDs use well-formed UUIDs.
+                String path = route.replace("{id}", "1")
+                        .replaceAll("\\{[^}]+\\}", "00000000-0000-4000-8000-000000000001");
+                HttpResponse<String> response;
+                if ("GET".equals(verb)) {
+                    response = get(anonymous, path);
+                } else {
+                    assertEquals("POST", verb, "New HTTP verb requires explicit test support: " + signature);
+                    HttpRequest request = HttpRequest.newBuilder(URI.create(base() + path))
+                            .header("Origin", origin())
+                            .header("X-CSRF-TOKEN", csrf)
+                            .header("Content-Type", "application/json")
+                            .POST(HttpRequest.BodyPublishers.ofString("{}")).build();
+                    response = anonymous.send(request, HttpResponse.BodyHandlers.ofString());
+                }
+                assertEquals(401, response.statusCode(), "Anonymous route " + signature + " returned " + response.body());
+                assertEquals("AUTH_REQUIRED", json(response).get("code").getAsString(),
+                        "Expected a non-disclosing authenticated-filter denial on " + signature);
+                assertFalse(response.body().contains("passwordHash"),
+                        "Anonymous refusal must not leak account secrets: " + signature);
+                protectedCount++;
+            }
+        }
+        assertEquals(93, actualRoutes.size(), "Audit exactly the registered C8 route surface");
+        assertTrue(actualRoutes.containsAll(publicRoutes), "Public route skip set must match actual handlers");
+        assertEquals(88, protectedCount, "Every non-public registered endpoint must be denied to anonymous users");
+        assertArrayEquals(before, new int[] {
+            jdbc.queryForObject("SELECT COUNT(*) FROM organization", Integer.class),
+            jdbc.queryForObject("SELECT COUNT(*) FROM resource", Integer.class),
+            jdbc.queryForObject("SELECT COUNT(*) FROM allocation", Integer.class),
+            jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement", Integer.class)
+        }, "Anonymous route probes must leave business tables unchanged");
+    }
+
+
+    @Test @Order(60)
+    void C8GovernanceDenialsLeaveExistingRecordsAndAuditStateUnchanged() throws Exception {
+        // Every refusal below targets an existing fictional membership/invitation with a
+        // correct anti-CSRF token. Responses alone would not prove transaction safety.
+        Fixture owner = newTenant("C8-governance-denial", Membership.Role.OWNER);
+        Fixture admin = fixtureInOrg(owner.orgDbId, Membership.Role.ADMIN);
+        Fixture member = fixtureInOrg(owner.orgDbId, Membership.Role.MEMBER);
+        Fixture stranger = newTenant("C8-governance-stranger", Membership.Role.OWNER);
+        Session ownerSession = login(owner.username, owner.password);
+        Session adminSession = login(admin.username, admin.password);
+        Session memberSession = login(member.username, member.password);
+        Session outsiderSession = login(stranger.username, stranger.password);
+        String root = "/api/v2/orgs/" + owner.orgPublicId;
+        HttpResponse<String> invitation = post(ownerSession, root + "/invitations",
+                GSON.toJson(new RoleRequest("MEMBER")));
+        assertEquals(201, invitation.statusCode(), invitation.body());
+        UUID invitationId = UUID.fromString(json(invitation).getAsJsonObject("data").get("id").getAsString());
+
+        long initialInvitations = jdbc.queryForObject("SELECT COUNT(*) FROM invitation WHERE org_id=?",
+                Long.class, owner.orgDbId);
+        long initialTransfers = jdbc.queryForObject("SELECT COUNT(*) FROM ownership_transfer WHERE org_id=?",
+                Long.class, owner.orgDbId);
+        long initialAudits = jdbc.queryForObject("SELECT COUNT(*) FROM audit_event WHERE org_id=?",
+                Long.class, owner.orgDbId);
+        Membership membership = memberships.findById(member.membershipDbId).orElseThrow();
+        long memberVersion = membership.version;
+        var invitationBefore = invitations.findByOrganizationIdAndPublicId(owner.orgDbId, invitationId).orElseThrow();
+        long invitationVersion = invitationBefore.version;
+        assertEquals(Invitation.Status.INVITED, invitationBefore.status);
+
+        assertEquals(403, post(memberSession, root + "/invitations",
+                GSON.toJson(new RoleRequest("MEMBER"))).statusCode(),
+                "Non-managers cannot grant invitations");
+        assertEquals(404, post(outsiderSession, root + "/invitations/" + invitationId + "/revoke",
+                "", "\"v0\"").statusCode(), "A foreign organization cannot revoke an existing invitation");
+        assertEquals(403, post(memberSession, root + "/invitations/" + invitationId + "/revoke",
+                "", "\"v0\"").statusCode(), "Members cannot revoke active invitations");
+        String memberRolePath = root + "/members/" + member.membershipPublicId + "/role";
+        assertEquals(403, post(adminSession, memberRolePath,
+                GSON.toJson(new RoleRequest("ADMIN")), "\"v0\"").statusCode(),
+                "An administrator cannot elevate a member to administrator");
+        assertEquals(404, post(outsiderSession, memberRolePath,
+                GSON.toJson(new RoleRequest("CUSTODIAN")), "\"v0\"").statusCode(),
+                "Foreign members have no role administration rights");
+        assertEquals(412, post(ownerSession, memberRolePath,
+                GSON.toJson(new RoleRequest("LEAD")), "\"v999\"").statusCode(),
+                "A stale If-Match must not modify a valid target");
+        assertEquals(403, post(memberSession, root + "/members/" + owner.membershipPublicId + "/suspend",
+                "", "\"v0\"").statusCode(),
+                "A member cannot suspend the owner");
+        assertEquals(403, post(memberSession, root + "/transfer-ownership",
+                GSON.toJson(new TransferRequest(admin.membershipPublicId, member.password))).statusCode(),
+                "Only an owner may initiate an ownership transfer");
+
+        Membership memberAfter = memberships.findById(member.membershipDbId).orElseThrow();
+        assertEquals(Membership.Role.MEMBER, memberAfter.role);
+        assertEquals(Membership.Status.ACTIVE, memberAfter.status);
+        assertEquals(memberVersion, memberAfter.version);
+        Invitation invitationAfter = invitations.findByOrganizationIdAndPublicId(owner.orgDbId, invitationId).orElseThrow();
+        assertEquals(Invitation.Status.INVITED, invitationAfter.status);
+        assertEquals(invitationVersion, invitationAfter.version);
+        assertEquals(initialInvitations, jdbc.queryForObject(
+                "SELECT COUNT(*) FROM invitation WHERE org_id=?", Long.class, owner.orgDbId));
+        assertEquals(initialTransfers, jdbc.queryForObject(
+                "SELECT COUNT(*) FROM ownership_transfer WHERE org_id=?", Long.class, owner.orgDbId));
+        assertEquals(initialAudits, jdbc.queryForObject(
+                "SELECT COUNT(*) FROM audit_event WHERE org_id=?", Long.class, owner.orgDbId));
+        assertEquals(1, memberships.countEffectiveActiveOwners(owner.orgDbId));
     }
 
     private record Fixture(long orgDbId, UUID orgPublicId, long userDbId, String username, String password,

@@ -11,12 +11,15 @@ function groupsFor(role: Role): { title: string; links: LinkItem[] }[] {
   const governance = role === "OWNER" || role === "ADMIN";
   return [
     { title: "Workspace", links: [{ to: "/", label: "Overview", icon: "⌂" }, ...(activity ? [{ to: "/allocations", label: "Allocations", icon: "⇄" }] : []), { to: "/resources", label: "Resource Library", icon: "◈" }, { to: "/projects", label: "Projects", icon: "▤" }] },
-    { title: "Organization", links: [{ to: "/requirements", label: "Requirements", icon: "☷" }, { to: "/departments", label: "Departments", icon: "⌘" }, ...(governance ? [
+    { title: "Organization", links: [{ to: "/requirements", label: "Requirements", icon: "☷" }, { to: "/departments", label: "Departments", icon: "⌘" },
+      ...(governance || role === "LEAD" ? [{ to: "/project-work", label: "Project work", icon: "▤" }] : []), ...(governance ? [
       { to: "/governance", label: "Members and access", icon: "♙" },
       { to: "/activity", label: "Activity", icon: "◷" },
       { to: "/exports", label: "Exports", icon: "↓" },
     ] : [])] },
-    { title: "System", links: [...(activity ? [{ to: "/reminders", label: "Reminder Activity", icon: "◷" }] : []), { to: "/account", label: "Account and security", icon: "◉" }, { to: "/about", label: "About", icon: "ⓘ" }] },
+    { title: "System", links: [...(activity ? [{ to: "/reminders", label: "Reminder Activity", icon: "◷" }] : []),
+      { to: "/borrowed", label: "My borrowed resources", icon: "⇄" },
+      { to: "/account", label: "Account and security", icon: "◉" }, { to: "/about", label: "About", icon: "ⓘ" }] },
   ];
 }
 
@@ -85,7 +88,7 @@ export function AcademicShell({ children, role, organizationName, sessionError }
       <aside className={`sidebar ${menuOpen ? "sidebar-open" : ""}`} aria-label="OrgResource navigation">
         <NavLink to="/" className="brand-lockup" aria-label="OrgResource Academic Commons, Overview" onClick={() => setMenuOpen(false)}>
           <span className="brand-seal" aria-hidden="true"><span>O</span><i>R</i></span>
-          <span><strong>OrgResource</strong><small>Academic Commons</small></span>
+          <span className="brand-text"><strong>OrgResource</strong><small>Academic Commons</small></span>
         </NavLink>
         <Navigation groups={groups} onNavigate={() => setMenuOpen(false)} />
       </aside>

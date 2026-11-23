@@ -8,6 +8,10 @@ import type {
   ResourceAvailability,
   ResourceRequirement,
   ResourceType,
+  WorkspaceOverview,
+  WorkspaceProject,
+  WorkspaceRequirement,
+  WorkspaceAllocation,
 } from "./types";
 
 export class ApiError extends Error {
@@ -29,6 +33,8 @@ export function abortTenantRequests(): void {
   for (const controller of activeRequests) controller.abort();
   activeRequests.clear();
 }
+
+export interface WorkspacePage<T> { items: T[]; nextCursor: string | null; }
 
 export interface RequestResult<T> { data: T; etag: string | null; status: number; }
 
@@ -70,18 +76,23 @@ export async function request<T>(
         : new ApiError(0, "NETWORK_ERROR", "The OrgResource API could not be reached. Check that the backend is running, then retry.");
     }
 
+  controller.signal.throwIfAborted();
   sessionEnded = response.status === 401 && !path.includes("/auth/login") && !path.includes("/auth/recover");
   const etag = response.headers.get("ETag");
   if (response.ok && options.download) {
-    return { data: await options.download(response), etag, status: response.status };
+    const downloaded = await options.download(response);
+    controller.signal.throwIfAborted();
+    return { data: downloaded, etag, status: response.status };
   }
   let text: string;
   try { text = await response.text(); }
   catch {
+    controller.signal.throwIfAborted();
     throw mutation
       ? new ApiError(response.status, "POST_OUTCOME_UNCERTAIN", "The server may have completed this change, but the response could not be read. Review current records before deciding what to do next.")
       : new ApiError(response.status, "INVALID_SERVER_RESPONSE", "The server response could not be read.");
   }
+  controller.signal.throwIfAborted();
   let parsed: unknown = null;
   if (text) {
     try { parsed = JSON.parse(text) as unknown; }
@@ -165,4 +176,40 @@ export const api = {
   cancelAllocation: (id: number) => post<Allocation>(`/allocations/${id}/cancel`),
   deleteAllocation: (id: number) => post<DeleteResponse>(`/allocations/${id}/delete`),
   revokeSmsConsent: (id: number) => post<Allocation>(`/allocations/${id}/revoke-sms-consent`),
+};
+
+type WorkspaceFilters = Record<string, string | number | null | undefined>;
+
+function workspacePage<T>(path: string, cursor: string | null, filters: WorkspaceFilters, signal?: AbortSignal) {
+  const query = new URLSearchParams();
+  for (const [name, value] of Object.entries(filters)) {
+    if (value != null && value !== "") query.set(name, String(value));
+  }
+  if (cursor !== null) query.set("cursor", cursor);
+  return request<WorkspacePage<T>>("/v2/workspace/" + path + "?" + query, "GET", undefined, { signal })
+    .then(({ data }) => {
+      if (!Array.isArray(data?.items) || (data.nextCursor !== null && typeof data.nextCursor !== "string")) {
+        throw new ApiError(502, "INVALID_SERVER_RESPONSE", "The server returned an invalid workspace page.");
+      }
+      return data;
+    });
+}
+
+export const workspaceApi = {
+  overview: (signal?: AbortSignal) => request<WorkspaceOverview>("/v2/workspace/overview", "GET", undefined, { signal })
+    .then(({ data }) => {
+      if (typeof data?.departmentCount !== "number" || !Array.isArray(data.resourcePreview) || !Array.isArray(data.calendarPreview)) {
+        throw new ApiError(502, "INVALID_SERVER_RESPONSE", "The server returned an invalid Overview snapshot.");
+      }
+      return data;
+    }),
+  departments: (cursor: string | null, search?: string, signal?: AbortSignal) => workspacePage<Department>("departments", cursor, { search }, signal),
+  projects: (cursor: string | null, filters: { departmentId?: number; search?: string; period?: string }, signal?: AbortSignal) =>
+    workspacePage<WorkspaceProject>("projects", cursor, filters, signal),
+  resources: (cursor: string | null, filters: { type?: ResourceType; search?: string }, signal?: AbortSignal) =>
+    workspacePage<Resource>("resources", cursor, filters, signal),
+  requirements: (cursor: string | null, filters: { projectId?: number; search?: string }, signal?: AbortSignal) =>
+    workspacePage<WorkspaceRequirement>("requirements", cursor, filters, signal),
+  allocations: (cursor: string | null, filters: { requirementId?: number; projectId?: number; status?: Allocation["status"] }, signal?: AbortSignal) =>
+    workspacePage<WorkspaceAllocation>("allocations", cursor, filters, signal),
 };

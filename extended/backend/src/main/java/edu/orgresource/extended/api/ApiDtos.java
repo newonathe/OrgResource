@@ -22,6 +22,25 @@ public final class ApiDtos {
     private static final DateTimeFormatter LOCAL_DATE_TIME = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     private ApiDtos() { }
 
+    public record WorkspacePage<T>(java.util.List<T> items, String nextCursor) { }
+
+    public record OverviewProject(ProjectView project, String departmentName, boolean active) { }
+
+    public record OverviewRecentAllocation(Long id, String borrowerName, int quantity, String status, String resourceName,
+            String createdAt) {
+        public OverviewRecentAllocation(Long id, String borrowerName, int quantity, AllocationStatus status, String resourceName,
+                LocalDateTime createdAt) {
+            this(id, borrowerName, quantity, status.name(), resourceName, createdAt.format(LOCAL_DATE_TIME));
+        }
+    }
+
+    public record OverviewAllocations(long pending, long issued, long overdue, long consumed,
+            java.util.List<OverviewRecentAllocation> recent) { }
+
+    public record WorkspaceOverview(String sampledAt, long departmentCount, long projectActiveCount,
+            long resourceTypeCount, long requirementShortageCount, java.util.List<ResourceView> resourcePreview,
+            java.util.List<OverviewProject> calendarPreview, OverviewAllocations allocations) { }
+
     public static class CreateDepartment {
         @NotBlank @Size(max = 100) public String name;
         public CreateDepartment() { }
@@ -93,11 +112,14 @@ public final class ApiDtos {
         public Integer availableQuantity;
         public ResourceView() { }
         public ResourceView(Resource resource, int availableQuantity) {
-            this.id = resource.id;
-            this.publicId = resource.publicId;
-            this.name = resource.name;
-            this.type = resource.type;
-            this.totalQuantity = resource.totalQuantity;
+            this(resource.id, resource.publicId, resource.name, resource.type, resource.totalQuantity, availableQuantity);
+        }
+        public ResourceView(Long id, java.util.UUID publicId, String name, ResourceType type, int totalQuantity, int availableQuantity) {
+            this.id = id;
+            this.publicId = publicId;
+            this.name = name;
+            this.type = type;
+            this.totalQuantity = totalQuantity;
             this.availableQuantity = availableQuantity;
         }
     }
@@ -136,6 +158,15 @@ public final class ApiDtos {
         @NotNull @Min(1) @Max(1000000) public Integer quantity;
     }
 
+    public static final class WorkspaceProjectView extends ProjectView {
+        public final String departmentName;
+
+        public WorkspaceProjectView(Project project) {
+            super(project);
+            this.departmentName = project.department.name;
+        }
+    }
+
     public static class RequirementView {
         public Long id;
         public Long projectId;
@@ -145,12 +176,15 @@ public final class ApiDtos {
         public Integer shortageQuantity;
         public RequirementView() { }
         public RequirementView(ResourceRequirement requirement, int allocatedQuantity) {
-            this.id = requirement.id;
-            this.projectId = requirement.project.id;
-            this.resourceId = requirement.resource.id;
-            this.quantity = requirement.quantity;
+            this(requirement.id, requirement.project.id, requirement.resource.id, requirement.quantity, allocatedQuantity);
+        }
+        protected RequirementView(Long id, Long projectId, Long resourceId, int quantity, int allocatedQuantity) {
+            this.id = id;
+            this.projectId = projectId;
+            this.resourceId = resourceId;
+            this.quantity = quantity;
             this.allocatedQuantity = allocatedQuantity;
-            this.shortageQuantity = Math.max(0, requirement.quantity - allocatedQuantity);
+            this.shortageQuantity = Math.max(0, quantity - allocatedQuantity);
         }
     }
 
@@ -160,6 +194,33 @@ public final class ApiDtos {
         @NotBlank @Size(max = 100) public String borrowerName;
         @Pattern(regexp = "^\\+[1-9][0-9]{7,14}$") public String phoneNumber;
         public Boolean smsConsent;
+    }
+
+    public static final class WorkspaceRequirementView extends RequirementView {
+        public final String projectName;
+        public final String resourceName;
+        public final ResourceType resourceType;
+        public final String projectStartAt;
+        public final String projectEndAt;
+
+        public WorkspaceRequirementView(Long id, Long projectId, Long resourceId, int quantity, int covered,
+                String projectName, String resourceName, ResourceType resourceType, LocalDateTime projectStartAt, LocalDateTime projectEndAt) {
+            super(id, projectId, resourceId, quantity, covered);
+            this.projectName = projectName;
+            this.resourceName = resourceName;
+            this.resourceType = resourceType;
+            this.projectStartAt = projectStartAt.format(LOCAL_DATE_TIME);
+            this.projectEndAt = projectEndAt.format(LOCAL_DATE_TIME);
+        }
+    }
+
+    public static final class WorkspaceAllocationView extends AllocationView {
+        public final WorkspaceRequirementView requirement;
+
+        public WorkspaceAllocationView(Allocation allocation, WorkspaceRequirementView requirement, LocalDateTime sampledNow) {
+            super(allocation, allocation.requirement.project.endAt, sampledNow);
+            this.requirement = requirement;
+        }
     }
 
     public static class AllocationView {

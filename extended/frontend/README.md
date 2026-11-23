@@ -3,6 +3,8 @@
 This workspace bundles into the Java 21 Extended C JAR. The JAR serves the authenticated React UI and Jersey API from the same origin. Course Final A has its own Java 8 JAR and React workspace at the repository root.
 
 - Workspace screens cover Overview, Departments, Projects, Resource Library, Requirements, Allocations, Reminder Activity, and About.
+- Project work exposes current assigned-Lead and governance actions. My borrowed resources shows the signed-in borrower's linked requests and their current reminder consent. Withdrawal is available only for active consent.
+- The workspace waits for the server to classify the environment. A dedicated synthetic demo displays a simulation notice. On a classification error the app holds the workspace closed and offers a retry.
 - Session and governance screens cover sign in, workspace selection, account recovery and management, member roles, invitations, and ownership transfer.
 - Resource details include image upload, preview and versioned removal, stock receive and correction, a bounded movement view, and permanent or temporary operation receipt lookup. Server roles determine which actions appear. The server checks authorization again.
 - CSRF values and displayed one-time credentials live in memory. Browser local storage holds theme and motion preferences.

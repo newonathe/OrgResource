@@ -22,12 +22,17 @@ public class C1AuditService {
 
     @Transactional(propagation = Propagation.MANDATORY)
     public void append(Long orgId, Long actorId, String action, String targetType, String targetId) {
+        appendAt(orgId, actorId, action, targetType, targetId, now());
+    }
+
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void appendAt(Long orgId, Long actorId, String action, String targetType, String targetId, LocalDateTime time) {
         String requestId = UUID.randomUUID().toString();
         if (RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes attributes) {
             Object value = attributes.getRequest().getAttribute(C1RequestIdFilter.ATTRIBUTE);
             if (value instanceof String text && !text.isBlank()) requestId = text;
         }
-        events.save(new AuditEvent(orgId, actorId, action, targetType, targetId, "SUCCESS", requestId, now()));
+        events.save(new AuditEvent(orgId, actorId, action, targetType, targetId, "SUCCESS", requestId, time));
     }
 
     public LocalDateTime now() { return LocalDateTime.ofInstant(clock.instant(), ZoneOffset.UTC); }

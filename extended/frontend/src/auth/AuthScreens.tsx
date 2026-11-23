@@ -3,7 +3,7 @@ import { Link, Navigate, useSearchParams } from "react-router-dom";
 import { setCsrfToken } from "../api/client";
 import { identityApi, type GovernanceMember, type Role } from "../api/extended";
 import { useAuth, errorText } from "./AuthContext";
-import { Button, GlassPanel, Notice, PageHeader, PanelHeading, StatusBadge, useSettings } from "../ui";
+import { Button, GlassPanel, Notice, PageHeader, PageNavigation, PanelHeading, StatusBadge, usePageCursors, useSettings } from "../ui";
 
 function AuthFrame({ children }: { children: React.ReactNode }) {
   const { theme, motionEnabled } = useSettings();
@@ -128,6 +128,10 @@ export function OrganizationPicker() {
   const { session, organizations, switchOrganization, error, clearError } = useAuth();
   const [busy, setBusy] = useState<string | null>(null);
   const [localError, setLocalError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const normalized = search.trim().toLocaleLowerCase();
+  const matching = organizations.filter(org =>
+    (org.displayName + " " + org.slug).toLocaleLowerCase().includes(normalized));
   if (!session) return <Navigate replace to="/login" />;
   const choose = async (id: string) => {
     setBusy(id); setLocalError(null); clearError();
@@ -139,12 +143,22 @@ export function OrganizationPicker() {
     <PageHeader eyebrow="Workspace selection" title={`Choose an organization, ${session.displayName}`} description="Organization data is fetched only after you explicitly select an active membership." />
     {(error || localError) && <Notice tone="danger">{localError ?? error}</Notice>}
     {organizations.length === 0 ? <Notice>No active organization memberships are available. Redeem an invitation or contact an organization owner.</Notice> :
-      <div className="organization-list">{organizations.map(org => <article className="organization-choice" key={org.id}><div><h2>{org.displayName}</h2><p>{org.slug} · <StatusBadge tone="blue">{org.role}</StatusBadge></p></div><Button variant="primary" disabled={busy !== null} onClick={() => void choose(org.id)}>{busy === org.id ? "Selecting…" : "Open workspace"}</Button></article>)}</div>}
+      <>
+        {organizations.length > 8 && <label className="organization-search-label">Find organization
+          <input type="search" value={search} autoComplete="off" placeholder="Search organization name or slug"
+            onChange={event => setSearch(event.target.value)} />
+        </label>}
+        <p className="quiet-note" role="status">{matching.length} of {organizations.length} organization{organizations.length === 1 ? "" : "s"} shown</p>
+        {matching.length === 0
+          ? <Notice>No organizations match this search. Try a different name.</Notice>
+          : <div className="organization-list">{matching.map(org => <article className="organization-choice" key={org.id}><div><h2>{org.displayName}</h2><p>{org.slug} · <StatusBadge tone="blue">{org.role}</StatusBadge></p></div><Button variant="primary" disabled={busy !== null} onClick={() => void choose(org.id)}>{busy === org.id ? "Selecting…" : "Open workspace"}</Button></article>)}</div>}
+      </>}
   </GlassPanel></AuthFrame>;
 }
 
 export function AccountPage() {
   const { signOut, reload } = useAuth();
+  const { motionEnabled, setMotionEnabled } = useSettings();
   const [account, setAccount] = useState<{ username: string; displayName: string; status: string } | null>(null);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -164,6 +178,14 @@ export function AccountPage() {
   const disable = () => { if (!window.confirm("Disable this account and sign out all sessions? This cannot be undone from this screen.")) return; void perform(async () => { await identityApi.disableAccount(currentPassword); await signOut(); }, "Account disabled."); };
   return <section className="page-shell"><PageHeader eyebrow="Account · session" title="Account and security" description="Manage your own password, one-time recovery codes, and server sessions." />
     {error && <Notice tone="danger">{error}</Notice>}{message && <Notice tone="success">{message}</Notice>}
+    <GlassPanel className="form-panel account-preferences" tilt={false}>
+      <PanelHeading kicker="Display preferences" title="Interface motion" />
+      <div className="account-preference-control">
+        <div><p>Animations and pointer effects</p><p className="quiet-note">Changes apply immediately and are saved in this browser. Your device's reduced-motion preference still takes priority.</p></div>
+        <Button type="button" variant="secondary" role="switch" aria-label="Interface motion" aria-checked={motionEnabled}
+          onClick={() => setMotionEnabled(!motionEnabled)}>Motion {motionEnabled ? "On" : "Off"}</Button>
+      </div>
+    </GlassPanel>
     <div className="account-grid"><GlassPanel className="form-panel" tilt={false}><PanelHeading kicker="Server account" title={account?.displayName ?? "Account"} /><dl className="account-details"><div><dt>Username</dt><dd>{account?.username ?? "Loading…"}</dd></div><div><dt>Status</dt><dd>{account?.status ?? "—"}</dd></div><div><dt>Session</dt><dd>HttpOnly cookie · 12-hour absolute lifetime</dd></div></dl><Button onClick={() => void signOut()}>Sign out</Button></GlassPanel>
       <GlassPanel className="form-panel" tilt={false}><PanelHeading kicker="Credentials" title="Change password" /><form className="auth-form" onSubmit={changePassword}><label>Current password<input type="password" autoComplete="current-password" required value={currentPassword} onChange={event => setCurrentPassword(event.target.value)} /></label><label>New password<input type="password" autoComplete="new-password" minLength={15} maxLength={1024} required value={newPassword} onChange={event => setNewPassword(event.target.value)} /></label><Button variant="primary" disabled={busy}>{busy ? "Saving…" : "Change password"}</Button></form></GlassPanel>
       <GlassPanel className="form-panel" tilt={false}><PanelHeading kicker="Recovery" title="Rotate recovery codes" /><p>Rotation replaces all previous codes. New values are shown once in this browser session.</p><label>Confirm current password<input type="password" autoComplete="current-password" value={currentPassword} onChange={event => setCurrentPassword(event.target.value)} /></label><Button disabled={busy || !currentPassword} onClick={rotate}>Generate new codes</Button>{codes && <ol className="recovery-code-list">{codes.map(code => <li key={code}><code>{code}</code></li>)}</ol>}</GlassPanel>
@@ -175,7 +197,10 @@ export function AccountPage() {
 export function GovernancePage({ orgId, role }: { orgId: string; role: Role }) {
   const { session, reload } = useAuth();
   const [members, setMembers] = useState<GovernanceMember[]>([]);
-  const [moreMembers, setMoreMembers] = useState(false);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [membersLoading, setMembersLoading] = useState(true);
+  const [membersError, setMembersError] = useState<string | null>(null);
+  const { cursor, page, move } = usePageCursors(orgId);
   const [inviteRole, setInviteRole] = useState<Exclude<Role, "OWNER">>("MEMBER");
   const [inviteToken, setInviteToken] = useState<string | null>(null);
   const [transferId, setTransferId] = useState("");
@@ -193,17 +218,33 @@ export function GovernancePage({ orgId, role }: { orgId: string; role: Role }) {
     membersRequest.current?.abort();
     const controller = new AbortController();
     membersRequest.current = controller;
+    setMembersLoading(true);
+    setMembersError(null);
+    setNextCursor(null);
     try {
-      const result = await identityApi.members(orgId, undefined, controller.signal);
-      if (!controller.signal.aborted) { setMembers(result.items); setMoreMembers(result.nextCursor !== null); setError(null); }
+      const result = await identityApi.members(orgId, cursor ?? undefined, controller.signal);
+      if (!controller.signal.aborted) {
+        setMembers(result.items);
+        setNextCursor(result.nextCursor);
+      }
     } catch (cause) {
-      if (!controller.signal.aborted) setError(errorText(cause));
+      if (!controller.signal.aborted) {
+        setMembers([]);
+        setMembersError(errorText(cause));
+      }
+    } finally {
+      if (!controller.signal.aborted) setMembersLoading(false);
     }
-  }, [orgId]);
+  }, [orgId, cursor]);
   useEffect(() => {
     const timer = window.setTimeout(() => { void load(); }, 0);
     return () => { window.clearTimeout(timer); membersRequest.current?.abort(); };
   }, [load]);
+  const goToPage = (next: string | null) => {
+    setMembersLoading(true);
+    move(next);
+  };
+  const recipients = members.filter(member => member.status === "ACTIVE" && member.role === "ADMIN");
   const run = async (action: () => Promise<unknown>, success: string) => { setBusy(true); setError(null); setMessage(null); try { await action(); setMessage(success); await load(); } catch (cause) { setError(errorText(cause)); } finally { setBusy(false); } };
   const createInvite = () => void run(async () => { const result = await identityApi.invite(orgId, inviteRole); setInviteToken(result.data.bearerToken); }, "Invitation created. Copy the bearer token now; it is not stored in browser storage.");
   const changeRole = (member: GovernanceMember, roleValue: Exclude<Role, "OWNER">) => void run(() => identityApi.changeRole(orgId, member, roleValue), "Membership role updated.");
@@ -219,15 +260,18 @@ export function GovernancePage({ orgId, role }: { orgId: string; role: Role }) {
   };
   return <section className="page-shell"><PageHeader eyebrow="Organization · governance" title="Members and access" description="Roles and membership state are enforced by the server. This page never grants access from browser state." />
     {error && <Notice tone="danger">{error}</Notice>}{message && <Notice tone="success">{message}</Notice>}
-    <div className="governance-grid"><GlassPanel className="list-panel" tilt={false}><PanelHeading kicker="Active and suspended members" title="Memberships"><Button disabled={busy} onClick={() => void load()}>Refresh</Button></PanelHeading>
-      {moreMembers && <p className="quiet-note">Showing the first 100 members. More member records exist.</p>}
-      {members.length === 0 ? <p>No memberships available, or your role cannot view member records.</p> : <div className="member-list">{members.map(member => <article className="member-row" key={member.id}><div><strong>{member.displayName}</strong><p><StatusBadge tone={member.status === "ACTIVE" ? "success" : "warning"}>{member.status}</StatusBadge> <StatusBadge tone="blue">{member.role}</StatusBadge></p></div>
+    <div className="governance-grid"><GlassPanel className="list-panel" tilt={false}><PanelHeading kicker="Active and suspended members" title="Memberships"><Button disabled={busy || membersLoading} onClick={() => void load()}>Refresh</Button></PanelHeading>
+      {!membersLoading && membersError && <><Notice tone="danger">{membersError}</Notice><Button disabled={busy} onClick={() => void load()}>Retry member page</Button></>}
+      {!membersLoading && !membersError && (members.length === 0 ? <p>No memberships on this page.</p> : <div className="member-list">{members.map(member => <article className="member-row" key={member.id}><div><strong>{member.displayName}</strong><p><StatusBadge tone={member.status === "ACTIVE" ? "success" : "warning"}>{member.status}</StatusBadge> <StatusBadge tone="blue">{member.role}</StatusBadge></p></div>
         {member.id !== ownMembershipId && member.role !== "OWNER" && member.status === "ACTIVE" &&
           (role === "OWNER" || (role === "ADMIN" && member.role !== "ADMIN")) &&
-          <div className="row-actions"><label className="compact-label">Role<select value={member.role} disabled={busy} onChange={event => changeRole(member, event.target.value as Exclude<Role, "OWNER">)}>{grantableRoles.map(option => <option key={option}>{option}</option>)}</select></label><Button variant="danger" disabled={busy} onClick={() => suspend(member)}>Suspend</Button></div>}</article>)}</div>}
+          <div className="row-actions"><label className="compact-label">Role<select value={member.role} disabled={busy} onChange={event => changeRole(member, event.target.value as Exclude<Role, "OWNER">)}>{grantableRoles.map(option => <option key={option}>{option}</option>)}</select></label><Button variant="danger" disabled={busy} onClick={() => suspend(member)}>Suspend</Button></div>}</article>)}</div>)}
+      <PageNavigation label="Membership pages" page={page} count={members.length} hasNext={nextCursor !== null}
+        loading={membersLoading || busy} unavailable={!!membersError} onPrevious={() => goToPage(null)}
+        onNext={() => { if (nextCursor) goToPage(nextCursor); }} />
     </GlassPanel>
     <GlassPanel className="form-panel" tilt={false}><PanelHeading kicker="Single-use credential" title="Create invitation" /><label>Grant role<select value={inviteRole} disabled={busy} onChange={event => setInviteRole(event.target.value as Exclude<Role, "OWNER">)}>{grantableRoles.map(option => <option key={option}>{option}</option>)}</select></label><Button variant="primary" disabled={busy} onClick={createInvite}>{busy ? "Working…" : "Create invitation"}</Button>{inviteToken && <div className="token-reveal"><strong>Bearer token — shown once</strong><code>{inviteToken}</code><Button onClick={() => void navigator.clipboard?.writeText(inviteToken)}>Copy token</Button><p>Send it using your approved private method. It is held only in current component memory.</p></div>}</GlassPanel>
-    {role === "OWNER" && <GlassPanel className="form-panel" tilt={false}><PanelHeading kicker="Two-person governance flow" title="Transfer ownership" /><form className="auth-form" onSubmit={startTransfer}><label>Recipient membership<select name="target" required><option value="">Choose an active member</option>{members.filter(member => member.status === "ACTIVE" && member.role === "ADMIN").map(member => <option key={member.id} value={member.id}>{member.displayName}</option>)}</select></label><label>Current password<input type="password" autoComplete="current-password" required value={currentPassword} onChange={event => setCurrentPassword(event.target.value)} /></label><Button disabled={busy || !members.some(member => member.role === "ADMIN" && member.status === "ACTIVE")}>Start transfer</Button></form><p className="quiet-note">No pending-transfer list API exists. Keep the transfer ID returned by the server and give it to the recipient through a private channel.</p></GlassPanel>}
+    {role === "OWNER" && <GlassPanel className="form-panel" tilt={false}><PanelHeading kicker="Two-person governance flow" title="Transfer ownership" /><form className="auth-form" onSubmit={startTransfer}><label>Recipient membership<select key={cursor ?? "first"} name="target" required disabled={busy || membersLoading}><option value="">Choose an active administrator</option>{recipients.map(member => <option key={member.id} value={member.id}>{member.displayName}</option>)}</select></label><p className="quiet-note">The recipient must be on the current membership page.</p><label>Current password<input type="password" autoComplete="current-password" required value={currentPassword} onChange={event => setCurrentPassword(event.target.value)} /></label><Button disabled={busy || membersLoading || recipients.length === 0}>Start transfer</Button></form><p className="quiet-note">No pending-transfer list API exists. Keep the transfer ID returned by the server and give it to the recipient through a private channel.</p></GlassPanel>}
     {role === "OWNER" && transferId && transferEtag && <GlassPanel className="form-panel" tilt={false}>
       <PanelHeading kicker="Private handoff" title="Transfer details" />
       <dl className="account-details"><div><dt>Transfer ID</dt><dd><code>{transferId}</code></dd></div><div><dt>Current ETag</dt><dd><code>{transferEtag}</code></dd></div></dl>

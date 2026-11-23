@@ -90,6 +90,7 @@ public class C1SecurityConfiguration {
                 .requestMatchers("/", "/index.html", "/assets/**", "/error", "/favicon.ico").permitAll()
                 .requestMatchers("/api/v2/auth/csrf", "/api/v2/auth/login", "/api/v2/auth/recover",
                         "/api/v2/invitations/redeem").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v2/demo/metadata").permitAll()
                 .requestMatchers("/api/**").authenticated()
                 .anyRequest().denyAll())
             .exceptionHandling(exceptions -> exceptions

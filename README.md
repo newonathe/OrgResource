@@ -1,5 +1,11 @@
 # OrgResource
 
+> **ACTIONABLE FIRST READ (2026-11-23):** [DO_NOW_MUST_DO_STOP_AND_CAPABILITIES.md](DO_NOW_MUST_DO_STOP_AND_CAPABILITIES.md) — fresh priority reset, exact actions ChatGPT can execute today, host-only blockers, academic obligations and explicit STOP list. The older detailed material below is reference, not a command to restart planning. **`LIVE_IMPORT_NOT_RUN`.**
+
+> **Authoritative current status and Codex continuation:** [CURRENT_STATUS_AND_NEXT_ACTIONS.md](CURRENT_STATUS_AND_NEXT_ACTIONS.md). The application runtime release candidate passed [all three CI jobs on SHA `9df70991`](https://github.com/newonathe/OrgResource/actions/runs/45155946849); the exact approved private dataset was validated, but the **96-org Northflank import has NOT run** and PR #25 remains draft/unmerged. The current branch may have documentation-only newer commits, so always recheck its exact HEAD and CI.
+
+> **Current multi-organization staging / C8 development (November 23, 2026):** [NEXT_CHAT_START_HERE.md](NEXT_CHAT_START_HERE.md). This README chiefly documents frozen Course Final A. Extended C is separately implemented under extended/, has a working Northflank staging deployment and remains **C8 technically blocked** pending the bounded authorization acceptance and independent review. Successful login and green CI do not mean production approval.
+
 OrgResource is a local academic application for planning one student organization’s projects, resource requirements, inventory commitments, and allocation history. It is a CSCI 180.05 course project, not an Ateneo-endorsed or production campus service.
 
 ## Current implementation

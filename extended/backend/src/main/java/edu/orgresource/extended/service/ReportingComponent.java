@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import edu.orgresource.extended.api.C1ApiException;
 import edu.orgresource.extended.identity.Membership;
 import edu.orgresource.extended.security.C1OrganizationContext;
@@ -65,9 +66,11 @@ public class ReportingComponent {
     private final ObjectMapper json;
     private final Clock clock;
     private final C1OrganizationContext organization;
+    private final DemoProvenance provenance;
 
-    public ReportingComponent(JdbcTemplate jdbc, ObjectMapper json, Clock clock, C1OrganizationContext organization) {
+    public ReportingComponent(JdbcTemplate jdbc, ObjectMapper json, Clock clock, C1OrganizationContext organization, DemoProvenance provenance) {
         this.jdbc = jdbc; this.json = json; this.clock = clock; this.organization = organization;
+        this.provenance = provenance;
     }
 
     public EventPage events(UUID organizationId, int limit, String cursor, boolean auditOnly) {
@@ -118,10 +121,19 @@ public class ReportingComponent {
             case MOVEMENTS -> readEvents(org, Source.MOVEMENT, null, MAX_EXPORT_ROWS + 1).stream().map(Event::view).toList();
         };
         if (rows.size() > MAX_EXPORT_ROWS) throw exportTooLarge();
+        DemoProvenance.Metadata demo = provenance.organizationMetadata(org);
         byte[] bytes;
         try {
-            bytes = format == Format.CSV ? csv(dataset, at, rows)
-                    : json.writeValueAsBytes(new ExportDocument(SCHEMA_VERSION, organizationId, dataset, at, rows));
+            if (format == Format.CSV) bytes = csv(dataset, at, rows, demo);
+            else {
+                var document = new ExportDocument(SCHEMA_VERSION, organizationId, dataset, at, rows);
+                if (demo == null) bytes = json.writeValueAsBytes(document);
+                else {
+                    ObjectNode labelled = json.valueToTree(document);
+                    labelled.set("demoProvenance", json.valueToTree(demo));
+                    bytes = json.writeValueAsBytes(labelled);
+                }
+            }
         } catch (JsonProcessingException invalid) {
             throw new IllegalStateException("Export serialization failed.", invalid);
         }
@@ -199,13 +211,15 @@ public class ReportingComponent {
         return new Event(source, id, at, view);
     }
 
-    private static byte[] csv(Dataset dataset, Instant at, List<?> rows) {
+    private static byte[] csv(Dataset dataset, Instant at, List<?> rows, DemoProvenance.Metadata demo) {
         String fields = switch (dataset) {
             case RESOURCES -> "id,name,type,totalQuantity";
             case AUDIT -> "id,source,action,targetType,outcome,requestId,occurredAt";
             case MOVEMENTS -> "id,source,action,resourceId,quantity,deltaTotal,deltaIssued,occurredAt";
         };
-        StringBuilder text = new StringBuilder("schemaVersion,exportedAt,").append(fields).append("\r\n");
+        StringBuilder text = new StringBuilder("schemaVersion,exportedAt,").append(fields);
+        if (demo != null) text.append(",synthetic,demoDataset,demonstrationAsOf,demoNotice");
+        text.append("\r\n");
         for (Object row : rows) {
             text.append(SCHEMA_VERSION);
             cell(text, at.toString());
@@ -222,6 +236,9 @@ public class ReportingComponent {
                     cell(text, event.deltaTotal()); cell(text, event.deltaIssued());
                 }
                 cell(text, event.occurredAt().toString());
+            }
+            if (demo != null) {
+                cell(text, "true"); cell(text, demo.datasetId()); cell(text, demo.demonstrationAsOf()); cell(text, demo.notice());
             }
             text.append("\r\n");
         }

@@ -1,53 +1,70 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { reportingApi, type ReportingDataset, type ReportingEvent, type ReportingFormat } from "../api/extended";
 import { explainError } from "../domain";
-import { Button, GlassPanel, Notice, PageHeader, PanelHeading } from "../ui";
+import { Button, GlassPanel, Notice, PageHeader, PageNavigation, PanelHeading, usePageCursors } from "../ui";
 
 export function ActivityPage({ orgId }: { orgId: string }) {
   const [feed, setFeed] = useState<"activity" | "audit">("activity");
   const [rows, setRows] = useState<ReportingEvent[]>([]);
-  const [cursor, setCursor] = useState<string | null>(null);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(true);
-  const [request, setRequest] = useState<{ cursor: string | null }>({ cursor: null });
+  const [reload, setReload] = useState(0);
+  const { cursor, page, move, reset } = usePageCursors(orgId + ":" + feed);
 
   useEffect(() => {
     const controller = new AbortController();
-    void reportingApi.events(orgId, feed, request.cursor, controller.signal).then(result => {
+    void reportingApi.events(orgId, feed, cursor, controller.signal).then(result => {
       if (controller.signal.aborted) return;
       setRows(result.items);
-      setCursor(result.nextCursor);
+      setNextCursor(result.nextCursor);
     }).catch((reason: unknown) => {
       if (!controller.signal.aborted) setError(explainError(reason));
     }).finally(() => {
       if (!controller.signal.aborted) setBusy(false);
     });
     return () => controller.abort();
-  }, [orgId, feed, request]);
+  }, [orgId, feed, cursor, reload]);
 
-  function load(next: string | null) {
-    setRows([]); setCursor(null); setError(""); setBusy(true); setRequest({ cursor: next });
+  function prepareRead() {
+    setRows([]); setNextCursor(null); setError(""); setBusy(true);
+  }
+
+  function goToPage(next: string | null) {
+    prepareRead();
+    move(next);
+  }
+
+  function refresh() {
+    prepareRead();
+    setReload(value => value + 1);
   }
 
   return <section className="page-shell">
     <PageHeader eyebrow="Organization" title="Activity" description="Recorded governance events and permanent inventory movements for this workspace. The audit feed covers recorded actions and can omit unrecorded requests." />
     <GlassPanel className="list-panel" tilt={false}>
       <PanelHeading title="Recorded events">
-        <Button variant="secondary" onClick={() => load(null)} disabled={busy}>Newest events</Button>
+        <Button variant="secondary" onClick={() => { reset(); refresh(); }} disabled={busy}>Newest events</Button>
       </PanelHeading>
-      <label>Show <select value={feed} onChange={event => { setFeed(event.target.value as "activity" | "audit"); load(null); }}>
+      <label>Show <select value={feed} onChange={event => {
+        reset();
+        setFeed(event.target.value as "activity" | "audit");
+        prepareRead();
+      }}>
         <option value="activity">Audit and stock movements</option>
         <option value="audit">Audit only</option>
       </select></label>
       {busy && <p role="status">Loading events…</p>}
-      {error && <><Notice tone="danger">{error}</Notice><Button onClick={() => load(request.cursor)}>Retry this page</Button></>}
+      {error && <><Notice tone="danger">{error}</Notice><Button onClick={refresh}>Retry this page</Button></>}
       {!busy && !error && rows.length === 0 && <p>No events were recorded for this page.</p>}
       {rows.length > 0 && <ul className="member-list">{rows.map(row => <li className="member-row" key={row.id}>
         <div><strong>{row.action.replaceAll("_", " ")}</strong><p>{row.source === "AUDIT" ? "Recorded audit action" : "Stock movement"} · {row.targetType}
           {row.outcome && ` · ${row.outcome}`}{row.quantity !== null && ` · ${row.quantity} units`}</p></div>
         <time dateTime={row.occurredAt}>{row.occurredAt.replace("T", " ").replace("Z", " UTC")}</time>
       </li>)}</ul>}
-      {cursor && <><p>More recorded events are available.</p><Button onClick={() => load(cursor)}>Older events</Button></>}
+      <PageNavigation label="Activity pages" page={page} count={rows.length} hasNext={nextCursor !== null}
+        loading={busy} unavailable={!!error} onPrevious={() => goToPage(null)}
+        onNext={() => { if (nextCursor) goToPage(nextCursor); }} />
     </GlassPanel>
   </section>;
 }
