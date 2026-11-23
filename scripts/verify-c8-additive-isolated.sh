@@ -78,6 +78,14 @@ original_sha_before="$(snapshot_original)"
 plan="$RUNNER_TEMP/c8-additive-$suffix-private.json"
 python3 scripts/generate-c8-demo.py --profile "$profile" --seed c8-fixture-proof-v1 --output "$plan"
 digest="$(sha256sum "$plan" | cut -d' ' -f1)"
+check_postflight() {
+  EXT_C8_PROOF_SCHEMA="$schema" EXT_C8_PROOF_CONFIRM="TEST ADDITIVE $schema" \
+    EXT_C8_PROOF_PORT=3306 EXT_C8_DEMO_PLAN="$plan" EXT_C8_DEMO_PLAN_SHA256="$digest" \
+    EXT_C8_PROOF_ORIGINAL_ORG_ID="$original_org" EXT_C8_PROOF_OWNER_ACCOUNT_ID="$owner_id" \
+    EXT_DB_USER="$runtime_user" EXT_DB_PASSWORD="$runtime_password" \
+    java -Xmx768m -jar extended/backend/target/extended-backend-0.1.0-SNAPSHOT.jar \
+    --c8-additive-demo-isolated-postflight
+}
 if [ "$inject_failure" -eq 1 ]; then
   # Prove a pre-import backup can be restored independently into a NEW database.
   # Only the disposable CI/MySQL container is used, never a live Northflank DB.
@@ -101,6 +109,10 @@ if [ "$inject_failure" -eq 1 ]; then
   grep -q 'INJECTED_ISOLATED_PARTIAL_FAILURE_AFTER_1_COMMITTED_WORKSPACES' "$failed_log"
   [ "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT COUNT(*) FROM organization WHERE demo_dataset_id IS NOT NULL;')" = "1" ]
   [ "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT COUNT(*) FROM allocation;')" = "12" ]
+  if check_postflight > "$RUNNER_TEMP/c8-additive-partial-postflight-refusal.log" 2>&1; then
+    echo "Independent postflight unexpectedly accepted the incomplete demo." >&2
+    exit 1
+  fi
   [ "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT COUNT(*) FROM user_account WHERE username_key="c8-demo-historical-actor";')" = "1" ]
   [ "$(snapshot_original)" = "$original_sha_before" ]
   [ "$(original_domain_snapshot)" = "$original_domain_sha_before" ]
@@ -170,6 +182,26 @@ expected="$(printf '%s\t%s\t%s\t%s\t1' "$((expected_workspaces+1))" "$expected_w
 owner_count="$(mysql_ci --batch --skip-column-names "$schema" -e \
   "SELECT COUNT(*) FROM membership m JOIN user_account u ON u.id=m.user_id JOIN organization o ON o.id=m.org_id WHERE u.username_key='additive-original-owner' AND m.role='OWNER' AND o.demo_plan_sha IS NOT NULL;")"
 [ "$owner_count" = "$expected_workspaces" ]
+# The independent reader must reject tampering and accept the repaired disposable fixture.
+if [ "$profile" = small ]; then
+  mysql_ci "$schema" -e "UPDATE organization SET display_name='Tampered Fictional Label' WHERE demo_reference_key='fictional-small-01';"
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-invalid-label.log" 2>&1; then
+    echo "Independent postflight accepted the wrong directory label" >&2
+    exit 1
+  fi
+  mysql_ci "$schema" -e "UPDATE organization SET display_name='Fictional Workspace 01' WHERE demo_reference_key='fictional-small-01';"
+  audit_id="$(mysql_ci --batch --skip-column-names "$schema" -e "
+    SELECT MIN(a.id) FROM audit_event a JOIN organization o ON o.id=a.org_id
+    WHERE o.demo_plan_sha IS NOT NULL AND a.action='C8_DEMO_REQUEST';")"
+  [ -n "$audit_id" ] && [ "$audit_id" != NULL ]
+  mysql_ci "$schema" -e "UPDATE audit_event SET action='C8_DEMO_TAMPER' WHERE id=$audit_id;"
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-invalid-audit.log" 2>&1; then
+    echo "Independent postflight accepted a tampered simulated audit action" >&2
+    exit 1
+  fi
+  mysql_ci "$schema" -e "UPDATE audit_event SET action='C8_DEMO_REQUEST' WHERE id=$audit_id;"
+  check_postflight
+fi
 # Full source-derived SQL conservation checks across every imported tenant.
 expected_events="$(python3 - "$plan" <<'PY'
 import json,sys

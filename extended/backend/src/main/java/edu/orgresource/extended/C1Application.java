@@ -48,7 +48,8 @@ public class C1Application {
             C8HostedDemoPostflight.run(args, System.getenv());
         } else if (Arrays.asList(args).contains(C8HostedDemoImportCommand.ARGUMENT)) {
             C8HostedDemoImportCommand.run(app, args, System.getenv());
-        } else if (Arrays.asList(args).contains(C8AdditiveProofCommand.ARGUMENT)) {
+        } else if (Arrays.asList(args).contains(C8AdditiveProofCommand.ARGUMENT)
+                || Arrays.asList(args).contains(C8AdditiveProofCommand.CHECK_ARGUMENT)) {
             C8AdditiveProofCommand.run(app, args, System.getenv());
         } else if (Arrays.asList(args).contains(C8HostedDemoPreflight.ARGUMENT)) {
             C8HostedDemoPreflight.run(args, System.getenv());
