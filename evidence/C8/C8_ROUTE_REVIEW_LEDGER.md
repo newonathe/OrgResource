@@ -2,6 +2,10 @@
 
 **As of:** 2026-11-23 (Asia/Manila) — **SOURCE INVENTORY VERIFIED; TECHNICAL ACCEPTANCE BLOCKED.**
 
+**CURRENT 2026-11-23 SOURCE-ONLY COMPLETION (new audit branch):** [Legacy + Workspace + metadata remaining 29-route oracle](C8_LEGACY_WORKSPACE_SOURCE_ORACLE_2026-11-23.md) covers the exact 29 previously unmapped source-declared operations, supplementing the existing 20 identity/governance, 11 Project Work/reporting, and 33 Inventory/Allocation source-policy rows. **93/93 source-level candidate policies are now mapped; this does NOT close the bounded v1 C8 gate.** Handler/path and unique-row parity is checked by `scripts/verify-c8-oracle-coverage.mjs` in CI. **Per-operation authorized HTTP positives, meaningful role/tenant/object negatives, denied-write MySQL postconditions, restricted IR4 receipt matching and independent reviewer sign-off remain OPEN/UNMAPPED.** The previous 64/93 note below is retained as a chronological prior checkpoint, not current coverage.
+
+
+
 
 **Latest source-only coverage, 2026-11-23:** [Inventory + Allocation oracle (33 method/path pairs)](C8_INVENTORY_ALLOCATION_SOURCE_ORACLE_2026-11-23.md), source reviewed at SHA `5b1c4826`. Added to [Project Work + Reporting (11)](C8_PROJECT_WORK_REPORTING_ORACLE_2026-11-23.md) and [identity/governance (20)](C8_IDENTITY_GOVERNANCE_ORACLE_2026-11-23.md), this yields **64/93 SOURCE-ORACLED, zero accepted on the strength of these drafts, 29 still missing source policy oracles**. These 33 were matched to the existing JSON annotated inventory; packaged route registration is not proven by this comparison. For **all 93**, meaningful authorized/denied HTTP, exact MySQL before/after effects, restricted IR4 receipt reconciliation and independent review remain UNMAPPED / NOT_RUN in this work. **C8 BLOCKED.** Prior C8 browser CI failure is tracked in [cycle 1](C8_CYCLE_01_REQUIREMENT_POST_DIAGNOSTIC_2026-11-23.md). No hosted classification fix can substitute for authorization acceptance.
 
