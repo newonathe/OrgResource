@@ -115,6 +115,50 @@ def main():
     asof = scalar("SELECT CAST(MIN(demo_as_of) AS CHAR) FROM organization "
                   "WHERE demo_plan_sha IS NOT NULL")
     require(bool(re.fullmatch(r"\d{4}-\d{2}-\d{2}", asof)), "C9_INVALID_AS_OF")
+    # The real Resource page loads the visible Resource IDs first, then issues
+    # AllocationRepository.findInventoryPageBalances for only those IDs.
+    # Preserve that two-query shape. Do not print IDs outside this process.
+    resource_ids = mysql(
+        f"SELECT r.id FROM resource r WHERE r.organization_id={org} "
+        f"ORDER BY r.id LIMIT 50").splitlines()
+    require(0 < len(resource_ids) <= 50 and
+            all(re.fullmatch(r"[1-9][0-9]*", value) for value in resource_ids) and
+            len(resource_ids) == len(set(resource_ids)),
+            "C9_VISIBLE_RESOURCE_IDS_INVALID")
+    ids = ",".join(resource_ids)
+    # Native SQL shape from AllocationRepository.findInventoryPageBalances,
+    # with validated fixture values expanded in place of org/ids/sampledNow.
+    # The sampledNow is demo-as-of midnight, NOT a production wall clock.
+    full_balances = (
+        "SELECT r.id AS resource_id,"
+        "COALESCE(l.ledger_total,0) AS ledger_total,"
+        "COALESCE(l.ledger_issued,0) AS ledger_issued,"
+        "COALESCE(c.holds,0) AS holds,"
+        "COALESCE(c.issued,0) AS issued FROM resource r "
+        "LEFT JOIN (SELECT organization_id,resource_id,"
+        "SUM(delta_total) AS ledger_total,SUM(delta_issued) AS ledger_issued "
+        f"FROM stock_movement WHERE organization_id={org} AND resource_id IN ({ids}) "
+        "GROUP BY organization_id,resource_id) l "
+        "ON l.organization_id=r.organization_id AND l.resource_id=r.id "
+        "LEFT JOIN (SELECT q.organization_id,q.resource_id,"
+        f"SUM(CASE WHEN a.status='APPROVED' AND p.end_at>'{asof} 00:00:00' "
+        "THEN a.quantity ELSE 0 END) AS holds,"
+        "SUM(CASE WHEN a.status='ISSUED' THEN a.quantity ELSE 0 END) AS issued "
+        "FROM allocation a JOIN resource_requirement q "
+        "ON q.id=a.requirement_id AND q.organization_id=a.organization_id "
+        "JOIN project p ON p.id=q.project_id AND p.organization_id=a.organization_id "
+        f"WHERE a.organization_id={org} AND q.resource_id IN ({ids}) "
+        "GROUP BY q.organization_id,q.resource_id) c "
+        "ON c.organization_id=r.organization_id AND c.resource_id=r.id "
+        f"WHERE r.organization_id={org} AND r.id IN ({ids})"
+    )
+    # Running a read-only SELECT checks that the native projection returns
+    # exactly one row per page Resource; values are never printed.
+    balance_rows = mysql(full_balances).splitlines()
+    require(len(balance_rows) == len(resource_ids) and
+            all(len(row.split("\t")) == 5 for row in balance_rows),
+            "C9_NATIVE_PAGE_BALANCES_INCOMPLETE")
+
     # Trace: C1Service workspace pages -> ResourceRepository, AllocationRepository,
     # ResourceRequirementRepository; overview -> AllocationRepository;
     # ledger balance -> AllocationRepository.INVENTORY_LEDGER_AGGREGATE.
@@ -138,6 +182,7 @@ def main():
             f"SELECT m.resource_id,SUM(m.delta_total),SUM(m.delta_issued) "
             f"FROM stock_movement m WHERE m.organization_id={org} "
             f"GROUP BY m.resource_id ORDER BY m.resource_id LIMIT 51"),
+        "native_resource_page_balances": full_balances,
         "overview_status_counts": (
             f"SELECT SUM(a.status='PENDING'),SUM(a.status='ISSUED'),"
             f"SUM(a.status='ISSUED' AND p.end_at<='{asof} 00:00:00'),"
@@ -160,6 +205,7 @@ def main():
         "engine": version, "fixture": "fictional intermediate (8 orgs/960 allocations)",
         "sql": "SQL analogues, not exact Hibernate SQL",
         "time_scope": "MySQL EXPLAIN ANALYZE top iterator, not HTTP/SLA",
+        "native_page_balance_source": "AllocationRepository.findInventoryPageBalances, parameter-expanded",
         "queries": rows}, sort_keys=True, separators=(",", ":")))
     print("C9_ACCEPTED_FULL_96_PERFORMANCE=NOT_RUN; C9_INDEX_CHANGES=NONE; "
           "C8_INDEPENDENT_ACCEPTANCE=BLOCKED")
