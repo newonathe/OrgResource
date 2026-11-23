@@ -37,5 +37,30 @@ for (const key of expectedKeys.keys()) {
 }
 const alreadyMapped = inventory.routes.length - expected.length;
 if (alreadyMapped !== 64) throw new Error("Previously source-oracled route partition drift");
+// Cross-check the complete four-document source-oracle register as well.
+// The first three source oracles have different, historically preserved table
+// formats. Their source-policy rows are not independent acceptance receipts.
+const readOracle = file => fs.readFileSync(path.join(root, "evidence/C8", file), "utf8");
+const identityText = readOracle("C8_IDENTITY_GOVERNANCE_ORACLE_2026-11-23.md");
+const workText = readOracle("C8_PROJECT_WORK_REPORTING_ORACLE_2026-11-23.md");
+const stockText = readOracle("C8_INVENTORY_ALLOCATION_SOURCE_ORACLE_2026-11-23.md");
+const identityKeys = [...identityText.matchAll(/^\|\s*(GET|POST)\s+`(\/api\/[^`]+)`\s*\|/gm)]
+  .map(row => row[1] + " " + row[2]);
+const projectWorkKeys = [...workText.matchAll(/^\|\s*(GET|POST)\s+(\/(?:projects|requirements|audit|activity|exports)[^|]*)\s*\|/gm)]
+  .map(row => row[1] + " /api/v2/orgs/{organizationId}" + row[2].trim());
+const inventoryKeys = [...stockText.matchAll(/^\|\s*(?:I|L)\d{2}\s*\|\s*`((?:GET|POST) \/api\/[^`]+)`\s*\|/gm)]
+  .map(row => row[1]);
+const allOracleKeys = [...identityKeys, ...projectWorkKeys, ...inventoryKeys, ...rows.map(row => row[2])];
+if ([identityKeys.length, projectWorkKeys.length, inventoryKeys.length, rows.length].join(",") !== "20,11,33,29") {
+  throw new Error("Four documented source policy oracle counts changed");
+}
+const allKeys = new Set(inventory.routes.map(route => route.verb + " " + route.path));
+if (allOracleKeys.length !== 93 || new Set(allOracleKeys).size !== 93 ||
+    allOracleKeys.some(key => !allKeys.has(key)) ||
+    [...allKeys].some(key => !allOracleKeys.includes(key))) {
+  throw new Error("The four source oracles no longer match all 93 declared Jersey method/path pairs");
+}
+console.log("PASS: all 93 routes occur exactly once across the four source-policy documents.");
+
 console.log("PASS: all 29 remaining policy rows match the 93-route inventory and exact Jersey handlers.");
 console.log("LIMIT: source documentation only; no authorization, MySQL effects or independent review proved.");
