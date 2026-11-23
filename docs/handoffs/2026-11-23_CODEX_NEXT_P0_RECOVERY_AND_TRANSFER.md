@@ -1,5 +1,14 @@
 # P0 Next Codex/Operator Cycle — recovery-tested demo importer, exact Northflank transfer
 
+## 2026-11-23 continuation: original-data baseline release gate, confirmed CI and DEC-D01
+
+**Verified CI:** [#45108552581](https://github.com/newonathe/OrgResource/actions/runs/45108552581) is ALL GREEN for `a66527cb2c5a5f98167dc741cf035069c216dd1f`: Java 8/MySQL, React, and Extended C/isolated MySQL/Newman/Playwright. Original baseline `--c8-hosted-original-baseline` CAPTURE/VERIFY uses SELECT-only JDBC and keyed HMAC-SHA256 of the original owner's credentials/account plus **15 original-organization related tables**; CI proves isolated acceptance and refusals for changing the original organization. The latest incremental credential-hash tamper proof has been committed and its exact CI run must be checked separately before claiming passing.
+
+**P0 runbook now requires:** a separate private operator's pre-import CAPTURE using a random off-repository 32-byte HMAC key, private 0600 baseline manifest retained off-host, and mandatory post-import VERIFY on the *same* schema/server fingerprint before lifting maintenance. A clone needs its own baseline because server UUID differs. The original-data baseline only covers the original org and owner: independent backup/restore, checks of other preexisting orgs/users, new cohort postflight and real browser authorization remain required. [Operator commands and safeguards](../deployment/P0_NORTHFLANK_MANUAL_JOB_COMMAND_2026-11-23.md). **LIVE_IMPORT_NOT_RUN.**
+
+**New future product decision:** [DEC-D01](../decisions/DEC_D01_DEPARTMENT_VISIBILITY_AND_REQUESTS_2026-11-23.md), [issue #27](https://github.com/newonathe/OrgResource/issues/27): one proposed home department **per organization membership** (retain multi-org account) with resource stewardship, minimized within-org cross-department catalog, and Project Requirements/authorized requests. **PROPOSED ONLY, NOT IMPLEMENTED.** Do not mix its V8 migration/API changes into V7-gated Northflank P0 importer or mutate the approved private plan. No change to frozen Course A.
+
+
 ## P0 latest: stronger plan-to-MySQL read-only integrity, 2026-11-23
 
 - **Verified baseline:** `35e2a53c572cf247ea48e91864428f19098edb89` passed [all three CI jobs #45104954191](https://github.com/newonathe/OrgResource/actions/runs/45104954191), including the isolated partial-import/restore and initial independent postflight with deliberate label/audit-action tampering. The original Course A is unchanged.

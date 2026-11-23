@@ -247,7 +247,20 @@ if [ "$profile" = small ]; then
     echo "Original-data baseline accepted an altered original organization" >&2
     exit 1
   fi
+  grep -q 'C8_ORIGINAL_BASELINE_MISMATCH' "$RUNNER_TEMP/c8-baseline-original-tamper-refusal.log"
   mysql_ci "$schema" -e "UPDATE organization SET display_name='Isolated Original Workspace' WHERE slug='isolated-original-workspace';"
+  original_baseline VERIFY
+  # A modified original password hash must be rejected independently of
+  # synthetic Project/Allocation consistency; restore exact bytes afterward.
+  mysql_ci "$schema" -e "UPDATE local_credential SET password_hash=CONCAT(password_hash,'x')
+    WHERE user_id=(SELECT id FROM user_account WHERE username_key='additive-original-owner');"
+  if original_baseline VERIFY > "$RUNNER_TEMP/c8-baseline-credential-tamper-refusal.log" 2>&1; then
+    echo "Original-data baseline accepted a changed original credential hash" >&2
+    exit 1
+  fi
+  grep -q 'C8_ORIGINAL_BASELINE_MISMATCH' "$RUNNER_TEMP/c8-baseline-credential-tamper-refusal.log"
+  mysql_ci "$schema" -e "UPDATE local_credential SET password_hash=LEFT(password_hash,CHAR_LENGTH(password_hash)-1)
+    WHERE user_id=(SELECT id FROM user_account WHERE username_key='additive-original-owner');"
   original_baseline VERIFY
   check_postflight
 fi
