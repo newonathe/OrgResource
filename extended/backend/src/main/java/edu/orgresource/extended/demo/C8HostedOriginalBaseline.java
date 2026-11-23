@@ -26,28 +26,23 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  * Operator-only, read-only database safeguard for original OrgResource data.
  * CAPTURE creates a mode-0600 local fingerprint manifest (never changes DB).
+ * VERIFY checks all pre-existing V7 database rows under CAPTURE-time
+ * per-table primary-key watermarks; new additive rows have higher IDs.
  * VERIFY checks the same ORIGINAL account, credential and organization rows
  * after fictional additive import. It does not replace an actual DB backup.
  */
 public final class C8HostedOriginalBaseline {
     public static final String ARGUMENT = "--c8-hosted-original-baseline";
-    private static final String VERSION = "orgresource-c8-original-baseline-v1";
+    private static final String VERSION = "orgresource-c8-original-baseline-v2-all-original-rows";
+    // V7 persistent records. The non-id credential PK is user_id; CAPTURE
+    // binds it to the pre-import user_account.id ceiling, including accounts
+    // that did not previously have a local credential.
     private static final String[][] TABLES = {
-            {"organization", "id", "org"},
-            {"user_account", "id", "owner"},
-            {"local_credential", "user_id", "owner"},
-            {"account_recovery_code", "user_id", "owner"},
-            {"membership", "org_id", "org"},
-            {"invitation", "org_id", "org"},
-            {"ownership_transfer", "org_id", "org"},
-            {"audit_event", "org_id", "org"},
-            {"department", "organization_id", "org"},
-            {"project", "organization_id", "org"},
-            {"resource", "organization_id", "org"},
-            {"resource_requirement", "organization_id", "org"},
-            {"allocation", "organization_id", "org"},
-            {"stock_movement", "organization_id", "org"},
-            {"idempotency_key", "organization_id", "org"}
+            {"organization","id"}, {"user_account","id"}, {"local_credential","user_id"},
+            {"account_recovery_code","id"}, {"membership","id"}, {"invitation","id"},
+            {"ownership_transfer","id"}, {"audit_event","id"}, {"department","id"},
+            {"project","id"}, {"resource","id"}, {"resource_requirement","id"},
+            {"allocation","id"}, {"stock_movement","id"}, {"idempotency_key","id"}
     };
 
     private C8HostedOriginalBaseline() { }
@@ -92,6 +87,16 @@ public final class C8HostedOriginalBaseline {
                         owner);
                 if (pairCount(db,originalOrg,ownerAccount) != 1)
                     throw new IllegalStateException("The original credentialed owner/organization pair differs.");
+                Properties saved = null;
+                if ("VERIFY".equals(mode)) {
+                    if (!Files.isRegularFile(path,LinkOption.NOFOLLOW_LINKS)
+                            || !PosixFilePermissions.toString(Files.getPosixFilePermissions(path)).equals("rw-------"))
+                        throw new IllegalStateException("Baseline evidence file absent or not private mode 0600.");
+                    saved = new Properties();
+                    try(InputStream in=Files.newInputStream(path)) { saved.load(in); }
+                    if (!VERSION.equals(saved.getProperty("version")))
+                        throw new IllegalStateException("Original baseline version mismatch; STOP.");
+                }
                 Properties state = new Properties();
                 state.setProperty("version", VERSION);
                 state.setProperty("schema",schema);
@@ -99,12 +104,17 @@ public final class C8HostedOriginalBaseline {
                 state.setProperty("originalOrg", org.toString());
                 state.setProperty("originalOwner", owner.toString());
                 state.setProperty("tableCount",Integer.toString(TABLES.length));
+                long originalUserCeiling = "CAPTURE".equals(mode)
+                        ? maxKey(db,"user_account","id") : readCeiling(saved,"user_account.maxid");
                 for (String[] item : TABLES) {
-                    String table = item[0], column = item[1];
-                    long selectedId = "owner".equals(item[2]) ? ownerAccount : originalOrg;
-                    TableDigest digested = digestTable(db,table,column,selectedId,key);
-                    state.setProperty(table+".count",Integer.toString(digested.rows));
-                    state.setProperty(table+".hmac",digested.hex);
+                    String table=item[0], pk=item[1];
+                    long max = "CAPTURE".equals(mode)
+                            ? ("local_credential".equals(table) ? originalUserCeiling : maxKey(db,table,pk))
+                            : readCeiling(saved,table+".maxid");
+                    TableDigest result = digestTable(db,table,pk,max,key);
+                    state.setProperty(table+".maxid",Long.toString(max));
+                    state.setProperty(table+".count",Integer.toString(result.rows));
+                    state.setProperty(table+".hmac",result.hex);
                 }
                 db.rollback();
                 if ("CAPTURE".equals(mode)) {
@@ -117,15 +127,10 @@ public final class C8HostedOriginalBaseline {
                     System.out.println("C8_ORIGINAL_BASELINE_CAPTURED: private mode-0600 manifest, "
                             + TABLES.length+" original-data tables. No database writes.");
                 } else {
-                    if (!Files.isRegularFile(path,LinkOption.NOFOLLOW_LINKS)
-                            || !PosixFilePermissions.toString(Files.getPosixFilePermissions(path)).equals("rw-------"))
-                        throw new IllegalStateException("Baseline evidence file is absent or not private mode 0600.");
-                    Properties saved = new Properties();
-                    try (InputStream in=Files.newInputStream(path)) { saved.load(in); }
                     if (!saved.equals(state))
-                        throw new IllegalStateException("C8_ORIGINAL_BASELINE_MISMATCH: Original owner, credentials or organization data changed; STOP.");
+                        throw new IllegalStateException("C8_ORIGINAL_BASELINE_MISMATCH: Pre-existing V7 rows changed or were removed; STOP.");
                     System.out.println("C8_ORIGINAL_BASELINE_READ_ONLY_OK: all "+TABLES.length
-                            +" original-state table fingerprints match. This is not backup/restore evidence.");
+                            +" pre-existing V7 tables match. This is not backup/restore evidence.");
                 }
             }
         } finally {
@@ -133,31 +138,41 @@ public final class C8HostedOriginalBaseline {
         }
     }
 
-    private static TableDigest digestTable(Connection db,String table,String column,long id,byte[] key) throws Exception {
-        // The identifiers are compiled-in fixed table and column strings; never user-controlled SQL.
+    private static TableDigest digestTable(Connection db,String table,String pk,long ceiling,byte[] key) throws Exception {
+        // Identifiers are hard-coded V7 table/PK literals, not operator input.
         Mac mac=Mac.getInstance("HmacSHA256");
         mac.init(new SecretKeySpec(key,"HmacSHA256"));
         update(mac,table.getBytes(StandardCharsets.UTF_8));
         int rows=0;
-        String sql="SELECT * FROM "+table+" WHERE "+column+"=? ORDER BY "
-                + (table.equals("local_credential") ? "user_id" : "id");
-        try (PreparedStatement q=db.prepareStatement(sql)) {
-            q.setLong(1,id);
-            try (ResultSet rs=q.executeQuery()) {
+        try (PreparedStatement q=db.prepareStatement("SELECT * FROM "+table+" WHERE "+pk+"<=? ORDER BY "+pk)) {
+            q.setLong(1,ceiling);
+            try(ResultSet rs=q.executeQuery()) {
                 ResultSetMetaData md=rs.getMetaData();
                 while(rs.next()) {
                     rows=Math.addExact(rows,1);
-                    mac.update((byte)0x51); // unambiguous row boundary
-                    for(int col=1;col<=md.getColumnCount();col++) {
-                        // getBytes preserves binary UUIDs, encrypted phone and hashed token
-                        // values without exposing them as text or logs.
-                        update(mac,rs.getBytes(col));
-                    }
+                    mac.update((byte)0x51);
+                    for(int col=1;col<=md.getColumnCount();col++) update(mac,rs.getBytes(col));
                 }
             }
         }
         mac.update(ByteBuffer.allocate(4).putInt(rows).array());
         return new TableDigest(rows,HexFormat.of().formatHex(mac.doFinal()));
+    }
+
+    private static long maxKey(Connection db,String table,String pk) throws Exception {
+        try(PreparedStatement q=db.prepareStatement("SELECT COALESCE(MAX("+pk+"),0) FROM "+table);
+            ResultSet rs=q.executeQuery()) {
+            if(!rs.next() || rs.getLong(1)<0) throw new IllegalStateException("Invalid original-data watermark.");
+            return rs.getLong(1);
+        }
+    }
+
+    private static long readCeiling(Properties state,String name) {
+        String raw=state.getProperty(name);
+        if(raw==null || !raw.matches("(?:0|[1-9][0-9]{0,18})"))
+            throw new IllegalStateException("Invalid or missing original-data watermark.");
+        try { return Long.parseLong(raw); }
+        catch(NumberFormatException overflow) { throw new IllegalStateException("Original-data watermark overflow."); }
     }
 
     private static void update(Mac mac, byte[] bytes) {

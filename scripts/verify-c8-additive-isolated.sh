@@ -63,6 +63,21 @@ original_domain_snapshot() {
   JOIN resource r ON r.organization_id=o.id WHERE o.slug='isolated-original-workspace';"     | sha256sum | cut -d' ' -f1
 }
 original_domain_sha_before="$(original_domain_snapshot)"
+# Add a second original organization/account BEFORE the HMAC baseline, ensuring
+# the safeguard also covers originals outside the nominated owner/org.
+mysql_ci "$schema" <<'SQL'
+INSERT INTO organization(public_id,slug,display_name,status,version,created_at,updated_at)
+VALUES(UUID_TO_BIN(UUID(),0),'isolated-other-original','Other Original Org','ACTIVE',0,UTC_TIMESTAMP(6),UTC_TIMESTAMP(6));
+INSERT INTO user_account(public_id,username_key,display_name,status,credential_version,version,created_at,updated_at)
+VALUES(UUID_TO_BIN(UUID(),0),'other-original-user','Other Original User','ACTIVE',0,0,UTC_TIMESTAMP(6),UTC_TIMESTAMP(6));
+INSERT INTO membership(public_id,org_id,user_id,role,status,version,created_at,updated_at)
+SELECT UUID_TO_BIN(UUID(),0),o.id,u.id,'MEMBER','ACTIVE',0,UTC_TIMESTAMP(6),UTC_TIMESTAMP(6)
+FROM organization o CROSS JOIN user_account u WHERE o.slug='isolated-other-original'
+AND u.username_key='other-original-user';
+INSERT INTO department(organization_id,name,name_key,version)
+SELECT id,'Other original department','other original department',0
+FROM organization WHERE slug='isolated-other-original';
+SQL
 # Independent 15-table original-data HMAC manifest. Remains in RUNNER_TEMP, never
 # uploaded or written to the application schema. Verification cannot rewrite it.
 baseline_file="$RUNNER_TEMP/c8-private-original-$suffix.properties"
@@ -198,7 +213,7 @@ statuses = plan['final_states']
 print(plan['counts']['resources'] + statuses['CONSUMED'] + statuses['ISSUED'] + 2 * statuses['RETURNED'])
 PY
 )"
-expected="$(printf '%s\t%s\t%s\t%s\t1' "$((expected_workspaces+1))" "$expected_workspaces" "$expected_allocations" "$expected_movement_count")"
+expected="$(printf '%s\t%s\t%s\t%s\t1' "$((expected_workspaces+2))" "$expected_workspaces" "$expected_allocations" "$expected_movement_count")"
 [ "$counts" = "$expected" ]
 owner_count="$(mysql_ci --batch --skip-column-names "$schema" -e \
   "SELECT COUNT(*) FROM membership m JOIN user_account u ON u.id=m.user_id JOIN organization o ON o.id=m.org_id WHERE u.username_key='additive-original-owner' AND m.role='OWNER' AND o.demo_plan_sha IS NOT NULL;")"
@@ -261,6 +276,21 @@ if [ "$profile" = small ]; then
   grep -q 'C8_ORIGINAL_BASELINE_MISMATCH' "$RUNNER_TEMP/c8-baseline-credential-tamper-refusal.log"
   mysql_ci "$schema" -e "UPDATE local_credential SET password_hash=LEFT(password_hash,CHAR_LENGTH(password_hash)-1)
     WHERE user_id=(SELECT id FROM user_account WHERE username_key='additive-original-owner');"
+  original_baseline VERIFY
+  mysql_ci "$schema" -e "UPDATE organization SET display_name='Tampered Other Original' WHERE slug='isolated-other-original';"
+  if original_baseline VERIFY > "$RUNNER_TEMP/c8-other-org-tamper.log" 2>&1; then
+    echo "Original-data verifier accepted another original organization mutation" >&2
+    exit 1
+  fi
+  grep -q 'C8_ORIGINAL_BASELINE_MISMATCH' "$RUNNER_TEMP/c8-other-org-tamper.log"
+  mysql_ci "$schema" -e "UPDATE organization SET display_name='Other Original Org' WHERE slug='isolated-other-original';"
+  mysql_ci "$schema" -e "UPDATE user_account SET display_name='Tampered Other User' WHERE username_key='other-original-user';"
+  if original_baseline VERIFY > "$RUNNER_TEMP/c8-other-account-tamper.log" 2>&1; then
+    echo "Original-data verifier accepted another original account mutation" >&2
+    exit 1
+  fi
+  grep -q 'C8_ORIGINAL_BASELINE_MISMATCH' "$RUNNER_TEMP/c8-other-account-tamper.log"
+  mysql_ci "$schema" -e "UPDATE user_account SET display_name='Other Original User' WHERE username_key='other-original-user';"
   original_baseline VERIFY
   check_postflight
 fi

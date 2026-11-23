@@ -1,5 +1,10 @@
 # P0 Next Codex/Operator Cycle — recovery-tested demo importer, exact Northflank transfer
 
+## Next P0 cycle: global original-row HMAC baseline, 2026-11-23 (CI pending)
+
+**SOURCE UPDATED / CI PENDING:** the original-data baseline now includes **all pre-existing rows** across all 15 V7 domain/account tables using capture-time PK watermarks and the private HMAC key; newly created historical demo rows append above those watermarks. Version is V2, not silently compatible with V1. Isolated CI now seeds an **additional existing org and account** before capture, checks both remain unchanged after import, then proves tampering with each causes read-only mismatch. The schema and web routes remain unchanged. This is not full native backup, full 96-plan rehearsal or hosted execution. See [P0 operator runbook](../deployment/P0_NORTHFLANK_MANUAL_JOB_COMMAND_2026-11-23.md). **Check exact GitHub run before reporting green.** DEC-D01 remains proposed; the frozen Course A is unchanged.
+
+
 ## 2026-11-23 continuation: original-data baseline release gate, confirmed CI and DEC-D01
 
 **Verified CI:** [#45108552581](https://github.com/newonathe/OrgResource/actions/runs/45108552581) is ALL GREEN for `a66527cb2c5a5f98167dc741cf035069c216dd1f`: Java 8/MySQL, React, and Extended C/isolated MySQL/Newman/Playwright. Original baseline `--c8-hosted-original-baseline` CAPTURE/VERIFY uses SELECT-only JDBC and keyed HMAC-SHA256 of the original owner's credentials/account plus **15 original-organization related tables**; CI proves isolated acceptance and refusals for changing the original organization. The latest incremental credential-hash tamper proof has been committed and its exact CI run must be checked separately before claiming passing.
