@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
 # Isolated Java/MySQL proof ONLY. Hard stop for any non-disposable remote target.
 set -euo pipefail
-profile="${1:-small}"
-case "$profile" in
-  small) expected_workspaces=3; expected_allocations=36 ;;
-  intermediate) expected_workspaces=8; expected_allocations=960 ;;
-  *) echo "Only disposable small or intermediate profiles are accepted" >&2; exit 1 ;;
+mode="${1:-small}"
+inject_failure=0
+case "$mode" in
+  small) profile=small; expected_workspaces=3; expected_allocations=36 ;;
+  intermediate) profile=intermediate; expected_workspaces=8; expected_allocations=960 ;;
+  small-partial) profile=small; expected_workspaces=3; expected_allocations=36; inject_failure=1 ;;
+  *) echo "Only disposable small, intermediate, or small-partial profiles are accepted" >&2; exit 1 ;;
 esac
-schema="orgresource_c8_additive_ci_fixture_$profile"
-runtime_user="c8_add_run_$profile"
-migrator_user="c8_add_mig_$profile"
+suffix="${mode//-/_}"
+schema="orgresource_c8_additive_ci_fixture_$suffix"
+runtime_user="c8_add_run_$suffix"
+migrator_user="c8_add_mig_$suffix"
 runtime_password="$(openssl rand -hex 24)"
 migration_password="$(openssl rand -hex 24)"
 owner_password="$(openssl rand -hex 24)"
@@ -72,9 +75,45 @@ snapshot_original() {
   mysql_ci --batch --skip-column-names "$schema" -e "$original_snapshot_sql" | sha256sum | cut -d' ' -f1
 }
 original_sha_before="$(snapshot_original)"
-plan="$RUNNER_TEMP/c8-additive-$profile-private.json"
+plan="$RUNNER_TEMP/c8-additive-$suffix-private.json"
 python3 scripts/generate-c8-demo.py --profile "$profile" --seed c8-fixture-proof-v1 --output "$plan"
 digest="$(sha256sum "$plan" | cut -d' ' -f1)"
+if [ "$inject_failure" -eq 1 ]; then
+  # This branch is an intentionally aborted 3-org CI fixture in its own disposable DB.
+  failed_log="$RUNNER_TEMP/c8-additive-partial-injected-private.log"
+  if EXT_C8_PROOF_SCHEMA="$schema" EXT_C8_PROOF_CONFIRM="TEST ADDITIVE $schema" \
+    EXT_C8_PROOF_PORT=3306 EXT_C8_DEMO_PLAN="$plan" EXT_C8_DEMO_PLAN_SHA256="$digest" \
+    EXT_C8_PROOF_ORIGINAL_ORG_ID="$original_org" EXT_C8_PROOF_OWNER_ACCOUNT_ID="$owner_id" \
+    EXT_C8_PROOF_FAIL_AFTER=1 EXT_DB_USER="$runtime_user" EXT_DB_PASSWORD="$runtime_password" \
+    java -Xmx768m -jar extended/backend/target/extended-backend-0.1.0-SNAPSHOT.jar \
+    --c8-additive-demo-isolated-proof > "$failed_log" 2>&1; then
+    echo "An intentionally interrupted fixture unexpectedly completed." >&2
+    exit 1
+  fi
+  grep -q 'INJECTED_ISOLATED_PARTIAL_FAILURE_AFTER_1_COMMITTED_WORKSPACES' "$failed_log"
+  [ "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT COUNT(*) FROM organization WHERE demo_dataset_id IS NOT NULL;')" = "1" ]
+  [ "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT COUNT(*) FROM allocation;')" = "12" ]
+  [ "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT COUNT(*) FROM user_account WHERE username_key="c8-demo-historical-actor";')" = "1" ]
+  [ "$(snapshot_original)" = "$original_sha_before" ]
+  [ "$(original_domain_snapshot)" = "$original_domain_sha_before" ]
+  # The next attempt must refuse the partial database and leave every row intact.
+  before="$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT (SELECT COUNT(*) FROM organization),(SELECT COUNT(*) FROM allocation),(SELECT COUNT(*) FROM stock_movement);')"
+  if EXT_C8_PROOF_SCHEMA="$schema" EXT_C8_PROOF_CONFIRM="TEST ADDITIVE $schema" \
+    EXT_C8_PROOF_PORT=3306 EXT_C8_DEMO_PLAN="$plan" EXT_C8_DEMO_PLAN_SHA256="$digest" \
+    EXT_C8_PROOF_ORIGINAL_ORG_ID="$original_org" EXT_C8_PROOF_OWNER_ACCOUNT_ID="$owner_id" \
+    EXT_DB_USER="$runtime_user" EXT_DB_PASSWORD="$runtime_password" \
+    java -Xmx768m -jar extended/backend/target/extended-backend-0.1.0-SNAPSHOT.jar \
+    --c8-additive-demo-isolated-proof > "$RUNNER_TEMP/c8-additive-partial-repeat-private.log" 2>&1; then
+    echo "Retry against a partial database unexpectedly succeeded." >&2
+    exit 1
+  fi
+  after="$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT (SELECT COUNT(*) FROM organization),(SELECT COUNT(*) FROM allocation),(SELECT COUNT(*) FROM stock_movement);')"
+  [ "$before" = "$after" ]
+  [ "$(snapshot_original)" = "$original_sha_before" ]
+  [ "$(original_domain_snapshot)" = "$original_domain_sha_before" ]
+  echo "ISOLATED_PARTIAL_FAILURE_PROOF_PASSED: original data unchanged, 1 committed demo workspace, retry refused; restore required before live rerun."
+  exit 0
+fi
 EXT_C8_PROOF_SCHEMA="$schema" EXT_C8_PROOF_CONFIRM="TEST ADDITIVE $schema" \
   EXT_C8_PROOF_PORT=3306 EXT_C8_DEMO_PLAN="$plan" EXT_C8_DEMO_PLAN_SHA256="$digest" \
   EXT_C8_PROOF_ORIGINAL_ORG_ID="$original_org" EXT_C8_PROOF_OWNER_ACCOUNT_ID="$owner_id" \

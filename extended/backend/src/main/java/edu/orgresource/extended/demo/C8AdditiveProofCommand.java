@@ -36,6 +36,9 @@ public final class C8AdditiveProofCommand {
         if (!(("LOCAL_ONLY_SMALL_TEST".equals(scope) && count == 3)
                 || ("LOCAL_ONLY_INTERMEDIATE_TEST".equals(scope) && count == 8)))
             throw new IllegalArgumentException("This acceptance-only command permits only three or eight fictional test workspaces.");
+        String injected = env.getOrDefault("EXT_C8_PROOF_FAIL_AFTER", "0");
+        if (!("0".equals(injected) || ("1".equals(injected) && count == 3)))
+            throw new IllegalArgumentException("Fault injection is only allowed after one small fictional workspace.");
         UUID originalOrg = UUID.fromString(required(env, "EXT_C8_PROOF_ORIGINAL_ORG_ID"));
         UUID owner = UUID.fromString(required(env, "EXT_C8_PROOF_OWNER_ACCOUNT_ID"));
         app.setWebApplicationType(WebApplicationType.NONE);
@@ -48,7 +51,8 @@ public final class C8AdditiveProofCommand {
                     "spring.flyway.enabled", "false",
                     "c1.sms.enabled", "false", "c1.reminder.mode", "DISABLED"))));
         try (ConfigurableApplicationContext context = app.run()) {
-            context.getBean(C8DemoImporter.class).importAdditionalPlanForIsolatedProof(plan, digest, originalOrg, owner);
+            context.getBean(C8DemoImporter.class).importAdditionalPlanForIsolatedProof(
+                    plan, digest, originalOrg, owner, Integer.parseInt(injected));
         }
     }
 

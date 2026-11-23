@@ -135,6 +135,14 @@ public class C8DemoImporter {
      */
     public void importAdditionalPlanForIsolatedProof(JsonNode plan, String planSha,
             UUID originalOrganizationId, UUID existingOwnerId) {
+        importAdditionalPlanForIsolatedProof(plan, planSha, originalOrganizationId, existingOwnerId, 0);
+    }
+
+    /** Fault injection is strictly reachable through the disposable loopback proof command. */
+    public void importAdditionalPlanForIsolatedProof(JsonNode plan, String planSha,
+            UUID originalOrganizationId, UUID existingOwnerId, int injectFailureAfter) {
+        if (injectFailureAfter < 0 || injectFailureAfter > 8)
+            throw new IllegalArgumentException("Isolated failure point is outside the fixed disposable fixture.");
         if (organizations.count() < 1 || accounts.count() < 1
                 || jdbc.queryForObject("SELECT MAX(CAST(version AS UNSIGNED)) FROM flyway_schema_history WHERE success=1", Integer.class) != 7)
             throw new IllegalStateException("The additive proof requires an existing V7 organization schema.");
@@ -175,7 +183,7 @@ public class C8DemoImporter {
         LocalDateTime wall = LocalDateTime.ofInstant(wallClock.instant(), ZoneOffset.UTC);
         UserAccount historicalActor = transaction.execute(status -> accounts.saveAndFlush(
                 new UserAccount("c8-demo-historical-actor", "Simulated historical actor", wall)));
-        int requests = 0, actions = 0;
+        int requests = 0, actions = 0, imported = 0;
         for (JsonNode slice : array(plan, "organizations")) {
             requests = Math.addExact(requests, array(slice, "allocations").size());
             actions = Math.addExact(actions, array(slice, "events").size());
@@ -195,6 +203,10 @@ public class C8DemoImporter {
                         SELECT COUNT(*) FROM membership WHERE org_id=? AND role='OWNER' AND status='ACTIVE'
                         """, imported.id);
             });
+            imported++;
+            if (injectFailureAfter > 0 && imported == injectFailureAfter)
+                throw new IllegalStateException("INJECTED_ISOLATED_PARTIAL_FAILURE_AFTER_" + imported
+                        + "_COMMITTED_WORKSPACES");
         }
         long expectedRequests = requests, expectedActions = actions;
         assertCount(keys.size(), "SELECT COUNT(*) FROM organization WHERE demo_plan_sha=?", planSha);
