@@ -2,6 +2,8 @@
 
 > **ACTIONABLE FIRST READ (2026-11-23):** [DO_NOW_MUST_DO_STOP_AND_CAPABILITIES.md](DO_NOW_MUST_DO_STOP_AND_CAPABILITIES.md) — fresh priority reset, exact actions ChatGPT can execute today, host-only blockers, academic obligations and explicit STOP list. The older detailed material below is reference, not a command to restart planning. **`LIVE_IMPORT_NOT_RUN`.**
 
+> **CURRENT C8 REVIEW POINTER (2026-11-24 PHT):** [Current status](CURRENT_STATUS_AND_NEXT_ACTIONS.md) now distinguishes the historical November 23 hosted-P0 snapshot from newer draft [PR #39](https://github.com/newonathe/OrgResource/pull/39) (20 identity route mapping, exact-head CI green) and stacked draft [PR #40](https://github.com/newonathe/OrgResource/pull/40) (final 29 Legacy/Workspace route mapping). The resulting **93/93 source-to-test navigation** is NOT 93 independent accepted route authorizations. [Issue #34](https://github.com/newonathe/OrgResource/issues/34) remains **BLOCKED**, private IR4/separate reviewer OPEN, [issue #26](https://github.com/newonathe/OrgResource/issues/26) `LIVE_IMPORT_NOT_RUN`. Check the latest exact GitHub SHA/CI before any new statement. No merge/host/import/SMS/C9 is authorized.
+
 > **CURRENT SOURCE OF TRUTH (2026-11-23):** [CURRENT_STATUS_AND_NEXT_ACTIONS.md](CURRENT_STATUS_AND_NEXT_ACTIONS.md) — exact current SHA/CI evidence, verified private data manifest, P0 release gates, what ChatGPT can/cannot do and a copy-ready Codex continuation. Read this **before** the chronological notes below. **LIVE_IMPORT_NOT_RUN** as of this handoff. Historical “CI PENDING” in older sections is not current status.
 
 
