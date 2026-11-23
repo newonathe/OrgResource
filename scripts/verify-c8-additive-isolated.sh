@@ -63,6 +63,25 @@ original_domain_snapshot() {
   JOIN resource r ON r.organization_id=o.id WHERE o.slug='isolated-original-workspace';"     | sha256sum | cut -d' ' -f1
 }
 original_domain_sha_before="$(original_domain_snapshot)"
+# Independent 15-table original-data HMAC manifest. Remains in RUNNER_TEMP, never
+# uploaded or written to the application schema. Verification cannot rewrite it.
+baseline_file="$RUNNER_TEMP/c8-private-original-$suffix.properties"
+baseline_key="$(openssl rand -hex 32)"
+echo "::add-mask::$baseline_key"
+original_baseline() {
+  local mode="$1"
+  local fp
+  fp="$(printf '%s\\0%s' "$schema" "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT @@server_uuid;')" | sha256sum | cut -d' ' -f1)"
+  EXT_C8_BASELINE_MODE="$mode" EXT_C8_BASELINE_FILE="$baseline_file" \
+    EXT_C8_BASELINE_HMAC_HEX="$baseline_key" \
+    EXT_C8_HOSTED_EXPECTED_SCHEMA="$schema" EXT_C8_HOSTED_EXPECTED_FINGERPRINT="$fp" \
+    EXT_C8_HOSTED_ORIGINAL_ORG_PUBLIC_ID="$original_org" EXT_C8_HOSTED_OWNER_PUBLIC_ID="$owner_id" \
+    EXT_DB_URL="jdbc:mysql://127.0.0.1:3306/$schema?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC" \
+    EXT_DB_USER="$runtime_user" EXT_DB_PASSWORD="$runtime_password" \
+    java -jar extended/backend/target/extended-backend-0.1.0-SNAPSHOT.jar \
+    --c8-hosted-original-baseline
+}
+original_baseline CAPTURE
 # Hash the *full original owner/org/credential/membership row values*, not just counts.
 # Never emit the credential material or the hash to public CI logs.
 original_snapshot_sql="SELECT HEX(o.public_id),o.slug,o.display_name,o.status,o.version,o.created_at,o.updated_at,\
@@ -116,6 +135,7 @@ if [ "$inject_failure" -eq 1 ]; then
   [ "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT COUNT(*) FROM user_account WHERE username_key="c8-demo-historical-actor";')" = "1" ]
   [ "$(snapshot_original)" = "$original_sha_before" ]
   [ "$(original_domain_snapshot)" = "$original_domain_sha_before" ]
+  original_baseline VERIFY
   # The next attempt must refuse the partial database and leave every row intact.
   before="$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT (SELECT COUNT(*) FROM organization),(SELECT COUNT(*) FROM allocation),(SELECT COUNT(*) FROM stock_movement);')"
   if EXT_C8_PROOF_SCHEMA="$schema" EXT_C8_PROOF_CONFIRM="TEST ADDITIVE $schema" \
@@ -156,6 +176,7 @@ SQL
   [ "$(snapshot_original)" = "$original_sha_before" ]
   [ "$(original_domain_snapshot)" = "$original_domain_sha_before" ]
   schema="$source_schema"
+  original_baseline VERIFY
   [ "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT COUNT(*) FROM organization WHERE demo_dataset_id IS NOT NULL;')" = "1" ]
   [ "$(snapshot_original)" = "$original_sha_before" ]
   [ "$(original_domain_snapshot)" = "$original_domain_sha_before" ]
@@ -218,6 +239,16 @@ if [ "$profile" = small ]; then
     exit 1
   fi
   mysql_ci "$schema" -e "UPDATE allocation SET quantity=quantity-1 WHERE id=$allocation_id;"
+  original_baseline VERIFY
+  # Even when demo records are valid, changing the *original* organization
+  # must cause the separate private before/after HMAC manifest to refuse.
+  mysql_ci "$schema" -e "UPDATE organization SET display_name='Tampered Original Workspace' WHERE slug='isolated-original-workspace';"
+  if original_baseline VERIFY > "$RUNNER_TEMP/c8-baseline-original-tamper-refusal.log" 2>&1; then
+    echo "Original-data baseline accepted an altered original organization" >&2
+    exit 1
+  fi
+  mysql_ci "$schema" -e "UPDATE organization SET display_name='Isolated Original Workspace' WHERE slug='isolated-original-workspace';"
+  original_baseline VERIFY
   check_postflight
 fi
 # Full source-derived SQL conservation checks across every imported tenant.
