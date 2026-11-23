@@ -44,6 +44,22 @@ original_org="$(mysql_ci --batch --skip-column-names "$schema" \
 owner_id="$(mysql_ci --batch --skip-column-names "$schema" \
   -e "SELECT BIN_TO_UUID(public_id,0) FROM user_account WHERE username_key='additive-original-owner';")"
 [ -n "$original_org" ] && [ -n "$owner_id" ]
+# Seed existing fictional domain rows so preservation is meaningful beyond account identity.
+mysql_ci "$schema" <<'SQL'
+INSERT INTO department (organization_id,name,name_key,version)
+SELECT id,'Existing fictional operations','existing fictional operations',0
+FROM organization WHERE slug='isolated-original-workspace';
+INSERT INTO resource (public_id,organization_id,name,name_key,type,total_quantity,version)
+SELECT UUID_TO_BIN(UUID(),0),id,'Existing fictional projector','existing fictional projector','REUSABLE',0,0
+FROM organization WHERE slug='isolated-original-workspace';
+SQL
+original_domain_snapshot() {
+  mysql_ci --batch --skip-column-names "$schema" -e "
+  SELECT HEX(o.public_id),d.name,d.name_key,d.version,HEX(r.public_id),r.name,r.name_key,r.type,r.total_quantity,r.version
+  FROM organization o JOIN department d ON d.organization_id=o.id
+  JOIN resource r ON r.organization_id=o.id WHERE o.slug='isolated-original-workspace';"     | sha256sum | cut -d' ' -f1
+}
+original_domain_sha_before="$(original_domain_snapshot)"
 # Hash the *full original owner/org/credential/membership row values*, not just counts.
 # Never emit the credential material or the hash to public CI logs.
 original_snapshot_sql="SELECT HEX(o.public_id),o.slug,o.display_name,o.status,o.version,o.created_at,o.updated_at,\
@@ -79,6 +95,66 @@ expected="$(printf '%s\t%s\t%s\t%s\t1' "$((expected_workspaces+1))" "$expected_w
 owner_count="$(mysql_ci --batch --skip-column-names "$schema" -e \
   "SELECT COUNT(*) FROM membership m JOIN user_account u ON u.id=m.user_id JOIN organization o ON o.id=m.org_id WHERE u.username_key='additive-original-owner' AND m.role='OWNER' AND o.demo_plan_sha IS NOT NULL;")"
 [ "$owner_count" = "$expected_workspaces" ]
+# Full source-derived SQL conservation checks across every imported tenant.
+expected_events="$(python3 - "$plan" <<'PY'
+import json,sys
+with open(sys.argv[1],encoding='utf-8') as stream: print(json.load(stream)['counts']['events'])
+PY
+)"
+actual_events="$(mysql_ci --batch --skip-column-names "$schema" -e "
+SELECT COUNT(*) FROM audit_event a JOIN organization o ON o.id=a.org_id
+WHERE o.demo_plan_sha IS NOT NULL AND a.action LIKE 'C8_DEMO_%';")"
+[ "$actual_events" = "$expected_events" ]
+for state in PENDING APPROVED ISSUED RETURNED CONSUMED CANCELLED; do
+  state_expected="$(python3 - "$plan" "$state" <<'PY'
+import json,sys
+with open(sys.argv[1],encoding='utf-8') as stream: print(json.load(stream)['final_states'][sys.argv[2]])
+PY
+)"
+  state_actual="$(mysql_ci --batch --skip-column-names "$schema" -e "
+SELECT COUNT(*) FROM allocation a JOIN organization o ON o.id=a.organization_id
+WHERE o.demo_plan_sha IS NOT NULL AND a.status='$state';")"
+  [ "$state_actual" = "$state_expected" ]
+done
+sms_count="$(mysql_ci --batch --skip-column-names "$schema" -e "
+SELECT COUNT(*) FROM allocation a JOIN organization o ON o.id=a.organization_id
+WHERE o.demo_plan_sha IS NOT NULL AND (a.sms_consent OR a.phone_ciphertext IS NOT NULL);")"
+[ "$sms_count" = "0" ]
+invalid_stock="$(mysql_ci --batch --skip-column-names "$schema" <<'SQL'
+SELECT COUNT(*) FROM resource r
+JOIN organization o ON o.id=r.organization_id AND o.demo_plan_sha IS NOT NULL
+LEFT JOIN (SELECT organization_id,resource_id,SUM(delta_total) total,SUM(delta_issued) issued
+  FROM stock_movement GROUP BY organization_id,resource_id) m
+  ON m.organization_id=r.organization_id AND m.resource_id=r.id
+LEFT JOIN (SELECT a.organization_id,a.resource_id,
+    SUM(CASE WHEN a.status='ISSUED' THEN a.quantity ELSE 0 END) issued,
+    SUM(CASE WHEN a.status='APPROVED' AND p.end_at>'2026-11-19 00:00:00'
+      THEN a.quantity ELSE 0 END) holds
+  FROM allocation a JOIN resource_requirement q ON q.id=a.requirement_id AND q.organization_id=a.organization_id
+  JOIN project p ON p.id=q.project_id AND p.organization_id=a.organization_id
+  GROUP BY a.organization_id,a.resource_id) a
+  ON a.organization_id=r.organization_id AND a.resource_id=r.id
+WHERE r.total_quantity<>COALESCE(m.total,0) OR COALESCE(m.issued,0)<>COALESCE(a.issued,0)
+  OR COALESCE(a.issued,0)+COALESCE(a.holds,0)>r.total_quantity;
+SQL
+)"
+[ "$invalid_stock" = "0" ]
+invalid_requirement="$(mysql_ci --batch --skip-column-names "$schema" <<'SQL'
+SELECT COUNT(*) FROM resource_requirement q
+JOIN organization o ON o.id=q.organization_id AND o.demo_plan_sha IS NOT NULL
+JOIN (SELECT a.organization_id,a.requirement_id,SUM(a.quantity) covered
+    FROM allocation a
+    JOIN resource_requirement rr ON rr.id=a.requirement_id AND rr.organization_id=a.organization_id
+    JOIN project p ON p.id=rr.project_id AND p.organization_id=a.organization_id
+    WHERE a.status IN ('ISSUED','RETURNED','CONSUMED')
+      OR (a.status='APPROVED' AND p.end_at>'2026-11-19 00:00:00')
+    GROUP BY a.organization_id,a.requirement_id) c
+  ON c.organization_id=q.organization_id AND c.requirement_id=q.id
+WHERE c.covered>q.quantity;
+SQL
+)"
+[ "$invalid_requirement" = "0" ]
+[ "$(original_domain_snapshot)" = "$original_domain_sha_before" ]
 # Fictional historical events must never be attributed to the real current owner.
 simulated_history="$(mysql_ci --batch --skip-column-names "$schema" -e "SELECT COUNT(*) FROM audit_event a JOIN user_account u ON u.id=a.actor_user_id WHERE u.username_key='c8-demo-historical-actor' AND a.action='C8_DEMO_REQUEST';")"
 [ "$simulated_history" = "$expected_allocations" ]
@@ -96,4 +172,5 @@ if EXT_C8_PROOF_SCHEMA="$schema" EXT_C8_PROOF_CONFIRM="TEST ADDITIVE $schema" \
 fi
 [ "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT COUNT(*) FROM allocation;')" = "$expected_allocations" ]
 [ "$(snapshot_original)" = "$original_sha_before" ]
-echo "ISOLATED_ADDITIVE_PROOF_PASSED: 1 original and 3 fictional workspaces, repeat refused; no hosted DB used."
+[ "$(original_domain_snapshot)" = "$original_domain_sha_before" ]
+echo "ISOLATED_ADDITIVE_PROOF_PASSED: original owner/domain unchanged; $expected_workspaces workspaces, $expected_allocations allocations, $expected_events synthetic events; stock/requirements/states clean, repeat refused; no hosted DB used."
