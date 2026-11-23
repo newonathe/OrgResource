@@ -4375,6 +4375,160 @@ class C1IdentityAcceptanceTest {
                 "All 165 blocked POST requests must leave domain, stock, identity and audit tables unchanged");
     }
 
+
+    @Test @Order(64)
+    void C8ProjectWorkRealForeignObjectsAndReadOnlyRolesCannotChangeSqlState() throws Exception {
+        // Routed ProjectWork authorization evidence: use real, existing objects
+        // in two unrelated fictional organizations, not random missing UUIDs.
+        Fixture home = newTenant("C8-work-denied-home", Membership.Role.OWNER);
+        Fixture away = newTenant("C8-work-denied-away", Membership.Role.OWNER);
+        Fixture custodian = fixtureInOrg(home.orgDbId, Membership.Role.CUSTODIAN);
+        Fixture member = fixtureInOrg(home.orgDbId, Membership.Role.MEMBER);
+        Fixture assigned = fixtureInOrg(home.orgDbId, Membership.Role.LEAD);
+        Fixture unassigned = fixtureInOrg(home.orgDbId, Membership.Role.LEAD);
+        Session homeOwner = login(home.username, home.password);
+        Session awayOwner = login(away.username, away.password);
+        Session observer = login(custodian.username, custodian.password);
+        Session basic = login(member.username, member.password);
+        Session lead = login(assigned.username, assigned.password);
+        Session otherLead = login(unassigned.username, unassigned.password);
+        String homeRoot = "/api/v2/orgs/" + home.orgPublicId;
+        String awayRoot = "/api/v2/orgs/" + away.orgPublicId;
+        String start = "2040-11-13T08:00:00", end = "2040-11-13T12:00:00";
+        long homeDepartment = json(post(homeOwner, "/api/departments",
+                GSON.toJson(new NameRequest("Fictional ProjectWork home")))).get("id").getAsLong();
+        long awayDepartment = json(post(awayOwner, "/api/departments",
+                GSON.toJson(new NameRequest("Fictional ProjectWork away")))).get("id").getAsLong();
+        long homeProjectDb = json(post(homeOwner, "/api/projects",
+                GSON.toJson(new ProjectRequest(homeDepartment, "Fictional work home", start, end))))
+                .get("id").getAsLong();
+        long awayProjectDb = json(post(awayOwner, "/api/projects",
+                GSON.toJson(new ProjectRequest(awayDepartment, "Fictional work away", start, end))))
+                .get("id").getAsLong();
+        UUID homeProject = projectRepository.findById(homeProjectDb).orElseThrow().publicId;
+        UUID awayProject = projectRepository.findById(awayProjectDb).orElseThrow().publicId;
+        long homeResourceDb = json(post(homeOwner, "/api/resources",
+                GSON.toJson(new ResourceRequest("Fictional work resource home", "REUSABLE", 10))))
+                .get("id").getAsLong();
+        long awayResourceDb = json(post(awayOwner, "/api/resources",
+                GSON.toJson(new ResourceRequest("Fictional work resource away", "REUSABLE", 10))))
+                .get("id").getAsLong();
+        UUID homeResource = resourceRepository.findById(homeResourceDb).orElseThrow().publicId;
+        UUID awayResource = resourceRepository.findById(awayResourceDb).orElseThrow().publicId;
+        String projectFields = GSON.toJson(new ProjectUpdateRequest("Fictional unauthorized rename", start, end));
+        String homeProjectPath = homeRoot + "/projects/" + homeProject;
+        String awayProjectPathFromHome = homeRoot + "/projects/" + awayProject;
+        String homeRequirements = homeRoot + "/requirements";
+        String homeCreate = GSON.toJson(java.util.Map.of(
+                "projectId", homeProject, "resourceId", homeResource, "quantity", 6));
+        String awayCreate = GSON.toJson(java.util.Map.of(
+                "projectId", awayProject, "resourceId", awayResource, "quantity", 6));
+        var homeCreated = post(homeOwner, homeRequirements, homeCreate);
+        var awayCreated = post(awayOwner, awayRoot + "/requirements", awayCreate);
+        assertEquals(201, homeCreated.statusCode(), homeCreated.body());
+        assertEquals(201, awayCreated.statusCode(), awayCreated.body());
+        UUID homeRequirement = UUID.fromString(json(homeCreated).getAsJsonObject("data").get("id").getAsString());
+        UUID awayRequirement = UUID.fromString(json(awayCreated).getAsJsonObject("data").get("id").getAsString());
+        String homeItem = homeRequirements + "/" + homeRequirement;
+        String awayItemFromHome = homeRequirements + "/" + awayRequirement;
+
+        assertEquals(200, modernPost(homeOwner, homeProjectPath + "/lead-assignment",
+                leadAssignment(UUID.randomUUID().toString(), assigned.membershipPublicId),
+                "\"v0\"", UUID.randomUUID().toString()).statusCode());
+        // Current, authorized reads prove the populated targets exist.
+        assertEquals(200, get(homeOwner.client, homeRoot + "/projects").statusCode());
+        assertEquals(200, get(observer.client, homeRoot + "/projects").statusCode());
+        assertEquals(200, get(observer.client, homeRequirements).statusCode());
+        assertEquals(200, get(observer.client, homeItem).statusCode());
+        assertEquals(200, get(lead.client, homeItem).statusCode());
+        assertEquals("\"v0\"", get(lead.client, homeItem).headers().firstValue("ETag").orElseThrow());
+        assertEquals(200, get(awayOwner.client, awayRoot + "/requirements/" + awayRequirement).statusCode());
+
+        // MEMBER has no ProjectWork read grant; unassigned LEAD sees only an
+        // empty page, never another lead's existing Project or Requirement.
+        assertEquals(403, get(basic.client, homeRoot + "/projects").statusCode());
+        assertEquals(403, get(basic.client, homeRequirements).statusCode());
+        assertEquals(403, get(basic.client, homeItem).statusCode());
+        assertTrue(json(get(otherLead.client, homeRoot + "/projects"))
+                .getAsJsonObject("data").getAsJsonArray("items").isEmpty());
+        assertTrue(json(get(otherLead.client, homeRequirements))
+                .getAsJsonObject("data").getAsJsonArray("items").isEmpty());
+        assertEquals(404, get(otherLead.client, homeItem).statusCode());
+        assertEquals(404, get(awayOwner.client, homeRoot + "/projects").statusCode());
+        assertEquals(404, get(awayOwner.client, homeRequirements).statusCode());
+        assertEquals(404, get(awayOwner.client, homeItem).statusCode());
+        assertEquals(404, get(homeOwner.client, awayItemFromHome).statusCode());
+
+        // Snapshot *actual* pre-existing Project and Requirement values, not
+        // just aggregate counts. Include both tenants and non-business effects.
+        String beforeProjects = jdbc.queryForList(
+                "SELECT id, name, version, lead_membership_id FROM project WHERE organization_id IN (?,?) ORDER BY id",
+                home.orgDbId, away.orgDbId).toString();
+        String beforeRequirements = jdbc.queryForList(
+                "SELECT id, organization_id, project_id, resource_id, quantity, version "
+                + "FROM resource_requirement WHERE organization_id IN (?,?) ORDER BY id",
+                home.orgDbId, away.orgDbId).toString();
+        long[] beforeEffects = new long[] {
+            jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE organization_id IN (?,?)",
+                    Long.class, home.orgDbId, away.orgDbId),
+            jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id IN (?,?)",
+                    Long.class, home.orgDbId, away.orgDbId),
+            jdbc.queryForObject("SELECT COUNT(*) FROM idempotency_key", Long.class),
+            jdbc.queryForObject("SELECT COUNT(*) FROM audit_event WHERE org_id IN (?,?)",
+                    Long.class, home.orgDbId, away.orgDbId)
+        };
+
+        // CUSTODIAN can read but never update/delete a Project or Requirement.
+        assertEquals(403, post(observer, homeProjectPath + "/update", projectFields, "\"v1\"").statusCode());
+        assertEquals(403, post(observer, homeProjectPath + "/delete", null, "\"v1\"").statusCode());
+        assertEquals(403, post(observer, homeRequirements, homeCreate).statusCode());
+        assertEquals(403, post(observer, homeItem + "/update", "{\"quantity\":5}", "\"v0\"").statusCode());
+        assertEquals(403, post(observer, homeItem + "/delete", null, "\"v0\"").statusCode());
+
+        // An unassigned LEAD does not receive a write grant over existing work.
+        assertEquals(404, post(otherLead, homeProjectPath + "/update", projectFields, "\"v1\"").statusCode());
+        assertEquals(404, post(otherLead, homeProjectPath + "/delete", null, "\"v1\"").statusCode());
+        assertEquals(404, post(otherLead, homeRequirements, homeCreate).statusCode());
+        assertEquals(404, post(otherLead, homeItem + "/update", "{\"quantity\":5}", "\"v0\"").statusCode());
+        assertEquals(404, post(otherLead, homeItem + "/delete", null, "\"v0\"").statusCode());
+
+        // A legitimate OWNER still cannot use an existing foreign Project,
+        // Resource, or Requirement by substituting its UUID under their own org.
+        assertEquals(404, post(homeOwner, awayProjectPathFromHome + "/update", projectFields, "\"v0\"").statusCode());
+        assertEquals(404, post(homeOwner, awayProjectPathFromHome + "/delete", null, "\"v0\"").statusCode());
+        assertEquals(404, post(homeOwner, homeRequirements, GSON.toJson(java.util.Map.of(
+                "projectId", homeProject, "resourceId", awayResource, "quantity", 6))).statusCode());
+        assertEquals(404, post(homeOwner, homeRequirements, GSON.toJson(java.util.Map.of(
+                "projectId", awayProject, "resourceId", homeResource, "quantity", 6))).statusCode());
+        assertEquals(404, post(homeOwner, awayItemFromHome + "/update", "{\"quantity\":5}", "\"v0\"").statusCode());
+        assertEquals(404, post(homeOwner, awayItemFromHome + "/delete", null, "\"v0\"").statusCode());
+
+        // Version guards reject stale/missing preconditions before changing SQL.
+        assertEquals(428, post(homeOwner, homeProjectPath + "/update", projectFields).statusCode());
+        assertEquals(412, post(homeOwner, homeProjectPath + "/update", projectFields, "\"v99\"").statusCode());
+        assertEquals(428, post(homeOwner, homeItem + "/update", "{\"quantity\":5}").statusCode());
+        assertEquals(412, post(homeOwner, homeItem + "/update", "{\"quantity\":5}", "\"v99\"").statusCode());
+        assertEquals(428, post(homeOwner, homeItem + "/delete", null).statusCode());
+        assertEquals(412, post(homeOwner, homeItem + "/delete", null, "\"v99\"").statusCode());
+
+        assertEquals(beforeProjects, jdbc.queryForList(
+                "SELECT id, name, version, lead_membership_id FROM project WHERE organization_id IN (?,?) ORDER BY id",
+                home.orgDbId, away.orgDbId).toString());
+        assertEquals(beforeRequirements, jdbc.queryForList(
+                "SELECT id, organization_id, project_id, resource_id, quantity, version "
+                + "FROM resource_requirement WHERE organization_id IN (?,?) ORDER BY id",
+                home.orgDbId, away.orgDbId).toString());
+        assertArrayEquals(beforeEffects, new long[] {
+            jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE organization_id IN (?,?)",
+                    Long.class, home.orgDbId, away.orgDbId),
+            jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id IN (?,?)",
+                    Long.class, home.orgDbId, away.orgDbId),
+            jdbc.queryForObject("SELECT COUNT(*) FROM idempotency_key", Long.class),
+            jdbc.queryForObject("SELECT COUNT(*) FROM audit_event WHERE org_id IN (?,?)",
+                    Long.class, home.orgDbId, away.orgDbId)
+        }, "All refused ProjectWork writes must leave allocations, movements, receipts and audit untouched");
+    }
+
     private record Fixture(long orgDbId, UUID orgPublicId, long userDbId, String username, String password,
                           long membershipDbId, UUID membershipPublicId, List<String> recoveryCodes) { }
     private static final class Session {
