@@ -4263,6 +4263,118 @@ class C1IdentityAcceptanceTest {
         assertEquals(403, get(live.client, "/api/v2/workspace/allocations?limit=10").statusCode());
     }
 
+
+    @Test @Order(63)
+    void C8EveryRegisteredPostEnforcesSameOriginAndCsrfBeforeExecutingAnyBusinessHandler() throws Exception {
+        // This is a single shared middleware factor across every registered POST.
+        // It does NOT establish per-operation authorized behavior, object scope,
+        // or role/field policy; those remain separate acceptance obligations.
+        Fixture owner = newTenant("C8-post-middleware", Membership.Role.OWNER);
+        Session authenticated = login(owner.username, owner.password);
+        assertFalse(authenticated.csrf.isBlank());
+
+        // No mutations may occur from requests that fail before Jersey dispatch.
+        // Session last-access bookkeeping is intentionally outside this snapshot.
+        String[] tables = {
+                "organization", "user_account", "membership", "invitation",
+                "ownership_transfer", "department", "project", "resource",
+                "resource_requirement", "allocation", "stock_movement",
+                "idempotency_key", "audit_event", "account_recovery_code"
+        };
+        long[] before = new long[tables.length];
+        for (int i = 0; i < tables.length; i++) {
+            assertTrue(tables[i].matches("[a-z_]+"));
+            before[i] = jdbc.queryForObject("SELECT COUNT(*) FROM " + tables[i], Long.class);
+        }
+
+        Set<String> registered = new java.util.HashSet<>();
+        int protectedPosts = 0;
+        for (Class<?> resource : c8JerseyResourceConfig.getClasses()) {
+            jakarta.ws.rs.Path root = resource.getAnnotation(jakarta.ws.rs.Path.class);
+            if (root == null || !resource.getPackageName().equals("edu.orgresource.extended.rest")) continue;
+            for (java.lang.reflect.Method method : resource.getDeclaredMethods()) {
+                String verb = null;
+                for (java.lang.annotation.Annotation annotation : method.getAnnotations()) {
+                    jakarta.ws.rs.HttpMethod http = annotation.annotationType().getAnnotation(jakarta.ws.rs.HttpMethod.class);
+                    if (http == null) continue;
+                    assertNull(verb, "A handler must declare only one HTTP verb: " + method);
+                    verb = http.value();
+                }
+                if (verb == null) continue;
+                jakarta.ws.rs.Path suffix = method.getAnnotation(jakarta.ws.rs.Path.class);
+                String route = "/api" + root.value() + (suffix == null ? "" : suffix.value());
+                String signature = verb + " " + route;
+                assertTrue(registered.add(signature), "Duplicate Jersey registration: " + signature);
+                if (!"POST".equals(verb)) continue;
+
+                // Real syntactically well-formed path values reach the same
+                // Spring filters regardless of whether the object exists.
+                String path = route.replace("{id}", "1")
+                        .replaceAll("\\{[^}]+\\}", "00000000-0000-4000-8000-000000000001");
+                URI uri = URI.create(base() + path);
+                String body = "{}";
+
+                // No Origin, valid CSRF: the same-origin filter must block.
+                HttpRequest missingOrigin = HttpRequest.newBuilder(uri)
+                        .header("X-CSRF-TOKEN", authenticated.csrf)
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(body)).build();
+                HttpResponse<String> missingOriginResponse = authenticated.client.send(
+                        missingOrigin, HttpResponse.BodyHandlers.ofString());
+                assertEquals(403, missingOriginResponse.statusCode(),
+                        "Missing Origin bypassed " + signature + ": " + missingOriginResponse.body());
+                assertEquals("ORIGIN_INVALID", json(missingOriginResponse).get("code").getAsString(),
+                        "Missing Origin must fail in the early filter for " + signature);
+
+                // Hostile Origin, valid CSRF: accepted cookies alone are insufficient.
+                HttpRequest hostileOrigin = HttpRequest.newBuilder(uri)
+                        .header("Origin", "https://untrusted.example.invalid")
+                        .header("X-CSRF-TOKEN", authenticated.csrf)
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(body)).build();
+                HttpResponse<String> hostileOriginResponse = authenticated.client.send(
+                        hostileOrigin, HttpResponse.BodyHandlers.ofString());
+                assertEquals(403, hostileOriginResponse.statusCode(),
+                        "Cross-origin POST bypassed " + signature + ": " + hostileOriginResponse.body());
+                assertEquals("ORIGIN_INVALID", json(hostileOriginResponse).get("code").getAsString());
+
+                // Valid Origin, missing CSRF: security must block before any
+                // request body validation or business-object lookup.
+                HttpRequest missingCsrf = HttpRequest.newBuilder(uri)
+                        .header("Origin", origin())
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(body)).build();
+                HttpResponse<String> missingCsrfResponse = authenticated.client.send(
+                        missingCsrf, HttpResponse.BodyHandlers.ofString());
+                assertEquals(403, missingCsrfResponse.statusCode(),
+                        "Missing CSRF bypassed " + signature + ": " + missingCsrfResponse.body());
+                assertEquals("FORBIDDEN", json(missingCsrfResponse).get("code").getAsString(),
+                        "CSRF error must be controlled for " + signature);
+                for (HttpResponse<String> denied : List.of(
+                        missingOriginResponse, hostileOriginResponse, missingCsrfResponse)) {
+                    assertTrue(denied.headers().firstValue("Cache-Control").orElse("").contains("no-store"),
+                            "Denied POST must be non-cacheable: " + signature);
+                    assertFalse(denied.headers().firstValue("X-Request-ID").orElse("").isBlank(),
+                            "Every denial must include its trace request ID: " + signature);
+                    assertFalse(denied.body().contains(owner.password),
+                            "Denial must not disclose fixture credential: " + signature);
+                }
+                protectedPosts++;
+            }
+        }
+
+        // A drifted HTTP operation inventory is a review blocker; the static
+        // checked-in policy inventory independently expects these 93 signatures.
+        assertEquals(93, registered.size(), "Test all source-registered Jersey routes");
+        assertEquals(55, protectedPosts, "Expected all 55 declared POST operations, including public login/recovery/redeem");
+        long[] after = new long[tables.length];
+        for (int i = 0; i < tables.length; i++) {
+            after[i] = jdbc.queryForObject("SELECT COUNT(*) FROM " + tables[i], Long.class);
+        }
+        assertArrayEquals(before, after,
+                "All 165 blocked POST requests must leave domain, stock, identity and audit tables unchanged");
+    }
+
     private record Fixture(long orgDbId, UUID orgPublicId, long userDbId, String username, String password,
                           long membershipDbId, UUID membershipPublicId, List<String> recoveryCodes) { }
     private static final class Session {
