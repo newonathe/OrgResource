@@ -1,5 +1,11 @@
 # OrgResource — START HERE for the next chat or Codex session
 
+## NEW USER PRODUCT INTENT — department affiliation and cross-department inventory discovery (2026-11-23)
+
+**Source of truth for this request:** [DEC-D01 Department affiliation + catalog + Project needs](docs/decisions/DEC_D01_DEPARTMENT_VISIBILITY_AND_REQUESTS_2026-11-23.md). The user wants organization/department membership, visibility of owned/stewarded resources, the offerings of other departments, and Project requirements and request states. **Verified current source:** a UserAccount can have memberships in multiple organizations; Membership has **no department link**, Resource is organization-scoped, Project has `department_id`; C8 already limits an assigned LEAD's Project work and a borrower's own Allocation view. **Recommendation, pending approval:** one nullable primary department **per organization membership**, catalog-only cross-department discovery inside that organization, Project-specific authorized requests, shared existing stock ledger, no new live scope/migration now. Do not introduce a "one organization globally per account" restriction; it breaks the 96-demo owner. This is **DOCUMENTED, NOT IMPLEMENTED**. Keep P0 Northflank import/secret-rotation/restore gate separate.
+
+
+
 ## P0 latest: stronger plan-to-MySQL read-only integrity, 2026-11-23
 
 - **Verified baseline:** `35e2a53c572cf247ea48e91864428f19098edb89` passed [all three CI jobs #45104954191](https://github.com/newonathe/OrgResource/actions/runs/45104954191), including the isolated partial-import/restore and initial independent postflight with deliberate label/audit-action tampering. The original Course A is unchanged.

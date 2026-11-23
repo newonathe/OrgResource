@@ -38,3 +38,8 @@ Exercise actual HTTP and MySQL for officer assignment and clear, demotion/reacti
 
 - C7 owner decisions DEC-02/03/04 establish the existing restrictions. The CP35 candidate defines the assigned LEAD, authorization by operation and borrower snapshots. CP41 calls for minimal, bounded borrower discovery and lists denial proof cases UI41-01/02. Candidate refs were read at `dfda643`. Neither candidate authorizes changing production permissions.
 - The approved choices are OWNER/ADMIN assignment, clearing on loss of eligibility, pending-only LEAD cancellation, Project-required borrower discovery for officers too, and a separate minimal borrower self view.
+
+
+## Later department-scoped visibility proposal (2026-11-23; not part of this already approved C8 policy)
+
+The separate [DEC-D01 assessment](../../docs/decisions/DEC_D01_DEPARTMENT_VISIBILITY_AND_REQUESTS_2026-11-23.md) captures the user's new idea to link each member to a primary department *within* an organization, show same-org resource offerings across departments, and provide Project needs/request summaries. It is a **new PROPOSED workflow**, not a retroactive change to the 2026-11-19 approved assigned-LEAD and borrower-scope policy. Maintain the currently enforced assigned-Project, borrower self-only and custody controls; do not assume department affiliation grants broader access. Future code must pass separate authorization/stock acceptance before release.

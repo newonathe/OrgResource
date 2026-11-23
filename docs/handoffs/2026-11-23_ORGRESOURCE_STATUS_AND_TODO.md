@@ -1,5 +1,11 @@
 # OrgResource — next tasks, remaining work and delivery gates
 
+## Department affiliation / cross-department catalog proposal — 2026-11-23
+
+**USER INTENT CAPTURED / NOT IMPLEMENTED.** The user asked whether one user should have one organization/department, see their department's stock and other departments' offerings, and view Project needs and request details. Source-checked proposed policy: [DEC-D01](../decisions/DEC_D01_DEPARTMENT_VISIBILITY_AND_REQUESTS_2026-11-23.md). Retain multi-organization memberships, add optional primary department *within each membership* (nullable for current owner/demo), optional resource steward dept, catalog-only cross-department discovery, Project-scoped needs/requests, and preserve existing stock ledger and assignment-based permissions. No release change, migration, endpoint or UI coded. User still to decide foreign-department quantities and department vs Project visibility.
+
+
+
 ## P0 latest: stronger plan-to-MySQL read-only integrity, 2026-11-23
 
 - **Verified baseline:** `35e2a53c572cf247ea48e91864428f19098edb89` passed [all three CI jobs #45104954191](https://github.com/newonathe/OrgResource/actions/runs/45104954191), including the isolated partial-import/restore and initial independent postflight with deliberate label/audit-action tampering. The original Course A is unchanged.
