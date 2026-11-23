@@ -21,7 +21,10 @@
     "java_exact_path_literal_mentions": 26,
     "overlap": 14,
     "neither_static_signal": 46,
-    "formally_accepted_from_this_reconciliation": 0
+    "formally_accepted_from_this_reconciliation": 0,
+    "postman_covered_routes_with_executed_status_assertion": 35,
+    "newman_executed_requests": 60,
+    "newman_executed_assertions": 110
   },
   "routes": [
     {
@@ -89,7 +92,24 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "A03 POST approve reusable Allocation",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "A03-CONSUMABLE POST approve consumable Allocation",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R002",
@@ -152,7 +172,17 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "A07 POST cancel Allocation",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R003",
@@ -215,7 +245,17 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "A06 POST consume consumable Allocation",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R004",
@@ -282,7 +322,24 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "A08-REFUSED POST issued Allocation delete",
+          "expected_http_status": 409,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "A08 POST eligible cancelled Allocation delete",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R005",
@@ -345,7 +402,17 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "A04 POST issue reusable Allocation",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R006",
@@ -408,7 +475,17 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "A05 POST return reusable Allocation",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R007",
@@ -471,7 +548,17 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "A09 POST revoke SMS consent",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R008",
@@ -603,7 +690,31 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "A02 GET Allocations by status and requirement",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "A02-STATUS GET Allocations by status only",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "A02-REQUIREMENT GET Allocations by requirement only",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R009",
@@ -735,7 +846,31 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "A01 POST reusable Allocation",
+          "expected_http_status": 201,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "A01-CONSUMABLE POST consumable Allocation",
+          "expected_http_status": 201,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "A01-CANCEL POST cancellable Allocation",
+          "expected_http_status": 201,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R010",
@@ -778,7 +913,17 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "D04 POST eligible Department delete",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R011",
@@ -821,7 +966,17 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "D03 POST Department update",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R012",
@@ -969,7 +1124,17 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "D02 GET Departments",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R013",
@@ -1121,7 +1286,24 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "PREP-01 POST workflow Department",
+          "expected_http_status": 201,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "D01 POST Department",
+          "expected_http_status": 201,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R014",
@@ -1168,7 +1350,17 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "P04 POST eligible Project delete",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R015",
@@ -1215,7 +1407,17 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "P03 POST Project update",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R016",
@@ -1339,7 +1541,17 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "P02 GET Projects",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R017",
@@ -1467,7 +1679,24 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "PREP-02 POST workflow Project",
+          "expected_http_status": 201,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "P01 POST Project",
+          "expected_http_status": 201,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R018",
@@ -1514,7 +1743,24 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "Q04-REFUSED POST referenced Requirement delete",
+          "expected_http_status": 409,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "Q04 POST eligible Requirement delete",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R019",
@@ -1557,7 +1803,17 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "Q03 POST Requirement update",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R020",
@@ -1665,7 +1921,17 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "Q02 GET Requirements by project",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R021",
@@ -1781,7 +2047,31 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "PREP-04 POST consumable Requirement",
+          "expected_http_status": 201,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "PREP-06 POST empty Requirement",
+          "expected_http_status": 201,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "Q01 POST main Requirement",
+          "expected_http_status": 201,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R022",
@@ -1832,7 +2122,17 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "R05 GET Resource availability",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R023",
@@ -1887,7 +2187,24 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "R04-REFUSED POST nonempty Resource delete",
+          "expected_http_status": 409,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "R04 POST eligible empty Resource delete",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R024",
@@ -1938,7 +2255,17 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "IMAGE-02 GET PNG bytes",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R025",
@@ -1989,7 +2316,17 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "IMAGE-01 POST PNG upload",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R026",
@@ -2044,7 +2381,24 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "R03 POST Resource update",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "R03-STALE POST stale Resource update",
+          "expected_http_status": 409,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R027",
@@ -2220,7 +2574,17 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "R02 GET Resources by type",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R028",
@@ -2404,7 +2768,31 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "PREP-03 POST consumable Resource",
+          "expected_http_status": 201,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "PREP-05 POST empty Resource",
+          "expected_http_status": 201,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "R01 POST reusable Resource",
+          "expected_http_status": 201,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R029",
@@ -2467,7 +2855,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R030",
@@ -2530,7 +2920,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R031",
@@ -2593,7 +2985,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R032",
@@ -2656,7 +3050,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R033",
@@ -2752,7 +3148,38 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "AUTH-01 GET CSRF",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "AUTH-05 GET refreshed CSRF",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C6a-Reporting.postman_collection.json",
+          "request_name": "AUTH-01 CSRF",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C6a-Reporting.postman_collection.json",
+          "request_name": "AUTH-05 refresh CSRF",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R034",
@@ -2824,7 +3251,24 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "AUTH-02 POST login",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C6a-Reporting.postman_collection.json",
+          "request_name": "AUTH-02 sign in",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R035",
@@ -2875,7 +3319,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R036",
@@ -2926,7 +3372,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R037",
@@ -2961,7 +3409,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R038",
@@ -2992,7 +3442,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R039",
@@ -3022,7 +3474,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R040",
@@ -3057,7 +3511,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R041",
@@ -3088,7 +3544,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R042",
@@ -3139,7 +3597,24 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C6a-Reporting.postman_collection.json",
+          "request_name": "C6A-02 bounded activity",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C6a-Reporting.postman_collection.json",
+          "request_name": "C6A-03 invalid cursor",
+          "expected_http_status": 400,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R043",
@@ -3213,7 +3688,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R044",
@@ -3287,7 +3764,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R045",
@@ -3361,7 +3840,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R046",
@@ -3435,7 +3916,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R047",
@@ -3509,7 +3992,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R048",
@@ -3583,7 +4068,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R049",
@@ -3657,7 +4144,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R050",
@@ -3731,7 +4220,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R051",
@@ -3805,7 +4296,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R052",
@@ -3852,7 +4345,17 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C6a-Reporting.postman_collection.json",
+          "request_name": "C6A-01 bounded audit",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R053",
@@ -3926,7 +4429,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R054",
@@ -4000,7 +4505,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R055",
@@ -4074,7 +4581,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R056",
@@ -4148,7 +4657,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R057",
@@ -4207,7 +4718,38 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C6a-Reporting.postman_collection.json",
+          "request_name": "C6A-04 CSV resources",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C6a-Reporting.postman_collection.json",
+          "request_name": "C6A-05 JSON audit",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C6a-Reporting.postman_collection.json",
+          "request_name": "C6A-06 JSON movements",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C6a-Reporting.postman_collection.json",
+          "request_name": "C6A-07 refuse excluded dataset",
+          "expected_http_status": 400,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R058",
@@ -4281,7 +4823,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R059",
@@ -4355,7 +4899,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R060",
@@ -4389,7 +4935,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R061",
@@ -4463,7 +5011,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R062",
@@ -4537,7 +5087,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R063",
@@ -4571,7 +5123,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R064",
@@ -4645,7 +5199,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R065",
@@ -4679,7 +5235,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R066",
@@ -4713,7 +5271,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R067",
@@ -4747,7 +5307,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R068",
@@ -4781,7 +5343,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R069",
@@ -4815,7 +5379,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R070",
@@ -4849,7 +5415,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R071",
@@ -4923,7 +5491,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R072",
@@ -4997,7 +5567,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R073",
@@ -5071,7 +5643,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R074",
@@ -5145,7 +5719,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R075",
@@ -5219,7 +5795,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R076",
@@ -5293,7 +5871,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R077",
@@ -5351,7 +5931,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R078",
@@ -5409,7 +5991,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R079",
@@ -5467,7 +6051,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R080",
@@ -5525,7 +6111,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R081",
@@ -5583,7 +6171,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R082",
@@ -5641,7 +6231,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R083",
@@ -5699,7 +6291,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R084",
@@ -5757,7 +6351,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R085",
@@ -5837,7 +6433,24 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "AUTH-03 GET organizations",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C6a-Reporting.postman_collection.json",
+          "request_name": "AUTH-03 organizations",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R086",
@@ -5937,7 +6550,24 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [
+        {
+          "collection": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "request_name": "AUTH-04 POST explicit active organization",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        },
+        {
+          "collection": "postman/OrgResource-Extended-C6a-Reporting.postman_collection.json",
+          "request_name": "AUTH-04 select workspace",
+          "expected_http_status": 200,
+          "execution": "PASS_IN_CI_45220719360",
+          "claim_limit": "HTTP status assertion, not full per-route authorization proof"
+        }
+      ],
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
     },
     {
       "route_id": "R087",
@@ -6024,7 +6654,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R088",
@@ -6058,7 +6690,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R089",
@@ -6092,7 +6726,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R090",
@@ -6135,7 +6771,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R091",
@@ -6169,7 +6807,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R092",
@@ -6203,7 +6843,9 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     },
     {
       "route_id": "R093",
@@ -6237,7 +6879,10 @@
       "route_specific_sql_or_redaction_receipt": "NOT_RECONCILED",
       "restricted_IR4_receipt": "NOT_AVAILABLE_TO_THIS_RECONCILIATION",
       "independent_review": "NOT_PERFORMED",
-      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW"
+      "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
+      "postman_executed_asserted_request_statuses": [],
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
     }
-  ]
+  ],
+  "methods_addendum": "Collection scripts were inspected: all 48 C3 request names map to global expected HTTP statuses; all 12 C6a request scripts assert explicit HTTP statuses. Exact CI Extended job logs report 48 requests/90 assertions (0 failures) and 12 requests/20 assertions (0 failures). Each of 35 matched distinct route signatures thus has one or more executed status assertion(s), which is a PARTIAL receipt; exact role/object/DB effects, separate review and private IR4 corroboration remain required."
 }
