@@ -555,4 +555,30 @@ fi
 [ "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT COUNT(*) FROM allocation;')" = "$expected_allocations" ]
 [ "$(snapshot_original)" = "$original_sha_before" ]
 [ "$(original_domain_snapshot)" = "$original_domain_sha_before" ]
+# C9 PREPARATION ONLY: measure on the independently postflight-reconciled
+# disposable intermediate fixture. No new schema or speculative index.
+# Never equate this small intermediate result with accepted full-96 metrics.
+if [ "$profile" = intermediate ]; then
+  if C9_DB_SCHEMA="$schema"_unsafe C9_READONLY_USER="$verifier_user" \
+      C9_READONLY_PASSWORD="$verifier_password" \
+      python3 scripts/measure-c9-isolated-queries.py \
+        > "$RUNNER_TEMP/c9-schema-negative.log" 2>&1; then
+    echo "C9 measurement unexpectedly allowed a non-fixture schema" >&2
+    exit 1
+  fi
+  grep -q 'C9_DISPOSABLE_SCHEMA_REQUIRED' "$RUNNER_TEMP/c9-schema-negative.log"
+  if C9_DB_SCHEMA="$schema" C9_READONLY_USER="$runtime_user" \
+      C9_READONLY_PASSWORD="$runtime_password" \
+      python3 scripts/measure-c9-isolated-queries.py \
+        > "$RUNNER_TEMP/c9-writer-negative.log" 2>&1; then
+    echo "C9 measurement unexpectedly allowed a write-capable identity" >&2
+    exit 1
+  fi
+  grep -q 'C9_READ_ONLY_ROLE_REQUIRED' "$RUNNER_TEMP/c9-writer-negative.log"
+  C9_DB_SCHEMA="$schema" C9_READONLY_USER="$verifier_user" \
+    C9_READONLY_PASSWORD="$verifier_password" \
+    python3 scripts/measure-c9-isolated-queries.py
+  original_baseline VERIFY
+  check_postflight
+fi
 echo "ISOLATED_ADDITIVE_PROOF_PASSED: original owner/domain unchanged; $expected_workspaces workspaces, $expected_allocations allocations, $expected_events synthetic events; stock/requirements/states clean, repeat refused; no hosted DB used."
