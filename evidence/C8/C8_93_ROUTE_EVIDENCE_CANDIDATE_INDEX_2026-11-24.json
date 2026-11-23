@@ -109,7 +109,27 @@
           "claim_limit": "HTTP status assertion, not full per-route authorization proof"
         }
       ],
-      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "L03",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 33,
+            "method": "C3_SECURITY02_everyLegacyOperationIsTenantScopedAndMemberWritesAreForbidden"
+          },
+          {
+            "order": 52,
+            "method": "C8WorkspacePagesReturnEveryResourceAndAllocationWithScopedContinuation"
+          }
+        ],
+        "source_assertion_summary_positive": "Newman A03=200, A03-CONSUMABLE=200; Java #52 legacy approve=200",
+        "source_assertion_summary_meaningful_denials": "Java #33 real foreign Allocation=404 and MEMBER=403",
+        "remaining_per_policy_review": "Full stock/hold SQL diffs for legacy role/state denials, ADMIN case",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R002",
@@ -182,7 +202,23 @@
           "claim_limit": "HTTP status assertion, not full per-route authorization proof"
         }
       ],
-      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "L07",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 33,
+            "method": "C3_SECURITY02_everyLegacyOperationIsTenantScopedAndMemberWritesAreForbidden"
+          }
+        ],
+        "source_assertion_summary_positive": "Newman A07 cancel=200",
+        "source_assertion_summary_meaningful_denials": "Java #33 foreign=404 and MEMBER=403",
+        "remaining_per_policy_review": "Denied ISSUED/CONSUMED cancel with SQL hold/state snapshot",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R003",
@@ -255,7 +291,23 @@
           "claim_limit": "HTTP status assertion, not full per-route authorization proof"
         }
       ],
-      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "L06",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 33,
+            "method": "C3_SECURITY02_everyLegacyOperationIsTenantScopedAndMemberWritesAreForbidden"
+          }
+        ],
+        "source_assertion_summary_positive": "Newman A06 consumable consume=200",
+        "source_assertion_summary_meaningful_denials": "Java #33 foreign=404 and MEMBER=403",
+        "remaining_per_policy_review": "Legacy consumption idempotence/insufficient stock SQL effects",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R004",
@@ -339,7 +391,27 @@
           "claim_limit": "HTTP status assertion, not full per-route authorization proof"
         }
       ],
-      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "L08",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 29,
+            "method": "C3_PARITY01_legacyListsFiltersAndProtectedCrudAreTenantScoped"
+          },
+          {
+            "order": 33,
+            "method": "C3_SECURITY02_everyLegacyOperationIsTenantScopedAndMemberWritesAreForbidden"
+          }
+        ],
+        "source_assertion_summary_positive": "Newman A08 eligible delete=200; Java #29 legacy delete=200",
+        "source_assertion_summary_meaningful_denials": "Newman A08-REFUSED issued delete=409; Java #33 foreign=404/member=403",
+        "remaining_per_policy_review": "Historical movement and audit invariants after refusal",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R005",
@@ -412,7 +484,23 @@
           "claim_limit": "HTTP status assertion, not full per-route authorization proof"
         }
       ],
-      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "L04",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 33,
+            "method": "C3_SECURITY02_everyLegacyOperationIsTenantScopedAndMemberWritesAreForbidden"
+          }
+        ],
+        "source_assertion_summary_positive": "Newman A04 issue reusable=200",
+        "source_assertion_summary_meaningful_denials": "Java #33 foreign=404 and MEMBER=403",
+        "remaining_per_policy_review": "Wrong type/state/time with ledger delta receipt",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R006",
@@ -485,7 +573,23 @@
           "claim_limit": "HTTP status assertion, not full per-route authorization proof"
         }
       ],
-      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "L05",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 33,
+            "method": "C3_SECURITY02_everyLegacyOperationIsTenantScopedAndMemberWritesAreForbidden"
+          }
+        ],
+        "source_assertion_summary_positive": "Newman A05 return reusable=200",
+        "source_assertion_summary_meaningful_denials": "Java #33 foreign=404 and MEMBER=403",
+        "remaining_per_policy_review": "Second return/no double movement and wrong state effects",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R007",
@@ -558,7 +662,27 @@
           "claim_limit": "HTTP status assertion, not full per-route authorization proof"
         }
       ],
-      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "L09",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 30,
+            "method": "C3_PRIVACY01_contactIsEncryptedAndConsentRevocationErasesIt"
+          },
+          {
+            "order": 33,
+            "method": "C3_SECURITY02_everyLegacyOperationIsTenantScopedAndMemberWritesAreForbidden"
+          }
+        ],
+        "source_assertion_summary_positive": "Newman A09 revoke=200; Java #30 consent false/contact ciphertext null and stock preserved",
+        "source_assertion_summary_meaningful_denials": "Java #33 foreign=404 and MEMBER=403",
+        "remaining_per_policy_review": "Additional authorized-role transitions and reminder-suppression persistence",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R008",
@@ -714,7 +838,31 @@
           "claim_limit": "HTTP status assertion, not full per-route authorization proof"
         }
       ],
-      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "L02",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 29,
+            "method": "C3_PARITY01_legacyListsFiltersAndProtectedCrudAreTenantScoped"
+          },
+          {
+            "order": 33,
+            "method": "C3_SECURITY02_everyLegacyOperationIsTenantScopedAndMemberWritesAreForbidden"
+          },
+          {
+            "order": 41,
+            "method": "C4_A5_memberAndUnassignedLeadCannotBrowseBorrowerAllocationActivity"
+          }
+        ],
+        "source_assertion_summary_positive": "Newman A02 status/requirement filters=200; Java #29 filter and #41 list",
+        "source_assertion_summary_meaningful_denials": "Java #33 foreign IDs omitted; lower-role restrictions #41",
+        "remaining_per_policy_review": "CUSTODIAN read success, ADMIN/MEMBER/LEAD/foreign filter claims per real target",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R009",
@@ -870,7 +1018,31 @@
           "claim_limit": "HTTP status assertion, not full per-route authorization proof"
         }
       ],
-      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE"
+      "postman_status_execution": "PASS_PARTIAL_STATUS_EVIDENCE",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "L01",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 29,
+            "method": "C3_PARITY01_legacyListsFiltersAndProtectedCrudAreTenantScoped"
+          },
+          {
+            "order": 30,
+            "method": "C3_PRIVACY01_contactIsEncryptedAndConsentRevocationErasesIt"
+          },
+          {
+            "order": 33,
+            "method": "C3_SECURITY02_everyLegacyOperationIsTenantScopedAndMemberWritesAreForbidden"
+          }
+        ],
+        "source_assertion_summary_positive": "Newman A01 variants=201; Java #29 create; #30 encrypted consent",
+        "source_assertion_summary_meaningful_denials": "Java #33 foreign Requirement=404; MEMBER=403",
+        "remaining_per_policy_review": "OWNER/ADMIN versus CUSTODIAN creation asymmetry with denied-write receipt",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R010",
@@ -3709,7 +3881,39 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "I15",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 20,
+            "method": "C2_LEDGER01_reusableStockHasAppendOnlyMovementAndLateReturnIsReplaySafe"
+          },
+          {
+            "order": 21,
+            "method": "C2_LEDGER02_consumableReceiveAdjustReplayAndStaleVersionAreAtomic"
+          },
+          {
+            "order": 22,
+            "method": "C2_TINV03_expiredApprovedHoldIsReleasedButIssuedCustodyRemainsAtEndBoundary"
+          },
+          {
+            "order": 23,
+            "method": "C2_CONCURRENCY01_twoApprovalsAndTwoIssuesCannotDoubleCommitStock"
+          },
+          {
+            "order": 55,
+            "method": "C8AssignedLeadUsesOnlyTheirProjectAndOwnPendingAllocationActions"
+          }
+        ],
+        "source_assertion_summary_positive": "Java #20/#21 approve=200; #23 2-racer one 200",
+        "source_assertion_summary_meaningful_denials": "Java #23 competing approval=409; #55 LEAD=403",
+        "remaining_per_policy_review": "Real foreign Allocation under same-org path and ADMIN denial effects",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R044",
@@ -3785,7 +3989,27 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "I19",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 23,
+            "method": "C2_CONCURRENCY01_twoApprovalsAndTwoIssuesCannotDoubleCommitStock"
+          },
+          {
+            "order": 55,
+            "method": "C8AssignedLeadUsesOnlyTheirProjectAndOwnPendingAllocationActions"
+          }
+        ],
+        "source_assertion_summary_positive": "Java #23 stock-role pending cancel=200; #55 assigned LEAD own cancel=200",
+        "source_assertion_summary_meaningful_denials": "Java #55 other requester's Allocation=404",
+        "remaining_per_policy_review": "APPROVED release and LEAD wrong state SQL invariants",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R045",
@@ -3861,7 +4085,23 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "I18",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 21,
+            "method": "C2_LEDGER02_consumableReceiveAdjustReplayAndStaleVersionAreAtomic"
+          }
+        ],
+        "source_assertion_summary_positive": "Java #21 consume=200 and exact idempotent replay",
+        "source_assertion_summary_meaningful_denials": "Java #21 no second stock deduction on replay",
+        "remaining_per_policy_review": "ADMIN/foreign/wrong-type/current-role denial SQL snapshot",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R046",
@@ -3937,7 +4177,23 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "I10",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 55,
+            "method": "C8AssignedLeadUsesOnlyTheirProjectAndOwnPendingAllocationActions"
+          }
+        ],
+        "source_assertion_summary_positive": "Java #55 LEAD own eligible delete=200 and OWNER other delete=200",
+        "source_assertion_summary_meaningful_denials": "Java #55 LEAD other request deletion=404",
+        "remaining_per_policy_review": "Historically approved delete refusal and per-row SQL snapshot",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R047",
@@ -4013,7 +4269,35 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "I16",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 20,
+            "method": "C2_LEDGER01_reusableStockHasAppendOnlyMovementAndLateReturnIsReplaySafe"
+          },
+          {
+            "order": 22,
+            "method": "C2_TINV03_expiredApprovedHoldIsReleasedButIssuedCustodyRemainsAtEndBoundary"
+          },
+          {
+            "order": 23,
+            "method": "C2_CONCURRENCY01_twoApprovalsAndTwoIssuesCannotDoubleCommitStock"
+          },
+          {
+            "order": 56,
+            "method": "C8HistoricalBusinessTimeDoesNotBackdateSessionsOrReceipts"
+          }
+        ],
+        "source_assertion_summary_positive": "Java #20/#22/#23/#56 ISSUE 200; #20 replay=200",
+        "source_assertion_summary_meaningful_denials": "Java #23 one competing issue refused 409/412",
+        "remaining_per_policy_review": "Wrong type/stale/foreign/ADMIN denial and negative movement count",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R048",
@@ -4089,7 +4373,23 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "I17",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 20,
+            "method": "C2_LEDGER01_reusableStockHasAppendOnlyMovementAndLateReturnIsReplaySafe"
+          }
+        ],
+        "source_assertion_summary_positive": "Java #20 RETURN 200 and ledger delta_issued restores",
+        "source_assertion_summary_meaningful_denials": "Java #20 exact movement count and return-replay safety",
+        "remaining_per_policy_review": "Wrong-state existing item and other role/foreign SQL invariants",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R049",
@@ -4165,7 +4465,39 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "I23",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 20,
+            "method": "C2_LEDGER01_reusableStockHasAppendOnlyMovementAndLateReturnIsReplaySafe"
+          },
+          {
+            "order": 21,
+            "method": "C2_LEDGER02_consumableReceiveAdjustReplayAndStaleVersionAreAtomic"
+          },
+          {
+            "order": 23,
+            "method": "C2_CONCURRENCY01_twoApprovalsAndTwoIssuesCannotDoubleCommitStock"
+          },
+          {
+            "order": 41,
+            "method": "C4_A5_memberAndUnassignedLeadCannotBrowseBorrowerAllocationActivity"
+          },
+          {
+            "order": 55,
+            "method": "C8AssignedLeadUsesOnlyTheirProjectAndOwnPendingAllocationActions"
+          }
+        ],
+        "source_assertion_summary_positive": "Java #20/#21/#23/#55 GET AllocationState 200/ETag",
+        "source_assertion_summary_meaningful_denials": "Java #41 unauthorized borrower/member scope; #55 LEAD own vs other",
+        "remaining_per_policy_review": "ADMIN read vs MEMBER/unassigned LEAD denial field set",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R050",
@@ -4241,7 +4573,27 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "I24",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 20,
+            "method": "C2_LEDGER01_reusableStockHasAppendOnlyMovementAndLateReturnIsReplaySafe"
+          },
+          {
+            "order": 41,
+            "method": "C4_A5_memberAndUnassignedLeadCannotBrowseBorrowerAllocationActivity"
+          }
+        ],
+        "source_assertion_summary_positive": "Java #20 Allocation page=200 with bounded limit",
+        "source_assertion_summary_meaningful_denials": "Java #41 lower-role Allocation page denied",
+        "remaining_per_policy_review": "Cross-org cursor/limit/ADMIN read denial; exact SQL zero-write",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R051",
@@ -4317,7 +4669,27 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "I06",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 54,
+            "method": "C8BorrowerAccessBindsIdentityAndHidesDirectoryAndContacts"
+          },
+          {
+            "order": 55,
+            "method": "C8AssignedLeadUsesOnlyTheirProjectAndOwnPendingAllocationActions"
+          }
+        ],
+        "source_assertion_summary_positive": "Java #54/#55 linked allocation=201, persisted borrower/requester keys and idempotent replay",
+        "source_assertion_summary_meaningful_denials": "Java #54 missing reusable borrower=400, foreign borrower=404, injected field=400; #55 unassigned LEAD=404",
+        "remaining_per_policy_review": "CONSUMABLE optional borrower; write count and first-failure audit invariant",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R052",
@@ -4469,7 +4841,23 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "I09",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 54,
+            "method": "C8BorrowerAccessBindsIdentityAndHidesDirectoryAndContacts"
+          }
+        ],
+        "source_assertion_summary_positive": "Java #54 own borrower revoke=200, consent and cipher cleared; idempotent replay",
+        "source_assertion_summary_meaningful_denials": "Java #54 other borrower=404, stale=412, suspended borrower=404; SQL and receipt invariant",
+        "remaining_per_policy_review": "Inspect all exact private field response keys and historical reminder events",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R054",
@@ -4545,7 +4933,23 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "I08",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 54,
+            "method": "C8BorrowerAccessBindsIdentityAndHidesDirectoryAndContacts"
+          }
+        ],
+        "source_assertion_summary_positive": "Java #54 own linked borrower detail=200/ETag and redacted fields",
+        "source_assertion_summary_meaningful_denials": "Java #54 other borrower and foreign tenant 404, suspension 404",
+        "remaining_per_policy_review": "Pagination not applicable; confirm all BorrowedView fields and expiry behavior",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R055",
@@ -4621,7 +5025,23 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "I07",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 54,
+            "method": "C8BorrowerAccessBindsIdentityAndHidesDirectoryAndContacts"
+          }
+        ],
+        "source_assertion_summary_positive": "Java #54 own borrowed page=200, one row",
+        "source_assertion_summary_meaningful_denials": "Java #54 different same-org borrower sees empty page",
+        "remaining_per_policy_review": "Cursor bounds/cross-org leakage under two borrowers",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R056",
@@ -4697,7 +5117,23 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "I03",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 54,
+            "method": "C8BorrowerAccessBindsIdentityAndHidesDirectoryAndContacts"
+          }
+        ],
+        "source_assertion_summary_positive": "Java #54 assigned LEAD borrower directory=200, only membershipId/displayName",
+        "source_assertion_summary_meaningful_denials": "Java #54 MEMBER=403, foreign=404, unassigned Project=404, project-mismatch cursor=404",
+        "remaining_per_policy_review": "Search length/active/suspended/role exclusions in directory",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R057",
@@ -4882,7 +5318,55 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "I14",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 20,
+            "method": "C2_LEDGER01_reusableStockHasAppendOnlyMovementAndLateReturnIsReplaySafe"
+          },
+          {
+            "order": 21,
+            "method": "C2_LEDGER02_consumableReceiveAdjustReplayAndStaleVersionAreAtomic"
+          },
+          {
+            "order": 26,
+            "method": "C2_AUTH02_suspendedCustodianCannotReplayPriorReceipt"
+          },
+          {
+            "order": 34,
+            "method": "C3_RECEIPT01_boundedPrunerDeletesExpiredHttpReceiptButKeepsPhysicalMovementReplayable"
+          },
+          {
+            "order": 40,
+            "method": "C4_A2_operationReceiptsRequireCurrentStockRoleEvenForOriginalActor"
+          },
+          {
+            "order": 51,
+            "method": "C8ScopeUsesPathMembershipForStockAndSelectedWorkspaceForReportingAndLegacy"
+          },
+          {
+            "order": 53,
+            "method": "C8ProjectLeadAssignmentIsVersionedScopedAndClearedOnLossOfRole"
+          },
+          {
+            "order": 54,
+            "method": "C8BorrowerAccessBindsIdentityAndHidesDirectoryAndContacts"
+          },
+          {
+            "order": 55,
+            "method": "C8AssignedLeadUsesOnlyTheirProjectAndOwnPendingAllocationActions"
+          }
+        ],
+        "source_assertion_summary_positive": "Java #20/#21 stock receipt=200; #54 borrower/LEAD current actor receipt=200",
+        "source_assertion_summary_meaningful_denials": "Java #26 suspended actor=404; #40 demoted=403/foreign=404; #54 other borrower=403",
+        "remaining_per_policy_review": "Expired bounded receipt, invalid tenant and full type-specific authorization matrix",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R059",
@@ -4958,7 +5442,23 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "I04",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 55,
+            "method": "C8AssignedLeadUsesOnlyTheirProjectAndOwnPendingAllocationActions"
+          }
+        ],
+        "source_assertion_summary_positive": "Java #55 assigned LEAD own Project Allocation page 200, canCancel true; another requester canCancel false",
+        "source_assertion_summary_meaningful_denials": "Java #55 other Project cursor=404",
+        "remaining_per_policy_review": "CUSTODIAN/ADMIN positive, requester-revocation and output field review",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R060",
@@ -5089,7 +5589,35 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "I02",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 53,
+            "method": "C8ProjectLeadAssignmentIsVersionedScopedAndClearedOnLossOfRole"
+          },
+          {
+            "order": 54,
+            "method": "C8BorrowerAccessBindsIdentityAndHidesDirectoryAndContacts"
+          },
+          {
+            "order": 55,
+            "method": "C8AssignedLeadUsesOnlyTheirProjectAndOwnPendingAllocationActions"
+          },
+          {
+            "order": 57,
+            "method": "C8LeadMutationAndDemotionSerializeOnTheCurrentOrganization"
+          }
+        ],
+        "source_assertion_summary_positive": "Java #53 ADMIN assigns lead=200 ETag and audit once, replay; #55 OWNER assignment=200",
+        "source_assertion_summary_meaningful_denials": "Java #53 missing If-Match 428, stale 412, unqualified LEAD 409, foreign member 404; #57 demotion race",
+        "remaining_per_policy_review": "CUSTODIAN denied 403 with exact unchanged Project/receipt SQL",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R062",
@@ -5165,7 +5693,23 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "I05",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 65,
+            "method": "C8LeadOptionsFiltersActualMembershipsAndBindsDirectoryCursorsWithoutSqlWrites"
+          }
+        ],
+        "source_assertion_summary_positive": "NEW Java #65 OWNER/ADMIN two active LEAD options 200 and pagination; pending exact-head CI",
+        "source_assertion_summary_meaningful_denials": "NEW Java #65 MEMBER/LEAD/CUSTODIAN 403, foreign Project/org 404, mismatched cursor 404; pending CI",
+        "remaining_per_policy_review": "Confirm ordered test #65 run and independent reviewer; other menu UI flow remains separate",
+        "new_test_order65_status": "ADDED_IN_BRANCH_PENDING_EXACT_CI",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R063",
@@ -5298,7 +5842,27 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "I01",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 53,
+            "method": "C8ProjectLeadAssignmentIsVersionedScopedAndClearedOnLossOfRole"
+          },
+          {
+            "order": 55,
+            "method": "C8AssignedLeadUsesOnlyTheirProjectAndOwnPendingAllocationActions"
+          }
+        ],
+        "source_assertion_summary_positive": "Java #53/#55 assigned LEAD GET ProjectAccess 200, with ETag",
+        "source_assertion_summary_meaningful_denials": "Java #53/#55 foreign, unassigned LEAD or demoted MEMBER 404/403",
+        "remaining_per_policy_review": "CUSTODIAN role and no-write row values for read path",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R065",
@@ -5703,7 +6267,23 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "I12",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 21,
+            "method": "C2_LEDGER02_consumableReceiveAdjustReplayAndStaleVersionAreAtomic"
+          }
+        ],
+        "source_assertion_summary_positive": "Java #21 Adjust 200, total+movement change, NO_CHANGE 422",
+        "source_assertion_summary_meaningful_denials": "Java #21 adjustment below reserved commitments 409, ledger stable",
+        "remaining_per_policy_review": "ADMIN/member/foreign actual Resource denied SQL effects",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R072",
@@ -5779,7 +6359,23 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "I21",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 39,
+            "method": "C4_A1_zeroStockResourceWithImageCannotBeDeletedButEmptyUnpicturedResourceCan"
+          }
+        ],
+        "source_assertion_summary_positive": "Java #39 OWNER delete image=200 ETag advanced, exact legacy image GET now 404",
+        "source_assertion_summary_meaningful_denials": "Java #39 MEMBER=403, foreign org=404, stale=412, missing=428, repeat delete=404",
+        "remaining_per_policy_review": "CUSTODIAN allowed, ADMIN denied, refusal preserves image byte/version SQL",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R073",
@@ -5855,7 +6451,27 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "I13",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 20,
+            "method": "C2_LEDGER01_reusableStockHasAppendOnlyMovementAndLateReturnIsReplaySafe"
+          },
+          {
+            "order": 51,
+            "method": "C8ScopeUsesPathMembershipForStockAndSelectedWorkspaceForReportingAndLegacy"
+          }
+        ],
+        "source_assertion_summary_positive": "Java #20 movement page limit2, after-cursor 200 and no extra events; #51 related resource movements 200",
+        "source_assertion_summary_meaningful_denials": "Java #51 MEMBER/LEAD=403, foreign/suspended current role 404",
+        "remaining_per_policy_review": "Real cross-resource cursor same-org with no disclosure and read-only SQL",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R074",
@@ -5931,7 +6547,51 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "I11",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 20,
+            "method": "C2_LEDGER01_reusableStockHasAppendOnlyMovementAndLateReturnIsReplaySafe"
+          },
+          {
+            "order": 21,
+            "method": "C2_LEDGER02_consumableReceiveAdjustReplayAndStaleVersionAreAtomic"
+          },
+          {
+            "order": 24,
+            "method": "C2_IDEMP02_failureBetweenQuantityAndMovementRollsBackEverything"
+          },
+          {
+            "order": 26,
+            "method": "C2_AUTH02_suspendedCustodianCannotReplayPriorReceipt"
+          },
+          {
+            "order": 34,
+            "method": "C3_RECEIPT01_boundedPrunerDeletesExpiredHttpReceiptButKeepsPhysicalMovementReplayable"
+          },
+          {
+            "order": 38,
+            "method": "C3_INPUT03_missingAndInvalidInventoryPreconditionsAreControlledAndAtomic"
+          },
+          {
+            "order": 49,
+            "method": "C7InventoryKeepsForeignOrganizationsPrivateAndFreezesAuthorizedWrites"
+          },
+          {
+            "order": 51,
+            "method": "C8ScopeUsesPathMembershipForStockAndSelectedWorkspaceForReportingAndLegacy"
+          }
+        ],
+        "source_assertion_summary_positive": "Java #21 receive 201 with one RECEIPT movement; #20/#51 CUSTODIAN receive=201; #34 pruned receipt replay",
+        "source_assertion_summary_meaningful_denials": "Java #20 ADMIN/LEAD/MEMBER=403, #49 frozen 409/foreign org404, #38 missing key400/version428/invalid400, #24 injection rollback",
+        "remaining_per_policy_review": "Real existing foreign Resource UUID under home org, denied row+receipt SQL invariants",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R075",
@@ -6007,7 +6667,35 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "I20",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 20,
+            "method": "C2_LEDGER01_reusableStockHasAppendOnlyMovementAndLateReturnIsReplaySafe"
+          },
+          {
+            "order": 21,
+            "method": "C2_LEDGER02_consumableReceiveAdjustReplayAndStaleVersionAreAtomic"
+          },
+          {
+            "order": 49,
+            "method": "C7InventoryKeepsForeignOrganizationsPrivateAndFreezesAuthorizedWrites"
+          },
+          {
+            "order": 51,
+            "method": "C8ScopeUsesPathMembershipForStockAndSelectedWorkspaceForReportingAndLegacy"
+          }
+        ],
+        "source_assertion_summary_positive": "Java #20/#21 resource state 200 ETag/available; #51 path-org CUSTODIAN read 200",
+        "source_assertion_summary_meaningful_denials": "Java #51 MEMBER/LEAD=403, outsider 404, demotion403, suspension404",
+        "remaining_per_policy_review": "ADMIN denied 403, row/field redaction review",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R076",
@@ -6083,7 +6771,27 @@
       "independent_review": "NOT_PERFORMED",
       "acceptance": "BLOCKED_UNTIL_ALL_CONTRACT_EVIDENCE_AND_REVIEW",
       "postman_executed_asserted_request_statuses": [],
-      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS"
+      "postman_status_execution": "NO_ROUTE_IN_THE_TWO_EXECUTED_EXTENDED_COLLECTIONS",
+      "inventory_33_assertion_reconciliation": {
+        "oracle_row": "I22",
+        "prior_test_source_sha": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+        "prior_test_exact_ci_url": "https://github.com/newonathe/OrgResource/actions/runs/45231285919",
+        "test_orders": [
+          {
+            "order": 20,
+            "method": "C2_LEDGER01_reusableStockHasAppendOnlyMovementAndLateReturnIsReplaySafe"
+          },
+          {
+            "order": 51,
+            "method": "C8ScopeUsesPathMembershipForStockAndSelectedWorkspaceForReportingAndLegacy"
+          }
+        ],
+        "source_assertion_summary_positive": "Java #20 resource page 200 keyset after cursor; #51 selected-org vs path resources",
+        "source_assertion_summary_meaningful_denials": "Java #51 lower role resource state refusal; prior middleware anonymous coverage",
+        "remaining_per_policy_review": "ADMIN read denial, mismatched cross-org cursor 404 and complete resource-page inventory",
+        "new_test_order65_status": "NOT_APPLICABLE",
+        "evidence_level": "SOURCE_LINKED_PARTIAL_HTTP_ASSERTIONS__INDEPENDENT_REVIEW_OUTSTANDING"
+      }
     },
     {
       "route_id": "R077",
@@ -7095,5 +7803,6 @@
     }
   ],
   "methods_addendum": "Collection scripts were inspected: all 48 C3 request names map to global expected HTTP statuses; all 12 C6a request scripts assert explicit HTTP statuses. Exact CI Extended job logs report 48 requests/90 assertions (0 failures) and 12 requests/20 assertions (0 failures). Each of 35 matched distinct route signatures thus has one or more executed status assertion(s), which is a PARTIAL receipt; exact role/object/DB effects, separate review and private IR4 corroboration remain required.",
-  "scope_note_projectwork": "11 ProjectWork/Reporting route entries now identify actual Java ordered assertion evidence sources. Order 64 is newly added but NOT yet CI verified. No route has an independent acceptance verdict."
+  "scope_note_projectwork": "11 ProjectWork/Reporting route entries now identify actual Java ordered assertion evidence sources. Order 64 is newly added but NOT yet CI verified. No route has an independent acceptance verdict.",
+  "inventory_33_reconciliation_note": "All 33 routes source-linked to their specific source oracle and tested Java/Newman assertion leads. New #65 specifically targets lead-options and awaits exact-head CI. Previous executable test methods ran green at f0f670f6. This is route candidate/evidence-linking work, not independent authorization acceptance; no existing BLOCKED fields were changed."
 }
