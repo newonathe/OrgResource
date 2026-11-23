@@ -51,8 +51,7 @@ public final class C8HostedDemoPreflight {
             String version = singleString(db, "SELECT VERSION()");
             if (!version.startsWith("8.0."))
                 throw new IllegalStateException("The current Hosted C8 fixture was verified against MySQL 8.0 only.");
-            long flyway = singleLong(db, "SELECT MAX(CAST(version AS UNSIGNED)) FROM flyway_schema_history WHERE success=1");
-            if (flyway != 7) throw new IllegalStateException("The existing schema must have exactly Flyway V7 applied.");
+            C8FlywayHistory.requireExactV7(db);
             long demo = singleLong(db, "SELECT COUNT(*) FROM organization WHERE demo_dataset_id IS NOT NULL");
             if (demo != 0) throw new IllegalStateException("The target has an existing or partial demo cohort: refuse new import.");
             long original = queryCount(db, """
