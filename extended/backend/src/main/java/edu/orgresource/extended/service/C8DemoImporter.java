@@ -183,7 +183,7 @@ public class C8DemoImporter {
         LocalDateTime wall = LocalDateTime.ofInstant(wallClock.instant(), ZoneOffset.UTC);
         UserAccount historicalActor = transaction.execute(status -> accounts.saveAndFlush(
                 new UserAccount("c8-demo-historical-actor", "Simulated historical actor", wall)));
-        int requests = 0, actions = 0, imported = 0;
+        int requests = 0, actions = 0, completedWorkspaces = 0;
         for (JsonNode slice : array(plan, "organizations")) {
             requests = Math.addExact(requests, array(slice, "allocations").size());
             actions = Math.addExact(actions, array(slice, "events").size());
@@ -203,9 +203,9 @@ public class C8DemoImporter {
                         SELECT COUNT(*) FROM membership WHERE org_id=? AND role='OWNER' AND status='ACTIVE'
                         """, imported.id);
             });
-            imported++;
-            if (injectFailureAfter > 0 && imported == injectFailureAfter)
-                throw new IllegalStateException("INJECTED_ISOLATED_PARTIAL_FAILURE_AFTER_" + imported
+            completedWorkspaces++;
+            if (injectFailureAfter > 0 && completedWorkspaces == injectFailureAfter)
+                throw new IllegalStateException("INJECTED_ISOLATED_PARTIAL_FAILURE_AFTER_" + completedWorkspaces
                         + "_COMMITTED_WORKSPACES");
         }
         long expectedRequests = requests, expectedActions = actions;
