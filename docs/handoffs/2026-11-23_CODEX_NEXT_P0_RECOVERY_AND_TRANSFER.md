@@ -1,5 +1,7 @@
 # P0 Next Codex/Operator Cycle — recovery-tested demo importer, exact Northflank transfer
 
+> **This is a historical detailed handoff. Current authoritative checklist and copy-ready Codex prompt:** [../../CURRENT_STATUS_AND_NEXT_ACTIONS.md](../../CURRENT_STATUS_AND_NEXT_ACTIONS.md). Its status/CI override old pending or inaccessible-file statements below. **LIVE_IMPORT_NOT_RUN** until actual Northflank evidence is recorded.
+
 ## Release candidate + private dataset verified — 2026-11-23
 
 **VERIFIED INPUT:** The owner uploaded the exact **19,265,850-byte** approved `fictional-events-v1.local.json`. Size, SHA-256 `3b0f54da85cadb77cd7d8ab2d50c1fdb4b4ee36710b803cf904227e13f08927c`, 96 orgs and all declared aggregate counts were independently checked. This is `LOCAL_ONLY_DRY_RUN` synthetic material. The **PUBLIC** OrgResource repository contains only the [safe dataset manifest](../deployment/C8_PRIVATE_DATASET_MANIFEST_2026-11-23.md), not the raw JSON. For raw GitHub custody create a separate PRIVATE repo, or stage directly to the operator-only Northflank job. **No Northflank connector/credentials, backup/restore or live import is available/executed here.**

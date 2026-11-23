@@ -1,0 +1,99 @@
+# OrgResource — current status, remaining work and Codex continuation
+
+**Canonical handoff: November 23, 2026 (Asia/Manila).** This is the **current priority and status register**. Read this file first in each new ChatGPT/Codex conversation, then the linked source files. Historical notes lower in \`NEXT_CHAT_START_HERE.md\`, old handoffs, and CI log excerpts may describe earlier pending/failed runs; **this file takes precedence for status only**, and must be refreshed against GitHub/Northflank before taking action.
+
+## 0. Decision and scope (USER DECISION)
+
+**Release priority:** load the exact **96 approved directory-labeled fictional organizations** and simulated 12-month project/inventory/allocation history into the **existing Northflank OrgResource deployment**. Preserve the original active OWNER account, original organization, and all other pre-existing V7 data. Finish acceptance on the actual hosted instance. **No further optional product or cosmetic work** before this P0 release. The user plans to resume with Codex when available and wants an autonomous, safe, sequential execution plan.
+
+**Current release verdict: \`LIVE_IMPORT_NOT_RUN\`; NOT HOST-ACCEPTED.** Do not confuse code/CI, private file validation, a mock/clone import, or an operator-provided attestation string with a live deployment/import.
+
+## 1. GitHub verified state (VERIFIED REPOSITORY FACT; 2026-11-23)
+
+- Repository **PUBLIC**: https://github.com/newonathe/OrgResource
+- Main release candidate: draft, **unmerged** [PR #25](https://github.com/newonathe/OrgResource/pull/25), branch \`feat/extended-c-c8-domain-workflows-2026-11-19\`.
+- **Last three-job-green runtime SHA:** \`9df7099145e324f326106870b1b3fd0788d5510f\`, [CI run #45155946849](https://github.com/newonathe/OrgResource/actions/runs/45155946849). Passed: Java 8 + isolated MySQL/frozen Course A, React typecheck/lint/build/tests, and Extended C Java 21 + isolated MySQL/Newman/Playwright. Includes responsive sidebar \`OrgResource\` one-line fix tested at nine widths, additive C8 import guards, V2 pre-existing-row HMAC baseline and independent postflight. **These tests used isolated small/intermediate fixtures, not the exact full 96-org plan or production DB.**
+- Most recent *pre-handoff* feature HEAD \`22cda4d20f88809cd0577b1c8fea0fbbb8b1335e\` added public-safe dataset manifest and handoff documentation. [Its CI run #45164554545](https://github.com/newonathe/OrgResource/actions/runs/45164554545) was **in progress when this handoff was prepared**. This document and its GitHub commit will create an even newer documentation-only HEAD; check each exact SHA independently before labeling it green.
+- Frozen Course A boundary: \`7f8c0746da18fd54b47f430ac1435ac36e605d67\`. Do not modify or overwrite the frozen Course A sources or claim approval/academic submission.
+- Only open tracked issues seen: [#26 P0 full demo import](https://github.com/newonathe/OrgResource/issues/26); [#27 DEC-D01 department model](https://github.com/newonathe/OrgResource/issues/27). Refresh issues/PRs for later changes.
+- **CODE FREEZE:** Do not make incidental improvements. If a real blocker is observed, identify the failing evidence, make the smallest isolated fix on PR #25, and rerun all required CI. Do not merge into main without explicit owner consent.
+
+## 2. Exact private source: found and verified (VERIFIED FILE EVIDENCE)
+
+The user has recovered and uploaded \`fictional-events-v1.local.json\`. Its reported content and checksum were independently validated in this ChatGPT Project and recorded in the [public-safe manifest](docs/deployment/C8_PRIVATE_DATASET_MANIFEST_2026-11-23.md):
+
+| Property | Exact expectation |
+| --- | --- |
+| Byte size | \`19265850\` |
+| SHA-256 | \`3b0f54da85cadb77cd7d8ab2d50c1fdb4b4ee36710b803cf904227e13f08927c\` |
+| Roster source SHA-256 | \`57f1f0c680041c39dcf7644a1acca5fcc75dc7d525262547842389da7540b9a2\` |
+| Dataset ID | \`orgresource-c8-plan-v1-57f1f0c68004-20deeda9e2af\` |
+| Classification | \`synthetic=true\`, \`scope=LOCAL_ONLY_DRY_RUN\` |
+| Directory-label cohorts | 96 total: 72 COA-M + 24 LIONS |
+| Planned data | 248 departments, 713 projects, 1,312 resources, 2,139 requirements, 462 fictional personas, 21,060 allocations, 67,370 historical allocation events |
+| Final state distribution | PENDING 212; APPROVED 211; ISSUED 1,123; RETURNED 8,479; CONSUMED 5,699; CANCELLED 5,336 |
+
+**Critical:** This repo is **PUBLIC**; the raw 19.3 MB JSON was **NOT** published to it. Do not upload it as a PR/issue/release attachment, workflow artifact, secret file, Docker layer or commit; no plan regeneration, scraping or invented names. The original file remains under owner control/ChatGPT attachment; Codex cannot assume an attached ChatGPT file is automatically in its workspace. Operator must obtain file securely and recheck size/SHA on disk and inside the temporary import job. Owner may separately create a PRIVATE GitHub repo, but **private repo creation/upload is not confirmed** and is optional if direct operator-private transfer works.
+
+## 3. P0 blockers — only remaining work before live release
+
+| ID | Priority | Next action | Evidence required | Status/owner |
+| --- | --- | --- | --- | --- |
+| P0-01 | BLOCKER | Access the **actual authenticated Northflank project** and inspect deployed image SHA, MySQL8, V7 schema/Flyway, existing OWNER/org UUIDs, runtime limits and safe network path | Redacted operator inspection receipt, no tokens | **OPEN — owner/authorized operator** |
+| P0-02 | BLOCKER | Check Northflank 2026-10-30 incident notices and **rotate/check stored secrets**, including MySQL/deployment/API credentials as applicable; verify site connectivity | Redacted audit/rotation and health evidence | **OPEN — owner/authorized operator** |
+| P0-03 | BLOCKER | Make native + encrypted **off-host backups**, **restore independently** to isolated MySQL8 clone, verify original account/schema/data | Completed backup ID, off-host copy and independently successful restore receipt | **OPEN — owner/authorized operator** |
+| P0-04 | BLOCKER | Privately stage unchanged JSON and **full-size rehearse all 96 orgs on the restored clone**, from the reviewed release image | Original SHA, completed clone import + detailed read-only postflight, capacity/performance and recovery proof | **OPEN — Codex + operator** |
+| P0-05 | BLOCKER | Confirm planned directory-label public-display/endorsement rights, correct synthetic notices, no actual participant data/SMS, and maintenance/rollback approval | Owner-reviewed go/no-go | **OPEN — owner** |
+| P0-06 | BLOCKER | On original target, capture original **V2 HMAC baseline BEFORE writes**, verify exact target plan, stop web writes, run owner-approved single import | Pre-import CAPTURE receipt, schema/server/owner fingerprint, manual import completion receipt | **NOT RUN — operator** |
+| P0-07 | BLOCKER | Run independent **SELECT-only original V2 VERIFY + exact source-derived postflight**, original-owner login and actual live browser/API tenant tests | Original data unchanged; all 96 exact labels, histories, states, stock checks and access-control negatives; dated/redacted receipts | **NOT RUN — operator + Codex** |
+| P0-08 | BLOCKER | Close maintenance after all gates, verify production bundle (sidebar fix), review merge/deploy explicitly with owner | Live URL tests, deployed SHA, signed owner decision | **NOT APPROVED — owner** |
+
+**Do not claim any item completed from CI.** In particular, an exact-plan fingerprint and a passing isolated synthetic test prove neither restore recoverability nor live deployment. If any import is partial, **STOP**; do not rerun blindly on a contaminated database. Restore only through a reviewed process.
+
+## 4. Can be completed in a normal ChatGPT + connected GitHub chat
+
+- Audit remote branch, issue/PR, repository source and actual GitHub Actions logs.
+- Edit/publicly commit **non-sensitive code, tests, public-safe docs**, update issue/PR and README/handoff links, and verify CI status. Avoid unrelated code because P0 is frozen.
+- Examine an uploaded private JSON locally, independently verify size/hash, schema/aggregates and safe sample fixtures. Do **not** copy private source to public GitHub or assume a previous attachment is present in every future Codex runtime.
+- Prepare **operator-ready commands, decision checklist, exact expected outputs, acceptance table and copy-ready Codex continuation prompt**.
+- Review proposed department feature, academic compliance, API and access-control tests, and identify verified gaps **without presenting the design as implemented**.
+
+## 5. Cannot complete from GitHub-only ChatGPT access
+
+- Read/rotate Northflank tenant secrets, run privileged jobs, modify a live MySQL addon, produce an authentic native backup + independently verified restore, transfer the private plan into Northflank, conduct the actual full 96 replay/import, validate live browser sessions or approve merge/deployment **without owner-operated host access**.
+- Create or populate a new PRIVATE repo unless a connected tool with those permissions is available and the owner authorizes it. **Do not create a public raw-data substitute.**
+- Test users' real interactions, claim a measured campus pilot/usage, obtain permission from Ateneo, or infer instructor/Canvas approval.
+- Promise asynchronous completion from a chat; Codex later must execute and record evidence.
+
+These are access/evidence boundaries, not requests to rewrite the importer. No passwords/API keys/DB dumps in ChatGPT, GitHub comments or public logs.
+
+## 6. Existing executable operator runbook and acceptance contract
+
+Read [P0 Northflank manual job runbook](docs/deployment/P0_NORTHFLANK_MANUAL_JOB_COMMAND_2026-11-23.md) **in full**. It contains the required environment variables, private job transfer and checks, exact SHA preflight, target fingerprint and confirmation phrase, SELECT-only HMAC CAPTURE/VERIFY, import, postflight, backup attestations, SMS-disabled settings, restoration handling and live acceptance.
+
+The existing CLI flags are:
+
+~~~text
+java -jar "$JAR" --c8-hosted-demo-preflight
+java -jar "$JAR" --c8-hosted-original-baseline   # CAPTURE before; VERIFY afterward
+java -jar "$JAR" --c8-hosted-demo-import
+java -jar "$JAR" --c8-hosted-demo-postflight
+~~~
+
+All flags and environment settings must be verified against **the actual deployed Java 21 artifact and operator job**. The hosted importer itself requires an existing private V2 baseline in VERIFY mode, checks before writes and rechecks afterward. Separate SELECT-only verification is still mandatory. The file exceeds Northflank's documented small secret-file cap; use a private authenticated job-file transfer, not env-var/secret-file embedding. No real SMS.
+
+## 7. DEFERRED until after P0 (DESIGN RECOMMENDATION, NOT IMPLEMENTED)
+
+- [DEC-D01 department affiliation and within-org cross-department resource catalog](docs/decisions/DEC_D01_DEPARTMENT_VISIBILITY_AND_REQUESTS_2026-11-23.md), [issue #27](https://github.com/newonathe/OrgResource/issues/27). A membership may belong to one *primary department within an organization* under the proposed design, and one user can have multiple organizations; this is NOT yet an accepted schema/API/privacy decision. **Do not add V8 migration or change approved V7 import schema during P0.**
+- Additional product features, SMS/Twilio integration, performance polish, alternate architecture, outside integrations, public campus adoption claims and ambitious UI redesign.
+- Extended C security/authorization full matrix or any feature beyond the verified bounded tests must be independently assessed for a production-ready product; passing the existing smoke tests is not proof of complete audit coverage. Confirm course assignment, syllabus and current Canvas announcements before academic submission. Record honest AI assistance/Certificate of Authorship where instructed.
+
+## 8. Copy-ready Codex execution prompt (paste only after opening the repo)
+
+> You are continuing OrgResource. First read **CURRENT_STATUS_AND_NEXT_ACTIONS.md**, then **NEXT_CHAT_START_HERE.md**, **docs/deployment/C8_PRIVATE_DATASET_MANIFEST_2026-11-23.md**, **docs/deployment/P0_NORTHFLANK_MANUAL_JOB_COMMAND_2026-11-23.md**, the C8 importer/preflight/baseline/postflight source and the current GitHub PR #25/issue #26. Check the latest remote HEAD, jobs and branch status; do not rely on stale historical “CI pending” paragraphs. The goal is to import the **exact already-approved private 19,265,850-byte/96-organization plan** into the **existing owner-controlled Northflank OrgResource**, preserving *every original row* and existing login. Reverify SHA \`3b0f54da85cadb77cd7d8ab2d50c1fdb4b4ee36710b803cf904227e13f08927c\` and the plan schema locally. Do not publicly upload the JSON; obtain it privately from the operator. Use the code freeze and avoid redesigns. Before any live database mutation, verify host access and user authorization, rotate/review secrets, independently back up + restore MySQL8 to a separate clone, demonstrate the exact full-plan rehearsal and independent postflight, capture the **original live target** V2 original-row HMAC BEFORE writes, verify image/DB compatibility and maintenance gating, then run one approved import and separate original VERIFY/postflight. On failure STOP and recover from backup. Verify original account, exact 96 orgs and all record histories, tenant isolation, synthetic labeling, no SMS, sidebar and responsive UI. Keep PR #25 unmerged until specifically approved. If blocked by absent host connection, **do not fake execution**: finish only safe repository tasks and report the precise access/action needed. Update this file, PR #25, issue #26 and sanitized evidence with actual observed facts. Issue #27 is explicitly deferred. Do not claim done until live proof exists.
+
+## 9. Update protocol for future sessions
+
+At **end of every work session**: (1) inspect exact HEAD and CI outcome; (2) replace the status rows in **this canonical file**, marking only proof-backed items complete with dated links; (3) update **NEXT_CHAT_START_HERE.md** pointer and PR #25/issue #26; (4) record the latest *actual* import state \`LIVE_IMPORT_NOT_RUN\` / \`PARTIAL_STOP\` / \`LIVE_VERIFIED\` with evidence; (5) leave owner-only secrets and private data outside public GitHub. Avoid duplicating ever-growing “current” paragraphs at the start of stale notes.
+
+**No production import, host security rotation, backup/restore, full-96 clone rehearsal or approved live release has yet been established in the GitHub evidence reviewed for this handoff.**

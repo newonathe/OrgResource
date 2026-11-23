@@ -1,5 +1,7 @@
 # P0 manual Northflank demo import — operator-only release checklist
 
+> **Current state, all remaining tasks and release-candidate SHA:** [../../CURRENT_STATUS_AND_NEXT_ACTIONS.md](../../CURRENT_STATUS_AND_NEXT_ACTIONS.md). This document remains the detailed operator procedure. The exact approved source JSON was locally validated but is **not** in public GitHub or Northflank. The release code SHA `9df7099145e324f326106870b1b3fd0788d5510f` passed all three CI jobs [#45155946849](https://github.com/newonathe/OrgResource/actions/runs/45155946849). Ignore superseded `CI PENDING` labels below for those earlier commits; verify new HEAD separately. **LIVE_IMPORT_NOT_RUN.**
+
 **Status (2026-11-23 PHT): prepared commands, NO Northflank execution.**
 **User priority:** fill the **existing** Northflank OrgResource instance with the **exact previously approved** 96 directory labels and simulated data, while retaining the old owner and old organization. **Code branch:** `feat/extended-c-c8-domain-workflows-2026-11-19` / draft PR #25, **DO NOT merge or release without owner approval and live proof**. **P0 issue:** [#26](https://github.com/newonathe/OrgResource/issues/26). Frozen Course A untouched.
 
