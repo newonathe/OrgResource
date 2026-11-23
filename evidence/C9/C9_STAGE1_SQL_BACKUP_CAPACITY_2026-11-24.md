@@ -34,3 +34,21 @@
 - **OPEN #26:** `LIVE_IMPORT_NOT_RUN` in existing Northflank; no security/secret incident remediation, hosted snapshot, independently restorable off-host backup or approved private 96 import has been performed here.
 - **C9 further stages:** retrieve *private full-96 SQL dump size and backup validity* from an operator-controlled isolated, independently restored MySQL8 clone after authorization and host-safety gates; validate actual 64 MiB limit, encrypted archive round-trip using the actual C5 script, empty-target refusal, tamper/key refusal, independent MySQL process, activity/export 1000-row/4MiB boundaries, and full-size HTTP percentile/restart recovery. Obtain separate reviewer acceptance. **Do not extrapolate** current 8-org bytes linearly or enlarge caps without proof.
 - **STOP:** no merge/rebase/main, V8 migration/index, hosted/production DB, live notifications, public raw source/backups, C10, academic submission or false reviewer signoff. C9 is ongoing work, not C9 COMPLETE.
+
+## Executed CI receipt — source code SHA `dbaed10a09ff4ab2d08e366c13f0a32cb18a2fe2`
+
+**VERIFIED CI (2026-11-24 PHT):** [GitHub Actions #45269236702](https://github.com/newonathe/OrgResource/actions/runs/45269236702) completed **SUCCESS** for all three jobs (Java8 frozen Course A, React, Extended Java21/MySQL/Newman/Playwright). The following sizes come from the actual `C9_ISOLATED_BACKUP_RESTORE_OK` log, not a projection or authored estimate:
+
+| Actual disposable MySQL8 C5-shaped SQL result | Bytes |
+| --- | ---: |
+| Main SQL dump (transient sessions excluded) | **1,031,942** |
+| Session table DDL | **2,357** |
+| **Combined unencrypted SQL** | **1,034,299** |
+| C5 raw SQL cap | **67,108,864** |
+| Estimated eventual C5 AES-GCM container (not generated) | **1,034,353** |
+
+**VERIFIED CI:** `row_dump_byte_equal=true`, `source_unchanged=true`, `plan_postflight=passed`, `corruption_digest_refused=true`, `nonempty_target_refused=true`; `ISOLATED_DEMO_POSTFLIGHT_READ_ONLY_OK: 8 orgs, 960 allocations, 3013 events` on the restored fixture; source C8 original-data HMAC VERIFY and existing postflight again passed. The separately guarded C8 small 3-org synthetic additive and 3-org partial recovery also passed. Extended Java21/MySQL **91 Maven / 66 ordered, failures/errors/skips 0**; Newman **48 requests/90 assertions plus 12/20**, failures 0; Playwright **19/19**. The C9 Stage 0b six-query measurement also ran successfully, but its individual millisecond medians changed again across ephemeral runners, reinforcing that this fixture cannot justify a database index change.
+
+**Interpretation:** The **1,034,299-byte** intermediate dump was below the 64 MiB SQL limit. That establishes only a bounded, real small/intermediate-fixture backup-and-restore fact. The relative row composition and encoded fields of the approved private **96-org / 21,060-allocation / 67,370-event** plan differ, so proportional projection is **not** an acceptable size or recovery proof. The generated SQL dump is **unencrypted** inside the temporary runner directory and removed at exit. Actual C5 AES-GCM archive encryption/decryption, its tamper/key tests on a full-size C8 fixture, independent server/off-host restore, real host credentials, capacity beyond this fixture, and end-to-end browser timing on 96 orgs are **NOT RUN**.
+
+**Source-of-truth distinction:** The code SHA above has all-three-job green CI. Any later documentation-only commit gets its own SHA and must not borrow that CI completion claim without checking its exact-head run. C8 #34 remains independently BLOCKED and P0 #26 `LIVE_IMPORT_NOT_RUN`; C9 work is user-authorized but C9 formal acceptance, merge and deployment remain OPEN.
