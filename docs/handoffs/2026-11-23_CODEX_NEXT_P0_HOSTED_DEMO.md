@@ -1,5 +1,8 @@
 # Next Codex handoff — P0 exact Northflank demo population
 
+**NEW handoff supersedes older code refs:** [recovery+transfer continuation](2026-11-23_CODEX_NEXT_P0_RECOVERY_AND_TRANSFER.md) at `7e040c8`; CI [45102931375](https://github.com/newonathe/OrgResource/actions/runs/45102931375) complete verification pending; oversized 19.3MB plan cannot fit Northflank's published 3,500KiB secret-file limit. See corrected operator runbook and private running-job file-copy mechanism.
+
+
 **NEW start point:** latest code commit `35f96466cf04c7239f6e04e72bb1ccfd79525d40`, but always fetch live GitHub HEAD. [Independent critique](../../evidence/C8/C8_P0_96_DEMO_CYCLE_CRITIQUE_2026-11-23.md) and [operator job procedure](../deployment/P0_NORTHFLANK_MANUAL_JOB_COMMAND_2026-11-23.md). Inspect pending [CI #45097447089](https://github.com/newonathe/OrgResource/actions/runs/45097447089), then fix any real failures without weakening original-row, final-state, audit, stock/hold and requirement tests. Current user intent is full actual Northflank 96 demo, not merely a fixture or plan. No exact private source, cloud connection or restore proof in this ChatGPT session; **do not trigger live import until secured and reviewed**. Side-task Account Motion On/Off already verified at `c259759c` run #45074711543.
 
 
