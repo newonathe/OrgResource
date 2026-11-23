@@ -216,6 +216,7 @@ public final class C8HostedDemoPostflight {
             throw new IllegalStateException("The imported simulated calendar coverage differs from the plan.");
         compareExactAuditHistory(db, workspaces, planSha);
         compareExpectedMovementKinds(db, workspaces, planSha);
+        C8MovementHistory.verify(db, workspaces, planSha);
         if (oneLong(db, """
                 SELECT COUNT(*) FROM audit_event a JOIN organization o ON o.id=a.org_id
                 JOIN user_account u ON u.id=a.actor_user_id
