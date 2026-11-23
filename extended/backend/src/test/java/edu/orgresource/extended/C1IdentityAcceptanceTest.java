@@ -3993,6 +3993,148 @@ class C1IdentityAcceptanceTest {
         assertEquals(1, memberships.countEffectiveActiveOwners(owner.orgDbId));
     }
 
+
+    @Test @Order(61)
+    void C8LegacyWorkspaceBaselineReadsAndV2DepartmentRoleBoundaryHaveSqlEvidence() throws Exception {
+        // This tests selected-workspace baseline reads separately from privileged
+        // legacy writes and from the assigned-Project /api/v2/orgs/{orgId} routes.
+        // Every denial below uses an actual same-org target and a valid session/CSRF.
+        Fixture owner = newTenant("C8-last29-owner", Membership.Role.OWNER);
+        Fixture outsider = newTenant("C8-last29-foreign", Membership.Role.OWNER);
+        Fixture admin = fixtureInOrg(owner.orgDbId, Membership.Role.ADMIN);
+        Fixture custodian = fixtureInOrg(owner.orgDbId, Membership.Role.CUSTODIAN);
+        Fixture lead = fixtureInOrg(owner.orgDbId, Membership.Role.LEAD);
+        Fixture member = fixtureInOrg(owner.orgDbId, Membership.Role.MEMBER);
+        Session ownerSession = login(owner.username, owner.password);
+        Session outsiderSession = login(outsider.username, outsider.password);
+        Session adminSession = login(admin.username, admin.password);
+        Session custodianSession = login(custodian.username, custodian.password);
+        Session leadSession = login(lead.username, lead.password);
+        Session memberSession = login(member.username, member.password);
+
+        HttpResponse<String> departmentCreated = post(ownerSession, "/api/v2/departments",
+                GSON.toJson(new NameRequest("C8 last29 home Department")));
+        assertEquals(201, departmentCreated.statusCode(), departmentCreated.body());
+        long departmentId = json(departmentCreated).get("id").getAsLong();
+        long projectId = json(post(ownerSession, "/api/projects",
+                GSON.toJson(new ProjectRequest(departmentId, "C8 last29 home Project",
+                        "2040-12-10T10:00:00", "2040-12-10T11:00:00")))).get("id").getAsLong();
+        long resourceId = json(post(ownerSession, "/api/resources",
+                GSON.toJson(new ResourceRequest("C8 last29 home Resource", "REUSABLE", 9)))).get("id").getAsLong();
+        long requirementId = json(post(ownerSession, "/api/requirements",
+                GSON.toJson(new RequirementRequest(projectId, resourceId, 4)))).get("id").getAsLong();
+        long allocationId = json(post(ownerSession, "/api/allocations",
+                GSON.toJson(new AllocationRequest(requirementId, 1, "Fictional C8 last29 borrower", null, false))))
+                        .get("id").getAsLong();
+        long outsiderDepartmentId = json(post(outsiderSession, "/api/departments",
+                GSON.toJson(new NameRequest("C8 last29 foreign Department")))).get("id").getAsLong();
+        long outsiderResourceId = json(post(outsiderSession, "/api/resources",
+                GSON.toJson(new ResourceRequest("C8 last29 foreign Resource", "REUSABLE", 0))))
+                        .get("id").getAsLong();
+
+        // Only authenticated sessions may use this legacy CSRF alias. The
+        // intentionally public pre-auth token has a separate /auth/csrf route.
+        assertEquals(401, get(newClient(), "/api/v2/csrf").statusCode());
+        HttpResponse<String> selectedCsrf = get(ownerSession.client, "/api/v2/csrf");
+        assertEquals(200, selectedCsrf.statusCode(), selectedCsrf.body());
+        assertFalse(json(selectedCsrf).get("token").getAsString().isBlank());
+
+        // OWNER, ADMIN, CUSTODIAN, LEAD and MEMBER may read the selected-org
+        // baseline directory. These are not assigned-Project detail grants.
+        String[][] expectedPages = {
+                {"departments", Long.toString(departmentId)},
+                {"projects", Long.toString(projectId)},
+                {"resources", Long.toString(resourceId)},
+                {"requirements", Long.toString(requirementId)}
+        };
+        for (Session actor : List.of(ownerSession, adminSession, custodianSession, leadSession, memberSession)) {
+            HttpResponse<String> legacyDepartment = get(actor.client, "/api/v2/departments/" + departmentId);
+            assertEquals(200, legacyDepartment.statusCode(), legacyDepartment.body());
+            assertEquals(departmentId, json(legacyDepartment).get("id").getAsLong());
+            for (String[] page : expectedPages) {
+                JsonObject view = workspacePage(actor, "/api/v2/workspace/" + page[0] + "?limit=50");
+                long expectedId = Long.parseLong(page[1]);
+                assertTrue(view.getAsJsonArray("items").asList().stream()
+                                .anyMatch(item -> item.getAsJsonObject().get("id").getAsLong() == expectedId),
+                        "Selected-org " + page[0] + " must contain the approved fixture for this active role");
+                assertFalse(view.getAsJsonArray("items").asList().stream().anyMatch(item ->
+                        item.getAsJsonObject().toString().contains("C8 last29 foreign")),
+                        "Selected-org " + page[0] + " must not leak a foreign workspace label");
+            }
+        }
+        assertEquals(404, get(outsiderSession.client, "/api/v2/departments/" + departmentId).statusCode());
+        assertEquals(404, get(ownerSession.client, "/api/v2/departments/" + outsiderDepartmentId).statusCode());
+        JsonObject foreignResources = workspacePage(outsiderSession, "/api/v2/workspace/resources?limit=50");
+        assertTrue(foreignResources.getAsJsonArray("items").asList().stream()
+                .anyMatch(item -> item.getAsJsonObject().get("id").getAsLong() == outsiderResourceId));
+        assertFalse(foreignResources.getAsJsonArray("items").asList().stream()
+                .anyMatch(item -> item.getAsJsonObject().get("id").getAsLong() == resourceId));
+
+        // Global Allocation browsing is privileged even while the baseline
+        // Project/Resource/Requirement summaries remain visible to active members.
+        assertEquals(403, get(memberSession.client, "/api/v2/workspace/allocations?limit=50").statusCode());
+        assertEquals(403, get(leadSession.client, "/api/v2/workspace/allocations?limit=50").statusCode());
+        for (Session officer : List.of(ownerSession, adminSession, custodianSession)) {
+            JsonObject allocationsPage = workspacePage(officer, "/api/v2/workspace/allocations?limit=50");
+            assertTrue(allocationsPage.getAsJsonArray("items").asList().stream()
+                    .anyMatch(item -> item.getAsJsonObject().get("id").getAsLong() == allocationId));
+        }
+        for (Session lowRole : List.of(memberSession, leadSession)) {
+            JsonObject overview = workspacePage(lowRole, "/api/v2/workspace/overview");
+            assertTrue(overview.get("allocations").isJsonNull(),
+                    "MEMBER/LEAD overview must not disclose general borrower activity");
+            assertFalse(overview.toString().contains("Fictional C8 last29 borrower"));
+        }
+
+        // Snapshot current tenant data AFTER login and authorized setup, then
+        // prove lower roles do not mutate a real Department, Project, Requirement
+        // or append-only stock/audit history.
+        long[] before = new long[] {
+            jdbc.queryForObject("SELECT COUNT(*) FROM department WHERE organization_id=?", Long.class, owner.orgDbId),
+            jdbc.queryForObject("SELECT COUNT(*) FROM project WHERE organization_id=?", Long.class, owner.orgDbId),
+            jdbc.queryForObject("SELECT COUNT(*) FROM resource WHERE organization_id=?", Long.class, owner.orgDbId),
+            jdbc.queryForObject("SELECT COUNT(*) FROM resource_requirement WHERE organization_id=?", Long.class, owner.orgDbId),
+            jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE organization_id=?", Long.class, owner.orgDbId)
+        };
+        long[] stockFacts = stockFactCounts(owner.orgDbId);
+        for (Session lowRole : List.of(memberSession, leadSession, custodianSession)) {
+            assertEquals(403, post(lowRole, "/api/v2/departments",
+                    GSON.toJson(new NameRequest("C8 forbidden Department"))).statusCode());
+            assertEquals(403, post(lowRole, "/api/departments/" + departmentId + "/update",
+                    GSON.toJson(new NameRequest("C8 forbidden Rename"))).statusCode());
+            assertEquals(403, post(lowRole, "/api/projects/" + projectId + "/delete", null).statusCode());
+            assertEquals(403, post(lowRole, "/api/requirements/" + requirementId + "/delete", null).statusCode());
+        }
+        assertEquals(403, post(adminSession, "/api/resources",
+                GSON.toJson(new ResourceRequest("C8 forbidden Admin Stock", "CONSUMABLE", 0))).statusCode());
+        assertEquals(403, post(memberSession, "/api/resources/" + resourceId + "/update",
+                GSON.toJson(new ResourceUpdateRequest("C8 forbidden Resource Rename", 10, 9))).statusCode());
+
+        assertArrayEquals(before, new long[] {
+            jdbc.queryForObject("SELECT COUNT(*) FROM department WHERE organization_id=?", Long.class, owner.orgDbId),
+            jdbc.queryForObject("SELECT COUNT(*) FROM project WHERE organization_id=?", Long.class, owner.orgDbId),
+            jdbc.queryForObject("SELECT COUNT(*) FROM resource WHERE organization_id=?", Long.class, owner.orgDbId),
+            jdbc.queryForObject("SELECT COUNT(*) FROM resource_requirement WHERE organization_id=?", Long.class, owner.orgDbId),
+            jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE organization_id=?", Long.class, owner.orgDbId)
+        }, "Denied legacy and V2 mutations must not insert or remove tenant business rows");
+        assertArrayEquals(stockFacts, stockFactCounts(owner.orgDbId),
+                "Denied mutations must not create movements, receipts or audit events");
+        assertEquals("C8 last29 home Department", jdbc.queryForObject(
+                "SELECT name FROM department WHERE id=? AND organization_id=?", String.class, departmentId, owner.orgDbId));
+        assertEquals("C8 last29 home Project", jdbc.queryForObject(
+                "SELECT name FROM project WHERE id=? AND organization_id=?", String.class, projectId, owner.orgDbId));
+        assertEquals(9, jdbc.queryForObject("SELECT total_quantity FROM resource WHERE id=? AND organization_id=?",
+                Integer.class, resourceId, owner.orgDbId));
+
+        // Distinguish two independent grants with real authorized writes.
+        assertEquals(201, post(adminSession, "/api/v2/departments",
+                GSON.toJson(new NameRequest("C8 allowed Admin Department"))).statusCode(),
+                "ADMIN is a Department manager");
+        assertEquals(201, post(custodianSession, "/api/resources",
+                GSON.toJson(new ResourceRequest("C8 allowed Custodian Resource", "CONSUMABLE", 0))).statusCode(),
+                "CUSTODIAN may create stock, while ADMIN may not");
+    }
+
     private record Fixture(long orgDbId, UUID orgPublicId, long userDbId, String username, String password,
                           long membershipDbId, UUID membershipPublicId, List<String> recoveryCodes) { }
     private static final class Session {
