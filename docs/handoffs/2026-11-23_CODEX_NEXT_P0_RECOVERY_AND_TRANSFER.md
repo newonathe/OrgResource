@@ -1,5 +1,12 @@
 # P0 Next Codex/Operator Cycle — recovery-tested demo importer, exact Northflank transfer
 
+## Release candidate + private dataset verified — 2026-11-23
+
+**VERIFIED INPUT:** The owner uploaded the exact **19,265,850-byte** approved `fictional-events-v1.local.json`. Size, SHA-256 `3b0f54da85cadb77cd7d8ab2d50c1fdb4b4ee36710b803cf904227e13f08927c`, 96 orgs and all declared aggregate counts were independently checked. This is `LOCAL_ONLY_DRY_RUN` synthetic material. The **PUBLIC** OrgResource repository contains only the [safe dataset manifest](../deployment/C8_PRIVATE_DATASET_MANIFEST_2026-11-23.md), not the raw JSON. For raw GitHub custody create a separate PRIVATE repo, or stage directly to the operator-only Northflank job. **No Northflank connector/credentials, backup/restore or live import is available/executed here.**
+
+**RELEASE CODE:** draft PR #25 SHA `9df7099145e324f326106870b1b3fd0788d5510f` passed all 3 CI jobs [#45155946849](https://github.com/newonathe/OrgResource/actions/runs/45155946849), including the nine-width sidebar regression and P0 original-V2-baseline guards. Current documentation-only handoff update must not be mistaken for new runtime verification; code freeze. **LIVE_IMPORT_NOT_RUN.** [Full manual import steps](../deployment/P0_NORTHFLANK_MANUAL_JOB_COMMAND_2026-11-23.md).
+
+
 ## Screenshot-reported sidebar wordmark defect (2026-11-23; CI PENDING)
 
 **Observed in user screenshot:** the sidebar displays “OrgResourc” on one line and “e” on the next; the circular logo and reserved vertical scrollbar leave insufficient text width. Source: `extended/frontend/src/shell/AcademicShell.tsx` + `extended/frontend/src/styles.css`. **Fix on draft PR #25:** keep “OrgResource” on one unbroken line, allocate space for the scrollbar and seal through responsive column/padding/gap/font adjustments (desktop, 1120/900 tablet, mobile drawer), and allow “Academic Commons” to wrap only at the word boundary. Added a packaged Playwright regression at widths 1440, 1120, 1024, 900, 768, 681, 680, 360, 320; it checks single-line wordmark, in-bounds logo/title and no document horizontal overflow. **Frozen Course A `frontend/` files unchanged.** This does not claim that the live host was updated. **CI result pending; verify exact SHA and repair failures.**

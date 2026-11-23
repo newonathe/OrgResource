@@ -39,3 +39,10 @@ Thumbs.db
 /deliverables/OrgResource-Java-Skeleton-2026-11-13/
 /deliverables/O11-O13/
 /deliverables/O14/
+
+# Approved C8 96-org dataset is LOCAL_ONLY_DRY_RUN and private.
+# NEVER commit raw 19,265,850-byte JSON to this PUBLIC repository.
+# Use a separate PRIVATE GitHub repository or encrypted operator-only staging.
+**/fictional-events-v1.local.json
+**/orgresource-c8-plan-v1*.json
+**/orgresource-private-demo*.json
