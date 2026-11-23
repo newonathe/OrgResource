@@ -180,8 +180,10 @@ jobs:
           node-version: '24'
           cache: npm
           cache-dependency-path: extended/frontend/package-lock.json
-      - name: Check tracked 93-route C8 source inventory
-        run: node scripts/verify-c8-routes.mjs
+      - name: Check tracked 93-route C8 source inventory and final 29 policy mappings
+        run: |
+          node scripts/verify-c8-routes.mjs
+          node scripts/verify-c8-oracle-coverage.mjs
       - name: Generate ephemeral contact-encryption test key
         shell: bash
         run: |
