@@ -68,3 +68,9 @@ Provide private receipt file to owner, sanitized aggregate summary here. Check a
 **Launch gate:** R09 in 12_EXECUTION_GRAPH.json must be explicitly ready from ChatGPT; all older hardcoded baseline commands are examples for their pinned revision, not authority to run stale code. L08 reports every task including blocked inputs/owner actions.
 
 R06A now has a test-first source candidate on #48; R06B still requires the actual executable local runner and full-96 post-import recovery support. Do not run scripts/verify-c9-local-original-transport.sh on the owner's machine: it is a public synthetic CI test, not L06. See 13 and 12. Native package-first L03/L04 unchanged.
+
+## Superseding continuation checkpoint (2026-11-24 PHT)
+
+R01 PR46 b62ff3c6 exact CI #45425950575 and R06A PR48 c9133376 exact CI #45427270775 are VERIFIED BOUNDED with actual logs inspected. R06B1 PR49 406ce2af CI #45430758956 pending actual receipts. The canonical cross-chat protocol is 14_CONTINUE_PRE_CLAUDE.md (GitHub issue #50), dependency state is 12_EXECUTION_GRAPH.json and historical receipts are 15_CONTINUATION_LEDGER.jsonl. Older dated statuses are historical. R09 remains false; no Claude launch, private plan import, operator attestation, host, merge or deployment. Independent review open.
+
+PR49 `scripts/verify-c9-local-mixed-preparation.sh` has `--fixture-only PRIVATE_ROOT SOURCE_SHA JAR JAR_SHA256` and `--approved-plan PRIVATE_ROOT SOURCE_SHA JAR JAR_SHA256 PRIVATE_PLAN`. Both are ephemeral preparation-only; approved mode does exact private hash and existing Java read-only preflight, not import. The test CI wrapper never uses private plan; exact-size plan refused in public CI. Final L06 must perform same actual recovery/preflight in same guarded lifetime before explicit operator confirmation, then import/postflight and full recovery/UI. Do not run standalone prep again if integrated runner covers it. Not a launch command; wait for R06B2/B3 and R09.

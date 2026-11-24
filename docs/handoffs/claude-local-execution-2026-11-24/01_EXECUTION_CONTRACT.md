@@ -27,3 +27,9 @@ See 10_CLAUDE_RESEARCH_AND_ADOPTION.md. Use installed /usage and /context or ava
 Read the compact 12_EXECUTION_GRAPH.json task states by deterministic selection, and the 13 compatibility gate only for L06. R09 is OPEN; no local agent launch until ChatGPT finishes remote queue or owner explicitly accepts named incomplete preparation. Claude is not authorized to fix the Windows/POSIX mismatch, add a backup transport, create an importer, alter production source, or attest to operator recovery. Keep independently validated local tasks separate. Do not run older hardcoded SHA commands after a new final reviewed source is supplied.
 
 R06A implementation candidate is on PR #48 only. Do not execute the public CI harness locally or spoof GITHUB_ACTIONS. LocalOriginalAcceptance is pre-import two-original-only transport; it does not support an imported 96 cohort and is not a production backup route. No local run until R09 and specific R06B script are ready.
+
+## Superseding continuation checkpoint (2026-11-24 PHT)
+
+R01 PR46 b62ff3c6 exact CI #45425950575 and R06A PR48 c9133376 exact CI #45427270775 are VERIFIED BOUNDED with actual logs inspected. R06B1 PR49 406ce2af CI #45430758956 pending actual receipts. The canonical cross-chat protocol is 14_CONTINUE_PRE_CLAUDE.md (GitHub issue #50), dependency state is 12_EXECUTION_GRAPH.json and historical receipts are 15_CONTINUATION_LEDGER.jsonl. Older dated statuses are historical. R09 remains false; no Claude launch, private plan import, operator attestation, host, merge or deployment. Independent review open.
+
+Every new ChatGPT project chat with `continue` resumes the remote queue using live refs/actual CI, AGENTS, quality gate, GOAT/Superpowers and issue #50. Update graph/context/ledger and all affected handoff files after each slice. This does not authorize Claude execution before R09 or any later/hosted phase.
