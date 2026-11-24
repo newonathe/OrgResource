@@ -349,7 +349,7 @@ SQL
 # Exact row comparison, allowing only the two specified outcome and version
 # changes. All other columns, including encrypted contact and claim timestamps,
 # remain byte-for-byte equal in private local files.
-reminder_columns="$(scalar "$target_id" "$target_password" "$target_schema" "SELECT GROUP_CONCAT(CONCAT('`',COLUMN_NAME,'`') ORDER BY ORDINAL_POSITION SEPARATOR ',') FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='allocation' AND COLUMN_NAME NOT IN ('reminder_outcome','version')")"
+reminder_columns="$(scalar "$target_id" "$target_password" "$target_schema" "SELECT GROUP_CONCAT(CONCAT(CHAR(96),COLUMN_NAME,CHAR(96)) ORDER BY ORDINAL_POSITION SEPARATOR ',') FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='allocation' AND COLUMN_NAME NOT IN ('reminder_outcome','version')")"
 [[ -n "$reminder_columns" && "$reminder_columns" =~ ^[a-zA-Z0-9_,\`]+$ ]] || fail R07_REMINDER_COLUMNS
 reminder_row_snapshot() {
   local label="$1"
