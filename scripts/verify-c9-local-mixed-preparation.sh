@@ -75,8 +75,10 @@ token="$(openssl rand -hex 6)"
 work="$root/orgresource-c9-local-$token"
 mkdir -m 700 -- "$work"
 source_id= target_id= mixed_id= receipt_dir=
+control_supervisor=
 cleanup() {
   local result=0 id role remaining
+  if [ -n "$control_supervisor" ]; then control_stop || return 1; fi
   docker_local info >/dev/null 2>&1 || return 1
   for role in source restore mixed; do
     case "$role" in source) id="$source_id";; restore) id="$target_id";; mixed) id="$mixed_id";; esac
@@ -341,6 +343,11 @@ if [ "$mode" = --fixture-only ]; then
   cmp -s "$work/source-before.sql" "$work/source-third-fixture.sql" &&
     cmp -s "$work/target-before.sql" "$work/target-third-fixture.sql" || fail R06B3A_THIRD_FIXTURE_CHANGED_ROWS
   echo R06B3A_THIRD_SERVER_FIXTURE_OK:distinct_ids=true distinct_uuids=true empty_schema=true original_rows_unchanged=true private_plan_used=false
+  if [ "${GITHUB_ACTIONS:-}" = true ]; then
+    phase=public_recovered_control
+    source scripts/c9-public-recovered-control.sh
+    control_run
+  fi
 elif [ "$mode" = --approved-import ]; then
   phase=operator_confirmation
   # This receipt is generated from actual completed recovery and preflight,
