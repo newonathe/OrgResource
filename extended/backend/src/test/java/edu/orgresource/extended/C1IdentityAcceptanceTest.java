@@ -5434,6 +5434,58 @@ class C1IdentityAcceptanceTest {
         assertFalse(passwordEncoder.matches(replacement, credentials.findByUserId(account.userDbId).orElseThrow().passwordHash));
     }
 
+    @Test @Order(78)
+    void C8StockRoleAndRealForeignResourceRefusalsPreserveScopedRows() throws Exception {
+        Fixture home = newTenant("C8-stock-denial", Membership.Role.OWNER);
+        Fixture foreign = newTenant("C8-stock-foreign", Membership.Role.OWNER);
+        Fixture admin = fixtureInOrg(home.orgDbId, Membership.Role.ADMIN);
+        Fixture member = fixtureInOrg(home.orgDbId, Membership.Role.MEMBER);
+        Fixture lead = fixtureInOrg(home.orgDbId, Membership.Role.LEAD);
+        Fixture custodian = fixtureInOrg(home.orgDbId, Membership.Role.CUSTODIAN);
+        Session owner = login(home.username, home.password);
+        Session outsider = login(foreign.username, foreign.password);
+        Session keeper = login(custodian.username, custodian.password);
+        HttpResponse<String> created = post(owner, "/api/resources",
+                GSON.toJson(new ResourceRequest("Fictional stock denial home", "REUSABLE", 5)));
+        HttpResponse<String> foreignCreated = post(outsider, "/api/resources",
+                GSON.toJson(new ResourceRequest("Fictional stock denial foreign", "REUSABLE", 7)));
+        assertEquals(201, created.statusCode());
+        assertEquals(201, foreignCreated.statusCode());
+        String homeId = json(created).get("publicId").getAsString();
+        String foreignId = json(foreignCreated).get("publicId").getAsString();
+        String root = "/api/v2/orgs/" + home.orgPublicId + "/resources";
+        String item = root + "/" + homeId;
+        String foreignItem = root + "/" + foreignId;
+        HttpResponse<String> read = get(keeper.client, item);
+        assertEquals(200, read.statusCode());
+        assertEquals(Set.of("id", "name", "type", "totalQuantity", "availableQuantity", "version"),
+                json(read).getAsJsonObject("data").keySet());
+        assertEquals(200, get(outsider.client, "/api/v2/orgs/" + foreign.orgPublicId + "/resources/" + foreignId).statusCode());
+        String tag = read.headers().firstValue("ETag").orElseThrow();
+        for (Fixture lowRole : List.of(admin, member, lead)) {
+            Session actor = login(lowRole.username, lowRole.password);
+            assertScopedRefusal(403, home.orgDbId, foreign.orgDbId, () -> get(actor.client, root));
+            assertScopedRefusal(403, home.orgDbId, foreign.orgDbId, () -> get(actor.client, item));
+            assertScopedRefusal(403, home.orgDbId, foreign.orgDbId, () -> get(actor.client, item + "/movements"));
+            assertScopedRefusal(403, home.orgDbId, foreign.orgDbId, () -> modernPost(actor, item + "/receive",
+                    GSON.toJson(new ReceiveRequest(UUID.randomUUID(), 1)), tag, C1Secrets.bearerToken()));
+            assertScopedRefusal(403, home.orgDbId, foreign.orgDbId, () -> modernPost(actor, item + "/adjust",
+                    GSON.toJson(new AdjustRequest(UUID.randomUUID(), 6)), tag, C1Secrets.bearerToken()));
+        }
+        for (Session actor : List.of(owner, keeper)) {
+            assertScopedRefusal(404, home.orgDbId, foreign.orgDbId, () -> get(actor.client, foreignItem));
+            assertScopedRefusal(404, home.orgDbId, foreign.orgDbId, () -> get(actor.client, foreignItem + "/movements"));
+            assertScopedRefusal(404, home.orgDbId, foreign.orgDbId, () -> get(actor.client, root + "?after=" + foreignId));
+            assertScopedRefusal(404, home.orgDbId, foreign.orgDbId, () -> modernPost(actor, foreignItem + "/receive",
+                    GSON.toJson(new ReceiveRequest(UUID.randomUUID(), 1)), tag, C1Secrets.bearerToken()));
+            assertScopedRefusal(404, home.orgDbId, foreign.orgDbId, () -> modernPost(actor, foreignItem + "/adjust",
+                    GSON.toJson(new AdjustRequest(UUID.randomUUID(), 8)), tag, C1Secrets.bearerToken()));
+        }
+        assertEquals(5, json(get(owner.client, item)).getAsJsonObject("data").get("totalQuantity").getAsInt());
+        assertEquals(7, json(get(outsider.client, "/api/v2/orgs/" + foreign.orgPublicId + "/resources/" + foreignId))
+                .getAsJsonObject("data").get("totalQuantity").getAsInt());
+    }
+
     private record Fixture(long orgDbId, UUID orgPublicId, long userDbId, String username, String password,
                           long membershipDbId, UUID membershipPublicId, List<String> recoveryCodes) { }
     private static final class Session {
