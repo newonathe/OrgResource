@@ -6,6 +6,7 @@ import http.cookiejar
 import http.client
 import http.server
 import threading
+import traceback
 import json
 import os
 import pathlib
@@ -97,6 +98,7 @@ def drop_committed_response(client, path, body, etag, key):
                "X-CSRF-TOKEN": client.csrf, "Cookie": "ORGSESSION=" + client.cookie(),
                "If-Match": etag, "Idempotency-Key": key}
     observed = []
+    upstream_receipt = []
     class DropHandler(http.server.BaseHTTPRequestHandler):
         def log_message(self, *args):
             pass
@@ -112,7 +114,9 @@ def drop_committed_response(client, path, body, etag, key):
                 with upstream.getresponse() as response:
                     data = json.loads(response.read())["data"]
                     check(response.status == 201 and data["operationId"] == body["operationId"]
-                          and data["totalQuantity"] == 1, "DROP_UPSTREAM_COMMIT")
+                          and data["action"] == "RECEIPT" and data["totalQuantity"] == 1
+                          and response.headers.get("ETag"), "DROP_UPSTREAM_COMMIT")
+                    upstream_receipt.append((data, response.headers["ETag"]))
                 observed.append(True)
                 # Intentionally never send a status line or body downstream.
             except Exception:
@@ -137,7 +141,9 @@ def drop_committed_response(client, path, body, etag, key):
             downstream.close()
             worker.join(20)
         check(not worker.is_alive() and lost and observed == [True], "DROP_RESPONSE_NOT_OBSERVED")
+    check(len(upstream_receipt) == 1, "DROP_UPSTREAM_RECEIPT")
     ok("lost-response-upstream-201-downstream-eof")
+    return upstream_receipt[0]
 
 def seed():
     owner = Client().login(OWNER, os.environ["C9_RUNTIME_OWNER_PASSWORD"])
@@ -166,7 +172,7 @@ def seed():
     op = str(uuid.uuid4())
     body = {"operationId": op, "quantity": 1}
     key = secrets.token_hex(32)
-    drop_committed_response(cust, path + "/receive", body, etag, key)
+    original_data, original_etag = drop_committed_response(cust, path + "/receive", body, etag, key)
     receipt, _ = owner.request("GET", org + "/operations/" + op, 200)
     check(receipt["kind"] == "RECEIPT" and receipt["operationId"] == op, "SOURCE_RECEIPT")
     owner.request("GET", "/api/v2/session", 200)
@@ -174,7 +180,8 @@ def seed():
     state = {"org": org_id, "foreign": foreign, "resource": resource, "operation": op,
              "etag": etag, "key": key, "oldSession": owner.cookie(),
              "custPassword": cust_password, "suspendedPassword": suspended_password,
-             "custMembership": cust_id, "suspendedMembership": suspended_id}
+             "custMembership": cust_id, "suspendedMembership": suspended_id,
+             "originalData": original_data, "originalEtag": original_etag}
     with os.fdopen(os.open(STATE, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), "w") as f:
         json.dump(state, f)
     ok("source-real-authenticated-session-and-committed-receipt")
@@ -190,10 +197,12 @@ def source_replay():
     cust.select(s["org"])
     before, etag = cust.request("GET", path, 200)
     check(before["totalQuantity"] == 1 and before["availableQuantity"] == 1 and etag, "RESTART_COMMITTED_STOCK")
-    replay, _ = cust.request("POST", path + "/receive", 201,
+    replay, replay_etag = cust.request("POST", path + "/receive", 201,
                              {"operationId": s["operation"], "quantity": 1},
                              {"If-Match": s["etag"], "Idempotency-Key": s["key"]})
-    check(replay["kind"] == "RECEIPT" and replay["operationId"] == s["operation"], "RESTART_REPLAY_IDENTITY")
+    check(replay["action"] == "RECEIPT" and replay["operationId"] == s["operation"], "RESTART_REPLAY_IDENTITY")
+    check(replay == s["originalData"] and replay_etag == s["originalEtag"] == etag,
+          "RESTART_TEMPORARY_RECEIPT_CHANGED")
     after, after_etag = cust.request("GET", path, 200)
     moves, _ = cust.request("GET", path + "/movements?limit=10", 200)
     check(after == before and after_etag == etag and len(moves["items"]) == 1
@@ -283,5 +292,6 @@ if __name__ == "__main__":
         if isinstance(exc, RuntimeError):
             print("C9_RUNTIME_FAILURE:" + str(exc), file=sys.stderr)
         else:
-            print("C9_RUNTIME_FAILURE:" + type(exc).__name__, file=sys.stderr)
+            frame = traceback.extract_tb(exc.__traceback__)[-1]
+            print("C9_RUNTIME_FAILURE:" + type(exc).__name__ + " line=" + str(frame.lineno), file=sys.stderr)
         sys.exit(1)
