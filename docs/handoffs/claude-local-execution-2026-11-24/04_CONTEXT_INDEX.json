@@ -969,5 +969,63 @@
     "ref": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
     "report": "docs/handoffs/claude-local-execution-2026-11-24/19_R06B3A_RECEIPT_AND_R06B3B_EXECUTION_CONTRACT.md",
     "state": "SOURCE_CONTRACT_READY_IMPLEMENTATION_OPEN"
+  },
+  "r06b3b_candidate": {
+    "sha": "321205f235efe36d615e68998f3ffbd75baf4051",
+    "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+    "pr": 53,
+    "run": 45441418164,
+    "acceptance": "CANDIDATE_CI_PENDING_PUBLIC_CONTROL_ONLY",
+    "test_first": "30c68c97211bfe339b01b22c676ed9ea2934f3e5",
+    "protected": {
+      "course": 105,
+      "extended": 170,
+      "migrations": 7
+    },
+    "report": "evidence/C9/R06B3B_PUBLIC_RECOVERED_CONTROL_2026-11-25.md",
+    "changed_paths": [
+      {
+        "path": "evidence/C9/R06B3B_PUBLIC_RECOVERED_CONTROL_2026-11-25.md",
+        "blob": "80779e6405c62d916d8fea5ef624f8b362e14931",
+        "bytes": 2434,
+        "mode": "100644"
+      },
+      {
+        "path": "scripts/c9-public-recovered-control.sh",
+        "blob": "506b8820a960649e12333f81ed89595f158c3abc",
+        "bytes": 7844,
+        "mode": "100644"
+      },
+      {
+        "path": "scripts/test-c9-local-mixed-preparation.sh",
+        "blob": "6fa41a2adddf2481ea5a704bd71c71be9feba14b",
+        "bytes": 4634,
+        "mode": "100644"
+      },
+      {
+        "path": "scripts/verify-c9-local-mixed-preparation.sh",
+        "blob": "de663d38bb6b7cdbb7e01fec05a341dc38053041",
+        "bytes": 36146,
+        "mode": "100644"
+      },
+      {
+        "path": "scripts/verify-c9-public-recovered-control.mjs",
+        "blob": "532ac2bb8deb2d656e5e0bcda4dec6e67ddded2f",
+        "bytes": 2875,
+        "mode": "100644"
+      },
+      {
+        "path": "scripts/verify-c9-public-recovered-control.py",
+        "blob": "57c1ff2090bd5e63c5b5918524cd461f2c873d76",
+        "bytes": 3596,
+        "mode": "100644"
+      }
+    ],
+    "limitations": [
+      "No local execution or observed failing test before implementation",
+      "Normal Flyway runtime disabled for observation control; prior actual migration/restore and non-session equality, not normal writable boot",
+      "Potential locking-read permission incompatibility",
+      "Full mixed private path and independent reviewer open"
+    ]
   }
 }

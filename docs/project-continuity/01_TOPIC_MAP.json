@@ -423,7 +423,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "R06B3a verified bounded, R06B3b implement per handoff 19; scheduler isolation conflict; R07/R08 later.",
+      "next": "PR53 321205f2 public recovered original control candidate, CI 45441418164; inspect exact receipt, resolve lock privilege compatibility, implement private mixed same-lifetime acceptance; R07 worker separate.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
