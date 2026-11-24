@@ -1,0 +1,3 @@
+# OrgResource Claude Code local-only handoff
+
+Read AGENTS.md in full and docs/QUALITY_EVIDENCE_CONTINUOUS_GATE.md in full. Use [the dated local execution packet](docs/handoffs/claude-local-execution-2026-11-24/00_START_HERE.md) and [single launch prompt](docs/handoffs/claude-local-execution-2026-11-24/09_LAUNCH_PROMPT.md). This documentation branch is not a release candidate. No changes to application, migrations, hosted data or frozen Course A are authorized by this file. Avoid loading historical archives into context; use pinned context index and exact source. Follow current user authorization, stop rules and private-data boundaries. No plugins/browser-control, no auto-merge, no deployments.

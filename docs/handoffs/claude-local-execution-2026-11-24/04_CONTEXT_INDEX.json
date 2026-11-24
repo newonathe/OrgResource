@@ -1,0 +1,377 @@
+{
+  "schema": "orgresource.claude.local.handoff.v1",
+  "date": "2026-11-24 Asia/Manila",
+  "repository": "newonathe/OrgResource",
+  "source_ref": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306",
+  "source_tree": "735742407327d8ad26e4b2e6ba2c60b446688bb8",
+  "source_pr": 46,
+  "source_ci": {
+    "id": 45419347291,
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "last_verified": {
+    "sha": "09e3e5a0b2a1e87132c8f7ba9fb44ab1c50de2c0",
+    "ci": 45414895612
+  },
+  "frozen_course_a": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+  "protected_migrations": "V1–V7",
+  "policy_reference": "d794e8d2a9db1167729a54dcab844f03642d2c36",
+  "source_audit_reference": "727c270f0a5f2d34bb3b049124d2d5cfca218f35",
+  "classifications": {
+    "active_tree": "METADATA_ONLY for every blob unless separately cited in existing evidence; no semantic whole-tree review claimed",
+    "policy_tree": "metadata locator; source review partial/full as noted in audit",
+    "c6_tree": "historical audit metadata locator; not re-reviewed"
+  },
+  "context": [
+    {
+      "stage": "mandatory root",
+      "ref": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "blob": "b9a8dd40cc8b8f7591a8d058622a23fa31177d7f",
+          "bytes": 7990
+        },
+        {
+          "path": "docs/QUALITY_EVIDENCE_CONTINUOUS_GATE.md",
+          "blob": "494d9df515dbfcc2e7586c87a1b1fa859aa71564",
+          "bytes": 15033
+        },
+        {
+          "path": "NEXT_CHAT_START_HERE.md",
+          "blob": "b4d8ee643978287d2f392129b50dbaa90d786d3a",
+          "bytes": 52820
+        },
+        {
+          "path": "CURRENT_STATUS_AND_NEXT_ACTIONS.md",
+          "blob": "8694ff3fbf151dbbe6f7cb72fd640e2d157ae772",
+          "bytes": 21311
+        },
+        {
+          "path": ".agents/skills/orgresource-goat/SKILL.md",
+          "blob": "07cba61eb26958cdd4499eaf557d8cf1fbb4fc7b",
+          "bytes": 3380
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-plan/SKILL.md",
+          "blob": "ccc899b93586e39b919559e691b41dc3ca175c8d",
+          "bytes": 1255
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-implement/SKILL.md",
+          "blob": "97e095e16ae1ca2af2a8bf4a6f1c63607621f351",
+          "bytes": 1823
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-debug/SKILL.md",
+          "blob": "5801f65147642269ef5cefa074dd99b6d524a643",
+          "bytes": 1191
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-review/SKILL.md",
+          "blob": "c7f37536f75f146c01283d159fc38eca1bac8060",
+          "bytes": 1435
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-verify/SKILL.md",
+          "blob": "716e3858f19fd4d90120c48fc020f051f930326a",
+          "bytes": 1377
+        }
+      ]
+    },
+    {
+      "stage": "mandatory routing source",
+      "ref": "d794e8d2a9db1167729a54dcab844f03642d2c36",
+      "files": [
+        {
+          "path": "docs/execution/01_EFFICIENCY_ENGINEERING_STANDARD.md",
+          "blob": "de8d6d93d8c174125cee1eb6d0d826b285b2cf66",
+          "bytes": 14307
+        },
+        {
+          "path": "docs/execution/12_TOKEN_BUDGETED_SUBAGENT_ROUTING.md",
+          "blob": "5ad52da158b879c6f551178e36b6ab89f147851d",
+          "bytes": 20140
+        },
+        {
+          "path": "docs/execution/13_PHASE_SPECIFIC_SUBAGENT_PROMPTS.md",
+          "blob": "f569b5c9d7ce045b891715e21293a22ea5bd5038",
+          "bytes": 26736
+        },
+        {
+          "path": "docs/execution/14_SUPERPOWERS_SOURCE_AUDIT_AND_CONFLICTS.md",
+          "blob": "910a4badc57eec6805b43b06b03a8767d234ff84",
+          "bytes": 17160
+        },
+        {
+          "path": "docs/execution/15_GOAT_MODEL_EFFORT_ROUTING_AND_COST_VALIDATION.md",
+          "blob": "9bf148f2730901aa48f2cba137d20b2b6da7a180",
+          "bytes": 14680
+        },
+        {
+          "path": "docs/execution/16_SUPERPOWERS_ADAPTED_ROOT_CODEX_HANDOFF.md",
+          "blob": "d4cc6021fb2b2958546c74119a92befac24eee40",
+          "bytes": 19679
+        },
+        {
+          "path": "data/config/orgresource-evidence-router-policy-2026.json",
+          "blob": "f2fd5bf7cc64706c847580538b59536606550ca4",
+          "bytes": 7841
+        }
+      ]
+    },
+    {
+      "stage": "C8 local source",
+      "ref": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306",
+      "files": [
+        {
+          "path": "evidence/C8/BOUNDED_AUTHORIZATION_CONTRACT_V1.md",
+          "blob": "22d50562d1d6d97abd2d59c64c66ba6e9b69c63b",
+          "bytes": 2797
+        },
+        {
+          "path": "evidence/C8/IR4_TECHNICAL_STATUS.md",
+          "blob": "8d8f643ca6625951f6570da8ee6bd7107ae9172f",
+          "bytes": 1531
+        },
+        {
+          "path": "evidence/C8/C8_93_ROUTE_EVIDENCE_CANDIDATE_INDEX_2026-11-24.json",
+          "blob": "8905f46440152f69e9e4633e281b9c37404a12af",
+          "bytes": 317394
+        },
+        {
+          "path": "evidence/C8/C8_PROJECTWORK_REPORTING_ASSERTION_RECONCILIATION_2026-11-24.md",
+          "blob": "75a0fc20e4d7b32e4746f9191063bc9808dadb70",
+          "bytes": 5995
+        },
+        {
+          "path": "evidence/C8/C8_INVENTORY33_ASSERTION_RECONCILIATION_2026-11-24.md",
+          "blob": "971cae54a77dfac0e471c4d7b46a4bb9c38fb504",
+          "bytes": 16205
+        },
+        {
+          "path": "evidence/C8/C8_IDENTITY20_ASSERTION_RECONCILIATION_2026-11-24.md",
+          "blob": "7e296f65e7a5ba1dfe42bc4e04612fe54a926edd",
+          "bytes": 13441
+        },
+        {
+          "path": "evidence/C8/C8_LEGACY29_ASSERTION_RECONCILIATION_2026-11-24.md",
+          "blob": "bec9e05c1dfc49595dc786182da66c1fe7bdd9c7",
+          "bytes": 16977
+        },
+        {
+          "path": "docs/deployment/C8_PRIVATE_DATASET_MANIFEST_2026-11-23.md",
+          "blob": "d5cec72739cc25e15ecc851aba36e3da33e123b3",
+          "bytes": 5019
+        },
+        {
+          "path": "scripts/verify-c8-demo-import.ps1",
+          "blob": "b76cc7f0ecca1c690727dba2f77c489e43c821f7",
+          "bytes": 15851
+        },
+        {
+          "path": "scripts/verify-c8-additive-isolated.sh",
+          "blob": "eec4c685f7ab3327cf2771d4a1da8e9f8bf96f3d",
+          "bytes": 39026
+        },
+        {
+          "path": "scripts/preflight-c8-demo-plan.py",
+          "blob": "58f2235914571ba94ae3dd38006c1e4dcfeb3c93",
+          "bytes": 5666
+        }
+      ]
+    },
+    {
+      "stage": "local recovery/release",
+      "ref": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306",
+      "files": [
+        {
+          "path": "docs/EXTENDED_C_RELEASE.md",
+          "blob": "73411cf0dc861f19d320dd0aef1b439c636fdb93",
+          "bytes": 9094
+        },
+        {
+          "path": "scripts/verify-extended-c1.ps1",
+          "blob": "d4a168dbea08460a8ac38efd6df10d2f8dd21221",
+          "bytes": 41074
+        },
+        {
+          "path": "scripts/verify-extended-c-recovery.ps1",
+          "blob": "76c8bd4e173f2edd165840a9d3455808fc2ceea0",
+          "bytes": 14360
+        },
+        {
+          "path": "scripts/verify-extended-c6a-operator.ps1",
+          "blob": "4015ba4117c720f06b97671c0448b92976d172ed",
+          "bytes": 20793
+        },
+        {
+          "path": "scripts/extended-c-backup.ps1",
+          "blob": "ef33b722c7e12cb7a4ba81d1108d35493f4974a4",
+          "bytes": 17502
+        },
+        {
+          "path": "scripts/package-extended-c.ps1",
+          "blob": "402594b78473a5c70ad2a78a408ed15d23057847",
+          "bytes": 8009
+        },
+        {
+          "path": ".github/workflows/verify.yml",
+          "blob": "8be24e64dd760fa10e650223f5a114972948d9c5",
+          "bytes": 13225
+        },
+        {
+          "path": "evidence/C9/C9_STAGE1C_ENCRYPTED_C5_ARCHIVE_2026-11-24.md",
+          "blob": "9a742cf7a45e0c7d3271f4e44b76bb949cd9278e",
+          "bytes": 9540
+        },
+        {
+          "path": "evidence/C9/C9_STAGE1D_RECOVERED_APPLICATION_2026-11-24.md",
+          "blob": "7ff01dcb6aa445b8dc2da2da602e6d9e787c3cc2",
+          "bytes": 4991
+        }
+      ]
+    },
+    {
+      "stage": "academic read only",
+      "ref": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306",
+      "files": [
+        {
+          "path": "docs/academic-final/COURSE_FINAL_A_AS_BUILT.md",
+          "blob": "9b40d9bcdecd06db9ce77a2d008d9693876e4f12",
+          "bytes": 32194
+        },
+        {
+          "path": "docs/compliance/FINAL_COURSE_COMPLIANCE_MATRIX.md",
+          "blob": "7d9d9ece7fde68f49b79c95cd9bb03f045cd7b79",
+          "bytes": 11742
+        },
+        {
+          "path": "docs/compliance/TWILIO_COURSE_DECISION.md",
+          "blob": "ab49567ff3c6bcd2e7d8a76b3c41656064015f1b",
+          "bytes": 3460
+        },
+        {
+          "path": "docs/COURSE_A_FINAL_DEMO_GUIDE.md",
+          "blob": "48bdbd6038400c24c68a59ec533cc51e403d26f6",
+          "bytes": 8092
+        }
+      ]
+    },
+    {
+      "stage": "historical future gates reference only",
+      "ref": "d794e8d2a9db1167729a54dcab844f03642d2c36",
+      "files": [
+        {
+          "path": "docs/execution/00_START_HERE.md",
+          "blob": "ffb04fd1d7d0f41483c95e6e7bf26f2354c9d86b",
+          "bytes": 15419
+        },
+        {
+          "path": "docs/execution/02_SUBAGENT_ORCHESTRATION.md",
+          "blob": "73da32d6792e83b667d69408cee97ec3f297f143",
+          "bytes": 14834
+        },
+        {
+          "path": "docs/execution/03_PASS_DEPENDENCIES_AND_ACCEPTANCE.md",
+          "blob": "716e869cb5c8efa742bea25c936251781e9e8b8e",
+          "bytes": 24534
+        },
+        {
+          "path": "docs/execution/04_CODEX_PROMPTS_C6_C8.md",
+          "blob": "4351e3f943a48fbd57f47f1707da1c9c1465c530",
+          "bytes": 24201
+        },
+        {
+          "path": "docs/execution/05_CODEX_PROMPTS_C9_C11.md",
+          "blob": "8787ce60610b933339e0ff3d3f10aa0cd629b648",
+          "bytes": 26685
+        },
+        {
+          "path": "docs/execution/06_COVERAGE_AND_DECISION_REGISTER.md",
+          "blob": "9da9538327688b08bdb8ada4005369d489cda513",
+          "bytes": 14091
+        },
+        {
+          "path": "docs/execution/08_ATENEO_HOSTED_DEMO_REQUIREMENTS.md",
+          "blob": "49c27282a41b4a9da2a2a113007f61e4fd1f5821",
+          "bytes": 22467
+        },
+        {
+          "path": "docs/execution/09_DEMO_SEED_ALGORITHM_AND_ACCEPTANCE.md",
+          "blob": "7abedf1dc61569247f11f8cf5e5d9e38fcc309ff",
+          "bytes": 25906
+        },
+        {
+          "path": "docs/execution/10_CODEX_DEMO_DATA_IMPLEMENTATION_PROMPT.md",
+          "blob": "ef7e1ce0a23ee65db5672ac8a606b63b3d49b9f6",
+          "bytes": 31435
+        },
+        {
+          "path": "docs/execution/11_EXPANDED_CAMPUS_ROSTER_AND_HIGH_VOLUME_PLAN.md",
+          "blob": "d03d9be9fca91c6929e6a443a3741ccbaa099307",
+          "bytes": 21264
+        },
+        {
+          "path": "docs/execution/17_GOAT_VIDEO_EVIDENCE_REGISTER_PENDING.md",
+          "blob": "0cf3731f20d93dadf675b80b207a2200a2f30b3a",
+          "bytes": 8608
+        },
+        {
+          "path": "docs/execution/18_INDEPENDENT_AGENT_COST_RESEARCH_AND_EVAL.md",
+          "blob": "892cde378058cc6c2ed3eb7658a5e00a72db172e",
+          "bytes": 8496
+        },
+        {
+          "path": "docs/execution/19_FINAL_SOURCE_AUDIT_AND_C6_ENTRY_GATE.md",
+          "blob": "ed1e7b1d796a4e44d7f4a7930b2954dafd4352fd",
+          "bytes": 21161
+        }
+      ]
+    },
+    {
+      "stage": "private/host planning only",
+      "ref": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306",
+      "files": [
+        {
+          "path": "docs/deployment/P0_NORTHFLANK_MANUAL_JOB_COMMAND_2026-11-23.md",
+          "blob": "dafdc6c0e445c60c6143aa0ebff3c8ee378e9d55",
+          "bytes": 28229
+        },
+        {
+          "path": "docs/deployment/P0_NORTHFLANK_DEMO_POPULATION_2026-11-23.md",
+          "blob": "bcf715d1ddb66c35c19aeb165340cfa25a9ed5ee",
+          "bytes": 12595
+        },
+        {
+          "path": "docs/decisions/DEC_D01_DEPARTMENT_VISIBILITY_AND_REQUESTS_2026-11-23.md",
+          "blob": "d991f5d65700e75b7c308ff83ed55d0e73c83a8b",
+          "bytes": 15610
+        }
+      ]
+    }
+  ],
+  "private_input": {
+    "name": "fictional-events-v1.local.json",
+    "bytes": 19265850,
+    "sha256": "3b0f54da85cadb77cd7d8ab2d50c1fdb4b4ee36710b803cf904227e13f08927c",
+    "source_sha256": "57f1f0c680041c39dcf7644a1acca5fcc75dc7d525262547842389da7540b9a2",
+    "counts": {
+      "organizations": 96,
+      "departments": 248,
+      "projects": 713,
+      "resources": 1312,
+      "requirements": 2139,
+      "personas": 462,
+      "allocations": 21060,
+      "events": 67370
+    },
+    "scope": "LOCAL_ONLY_DRY_RUN",
+    "status": "manifest previously verified; bytes not accessed during this audit; never public"
+  },
+  "independent_acceptance": "OPEN",
+  "hosted_issue26": "LIVE_IMPORT_NOT_RUN",
+  "C8_issue34": "BLOCKED",
+  "DEC_D01_issue27": "PROPOSED_ONLY"
+}
