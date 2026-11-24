@@ -871,20 +871,23 @@
   },
   "latest_scoped_observation": {
     "date": "2026-11-25 PHT",
-    "handoff_parent": "f4b01e3dbd2cedfd7b3f299231caa540150baf73",
+    "handoff_parent": "9a4a043584c31352c559442dbba352306fc722c3",
     "pr53": {
-      "head": "8c6000a481172e2e31a479065abc6e0d296e8c4c",
+      "head": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
       "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
       "draft": true,
       "open": true,
       "runs": [
         [
-          45473244425,
+          45475369786,
           "in_progress",
           null
         ]
       ],
-      "previous_verified": "d941d916c98b69bc19a36f762ad1b8e8e1e8e3ab"
+      "intermediate": "bec8b69c5aedd2cf23b379f2509b871ee3ade84d",
+      "intermediate_run": 45475142332,
+      "aggregate_candidate": "8c6000a481172e2e31a479065abc6e0d296e8c4c",
+      "aggregate_run": 45473244425
     },
     "pr54": {
       "head": "cfb6e83bdf20e7ebe51315d7229c43babf9d9923",

@@ -54,3 +54,5 @@ R03 second directed batch: PR54 test-only candidate #69–71; no new production-
 R03 expiration oracle correction: exact persisted expiry and strict submicrosecond creation/storage difference; no product change. R06B3b API phase diagnostic only; no grant changes.
 
 R04 remote-only bounded scope reconciliation; G07 private/student gates not satisfied. Historical whole-HEAD package and non-loopback test URL check unsafe for new distribution. R06B3b disposable lock-only fixture capability candidate selected to preserve PESSIMISTIC_WRITE semantics and prevent domain DML; no hosted or production grant authorization.
+
+PC-D24 addendum: wait for known isolated timeout supervisor and recheck any late or initially refused PID record via unchanged strict PIDFD guard. Never signal numeric PID; persistent refusal preserves custody. Extracted ordering harness passes, private JVM/PIDFD positive and setup/daemon stalls unverified.

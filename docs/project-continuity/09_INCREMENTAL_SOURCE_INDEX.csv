@@ -62,3 +62,7 @@
 "scripts/test-c9-local-mixed-preparation.sh","858bf4442196324e45dbaebbf5c68c8d8154a99e","6507","100644","r06b3b_public_aggregates_candidate:8c6000a481172e2e31a479065abc6e0d296e8c4c","PATCH; actual CI pending"
 "scripts/test-c9-public-sql-aggregates.py","3fdfffc23f604f1383cd9afd4ad8b43f5d3b3c9c","2650","100644","r06b3b_public_aggregates_candidate:8c6000a481172e2e31a479065abc6e0d296e8c4c","PATCH; actual CI pending"
 "scripts/verify-c9-local-mixed-preparation.sh","f4f5a563817ee5edc8b44d6241a40316b6c01ff7","36683","100644","r06b3b_public_aggregates_candidate:8c6000a481172e2e31a479065abc6e0d296e8c4c","PATCH; actual CI pending"
+"scripts/c9-private-mixed-recovered-control.sh","7272e978a6e3961a617d6d2ebc0313e7b32d9ecd","14324","100644","r06b3b_reap_candidate:d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12","PATCH; local extracted harness pass; actual CI pending"
+"scripts/test-c9-private-reap-ordering.sh","c6b2ee266def6069e6f3c1b4e066b5fe6105430c","2513","100644","r06b3b_reap_candidate:d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12","PATCH; local extracted harness pass; actual CI pending"
+"scripts/test-c9-local-mixed-preparation.sh","2ebe7e1d70bd6bcb06234d26e2e8936a4319ddd8","6602","100644","r06b3b_reap_candidate:d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12","PATCH; local extracted harness pass; actual CI pending"
+"evidence/C9/R06B3B_PRIVATE_REAP_ORDERING_CANDIDATE_2026-11-25.md","7b536cfe16c8317c8b17f73d3fe48a906c44831a","1158","100644","r06b3b_reap_candidate:d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12","PATCH; local extracted harness pass; actual CI pending"
