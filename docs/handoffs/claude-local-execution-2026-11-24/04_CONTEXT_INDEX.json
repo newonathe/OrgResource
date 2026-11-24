@@ -993,7 +993,22 @@
       "test_blob": "c6b2ee266def6069e6f3c1b4e066b5fe6105430c",
       "cases": 7,
       "scope": "extracted helper, actual short-lived owned children, guard double; no private JVM"
-    }
+    },
+    "aggregate_receipt": {
+      "sha": "8c6000a481172e2e31a479065abc6e0d296e8c4c",
+      "run": 45473244425,
+      "job": 138726559312,
+      "maven": 91,
+      "playwright": 19,
+      "failures": 0,
+      "all_jobs_success": true,
+      "public_sql_aggregates": "VERIFIED_BOUNDED",
+      "private_positive": "NOT_RUN"
+    },
+    "latest_job": 138734044884,
+    "latest_run": 45475369786,
+    "latest_status": "in_progress",
+    "command_contract": "docs/handoffs/claude-local-execution-2026-11-24/27_R06B3B_AGGREGATE_RECEIPT_AND_L06_COMMAND_CONTRACT.md"
   },
   "r04_standalone_candidate": {
     "base": "076c9a5e7c7a1e66b894362864d93b76409196bd",
@@ -1410,6 +1425,24 @@
       "static_refusals": "VERIFIED_BOUNDED",
       "public_sql_projection": "VERIFIED_BOUNDED",
       "private_positive": "NOT_RUN"
+    },
+    {
+      "sha": "8c6000a481172e2e31a479065abc6e0d296e8c4c",
+      "run": 45473244425,
+      "job": 138726559312,
+      "maven": 91,
+      "playwright": 19,
+      "failures": 0,
+      "all_jobs_success": true,
+      "public_sql_aggregates": "VERIFIED_BOUNDED",
+      "private_positive": "NOT_RUN"
     }
-  ]
+  ],
+  "l06_command_contract": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/27_R06B3B_AGGREGATE_RECEIPT_AND_L06_COMMAND_CONTRACT.md",
+    "source_candidate": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
+    "final_sha": "PENDING_R09",
+    "state": "BLOCKED",
+    "private_positive": "NOT_RUN"
+  }
 }

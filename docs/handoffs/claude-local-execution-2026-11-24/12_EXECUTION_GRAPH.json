@@ -60,7 +60,7 @@
         "R02"
       ],
       "receipt": "PR54 cfb6e83bdf20e7ebe51315d7229c43babf9d9923 actual CI45461292876 attempt2 job138686481378 100 Maven/75 identity/19 Playwright all pass, zero failures/errors/skips, 3/3 jobs. R025 #75 bounded verified; prior Maven download failure before tests retained. R017/R040 #73/#74 prior actual 99/74/19, other directed receipts retained.",
-      "notes": "R029/R031/R082/R078/R041/R083/R084/R089/R091/R017/R040/R025 directed bounded executed. Remaining route oracle gaps and independent IR4 open; do not treat 100 tests as complete acceptance."
+      "notes": "R029/R031/R082/R078/R041/R083/R084/R089/R091/R017/R040/R025 directed bounded executed. Remaining route oracle gaps and independent IR4 open; do not treat 100 tests as complete acceptance. R035 public recovered logout stale replay/session deletion/domain equality and R038 original-only exact metadata public receipts reused; independent acceptance remains open."
     },
     {
       "id": "R04",
@@ -151,8 +151,8 @@
       "depends_on": [
         "R06B3a"
       ],
-      "receipt": "PR53 d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12 (prior bec8b69c5aedd2cf23b379f2509b871ee3ade84d) fixes late PID record/initial pre-exec guard refusal: wait isolated timeout supervisor then retry unchanged strict PIDFD guard, persistent refusal retains custody. Targeted frontend/API/SQL source reconciliation supports picker/selector/navigation/ID rendering, 50/100 pagination ordered by DB ID and scoped queries, stable detail with no APPROVED allocations. Actual local extracted Bash helper + exact final test blob c6b2ee266def6069e6f3c1b4e066b5fe6105430c: seven ordering/refusal cases pass exit0, reconstructed old branch red exit1; no actual private JVM/PIDFD positive. Earlier aggregate CI45473244425 Extended job138726559312 in progress at last observation, Java8/React success; first cleanup CI45475142332 in progress; final CI [[45475369786,\"in_progress\",null]]. Test tooling only, no product/migration changes. Inspect actual aggregate CI45473244425 and latest cleanup-candidate CI, diagnose failure without weakening oracles; reconcile remote R06B vs L06 and exact final local command/preconditions, then remaining R03/R07/R08. R09=false.",
-      "notes": "Public fixture and refusal proofs bounded; full private mixed positive, nonzero aggregate projection and final targeted source review open. No production grants or normal writable scheduler proof."
+      "receipt": "PR53 8c6000a481172e2e31a479065abc6e0d296e8c4c actual CI45473244425 job138726559312 checkout and logs: 91 Maven zero failures/errors/skips, 19 Playwright, all 3 jobs success; PUBLIC_SQL_AGGREGATES_OK actual MySQL signed/issue-return/consume/approved count/tenant separation; AGGREGATE_ROWS_OK SELECT-only and fixture/original/restored equality, existing control, 10 prechecks, cleanup. Latest d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12 cleanup CI45475369786 Extended pending, intermediate CI45475142332 pending at observation; Java8/React success metadata. L06 single integrated source command and prerequisites reviewed in report27, NOT_AUTHORIZED/NOT_RUN; final integration SHA still pending R09. R035 mapped existing stale-cookie replay, persisted session deletion and whole non-session equality; R038 original-only 200 and no early API mapped, private valid cohort still open. Inspect actual final cleanup CI45475369786 job138734044884 and intermediate CI45475142332 job138733247385; close remote R06B bounded only after exact-head green and review, keep L06 blocked until R09/L00B/L03/owner consent. In parallel continue R03 next R030 directed password-denial invariants or other actual remaining gap; then R07/R08. R09=false.",
+      "notes": "Nonzero public SQL projection verified; targeted source review and local ordering harness recorded. Final cleanup CI pending; private positive and independent review NOT_RUN."
     },
     {
       "id": "R07",
@@ -271,7 +271,7 @@
         "R06B"
       ],
       "receipt": "Exact full mixed 96 plus 2 original fixture orgs, real C5 restore, actual preflight/V2 baseline/one import/SELECT-only postflight/valid browser",
-      "notes": "POSIX execution environment and explicit operator attestation required; not same as L04; no host"
+      "notes": "Integrated command source reviewed in report27; final SHA must be pinned at R09. Native Linux/approved WSL POSIX, exact private plan/JAR, explicit owner terminal consent, all private positive NOT_RUN. No host."
     },
     {
       "id": "L07",
@@ -422,7 +422,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "Inspect actual aggregate CI45473244425 and latest cleanup-candidate CI, diagnose failure without weakening oracles; reconcile remote R06B vs L06 and exact final local command/preconditions, then remaining R03/R07/R08. R09=false."
+    "next_action": "Inspect actual final cleanup CI45475369786 job138734044884 and intermediate CI45475142332 job138733247385; close remote R06B bounded only after exact-head green and review, keep L06 blocked until R09/L00B/L03/owner consent. In parallel continue R03 next R030 directed password-denial invariants or other actual remaining gap; then R07/R08. R09=false."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -463,7 +463,22 @@
       "test_blob": "c6b2ee266def6069e6f3c1b4e066b5fe6105430c",
       "cases": 7,
       "scope": "extracted helper, actual short-lived owned children, guard double; no private JVM"
-    }
+    },
+    "aggregate_receipt": {
+      "sha": "8c6000a481172e2e31a479065abc6e0d296e8c4c",
+      "run": 45473244425,
+      "job": 138726559312,
+      "maven": 91,
+      "playwright": 19,
+      "failures": 0,
+      "all_jobs_success": true,
+      "public_sql_aggregates": "VERIFIED_BOUNDED",
+      "private_positive": "NOT_RUN"
+    },
+    "latest_job": 138734044884,
+    "latest_run": 45475369786,
+    "latest_status": "in_progress",
+    "command_contract": "docs/handoffs/claude-local-execution-2026-11-24/27_R06B3B_AGGREGATE_RECEIPT_AND_L06_COMMAND_CONTRACT.md"
   },
   "r03_candidate": {
     "sha": "cfb6e83bdf20e7ebe51315d7229c43babf9d9923",
@@ -831,6 +846,24 @@
       "static_refusals": "VERIFIED_BOUNDED",
       "public_sql_projection": "VERIFIED_BOUNDED",
       "private_positive": "NOT_RUN"
+    },
+    {
+      "sha": "8c6000a481172e2e31a479065abc6e0d296e8c4c",
+      "run": 45473244425,
+      "job": 138726559312,
+      "maven": 91,
+      "playwright": 19,
+      "failures": 0,
+      "all_jobs_success": true,
+      "public_sql_aggregates": "VERIFIED_BOUNDED",
+      "private_positive": "NOT_RUN"
     }
-  ]
+  ],
+  "l06_command_contract": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/27_R06B3B_AGGREGATE_RECEIPT_AND_L06_COMMAND_CONTRACT.md",
+    "source_candidate": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
+    "final_sha": "PENDING_R09",
+    "state": "BLOCKED",
+    "private_positive": "NOT_RUN"
+  }
 }
