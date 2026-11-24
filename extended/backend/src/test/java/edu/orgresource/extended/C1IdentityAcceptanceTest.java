@@ -455,6 +455,14 @@ class C1IdentityAcceptanceTest {
         assertGovernanceRefusal(404, one.orgDbId, two.orgDbId,
                 () -> post(session, "/api/v2/session/active-org", GSON.toJson(new OrgRequest(UUID.randomUUID()))));
         assertEquals(currentCookie, cookie(session.client));
+        Session existingSelected = login(two.username, two.password);
+        long frozenResourceId = json(post(existingSelected, "/api/resources",
+                GSON.toJson(new ResourceRequest("Fictional existing selected frozen resource", "REUSABLE", 2))))
+                .get("id").getAsLong();
+        String frozenCookie = cookie(existingSelected.client);
+        var activeResources = workspacePage(existingSelected, "/api/v2/workspace/resources");
+        assertEquals(1, activeResources.getAsJsonArray("items").size());
+        assertEquals(frozenResourceId, activeResources.getAsJsonArray("items").get(0).getAsJsonObject().get("id").getAsLong());
         assertEquals(1, jdbc.update("UPDATE organization SET status='FROZEN' WHERE id=? AND status='ACTIVE'", two.orgDbId));
         try {
             var hidden = json(assertGovernanceRefusal(200, one.orgDbId, two.orgDbId,
@@ -467,6 +475,17 @@ class C1IdentityAcceptanceTest {
             assertGovernanceRefusal(404, one.orgDbId, two.orgDbId,
                     () -> post(session, "/api/v2/session/active-org", GSON.toJson(new OrgRequest(two.orgPublicId))));
             assertEquals(currentCookie, cookie(session.client));
+            var frozenSelected = json(assertGovernanceRefusal(200, one.orgDbId, two.orgDbId,
+                    () -> get(existingSelected.client, "/api/v2/session"))).getAsJsonObject("data");
+            assertEquals(two.orgPublicId.toString(), frozenSelected.get("activeOrgId").getAsString());
+            var frozenReadsBefore = governanceDenialRows(one.orgDbId, two.orgDbId);
+            assertEquals(activeResources, workspacePage(existingSelected, "/api/v2/workspace/resources"));
+            assertTrue(frozenReadsBefore.equals(governanceDenialRows(one.orgDbId, two.orgDbId)));
+            var frozenDenied = assertGovernanceRefusal(409, one.orgDbId, two.orgDbId,
+                    () -> post(existingSelected, "/api/resources",
+                            GSON.toJson(new ResourceRequest("Fictional frozen write forbidden", "REUSABLE", 1))));
+            assertEquals("ORG_FROZEN", json(frozenDenied).get("code").getAsString());
+            assertEquals(frozenCookie, cookie(existingSelected.client));
         } finally {
             assertEquals(1, jdbc.update("UPDATE organization SET status='ACTIVE' WHERE id=? AND status='FROZEN'", two.orgDbId));
         }
@@ -4351,6 +4370,13 @@ class C1IdentityAcceptanceTest {
                 GSON.toJson(new ResourceRequest("C8 last29 foreign Resource", "REUSABLE", 0))))
                         .get("id").getAsLong();
 
+        long outsiderProjectId = json(post(outsiderSession, "/api/projects", GSON.toJson(new ProjectRequest(
+                outsiderDepartmentId, "C8 last29 foreign Project", "2040-12-10T10:00:00", "2040-12-10T11:00:00")))).get("id").getAsLong();
+        long outsiderRequirementId = json(post(outsiderSession, "/api/requirements", GSON.toJson(new RequirementRequest(
+                outsiderProjectId, outsiderResourceId, 1)))).get("id").getAsLong();
+        assertNotEquals(projectId, outsiderProjectId);
+        assertNotEquals(requirementId, outsiderRequirementId);
+
         // Only authenticated sessions may use this legacy CSRF alias. The
         // intentionally public pre-auth token has a separate /auth/csrf route.
         assertEquals(401, get(newClient(), "/api/v2/csrf").statusCode());
@@ -4381,7 +4407,9 @@ class C1IdentityAcceptanceTest {
                         case "requirements" -> assertEquals(Set.of("id", "projectId", "resourceId", "quantity",
                                 "allocatedQuantity", "shortageQuantity", "projectName", "resourceName",
                                 "resourceType", "projectStartAt", "projectEndAt"), fields);
-                        default -> { }
+                        case "departments" -> assertEquals(Set.of("id", "name"), fields);
+                        case "projects" -> assertEquals(Set.of("id", "departmentId", "name", "startAt", "endAt", "departmentName"), fields);
+                        default -> fail("Unknown fixture page " + page[0]);
                     }
                 }
                 long expectedId = Long.parseLong(page[1]);
@@ -4410,9 +4438,49 @@ class C1IdentityAcceptanceTest {
         assertEquals(403, get(leadSession.client, "/api/v2/workspace/allocations?limit=50").statusCode());
         for (Session officer : List.of(ownerSession, adminSession, custodianSession)) {
             JsonObject allocationsPage = workspacePage(officer, "/api/v2/workspace/allocations?limit=50");
-            assertTrue(allocationsPage.getAsJsonArray("items").asList().stream()
-                    .anyMatch(item -> item.getAsJsonObject().get("id").getAsLong() == allocationId));
+            var items = allocationsPage.getAsJsonArray("items");
+            assertEquals(1, items.size());
+            var allocation = items.get(0).getAsJsonObject();
+            assertEquals(allocationId, allocation.get("id").getAsLong());
+            assertEquals(Set.of("id", "publicId", "requirementId", "quantity", "borrowerName", "contactPresent",
+                    "smsConsent", "status", "createdAt", "approvedAt", "issuedAt", "returnedAt", "consumedAt",
+                    "cancelledAt", "cancellationReason", "expiredPendingCleanup", "reminderAttempted",
+                    "reminderOutcome", "requirement"), allocation.keySet());
+            assertEquals(Set.of("id", "projectId", "resourceId", "quantity", "allocatedQuantity", "shortageQuantity",
+                    "projectName", "resourceName", "resourceType", "projectStartAt", "projectEndAt"),
+                    allocation.getAsJsonObject("requirement").keySet());
+            assertEquals(requirementId, allocation.getAsJsonObject("requirement").get("id").getAsLong());
+            assertFalse(allocation.get("contactPresent").getAsBoolean());
+            assertFalse(allocation.get("smsConsent").getAsBoolean());
+            assertGovernanceRefusal(404, owner.orgDbId, outsider.orgDbId,
+                    () -> get(officer.client, "/api/v2/workspace/allocations?projectId=" + outsiderProjectId));
+            assertGovernanceRefusal(404, owner.orgDbId, outsider.orgDbId,
+                    () -> get(officer.client, "/api/v2/workspace/allocations?requirementId=" + outsiderRequirementId));
+            var overview = workspacePage(officer, "/api/v2/workspace/overview");
+            assertEquals(1, overview.get("departmentCount").getAsLong());
+            assertEquals(0, overview.get("projectActiveCount").getAsLong());
+            assertEquals(1, overview.get("resourceTypeCount").getAsLong());
+            assertEquals(1, overview.get("requirementShortageCount").getAsLong());
+            var preview = overview.getAsJsonArray("resourcePreview");
+            assertEquals(1, preview.size());
+            assertEquals(resourceId, preview.get(0).getAsJsonObject().get("id").getAsLong());
+            assertEquals(9, preview.get(0).getAsJsonObject().get("availableQuantity").getAsInt());
+            var calendar = overview.getAsJsonArray("calendarPreview");
+            assertEquals(1, calendar.size());
+            assertEquals(projectId, calendar.get(0).getAsJsonObject().getAsJsonObject("project").get("id").getAsLong());
+            assertFalse(calendar.get(0).getAsJsonObject().get("active").getAsBoolean());
+            var counts = overview.getAsJsonObject("allocations");
+            assertEquals(Set.of("pending", "issued", "overdue", "consumed", "recent"), counts.keySet());
+            assertEquals(1, counts.get("pending").getAsLong());
+            for (String key : List.of("issued", "overdue", "consumed")) assertEquals(0, counts.get(key).getAsLong());
+            var recent = counts.getAsJsonArray("recent");
+            assertEquals(1, recent.size());
+            assertEquals(Set.of("id", "borrowerName", "quantity", "status", "resourceName", "createdAt"),
+                    recent.get(0).getAsJsonObject().keySet());
+            assertEquals(allocationId, recent.get(0).getAsJsonObject().get("id").getAsLong());
         }
+        assertGovernanceRefusal(404, owner.orgDbId, outsider.orgDbId,
+                () -> get(ownerSession.client, "/api/v2/workspace/requirements?projectId=" + outsiderProjectId));
         for (Session lowRole : List.of(memberSession, leadSession)) {
             JsonObject overview = workspacePage(lowRole, "/api/v2/workspace/overview");
             assertTrue(overview.get("allocations").isJsonNull(),
