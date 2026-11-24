@@ -344,7 +344,7 @@
         }
       ],
       "authority": "93 route candidate mapping, independent issue34 blocked; current code and actual test evidence.",
-      "next": "PR54 4ac7c197 actual 97/72/19 all pass; R089/R091 bounded; new R017/R040 #73/#74 bc74332a8904b3022cf5f27f5d31a597455a1def pending. Remaining gaps/IR4 open."
+      "next": "R017/R040 #73/#74 backend step success metadata only, actual logs pending; R025 #75 cfb6e83bdf20e7ebe51315d7229c43babf9d9923 candidate. Previous 97/72/19 verified; remaining gaps/IR4 open."
     },
     {
       "id": "T12_HOSTING_AND_SYNTHETIC_DATA",
@@ -423,7 +423,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "PR53 actual RESOURCE_DETAIL HTTP500; candidate scoped disposable LOCK TABLES + direct refusal/success + seven domain DML denials; CI pending.",
+      "next": "PR53 locking-read run advancing; actual exact receipt pending, no inferred success.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",

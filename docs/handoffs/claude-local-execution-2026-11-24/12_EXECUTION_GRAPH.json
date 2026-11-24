@@ -59,8 +59,8 @@
       "depends_on": [
         "R02"
       ],
-      "receipt": "PR54 4ac7c197b9def27bc507697c9303b147e76ffbd6 actual CI45457441719 job138670606242 97 Maven/72 identity/19 Playwright zero failures, 3/3 jobs; #72 R089/R091 verified bounded. New #73/#74 R017/R040 candidate bc74332a8904b3022cf5f27f5d31a597455a1def pending CI; prior receipts retained. Independent IR4/review and remaining gaps open.",
-      "notes": "R029/R031/R082/R078/R041/R083/R084/R089/R091 directed bounded executed. #73/#74 R017/R040 new candidate. Next R025 and remaining route gaps; no product change."
+      "receipt": "Prior verified PR54 4ac7c197 CI45457441719 job138670606242 97 Maven/72 identity/19 Playwright all pass. #73/#74 R017/R040 bc74332a8904b3022cf5f27f5d31a597455a1def CI45460588237 backend step success METADATA_ONLY, full receipt pending. New #75 R025 cfb6e83bdf20e7ebe51315d7229c43babf9d9923 pending; do not replace earlier candidate/receipt. Independent IR4 and remaining gaps open.",
+      "notes": "R029/R031/R082/R078/R041/R083/R084/R089/R091 bounded executed. R017/R040 previous run still pending actual log. New R025 exact bytes candidate on backend-step successful base; no production change."
     },
     {
       "id": "R04",
@@ -422,7 +422,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "Inspect PR53 locking-read direct refusal/success and actual API/browser/rows/cleanup CI45459113536; inspect PR54 #73/#74 exact run; continue remaining R025 etc. R04 remote bounded; private academic gates remain G07. R09 false."
+    "next_action": "Inspect actual PR53 CI45459113536 locking/read/browser/row/cleanup logs first; inspect PR54 previous CI45460588237 #73/#74 and new #75 CI; then same-lifetime private mixed runtime candidate, remaining route gaps, R07/R08. R09 false."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -476,28 +476,65 @@
     "prior_failed_job": 138669505383,
     "prior_failed_phase": "RESOURCE_DETAIL",
     "expected_http": 200,
-    "actual_http": 500
+    "actual_http": 500,
+    "latest_job_metadata": [
+      {
+        "id": 138676495058,
+        "name": "Java 8 and isolated MySQL tests",
+        "status": "completed",
+        "conclusion": "success",
+        "steps": []
+      },
+      {
+        "id": 138676495401,
+        "name": "React typecheck, tests, lint, and build",
+        "status": "completed",
+        "conclusion": "success",
+        "steps": []
+      },
+      {
+        "id": 138676495489,
+        "name": "Extended C Java 21, isolated MySQL, Newman and Playwright",
+        "status": "in_progress",
+        "conclusion": null,
+        "steps": [
+          [
+            "Verify Extended C Java 21 backend against isolated MySQL",
+            "completed",
+            "success"
+          ],
+          [
+            "Prove local mixed rehearsal preparation with public fictional originals",
+            "completed",
+            "success"
+          ],
+          [
+            "Run authenticated Newman and browser acceptance against packaged JAR",
+            "in_progress",
+            null
+          ]
+        ]
+      }
+    ]
   },
   "r03_candidate": {
-    "sha": "bc74332a8904b3022cf5f27f5d31a597455a1def",
-    "base": "4ac7c197b9def27bc507697c9303b147e76ffbd6",
+    "sha": "cfb6e83bdf20e7ebe51315d7229c43babf9d9923",
+    "base": "bc74332a8904b3022cf5f27f5d31a597455a1def",
     "pr": 54,
     "runs": [
       [
-        45460588237,
+        45461292876,
         "in_progress",
         null
       ]
     ],
-    "report": "evidence/C8/R03_DIRECTED_R017_R040_CANDIDATE_2026-11-25.md",
+    "report": "evidence/C8/R03_DIRECTED_R025_CANDIDATE_2026-11-25.md",
     "acceptance": "CANDIDATE_CI_PENDING",
     "routes": [
-      "R017",
-      "R040"
+      "R025"
     ],
     "tests": [
-      73,
-      74
+      75
     ]
   },
   "r03_prior_verified": {
@@ -526,5 +563,66 @@
     "identity_tests": 72,
     "playwright": 19,
     "failures": 0
+  },
+  "r03_previous_candidate": {
+    "sha": "bc74332a8904b3022cf5f27f5d31a597455a1def",
+    "base": "4ac7c197b9def27bc507697c9303b147e76ffbd6",
+    "pr": 54,
+    "runs": [
+      [
+        45460588237,
+        "in_progress",
+        null
+      ]
+    ],
+    "report": "evidence/C8/R03_DIRECTED_R017_R040_CANDIDATE_2026-11-25.md",
+    "acceptance": "BACKEND_STEP_SUCCESS_METADATA_ONLY_FULL_RECEIPT_PENDING",
+    "routes": [
+      "R017",
+      "R040"
+    ],
+    "tests": [
+      73,
+      74
+    ],
+    "jobs": [
+      {
+        "id": 138681753305,
+        "name": "Extended C Java 21, isolated MySQL, Newman and Playwright",
+        "status": "in_progress",
+        "conclusion": null,
+        "steps": [
+          [
+            "Verify Extended C Java 21 backend against isolated MySQL",
+            "completed",
+            "success"
+          ],
+          [
+            "Prove isolated additive replay preserves existing owner and refuses repeat",
+            "in_progress",
+            null
+          ],
+          [
+            "Prove local mixed rehearsal preparation with public fictional originals",
+            "pending",
+            null
+          ]
+        ]
+      },
+      {
+        "id": 138681753731,
+        "name": "Java 8 and isolated MySQL tests",
+        "status": "completed",
+        "conclusion": "success",
+        "steps": []
+      },
+      {
+        "id": 138681754240,
+        "name": "React typecheck, tests, lint, and build",
+        "status": "completed",
+        "conclusion": "success",
+        "steps": []
+      }
+    ]
   }
 }
