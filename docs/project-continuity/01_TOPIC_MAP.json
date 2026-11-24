@@ -423,7 +423,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "Public control regression a6d3682a verified actual; new private browser 1e9d47392e8bc2849c037d0562a464070a474d60 unintegrated, SQL/API/browser candidates NOT_RUN; local PIDFD/runner/refusal checks next.",
+      "next": "Local PIDFD and public static/refusal candidate 3299e97674c5815f8705e5464e1e4d2f462c2830 staged, CI pending. Same-lifetime runner integration next. Private API/SQL/browser/local stop NOT_RUN.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",

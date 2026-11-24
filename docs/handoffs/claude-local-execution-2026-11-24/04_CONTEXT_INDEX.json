@@ -971,18 +971,18 @@
     "state": "SOURCE_CONTRACT_READY_IMPLEMENTATION_OPEN"
   },
   "r06b3b_candidate": {
-    "sha": "1e9d47392e8bc2849c037d0562a464070a474d60",
-    "base": "e1067c8be387c38993b8d361b7c6059c70b7eeaa",
+    "sha": "3299e97674c5815f8705e5464e1e4d2f462c2830",
+    "base": "1e9d47392e8bc2849c037d0562a464070a474d60",
     "pr": 53,
     "runs": [
       [
-        45464990215,
+        45466376744,
         "in_progress",
         null
       ]
     ],
-    "report": "evidence/C9/R06B3B_PRIVATE_MIXED_BROWSER_CANDIDATE_2026-11-25.md",
-    "acceptance": "PRIVATE_BROWSER_ORACLE_UNINTEGRATED"
+    "report": "evidence/C9/R06B3B_LOCAL_PIDFD_AND_STATIC_CANDIDATE_2026-11-25.md",
+    "acceptance": "LOCAL_PIDFD_AND_STATIC_REFUSALS_CI_PENDING"
   },
   "r04_standalone_candidate": {
     "base": "076c9a5e7c7a1e66b894362864d93b76409196bd",
@@ -1292,33 +1292,33 @@
     "scheduler_denial_log_matches": 1
   },
   "r06b3b_previous_candidate": {
-    "sha": "e1067c8be387c38993b8d361b7c6059c70b7eeaa",
-    "base": "a6d3682a8fea6901efb89db9e7e62509a690b0e6",
+    "sha": "1e9d47392e8bc2849c037d0562a464070a474d60",
+    "base": "e1067c8be387c38993b8d361b7c6059c70b7eeaa",
     "pr": 53,
     "runs": [
       [
-        45463840859,
+        45464990215,
         "in_progress",
         null
       ]
     ],
-    "report": "evidence/C9/R06B3B_PRIVATE_MIXED_SQL_ORACLE_CANDIDATE_2026-11-25.md",
-    "acceptance": "PRIVATE_SQL_ORACLE_UNINTEGRATED",
+    "report": "evidence/C9/R06B3B_PRIVATE_MIXED_BROWSER_CANDIDATE_2026-11-25.md",
+    "acceptance": "PRIVATE_BROWSER_ORACLE_UNINTEGRATED",
     "latest_jobs": [
       [
-        138693330411,
+        138697393459,
         "React typecheck, tests, lint, and build",
         "completed",
         "success"
       ],
       [
-        138693330632,
+        138697393923,
         "Extended C Java 21, isolated MySQL, Newman and Playwright",
         "in_progress",
         null
       ],
       [
-        138693330652,
+        138697394003,
         "Java 8 and isolated MySQL tests",
         "completed",
         "success"
@@ -1333,5 +1333,29 @@
     "maven": 91,
     "playwright": 19,
     "private_positive": "NOT_RUN"
+  },
+  "r06b3b_sql_candidate_status": {
+    "sha": "e1067c8be387c38993b8d361b7c6059c70b7eeaa",
+    "run": 45463840859,
+    "jobs": [
+      [
+        138693330411,
+        "React typecheck, tests, lint, and build",
+        "completed",
+        "success"
+      ],
+      [
+        138693330632,
+        "Extended C Java 21, isolated MySQL, Newman and Playwright",
+        "completed",
+        "success"
+      ],
+      [
+        138693330652,
+        "Java 8 and isolated MySQL tests",
+        "completed",
+        "success"
+      ]
+    ]
   }
 }

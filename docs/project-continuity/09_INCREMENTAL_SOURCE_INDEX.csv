@@ -41,3 +41,7 @@
 "scripts/verify-c9-private-mixed-api.py","a2e35c315d8de63155b3d5047102f76b7a71f0ec","8519","100644","r06b3b_private_sql_candidate:e1067c8be387c38993b8d361b7c6059c70b7eeaa","PATCH; unintegrated, NOT_RUN"
 "evidence/C9/R06B3B_PRIVATE_MIXED_BROWSER_CANDIDATE_2026-11-25.md","4889f8431434cedab543e1b2385fe8bcf8b8fadb","2304","100644","r06b3b_private_browser_candidate:1e9d47392e8bc2849c037d0562a464070a474d60","PATCH; unintegrated, NOT_RUN"
 "scripts/verify-c9-private-mixed-browser.mjs","96beb793e70322325b2b55c59ce72dab9ba7de98","10647","100644","r06b3b_private_browser_candidate:1e9d47392e8bc2849c037d0562a464070a474d60","PATCH; unintegrated, NOT_RUN"
+"evidence/C9/R06B3B_LOCAL_PIDFD_AND_STATIC_CANDIDATE_2026-11-25.md","1613ad0424e1c17e018450368b6967d07367f1aa","2250","100644","r06b3b_local_pidfd_candidate:3299e97674c5815f8705e5464e1e4d2f462c2830","PATCH; actual CI pending"
+"scripts/stop-c9-private-mixed-process.py","0197217580f8be98a7324f17b1fa66b342739b69","4079","100644","r06b3b_local_pidfd_candidate:3299e97674c5815f8705e5464e1e4d2f462c2830","PATCH; actual CI pending"
+"scripts/test-c9-local-mixed-preparation.sh","234cb2b628dc85bc8a25da9a713e15385412bc08","5972","100644","r06b3b_local_pidfd_candidate:3299e97674c5815f8705e5464e1e4d2f462c2830","PATCH; actual CI pending"
+"scripts/test-c9-private-mixed-static.py","c4f300739d3f834e1d82c7a88faeff529e75b01c","2869","100644","r06b3b_local_pidfd_candidate:3299e97674c5815f8705e5464e1e4d2f462c2830","PATCH; actual CI pending"
