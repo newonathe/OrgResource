@@ -93,3 +93,7 @@
 "scripts/verify-r0708-receipt.py","957b37cbc2f7c16aa9a449a01f54c2ee21aa545a","2979","100644","parallel_r03_r08_candidate:c11f47a23a82b0dac4afa8d5d4234280eb16f67e","PATCH; actual CI pending"
 "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","38cf8da108450b286c01b7a607fbe0636c6131c5","442836","100644","r03_reporting_candidate:b3eb16e5ddf757e67cfa8296eb56f9f340ef632c","PATCH; actual CI pending"
 "evidence/C8/R03_REPORTING_READ_ONLY_CANDIDATE_2026-11-25.md","770f90f3a6dd327a39b25c4305df08888f0ab7e6","1443","100644","r03_reporting_candidate:b3eb16e5ddf757e67cfa8296eb56f9f340ef632c","PATCH; actual CI pending"
+"scripts/verify-c9-cross-server-restore.sh","063a440daec581d1d832c2633f1dab0b40416d73","13590","100644","candidate:76a8e687581bd1b70582822a38b657744e22d387","PATCH; actual CI pending"
+"evidence/C9/R07_CROSS_SERVER_STARTUP_RACE_CANDIDATE_2026-11-25.md","8e7d80ecff63e0fc8dbef3b18850007b801daf6e","1477","100644","candidate:76a8e687581bd1b70582822a38b657744e22d387","PATCH; actual CI pending"
+"extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","6a64b6fd36c0f43506ffbb53697ba1f0d3db36bc","444522","100644","candidate:7ff4f8d7bbeb1e83068f380ebfcaa3216a4f727b","PATCH; actual CI pending"
+"evidence/C8/R03_WORKSPACE_READ_PRESERVATION_CANDIDATE_2026-11-25.md","0e9ef3c3491dce46ab41235489ccb607d98061e1","1366","100644","candidate:7ff4f8d7bbeb1e83068f380ebfcaa3216a4f727b","PATCH; actual CI pending"
