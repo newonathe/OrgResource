@@ -28,6 +28,7 @@ def main():
     for name in ("verify-c9-private-mixed-api.py", "build-c9-private-mixed-expectations.py", "stop-c9-private-mixed-process.py"):
         ast.parse((ROOT / name).read_text())
     oracle = load("build-c9-private-mixed-expectations.py", "sql_oracle")
+    assert oracle.parse_projection('{"name":"Fictional\u2028name"}\n') == [{"name":"Fictional\u2028name"}]
     row = dict(id="fictional", name="fictional", type="REUSABLE", totalQuantity=5,
                version=0, ledgerTotal=5, ledgerIssued=2, issued=2, approvedCount=0)
     assert oracle.stable_detail(row)["availableQuantity"] == 3

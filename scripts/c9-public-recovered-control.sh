@@ -38,6 +38,16 @@ control_run() {
   foreign="$(scalar "$target_id" "$dst_password" "$target_schema" "SELECT BIN_TO_UUID(public_id,0) FROM organization WHERE slug='isolated-other-original'")"
   resource="$(scalar "$target_id" "$dst_password" "$target_schema" "SELECT BIN_TO_UUID(public_id,0) FROM resource WHERE name='Existing fictional projector'")"
   [[ "$foreign" =~ ^[a-f0-9-]{36}$ && "$resource" =~ ^[a-f0-9-]{36}$ ]] || fail R06B3B_CONTROL_IDS
+  # Exercise the same read-only SQL projection on the actual restored public
+  # fixture. Do not create any private/approved demo tags or call private entrypoints.
+  MYSQL_PWD="$ro_password" docker_local exec -i --env MYSQL_PWD "$target_id" mysql --no-defaults --protocol=tcp --host=127.0.0.1 \
+    -uc9_local_ro --batch --raw --skip-column-names --default-character-set=utf8mb4 "$target_schema" \
+    < scripts/c9-private-mixed-expectations.sql > "$work/public-projection.jsonl" 2> "$work/public-projection-private.log" ||
+    fail R06B3B_PUBLIC_SQL_PROJECTION
+  python3 -B scripts/test-c9-public-sql-projection.py "$work/public-projection.jsonl" "$target_schema" "$target_uuid" "$owner_id" "$original_org" "$foreign" "$resource" ||
+    fail R06B3B_PUBLIC_SQL_ORACLE
+  rows_at "$target_id" "$dst_password" "$target_schema" > "$work/public-projection-after.sql"
+  cmp -s "$work/target-before.sql" "$work/public-projection-after.sql" || fail R06B3B_PUBLIC_PROJECTION_CHANGED_ROWS
   password="$(openssl rand -hex 24)"
   echo "::add-mask::$password"
   mysql_at "$target_id" "$dst_password" -e "CREATE USER 'c9_observer'@'%' IDENTIFIED BY '$password'; GRANT SELECT ON $target_schema.* TO 'c9_observer'@'%';"

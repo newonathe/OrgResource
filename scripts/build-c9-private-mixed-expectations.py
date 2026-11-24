@@ -90,6 +90,11 @@ def build(rows, schema, server_uuid, owner_id, original_id, fingerprint):
     }
     return oracle.validate_expected(result)
 
+def parse_projection(text):
+    # MySQL raw batch uses LF record separators. JSON strings may contain
+    # literal Unicode line separators; splitlines() would corrupt them.
+    return [json.loads(line) for line in text.split("\n") if line]
+
 def run():
     require(os.getuid() != 0 and os.environ.get("GITHUB_ACTIONS") != "true")
     require(os.environ.get("C9_CONTROL_PRIVATE_MIXED") == "true")
@@ -97,7 +102,7 @@ def run():
     require(0 < projection.stat().st_size <= 16 * 1024 * 1024)
     target = pathlib.Path(os.environ["C9_MIXED_EXPECTED"])
     require(target.is_absolute() and target.parent == projection.parent and target != projection)
-    rows = [json.loads(line) for line in projection.read_text(encoding="utf-8").splitlines()]
+    rows = parse_projection(projection.read_text(encoding="utf-8"))
     doc = build(rows, os.environ["C9_MIXED_SCHEMA"], os.environ["C9_MIXED_SERVER_UUID"],
                 os.environ["C9_MIXED_OWNER"], os.environ["C9_MIXED_ORIGINAL"], os.environ["C9_MIXED_FINGERPRINT"])
     with os.fdopen(os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600), "w", encoding="utf-8") as out:

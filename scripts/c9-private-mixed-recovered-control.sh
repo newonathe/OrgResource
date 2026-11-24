@@ -113,6 +113,7 @@ mixed_runtime_run() {
   mixed_runtime_namespace="$(sudo -n readlink "/proc/$pid/ns/net")"
   [[ "$mixed_runtime_namespace" =~ ^net:\[[0-9]+\]$ && "$mixed_runtime_namespace" != "$(readlink /proc/self/ns/net)" ]] || fail R06B3B_PRIVATE_NAMESPACE
   ns_run "$mixed_id" timeout --signal=TERM --kill-after=10s 480s bash -ec '
+    umask 077
     source "$1"
     stat_line="$(cat "/proc/$$/stat")"
     read -r -a fields <<< "${stat_line##*) }"
@@ -129,7 +130,7 @@ mixed_runtime_run() {
   done
   [[ "$ready" = true ]] && grep -Eq 'assets/index-[^"]+\.js' "$work/mixed-index.html" || fail R06B3B_PRIVATE_JAR_READY
   mixed_private() {
-    ns_run "$mixed_id" timeout --signal=TERM --kill-after=5s 150s bash -ec 'source "$1"; shift; exec "$@"' _ "$work/mixed-runtime.env" "$@"
+    ns_run "$mixed_id" timeout --signal=TERM --kill-after=5s 150s bash -ec 'umask 077; source "$1"; shift; exec "$@"' _ "$work/mixed-runtime.env" "$@"
   }
   mixed_private python3 -B scripts/verify-c9-private-mixed-api.py login > "$receipt_dir/mixed-api-private.log" 2>&1 || fail R06B3B_PRIVATE_API
   session="$(python3 -B -c 'import json,sys; print(json.load(open(sys.argv[1]))["cookie"])' "$work/mixed-session.json")"
