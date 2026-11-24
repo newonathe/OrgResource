@@ -26,6 +26,7 @@ uid="$(id -u)"
 gid="$(id -g)"
 [[ "$uid" != 0 ]] || fail C9_RUNTIME_UNPRIVILEGED_RUNNER_REQUIRED
 sudo -n true || fail C9_RUNTIME_NSENTER_UNAVAILABLE
+"$python_bin" scripts/stop-c9-isolated-process.py --self-test
 
 job_container="$MYSQL_CONTAINER"
 job_password="$EXT_DB_MIGRATION_PASSWORD"
@@ -39,33 +40,34 @@ chmod 700 "$work"
 source_id=
 target_id=
 app_supervisor=
+app_container=
 app_pidfile="$work/app.pid"
 stop_app() {
   if [ -n "$app_supervisor" ]; then
-    if [ -s "$app_pidfile" ]; then
-      local app_pid
-      app_pid="$(cat "$app_pidfile")"
-      if [[ "$app_pid" =~ ^[1-9][0-9]*$ ]]; then
-        kill "$app_pid" 2>/dev/null || true
-        for _ in $(seq 1 30); do
-          kill -0 "$app_pid" 2>/dev/null || break
-          sleep 0.2
-        done
-        kill -9 "$app_pid" 2>/dev/null || true
-      fi
-    fi
-    kill "$app_supervisor" 2>/dev/null || true
+    local container_pid namespace
+    [ -s "$app_pidfile" ] || { echo C9_RUNTIME_PID_RECORD_MISSING >&2; return 1; }
+    container_pid="$(docker inspect --format '{{.State.Pid}}' "$app_container")" || return 1
+    [[ "$container_pid" =~ ^[1-9][0-9]*$ ]] || return 1
+    namespace="$(sudo -n readlink "/proc/$container_pid/ns/net")" || return 1
+    "$python_bin" scripts/stop-c9-isolated-process.py "$app_pidfile" "$uid" "$namespace" || return 1
     wait "$app_supervisor" 2>/dev/null || true
     app_supervisor=
+    app_container=
     rm -f "$app_pidfile"
   fi
 }
 cleanup() {
-  stop_app
+  local result=0
+  stop_app || result=1
   for id in "$source_id" "$target_id"; do
-    if [ -n "$id" ]; then docker rm -f "$id" >/dev/null 2>&1 || true; fi
+    if [ -n "$id" ]; then
+      if docker container inspect "$id" >/dev/null 2>&1; then
+        docker rm -f "$id" >/dev/null 2>&1 || result=1
+      fi
+    fi
   done
-  rm -rf -- "$work"
+  rm -rf -- "$work" || result=1
+  return "$result"
 }
 trap cleanup EXIT
 trap 'exit 130' INT
@@ -170,7 +172,16 @@ run_private() {
 }
 start_app() {
   local id="$1" envfile="$2" label="$3"
-  ns_run "$id" bash -ec 'source "$1"; echo $$ > "$2"; shift 2; exec "$@"' _ \
+  app_container="$id"
+  # Bound the launcher lifetime even if cleanup must refuse a mismatched PID.
+  ns_run "$id" timeout --signal=TERM --kill-after=10s 240s bash -ec '
+    source "$1"
+    stat_line="$(cat "/proc/$$/stat")"
+    read -r -a fields <<< "${stat_line##*) }"
+    printf "%s %s\n" "$$" "${fields[19]}" > "$2"
+    shift 2
+    exec "$@"
+  ' _ \
     "$envfile" "$app_pidfile" "$java_bin" -Xmx512m -Duser.timezone=Asia/Manila -jar "$jar" \
     > "$work/$label-app.log" 2>&1 &
   app_supervisor=$!
