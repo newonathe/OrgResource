@@ -88,8 +88,25 @@ import javax.validation.ValidatorFactory;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         properties = {"spring.profiles.active=c1-test", "c1.sms.enabled=false", "c1.governance-expiry-delay-ms=86400000"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestMethodOrder(C1IdentityAcceptanceTest.R07Order.class)
 class C1IdentityAcceptanceTest {
+    // Default ordering remains identical to the existing ordered acceptance suite.
+    public static class R07Order implements MethodOrderer {
+        @Override public void orderMethods(org.junit.jupiter.api.MethodOrdererContext context) {
+            new MethodOrderer.OrderAnnotation().orderMethods(context);
+            if ("true".equals(System.getenv("ORGRESOURCE_R07_REVERSE"))) {
+                if (!"true".equals(System.getenv("GITHUB_ACTIONS")))
+                    throw new IllegalStateException("R07 reversal is confined to disposable CI.");
+                java.util.Collections.reverse(context.getMethodDescriptors());
+            }
+        }
+    }
+
+    private static void isolationMarker(String name) {
+        if ("true".equals(System.getenv("ORGRESOURCE_R07_PROBE")))
+            System.out.println("R07_CASE_START:" + name);
+    }
+
     private static final Gson GSON = new Gson();
     private static final String COOKIE = "ORGSESSION";
     private static final String OWNER_SLUG = "c1-seed-workspace";
@@ -1444,6 +1461,7 @@ class C1IdentityAcceptanceTest {
 
     @Test @Order(23)
     void C2_CONCURRENCY01_twoApprovalsAndTwoIssuesCannotDoubleCommitStock() throws Exception {
+        isolationMarker("concurrency");
         Fixture owner = newTenant("C2-race-owner", Membership.Role.OWNER);
         Fixture custodian = fixtureInOrg(owner.orgDbId, Membership.Role.CUSTODIAN);
         Session ownerSession = login(owner.username, owner.password);
@@ -1527,6 +1545,7 @@ class C1IdentityAcceptanceTest {
 
     @Test @Order(24)
     void C2_IDEMP02_failureBetweenQuantityAndMovementRollsBackEverything() throws Exception {
+        isolationMarker("rollback");
         Fixture owner = newTenant("C2-rollback-owner", Membership.Role.OWNER);
         Session session = login(owner.username, owner.password);
         long resourceId = json(post(session, "/api/resources", GSON.toJson(new ResourceRequest(
@@ -1579,6 +1598,83 @@ class C1IdentityAcceptanceTest {
         assertEquals(201, replay.statusCode());
         assertTrue(committed.equals(legacyDenialRows(owner.orgDbId, owner.orgDbId)),
                 "Successful receive replay must not change scoped rows.");
+        // Actual InnoDB lock cycle: service locks organization then resource;
+        // a heavier disposable transaction deliberately uses reverse order.
+        for (int i = 0; i < 4; i++) {
+            assertEquals(201, post(session, "/api/resources", GSON.toJson(new ResourceRequest(
+                    "C2 Deadlock Weight " + i, "CONSUMABLE", 0))).statusCode());
+        }
+        var deadlockBefore = r07LifecycleRows(owner.orgDbId, owner.orgDbId);
+        String deadlockEtag = get(session.client, path).headers().firstValue("ETag").orElseThrow();
+        UUID deadlockOperation = UUID.randomUUID();
+        String deadlockBody = GSON.toJson(new ReceiveRequest(deadlockOperation, 1));
+        String deadlockKey = C1Secrets.bearerToken();
+        var pool = Executors.newSingleThreadExecutor();
+        try (Connection blocker = DriverManager.getConnection(migrationUrl, migrationUser, migrationPassword);
+             Connection monitor = DriverManager.getConnection(migrationUrl, migrationUser, migrationPassword);
+             var lock = blocker.createStatement(); var inspect = monitor.createStatement()) {
+            assertTrue(blocker.getCatalog().matches("orgresource_c[12]_[A-Za-z0-9_]+"));
+            assertEquals(blocker.getCatalog(), monitor.getCatalog());
+            assertEquals(jdbc.queryForObject("SELECT DATABASE()", String.class), blocker.getCatalog());
+            long connectionId;
+            try (var rs = lock.executeQuery("SELECT CONNECTION_ID()")) {
+                assertTrue(rs.next()); connectionId = rs.getLong(1);
+            }
+            try (var rs = inspect.executeQuery("SELECT @@GLOBAL.innodb_deadlock_detect")) {
+                assertTrue(rs.next() && rs.getBoolean(1), "Actual MySQL deadlock detection is required.");
+            }
+            String deadlockMetric = "SELECT COUNT, STATUS FROM information_schema.INNODB_METRICS WHERE NAME='lock_deadlocks'";
+            long deadlocksBefore;
+            try (var rs = inspect.executeQuery(deadlockMetric)) {
+                assertTrue(rs.next(), "MySQL must expose the InnoDB lock_deadlocks metric.");
+                assertEquals("enabled", rs.getString(2));
+                deadlocksBefore = rs.getLong(1);
+            }
+            lock.execute("SET SESSION innodb_lock_wait_timeout=10");
+            blocker.setAutoCommit(false);
+            try {
+                assertEquals(5, lock.executeUpdate("UPDATE resource SET version=version+1 WHERE organization_id=" + owner.orgDbId));
+                var pending = pool.submit(() -> modernPost(session, path + "/receive", deadlockBody, deadlockEtag, deadlockKey));
+                boolean waiting = false;
+                long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+                String waitSql = "SELECT COUNT(*) FROM performance_schema.data_lock_waits w "
+                        + "JOIN performance_schema.data_locks l ON l.ENGINE=w.ENGINE AND l.ENGINE_LOCK_ID=w.BLOCKING_ENGINE_LOCK_ID "
+                        + "JOIN performance_schema.threads t ON t.THREAD_ID=l.THREAD_ID "
+                        + "WHERE t.PROCESSLIST_ID=" + connectionId + " AND l.OBJECT_SCHEMA='" + blocker.getCatalog()
+                        + "' AND l.OBJECT_NAME='resource'";
+                while (System.nanoTime() < deadline && !pending.isDone()) {
+                    try (var rs = inspect.executeQuery(waitSql)) {
+                        assertTrue(rs.next()); if (rs.getLong(1) > 0) { waiting = true; break; }
+                    }
+                    Thread.sleep(50);
+                }
+                assertTrue(waiting, "The HTTP transaction must be observed waiting on the resource held by the blocker.");
+                try (var rs = lock.executeQuery("SELECT id FROM organization WHERE id=" + owner.orgDbId + " FOR UPDATE")) {
+                    assertTrue(rs.next(), "The heavier blocker must survive the actual lock cycle.");
+                }
+                var conflict = pending.get(30, TimeUnit.SECONDS);
+                assertEquals(503, conflict.statusCode(), conflict.body());
+                assertEquals("TRANSIENT_TRANSACTION_CONFLICT", json(conflict).get("code").getAsString());
+                try (var rs = inspect.executeQuery(deadlockMetric)) {
+                    assertTrue(rs.next(), "The InnoDB lock_deadlocks metric must remain available.");
+                    assertEquals("enabled", rs.getString(2));
+                    assertTrue(rs.getLong(1) > deadlocksBefore, "InnoDB must report an actual deadlock.");
+                }
+            } finally {
+                blocker.rollback();
+            }
+        } finally { pool.shutdownNow(); }
+        assertTrue(deadlockBefore.equals(r07LifecycleRows(owner.orgDbId, owner.orgDbId)),
+                "Deadlock victim and rolled-back blocker must preserve exact domain rows.");
+        var deadlockRetry = modernPost(session, path + "/receive", deadlockBody, deadlockEtag, deadlockKey);
+        assertEquals(201, deadlockRetry.statusCode(), deadlockRetry.body());
+        assertEquals(8, json(deadlockRetry).getAsJsonObject("data").get("totalQuantity").getAsInt());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=? AND operation_public_id=UUID_TO_BIN(?,0) AND kind='RECEIPT'",
+                Integer.class, owner.orgDbId, deadlockOperation.toString()));
+        var deadlockCommitted = r07LifecycleRows(owner.orgDbId, owner.orgDbId);
+        assertEquals(201, modernPost(session, path + "/receive", deadlockBody, deadlockEtag, deadlockKey).statusCode());
+        assertTrue(deadlockCommitted.equals(r07LifecycleRows(owner.orgDbId, owner.orgDbId)));
+        System.out.println("R07_ACTUAL_DEADLOCK_OK:observed_lock_wait=true mysql_counter_increased=true http503=true exact_rollback=true same_key_retry=true replay_preserved=true");
     }
 
     @Test @Order(25)
@@ -2046,15 +2142,19 @@ class C1IdentityAcceptanceTest {
         LocalDateTime now = LocalDateTime.now(clock).withNano(0);
         long reminderProjectId = json(post(session, "/api/projects", GSON.toJson(new ProjectRequest(departmentId, "C3 Reminder Project",
                 now.plusHours(1).toString(), now.plusHours(4).toString())))).get("id").getAsLong();
-        long reusableId = json(post(session, "/api/resources", GSON.toJson(new ResourceRequest("C3 Reminder Reusable", "REUSABLE", 2)))).get("id").getAsLong();
-        long reminderRequirementId = json(post(session, "/api/requirements", GSON.toJson(new RequirementRequest(reminderProjectId, reusableId, 2)))).get("id").getAsLong();
+        long reusableId = json(post(session, "/api/resources", GSON.toJson(new ResourceRequest("C3 Reminder Reusable", "REUSABLE", 4)))).get("id").getAsLong();
+        long reminderRequirementId = json(post(session, "/api/requirements", GSON.toJson(new RequirementRequest(reminderProjectId, reusableId, 4)))).get("id").getAsLong();
         long fakeAllocationId = json(post(session, "/api/allocations", GSON.toJson(new AllocationRequest(reminderRequirementId, 1,
                 "Fictional Reminder One", "+15555550111", true)))).get("id").getAsLong();
         long twilioAllocationId = json(post(session, "/api/allocations", GSON.toJson(new AllocationRequest(reminderRequirementId, 1,
                 "Fictional Reminder Two", "+15555550112", true)))).get("id").getAsLong();
         jdbc.update("UPDATE project SET start_at=?,end_at=? WHERE id=? AND organization_id=?",
                 Timestamp.valueOf(now.minusHours(2)), Timestamp.valueOf(now.plusHours(3)), reminderProjectId, owner.orgDbId);
-        for (long allocationId : List.of(fakeAllocationId, twilioAllocationId)) {
+        long claimedId = json(post(session, "/api/allocations", GSON.toJson(new AllocationRequest(reminderRequirementId, 1,
+                "Fictional Interrupted Claim", "+15555550113", true)))).get("id").getAsLong();
+        long dispatchingId = json(post(session, "/api/allocations", GSON.toJson(new AllocationRequest(reminderRequirementId, 1,
+                "Fictional Interrupted Dispatch", "+15555550114", true)))).get("id").getAsLong();
+        for (long allocationId : List.of(fakeAllocationId, twilioAllocationId, claimedId, dispatchingId)) {
             assertEquals(200, post(session, "/api/allocations/" + allocationId + "/approve", null).statusCode());
             assertEquals(200, post(session, "/api/allocations/" + allocationId + "/issue", null).statusCode());
         }
@@ -2117,10 +2217,30 @@ class C1IdentityAcceptanceTest {
             server.stop(0);
         }
 
+        // Persist both crash-window states, then exercise the actual registered
+        // recovery worker. This models interruption; it is not a JVM restart.
+        LocalDateTime stale = now.minusMinutes(16);
+        assertTrue(reminderService.claimOne(claimedId, stale));
+        assertTrue(reminderService.claimOne(dispatchingId, stale));
+        assertNotNull(reminderService.prepareForDispatch(dispatchingId, stale));
+        assertTrue(reminderService.authorizeDispatch(dispatchingId, stale));
+        assertEquals("CLAIMED", jdbc.queryForObject("SELECT reminder_outcome FROM allocation WHERE id=?", String.class, claimedId));
+        assertEquals("DISPATCHING", jdbc.queryForObject("SELECT reminder_outcome FROM allocation WHERE id=?", String.class, dispatchingId));
+        assertFalse(reminderService.markStaleClaimUnknown(claimedId, stale), "Strict cutoff must not recover an equal timestamp.");
+        invokeRegisteredLifecycleSchedule();
+        for (long id : List.of(claimedId, dispatchingId)) {
+            assertEquals("UNKNOWN", jdbc.queryForObject("SELECT reminder_outcome FROM allocation WHERE id=?", String.class, id));
+            assertFalse(reminderService.claimOne(id, now));
+            assertFalse(reminderService.authorizeDispatch(id, now));
+            assertFalse(reminderService.recordOutcome(id, ReminderSendResult.unknown(null)));
+            assertNull(jdbc.queryForObject("SELECT provider_message_sid FROM allocation WHERE id=?", String.class, id));
+            assertNull(jdbc.queryForObject("SELECT reminder_http_status FROM allocation WHERE id=?", Integer.class, id));
+        }
+
         long expiryProjectId = json(post(session, "/api/projects", GSON.toJson(new ProjectRequest(departmentId, "C3 Expiry Project",
                 now.plusDays(1).toString(), now.plusDays(2).toString())))).get("id").getAsLong();
         long expiryResourceId = json(post(session, "/api/resources", GSON.toJson(new ResourceRequest("C3 Expiry Resource", "REUSABLE", 5)))).get("id").getAsLong();
-        long expiryRequirementId = json(post(session, "/api/requirements", GSON.toJson(new RequirementRequest(expiryProjectId, expiryResourceId, 2)))).get("id").getAsLong();
+        long expiryRequirementId = json(post(session, "/api/requirements", GSON.toJson(new RequirementRequest(expiryProjectId, expiryResourceId, 3)))).get("id").getAsLong();
         long pendingId = json(post(session, "/api/allocations", GSON.toJson(new AllocationRequest(expiryRequirementId, 1,
                 "Fictional Expiry Pending", null, false)))).get("id").getAsLong();
         long approvedId = json(post(session, "/api/allocations", GSON.toJson(new AllocationRequest(expiryRequirementId, 1,
@@ -2128,18 +2248,61 @@ class C1IdentityAcceptanceTest {
         jdbc.update("UPDATE project SET start_at=?,end_at=? WHERE id=? AND organization_id=?",
                 Timestamp.valueOf(now.minusHours(1)), Timestamp.valueOf(now.plusHours(1)), expiryProjectId, owner.orgDbId);
         assertEquals(200, post(session, "/api/allocations/" + approvedId + "/approve", null).statusCode());
+        long issuedId = json(post(session, "/api/allocations", GSON.toJson(new AllocationRequest(expiryRequirementId, 1,
+                "Fictional Expiry Return", null, false)))).get("id").getAsLong();
+        assertEquals(200, post(session, "/api/allocations/" + issuedId + "/approve", null).statusCode());
+        assertEquals(200, post(session, "/api/allocations/" + issuedId + "/issue", null).statusCode());
+        String returnPath = "/api/v2/orgs/" + owner.orgPublicId + "/allocations/"
+                + allocationRepository.findById(issuedId).orElseThrow().publicId + "/return";
+        String returnEtag = get(session.client, returnPath.replace("/return", ""))
+                .headers().firstValue("ETag").orElseThrow();
+        String returnBody = GSON.toJson(new OperationRequest(UUID.randomUUID())), returnKey = C1Secrets.bearerToken();
         int movementCount = jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=? AND resource_id=?",
                 Integer.class, owner.orgDbId, expiryResourceId);
         jdbc.update("UPDATE project SET end_at=? WHERE id=? AND organization_id=?",
                 Timestamp.valueOf(now.minusSeconds(1)), expiryProjectId, owner.orgDbId);
-        invokeRegisteredLifecycleSchedule();
+        var start = new CountDownLatch(1);
+        var ready = new CountDownLatch(2);
+        var pool = Executors.newFixedThreadPool(2);
+        try {
+            var expiry = pool.submit(() -> { ready.countDown(); start.await(); invokeRegisteredLifecycleSchedule(); return true; });
+            var returned = pool.submit(() -> { ready.countDown(); start.await(); return modernPost(session, returnPath, returnBody, returnEtag, returnKey); });
+            assertTrue(ready.await(10, TimeUnit.SECONDS));
+            start.countDown();
+            assertTrue(expiry.get(45, TimeUnit.SECONDS));
+            assertEquals(200, returned.get(45, TimeUnit.SECONDS).statusCode());
+        } finally { start.countDown(); pool.shutdownNow(); }
+        assertEquals("RETURNED", jdbc.queryForObject("SELECT status FROM allocation WHERE id=?", String.class, issuedId));
         assertEquals(2, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE organization_id=? AND id IN (?,?) "
                 + "AND status='CANCELLED' AND cancellation_reason='EXPIRED'", Integer.class,
                 owner.orgDbId, pendingId, approvedId));
-        assertEquals(movementCount, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=? AND resource_id=?",
-                Integer.class, owner.orgDbId, expiryResourceId), "Expiry releases computed holds without inserting stock movements.");
+        assertEquals(movementCount + 1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=? AND resource_id=?",
+                Integer.class, owner.orgDbId, expiryResourceId), "Only return adds a movement; expiry releases holds.");
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE allocation_id=? AND kind='RETURN'", Integer.class, issuedId));
+        assertEquals(0L, jdbc.queryForObject("SELECT SUM(delta_issued) FROM stock_movement WHERE resource_id=?", Long.class, expiryResourceId));
+        assertEquals(5L, jdbc.queryForObject("SELECT SUM(delta_total) FROM stock_movement WHERE resource_id=?", Long.class, expiryResourceId));
+        var beforeReplay = r07LifecycleRows(owner.orgDbId, owner.orgDbId);
+        assertEquals(200, modernPost(session, returnPath, returnBody, returnEtag, returnKey).statusCode());
+        assertTrue(beforeReplay.equals(r07LifecycleRows(owner.orgDbId, owner.orgDbId)), "Replay changed the return/expiry facts.");
         assertEquals(2, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE id IN (?,?) AND reminder_outcome='NONE'",
                 Integer.class, pendingId, approvedId));
+    }
+
+    private List<List<List<String>>> r07LifecycleRows(long firstOrg, long secondOrg) {
+        var result = legacyDenialRows(firstOrg, secondOrg);
+        for (String table : List.of("membership", "invitation", "ownership_transfer", "organization")) {
+            String scope = table.equals("organization") ? "id" : "org_id";
+            result.add(jdbc.query("SELECT * FROM " + table + " WHERE " + scope + " IN (?,?) ORDER BY id",
+                    (rs, rowNumber) -> {
+                        List<String> values = new ArrayList<>();
+                        for (int column = 1; column <= rs.getMetaData().getColumnCount(); column++) {
+                            byte[] bytes = rs.getBytes(column);
+                            values.add(bytes == null ? null : Base64.getEncoder().encodeToString(bytes));
+                        }
+                        return values;
+                    }, firstOrg, secondOrg));
+        }
+        return result;
     }
 
     @Test @Order(33)
@@ -3556,6 +3719,56 @@ class C1IdentityAcceptanceTest {
         assertEquals(404, get(foreignActor.client, relatedPath).statusCode());
         String nextRequirementPage = workspacePage(actor, relatedPath).get("nextCursor").getAsString();
         assertEquals(404, get(actor.client, root + "/requirements?limit=50&cursor=" + nextRequirementPage).statusCode());
+        if ("true".equals(System.getenv("ORGRESOURCE_R08_PROBE"))) {
+            assertEquals("true", System.getenv("GITHUB_ACTIONS"));
+            assertEquals(1001, jdbc.queryForObject("SELECT COUNT(*) FROM resource WHERE organization_id=?", Integer.class, owner.orgDbId));
+            assertEquals(1002, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE organization_id=?", Integer.class, owner.orgDbId));
+            assertEquals(101, jdbc.queryForObject("SELECT COUNT(*) FROM resource_requirement WHERE organization_id=?", Integer.class, owner.orgDbId));
+            var before = legacyDenialRows(owner.orgDbId, foreign.orgDbId);
+            long heapBefore = java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+            measureWorkspaceRead(actor, "resource_page", stock, 100);
+            measureWorkspaceRead(actor, "allocation_page", requests, 100);
+            measureWorkspaceRead(actor, "requirement_page", relatedPath, 50);
+            measureWorkspaceRead(actor, "project_page", root + "/projects", 1);
+            measureWorkspaceRead(actor, "overview", root + "/overview", -1);
+            long heapAfter = java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+            assertTrue(before.equals(legacyDenialRows(owner.orgDbId, foreign.orgDbId)), "Measurement reads altered scoped domain rows.");
+            var sizes = jdbc.queryForMap("SELECT COALESCE(SUM(data_length),0) AS data_bytes,COALESCE(SUM(index_length),0) AS index_bytes FROM information_schema.tables WHERE table_schema=DATABASE() AND engine='InnoDB'");
+            System.out.printf("R08_FIXTURE:resources=1001 allocations=1002 requirements=101 heap_before=%d heap_after=%d innodb_data_estimate=%s innodb_index_estimate=%s%n",
+                    heapBefore, heapAfter, sizes.get("data_bytes"), sizes.get("index_bytes"));
+        }
+    }
+
+    private void measureWorkspaceRead(Session actor, String label, String path, int expectedItems) throws Exception {
+        final int warmups = 5, samples = 30;
+        long[] elapsed = new long[samples];
+        int minBytes = Integer.MAX_VALUE, maxBytes = 0;
+        long firstWarmup = 0;
+        for (int i = -warmups; i < samples; i++) {
+            HttpRequest request = HttpRequest.newBuilder(URI.create(base() + path))
+                    .timeout(java.time.Duration.ofSeconds(15)).GET().build();
+            long start = System.nanoTime();
+            HttpResponse<String> response = actor.client.send(request, HttpResponse.BodyHandlers.ofString());
+            long duration = System.nanoTime() - start;
+            assertEquals(200, response.statusCode());
+            JsonObject data = json(response).getAsJsonObject("data");
+            if (expectedItems >= 0) assertEquals(expectedItems, data.getAsJsonArray("items").size());
+            else assertEquals(1001, data.getAsJsonObject("allocations").get("pending").getAsInt());
+            if (i == -warmups) firstWarmup = duration;
+            if (i >= 0) {
+                elapsed[i] = duration;
+                int bytes = response.body().getBytes(StandardCharsets.UTF_8).length;
+                minBytes = Math.min(minBytes, bytes);
+                maxBytes = Math.max(maxBytes, bytes);
+            }
+        }
+        Arrays.sort(elapsed);
+        // Nearest rank, measured serial HTTP round-trip including body transfer.
+        System.out.printf(java.util.Locale.ROOT,
+                "R08_HTTP:%s warmups=%d samples=%d min_ms=%.3f p50_ms=%.3f p95_ms=%.3f max_ms=%.3f body_bytes_min=%d body_bytes_max=%d%n",
+                label, warmups, samples, elapsed[0] / 1e6, elapsed[(int)Math.ceil(.5 * samples)-1] / 1e6,
+                elapsed[(int)Math.ceil(.95 * samples)-1] / 1e6, elapsed[samples-1] / 1e6, minBytes, maxBytes);
+        System.out.printf(java.util.Locale.ROOT, "R08_FIRST_WARMUP:%s ms=%.3f%n", label, firstWarmup / 1e6);
     }
 
     @Test @Order(53)
