@@ -1,5 +1,9 @@
 # R06B3b actual aggregate receipt and L06 execution contract
 
+**Current authority (Report49, 2026-11-25 PHT):** R09 technical gate VERIFIED_BOUNDED; exact reviewed source `2c626cb251fc3e0a5e3304f9ea5b03f89f55e024`, draft PR56, full CI45494597345 and dedicated CI45494597313. Owner explicitly initiates local execution. Private/independent/host/student gates remain open. Historical text is preserved in the previous handoff commit `cef3b1d566d5d480156e114a1947089518022f0f`; current 09/11/12/45 supersede it. No native execution claimed.
+
+The command/oracles below remain applicable; candidate/pending/next-action sentences record the historical observation, superseded by exact final SHA in lock45. No owner consent or private proof is implied.
+
 2026-11-25 PHT. Current CHAT executor, bounded evidence reconciliation; no independent reviewer. Goal: consume actual pending public result and remove command ambiguity while keeping private proof in owner-local lane. PR53 base d3e8a8550e00e3bb9423d84f51f8141783e71fd1, public aggregate 8c6000a481172e2e31a479065abc6e0d296e8c4c, latest cleanup candidate d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12. Handoff parent ebd9b0d68405c29815cbc741037b74c1ae7cdc31. No execution of private plan, host or Claude.
 
 ## Actual receipt

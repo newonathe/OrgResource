@@ -1,83 +1,43 @@
-# 03 — End-to-end ownership, dependency and acceptance map
+# 03 — Current end-to-end ownership and dependencies
 
-**CURRENT DISPATCH AUTHORITY (2026-11-25 PHT, Report48):** R09 technical remote preparation is VERIFIED_BOUNDED; graph 12 and lock 45 ready=true at PR56 `2c626cb251fc3e0a5e3304f9ea5b03f89f55e024`, exact full CI45494597345 and dedicated45494597313 passed with actual logs. Owner explicitly initiates local queue and supplies authorized prerequisites; no automatic local action. Historical checkpoints below are retained as history, not instructions. Use 09/11, report27 L06 single guarded owner-terminal command; G01/G03/private/host/student/release gates remain open. No C8/C9 formal acceptance or deployment implied.
+**Current authority (Report49, 2026-11-25 PHT):** R09 technical gate VERIFIED_BOUNDED; exact reviewed source `2c626cb251fc3e0a5e3304f9ea5b03f89f55e024`, draft PR56, full CI45494597345 and dedicated CI45494597313. Owner explicitly initiates local execution. Private/independent/host/student gates remain open. Historical text is preserved in the previous handoff commit `cef3b1d566d5d480156e114a1947089518022f0f`; current 09/11/12/45 supersede it. No native execution claimed.
 
-Snapshot: PR #46 ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306, CI #45419347291 completed/success; prior #45 green #45414895612. main is skeleton 16e781c837dd7e1f0481fb7a01e49c27d80a91e8. Source lineage is stacked: #2→3→4→5→6→8→11→12 (frozen academic A)→13→14→15→16→17→18→19→20→22→25→28→29→31→32→33→35→36→37→38→39→40→41→42→43→44→45→46. Parallel historical documents #21/#23/#24 are not merged into this line; use exact refs in 04_CONTEXT_INDEX.json. #1/#7/#9/#10 separate historical branches; do not blindly merge. All current release/merge decisions remain owner-gated.
+Graph 12 is machine authority. The following table is generated from current task nodes; historical detailed ownership/oracles preserved at prior handoff commit and report48. Use report27/11 for L06 and 02/07/08 for native task acceptance. No formal waiver.
 
-| ID | Scope / state | Executor / prerequisites | Exact completion receipt |
+| ID | Executor | State | Dependencies |
 |---|---|---|---|
-| R00 | CI latest #46 | CHAT; VERIFIED on ec8600f5, refresh for later head | All 3 jobs and actual Stage 1D markers; see executed receipt in 00_START_HERE.md |
-| R01 | Stage 1D follow-up candidate b62ff3c6 | CHAT; new exact-head CI in_progress; actual receipt review required | Changed-payload 409 with exact code; new demoted write 403; PID namespace identity; verify no mutation and actual markers; no weaker isolation |
-| R02 | C8 93 routes | CHAT; 05_ROUTE_GAP_MAP.csv + full policy oracle; local L05 supplements | 93 unique routes (11 project/report,33 stock,20 identity,29 legacy); each real positive, meaningful negative, field/SQL and separate review. No blanket acceptance |
-| R03 | C8 focused gap closure | CHAT; independent oracle before tests | R029 deterministic disable already has later #66 candidate, verify before duplicating; R082 cursor/fields, R084/R078 versioned revoke, R083/R041/R031 password/expired token, R089/R091 scoped cursors, R017 invalid project time, R025 image bytes, R040 duplicate/invalid dept; 05 includes every remaining source-stated gap |
-| R04 | Academic 28-operation parity / packaging requirements | CHAT; exact frozen tree + course evidence | Mapping to source/CI, no change A; student-only Canvas/COA/peer/video/Twilio instructor decision not claimed |
-| R05 | C9 bounded query/restore baseline | CHAT; #41–45 already verified | Keep original measurements and proof; no speculative indexes |
-| R06A/R06B | Full mixed private rehearsal OS/transport compatibility and guarded runner | CHAT; POSIX baseline verified source conflict with Windows-only design; see 13 | Guarded local-only runner, tests-first synthetic refusal, no private source in CI; review before L06 |
-| R07 | C9 independent fixture/test order, concurrency/failure injection, boundary cases | CHAT; after scoped authorization and C8 gates; pinned #23 docs/execution/05 C9 contract | L0/L1/L2 exact real MySQL/HTTP/Chromium; compare isolation/reverse order, lost response, rollback, replay, concurrency, timing, session/consent, pagination/images and failure matrices. No overclaims |
-| R08 | C9 performance | CHAT for public 8-org harness; local only full private data and native timings | Baseline vs candidate equal fixtures, at least 3 samples where practical, p50/p95/range and workload, storage/JAR/heap/CI build; no index change without evidence and separate approval |
-| L00 | Local preflight/private path | CLAUDE locally | version/identity/path/byte hash, no secrets |
-| L01 | Windows disposable recovery | CLAUDE locally, nested within L03 by default | actual recovery/connected suite exit and markers; fallback only if receipt missing |
-| L02 | Protected login and oversized backup/outage | CLAUDE locally, nested within L03 by default | actual independent disposable Windows operator drill; fallback only if missing |
-| L03 | Package / clean extraction (primary combined task) | CLAUDE locally, L00 clean source | manifests/hash/extraction, L01+L02 nested receipts, V1–V7 exact JAR bytes; report historical package allowlist omissions |
-| L04 | Exact standalone 96 | CLAUDE locally, private approved file | exact 96, counts/states, guard, C5 archive, independent restore and limits; not mixed |
-| L05 | IR4 private ledger reconcile | CLAUDE local restricted access | redacted route summary; no fabricated independent sign-off |
-| L06 | Exact full mixed 96 additive | CLAUDE local after R06 + verified prerequisites | new fixture, real C5 restore, exact preflight and original V2 HMAC, one import, independent postflight, valid mixed UI; not host |
-| L07 | Separate local machine / off-host encrypted recovery | OPERATOR + local agent only with authorized independent machine/storage | actual protected transfer and verified distinct machine/service, recovery keys separately managed, tested RTO/RPO; NOT_RUN until real |
-| G01 | C8 independent acceptance #34 | INDEPENDENT REVIEWER + owner; 93-route v1 + restricted receipts | each accepted row, documented exclusions, exact final CI; no self-sign-off |
-| G02 | P0 actual host #26 | AUTHORIZED OPERATOR/OWNER; separately granted access | actual host inventory/security review, backup/off-host restore, actual clone full96 rehearsal, explicit maintenance/GO, one import, independent postflight/original preservation, browser/access controls, cleanup and GO |
-| G03 | C9 formal exit | OWNER/REVIEWER; C8 accepted + exact full private proof + required C9 tests | evidence/C9 phase outputs per #23 pinned prompt; independent review |
-| G04 | C10 HTTPS/staging/ops | OWNER approval after C9 | actual scoped HTTPS/proxy, cookies/CSRF, least privilege, recovery, monitoring, incident/rollback, off-host and RTO/RPO; no hosting before approval |
-| G05 | C11 independent release | OWNER approval after C10 | final source/binary exact hash, independent red-team, security/advisories, academic/local/staging/public verdicts; no automatic merge |
-| G06 | DEC-D01 #27 | OWNER post-P0 design approval | decide 4 questions in issue, new migration only separately approved; no V8 now |
-| G07 | Academic obligations | STUDENT ONLY | printed Dec 5 2026 deadline verify Canvas, actual submission, video demo, COA/acknowledge assistance, proposal/group and peer review if applicable, instructor Twilio demonstration level; not agent fabricated |
+| R00 | CHAT | VERIFIED_BOUNDED | None |
+| R01 | CHAT | VERIFIED_BOUNDED | R00 |
+| R02 | CHAT | SOURCE_RECONCILED_REVIEW_OPEN | R00 |
+| R03 | CHAT | VERIFIED_BOUNDED | R02 |
+| R04 | CHAT | VERIFIED_BOUNDED | R00 |
+| R05 | CHAT | VERIFIED_BOUNDED | None |
+| R06A | CHAT | VERIFIED_BOUNDED | R05, R01 |
+| R06B | CHAT | VERIFIED_BOUNDED | R06B1, R06B2, R06B3 |
+| R06B1 | CHAT | VERIFIED_BOUNDED | R06A |
+| R06B2 | CHAT | VERIFIED_BOUNDED | R06B1 |
+| R06B3 | CHAT | VERIFIED_BOUNDED | R06B3a, R06B3b |
+| R06B3a | CHAT | VERIFIED_BOUNDED | R06B2 |
+| R06B3b | CHAT | VERIFIED_BOUNDED | R06B3a |
+| R07 | CHAT | VERIFIED_BOUNDED | R01, R03 |
+| R08 | CHAT | VERIFIED_BOUNDED | R07 |
+| R09 | CHAT | VERIFIED_BOUNDED | R01, R03, R04, R06B, R07, R08 |
+| L00 | CLAUDE_LOCAL | NOT_RUN | R09 |
+| L00B | CLAUDE_LOCAL | PRIVATE_INPUT_REQUIRED | L00 |
+| L03 | CLAUDE_LOCAL | NOT_RUN | L00 |
+| L01 | CLAUDE_LOCAL | NESTED_IN_L03 | L03 |
+| L02 | CLAUDE_LOCAL | NESTED_IN_L03 | L03 |
+| L04 | CLAUDE_LOCAL | WAITING_FOR_PRIVATE_INPUT | L03, L00B |
+| L05 | CLAUDE_LOCAL | PRIVATE_INPUT_REQUIRED | L00 |
+| L06 | CLAUDE_LOCAL | BLOCKED | L00B, L03, R06B |
+| L07 | OWNER_OPERATOR | NOT_RUN | L06 |
+| L08 | CLAUDE_LOCAL | WAITING_FOR_LOCAL_QUEUE | L00 |
+| G01 | INDEPENDENT_REVIEWER_OWNER | BLOCKED | R03, L05 |
+| G02 | OWNER_OPERATOR | LIVE_IMPORT_NOT_RUN | L06, L07 |
+| G03 | OWNER_REVIEWER | BLOCKED | G01, R07, R08, L06 |
+| G04 | OWNER_AUTHORIZATION | NOT_RUN | G03 |
+| G05 | OWNER_AUTHORIZATION | NOT_RUN | G04 |
+| G06 | OWNER | PROPOSED_ONLY | None |
+| G07 | STUDENT | NOT_VERIFIED | None |
 
-## L06 exact mixed rehearsal design — not implemented by this packet
-Read full C8HostedDemoPreflight, C8HostedOriginalBaseline, C8HostedDemoImportCommand, C8HostedDemoPostflight, C8DemoImporter, C8MovementHistory, C8FlywayHistory, DemoProvenance and native C6a/backup and additive harness. Only a fresh disposable source and target, unique explicit schema, loopback, distinct server UUIDs, no user data. Existing CI-only transport restricted to eight-org fixture; never relax or impersonate CI. The earlier Windows-only protected-login design is superseded by 13_MIXED_REHEARSAL_COMPATIBILITY_GATE.md: native Windows cannot satisfy existing POSIX baseline mode checks. Use an approved POSIX environment and actual C5 transport only after R06A/R06B are reviewed; ensure fixture-specific credentials, append-only runtime and verifier SELECT-only; no root application. Bootstrap a clean V7 source using actual JAR --bootstrap, seed original two workspaces with real related rows and owner access; verify 18 tables and no demo rows. Stop web, capture exact source row snapshot; C5 authenticated archive and restore into independent empty local schema, compare all non-session table rows (not just CRC), original unchanged and empty sessions. Keep archive and key private, measure. Attest only actual completed restore using private receipt SHA and local backup identifier, no fabricated production attestation. Verify restored original owner can login; quiesce before capture.
-
-Against only restored disposable local target, use exact JAR nonweb command flags:
-1. Verify approved file size/SHA; set EXT_C8_DEMO_PLAN, EXT_C8_HOSTED_EXPECTED_SCHEMA, EXT_C8_HOSTED_OWNER_PUBLIC_ID, EXT_C8_HOSTED_ORIGINAL_ORG_PUBLIC_ID, EXT_DB_URL (loopback only, no credentials embedded), EXT_DB_USER/PASSWORD (SELECT-only for preflight), EXT_SMS_ENABLED=false, EXT_REMINDER_MODE=DISABLED. Clear SPRING_PROFILES_ACTIVE. Run --c8-hosted-demo-preflight, require HOSTED_DEMO_PREFLIGHT_READ_ONLY_OK, zero writes, V7, exact target fingerprint. Set EXT_C8_HOSTED_EXPECTED_FINGERPRINT from output.
-2. Generate random 32-byte HMAC key, absolute private baseline file; EXT_C8_BASELINE_MODE=CAPTURE; --c8-hosted-original-baseline, verify V2 and private permissions. Change mode VERIFY and verify using same key/file. Negative wrong fingerprint, absent/corrupt baseline, CAPTURE mode, wrong plan, populated/partial target, wrong owner and wrong confirmation must refuse without writes in separate controlled fixtures; don't use production.
-3. ONLY after positive independent restoration evidence, set EXT_C8_HOSTED_CONFIRM="IMPORT 96 INTO <actual fingerprint>", EXT_C8_HOSTED_BACKUP_ID (actual local backup ID), EXT_C8_HOSTED_RESTORE_EVIDENCE_SHA256 (actual receipt digest), EXT_C8_HOSTED_RESTORE_ATTESTATION="I VERIFIED ISOLATED RESTORE", approved local importer identity, and VERIFY baseline. Run --c8-hosted-demo-import once on the disposable target. On partial failure stop target, preserve redacted evidence, discard only test-owned instance, do not retry partial state. No production command.
-4. Switch to independently restricted SELECT-only account; --c8-hosted-original-baseline VERIFY and --c8-hosted-demo-postflight. Require exact 96 tags + original(s) retained; all plan IDs, 248 depts,713 projects,1312 resources,2139 requirements,462 personas,21060 allocations,67370 events, states PENDING212 APPROVED211 ISSUED1123 RETURNED8479 CONSUMED5699 CANCELLED5336; stock movement/holds/issued, event chronology and actor provenance checked by actual postflight; no original row changes, no consent or live SMS. Repeat refusal. Inspect C8 code's exact persona/account distinction: owner may be linked in addition to fictional personas, do not equate count blindly.
-5. Start actual packaged JAR only on isolated loopback, test genuine metadata 200 synthetic=true exact datasetId and MIXED_NOTICE; original OWNER 96+original membership, tenant denial, role scope, login/reload and real packaged Chromium normal valid-cohort journeys, visible fiction notice, exact source/postflight evidence and SQL side effects. Do not bypass classification or use c1-test public-facing. Measure full import/DB footprint/archive/heap/API with exact environment; archive 64 MiB ceiling; if exceeded, refuse, do not enlarge cap or weaken crypto. Off-host distinct-machine and actual-host clone are still separate.
-
-These instructions are a complete bounded design, not an executable mixed harness. R06A/R06B are reserved for ChatGPT; L06 cannot be claimed ready until that harness is published and reviewed. Actual host access, backup/secret review/transfer, live approval and separate reviewer remain manual. No guarantee of error-free continuous execution.
-
-**Superseding local order:** L00 → L03 (L01/L02 credited only by nested executed receipts) → L04 using verified copied JAR. L05 is independent; L06 requires ChatGPT's guarded harness; L07 off-host requires separate operator approval; L08 sanitized handback. Source package script includes both native verification stages; no duplicated run or fresh build without evidence. See 10 and 11.
-
-## Current execution authority
-
-12_EXECUTION_GRAPH.json records all remote/local/operator dependencies including R09 pre-handoff gate and 13 resolves the OS design conflict. L06 remains blocked, owner must separately attest actual local restore before an import. #34 independent acceptance and #26 hosted import remain separate. Do not launch Claude at this checkpoint.
-
-
-## R06A implementation candidate — 2026-11-24 PHT
-
-Draft [PR #48](https://github.com/newonathe/OrgResource/pull/48), `c91333766f3082b88a8c0414450dcaf6fc934ca2`, stacked on #46 `b62ff3c65552b258291ed52f85e9c1413c5e63fa`. [CI #45427270775](https://github.com/newonathe/OrgResource/actions/runs/45427270775) in_progress/NO_CONCLUSION. Test-first commit 6b3e3f14733bae1628d9f5d42053f2e82d95e487; no red execution observed. Added separate Linux -LocalOriginalAcceptance mode to the actual C5 utility, exact run-generated source/restore container identities and schema, local Unix Docker socket, 0700 canonical owner-owned paths, no published ports/binds, two untagged original fictional organizations only, actual version/UUID verification. Public fixture tests actual AES-GCM backup/restore, nine refusal cases, all-table row equality, zero historical session rows, actual Java V2 POSIX HMAC CAPTURE/VERIFY and wrong-mode/symlink refusal, read-only account and cleanup. Runtime markers pending. 105/105 frozen A, 170/170 Extended files, five existing recovery scripts unchanged; C5 new mode is additive, original crypto/format/limits retained. Source comparison is not runtime or independent acceptance. R01 CI #45425950575 in_progress/NO_CONCLUSION; actual log receipt still required. R06B not implemented, full private mixed input never accessed. Local WSL/native Linux Docker/namespace tooling remains unverified. Existing Windows package-first route remains separate. See source report evidence/C9/R06A_LOCAL_ORIGINAL_TRANSPORT_2026-11-24.md at PR48. **R09 not ready, do not launch Claude.**
-
-R06A depends on accepted R01 plus actual PR48 runtime markers. R06B must use this tested transport (or document and verify a safer alternative), implement the local operator/preflight/import/postflight stages and full-96 post-import backup support separately. Existing C5 guard cannot be used to recover a tagged full cohort under LocalOriginalAcceptance. Do not repeat prior proofs unnecessarily.
-
-## Superseding continuation checkpoint (2026-11-24 PHT)
-
-R01 PR46 b62ff3c6 exact CI #45425950575 and R06A PR48 c9133376 exact CI #45427270775 are VERIFIED BOUNDED with actual logs inspected. R06B1 PR49 406ce2af CI #45430758956 pending actual receipts. The canonical cross-chat protocol is 14_CONTINUE_PRE_CLAUDE.md (GitHub issue #50), dependency state is 12_EXECUTION_GRAPH.json and historical receipts are 15_CONTINUATION_LEDGER.jsonl. Older dated statuses are historical. R09 remains false; no Claude launch, private plan import, operator attestation, host, merge or deployment. Independent review open.
-
-R06B aggregate now depends on R06B1 (fresh executable preparation candidate), R06B2 (actual operator-gated exact-plan importer and postflight), R06B3 (full post-import encrypted recovery and valid mixed browser). Graph 12 has 31 checked dependency nodes, no cycles. No local L06 until all three and final R09. R03/R04/R07/R08 remote engineering remains. The earlier R06A/R01 pending wording is superseded.
-
-## Superseding checkpoint — 2026-11-25 PHT
-
-R06B1 PR49 406ce2af exact CI #45430758956 / Extended job 138575101070 VERIFIED BOUNDED: 7 refusal cases, actual fresh bootstrap, C5 archive 33,858 bytes, independent exact row restore, read-only V2 baseline and cleanup, 3/3 jobs, 91 Maven/19 Playwright. R06B2 PR51 17bd5bf0 exact CI #45434204255 in progress, source-only candidate; no actual private import or operator attestation. Current graph 12, continuation 14 and ledger 15 supersede older status text. R09 false; no local launch, hosted operation, merge/deploy or independent self-signoff.
-
-R06B2 candidate includes owner-gated import and postflight but actual exact-plan positive remains local-only; R06B3 full imported C5/normal browser is still an implementation dependency. L06 is blocked; no Claude task added to repair missing engineering. No route acceptance advanced from a local runner guard test.
-
-## Superseding checkpoint — R06B3a, 2026-11-25 PHT
-
-R06B2 PR51 17bd5bf0 exact CI 45434204255 / Extended job 138587448867 VERIFIED BOUNDED: actual confirmation matching and CI refusal, 8 precheck refusals, actual restricted MySQL grants, original encrypted C5/V2/cleanup, 91 Maven/19 Playwright and all 3 jobs. Actual owner consent/private full-plan positive NOT_RUN. R06B3a PR52 d3e8a8550e00e3bb9423d84f51f8141783e71fd1 exact CI 45437263264 pending actual receipts, adds separate LocalMixedAcceptance C5 mode, exact approved plan private, third independently initialized server, exact row equality, independent restored postflight, size/timing and cleanup. Public CI refuses full mixed backup/restore and tests third EMPTY server; 10 prechecks expected. Actual full cohort positive remains NOT_RUN. R06B3b valid recovered normal browser/API remains open. Graph 12 (33 nodes), 14, 15 and project-wide registry supersede older status. No R09 release, no Claude launch, no host/private input upload/merge/deploy, independent review open.
-
-R06B3 is now an aggregate of R06B3a actual-C5 full mixed recovery candidate and R06B3b actual valid browser/API. No independent acceptance advanced from public guard evidence. R03/R04/R07/R08/R09 remain open.
-
-## Superseding L06 command contract (source-reviewed; still blocked)
-
-See [report27](27_R06B3B_AGGREGATE_RECEIPT_AND_L06_COMMAND_CONTRACT.md). The integrated same-lifetime command is now source-implemented; final exact-head CI and R09 authorization remain mandatory. Do not run interim preparation separately, automate confirmation, or use a private positive in CI. Final implementation SHA must be pinned at R09; L06 remains NOT_RUN/BLOCKED. Windows L03/L04 unaffected.
-
-## Remote gate checkpoint — R06B VERIFIED_BOUNDED
-
-Report28 records actual final PR53 CI45475369786. Integrated L06 runner remote engineering complete within public scope; still BLOCKED pending final R09 SHA, local prerequisites and direct owner consent. Report27 command contract remains authoritative; no actual private positive or independent acceptance.
+R02 source-only reconciliation suffices for bounded R03 remote scope, independent G01 remains open. G03 formal C9 requires G01, private full positive, required performance/independent proof. L01/L02 nested L03, L05 independent, L07 operator, L08 return blocked statuses. G02 #26 live import NOT_RUN, G06 #27 proposed only, G07 student only.

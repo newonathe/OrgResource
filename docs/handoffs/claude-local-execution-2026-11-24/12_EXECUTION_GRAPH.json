@@ -190,7 +190,7 @@
         "R07",
         "R08"
       ],
-      "receipt": "Final exact PR56 full and dedicated CI actual receipts, 23/23 dispatch pins, protected A105/migrations7, corrected launch contract Report48. ready=true technical only; explicit owner launch required; no local execution or release.",
+      "receipt": "Final exact PR56 full and dedicated CI actual receipts, 23/23 dispatch pins, protected A105/migrations7, corrected launch contract Report48. ready=true technical only; explicit owner launch required; no local execution or release. Report49: remaining React actual 15/15; 40/40 unique pins and DAG checks, current command packet de-duplicated; native NOT_RUN.",
       "notes": "This is the pre-handoff release gate; no launch until ChatGPT declares local queue ready Exact four-hunk source dry-run report37; final heads and actual combined CI not run. Report39 renewed six-hunk exact dry-run on latest heads, source only. Report41 seven-hunk exact latest-head source-only dry-run passed; actual integrated CI not run. Report42 preliminary combined draft PR56 exact blob integration and corrected head, CI pending, dedicated skipped by branch guard. No closure. Report43: Dedicated same-repo and exact-checkout guard candidate 2c626cb251fc3e0a5e3304f9ea5b03f89f55e024; full/dedicated pending. Report44 exact integrated dedicated and Java8 actual passed, source lock candidate only; full Extended pending. Report46: Corrected source PR55 both restart markers actual; exact PR56 full pending; no closure. Report47: prior integrated full actual pass including both restart and public R06B3b; newest integrated full pending. Bounded timing reuse not cold/warm. Report48 supersedes pending status. Current lock and graph jointly pin exact reviewed source."
     },
     {
@@ -425,7 +425,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "R03 final auth 3a1e46cddf0cf1bd519b6c493205727b9310a97a CI45490152665 job138785983133 103 Maven/78 identity/19 Playwright all pass, 3/3 cleanup. Route register 93/93 bounded executed addenda; independent0/93 and residuals open, residual45491538911 pending. R08 packaged 18f47cc762f5bcf0ed857350b177c4ccdf035ff1 full CI45490328103 job138786607428 exact 103/78/19 and cleanup pass, actual 450 timed+75 warmups on selected tagged workspace 120 allocations/20 resources/18 requirements/6 projects/2 departments; p95 by workload repeats in Report42, JAR72486427 bytes SHA76e5977499edb6a01a0c6de95ce166c2975d08f70bcdbd57680049d1af32c10a; same JVM not cold or hosted. R07 deadlock ef634ce7469f0b94b09ddcef097ad14a8c6e0206 dedicated45491974383 job138792386449 all selected pass, full45491974364 job138792387677 actual R07_ACTUAL_DEADLOCK_OK and 103/78 zero failures; later Stage1D upstream201/downstreamEOF and distinct restarted JAR ready, then KeyError, full run failed, restore/browser NOT_RUN. Corrected source 5afd326f4bd4e03c6027a9a639de682a1996d5e1 uses temporary OperationView.action, exact initial upstream data/ETag equality and safe exception line; durable MovementReceipt.kind unchanged, CI45493345999/45493345989 pending. Reminder restart candidate 87a9aae65b8406cc716b473dbbf57283a98da302, shell quoting self-review correction de6d2ed2787b2c3baf5a480dbc2756eeefa3a1cb (CHAR(96)); post-original archive proof target clone only, staged stale/fresh claims across distinct actual JVM, actual CI pending. Integrated draft PR56 initial c68252db41f562d0230269844794048471dac0cf, parent PR54 9646ff743c6678af90aa357ee761ac11ed366dff, exact PR53 27 and PR55 17 nonshared blobs +7 reconciled Java hunks (78 ordered tests), 46 path delta all allowed, corrected latest 9d0902b4e8ea2045a30a4ff4a524e213a3b6a7b3 carries exact PR55 correction blobs and report; initial Verify45493192571 pending, dedicated skipped by branch guard, latest runs discover by SHA. Final combined proof not yet available. Next consume actual corrected full logs, reminder restart and residual, align exact latest refs, verify integrated runtime and decide dedicated final scope, R09=false. No merge/deploy/Claude launch."
+    "next_action": "R09 VERIFIED_BOUNDED, owner explicitly initiates local queue from live 09/11 at exact PR56 source; L00/03 NOT_RUN, L04/L05/L06 private or operator gates remain, L07 separate, L08 sanitized handback. No new remote work unless actual failure, source drift, independent review finding or separately authorized scope. Do not launch while owner unavailable."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -813,10 +813,12 @@
   "l06_command_contract": {
     "report": "docs/handoffs/claude-local-execution-2026-11-24/27_R06B3B_AGGREGATE_RECEIPT_AND_L06_COMMAND_CONTRACT.md",
     "source_candidate": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
-    "final_sha": "PENDING_R09",
+    "final_sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
     "state": "BLOCKED",
     "private_positive": "NOT_RUN",
-    "remote_gate": "VERIFIED_BOUNDED"
+    "remote_gate": "VERIFIED_BOUNDED",
+    "owner_terminal_required": true,
+    "report49": "docs/handoffs/claude-local-execution-2026-11-24/49_FINAL_ADVERSARIAL_HANDOFF_AUDIT.md"
   },
   "r03_pending_candidates": [
     {
@@ -1924,7 +1926,7 @@
       {
         "id": 138801600647,
         "status": "success",
-        "review": "METADATA"
+        "review": "ACTUAL_LOGS"
       },
       {
         "id": 138801601172,
@@ -2129,5 +2131,33 @@
     "acceptance": "VERIFIED_BOUNDED_REMOTE_PREPARATION_ONLY",
     "owner_launch_required": true
   },
-  "owner_launch_required": true
+  "owner_launch_required": true,
+  "final_dispatch_audit": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/49_FINAL_ADVERSARIAL_HANDOFF_AUDIT.md",
+    "source": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "tree": "d55cecc7afd240da455014e2d9f1b61bb0e74f40",
+    "prior_handoff": "cef3b1d566d5d480156e114a1947089518022f0f",
+    "react_actual": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+      "run": 45494597345,
+      "job": 138801600647,
+      "oracle": "actual exact final React typecheck, tests, lint and build",
+      "actual": "checkout exact; 3 test files/15 tests passed; typecheck, lint, build completed; Vite reported 162ms; job success"
+    },
+    "checks": {
+      "source_pins": 16,
+      "migration_pins": 7,
+      "support_pins": 17,
+      "total_unique_pins": 40,
+      "graph_tasks": 33,
+      "unknown_dependencies": 0,
+      "cycles": 0,
+      "actual_final_ci_jobs": 4
+    },
+    "native_execution": "NOT_RUN",
+    "local_owner_launch_required": true,
+    "private_positive": "NOT_RUN",
+    "independent": "OPEN"
+  }
 }
