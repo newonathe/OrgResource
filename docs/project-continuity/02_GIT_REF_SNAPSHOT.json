@@ -1,0 +1,840 @@
+{
+  "schema": "orgresource.project_context.git_ref_snapshot.v1",
+  "observed_date": "2026-11-25 PHT",
+  "repository": "newonathe/OrgResource",
+  "visibility": "public",
+  "default_branch": "main",
+  "authority": "Point-in-time locator, not proof of merged/deployed/runtime state; refresh live every chat.",
+  "pagination": {
+    "pr_count": 46,
+    "branch_count": 49,
+    "issue_response_count": 51,
+    "per_page": 100,
+    "all_within_page": true
+  },
+  "pull_requests": [
+    {
+      "id": 51,
+      "title": "test(R06B2): owner-gated disposable full-plan import and independent postflight",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+      "head_branch": "test/c9-local-operator-gated-import-2026-11-25",
+      "base": "406ce2af1c4905bf7b845bcc072f71903327e0a1",
+      "base_branch": "test/c9-local-mixed-preparation-2026-11-24"
+    },
+    {
+      "id": 49,
+      "title": "test(R06B1): executable local mixed rehearsal preparation and preflight guards",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "406ce2af1c4905bf7b845bcc072f71903327e0a1",
+      "head_branch": "test/c9-local-mixed-preparation-2026-11-24",
+      "base": "c91333766f3082b88a8c0414450dcaf6fc934ca2",
+      "base_branch": "test/c9-local-original-transport-2026-11-24"
+    },
+    {
+      "id": 48,
+      "title": "test(R06A): guarded Linux C5 original-only transport and POSIX baseline proof",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "c91333766f3082b88a8c0414450dcaf6fc934ca2",
+      "head_branch": "test/c9-local-original-transport-2026-11-24",
+      "base": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
+      "base_branch": "test/c9-recovered-application-2026-11-24"
+    },
+    {
+      "id": 47,
+      "title": "docs: Claude Code local-only execution handoff and end-to-end completion map",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "6ff1f2cebc69d3c490f6f469c6d3b119e04d6758",
+      "head_branch": "docs/claude-local-execution-handoff-2026-11-24",
+      "base": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306",
+      "base_branch": "test/c9-recovered-application-2026-11-24"
+    },
+    {
+      "id": 46,
+      "title": "test(C9 Stage 1D): recovered packaged application and durable receipt on isolated loopback namespaces",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
+      "head_branch": "test/c9-recovered-application-2026-11-24",
+      "base": "09e3e5a0b2a1e87132c8f7ba9fb44ab1c50de2c0",
+      "base_branch": "test/c9-encrypted-c5-archive-recovery-2026-11-24"
+    },
+    {
+      "id": 45,
+      "title": "test(C9 Stage 1C): actual C5 AES-GCM archive recovery on isolated intermediate fixture",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "09e3e5a0b2a1e87132c8f7ba9fb44ab1c50de2c0",
+      "head_branch": "test/c9-encrypted-c5-archive-recovery-2026-11-24",
+      "base": "be91d557d4f19d38c759ca77aaa151e793c125fe",
+      "base_branch": "test/c9-network-isolated-mysql-cross-server-restore-2026-11-24"
+    },
+    {
+      "id": 44,
+      "title": "test(C9 Stage 1B): recover fictional SQL on an independent networkless MySQL 8 server",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "be91d557d4f19d38c759ca77aaa151e793c125fe",
+      "head_branch": "test/c9-network-isolated-mysql-cross-server-restore-2026-11-24",
+      "base": "a7c4ec8192997d38f97a5ed942f1e3cea710f72e",
+      "base_branch": "test/c9-intermediate-backup-restore-capacity-2026-11-24"
+    },
+    {
+      "id": 43,
+      "title": "test(C9 Stage 1A): measure C5-shaped SQL backup and verify independent CI-schema restore",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "a7c4ec8192997d38f97a5ed942f1e3cea710f72e",
+      "head_branch": "test/c9-intermediate-backup-restore-capacity-2026-11-24",
+      "base": "720df01be34110038af6422443434c66fbde8d65",
+      "base_branch": "test/c9-native-inventory-page-balance-plan-2026-11-24"
+    },
+    {
+      "id": 42,
+      "title": "test(C9 Stage 0b): explain full native Resource-page stock/holds/issued balance",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "720df01be34110038af6422443434c66fbde8d65",
+      "head_branch": "test/c9-native-inventory-page-balance-plan-2026-11-24",
+      "base": "14416f069f654c7d2db2b8c2908aab6cc2b05557",
+      "base_branch": "test/c9-isolated-mysql-query-plan-probe-2026-11-24"
+    },
+    {
+      "id": 41,
+      "title": "test(C9 Stage 0): SELECT-only MySQL plan/timing probe and explicit authorization handoff",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "14416f069f654c7d2db2b8c2908aab6cc2b05557",
+      "head_branch": "test/c9-isolated-mysql-query-plan-probe-2026-11-24",
+      "base": "f0cf2ace7623a38fda29ab6b209fcb898d8740a8",
+      "base_branch": "docs/c8-legacy29-assertion-reconciliation-2026-11-24"
+    },
+    {
+      "id": 40,
+      "title": "docs(c8): complete 93-route source-to-test mapping and update blocked release handoff",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "f0cf2ace7623a38fda29ab6b209fcb898d8740a8",
+      "head_branch": "docs/c8-legacy29-assertion-reconciliation-2026-11-24",
+      "base": "763542d4bd1f0fd6d21ba373bc28d54b23a0126d",
+      "base_branch": "test/c8-identity20-assertion-reconciliation-2026-11-24"
+    },
+    {
+      "id": 39,
+      "title": "test(c8): reconcile 20 identity/governance routes and prove account-disable state",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "763542d4bd1f0fd6d21ba373bc28d54b23a0126d",
+      "head_branch": "test/c8-identity20-assertion-reconciliation-2026-11-24",
+      "base": "b772613a02f4f8fa3e43238259d062188cc2a4c4",
+      "base_branch": "test/c8-movement-identity-reconciliation-2026-11-24"
+    },
+    {
+      "id": 38,
+      "title": "fix(c8): verify exact synthetic stock-movement row history",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "b772613a02f4f8fa3e43238259d062188cc2a4c4",
+      "head_branch": "test/c8-movement-identity-reconciliation-2026-11-24",
+      "base": "785d89d8ad386ddb1637b872c0e2cff73face613",
+      "base_branch": "test/c8-postflight-negative-reproductions-2026-11-24"
+    },
+    {
+      "id": 37,
+      "title": "fix(c8): fail-closed V1–V7 validation and synthetic stock-history postflight",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "785d89d8ad386ddb1637b872c0e2cff73face613",
+      "head_branch": "test/c8-postflight-negative-reproductions-2026-11-24",
+      "base": "bb343058694ffa2c543e094cd425362baed6860d",
+      "base_branch": "test/c8-inventory33-assertions-lead-options-2026-11-24"
+    },
+    {
+      "id": 36,
+      "title": "test(C8): reconcile 33 inventory routes and prove LEAD options directory boundaries",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "bb343058694ffa2c543e094cd425362baed6860d",
+      "head_branch": "test/c8-inventory33-assertions-lead-options-2026-11-24",
+      "base": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+      "base_branch": "test/c8-project-work-denied-sql-2026-11-24"
+    },
+    {
+      "id": 35,
+      "title": "test(C8): verify Project Work role/foreign-object refusals preserve MySQL state",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+      "head_branch": "test/c8-project-work-denied-sql-2026-11-24",
+      "base": "51b2bfff808a04800e6adba4f80811f35e7e0f06",
+      "base_branch": "audit/c8-93-route-evidence-reconciliation-2026-11-24"
+    },
+    {
+      "id": 33,
+      "title": "docs(C8): reconcile all 93 route policies against executed test evidence and blockers",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "51b2bfff808a04800e6adba4f80811f35e7e0f06",
+      "head_branch": "audit/c8-93-route-evidence-reconciliation-2026-11-24",
+      "base": "64d44cb6d64027b2e26860f250a255b4fa3c0e1a",
+      "base_branch": "test/c8-all-post-csrf-origin-gate-2026-11-24"
+    },
+    {
+      "id": 32,
+      "title": "test(C8): require CSRF and same-origin on every registered POST operation",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "64d44cb6d64027b2e26860f250a255b4fa3c0e1a",
+      "head_branch": "test/c8-all-post-csrf-origin-gate-2026-11-24",
+      "base": "921b95176036e4bb69828d13cb3e45a4a45523ef",
+      "base_branch": "test/c8-live-membership-switch-revocation-2026-11-24"
+    },
+    {
+      "id": 31,
+      "title": "test(C8): invalidate selected-workspace privileges on switch, demotion and suspension",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "921b95176036e4bb69828d13cb3e45a4a45523ef",
+      "head_branch": "test/c8-live-membership-switch-revocation-2026-11-24",
+      "base": "ca046b9c21bfc590abbe363370206c7922df836b",
+      "base_branch": "test/c8-legacy-workspace-role-boundary-2026-11-23"
+    },
+    {
+      "id": 29,
+      "title": "test(C8): prove baseline workspace role boundaries and denied-write SQL invariants",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "ca046b9c21bfc590abbe363370206c7922df836b",
+      "head_branch": "test/c8-legacy-workspace-role-boundary-2026-11-23",
+      "base": "235f23a1f9678f0073cd2172f717345ed1228d6a",
+      "base_branch": "audit/c8-last29-policy-2026-11-23"
+    },
+    {
+      "id": 28,
+      "title": "audit(C8): complete remaining 29 source-policy oracles with CI traceability",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "235f23a1f9678f0073cd2172f717345ed1228d6a",
+      "head_branch": "audit/c8-last29-policy-2026-11-23",
+      "base": "45bcdfc7285598de3fe98684448aa65b5dd47e12",
+      "base_branch": "feat/extended-c-c8-domain-workflows-2026-11-19"
+    },
+    {
+      "id": 25,
+      "title": "C8 domain workflows, scoped roles, and isolated synthetic demo",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "45bcdfc7285598de3fe98684448aa65b5dd47e12",
+      "head_branch": "feat/extended-c-c8-domain-workflows-2026-11-19",
+      "base": "b4ca5cd1b8a2a128f997f4dbd5e6848cf2b39d0b",
+      "base_branch": "feat/extended-c-c7-security-privacy-2026-11-19"
+    },
+    {
+      "id": 24,
+      "title": "audit(C6): original 2611-source manifest, 28 academic delegates, 65 API routes and publication vetoes",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "727c270f0a5f2d34bb3b049124d2d5cfca218f35",
+      "head_branch": "docs/c6-source-and-publication-audit-2026-11-19",
+      "base": "d794e8d2a9db1167729a54dcab844f03642d2c36",
+      "base_branch": "docs/superpowers-evidence-goat-router-2026-11-19"
+    },
+    {
+      "id": 23,
+      "title": "docs: audited Superpowers/GOAT Native-first handoff, corrected agent isolation, C6 entry and CI blockers",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "d794e8d2a9db1167729a54dcab844f03642d2c36",
+      "head_branch": "docs/superpowers-evidence-goat-router-2026-11-19",
+      "base": "6036f2d1a02aaecd6fa916c95718a3ee77083d80",
+      "base_branch": "docs/extended-c-efficient-evidence-orchestration-2026-11-19"
+    },
+    {
+      "id": 22,
+      "title": "Extended C7: verify and harden identity, tenancy and contact privacy",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "b4ca5cd1b8a2a128f997f4dbd5e6848cf2b39d0b",
+      "head_branch": "feat/extended-c-c7-security-privacy-2026-11-19",
+      "base": "856f73baeb76cab09f880ac1a3ca64c649eb481e",
+      "base_branch": "feat/extended-c-c6a-independent-acceptance-2026-11-19"
+    },
+    {
+      "id": 21,
+      "title": "docs(codex): quality-gated C6–C11 plan with strict subagent models, token controls and Ateneo demo scope",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "6036f2d1a02aaecd6fa916c95718a3ee77083d80",
+      "head_branch": "docs/extended-c-efficient-evidence-orchestration-2026-11-19",
+      "base": "29efe86298431db16a780ae2e582b2276a699530",
+      "base_branch": "docs/continuous-evidence-completeness-standard-2026-11-19"
+    },
+    {
+      "id": 20,
+      "title": "C6a reporting, independent operator acceptance, and release hardening",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "856f73baeb76cab09f880ac1a3ca64c649eb481e",
+      "head_branch": "feat/extended-c-c6a-independent-acceptance-2026-11-19",
+      "base": "29efe86298431db16a780ae2e582b2276a699530",
+      "base_branch": "docs/continuous-evidence-completeness-standard-2026-11-19"
+    },
+    {
+      "id": 19,
+      "title": "docs: require evidence-first Socratic completeness for every OrgResource cycle",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "29efe86298431db16a780ae2e582b2276a699530",
+      "head_branch": "docs/continuous-evidence-completeness-standard-2026-11-19",
+      "base": "9755ef63bd4c02a7042cb48823bf759e609357cd",
+      "base_branch": "feat/extended-c-c5-release-recovery-2026-11-18"
+    },
+    {
+      "id": 18,
+      "title": "Extended C5 corrective gates, local release and MySQL recovery",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "9755ef63bd4c02a7042cb48823bf759e609357cd",
+      "head_branch": "feat/extended-c-c5-release-recovery-2026-11-18",
+      "base": "3c0d677e37fb4df883d8eeb075ba14a773c90c8f",
+      "base_branch": "feat/extended-c-c4-connected-react-2026-11-18"
+    },
+    {
+      "id": 17,
+      "title": "Extended C4: authenticated React workspace and course acceptance audit",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "3c0d677e37fb4df883d8eeb075ba14a773c90c8f",
+      "head_branch": "feat/extended-c-c4-connected-react-2026-11-18",
+      "base": "95439de8492ef1a8192afc8b4ec45b981c99b032",
+      "base_branch": "feat/extended-c-c3-course-parity-2026-11-18"
+    },
+    {
+      "id": 16,
+      "title": "C3: complete secured Course A route parity",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "95439de8492ef1a8192afc8b4ec45b981c99b032",
+      "head_branch": "feat/extended-c-c3-course-parity-2026-11-18",
+      "base": "c8b6e76c249f99f3642c1513ddd7d55b584e027a",
+      "base_branch": "feat/extended-c-c2-ledger-atomicity-2026-11-17"
+    },
+    {
+      "id": 15,
+      "title": "C2: atomic inventory and movement ledger",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "c8b6e76c249f99f3642c1513ddd7d55b584e027a",
+      "head_branch": "feat/extended-c-c2-ledger-atomicity-2026-11-17",
+      "base": "7c349a6a818f2aafd21598e76d3eb8b9faa9a8ef",
+      "base_branch": "feat/extended-c-c1-identity-tenancy-2026-11-17"
+    },
+    {
+      "id": 14,
+      "title": "C1: secure identity, organizations, and governance",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "7c349a6a818f2aafd21598e76d3eb8b9faa9a8ef",
+      "head_branch": "feat/extended-c-c1-identity-tenancy-2026-11-17",
+      "base": "e492aeb24623476b05ad6d1ba9f4c9792e1bd105",
+      "base_branch": "feat/extended-c-c0-compat-2026-11-17"
+    },
+    {
+      "id": 13,
+      "title": "C0: isolated supported-runtime compatibility proof",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "e492aeb24623476b05ad6d1ba9f4c9792e1bd105",
+      "head_branch": "feat/extended-c-c0-compat-2026-11-17",
+      "base": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+      "base_branch": "feat/course-final-a3-freeze-2026-11-17"
+    },
+    {
+      "id": 12,
+      "title": "Course Final A3: as-built acceptance and reproducible release freeze",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+      "head_branch": "feat/course-final-a3-freeze-2026-11-17",
+      "base": "af2a405ebe893268c54f463ec37da6a37cf6b917",
+      "base_branch": "feat/course-final-a1-a2-2026-11-17"
+    },
+    {
+      "id": 11,
+      "title": "Course A1+A2: add image API and Twilio protocol acceptance",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "af2a405ebe893268c54f463ec37da6a37cf6b917",
+      "head_branch": "feat/course-final-a1-a2-2026-11-17",
+      "base": "2dd336ed39cecd417a8bce3388b303e688e95dee",
+      "base_branch": "feat/o14-academic-final-acceptance-2026-11-15"
+    },
+    {
+      "id": 10,
+      "title": "docs(academic): Course Final A exact execution specification, Luna-efficient A1/A2 build prompt and agent policy",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "4a137b8acb4d1dda486bf03a4151835613240fd5",
+      "head_branch": "docs/course-a-final-spec-build-handoff-2026-11-16",
+      "base": "ab32f3fc2aa9afa36953007ac147c0dba0f4e882",
+      "base_branch": "docs/orgresource2-research-continuity-2026-11-15"
+    },
+    {
+      "id": 9,
+      "title": "docs(academic): canonical full CSCI 180.05 requirements, 26-route contract, EERD and efficient agent policy",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "b0b648874608634ed8e113b0bc10ccc9a8be7284",
+      "head_branch": "docs/academic-canonical-requirements-2026-11-16",
+      "base": "3c2c2321acb069080706034e70782fe29abd0ca9",
+      "base_branch": "docs/orgresource2-research-continuity-2026-11-15"
+    },
+    {
+      "id": 8,
+      "title": "O14: interim academic baseline and release handoff",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "2dd336ed39cecd417a8bce3388b303e688e95dee",
+      "head_branch": "feat/o14-academic-final-acceptance-2026-11-15",
+      "base": "fd34a8a66242f795dda758d45f220f2c331472db",
+      "base_branch": "feat/o11-o13-system-acceptance-release-2026-11-15"
+    },
+    {
+      "id": 7,
+      "title": "docs(final): A-first course-complete + Extended C second — Codex master handoff and academic matrix",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "dfda6434450c3e57a621bf23373ce6f4f68aa148",
+      "head_branch": "docs/orgresource2-research-continuity-2026-11-15",
+      "base": "725ad0ad796b787bf63e67db728ff2882f6a7252",
+      "base_branch": "feat/o8-o10-academic-glass-ui-2026-11-15"
+    },
+    {
+      "id": 6,
+      "title": "O11 + O13: system acceptance and release packaging",
+      "state": "open",
+      "draft": false,
+      "merged_at": null,
+      "head": "fd34a8a66242f795dda758d45f220f2c331472db",
+      "head_branch": "feat/o11-o13-system-acceptance-release-2026-11-15",
+      "base": "725ad0ad796b787bf63e67db728ff2882f6a7252",
+      "base_branch": "feat/o8-o10-academic-glass-ui-2026-11-15"
+    },
+    {
+      "id": 5,
+      "title": "O8-O10: Academic Glass Commons functional UI",
+      "state": "open",
+      "draft": false,
+      "merged_at": null,
+      "head": "725ad0ad796b787bf63e67db728ff2882f6a7252",
+      "head_branch": "feat/o8-o10-academic-glass-ui-2026-11-15",
+      "base": "83b02ba01b367b1b6df537aa1652d93922faed48",
+      "base_branch": "feat/o6-o7-reminders-react-2026-11-15"
+    },
+    {
+      "id": 4,
+      "title": "O6–O7: safe reminders and Department/Resource UI",
+      "state": "open",
+      "draft": false,
+      "merged_at": null,
+      "head": "83b02ba01b367b1b6df537aa1652d93922faed48",
+      "head_branch": "feat/o6-o7-reminders-react-2026-11-15",
+      "base": "65829bcdcd5445d7ff88893032c6f82db6de357e",
+      "base_branch": "feat/o4-o5-allocation-expiry-2026-11-15"
+    },
+    {
+      "id": 3,
+      "title": "O4/O5: implement allocation lifecycle and expiry scheduler",
+      "state": "open",
+      "draft": false,
+      "merged_at": null,
+      "head": "65829bcdcd5445d7ff88893032c6f82db6de357e",
+      "head_branch": "feat/o4-o5-allocation-expiry-2026-11-15",
+      "base": "6ced417b0d1ab84fe4f88dceff5fdc79d2d4dd22",
+      "base_branch": "codex/o3-crud-integrity"
+    },
+    {
+      "id": 2,
+      "title": "O3: complete project, resource, and requirement CRUD",
+      "state": "open",
+      "draft": false,
+      "merged_at": null,
+      "head": "6ced417b0d1ab84fe4f88dceff5fdc79d2d4dd22",
+      "head_branch": "codex/o3-crud-integrity",
+      "base": "16e781c837dd7e1f0481fb7a01e49c27d80a91e8",
+      "base_branch": "main"
+    },
+    {
+      "id": 1,
+      "title": "O2: prepare one-click Java skeleton video demo (no agent needed)",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "89d61934b145a9139085d782dd4ddfc38f17b474",
+      "head_branch": "demo/o2-recording-kit-2026-11-14",
+      "base": "acc301992da820089ff9b2567ee095241cf8c307",
+      "base_branch": "main"
+    }
+  ],
+  "branches": [
+    {
+      "name": "audit/c8-93-route-evidence-reconciliation-2026-11-24",
+      "sha": "51b2bfff808a04800e6adba4f80811f35e7e0f06"
+    },
+    {
+      "name": "audit/c8-last29-policy-2026-11-23",
+      "sha": "235f23a1f9678f0073cd2172f717345ed1228d6a"
+    },
+    {
+      "name": "codex/o3-crud-integrity",
+      "sha": "6ced417b0d1ab84fe4f88dceff5fdc79d2d4dd22"
+    },
+    {
+      "name": "demo/o2-recording-kit-2026-11-14",
+      "sha": "89d61934b145a9139085d782dd4ddfc38f17b474"
+    },
+    {
+      "name": "deploy/northflank-c8-staging",
+      "sha": "32a4687bd745bfd37b547867e5a72ae1ea623794"
+    },
+    {
+      "name": "docs/academic-canonical-requirements-2026-11-16",
+      "sha": "b0b648874608634ed8e113b0bc10ccc9a8be7284"
+    },
+    {
+      "name": "docs/c6-source-and-publication-audit-2026-11-19",
+      "sha": "727c270f0a5f2d34bb3b049124d2d5cfca218f35"
+    },
+    {
+      "name": "docs/c8-legacy29-assertion-reconciliation-2026-11-24",
+      "sha": "f0cf2ace7623a38fda29ab6b209fcb898d8740a8"
+    },
+    {
+      "name": "docs/claude-local-execution-handoff-2026-11-24",
+      "sha": "6ff1f2cebc69d3c490f6f469c6d3b119e04d6758"
+    },
+    {
+      "name": "docs/continuous-evidence-completeness-standard-2026-11-19",
+      "sha": "29efe86298431db16a780ae2e582b2276a699530"
+    },
+    {
+      "name": "docs/conversation-continuity-2026-11-14",
+      "sha": "b95a669209a6c027ba568ebf46084d5dc902ecc3"
+    },
+    {
+      "name": "docs/course-a-final-spec-build-handoff-2026-11-16",
+      "sha": "4a137b8acb4d1dda486bf03a4151835613240fd5"
+    },
+    {
+      "name": "docs/extended-c-efficient-evidence-orchestration-2026-11-19",
+      "sha": "6036f2d1a02aaecd6fa916c95718a3ee77083d80"
+    },
+    {
+      "name": "docs/orgresource2-research-continuity-2026-11-15",
+      "sha": "dfda6434450c3e57a621bf23373ce6f4f68aa148"
+    },
+    {
+      "name": "docs/superpowers-evidence-goat-router-2026-11-19",
+      "sha": "d794e8d2a9db1167729a54dcab844f03642d2c36"
+    },
+    {
+      "name": "feat/course-final-a1-a2-2026-11-17",
+      "sha": "af2a405ebe893268c54f463ec37da6a37cf6b917"
+    },
+    {
+      "name": "feat/course-final-a3-freeze-2026-11-17",
+      "sha": "7f8c0746da18fd54b47f430ac1435ac36e605d67"
+    },
+    {
+      "name": "feat/extended-c-c0-compat-2026-11-17",
+      "sha": "e492aeb24623476b05ad6d1ba9f4c9792e1bd105"
+    },
+    {
+      "name": "feat/extended-c-c1-identity-tenancy-2026-11-17",
+      "sha": "7c349a6a818f2aafd21598e76d3eb8b9faa9a8ef"
+    },
+    {
+      "name": "feat/extended-c-c2-ledger-atomicity-2026-11-17",
+      "sha": "c8b6e76c249f99f3642c1513ddd7d55b584e027a"
+    },
+    {
+      "name": "feat/extended-c-c3-course-parity-2026-11-18",
+      "sha": "95439de8492ef1a8192afc8b4ec45b981c99b032"
+    },
+    {
+      "name": "feat/extended-c-c4-connected-react-2026-11-18",
+      "sha": "3c0d677e37fb4df883d8eeb075ba14a773c90c8f"
+    },
+    {
+      "name": "feat/extended-c-c5-release-recovery-2026-11-18",
+      "sha": "9755ef63bd4c02a7042cb48823bf759e609357cd"
+    },
+    {
+      "name": "feat/extended-c-c6a-independent-acceptance-2026-11-19",
+      "sha": "856f73baeb76cab09f880ac1a3ca64c649eb481e"
+    },
+    {
+      "name": "feat/extended-c-c7-security-privacy-2026-11-19",
+      "sha": "b4ca5cd1b8a2a128f997f4dbd5e6848cf2b39d0b"
+    },
+    {
+      "name": "feat/extended-c-c8-domain-workflows-2026-11-19",
+      "sha": "45bcdfc7285598de3fe98684448aa65b5dd47e12"
+    },
+    {
+      "name": "feat/o4-o5-allocation-expiry-2026-11-15",
+      "sha": "65829bcdcd5445d7ff88893032c6f82db6de357e"
+    },
+    {
+      "name": "feat/o6-o7-reminders-react-2026-11-15",
+      "sha": "83b02ba01b367b1b6df537aa1652d93922faed48"
+    },
+    {
+      "name": "feat/o8-o10-academic-glass-ui-2026-11-15",
+      "sha": "725ad0ad796b787bf63e67db728ff2882f6a7252"
+    },
+    {
+      "name": "feat/o11-o13-system-acceptance-release-2026-11-15",
+      "sha": "fd34a8a66242f795dda758d45f220f2c331472db"
+    },
+    {
+      "name": "feat/o14-academic-final-acceptance-2026-11-15",
+      "sha": "2dd336ed39cecd417a8bce3388b303e688e95dee"
+    },
+    {
+      "name": "main",
+      "sha": "16e781c837dd7e1f0481fb7a01e49c27d80a91e8"
+    },
+    {
+      "name": "test/c8-all-post-csrf-origin-gate-2026-11-24",
+      "sha": "64d44cb6d64027b2e26860f250a255b4fa3c0e1a"
+    },
+    {
+      "name": "test/c8-identity20-assertion-reconciliation-2026-11-24",
+      "sha": "763542d4bd1f0fd6d21ba373bc28d54b23a0126d"
+    },
+    {
+      "name": "test/c8-inventory33-assertions-lead-options-2026-11-24",
+      "sha": "bb343058694ffa2c543e094cd425362baed6860d"
+    },
+    {
+      "name": "test/c8-legacy-workspace-role-boundary-2026-11-23",
+      "sha": "ca046b9c21bfc590abbe363370206c7922df836b"
+    },
+    {
+      "name": "test/c8-live-membership-switch-revocation-2026-11-24",
+      "sha": "921b95176036e4bb69828d13cb3e45a4a45523ef"
+    },
+    {
+      "name": "test/c8-movement-identity-reconciliation-2026-11-24",
+      "sha": "b772613a02f4f8fa3e43238259d062188cc2a4c4"
+    },
+    {
+      "name": "test/c8-postflight-negative-reproductions-2026-11-24",
+      "sha": "785d89d8ad386ddb1637b872c0e2cff73face613"
+    },
+    {
+      "name": "test/c8-project-work-denied-sql-2026-11-24",
+      "sha": "f0f670f65a9f706713591d94d19f4700fa2e3084"
+    },
+    {
+      "name": "test/c9-encrypted-c5-archive-recovery-2026-11-24",
+      "sha": "09e3e5a0b2a1e87132c8f7ba9fb44ab1c50de2c0"
+    },
+    {
+      "name": "test/c9-intermediate-backup-restore-capacity-2026-11-24",
+      "sha": "a7c4ec8192997d38f97a5ed942f1e3cea710f72e"
+    },
+    {
+      "name": "test/c9-isolated-mysql-query-plan-probe-2026-11-24",
+      "sha": "14416f069f654c7d2db2b8c2908aab6cc2b05557"
+    },
+    {
+      "name": "test/c9-local-mixed-preparation-2026-11-24",
+      "sha": "406ce2af1c4905bf7b845bcc072f71903327e0a1"
+    },
+    {
+      "name": "test/c9-local-operator-gated-import-2026-11-25",
+      "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6"
+    },
+    {
+      "name": "test/c9-local-original-transport-2026-11-24",
+      "sha": "c91333766f3082b88a8c0414450dcaf6fc934ca2"
+    },
+    {
+      "name": "test/c9-native-inventory-page-balance-plan-2026-11-24",
+      "sha": "720df01be34110038af6422443434c66fbde8d65"
+    },
+    {
+      "name": "test/c9-network-isolated-mysql-cross-server-restore-2026-11-24",
+      "sha": "be91d557d4f19d38c759ca77aaa151e793c125fe"
+    },
+    {
+      "name": "test/c9-recovered-application-2026-11-24",
+      "sha": "b62ff3c65552b258291ed52f85e9c1413c5e63fa"
+    }
+  ],
+  "issues": [
+    {
+      "id": 50,
+      "title": "Canonical OrgResource pre-Claude continuation — read first when user says continue",
+      "state": "open"
+    },
+    {
+      "id": 34,
+      "title": "C8 exit gate: reconcile 93 route-level authorization receipts and obtain independent sign-off",
+      "state": "open"
+    },
+    {
+      "id": 30,
+      "title": "CI-BLOCKER: all three Actions jobs fail before steps on C8 authorization test PR",
+      "state": "closed"
+    },
+    {
+      "id": 27,
+      "title": "DEC-D01 (proposal): primary department per membership, cross-dept resource catalog, scoped Project needs/requests",
+      "state": "open"
+    },
+    {
+      "id": 26,
+      "title": "P0: Safely populate existing Northflank deployment with exact approved 96-organization synthetic demo",
+      "state": "open"
+    }
+  ],
+  "tree_snapshots": [
+    {
+      "id": "active_implementation",
+      "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+      "tree_response_sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+      "blobs": 786,
+      "indexed_blobs": 556,
+      "truncated": false
+    },
+    {
+      "id": "claude_handoff_before_global_index",
+      "ref": "6ff1f2cebc69d3c490f6f469c6d3b119e04d6758",
+      "tree_response_sha": "6ff1f2cebc69d3c490f6f469c6d3b119e04d6758",
+      "blobs": 795,
+      "indexed_blobs": 565,
+      "truncated": false
+    },
+    {
+      "id": "early_conversation",
+      "ref": "b95a669209a6c027ba568ebf46084d5dc902ecc3",
+      "tree_response_sha": "b95a669209a6c027ba568ebf46084d5dc902ecc3",
+      "blobs": 406,
+      "indexed_blobs": 186,
+      "truncated": false
+    },
+    {
+      "id": "unified_research",
+      "ref": "dfda6434450c3e57a621bf23373ce6f4f68aa148",
+      "tree_response_sha": "dfda6434450c3e57a621bf23373ce6f4f68aa148",
+      "blobs": 569,
+      "indexed_blobs": 343,
+      "truncated": false
+    },
+    {
+      "id": "academic_authority",
+      "ref": "b0b648874608634ed8e113b0bc10ccc9a8be7284",
+      "tree_response_sha": "b0b648874608634ed8e113b0bc10ccc9a8be7284",
+      "blobs": 560,
+      "indexed_blobs": 334,
+      "truncated": false
+    },
+    {
+      "id": "academic_execution",
+      "ref": "4a137b8acb4d1dda486bf03a4151835613240fd5",
+      "tree_response_sha": "4a137b8acb4d1dda486bf03a4151835613240fd5",
+      "blobs": 574,
+      "indexed_blobs": 348,
+      "truncated": false
+    },
+    {
+      "id": "router",
+      "ref": "d794e8d2a9db1167729a54dcab844f03642d2c36",
+      "tree_response_sha": "d794e8d2a9db1167729a54dcab844f03642d2c36",
+      "blobs": 699,
+      "indexed_blobs": 469,
+      "truncated": false
+    },
+    {
+      "id": "c6_audit",
+      "ref": "727c270f0a5f2d34bb3b049124d2d5cfca218f35",
+      "tree_response_sha": "727c270f0a5f2d34bb3b049124d2d5cfca218f35",
+      "blobs": 723,
+      "indexed_blobs": 493,
+      "truncated": false
+    },
+    {
+      "id": "staging",
+      "ref": "32a4687bd745bfd37b547867e5a72ae1ea623794",
+      "tree_response_sha": "32a4687bd745bfd37b547867e5a72ae1ea623794",
+      "blobs": 733,
+      "indexed_blobs": 503,
+      "truncated": false
+    },
+    {
+      "id": "frozen_course_A",
+      "ref": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+      "tree_response_sha": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+      "blobs": 504,
+      "indexed_blobs": 277,
+      "truncated": false
+    },
+    {
+      "id": "early_o2_demo",
+      "ref": "89d61934b145a9139085d782dd4ddfc38f17b474",
+      "tree_response_sha": "89d61934b145a9139085d782dd4ddfc38f17b474",
+      "blobs": 378,
+      "indexed_blobs": 158,
+      "truncated": false
+    }
+  ],
+  "index_unique_path_blob_versions": 953,
+  "coverage_limit": "All listed refs captured as metadata; recursive trees inspected for eleven anchor refs. All other branch-tip contents can be reopened from exact refs. Not a full historical commit-DAG traversal or semantic audit. Excludes uploaded original course files, binaries/screenshots/raw artifacts and potential private payload paths from duplicated index. No access to every chat transcript."
+}
