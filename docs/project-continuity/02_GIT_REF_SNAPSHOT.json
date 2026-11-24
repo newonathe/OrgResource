@@ -871,7 +871,7 @@
   },
   "latest_scoped_observation": {
     "date": "2026-11-25 PHT",
-    "handoff_parent": "ed416247869fdca0f9c358d07a4bcdd7ab8c0508",
+    "handoff_parent": "4aacd2100d039bef70bd8ffe7cd42417afcb0fa2",
     "pr53": {
       "head": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
       "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
@@ -880,11 +880,6 @@
       "runs": [
         [
           45475369786,
-          "in_progress",
-          null
-        ],
-        [
-          45475142332,
           "in_progress",
           null
         ]
@@ -903,16 +898,28 @@
         "all_jobs_success": true,
         "public_sql_aggregates": "VERIFIED_BOUNDED",
         "private_positive": "NOT_RUN"
+      },
+      "intermediate_receipt": {
+        "sha": "bec8b69c5aedd2cf23b379f2509b871ee3ade84d",
+        "pr": 53,
+        "run": 45475142332,
+        "job": 138733247385,
+        "maven": 91,
+        "playwright": 19,
+        "all_jobs_success": true,
+        "failures": 0,
+        "verdict": "VERIFIED_BOUNDED",
+        "private_positive": "NOT_RUN"
       }
     },
     "pr54": {
-      "head": "30ecc88fe662dc331d405a560d109450bfc16282",
+      "head": "2f61a900e3a4f83cea283809efd15cd637076d0d",
       "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
       "draft": true,
       "open": true,
       "runs": [
         [
-          45477193785,
+          45477804709,
           "in_progress",
           null
         ]
@@ -937,8 +944,13 @@
         ],
         "acceptance": "VERIFIED_BOUNDED",
         "report": "evidence/C8/R03_DIRECTED_R083_R084_TERMINAL_CANDIDATE_2026-11-25.md"
+      },
+      "previous_pending": {
+        "sha": "30ecc88fe662dc331d405a560d109450bfc16282",
+        "run": 45477193785,
+        "job": 138740427695
       }
     },
-    "coverage": "Scoped PR54 exact receipts and PR53 pending status; not full metadata refresh."
+    "coverage": "Scoped PR53/54 receipts and candidate, not full metadata refresh."
   }
 }

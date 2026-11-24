@@ -58,3 +58,5 @@ R04 remote-only bounded scope reconciliation; G07 private/student gates not sati
 PC-D24 addendum: wait for known isolated timeout supervisor and recheck any late or initially refused PID record via unchanged strict PIDFD guard. Never signal numeric PID; persistent refusal preserves custody. Extracted ordering harness passes, private JVM/PIDFD positive and setup/daemon stalls unverified.
 
 R03 source-oracle reconciliation: #76 actual receipt confirms inactive transfer recipient 404 and accepted transfer revoke 403 based on authorization precedence. Do not force historical route-map blanket 409 onto implementation. R030 candidate uses stable session identity columns, not access timestamps, which legitimately advance. Actual CI pending.
+
+User throughput instruction 2026-11-25: check every pending run at intake and before checkpoint; advance independent eligible work while CI runs, batch compatible checks and avoid duplicate CI; never relax actual receipt/dependency or independent-review gates. Legacy #33 per-request full-column snapshots are scoped to eight tables and two fictional tenants; not a global database equality or all-role proof.

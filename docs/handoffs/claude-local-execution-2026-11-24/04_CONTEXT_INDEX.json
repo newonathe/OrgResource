@@ -1008,7 +1008,19 @@
     "latest_job": 138734044884,
     "latest_run": 45475369786,
     "latest_status": "in_progress",
-    "command_contract": "docs/handoffs/claude-local-execution-2026-11-24/27_R06B3B_AGGREGATE_RECEIPT_AND_L06_COMMAND_CONTRACT.md"
+    "command_contract": "docs/handoffs/claude-local-execution-2026-11-24/27_R06B3B_AGGREGATE_RECEIPT_AND_L06_COMMAND_CONTRACT.md",
+    "intermediate_receipt": {
+      "sha": "bec8b69c5aedd2cf23b379f2509b871ee3ade84d",
+      "pr": 53,
+      "run": 45475142332,
+      "job": 138733247385,
+      "maven": 91,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "failures": 0,
+      "verdict": "VERIFIED_BOUNDED",
+      "private_positive": "NOT_RUN"
+    }
   },
   "r04_standalone_candidate": {
     "base": "076c9a5e7c7a1e66b894362864d93b76409196bd",
@@ -1045,25 +1057,53 @@
     "failures": 0
   },
   "r03_candidate": {
-    "sha": "30ecc88fe662dc331d405a560d109450bfc16282",
-    "base": "4272bd0e0fbbb9e31354f387de39d5a86131bf1b",
+    "sha": "2f61a900e3a4f83cea283809efd15cd637076d0d",
+    "base": "30ecc88fe662dc331d405a560d109450bfc16282",
     "pr": 54,
     "runs": [
       [
-        45477193785,
+        45477804709,
         "in_progress",
         null
       ]
     ],
-    "report": "evidence/C8/R03_DIRECTED_R030_PASSWORD_DENIAL_CANDIDATE_2026-11-25.md",
+    "report": "evidence/C8/R03_LEGACY_DENIAL_ROW_BATCH_CANDIDATE_2026-11-25.md",
     "acceptance": "CI_PENDING",
     "routes": [
-      "R030"
+      "R001",
+      "R002",
+      "R003",
+      "R004",
+      "R005",
+      "R006",
+      "R007",
+      "R008",
+      "R009",
+      "R010",
+      "R011",
+      "R012",
+      "R013",
+      "R014",
+      "R015",
+      "R016",
+      "R017",
+      "R018",
+      "R019",
+      "R020",
+      "R021",
+      "R022",
+      "R023",
+      "R024",
+      "R025",
+      "R026",
+      "R027",
+      "R028"
     ],
     "tests": [
-      77
+      33
     ],
-    "observed_red": "NOT_RUN"
+    "observed_red": "NOT_RUN",
+    "scope": "42 per-denial checks; 3 filtered GET negatives; grouped read equality"
   },
   "proposed_project_instructions": {
     "path": "docs/project-continuity/10_PROPOSED_PROJECT_INSTRUCTIONS_UNDER_8000.md",
@@ -1102,53 +1142,25 @@
     "local_gates": "G07 NOT_RUN/NOT_VERIFIED; no distribution"
   },
   "r03_previous_candidate": {
-    "sha": "cfb6e83bdf20e7ebe51315d7229c43babf9d9923",
-    "base": "bc74332a8904b3022cf5f27f5d31a597455a1def",
+    "sha": "30ecc88fe662dc331d405a560d109450bfc16282",
+    "base": "4272bd0e0fbbb9e31354f387de39d5a86131bf1b",
     "pr": 54,
     "runs": [
       [
-        45461292876,
+        45477193785,
         "in_progress",
         null
       ]
     ],
-    "report": "evidence/C8/R03_DIRECTED_R025_CANDIDATE_2026-11-25.md",
-    "acceptance": "VERIFIED_BOUNDED",
+    "report": "evidence/C8/R03_DIRECTED_R030_PASSWORD_DENIAL_CANDIDATE_2026-11-25.md",
+    "acceptance": "CI_PENDING",
     "routes": [
-      "R025"
+      "R030"
     ],
     "tests": [
-      75
+      77
     ],
-    "failed_job": 138684239103,
-    "reason": "Maven 3.10.0 ZIP download failed before tests",
-    "retry_jobs": [
-      [
-        138686481378,
-        "Extended C Java 21, isolated MySQL, Newman and Playwright",
-        "in_progress",
-        null
-      ],
-      [
-        138686484144,
-        "Java 8 and isolated MySQL tests",
-        "completed",
-        "success"
-      ],
-      [
-        138686484733,
-        "React typecheck, tests, lint, and build",
-        "completed",
-        "success"
-      ]
-    ],
-    "run": 45461292876,
-    "job": 138686481378,
-    "attempt": 2,
-    "maven": 100,
-    "identity": 75,
-    "playwright": 19,
-    "failures": 0
+    "observed_red": "NOT_RUN"
   },
   "r06b3b_public_verified": {
     "sha": "e1d648d5a4c64b69e495cabca7bbd1b4eea0f2f2",
@@ -1349,6 +1361,18 @@
       "failures": 0,
       "all_jobs_success": true,
       "public_sql_aggregates": "VERIFIED_BOUNDED",
+      "private_positive": "NOT_RUN"
+    },
+    {
+      "sha": "bec8b69c5aedd2cf23b379f2509b871ee3ade84d",
+      "pr": 53,
+      "run": 45475142332,
+      "job": 138733247385,
+      "maven": 91,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "failures": 0,
+      "verdict": "VERIFIED_BOUNDED",
       "private_positive": "NOT_RUN"
     }
   ],
