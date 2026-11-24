@@ -78,6 +78,12 @@ jobs:
           npm --prefix ../frontend run build
       - name: Verify backend and bundle React application against isolated MySQL
         run: bash mvnw -B -Pbundle-react-ui clean verify
+      - name: Verify exact Course A source candidate and clean extracted build (no archive upload)
+        working-directory: .
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin 7f8c0746da18fd54b47f430ac1435ac36e605d67
+          python3 docs/handoffs/claude-local-execution-2026-11-24/verify_course_a_source_export.py --build
       - name: Install Chromium for frozen Course A acceptance
         working-directory: frontend
         run: npx playwright install --with-deps chromium

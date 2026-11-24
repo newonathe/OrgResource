@@ -34,3 +34,5 @@ The initial 953-version index remains historical. Consult 09_INCREMENTAL_SOURCE_
 ## R04 partial parallel checkpoint
 
 See [handoff 16](../handoffs/claude-local-execution-2026-11-24/16_R04_COURSE_A_PACKAGING_RECONCILIATION.md). Actual current Java8 CI and exact frozen tree comparison; R04 package findings open. R06B3a actual Extended receipt still pending, R09 false.
+
+R04 exact source export candidate: handoff 17/18 and checker, 120 files. Pending CI; no release/rights clearance. R09 false.

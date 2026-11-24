@@ -46,3 +46,7 @@ All OrgResource chats (regardless of topic) first use [PROJECT_CONTEXT_START_HER
 ## R04 partial parallel checkpoint — 2026-11-25 PHT
 
 R04 partial source and runtime reconciliation: frozen A 75 backend + 30 frontend blobs identical at PR52; 3 Course-A Postman files, PNG and 3 compliance files identical. Actual PR52 Java8 job 138598356335: 61 Maven, 100 Newman requests/151 assertions across six collections, 1 packaged Playwright, all zero failures. 28 collection operations enumerated; historical source delegation matrix retained. Historical Windows package omits separately copied PNG and whole-HEAD git archive includes denied historical material; no new distribution or packaging run. R04 remains open for safe allowlisted exact archive/export and clean rebuild, separate student/instructor obligations. [Detailed R04 reconciliation](16_R04_COURSE_A_PACKAGING_RECONCILIATION.md). R06B3a Extended job remains in progress at last observed metadata; next inspect actual logs then R06B3b. No Claude launch.
+
+## R04 exact source candidate
+
+120 files, 793613 bytes, exact frozen blobs. See [18 source export candidate](18_R04_SOURCE_EXPORT_CANDIDATE.md), manifest 17 and checker. PR47 CI new step pending; no archive upload or frozen A changes. Standalone fixture/hash, final package and rights review open. PR52 actual Extended receipt still required. R09 false.

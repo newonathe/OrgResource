@@ -949,5 +949,15 @@
     ],
     "acceptance": "R04_IN_PROGRESS",
     "remaining": "safe allowlist and actual package checks"
+  },
+  "r04_source_export_candidate": {
+    "frozen": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+    "base": "7c156ff3a0ca267bf85eaa80288559335963df4a",
+    "manifest": "docs/handoffs/claude-local-execution-2026-11-24/17_COURSE_A_SOURCE_ALLOWLIST.json",
+    "checker": "docs/handoffs/claude-local-execution-2026-11-24/verify_course_a_source_export.py",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/18_R04_SOURCE_EXPORT_CANDIDATE.md",
+    "files": 120,
+    "bytes": 793613,
+    "acceptance": "CANDIDATE_CI_PENDING"
   }
 }
