@@ -2795,42 +2795,44 @@ class C1IdentityAcceptanceTest {
         Fixture foreign = newTenant("C6-report-other", Membership.Role.OWNER);
         String root = "/api/v2/orgs/" + owner.orgPublicId;
         String exportBody = "{\"format\":\"TENANT_JSON\",\"dataset\":\"RESOURCES\"}";
-        assertEquals(401, get(newClient(), root + "/audit").statusCode());
+        assertGovernanceRefusal(401, owner.orgDbId, foreign.orgDbId, () -> get(newClient(), root + "/audit"));
         HttpClient unselected = newClient();
         String preToken = json(get(unselected, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();
         assertEquals(200, post(unselected, "/api/v2/auth/login", GSON.toJson(new LoginRequest(owner.username, owner.password)),
                 preToken, origin()).statusCode());
-        assertEquals(409, get(unselected, root + "/activity").statusCode());
+        assertGovernanceRefusal(409, owner.orgDbId, foreign.orgDbId, () -> get(unselected, root + "/activity"));
 
         Session foreignSession = login(foreign.username, foreign.password);
-        assertEquals(404, get(foreignSession.client, root + "/activity").statusCode());
-        assertEquals(404, post(foreignSession, root + "/exports", exportBody).statusCode());
+        assertGovernanceRefusal(404, owner.orgDbId, foreign.orgDbId, () -> get(foreignSession.client, root + "/activity"));
+        assertGovernanceRefusal(404, owner.orgDbId, foreign.orgDbId, () -> post(foreignSession, root + "/exports", exportBody));
         Session ownerSession = login(owner.username, owner.password);
-        assertEquals(403, post(ownerSession, root + "/exports", exportBody, "", origin()).statusCode());
+        assertGovernanceRefusal(403, owner.orgDbId, foreign.orgDbId, () -> post(ownerSession, root + "/exports", exportBody, "", origin()));
         addMembership(foreign.orgDbId, owner.userDbId, Membership.Role.MEMBER);
         String unselectedWorkspace = "/api/v2/orgs/" + foreign.orgPublicId;
-        assertEquals(404, get(ownerSession.client, unselectedWorkspace + "/audit").statusCode());
-        assertEquals(404, get(ownerSession.client, unselectedWorkspace + "/activity").statusCode());
-        assertEquals(404, post(ownerSession, unselectedWorkspace + "/exports", exportBody).statusCode());
+        assertGovernanceRefusal(404, owner.orgDbId, foreign.orgDbId, () -> get(ownerSession.client, unselectedWorkspace + "/audit"));
+        assertGovernanceRefusal(404, owner.orgDbId, foreign.orgDbId, () -> get(ownerSession.client, unselectedWorkspace + "/activity"));
+        assertGovernanceRefusal(404, owner.orgDbId, foreign.orgDbId, () -> post(ownerSession, unselectedWorkspace + "/exports", exportBody));
         for (Membership.Role role : List.of(Membership.Role.MEMBER, Membership.Role.LEAD, Membership.Role.CUSTODIAN, Membership.Role.ADMIN)) {
             Fixture actor = fixtureInOrg(owner.orgDbId, role);
             Session session = login(actor.username, actor.password);
             int expected = role == Membership.Role.ADMIN ? 200 : 403;
-            assertEquals(expected, get(session.client, root + "/audit").statusCode());
-            assertEquals(expected, get(session.client, root + "/activity").statusCode());
-            assertEquals(expected, post(session, root + "/exports", exportBody).statusCode());
+            // Reporting is read-only for allowed and denied calls.
+            assertGovernanceRefusal(expected, owner.orgDbId, foreign.orgDbId, () -> get(session.client, root + "/audit"));
+            assertGovernanceRefusal(expected, owner.orgDbId, foreign.orgDbId, () -> get(session.client, root + "/activity"));
+            assertGovernanceRefusal(expected, owner.orgDbId, foreign.orgDbId, () -> post(session, root + "/exports", exportBody));
             if (role == Membership.Role.ADMIN) {
                 HttpResponse<String> suspended = post(ownerSession, root + "/members/" + actor.membershipPublicId + "/suspend", "{}", "\"v0\"");
                 assertEquals(200, suspended.statusCode(), suspended.body());
-                assertEquals(404, get(session.client, root + "/audit").statusCode());
-                assertEquals(404, post(session, root + "/exports", exportBody).statusCode());
+                assertGovernanceRefusal(404, owner.orgDbId, foreign.orgDbId, () -> get(session.client, root + "/audit"));
+                assertGovernanceRefusal(404, owner.orgDbId, foreign.orgDbId, () -> post(session, root + "/exports", exportBody));
             }
         }
-        assertEquals(200, get(ownerSession.client, root + "/audit").statusCode());
-        assertEquals(200, post(ownerSession, root + "/exports", exportBody).statusCode());
+        assertGovernanceRefusal(200, owner.orgDbId, foreign.orgDbId, () -> get(ownerSession.client, root + "/audit"));
+        assertGovernanceRefusal(200, owner.orgDbId, foreign.orgDbId, () -> get(ownerSession.client, root + "/activity"));
+        assertGovernanceRefusal(200, owner.orgDbId, foreign.orgDbId, () -> post(ownerSession, root + "/exports", exportBody));
         assertEquals(1, jdbc.update("UPDATE SPRING_SESSION SET LAST_ACCESS_TIME=0, EXPIRY_TIME=0 WHERE SESSION_ID=?",
                 ownerSession.sessionId));
-        assertEquals(401, get(ownerSession.client, root + "/activity").statusCode());
+        assertGovernanceRefusal(401, owner.orgDbId, foreign.orgDbId, () -> get(ownerSession.client, root + "/activity"));
     }
 
     @Test @Order(46)
@@ -2852,7 +2854,7 @@ class C1IdentityAcceptanceTest {
         tx.executeWithoutResult(transaction -> jdbc.batchUpdate(insert, fixtures));
         assertEquals(201, post(session, "/api/resources", GSON.toJson(new ResourceRequest("C6 Movement Resource", "REUSABLE", 2))).statusCode());
         String filter = root + "/audit?limit=100";
-        HttpResponse<String> firstResponse = get(session.client, filter);
+        HttpResponse<String> firstResponse = assertGovernanceRefusal(200, owner.orgDbId, foreign.orgDbId, () -> get(session.client, filter));
         assertEquals(200, firstResponse.statusCode(), firstResponse.body());
         assertFalse(firstResponse.body().contains("PRIVATE-TARGET-FIXTURE"));
         var first = json(firstResponse).getAsJsonObject("data");
@@ -2861,17 +2863,32 @@ class C1IdentityAcceptanceTest {
                 .getAsJsonObject().get("occurredAt").getAsString()), "UTC timestamp format and microsecond precision");
         String cursor = first.get("nextCursor").getAsString();
         jdbc.update(insert, owner.orgDbId, owner.userDbId, UUID.randomUUID().toString(), tie.plusSeconds(1));
-        var second = json(get(session.client, filter + "&cursor=" + cursor)).getAsJsonObject("data");
+        var second = json(assertGovernanceRefusal(200, owner.orgDbId, foreign.orgDbId, () -> get(session.client, filter + "&cursor=" + cursor))).getAsJsonObject("data");
         Set<String> seen = new java.util.HashSet<>();
         first.getAsJsonArray("items").forEach(row -> assertTrue(seen.add(row.getAsJsonObject().get("id").getAsString())));
         second.getAsJsonArray("items").forEach(row -> assertTrue(seen.add(row.getAsJsonObject().get("id").getAsString())));
         assertTrue(second.get("nextCursor").isJsonNull());
         assertEquals(105, seen.size());
-        assertEquals(400, get(session.client, root + "/audit?limit=-1").statusCode());
-        assertEquals(400, get(session.client, root + "/activity?limit=101").statusCode());
-        assertEquals(400, get(session.client, root + "/activity?cursor=%21bad").statusCode());
-        assertEquals(400, get(foreignSession.client, "/api/v2/orgs/" + foreign.orgPublicId + "/activity?cursor=" + cursor).statusCode());
-        var mixed = json(get(session.client, root + "/activity?cursor=" + cursor)).getAsJsonObject("data").getAsJsonArray("items");
+        assertGovernanceRefusal(400, owner.orgDbId, foreign.orgDbId, () -> get(session.client, root + "/audit?limit=-1"));
+        assertGovernanceRefusal(400, owner.orgDbId, foreign.orgDbId, () -> get(session.client, root + "/activity?limit=101"));
+        assertGovernanceRefusal(400, owner.orgDbId, foreign.orgDbId, () -> get(session.client, root + "/activity?cursor=%21bad"));
+        assertGovernanceRefusal(400, owner.orgDbId, foreign.orgDbId, () -> get(foreignSession.client, "/api/v2/orgs/" + foreign.orgPublicId + "/activity?cursor=" + cursor));
+        var mixed = json(assertGovernanceRefusal(200, owner.orgDbId, foreign.orgDbId, () -> get(session.client, root + "/activity?cursor=" + cursor))).getAsJsonObject("data").getAsJsonArray("items");
+        Set<String> allowedEventFields = Set.of("id", "source", "action", "targetType", "outcome", "requestId",
+                "resourceId", "quantity", "deltaTotal", "deltaIssued", "occurredAt");
+        for (var page : List.of(first.getAsJsonArray("items"), second.getAsJsonArray("items"), mixed)) {
+            for (var element : page) {
+                var event = element.getAsJsonObject();
+                assertTrue(allowedEventFields.containsAll(event.keySet()), "Unexpected reporting field");
+                assertTrue(event.keySet().containsAll(Set.of("id", "source", "action", "targetType", "occurredAt")));
+                if ("AUDIT".equals(event.get("source").getAsString())) {
+                    assertTrue(event.keySet().containsAll(Set.of("outcome", "requestId")));
+                } else {
+                    assertEquals("MOVEMENT", event.get("source").getAsString());
+                    assertTrue(event.keySet().containsAll(Set.of("resourceId", "quantity", "deltaTotal", "deltaIssued")));
+                }
+            }
+        }
         assertTrue(mixed.asList().stream().anyMatch(row -> "MOVEMENT".equals(row.getAsJsonObject().get("source").getAsString())));
         String runtime = jdbc.queryForObject("SELECT CURRENT_USER()", String.class);
         assertNotNull(runtime);
@@ -2904,11 +2921,11 @@ class C1IdentityAcceptanceTest {
         Session other = login(foreign.username, foreign.password);
         String path = "/api/v2/orgs/" + owner.orgPublicId + "/exports";
         assertEquals(201, post(other, "/api/resources", GSON.toJson(new ResourceRequest("Foreign C6 Resource", "REUSABLE", 3))).statusCode());
-        assertEquals(400, post(session, path, "{\"format\":\"PDF\",\"dataset\":\"RESOURCES\"}").statusCode());
-        assertEquals(400, post(session, path, "{\"format\":\"CSV\",\"dataset\":\"ALLOCATIONS\"}").statusCode());
-        assertEquals(400, post(session, path, "{\"format\":\"CSV\",\"dataset\":\"AUDIT\",\"limit\":1}").statusCode());
-        assertEquals(400, post(session, path, "{\"format\":\"CSV\",\"format\":\"TENANT_JSON\",\"dataset\":\"AUDIT\"}").statusCode());
-        assertEquals(400, post(session, path, "{\"format\":\"CSV\",\"dataset\":\"AUDIT\"}" + " ".repeat(1024)).statusCode());
+        assertGovernanceRefusal(400, owner.orgDbId, foreign.orgDbId, () -> post(session, path, "{\"format\":\"PDF\",\"dataset\":\"RESOURCES\"}"));
+        assertGovernanceRefusal(400, owner.orgDbId, foreign.orgDbId, () -> post(session, path, "{\"format\":\"CSV\",\"dataset\":\"ALLOCATIONS\"}"));
+        assertGovernanceRefusal(400, owner.orgDbId, foreign.orgDbId, () -> post(session, path, "{\"format\":\"CSV\",\"dataset\":\"AUDIT\",\"limit\":1}"));
+        assertGovernanceRefusal(400, owner.orgDbId, foreign.orgDbId, () -> post(session, path, "{\"format\":\"CSV\",\"format\":\"TENANT_JSON\",\"dataset\":\"AUDIT\"}"));
+        assertGovernanceRefusal(400, owner.orgDbId, foreign.orgDbId, () -> post(session, path, "{\"format\":\"CSV\",\"dataset\":\"AUDIT\"}" + " ".repeat(1024)));
         String resources = "{\"format\":\"TENANT_JSON\",\"dataset\":\"RESOURCES\"}";
         assertTrue(json(post(session, path, resources)).getAsJsonArray("rows").isEmpty());
         String csv = "{\"format\":\"CSV\",\"dataset\":\"RESOURCES\"}";
@@ -2918,7 +2935,7 @@ class C1IdentityAcceptanceTest {
                     VALUES(UUID_TO_BIN(UUID(),0),?,?,?,'REUSABLE',0)
                     """, owner.orgDbId, name, UUID.randomUUID().toString());
         }
-        HttpResponse<String> file = post(session, path, csv);
+        HttpResponse<String> file = assertGovernanceRefusal(200, owner.orgDbId, foreign.orgDbId, () -> post(session, path, csv));
         assertEquals(200, file.statusCode(), file.body());
         assertTrue(file.headers().firstValue("Content-Type").orElseThrow().startsWith("text/csv"));
         assertTrue(file.headers().firstValue("Content-Disposition").orElseThrow().matches("attachment; filename=\"orgresource-resources-[0-9TZ]+\\.csv\""));
@@ -2930,10 +2947,14 @@ class C1IdentityAcceptanceTest {
         assertTrue(file.body().contains(",\"'\r\n-Example\","));
         assertTrue(file.body().contains(",\"'@Example\","));
         assertTrue(file.body().contains(",\"É, \"\"fictional\"\"\r\nline\","));
-        JsonObject jsonFile = json(post(session, path, resources));
+        JsonObject jsonFile = json(assertGovernanceRefusal(200, owner.orgDbId, foreign.orgDbId, () -> post(session, path, resources)));
         assertEquals(1, jsonFile.get("schemaVersion").getAsInt());
         assertEquals(owner.orgPublicId.toString(), jsonFile.get("organizationId").getAsString());
         assertEquals(5, jsonFile.getAsJsonArray("rows").size());
+        assertEquals(Set.of("schemaVersion", "organizationId", "dataset", "exportedAt", "rows"), jsonFile.keySet());
+        for (var row : jsonFile.getAsJsonArray("rows")) {
+            assertEquals(Set.of("id", "name", "type", "totalQuantity"), row.getAsJsonObject().keySet());
+        }
         assertFalse(jsonFile.toString().contains("Foreign C6 Resource"));
         String root = "/api/v2/orgs/" + owner.orgPublicId;
         HttpResponse<String> invitation = post(session, root + "/invitations", GSON.toJson(new RoleRequest("MEMBER")));
@@ -2942,7 +2963,8 @@ class C1IdentityAcceptanceTest {
         String privateAuditTarget = json(invitation).getAsJsonObject("data").get("id").getAsString();
         assertEquals(201, post(session, "/api/resources", GSON.toJson(new ResourceRequest("C6 persisted movement", "REUSABLE", 2))).statusCode());
         for (String dataset : List.of("AUDIT", "MOVEMENTS")) {
-            HttpResponse<String> safe = post(session, path, GSON.toJson(java.util.Map.of("format", "TENANT_JSON", "dataset", dataset)));
+            HttpResponse<String> safe = assertGovernanceRefusal(200, owner.orgDbId, foreign.orgDbId,
+                    () -> post(session, path, GSON.toJson(java.util.Map.of("format", "TENANT_JSON", "dataset", dataset))));
             assertEquals(200, safe.statusCode());
             assertFalse(json(safe).getAsJsonArray("rows").isEmpty());
             assertFalse(safe.body().contains("actorUserId") || safe.body().contains("targetId")
@@ -2982,7 +3004,7 @@ class C1IdentityAcceptanceTest {
                        CONCAT('C6 export row ',a.n,b.n,c.n),CONCAT('c6 export row ',a.n,b.n,c.n),'REUSABLE',0
                 FROM digit a CROSS JOIN digit b CROSS JOIN digit c
                 """, owner.orgDbId);
-        HttpResponse<String> refused = post(session, path, csv);
+        HttpResponse<String> refused = assertGovernanceRefusal(413, owner.orgDbId, foreign.orgDbId, () -> post(session, path, csv));
         assertEquals(413, refused.statusCode());
         assertEquals("EXPORT_TOO_LARGE", json(refused).get("code").getAsString());
         assertTrue(refused.headers().firstValue("Content-Disposition").isEmpty());
