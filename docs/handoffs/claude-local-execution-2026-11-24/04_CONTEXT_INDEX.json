@@ -1070,28 +1070,30 @@
     "failures": 0
   },
   "r03_candidate": {
-    "sha": "b3eb16e5ddf757e67cfa8296eb56f9f340ef632c",
-    "base": "9f374d77addd36b9c5985f25d2e874116970aa2d",
+    "sha": "7ff4f8d7bbeb1e83068f380ebfcaa3216a4f727b",
+    "base": "b3eb16e5ddf757e67cfa8296eb56f9f340ef632c",
     "pr": 54,
     "runs": [
       [
-        45485647999,
+        45486716110,
         "Verify",
-        "in_progress",
+        "queued",
         null
       ]
     ],
-    "report": "evidence/C8/R03_REPORTING_READ_ONLY_CANDIDATE_2026-11-25.md",
+    "report": "evidence/C8/R03_WORKSPACE_READ_PRESERVATION_CANDIDATE_2026-11-25.md",
     "acceptance": "CI_PENDING",
     "routes": [
-      "R042",
-      "R052",
-      "R057"
+      "R088",
+      "R089",
+      "R090",
+      "R091",
+      "R092",
+      "R093"
     ],
     "tests": [
-      45,
-      46,
-      47
+      61,
+      62
     ],
     "observed_red": "NOT_RUN"
   },
@@ -1394,56 +1396,28 @@
   },
   "r03_pending_candidates": [
     {
-      "sha": "74b2450ddd508d5e07a387fa7c1212b42d52779a",
-      "base": "a1ba49aecce96ea24e82b0e2de4e1f210221aaa7",
+      "sha": "b3eb16e5ddf757e67cfa8296eb56f9f340ef632c",
+      "base": "9f374d77addd36b9c5985f25d2e874116970aa2d",
       "pr": 54,
       "runs": [
         [
-          45483605533,
-          "in_progress",
-          null
-        ]
-      ],
-      "report": "evidence/C8/R03_BORROWER_DIRECTORY_CONSENT_CURSOR_CANDIDATE_2026-11-25.md",
-      "acceptance": "CI_PENDING",
-      "routes": [
-        "R051",
-        "R053",
-        "R054",
-        "R055",
-        "R056",
-        "R058"
-      ],
-      "tests": [
-        54
-      ],
-      "observed_red": "NOT_RUN"
-    },
-    {
-      "sha": "9f374d77addd36b9c5985f25d2e874116970aa2d",
-      "base": "74b2450ddd508d5e07a387fa7c1212b42d52779a",
-      "pr": 54,
-      "runs": [
-        [
-          45484467643,
+          45485647999,
           "Verify",
           "in_progress",
           null
         ]
       ],
-      "report": "evidence/C8/R03_GOVERNANCE_ACCEPT_INVITE_SUSPEND_CANDIDATE_2026-11-25.md",
+      "report": "evidence/C8/R03_REPORTING_READ_ONLY_CANDIDATE_2026-11-25.md",
       "acceptance": "CI_PENDING",
       "routes": [
-        "R077",
-        "R078",
-        "R079",
-        "R080",
-        "R081",
-        "R083"
+        "R042",
+        "R052",
+        "R057"
       ],
       "tests": [
-        60,
-        76
+        45,
+        46,
+        47
       ],
       "observed_red": "NOT_RUN"
     }
@@ -1552,6 +1526,49 @@
       "playwright": 19,
       "all_jobs_success": true,
       "failures": 0,
+      "verdict": "VERIFIED_BOUNDED"
+    },
+    {
+      "sha": "74b2450ddd508d5e07a387fa7c1212b42d52779a",
+      "pr": 54,
+      "run": 45483605533,
+      "job": 138762991854,
+      "tests": [
+        54
+      ],
+      "routes": [
+        "R051",
+        "R053",
+        "R054",
+        "R055",
+        "R056",
+        "R058"
+      ],
+      "maven": 103,
+      "identity": 78,
+      "playwright": 19,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "all_jobs_success": true,
+      "verdict": "VERIFIED_BOUNDED"
+    },
+    {
+      "sha": "9f374d77addd36b9c5985f25d2e874116970aa2d",
+      "pr": 54,
+      "run": 45484467643,
+      "job": 138766024990,
+      "tests": [
+        60,
+        76
+      ],
+      "maven": 103,
+      "identity": 78,
+      "playwright": 19,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "all_jobs_success": true,
       "verdict": "VERIFIED_BOUNDED"
     }
   ],
@@ -1722,8 +1739,8 @@
       [
         45484557514,
         "Verify",
-        "in_progress",
-        null
+        "completed",
+        "failure"
       ]
     ],
     "report": "evidence/C9/R07_R08_ISOLATION_HTTP_PREPARATION_CANDIDATE_2026-11-25.md",
@@ -1943,6 +1960,44 @@
       "npm_build_s": 5,
       "scope": "serial synthetic test-context HTTP; three fresh schemas and JVMs on same CI server; no packaged/cold-start/SLA/peak heap/hosted/private inference"
     },
-    "cold_start": false
+    "cold_start": false,
+    "full_verify_failure": {
+      "sha": "c11f47a23a82b0dac4afa8d5d4234280eb16f67e",
+      "pr": 55,
+      "run": 45484557514,
+      "job": 138766342243,
+      "maven": 103,
+      "identity": 78,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "playwright": "NOT_RUN",
+      "verdict": "TEST_FAILED",
+      "phase": "Stage1B cross-server recovery startup",
+      "actual": "ERROR 2002 socket missing then C9_CROSS_SERVER_WRONG_MYSQL_VERSION",
+      "cause": "startup temporary socket race hypothesis; failed restorer logs unavailable"
+    }
+  },
+  "r07_startup_correction": {
+    "sha": "76a8e687581bd1b70582822a38b657744e22d387",
+    "pr": 55,
+    "base": "c11f47a23a82b0dac4afa8d5d4234280eb16f67e",
+    "runs": [
+      [
+        45486540380,
+        "Verify",
+        "in_progress",
+        null
+      ],
+      [
+        45486540376,
+        "R07-R08 isolated preparation",
+        "in_progress",
+        null
+      ]
+    ],
+    "report": "evidence/C9/R07_CROSS_SERVER_STARTUP_RACE_CANDIDATE_2026-11-25.md",
+    "acceptance": "CI_PENDING",
+    "observed_red": "actual original failure; targeted reproduction NOT_RUN"
   }
 }
