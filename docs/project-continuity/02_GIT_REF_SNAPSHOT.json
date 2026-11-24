@@ -871,49 +871,43 @@
   },
   "latest_scoped_observation": {
     "date": "2026-11-25 PHT",
-    "handoff_parent": "3ad48a7d33518332e8fadd5947fa5ed44e429210",
+    "handoff_parent": "6a4fb6c9369d20d3a1df71e8f31a467d9f9e139f",
     "pr53": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
-    "pr54": "3a1e46cddf0cf1bd519b6c493205727b9310a97a",
-    "pr55": "18f47cc762f5bcf0ed857350b177c4ccdf035ff1",
-    "coverage": "Scoped exact live refs, actual workspace, identity and corrected dedicated receipts; historical inventory retained",
+    "pr54": "9646ff743c6678af90aa357ee761ac11ed366dff",
+    "pr55": "849a1284ef0b5ff641f1a933d2aedb60627ddf7a",
+    "coverage": "Exact project actual, prior dedicated repeat, new observed deadlock candidate failure, source residual/restart candidate",
     "candidate_runs": [
       [
-        45490152665,
+        45491538911,
         "Verify",
         "in_progress",
         null
       ],
       [
-        45490328103,
+        45491262809,
         "Verify",
-        "in_progress",
-        null
-      ],
-      [
-        45490328267,
-        "R07-R08 isolated preparation",
         "in_progress",
         null
       ]
     ],
     "actual_runs": [
       [
-        45486716110,
+        45488537632,
         "Verify",
         "completed",
         "success"
       ],
       [
-        45487476059,
-        "Verify",
-        "completed",
-        "success"
-      ],
-      [
-        45489075914,
+        45490328267,
         "R07-R08 isolated preparation",
         "completed",
         "success"
+      ],
+      [
+        45491263013,
+        "R07-R08 isolated preparation",
+        "completed",
+        "failure"
       ]
     ]
   }

@@ -1073,7 +1073,14 @@
     "sha": "9646ff743c6678af90aa357ee761ac11ed366dff",
     "base": "3a1e46cddf0cf1bd519b6c493205727b9310a97a",
     "pr": 54,
-    "runs": [],
+    "runs": [
+      [
+        45491538911,
+        "Verify",
+        "in_progress",
+        null
+      ]
+    ],
     "report": "evidence/C8/R03_WORKSPACE_RESIDUAL_ORACLE_CANDIDATE_2026-11-25.md",
     "acceptance": "CI_PENDING",
     "routes": [
