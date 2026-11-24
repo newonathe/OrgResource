@@ -871,20 +871,27 @@
   },
   "latest_scoped_observation": {
     "date": "2026-11-25 PHT",
-    "handoff_parent": "6a4fb6c9369d20d3a1df71e8f31a467d9f9e139f",
+    "handoff_parent": "a183f5acdc136cb9148a23043d828535204087ec",
     "pr53": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
     "pr54": "9646ff743c6678af90aa357ee761ac11ed366dff",
-    "pr55": "ef634ce7469f0b94b09ddcef097ad14a8c6e0206",
-    "coverage": "Exact project actual, prior dedicated repeat, new observed deadlock candidate failure, source residual/restart candidate",
+    "pr55": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
+    "pr56": "9d0902b4e8ea2045a30a4ff4a524e213a3b6a7b3",
+    "coverage": "Exact auth/packaged/deadlock receipts, restart failure and source correction, preliminary combined candidate",
     "candidate_runs": [
       [
-        45491538911,
+        45493345999,
         "Verify",
+        "queued",
+        null
+      ],
+      [
+        45493345989,
+        "R07-R08 isolated preparation",
         "in_progress",
         null
       ],
       [
-        45491262809,
+        45493192571,
         "Verify",
         "in_progress",
         null
@@ -892,38 +899,33 @@
     ],
     "actual_runs": [
       [
-        45488537632,
+        45490152665,
         "Verify",
         "completed",
         "success"
       ],
       [
-        45490328267,
-        "R07-R08 isolated preparation",
+        45490328103,
+        "Verify",
         "completed",
         "success"
-      ],
-      [
-        45491263013,
-        "R07-R08 isolated preparation",
-        "completed",
-        "failure"
-      ]
-    ],
-    "deadlock_failed_sha": "849a1284ef0b5ff641f1a933d2aedb60627ddf7a",
-    "deadlock_correction_runs": [
-      [
-        45491974364,
-        "Verify",
-        "queued",
-        null
       ],
       [
         45491974383,
         "R07-R08 isolated preparation",
-        "queued",
-        null
+        "completed",
+        "success"
+      ],
+      [
+        45491974364,
+        "Verify",
+        "completed",
+        "failure"
       ]
+    ],
+    "integrated_dedicated_initial": [
+      45493192652,
+      "skipped"
     ]
   }
 }
