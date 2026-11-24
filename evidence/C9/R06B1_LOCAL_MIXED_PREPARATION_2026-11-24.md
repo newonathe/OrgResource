@@ -14,3 +14,10 @@ Test public fixture runner with a fresh source bootstrap (not a raw clone), two 
 
 ## R01/R06A receipts
 R01 exact b62ff3c65552b258291ed52f85e9c1413c5e63fa CI #45425950575 job 138557865307: 91 Maven, PIDFD wrong identity refusals, changed-payload conflict, fresh demoted mutation refusal, recovered app and cleanup, 19 Playwright. R06A exact c91333766f3082b88a8c0414450dcaf6fc934ca2 CI #45427270775 job 138562564604: all nine refusal labels, 33,892-byte original-only archive, 2 original orgs and row equality, actual V2 0600/wrong mode/symlink refusal, cleanup; R01 markers repeated; 91 Maven / 19 Playwright. All 3 jobs passed on each. These are bounded CI receipts, independent acceptance OPEN. No private plan or hosted operations.
+
+## Same-slice self-review strengthening (before publishing)
+
+- Replace Python assert-dependent artifact checking with explicit checks and isolated Python mode; prevents an optimized interpreter from disabling verification.
+- Explicitly refuse exact-size private plan in public CI before opening/hash/copy; directed sparse-file refusal in public test (7 pre-allocation negatives). No private payload involved.
+- Snapshot checked JAR into private workdir and recheck digest, avoiding later reads from a mutable external path. No rebuild.
+- Cleanup requires daemon healthy and no remaining run-labeled containers before removing workdir; failure retains private evidence and reports failure. Existing C5 and application code unchanged. Independent review still OPEN; no local runtime proof yet.

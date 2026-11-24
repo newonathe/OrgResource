@@ -19,23 +19,26 @@ case "$repo/" in "$root/"*) fail R06B1_PRIVATE_ROOT_REQUIRED;; esac
 git diff --quiet HEAD -- || fail R06B1_DIRTY_TRACKED_SOURCE
 [[ "$jar" = /* && -f "$jar" && "$(realpath -e -- "$jar")" = "$jar" && "$jar_sha" =~ ^[a-f0-9]{64}$ ]] || fail R06B1_JAR_REQUIRED
 [[ "$(sha256sum -- "$jar" | cut -d' ' -f1)" = "$jar_sha" ]] || fail R06B1_JAR_HASH_MISMATCH
-python3 - "$repo" "$source_sha" "$jar" <<'PY'
+python3 -I - "$repo" "$source_sha" "$jar" <<'PY'
 import pathlib, subprocess, sys, zipfile, re
 repo, sha, jar = sys.argv[1:]
 try:
     prefix="extended/backend/src/main/resources/db/migration/"
     paths=subprocess.check_output(["git","-C",repo,"ls-tree","-r","--name-only",sha,"--",prefix],text=True).splitlines()
     versions=[re.fullmatch(r"V([1-7])__.+\.sql",pathlib.PurePosixPath(p).name) for p in paths]
-    assert len(paths)==7 and all(versions) and {m[1] for m in versions}==set("1234567")
+    if not (len(paths)==7 and all(versions) and {m[1] for m in versions}==set("1234567")):
+        raise ValueError("migration inventory")
     with zipfile.ZipFile(jar) as z:
         names=z.namelist()
         actual=[n for n in names if n.startswith("BOOT-INF/classes/db/migration/") and n.endswith(".sql")]
         expected=["BOOT-INF/classes/db/migration/"+pathlib.PurePosixPath(p).name for p in paths]
-        assert sorted(actual)==sorted(expected)
+        if sorted(actual)!=sorted(expected):
+            raise ValueError("jar migrations")
         for path, member in zip(paths, expected):
-            assert z.read(member)==subprocess.check_output(["git","-C",repo,"cat-file","blob",sha+":"+path])
-        assert names.count("BOOT-INF/classes/static/index.html")==1
-        assert any(n.startswith("BOOT-INF/classes/static/assets/") and n.endswith(".js") for n in names)
+            if z.read(member)!=subprocess.check_output(["git","-C",repo,"cat-file","blob",sha+":"+path]):
+                raise ValueError("migration bytes")
+        if names.count("BOOT-INF/classes/static/index.html")!=1 or not any(n.startswith("BOOT-INF/classes/static/assets/") and n.endswith(".js") for n in names):
+            raise ValueError("packaged assets")
 except Exception:
     print("R06B1_JAR_MIGRATION_OR_ASSET_MISMATCH",file=sys.stderr)
     sys.exit(1)
@@ -44,7 +47,10 @@ approved_sha=3b0f54da85cadb77cd7d8ab2d50c1fdb4b4ee36710b803cf904227e13f08927c
 if [ "$mode" = --approved-plan ]; then
   [[ "$plan" = /* && -f "$plan" && "$(realpath -e -- "$plan")" = "$plan" && "$(stat -c '%a:%u' -- "$plan")" = "600:$(id -u)" ]] || fail R06B1_PRIVATE_PLAN_REQUIRED
   case "$plan" in "$repo/"*) fail R06B1_PRIVATE_PLAN_REQUIRED;; esac
-  [[ "$(stat -c '%s' -- "$plan")" = 19265850 && "$(sha256sum -- "$plan" | cut -d' ' -f1)" = "$approved_sha" ]] || fail R06B1_APPROVED_PLAN_MISMATCH
+  [[ "$(stat -c '%s' -- "$plan")" = 19265850 ]] || fail R06B1_APPROVED_PLAN_MISMATCH
+  # Even an exact-size candidate must never be opened or copied in public CI.
+  [ "${GITHUB_ACTIONS:-}" != true ] || fail R06B1_PRIVATE_PLAN_CI_REFUSED
+  [[ "$(sha256sum -- "$plan" | cut -d' ' -f1)" = "$approved_sha" ]] || fail R06B1_APPROVED_PLAN_MISMATCH
 fi
 socket=unix:///var/run/docker.sock
 [[ -z "${DOCKER_HOST:-}" || "$DOCKER_HOST" = "$socket" ]] || fail R06B1_LOCAL_DOCKER_REQUIRED
@@ -65,7 +71,8 @@ work="$root/orgresource-c9-local-$token"
 mkdir -m 700 -- "$work"
 source_id= target_id=
 cleanup() {
-  local result=0 id role
+  local result=0 id role remaining
+  docker_local info >/dev/null 2>&1 || return 1
   for role in source restore; do
     if [ "$role" = source ]; then id="$source_id"; else id="$target_id"; fi
     if [ -n "$id" ] && docker_local container inspect "$id" >/dev/null 2>&1; then
@@ -77,6 +84,8 @@ cleanup() {
       fi
     fi
   done
+  remaining="$(docker_local ps -a --filter "label=orgresource.c9.local=$token" --format '{{.ID}}')" || result=1
+  [ -z "$remaining" ] || result=1
   if [ "$result" = 0 ]; then rm -rf -- "$work" || result=1; fi
   return "$result"
 }
@@ -84,6 +93,11 @@ trap 'code=$?; cleanup || { echo R06B1_CLEANUP_FAILED >&2; code=1; }; exit "$cod
 trap 'exit 130' INT
 trap 'exit 143' TERM
 mkdir -m 700 -- "$work/home"
+# Snapshot the checked binary; no subsequent use of a mutable external JAR path.
+cp -- "$jar" "$work/verified.jar"
+chmod 600 "$work/verified.jar"
+[[ "$(sha256sum -- "$work/verified.jar" | cut -d' ' -f1)" = "$jar_sha" ]] || fail R06B1_JAR_HASH_MISMATCH
+jar="$work/verified.jar"
 if [ "$mode" = --approved-plan ]; then
   # Snapshot the approved bytes into private custody; recheck before database work.
   cp -- "$plan" "$work/approved-plan.json"

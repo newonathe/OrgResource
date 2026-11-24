@@ -28,6 +28,10 @@ chmod 600 "$root/wrong-plan.json"
 refuse wrong-plan R06B1_APPROVED_PLAN_MISMATCH bash "$runner" --approved-plan "$root" "$source_sha" "$jar" "$jar_sha" "$root/wrong-plan.json"
 ln -s "$root/wrong-plan.json" "$root/link-plan.json"
 refuse plan-link R06B1_PRIVATE_PLAN_REQUIRED bash "$runner" --approved-plan "$root" "$source_sha" "$jar" "$jar_sha" "$root/link-plan.json"
+# Sparse synthetic file, never actual approved data; CI must refuse before reading bytes.
+truncate -s 19265850 "$root/size-only.json"
+chmod 600 "$root/size-only.json"
+refuse exact-size-ci R06B1_PRIVATE_PLAN_CI_REFUSED bash "$runner" --approved-plan "$root" "$source_sha" "$jar" "$jar_sha" "$root/size-only.json"
 refuse remote-docker R06B1_LOCAL_DOCKER_REQUIRED env DOCKER_HOST=tcp://127.0.0.1:2375 bash "$runner" --fixture-only "$root" "$source_sha" "$jar" "$jar_sha"
 bash "$runner" --fixture-only "$root" "$source_sha" "$jar" "$jar_sha" > "$root/test-private.log" 2>&1 || {
   grep -E '^R06B1_[A-Z_]+(:[a-zA-Z0-9_= .-]+)?$' "$root/test-private.log" | tail -15 || true
@@ -37,4 +41,4 @@ for marker in R06B1_BOOTSTRAP_OK R06B1_ORIGINAL_RESTORE_OK R06B1_BASELINE_OK R06
   grep -E "^$marker(:|$)" "$root/test-private.log" || exit 1
 done
 [[ "$(count_containers)" = "$before" ]] || exit 1
-echo R06B1_PUBLIC_FIXTURE_TEST_OK:private_plan_used=false importer_run=false precheck_refusals=6
+echo R06B1_PUBLIC_FIXTURE_TEST_OK:private_plan_used=false importer_run=false precheck_refusals=7
