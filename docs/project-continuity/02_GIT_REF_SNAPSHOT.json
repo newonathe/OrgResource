@@ -871,7 +871,7 @@
   },
   "latest_scoped_observation": {
     "date": "2026-11-25 PHT",
-    "handoff_parent": "4aacd2100d039bef70bd8ffe7cd42417afcb0fa2",
+    "handoff_parent": "7a7c3590c9589078b380a6d6b59642a5d7564c60",
     "pr53": {
       "head": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
       "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
@@ -880,8 +880,8 @@
       "runs": [
         [
           45475369786,
-          "in_progress",
-          null
+          "completed",
+          "success"
         ]
       ],
       "intermediate": "bec8b69c5aedd2cf23b379f2509b871ee3ade84d",
@@ -910,16 +910,29 @@
         "failures": 0,
         "verdict": "VERIFIED_BOUNDED",
         "private_positive": "NOT_RUN"
+      },
+      "final_receipt": {
+        "sha": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
+        "pr": 53,
+        "run": 45475369786,
+        "job": 138734044884,
+        "maven": 91,
+        "playwright": 19,
+        "all_jobs_success": true,
+        "failures": 0,
+        "verdict": "VERIFIED_BOUNDED",
+        "private_positive": "NOT_RUN",
+        "scope": "remote engineering/public synthetic controls only"
       }
     },
     "pr54": {
-      "head": "2f61a900e3a4f83cea283809efd15cd637076d0d",
+      "head": "cf7324af9a664788e7367dbd9854531e33a38d7a",
       "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
       "draft": true,
       "open": true,
       "runs": [
         [
-          45477804709,
+          45478317640,
           "in_progress",
           null
         ]
@@ -949,8 +962,18 @@
         "sha": "30ecc88fe662dc331d405a560d109450bfc16282",
         "run": 45477193785,
         "job": 138740427695
-      }
+      },
+      "prior_pending": [
+        {
+          "sha": "2f61a900e3a4f83cea283809efd15cd637076d0d",
+          "run": 45477804709
+        },
+        {
+          "sha": "30ecc88fe662dc331d405a560d109450bfc16282",
+          "run": 45477193785
+        }
+      ]
     },
-    "coverage": "Scoped PR53/54 receipts and candidate, not full metadata refresh."
+    "coverage": "Scoped PR53 final and PR54 candidate; not full metadata refresh."
   }
 }
