@@ -2077,11 +2077,28 @@ class C1IdentityAcceptanceTest {
         assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE allocation_id=? AND kind='RETURN'", Integer.class, issuedId));
         assertEquals(0L, jdbc.queryForObject("SELECT SUM(delta_issued) FROM stock_movement WHERE resource_id=?", Long.class, expiryResourceId));
         assertEquals(5L, jdbc.queryForObject("SELECT SUM(delta_total) FROM stock_movement WHERE resource_id=?", Long.class, expiryResourceId));
-        var beforeReplay = governanceDenialRows(owner.orgDbId, owner.orgDbId);
+        var beforeReplay = r07LifecycleRows(owner.orgDbId, owner.orgDbId);
         assertEquals(200, modernPost(session, returnPath, returnBody, returnEtag, returnKey).statusCode());
-        assertTrue(beforeReplay.equals(governanceDenialRows(owner.orgDbId, owner.orgDbId)), "Replay changed the return/expiry facts.");
+        assertTrue(beforeReplay.equals(r07LifecycleRows(owner.orgDbId, owner.orgDbId)), "Replay changed the return/expiry facts.");
         assertEquals(2, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE id IN (?,?) AND reminder_outcome='NONE'",
                 Integer.class, pendingId, approvedId));
+    }
+
+    private List<List<List<String>>> r07LifecycleRows(long firstOrg, long secondOrg) {
+        var result = legacyDenialRows(firstOrg, secondOrg);
+        for (String table : List.of("membership", "invitation", "ownership_transfer", "organization")) {
+            String scope = table.equals("organization") ? "id" : "org_id";
+            result.add(jdbc.query("SELECT * FROM " + table + " WHERE " + scope + " IN (?,?) ORDER BY id",
+                    (rs, rowNumber) -> {
+                        List<String> values = new ArrayList<>();
+                        for (int column = 1; column <= rs.getMetaData().getColumnCount(); column++) {
+                            byte[] bytes = rs.getBytes(column);
+                            values.add(bytes == null ? null : Base64.getEncoder().encodeToString(bytes));
+                        }
+                        return values;
+                    }, firstOrg, secondOrg));
+        }
+        return result;
     }
 
     @Test @Order(33)
