@@ -4,15 +4,15 @@
   "ready_to_launch": false,
   "decision": "Owner requested finish all ChatGPT-side work before Claude. Continue remote engineering; local-only candidate packet is not a launch authorization.",
   "verified_source": {
-    "sha": "406ce2af1c4905bf7b845bcc072f71903327e0a1",
-    "pr": 49,
-    "run": 45430758956,
-    "extended_job": 138575101070,
+    "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+    "pr": 51,
+    "run": 45434204255,
+    "extended_job": 138587448867,
     "actual_logs_inspected": true
   },
   "verified_docs": {
-    "sha": "ac8df46f8aa11d7562e5b0e7ce2a8eba1534c5da",
-    "run": 45431494042,
+    "sha": "6ff1f2cebc69d3c490f6f469c6d3b119e04d6758",
+    "run": 45434476827,
     "workflow_conclusion": "success",
     "actual_logs_inspected": false
   },
@@ -116,22 +116,43 @@
     {
       "id": "R06B2",
       "executor": "CHAT",
-      "state": "IMPLEMENTED_CI_PENDING",
+      "state": "VERIFIED_BOUNDED",
       "depends_on": [
         "R06B1"
       ],
-      "receipt": "PR51 17bd5bf05dba9481a5aff14af1bdb6654f0505b6 CI 45434204255; require R06B2_CONFIRMATION_CONTRACT_OK, import-ci refusal, R06B2_IMPORTER_GRANTS_OK, all eight precheck refusals, prior preparation/cleanup and 3/3 jobs; actual private positive local only",
-      "notes": "Owner terminal required; no automated consent. No local import yet. Same-lifetime actual C5 recovery+baseline+actual importer/postflight; R06B3 must integrate full post-import recovery/browser before final L06."
+      "receipt": "PR51 17bd5bf0 CI 45434204255 job 138587448867 actual confirmation contract, 8 refusal cases, scoped MySQL grants, original C5/V2/cleanup, 3/3 jobs, 91 Maven/19 Playwright",
+      "notes": "Public confirmation/refusal/grants only; actual private import and owner consent NOT_RUN."
     },
     {
       "id": "R06B3",
       "executor": "CHAT",
-      "state": "OPEN",
+      "state": "IN_PROGRESS",
+      "depends_on": [
+        "R06B3a",
+        "R06B3b"
+      ],
+      "receipt": "Integrated full mixed actual encrypted recovery and valid recovered packaged browser/API with exact postflight/row invariants; local-only private positive and independent gates remain.",
+      "notes": "Aggregate remote engineering gate; public synthetic guard receipts and exact CI before final L06."
+    },
+    {
+      "id": "R06B3a",
+      "executor": "CHAT",
+      "state": "IMPLEMENTED_CI_PENDING",
       "depends_on": [
         "R06B2"
       ],
-      "receipt": "Separate constrained full-mixed C5 transport, independent fresh restored target, exact 96 tags plus originals, raw cap and row equality, valid mixed metadata/normal packaged browser, scoped reads and performance",
-      "notes": "Public synthetic guard tests; full private positive local only, no production mode broadening."
+      "receipt": "PR52 d3e8a855 CI 45437263264: mixed-backup-ci and mixed-restore-ci refusals, 10 total prechecks, R06B3A_THIRD_SERVER_FIXTURE_OK, prior confirmation/grant/restore/V2/cleanup, actual logs + all 3 jobs. Full mixed private positive remains local.",
+      "notes": "Separate actual C5 LocalMixedAcceptance and third server; exact private plan, archive/row checks and independent restored postflight. Full positive NOT_RUN; do not broaden guard."
+    },
+    {
+      "id": "R06B3b",
+      "executor": "CHAT",
+      "state": "OPEN",
+      "depends_on": [
+        "R06B3a"
+      ],
+      "receipt": "Real normal authenticated packaged browser/API acceptance on valid recovered mixed cohort, metadata 200 exact notice, owner workspace selection/scoped reads, no protected request before gate, SQL unchanged except intended session lifecycle; measured runtime, PID-safe cleanup; public guard tests without private plan.",
+      "notes": "Review existing browser/api/PIDFD and runtime grant source; integrate within same L06 lifetime. Never fake approved cohort or skip actual local positive."
     },
     {
       "id": "R07",
@@ -354,6 +375,8 @@
     "R06A",
     "R06B1",
     "R06B2",
+    "R06B3a",
+    "R06B3b",
     "R06B3",
     "R06B",
     "R07",
@@ -399,12 +422,20 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "Refresh PR51 17bd5bf05dba9481a5aff14af1bdb6654f0505b6, CI 45434204255 by exact SHA; inspect R06B2 actual public guard/grant receipts, repair bounded failures, then R06B3 and R03/R04/R07/R08; no Claude launch."
+    "next_action": "Inspect PR52 d3e8a8550e00e3bb9423d84f51f8141783e71fd1 CI 45437263264 actual guard/third-server receipts, then R06B3b recovered packaged browser/API; R03/R04/R07/R08 next; no Claude launch."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
     "pr": 51,
     "run": 45434204255,
+    "status": "completed",
+    "conclusion": "success",
+    "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS"
+  },
+  "r06b3a_candidate": {
+    "sha": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+    "pr": 52,
+    "run": 45437263264,
     "status": "in_progress",
     "conclusion": null,
     "acceptance": "CI_PENDING_ACTUAL_RECEIPTS"
