@@ -4948,6 +4948,91 @@ class C1IdentityAcceptanceTest {
         assertEquals(1, memberships.countEffectiveActiveOwners(other.orgDbId));
     }
 
+    @Test @Order(72)
+    void C8R089R091DepartmentAndProjectCursorsBindToWorkspaceAndQuery() throws Exception {
+        Fixture home = newTenant("C8-pages-directed-home", Membership.Role.OWNER);
+        Fixture other = newTenant("C8-pages-directed-other", Membership.Role.OWNER);
+        Fixture member = fixtureInOrg(home.orgDbId, Membership.Role.MEMBER);
+        Session owner = login(home.username, home.password);
+        Session outsider = login(other.username, other.password);
+        Session reader = login(member.username, member.password);
+        List<Long> departmentIds = new ArrayList<>();
+        for (String name : List.of("Directed Alpha", "Directed Beta", "Separate Gamma")) {
+            HttpResponse<String> created = post(owner, "/api/departments", GSON.toJson(new NameRequest(name)));
+            assertEquals(201, created.statusCode());
+            departmentIds.add(json(created).get("id").getAsLong());
+        }
+        List<Long> projectIds = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            HttpResponse<String> created = post(owner, "/api/projects", GSON.toJson(new ProjectRequest(
+                    departmentIds.get(i == 2 ? 1 : 0), "Directed Project " + i,
+                    "2040-12-10T10:00:00", "2040-12-10T11:00:00")));
+            assertEquals(201, created.statusCode());
+            projectIds.add(json(created).get("id").getAsLong());
+        }
+        HttpResponse<String> foreignDepartment = post(outsider, "/api/departments", GSON.toJson(new NameRequest("Directed Foreign")));
+        assertEquals(201, foreignDepartment.statusCode());
+        long foreignId = json(foreignDepartment).get("id").getAsLong();
+        assertEquals(201, post(outsider, "/api/projects", GSON.toJson(new ProjectRequest(foreignId,
+                "Directed Foreign Project", "2040-12-10T10:00:00", "2040-12-10T11:00:00"))).statusCode());
+
+        String deptSql = "SELECT id,organization_id,name,name_key,version FROM department WHERE organization_id IN (?,?) ORDER BY id";
+        String projectSql = "SELECT id,organization_id,department_id,name,HEX(public_id) AS public_id,version,start_at,end_at,lead_membership_id FROM project WHERE organization_id IN (?,?) ORDER BY id";
+        var deptBefore = jdbc.queryForList(deptSql, home.orgDbId, other.orgDbId);
+        var projectBefore = jdbc.queryForList(projectSql, home.orgDbId, other.orgDbId);
+        long[] homeBefore = stockFactCounts(home.orgDbId), otherBefore = stockFactCounts(other.orgDbId);
+        String departments = "/api/v2/workspace/departments";
+        String projects = "/api/v2/workspace/projects";
+
+        var first = workspacePage(reader, departments + "?search=directed&limit=1");
+        assertEquals(Set.of("items", "nextCursor"), first.keySet());
+        assertEquals(1, first.getAsJsonArray("items").size());
+        var firstDept = first.getAsJsonArray("items").get(0).getAsJsonObject();
+        assertEquals(Set.of("id", "name"), firstDept.keySet());
+        assertEquals(departmentIds.get(0).longValue(), firstDept.get("id").getAsLong());
+        String dc = first.get("nextCursor").getAsString();
+        var second = workspacePage(reader, departments + "?search=DIRECTED&limit=1&cursor=" + dc);
+        assertEquals(1, second.getAsJsonArray("items").size());
+        assertEquals(departmentIds.get(1).longValue(), second.getAsJsonArray("items").get(0).getAsJsonObject().get("id").getAsLong());
+        assertTrue(second.get("nextCursor").isJsonNull());
+        assertEquals(404, get(reader.client, departments + "?search=separate&cursor=" + dc).statusCode());
+        assertEquals(404, get(outsider.client, departments + "?search=directed&cursor=" + dc).statusCode());
+        assertEquals(400, get(reader.client, departments + "?limit=0").statusCode());
+        assertEquals(400, get(reader.client, departments + "?limit=101").statusCode());
+        var allDepartments = workspacePage(reader, departments + "?limit=100");
+        assertEquals(departmentIds, allDepartments.getAsJsonArray("items").asList().stream()
+                .map(x -> x.getAsJsonObject().get("id").getAsLong()).toList());
+        assertTrue(allDepartments.get("nextCursor").isJsonNull());
+
+        String projectQuery = projects + "?departmentId=" + departmentIds.get(0) + "&period=UPCOMING&search=directed&limit=1";
+        var firstProjectPage = workspacePage(reader, projectQuery);
+        assertEquals(Set.of("items", "nextCursor"), firstProjectPage.keySet());
+        assertEquals(1, firstProjectPage.getAsJsonArray("items").size());
+        var firstProject = firstProjectPage.getAsJsonArray("items").get(0).getAsJsonObject();
+        assertEquals(Set.of("id", "departmentId", "name", "startAt", "endAt", "departmentName"), firstProject.keySet());
+        assertEquals(projectIds.get(0).longValue(), firstProject.get("id").getAsLong());
+        assertEquals("Directed Alpha", firstProject.get("departmentName").getAsString());
+        String pc = firstProjectPage.get("nextCursor").getAsString();
+        var secondProjectPage = workspacePage(reader, projectQuery + "&cursor=" + pc);
+        assertEquals(1, secondProjectPage.getAsJsonArray("items").size());
+        assertEquals(projectIds.get(1).longValue(), secondProjectPage.getAsJsonArray("items").get(0).getAsJsonObject().get("id").getAsLong());
+        assertTrue(secondProjectPage.get("nextCursor").isJsonNull());
+        assertEquals(404, get(reader.client, projects + "?departmentId=" + departmentIds.get(1) + "&period=UPCOMING&search=directed&cursor=" + pc).statusCode());
+        assertEquals(404, get(reader.client, projects + "?departmentId=" + departmentIds.get(0) + "&period=ACTIVE&search=directed&cursor=" + pc).statusCode());
+        assertEquals(404, get(reader.client, projects + "?departmentId=" + departmentIds.get(0) + "&period=UPCOMING&search=other&cursor=" + pc).statusCode());
+        assertEquals(404, get(outsider.client, projects + "?departmentId=" + foreignId + "&period=UPCOMING&search=directed&cursor=" + pc).statusCode());
+        assertEquals(404, get(reader.client, departments + "?cursor=" + pc).statusCode());
+        assertEquals(400, get(reader.client, projects + "?limit=101").statusCode());
+        var allProjects = workspacePage(reader, projects + "?limit=100");
+        assertEquals(projectIds, allProjects.getAsJsonArray("items").asList().stream()
+                .map(x -> x.getAsJsonObject().get("id").getAsLong()).toList());
+        assertTrue(allProjects.get("nextCursor").isJsonNull());
+        assertTrue(deptBefore.equals(jdbc.queryForList(deptSql, home.orgDbId, other.orgDbId)));
+        assertTrue(projectBefore.equals(jdbc.queryForList(projectSql, home.orgDbId, other.orgDbId)));
+        assertArrayEquals(homeBefore, stockFactCounts(home.orgDbId));
+        assertArrayEquals(otherBefore, stockFactCounts(other.orgDbId));
+    }
+
     private record Fixture(long orgDbId, UUID orgPublicId, long userDbId, String username, String password,
                           long membershipDbId, UUID membershipPublicId, List<String> recoveryCodes) { }
     private static final class Session {
