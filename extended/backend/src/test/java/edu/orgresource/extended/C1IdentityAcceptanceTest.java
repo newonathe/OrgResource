@@ -5033,6 +5033,109 @@ class C1IdentityAcceptanceTest {
         assertArrayEquals(otherBefore, stockFactCounts(other.orgDbId));
     }
 
+    @Test @Order(73)
+    void C8R017AdminProjectCreationValidatesTimeAndPreservesRowsOnRefusal() throws Exception {
+        Fixture home = newTenant("C8-project-create-home", Membership.Role.OWNER);
+        Fixture other = newTenant("C8-project-create-other", Membership.Role.OWNER);
+        Fixture admin = fixtureInOrg(home.orgDbId, Membership.Role.ADMIN);
+        Fixture member = fixtureInOrg(home.orgDbId, Membership.Role.MEMBER);
+        Session owner = login(home.username, home.password);
+        Session outsider = login(other.username, other.password);
+        Session officer = login(admin.username, admin.password);
+        Session reader = login(member.username, member.password);
+        HttpResponse<String> department = post(owner, "/api/departments", GSON.toJson(new NameRequest("Project fixture department")));
+        assertEquals(201, department.statusCode());
+        long departmentId = json(department).get("id").getAsLong();
+        HttpResponse<String> foreign = post(outsider, "/api/departments", GSON.toJson(new NameRequest("Foreign fixture department")));
+        assertEquals(201, foreign.statusCode());
+        long foreignId = json(foreign).get("id").getAsLong();
+        String sql = "SELECT id,organization_id,department_id,name,HEX(public_id) AS public_id,version,start_at,end_at,lead_membership_id FROM project WHERE organization_id IN (?,?) ORDER BY id";
+        var before = jdbc.queryForList(sql, home.orgDbId, other.orgDbId);
+        long[] homeFacts = stockFactCounts(home.orgDbId), otherFacts = stockFactCounts(other.orgDbId);
+        String start = "2040-12-10T10:00:00", end = "2040-12-10T11:00:00";
+        for (ProjectRequest invalid : List.of(
+                new ProjectRequest(departmentId, "Malformed start", "not-a-date", end),
+                new ProjectRequest(departmentId, "Malformed end", start, "not-a-date"),
+                new ProjectRequest(departmentId, "Equal time", start, start),
+                new ProjectRequest(departmentId, "Reverse time", end, start),
+                new ProjectRequest(departmentId, "Past start", "2000-01-01T10:00:00", end))) {
+            HttpResponse<String> rejected = post(officer, "/api/projects", GSON.toJson(invalid));
+            assertEquals(400, rejected.statusCode());
+            assertEquals("VALIDATION_FAILED", json(rejected).get("code").getAsString());
+            assertEquals(before, jdbc.queryForList(sql, home.orgDbId, other.orgDbId));
+            assertArrayEquals(homeFacts, stockFactCounts(home.orgDbId));
+            assertArrayEquals(otherFacts, stockFactCounts(other.orgDbId));
+        }
+        assertEquals(404, post(officer, "/api/projects", GSON.toJson(new ProjectRequest(foreignId, "Foreign", start, end))).statusCode());
+        assertEquals(403, post(reader, "/api/projects", GSON.toJson(new ProjectRequest(departmentId, "Denied member", start, end))).statusCode());
+        assertEquals(before, jdbc.queryForList(sql, home.orgDbId, other.orgDbId));
+        assertArrayEquals(homeFacts, stockFactCounts(home.orgDbId));
+        assertArrayEquals(otherFacts, stockFactCounts(other.orgDbId));
+        HttpResponse<String> created = post(officer, "/api/projects",
+                GSON.toJson(new ProjectRequest(departmentId, "  Fictional  admin project  ", start, end)));
+        assertEquals(201, created.statusCode());
+        var view = json(created);
+        assertEquals(Set.of("id", "departmentId", "name", "startAt", "endAt"), view.keySet());
+        assertEquals(departmentId, view.get("departmentId").getAsLong());
+        assertEquals("Fictional admin project", view.get("name").getAsString());
+        assertEquals(start, view.get("startAt").getAsString());
+        assertEquals(end, view.get("endAt").getAsString());
+        long id = view.get("id").getAsLong();
+        var rows = jdbc.queryForList(sql, home.orgDbId, other.orgDbId);
+        assertEquals(before.size() + 1, rows.size());
+        assertEquals(before, rows.stream().filter(row -> ((Number) row.get("id")).longValue() != id).toList());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM project WHERE id=? AND organization_id=? AND department_id=? AND name=? AND start_at=? AND end_at=? AND version=0 AND lead_membership_id IS NULL",
+                Integer.class, id, home.orgDbId, departmentId, "Fictional admin project",
+                Timestamp.valueOf(LocalDateTime.parse(start)), Timestamp.valueOf(LocalDateTime.parse(end))));
+        // Legacy createProject does not append a governance or stock event.
+        assertArrayEquals(homeFacts, stockFactCounts(home.orgDbId));
+        assertArrayEquals(otherFacts, stockFactCounts(other.orgDbId));
+    }
+
+    @Test @Order(74)
+    void C8R040V2DepartmentCreationNormalizesNamesAndRejectsScopedConflicts() throws Exception {
+        Fixture home = newTenant("C8-department-create-home", Membership.Role.OWNER);
+        Fixture other = newTenant("C8-department-create-other", Membership.Role.OWNER);
+        Fixture admin = fixtureInOrg(home.orgDbId, Membership.Role.ADMIN);
+        Fixture member = fixtureInOrg(home.orgDbId, Membership.Role.MEMBER);
+        Session officer = login(admin.username, admin.password);
+        Session outsider = login(other.username, other.password);
+        Session reader = login(member.username, member.password);
+        String path = "/api/v2/departments";
+        String sql = "SELECT id,organization_id,name,name_key,version FROM department WHERE organization_id IN (?,?) ORDER BY id";
+        HttpResponse<String> foreign = post(outsider, path, GSON.toJson(new NameRequest("Fictional shared name")));
+        assertEquals(201, foreign.statusCode());
+        var before = jdbc.queryForList(sql, home.orgDbId, other.orgDbId);
+        long[] homeFacts = stockFactCounts(home.orgDbId), otherFacts = stockFactCounts(other.orgDbId);
+        HttpResponse<String> created = post(officer, path, GSON.toJson(new NameRequest("  Fictional   shared name  ")));
+        assertEquals(201, created.statusCode());
+        var view = json(created);
+        assertEquals(Set.of("id", "name"), view.keySet());
+        assertEquals("Fictional shared name", view.get("name").getAsString());
+        long id = view.get("id").getAsLong();
+        var rows = jdbc.queryForList(sql, home.orgDbId, other.orgDbId);
+        assertEquals(before.size() + 1, rows.size());
+        assertEquals(before, rows.stream().filter(row -> ((Number) row.get("id")).longValue() != id).toList());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM department WHERE id=? AND organization_id=? AND name=? AND name_key=? AND version=0",
+                Integer.class, id, home.orgDbId, "Fictional shared name", "fictional shared name"));
+        assertArrayEquals(homeFacts, stockFactCounts(home.orgDbId));
+        assertArrayEquals(otherFacts, stockFactCounts(other.orgDbId));
+        HttpResponse<String> duplicate = post(officer, path, GSON.toJson(new NameRequest("FICTIONAL SHARED NAME")));
+        assertEquals(409, duplicate.statusCode());
+        assertEquals("DATA_CONFLICT", json(duplicate).get("code").getAsString());
+        assertEquals(rows, jdbc.queryForList(sql, home.orgDbId, other.orgDbId));
+        for (String invalid : List.of("", "   ", "x".repeat(101))) {
+            HttpResponse<String> rejected = post(officer, path, GSON.toJson(new NameRequest(invalid)));
+            assertEquals(400, rejected.statusCode());
+            assertEquals("VALIDATION_FAILED", json(rejected).get("code").getAsString());
+            assertEquals(rows, jdbc.queryForList(sql, home.orgDbId, other.orgDbId));
+        }
+        assertEquals(403, post(reader, path, GSON.toJson(new NameRequest("Denied member"))).statusCode());
+        assertEquals(rows, jdbc.queryForList(sql, home.orgDbId, other.orgDbId));
+        assertArrayEquals(homeFacts, stockFactCounts(home.orgDbId));
+        assertArrayEquals(otherFacts, stockFactCounts(other.orgDbId));
+    }
+
     private record Fixture(long orgDbId, UUID orgPublicId, long userDbId, String username, String password,
                           long membershipDbId, UUID membershipPublicId, List<String> recoveryCodes) { }
     private static final class Session {
