@@ -1938,15 +1938,19 @@ class C1IdentityAcceptanceTest {
         LocalDateTime now = LocalDateTime.now(clock).withNano(0);
         long reminderProjectId = json(post(session, "/api/projects", GSON.toJson(new ProjectRequest(departmentId, "C3 Reminder Project",
                 now.plusHours(1).toString(), now.plusHours(4).toString())))).get("id").getAsLong();
-        long reusableId = json(post(session, "/api/resources", GSON.toJson(new ResourceRequest("C3 Reminder Reusable", "REUSABLE", 2)))).get("id").getAsLong();
-        long reminderRequirementId = json(post(session, "/api/requirements", GSON.toJson(new RequirementRequest(reminderProjectId, reusableId, 2)))).get("id").getAsLong();
+        long reusableId = json(post(session, "/api/resources", GSON.toJson(new ResourceRequest("C3 Reminder Reusable", "REUSABLE", 4)))).get("id").getAsLong();
+        long reminderRequirementId = json(post(session, "/api/requirements", GSON.toJson(new RequirementRequest(reminderProjectId, reusableId, 4)))).get("id").getAsLong();
         long fakeAllocationId = json(post(session, "/api/allocations", GSON.toJson(new AllocationRequest(reminderRequirementId, 1,
                 "Fictional Reminder One", "+15555550111", true)))).get("id").getAsLong();
         long twilioAllocationId = json(post(session, "/api/allocations", GSON.toJson(new AllocationRequest(reminderRequirementId, 1,
                 "Fictional Reminder Two", "+15555550112", true)))).get("id").getAsLong();
         jdbc.update("UPDATE project SET start_at=?,end_at=? WHERE id=? AND organization_id=?",
                 Timestamp.valueOf(now.minusHours(2)), Timestamp.valueOf(now.plusHours(3)), reminderProjectId, owner.orgDbId);
-        for (long allocationId : List.of(fakeAllocationId, twilioAllocationId)) {
+        long claimedId = json(post(session, "/api/allocations", GSON.toJson(new AllocationRequest(reminderRequirementId, 1,
+                "Fictional Interrupted Claim", "+15555550113", true)))).get("id").getAsLong();
+        long dispatchingId = json(post(session, "/api/allocations", GSON.toJson(new AllocationRequest(reminderRequirementId, 1,
+                "Fictional Interrupted Dispatch", "+15555550114", true)))).get("id").getAsLong();
+        for (long allocationId : List.of(fakeAllocationId, twilioAllocationId, claimedId, dispatchingId)) {
             assertEquals(200, post(session, "/api/allocations/" + allocationId + "/approve", null).statusCode());
             assertEquals(200, post(session, "/api/allocations/" + allocationId + "/issue", null).statusCode());
         }
@@ -2009,10 +2013,30 @@ class C1IdentityAcceptanceTest {
             server.stop(0);
         }
 
+        // Persist both crash-window states, then exercise the actual registered
+        // recovery worker. This models interruption; it is not a JVM restart.
+        LocalDateTime stale = now.minusMinutes(16);
+        assertTrue(reminderService.claimOne(claimedId, stale));
+        assertTrue(reminderService.claimOne(dispatchingId, stale));
+        assertNotNull(reminderService.prepareForDispatch(dispatchingId, stale));
+        assertTrue(reminderService.authorizeDispatch(dispatchingId, stale));
+        assertEquals("CLAIMED", jdbc.queryForObject("SELECT reminder_outcome FROM allocation WHERE id=?", String.class, claimedId));
+        assertEquals("DISPATCHING", jdbc.queryForObject("SELECT reminder_outcome FROM allocation WHERE id=?", String.class, dispatchingId));
+        assertFalse(reminderService.markStaleClaimUnknown(claimedId, stale), "Strict cutoff must not recover an equal timestamp.");
+        invokeRegisteredLifecycleSchedule();
+        for (long id : List.of(claimedId, dispatchingId)) {
+            assertEquals("UNKNOWN", jdbc.queryForObject("SELECT reminder_outcome FROM allocation WHERE id=?", String.class, id));
+            assertFalse(reminderService.claimOne(id, now));
+            assertFalse(reminderService.authorizeDispatch(id, now));
+            assertFalse(reminderService.recordOutcome(id, ReminderSendResult.unknown(null)));
+            assertNull(jdbc.queryForObject("SELECT provider_message_sid FROM allocation WHERE id=?", String.class, id));
+            assertNull(jdbc.queryForObject("SELECT reminder_http_status FROM allocation WHERE id=?", Integer.class, id));
+        }
+
         long expiryProjectId = json(post(session, "/api/projects", GSON.toJson(new ProjectRequest(departmentId, "C3 Expiry Project",
                 now.plusDays(1).toString(), now.plusDays(2).toString())))).get("id").getAsLong();
         long expiryResourceId = json(post(session, "/api/resources", GSON.toJson(new ResourceRequest("C3 Expiry Resource", "REUSABLE", 5)))).get("id").getAsLong();
-        long expiryRequirementId = json(post(session, "/api/requirements", GSON.toJson(new RequirementRequest(expiryProjectId, expiryResourceId, 2)))).get("id").getAsLong();
+        long expiryRequirementId = json(post(session, "/api/requirements", GSON.toJson(new RequirementRequest(expiryProjectId, expiryResourceId, 3)))).get("id").getAsLong();
         long pendingId = json(post(session, "/api/allocations", GSON.toJson(new AllocationRequest(expiryRequirementId, 1,
                 "Fictional Expiry Pending", null, false)))).get("id").getAsLong();
         long approvedId = json(post(session, "/api/allocations", GSON.toJson(new AllocationRequest(expiryRequirementId, 1,
@@ -2020,16 +2044,42 @@ class C1IdentityAcceptanceTest {
         jdbc.update("UPDATE project SET start_at=?,end_at=? WHERE id=? AND organization_id=?",
                 Timestamp.valueOf(now.minusHours(1)), Timestamp.valueOf(now.plusHours(1)), expiryProjectId, owner.orgDbId);
         assertEquals(200, post(session, "/api/allocations/" + approvedId + "/approve", null).statusCode());
+        long issuedId = json(post(session, "/api/allocations", GSON.toJson(new AllocationRequest(expiryRequirementId, 1,
+                "Fictional Expiry Return", null, false)))).get("id").getAsLong();
+        assertEquals(200, post(session, "/api/allocations/" + issuedId + "/approve", null).statusCode());
+        assertEquals(200, post(session, "/api/allocations/" + issuedId + "/issue", null).statusCode());
+        String returnPath = "/api/v2/orgs/" + owner.orgPublicId + "/allocations/"
+                + allocationRepository.findById(issuedId).orElseThrow().publicId + "/return";
+        String returnEtag = get(session.client, returnPath.replace("/return", ""))
+                .headers().firstValue("ETag").orElseThrow();
+        String returnBody = GSON.toJson(new OperationRequest(UUID.randomUUID())), returnKey = C1Secrets.bearerToken();
         int movementCount = jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=? AND resource_id=?",
                 Integer.class, owner.orgDbId, expiryResourceId);
         jdbc.update("UPDATE project SET end_at=? WHERE id=? AND organization_id=?",
                 Timestamp.valueOf(now.minusSeconds(1)), expiryProjectId, owner.orgDbId);
-        invokeRegisteredLifecycleSchedule();
+        var start = new CountDownLatch(1);
+        var ready = new CountDownLatch(2);
+        var pool = Executors.newFixedThreadPool(2);
+        try {
+            var expiry = pool.submit(() -> { ready.countDown(); start.await(); invokeRegisteredLifecycleSchedule(); return true; });
+            var returned = pool.submit(() -> { ready.countDown(); start.await(); return modernPost(session, returnPath, returnBody, returnEtag, returnKey); });
+            assertTrue(ready.await(10, TimeUnit.SECONDS));
+            start.countDown();
+            assertTrue(expiry.get(45, TimeUnit.SECONDS));
+            assertEquals(200, returned.get(45, TimeUnit.SECONDS).statusCode());
+        } finally { start.countDown(); pool.shutdownNow(); }
+        assertEquals("RETURNED", jdbc.queryForObject("SELECT status FROM allocation WHERE id=?", String.class, issuedId));
         assertEquals(2, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE organization_id=? AND id IN (?,?) "
                 + "AND status='CANCELLED' AND cancellation_reason='EXPIRED'", Integer.class,
                 owner.orgDbId, pendingId, approvedId));
-        assertEquals(movementCount, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=? AND resource_id=?",
-                Integer.class, owner.orgDbId, expiryResourceId), "Expiry releases computed holds without inserting stock movements.");
+        assertEquals(movementCount + 1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=? AND resource_id=?",
+                Integer.class, owner.orgDbId, expiryResourceId), "Only return adds a movement; expiry releases holds.");
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE allocation_id=? AND kind='RETURN'", Integer.class, issuedId));
+        assertEquals(0L, jdbc.queryForObject("SELECT SUM(delta_issued) FROM stock_movement WHERE resource_id=?", Long.class, expiryResourceId));
+        assertEquals(5L, jdbc.queryForObject("SELECT SUM(delta_total) FROM stock_movement WHERE resource_id=?", Long.class, expiryResourceId));
+        var beforeReplay = governanceDenialRows(owner.orgDbId, owner.orgDbId);
+        assertEquals(200, modernPost(session, returnPath, returnBody, returnEtag, returnKey).statusCode());
+        assertTrue(beforeReplay.equals(governanceDenialRows(owner.orgDbId, owner.orgDbId)), "Replay changed the return/expiry facts.");
         assertEquals(2, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE id IN (?,?) AND reminder_outcome='NONE'",
                 Integer.class, pendingId, approvedId));
     }
