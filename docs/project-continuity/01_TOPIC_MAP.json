@@ -423,7 +423,21 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "PR51 actual CI, R06B3, R07/R08."
+      "next": "Inspect PR52 actual CI, then R06B3b normal recovered valid browser/API; R07/R08 later.",
+      "latest_sources": [
+        {
+          "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
+          "ref": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+          "blob": "49133fd1eb193cdd6d4a9cfc529804dc0b884b99",
+          "review": "SOURCE_ONLY_CANDIDATE"
+        },
+        {
+          "path": "evidence/C9/R06B2_OPERATOR_GATED_IMPORT_2026-11-25.md",
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "blob": "44cd39ca2b0707d2804431aed937305c2450f5b7",
+          "review": "VERIFIED_BOUNDED actual CI 45434204255, job 138587448867"
+        }
+      ]
     },
     {
       "id": "T16_CLAUDE_RESEARCH_AND_HANDOFF",
@@ -523,5 +537,15 @@
       "next": "Every chat, audit and update durable context."
     }
   ],
-  "coverage": "18 topic families mapped to actual exact file or directory at inspected tree. Directory count is metadata not proof of reading. Reopen relevant files and ranges; append discovered source/decision rather than claim complete."
+  "coverage": "18 topic families mapped to actual exact file or directory at inspected tree. Directory count is metadata not proof of reading. Reopen relevant files and ranges; append discovered source/decision rather than claim complete.",
+  "current_implementation": {
+    "candidate": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+    "pr": 52,
+    "verified_base": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+    "verified_pr": 51,
+    "run": 45437263264,
+    "status": "CI_PENDING_ACTUAL_RECEIPTS",
+    "source_index_delta": "09_INCREMENTAL_SOURCE_INDEX.csv",
+    "handoff_graph": "../handoffs/claude-local-execution-2026-11-24/12_EXECUTION_GRAPH.json"
+  }
 }

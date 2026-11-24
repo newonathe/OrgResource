@@ -1,18 +1,29 @@
 {
   "schema": "orgresource.project_context.git_ref_snapshot.v1",
-  "observed_date": "2026-11-25 PHT",
+  "observed_date": "2026-11-25 PHT, R06B3a checkpoint",
   "repository": "newonathe/OrgResource",
   "visibility": "public",
   "default_branch": "main",
   "authority": "Point-in-time locator, not proof of merged/deployed/runtime state; refresh live every chat.",
   "pagination": {
-    "pr_count": 46,
-    "branch_count": 49,
-    "issue_response_count": 51,
+    "pr_count": 47,
+    "branch_count": 50,
+    "issue_response_count": 52,
     "per_page": 100,
     "all_within_page": true
   },
   "pull_requests": [
+    {
+      "id": 52,
+      "title": "test(R06B3a): independent full-mixed C5 recovery and restored postflight",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+      "head_branch": "test/c9-local-full-mixed-recovery-2026-11-25",
+      "base": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+      "base_branch": "test/c9-local-operator-gated-import-2026-11-25"
+    },
     {
       "id": 51,
       "title": "test(R06B2): owner-gated disposable full-plan import and independent postflight",
@@ -52,7 +63,7 @@
       "state": "open",
       "draft": true,
       "merged_at": null,
-      "head": "6ff1f2cebc69d3c490f6f469c6d3b119e04d6758",
+      "head": "60fed8ca69b7453d0a1b552a25958a34a39dc6e8",
       "head_branch": "docs/claude-local-execution-handoff-2026-11-24",
       "base": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306",
       "base_branch": "test/c9-recovered-application-2026-11-24"
@@ -555,7 +566,7 @@
     },
     {
       "name": "docs/claude-local-execution-handoff-2026-11-24",
-      "sha": "6ff1f2cebc69d3c490f6f469c6d3b119e04d6758"
+      "sha": "60fed8ca69b7453d0a1b552a25958a34a39dc6e8"
     },
     {
       "name": "docs/continuous-evidence-completeness-standard-2026-11-19",
@@ -694,6 +705,10 @@
       "sha": "14416f069f654c7d2db2b8c2908aab6cc2b05557"
     },
     {
+      "name": "test/c9-local-full-mixed-recovery-2026-11-25",
+      "sha": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1"
+    },
+    {
       "name": "test/c9-local-mixed-preparation-2026-11-24",
       "sha": "406ce2af1c4905bf7b845bcc072f71903327e0a1"
     },
@@ -721,7 +736,7 @@
   "issues": [
     {
       "id": 50,
-      "title": "Canonical OrgResource pre-Claude continuation — read first when user says continue",
+      "title": "Canonical OrgResource project-wide continuity — every chat and pre-Claude queue",
       "state": "open"
     },
     {
@@ -833,8 +848,25 @@
       "blobs": 378,
       "indexed_blobs": 158,
       "truncated": false
+    },
+    {
+      "id": "r06b3a_candidate",
+      "ref": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+      "tree_response_sha": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+      "blobs": 787,
+      "indexed_blobs": 6,
+      "truncated": false,
+      "coverage": "incremental candidate delta only"
     }
   ],
   "index_unique_path_blob_versions": 953,
-  "coverage_limit": "All listed refs captured as metadata; recursive trees inspected for eleven anchor refs. All other branch-tip contents can be reopened from exact refs. Not a full historical commit-DAG traversal or semantic audit. Excludes uploaded original course files, binaries/screenshots/raw artifacts and potential private payload paths from duplicated index. No access to every chat transcript."
+  "coverage_limit": "All listed refs captured as metadata; recursive trees inspected for eleven anchor refs. All other branch-tip contents can be reopened from exact refs. Not a full historical commit-DAG traversal or semantic audit. Excludes uploaded original course files, binaries/screenshots/raw artifacts and potential private payload paths from duplicated index. No access to every chat transcript.",
+  "incremental_index": {
+    "path": "09_INCREMENTAL_SOURCE_INDEX.csv",
+    "base_index": "03_DOCUMENT_VERSION_INDEX.csv",
+    "from": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+    "to": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+    "changed_path_blob_versions": 6,
+    "coverage": "Exact active tree compared; unchanged entries are covered by previous base. New handoff docs are separate live branch; index metadata only. Do not treat 953 initial indexed versions as current exhaustive count."
+  }
 }

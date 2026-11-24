@@ -1,0 +1,7 @@
+"path","blob_sha","bytes","mode","snapshot_refs","inspection_depth"
+"CURRENT_STATUS_AND_NEXT_ACTIONS.md","67aff9d598106037bd3c75cee23ec7fc6746a5b5","24663","100644","r06b3a_candidate:d3e8a8550e00e3bb9423d84f51f8141783e71fd1","METADATA; source report and exact runtime receipts required"
+"NEXT_CHAT_START_HERE.md","ccd7ad97e9725abbee7735d8e9096cf159939b5a","56172","100644","r06b3a_candidate:d3e8a8550e00e3bb9423d84f51f8141783e71fd1","METADATA; source report and exact runtime receipts required"
+"evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md","49133fd1eb193cdd6d4a9cfc529804dc0b884b99","4799","100644","r06b3a_candidate:d3e8a8550e00e3bb9423d84f51f8141783e71fd1","METADATA; source report and exact runtime receipts required"
+"scripts/extended-c-backup.ps1","a909fc2a4b3818f8dec318ab9d12ac49d0bd5fb8","30968","100644","r06b3a_candidate:d3e8a8550e00e3bb9423d84f51f8141783e71fd1","METADATA; source report and exact runtime receipts required"
+"scripts/test-c9-local-mixed-preparation.sh","a2e9d31ea6a58e5c78e03f821edc20194f058224","4467","100644","r06b3a_candidate:d3e8a8550e00e3bb9423d84f51f8141783e71fd1","METADATA; source report and exact runtime receipts required"
+"scripts/verify-c9-local-mixed-preparation.sh","d75846e4ab4f93b8ae8a4a4eb5c6c44fe326acd3","35907","100644","r06b3a_candidate:d3e8a8550e00e3bb9423d84f51f8141783e71fd1","METADATA; source report and exact runtime receipts required"
