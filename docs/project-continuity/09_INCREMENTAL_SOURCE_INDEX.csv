@@ -91,3 +91,5 @@
 "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","f737106571242c67e651b777f150e4f67be190c7","435872","100644","parallel_r03_r08_candidate:c11f47a23a82b0dac4afa8d5d4234280eb16f67e","PATCH; actual CI pending"
 "scripts/verify-r0708-isolated.sh","64f7829283644727739104dac6f2abda4f5b9594","6217","100644","parallel_r03_r08_candidate:c11f47a23a82b0dac4afa8d5d4234280eb16f67e","PATCH; actual CI pending"
 "scripts/verify-r0708-receipt.py","957b37cbc2f7c16aa9a449a01f54c2ee21aa545a","2979","100644","parallel_r03_r08_candidate:c11f47a23a82b0dac4afa8d5d4234280eb16f67e","PATCH; actual CI pending"
+"extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","38cf8da108450b286c01b7a607fbe0636c6131c5","442836","100644","r03_reporting_candidate:b3eb16e5ddf757e67cfa8296eb56f9f340ef632c","PATCH; actual CI pending"
+"evidence/C8/R03_REPORTING_READ_ONLY_CANDIDATE_2026-11-25.md","770f90f3a6dd327a39b25c4305df08888f0ab7e6","1443","100644","r03_reporting_candidate:b3eb16e5ddf757e67cfa8296eb56f9f340ef632c","PATCH; actual CI pending"
