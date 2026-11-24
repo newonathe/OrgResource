@@ -6,6 +6,8 @@ source_schema=orgresource_c8_additive_ci_fixture_intermediate
 target_schema=orgresource_c8_additive_ci_fixture_c9_cross_server
 cap=$((64 * 1024 * 1024))
 refuse() { echo "$1" >&2; exit 1; }
+# time.monotonic_ns cannot move backwards if the GitHub runner wall clock is adjusted.
+monotonic_ms() { python3 -c 'import time; print(time.monotonic_ns() // 1000000)'; }
 
 [ "$(printenv GITHUB_ACTIONS || true)" = true ] || refuse C9_CROSS_SERVER_CI_ONLY
 [ "$(printenv C9_DB_SCHEMA || true)" = "$source_schema" ] ||
@@ -78,7 +80,7 @@ sessions_sql="$workdir/session-ddl.sql"
 combined="$workdir/complete.sql"
 original_rows="$workdir/original-rows.sql"
 restored_rows="$workdir/restored-rows.sql"
-start_backup="$(date +%s%3N)"
+start_backup="$(monotonic_ms)"
 source_dump --single-transaction --quick \
   "--ignore-table=$source_schema.SPRING_SESSION" \
   "--ignore-table=$source_schema.SPRING_SESSION_ATTRIBUTES" \
@@ -96,7 +98,8 @@ total_bytes=$((main_bytes + session_bytes))
 cat "$main_sql" "$sessions_sql" > "$combined"
 [ "$(stat -c%s "$combined")" = "$total_bytes" ] ||
   refuse C9_CROSS_SERVER_LENGTH_MISMATCH
-backup_wall_ms=$(( $(date +%s%3N) - start_backup ))
+backup_wall_ms=$(( $(monotonic_ms) - start_backup ))
+(( backup_wall_ms >= 0 )) || refuse C9_CROSS_SERVER_NEGATIVE_BACKUP_DURATION
 digest="$(sha256sum "$combined" | cut -d' ' -f1)"
 require_digest() {
   [ "$(sha256sum "$1" | cut -d' ' -f1)" = "$digest" ] || {
@@ -169,11 +172,12 @@ require_empty() {
 }
 require_empty
 require_digest "$combined"
-start_restore="$(date +%s%3N)"
+start_restore="$(monotonic_ms)"
 restore_mysql --binary-mode "$target_schema" < "$combined" \
   > "$workdir/mysql-restore-output.log" 2> "$workdir/mysql-restore-private-error.log" ||
   refuse C9_CROSS_SERVER_SQL_RESTORE_FAILED
-restore_wall_ms=$(( $(date +%s%3N) - start_restore ))
+restore_wall_ms=$(( $(monotonic_ms) - start_restore ))
+(( restore_wall_ms >= 0 )) || refuse C9_CROSS_SERVER_NEGATIVE_RESTORE_DURATION
 if require_empty > "$workdir/nonempty-refusal.log" 2>&1; then
   refuse C9_CROSS_SERVER_REPEAT_IMPORT_ALLOWED
 fi
