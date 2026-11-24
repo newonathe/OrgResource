@@ -1494,5 +1494,45 @@
       "failures": 0,
       "verdict": "VERIFIED_BOUNDED"
     }
-  ]
+  ],
+  "r07_r08_preparation": {
+    "pr": 55,
+    "sha": "30f8d06aa60a65377bad2e8df4443ca860be4e80",
+    "base": "a1ba49aecce96ea24e82b0e2de4e1f210221aaa7",
+    "branch": "test/c9-r07-r08-preparation-2026-11-25",
+    "runs": [
+      [
+        45482691119,
+        "R07-R08 isolated preparation",
+        "in_progress",
+        null
+      ],
+      [
+        45482690895,
+        "Verify",
+        "in_progress",
+        null
+      ]
+    ],
+    "report": "evidence/C9/R07_R08_ISOLATION_HTTP_PREPARATION_CANDIDATE_2026-11-25.md",
+    "state": "CANDIDATE",
+    "r07": [
+      "individual concurrency",
+      "individual rollback",
+      "reverse rollback then concurrency"
+    ],
+    "r08": {
+      "workloads": 5,
+      "warmups_each": 5,
+      "samples_each": 30,
+      "fixture": {
+        "resources": 1001,
+        "allocations": 1002,
+        "requirements": 101
+      },
+      "scope": "synthetic test-context HTTP"
+    },
+    "actual": "NOT_RUN",
+    "formal_dependencies_preserved": true
+  }
 }

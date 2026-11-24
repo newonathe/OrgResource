@@ -871,7 +871,7 @@
   },
   "latest_scoped_observation": {
     "date": "2026-11-25 PHT",
-    "handoff_parent": "6bc88100616aaafe2b5acfb60af5fcc8aef83eb3",
+    "handoff_parent": "ce9167d20374a7361b00f1fa083b25ef3b3598a0",
     "pr53": {
       "head": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
       "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
@@ -1032,6 +1032,26 @@
         }
       ]
     },
-    "coverage": "Scoped PR54 actual receipt and candidate; PR53 verified bounded unchanged."
+    "coverage": "PR55 preparatory candidate, PR53 bounded and PR54 pending prior receipts retained.",
+    "pr55": {
+      "head": "30f8d06aa60a65377bad2e8df4443ca860be4e80",
+      "base": "a1ba49aecce96ea24e82b0e2de4e1f210221aaa7",
+      "draft": true,
+      "open": true,
+      "runs": [
+        [
+          45482691119,
+          "R07-R08 isolated preparation",
+          "in_progress",
+          null
+        ],
+        [
+          45482690895,
+          "Verify",
+          "in_progress",
+          null
+        ]
+      ]
+    }
   }
 }
