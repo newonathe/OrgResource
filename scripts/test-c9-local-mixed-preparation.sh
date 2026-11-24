@@ -14,6 +14,11 @@ bash -n scripts/c9-local-operator-gate.sh
 bash -n scripts/c9-public-recovered-control.sh
 python3 -m py_compile scripts/verify-c9-public-recovered-control.py
 node --check scripts/verify-c9-public-recovered-control.mjs
+node --check scripts/verify-c9-private-mixed-browser.mjs
+python3 -B scripts/test-c9-private-mixed-static.py
+if node scripts/verify-c9-private-mixed-browser.mjs > "$root/private-browser-refusal.log" 2>&1; then exit 1; fi
+grep -Fxq R06B3B_MIXED_BROWSER_FAILED:INTAKE "$root/private-browser-refusal.log"
+echo R06B3B_PRIVATE_BROWSER_CI_REFUSED_OK
 source scripts/c9-local-operator-gate.sh
 fp="$(printf '%064d' 1)"
 digest="$(printf '%064d' 2)"
