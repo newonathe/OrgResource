@@ -723,7 +723,8 @@
     "ready": false,
     "source_of_truth": "12_EXECUTION_GRAPH.json",
     "compatibility_gate": "13_MIXED_REHEARSAL_COMPATIBILITY_GATE.md",
-    "verified_base_only": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6"
+    "verified_base_only": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+    "candidate_lock": "45_LOCAL_DISPATCH_SOURCE_LOCK.json"
   },
   "r06a_candidate": {
     "sha": "c91333766f3082b88a8c0414450dcaf6fc934ca2",
@@ -3525,6 +3526,175 @@
       }
     ],
     "report": "docs/handoffs/claude-local-execution-2026-11-24/43_WORKSPACE_RESIDUAL_ACTUAL_AND_INTEGRATED_DEDICATED_GATE.md",
+    "acceptance": "CI_PENDING"
+  },
+  "r09_integrated_actual_preflight": {
+    "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/44_INTEGRATED_DEDICATED_ACTUAL_AND_LOCAL_DISPATCH_PREFLIGHT.md",
+    "lock": "docs/handoffs/claude-local-execution-2026-11-24/45_LOCAL_DISPATCH_SOURCE_LOCK.json",
+    "receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+        "run": 45494597313,
+        "job": 138801600507,
+        "oracle": "integrated dedicated isolation, reversed order, measurements",
+        "actual": "six selected cases (1+1+2+1+1+1), zero failures/errors/skips, six cleanups, 450 measured+75 warmups, exact checkout and final markers"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+        "run": 45494597345,
+        "job": 138801601440,
+        "oracle": "frozen Java8 actual regression",
+        "actual": "61 Maven, 100 Newman requests/151 assertions, one packaged Playwright, zero failures/errors/skips"
+      }
+    ],
+    "metrics": {
+      "scope": "integrated dedicated test-context serial HTTP, not packaged/cold/hosted/private",
+      "columns": [
+        "min_ms",
+        "p50_ms",
+        "p95_ms",
+        "max_ms"
+      ],
+      "workloads": [
+        "resource_page",
+        "allocation_page",
+        "requirement_page",
+        "project_page",
+        "overview"
+      ],
+      "values": [
+        [
+          [
+            14.476,
+            16.958,
+            23.192,
+            23.907
+          ],
+          [
+            21.728,
+            25.9,
+            42.231,
+            54.547
+          ],
+          [
+            13.759,
+            17.153,
+            32.418,
+            46.448
+          ],
+          [
+            10.557,
+            11.666,
+            13.879,
+            15.16
+          ],
+          [
+            19.953,
+            22.021,
+            28.249,
+            29.351
+          ]
+        ],
+        [
+          [
+            14.129,
+            17.225,
+            22.313,
+            22.325
+          ],
+          [
+            17.915,
+            20.492,
+            30.311,
+            41.727
+          ],
+          [
+            13.623,
+            17.605,
+            27.869,
+            38.446
+          ],
+          [
+            9.541,
+            11.336,
+            13.521,
+            16.617
+          ],
+          [
+            18.348,
+            20.597,
+            29.006,
+            36.809
+          ]
+        ],
+        [
+          [
+            13.818,
+            16.599,
+            19.541,
+            20.064
+          ],
+          [
+            20.114,
+            22.271,
+            27.128,
+            28.51
+          ],
+          [
+            13.365,
+            15.351,
+            20.716,
+            21.83
+          ],
+          [
+            8.833,
+            10.653,
+            25.642,
+            27.035
+          ],
+          [
+            16.18,
+            19.504,
+            26.24,
+            26.433
+          ]
+        ]
+      ],
+      "measured": 450,
+      "warmups": 75,
+      "fixture": [
+        1001,
+        1002,
+        101
+      ],
+      "jar_bytes": 72486427,
+      "bundle_bytes": 463308
+    },
+    "protection": {
+      "course_a": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+      "course_a_blob_mode_count": 105,
+      "extended_comparison_base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+      "extended_unchanged_excluding_test": 169,
+      "designated_test": "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java",
+      "migration_count": 7
+    },
+    "full_pending": [
+      {
+        "run": 45494597345,
+        "job": 138801601172
+      },
+      {
+        "run": 45493345999,
+        "job": 138797218433
+      },
+      {
+        "run": 45493392042,
+        "job": 138797385434
+      }
+    ],
     "acceptance": "CI_PENDING"
   }
 }

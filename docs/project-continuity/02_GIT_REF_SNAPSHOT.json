@@ -871,21 +871,27 @@
   },
   "latest_scoped_observation": {
     "date": "2026-11-25 PHT",
-    "handoff_parent": "8ca8cae9d02a2ea6f00ade59d4b5f86944f3b7a2",
+    "handoff_parent": "cc73a98b1d12771031154b809b76b8305d10e95a",
     "pr53": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
     "pr54": "9646ff743c6678af90aa357ee761ac11ed366dff",
     "pr55": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
     "pr56": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
-    "coverage": "Report43 actual residual and dedicated receipt, failures, same-repo integrated guard",
+    "coverage": "Report44 exact protected tree checks, dedicated/Java8 actual, candidate dispatch lock",
     "candidate_runs": [
       [
-        45494597313,
-        "R07-R08 isolated preparation",
+        45494597345,
+        "Verify",
         "in_progress",
         null
       ],
       [
-        45494597345,
+        45493345999,
+        "Verify",
+        "in_progress",
+        null
+      ],
+      [
+        45493392042,
         "Verify",
         "in_progress",
         null
@@ -909,7 +915,31 @@
         "Verify",
         "completed",
         "failure"
+      ],
+      [
+        45494597313,
+        "R07-R08 isolated preparation",
+        "completed",
+        "success"
       ]
+    ],
+    "job_receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+        "run": 45494597313,
+        "job": 138801600507,
+        "oracle": "integrated dedicated isolation, reversed order, measurements",
+        "actual": "six selected cases (1+1+2+1+1+1), zero failures/errors/skips, six cleanups, 450 measured+75 warmups, exact checkout and final markers"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+        "run": 45494597345,
+        "job": 138801601440,
+        "oracle": "frozen Java8 actual regression",
+        "actual": "61 Maven, 100 Newman requests/151 assertions, one packaged Playwright, zero failures/errors/skips"
+      }
     ]
   }
 }

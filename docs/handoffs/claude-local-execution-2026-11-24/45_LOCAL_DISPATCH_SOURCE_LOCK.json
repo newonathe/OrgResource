@@ -1,0 +1,211 @@
+{
+  "schema": "orgresource-local-dispatch-source-lock-v1",
+  "date": "2026-11-25 PHT",
+  "ready_to_launch": false,
+  "approved_source_sha": null,
+  "candidate_source_sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+  "repository": "newonathe/OrgResource",
+  "graph": "12_EXECUTION_GRAPH.json",
+  "status": "CANDIDATE_ONLY",
+  "source_files": [
+    {
+      "path": "AGENTS.md",
+      "blob": "b9a8dd40cc8b8f7591a8d058622a23fa31177d7f",
+      "bytes": 7990,
+      "mode": "100644"
+    },
+    {
+      "path": "docs/QUALITY_EVIDENCE_CONTINUOUS_GATE.md",
+      "blob": "494d9df515dbfcc2e7586c87a1b1fa859aa71564",
+      "bytes": 15033,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/package-extended-c.ps1",
+      "blob": "402594b78473a5c70ad2a78a408ed15d23057847",
+      "bytes": 8009,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/verify-extended-c1.ps1",
+      "blob": "d4a168dbea08460a8ac38efd6df10d2f8dd21221",
+      "bytes": 41074,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/verify-extended-c-recovery.ps1",
+      "blob": "76c8bd4e173f2edd165840a9d3455808fc2ceea0",
+      "bytes": 14360,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/verify-extended-c6a-operator.ps1",
+      "blob": "4015ba4117c720f06b97671c0448b92976d172ed",
+      "bytes": 20793,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/verify-c8-demo-import.ps1",
+      "blob": "b76cc7f0ecca1c690727dba2f77c489e43c821f7",
+      "bytes": 15851,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/extended-c-backup.ps1",
+      "blob": "a909fc2a4b3818f8dec318ab9d12ac49d0bd5fb8",
+      "bytes": 30968,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/verify-c9-local-mixed-preparation.sh",
+      "blob": "f4f5a563817ee5edc8b44d6241a40316b6c01ff7",
+      "bytes": 36683,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/c9-private-mixed-recovered-control.sh",
+      "blob": "7272e978a6e3961a617d6d2ebc0313e7b32d9ecd",
+      "bytes": 14324,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/c9-local-operator-gate.sh",
+      "blob": "98977d6f4a45ee610d926b569bb90deb6dcf3d23",
+      "bytes": 1164,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/verify-c9-private-mixed-api.py",
+      "blob": "a2e35c315d8de63155b3d5047102f76b7a71f0ec",
+      "bytes": 8519,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/verify-c9-private-mixed-browser.mjs",
+      "blob": "96beb793e70322325b2b55c59ce72dab9ba7de98",
+      "bytes": 10647,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/build-c9-private-mixed-expectations.py",
+      "blob": "e8e8d046ba740fb6ee7af327c6c4fd16c278ccde",
+      "bytes": 6578,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/c9-private-mixed-expectations.sql",
+      "blob": "d1db889aab9b11d4284f9f8f3232bda2e7c1fd3d",
+      "bytes": 2461,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/stop-c9-private-mixed-process.py",
+      "blob": "0197217580f8be98a7324f17b1fa66b342739b69",
+      "bytes": 4079,
+      "mode": "100644"
+    }
+  ],
+  "migrations": [
+    {
+      "path": "extended/backend/src/main/resources/db/migration/V1__extended_c1_baseline.sql",
+      "blob": "22b1e0f589ab05d2b0721e5de39bb29b371a2382",
+      "bytes": 10645,
+      "mode": "100644"
+    },
+    {
+      "path": "extended/backend/src/main/resources/db/migration/V2__spring_session_jdbc_mysql.sql",
+      "blob": "4dd537e2bcfb22898fb144860cb5881afe904790",
+      "bytes": 1162,
+      "mode": "100644"
+    },
+    {
+      "path": "extended/backend/src/main/resources/db/migration/V3__atomic_inventory_ledger.sql",
+      "blob": "37ce7fffc3a2a5aae6556aec22f5c8f7755b363c",
+      "bytes": 5479,
+      "mode": "100644"
+    },
+    {
+      "path": "extended/backend/src/main/resources/db/migration/V4__c3_contact_images_and_reminders.sql",
+      "blob": "56d09c0c7f46a23d0d29f8fd5eb236548e86f29d",
+      "bytes": 2158,
+      "mode": "100644"
+    },
+    {
+      "path": "extended/backend/src/main/resources/db/migration/V5__c4_reminder_dispatch_boundary.sql",
+      "blob": "ff9f7330de52b7f6aba6f4f21c29382896eeb5a5",
+      "bytes": 311,
+      "mode": "100644"
+    },
+    {
+      "path": "extended/backend/src/main/resources/db/migration/V6__c8_project_leads_and_linked_borrowers.sql",
+      "blob": "187e5aeff4481d250db9e45f6f7d7cb685e683d4",
+      "bytes": 1594,
+      "mode": "100644"
+    },
+    {
+      "path": "extended/backend/src/main/resources/db/migration/V7__c8_local_demo_provenance.sql",
+      "blob": "7072ea7d77a7d8d4f03b790e5516e4f7fd470cb0",
+      "bytes": 816,
+      "mode": "100644"
+    }
+  ],
+  "protected": {
+    "course_a": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+    "course_a_blob_mode_count": 105,
+    "extended_comparison_base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+    "extended_unchanged_excluding_test": 169,
+    "designated_test": "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java",
+    "migration_count": 7
+  },
+  "actual_receipts": [
+    {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+      "run": 45494597313,
+      "job": 138801600507,
+      "oracle": "integrated dedicated isolation, reversed order, measurements",
+      "actual": "six selected cases (1+1+2+1+1+1), zero failures/errors/skips, six cleanups, 450 measured+75 warmups, exact checkout and final markers"
+    },
+    {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+      "run": 45494597345,
+      "job": 138801601440,
+      "oracle": "frozen Java8 actual regression",
+      "actual": "61 Maven, 100 Newman requests/151 assertions, one packaged Playwright, zero failures/errors/skips"
+    }
+  ],
+  "full_pending": [
+    {
+      "run": 45494597345,
+      "job": 138801601172
+    },
+    {
+      "run": 45493345999,
+      "job": 138797218433
+    },
+    {
+      "run": 45493392042,
+      "job": 138797385434
+    }
+  ],
+  "local_queue": [
+    "L00",
+    "L03",
+    "L01/L02 nested",
+    "L04",
+    "L05 independent",
+    "L06 owner-terminal",
+    "L08"
+  ],
+  "academic_separate": {
+    "source": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+    "temporary_packaging_tools_ref": "9ecabdbc51b280ff1dbb2673f72766cfca2ab9a8",
+    "scope": "R04 bounded temporary evidence only; G07 owner/student, no final assembler or release authorization"
+  },
+  "notes": [
+    "R09 final acceptance must update approved_source_sha and ready_to_launch together with graph, exact actual receipts and owner permission; candidate is never executable authority.",
+    "L04 Windows verifier authenticates encrypted C5 archive and compares four-table count/sum/XOR CRC32 fingerprints and allocation count; not exact all-row equality. Retained stopped disposable datadirs require owner-private custody. Native Windows scripts reserve then release loopback ports before launch and poll ping, so require owner-approved exclusive disposable Windows environment without other MySQL servers/listeners or competing launches; no permission broadening or shared database shutdown. If ownership cannot be established, BLOCKED, do not run. Source-only review; actual native behavior NOT_RUN.",
+    "L06 report27 is authoritative; actual exact private plan/owner confirmation and POSIX capability required. No interim preparation or duplicate import."
+  ]
+}

@@ -59,7 +59,7 @@
       "depends_on": [
         "R02"
       ],
-      "receipt": "93/93 route rows have bounded executed addenda; residual candidate pending and independent acceptance remains open. Report42 R03 final auth 3a1e46cddf0cf1bd519b6c493205727b9310a97a CI45490152665 job138785983133 103 Maven/78 identity/19 Playwright all pass, 3/3 cleanup. Route register 93/93 bounded executed addenda; independent0/93 and residuals open, residual45491538911 pending. R08 packaged 18f47cc762f5bcf0ed857350b177c4ccdf035ff1 full CI45490328103 job138786607428 exact 103/78/19 and cleanup pass, actual 450 timed+75 warmups on selected tagged workspace 120 allocations/20 resources/18 requirements/6 projects/2 departments; p95 by workload repeats in Report42, JAR72486427 bytes SHA76e5977499edb6a01a0c6de95ce166c2975d08f70bcdbd57680049d1af32c10a; same JVM not cold or hosted. R07 deadlock ef634ce7469f0b94b09ddcef097ad14a8c6e0206 dedicated45491974383 job138792386449 all selected pass, full45491974364 job138792387677 actual R07_ACTUAL_DEADLOCK_OK and 103/78 zero failures; later Stage1D upstream201/downstreamEOF and distinct restarted JAR ready, then KeyError, full run failed, restore/browser NOT_RUN. Corrected source 5afd326f4bd4e03c6027a9a639de682a1996d5e1 uses temporary OperationView.action, exact initial upstream data/ETag equality and safe exception line; durable MovementReceipt.kind unchanged, CI45493345999/45493345989 pending. Reminder restart candidate 87a9aae65b8406cc716b473dbbf57283a98da302, shell quoting self-review correction de6d2ed2787b2c3baf5a480dbc2756eeefa3a1cb (CHAR(96)); post-original archive proof target clone only, staged stale/fresh claims across distinct actual JVM, actual CI pending. Integrated draft PR56 initial c68252db41f562d0230269844794048471dac0cf, parent PR54 9646ff743c6678af90aa357ee761ac11ed366dff, exact PR53 27 and PR55 17 nonshared blobs +7 reconciled Java hunks (78 ordered tests), 46 path delta all allowed, corrected latest 9d0902b4e8ea2045a30a4ff4a524e213a3b6a7b3 carries exact PR55 correction blobs and report; initial Verify45493192571 pending, dedicated skipped by branch guard, latest runs discover by SHA. Final combined proof not yet available. Next consume actual corrected full logs, reminder restart and residual, align exact latest refs, verify integrated runtime and decide dedicated final scope, R09=false. No merge/deploy/Claude launch.",
+      "receipt": "93/93 bounded executed route addenda, #6/#61 residual actual PR54 9646ff7 CI45491538911; independent0/93; integrated full regression pending. Prior receipts preserved in ledger.",
       "notes": "R029/R031/R082/R078/R041/R083/R084/R089/R091/R017/R040/R025 directed bounded executed. Remaining route oracle gaps and independent IR4 open; do not treat 100 tests as complete acceptance. R035 public recovered logout stale replay/session deletion/domain equality and R038 original-only exact metadata public receipts reused; independent acceptance remains open. Report43: Residual actual pass; 93/93 directed bounded, independent0/93; final combined proof pending."
     },
     {
@@ -188,7 +188,7 @@
         "R08"
       ],
       "receipt": "Reconciled exact final implementation SHA and updated handoff, actual green CI, no unresolved remote engineering for local lane",
-      "notes": "This is the pre-handoff release gate; no launch until ChatGPT declares local queue ready Exact four-hunk source dry-run report37; final heads and actual combined CI not run. Report39 renewed six-hunk exact dry-run on latest heads, source only. Report41 seven-hunk exact latest-head source-only dry-run passed; actual integrated CI not run. Report42 preliminary combined draft PR56 exact blob integration and corrected head, CI pending, dedicated skipped by branch guard. No closure. Report43: Dedicated same-repo and exact-checkout guard candidate 2c626cb251fc3e0a5e3304f9ea5b03f89f55e024; full/dedicated pending."
+      "notes": "This is the pre-handoff release gate; no launch until ChatGPT declares local queue ready Exact four-hunk source dry-run report37; final heads and actual combined CI not run. Report39 renewed six-hunk exact dry-run on latest heads, source only. Report41 seven-hunk exact latest-head source-only dry-run passed; actual integrated CI not run. Report42 preliminary combined draft PR56 exact blob integration and corrected head, CI pending, dedicated skipped by branch guard. No closure. Report43: Dedicated same-repo and exact-checkout guard candidate 2c626cb251fc3e0a5e3304f9ea5b03f89f55e024; full/dedicated pending. Report44 exact integrated dedicated and Java8 actual passed, source lock candidate only; full Extended pending."
     },
     {
       "id": "L00",
@@ -198,7 +198,7 @@
         "R09"
       ],
       "receipt": "Owner-approved private local path, exact source/worktree, toolchain + hash checks",
-      "notes": "No secrets/host variables, no scans of unrelated files"
+      "notes": "No secrets/host variables, no scans of unrelated files Report44: require current graph and dispatch lock both ready with identical approved source SHA, owner permission; no stale checkout."
     },
     {
       "id": "L00B",
@@ -249,7 +249,7 @@
         "L00B"
       ],
       "receipt": "Exact full standalone 96: state/count/ledger/actual encrypted restore, private measurements",
-      "notes": "Reuse exact verified JAR, no extra build; not mixed or host"
+      "notes": "Reuse exact verified JAR, no extra build; not mixed or host Report44: actual C5 and four-table fingerprint, not all-row proof; require exclusive disposable Windows environment, no unrelated DB/listeners, native proof NOT_RUN."
     },
     {
       "id": "L05",
@@ -1308,6 +1308,175 @@
       }
     ],
     "report": "docs/handoffs/claude-local-execution-2026-11-24/43_WORKSPACE_RESIDUAL_ACTUAL_AND_INTEGRATED_DEDICATED_GATE.md",
+    "acceptance": "CI_PENDING"
+  },
+  "r09_integrated_actual_preflight": {
+    "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/44_INTEGRATED_DEDICATED_ACTUAL_AND_LOCAL_DISPATCH_PREFLIGHT.md",
+    "lock": "docs/handoffs/claude-local-execution-2026-11-24/45_LOCAL_DISPATCH_SOURCE_LOCK.json",
+    "receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+        "run": 45494597313,
+        "job": 138801600507,
+        "oracle": "integrated dedicated isolation, reversed order, measurements",
+        "actual": "six selected cases (1+1+2+1+1+1), zero failures/errors/skips, six cleanups, 450 measured+75 warmups, exact checkout and final markers"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+        "run": 45494597345,
+        "job": 138801601440,
+        "oracle": "frozen Java8 actual regression",
+        "actual": "61 Maven, 100 Newman requests/151 assertions, one packaged Playwright, zero failures/errors/skips"
+      }
+    ],
+    "metrics": {
+      "scope": "integrated dedicated test-context serial HTTP, not packaged/cold/hosted/private",
+      "columns": [
+        "min_ms",
+        "p50_ms",
+        "p95_ms",
+        "max_ms"
+      ],
+      "workloads": [
+        "resource_page",
+        "allocation_page",
+        "requirement_page",
+        "project_page",
+        "overview"
+      ],
+      "values": [
+        [
+          [
+            14.476,
+            16.958,
+            23.192,
+            23.907
+          ],
+          [
+            21.728,
+            25.9,
+            42.231,
+            54.547
+          ],
+          [
+            13.759,
+            17.153,
+            32.418,
+            46.448
+          ],
+          [
+            10.557,
+            11.666,
+            13.879,
+            15.16
+          ],
+          [
+            19.953,
+            22.021,
+            28.249,
+            29.351
+          ]
+        ],
+        [
+          [
+            14.129,
+            17.225,
+            22.313,
+            22.325
+          ],
+          [
+            17.915,
+            20.492,
+            30.311,
+            41.727
+          ],
+          [
+            13.623,
+            17.605,
+            27.869,
+            38.446
+          ],
+          [
+            9.541,
+            11.336,
+            13.521,
+            16.617
+          ],
+          [
+            18.348,
+            20.597,
+            29.006,
+            36.809
+          ]
+        ],
+        [
+          [
+            13.818,
+            16.599,
+            19.541,
+            20.064
+          ],
+          [
+            20.114,
+            22.271,
+            27.128,
+            28.51
+          ],
+          [
+            13.365,
+            15.351,
+            20.716,
+            21.83
+          ],
+          [
+            8.833,
+            10.653,
+            25.642,
+            27.035
+          ],
+          [
+            16.18,
+            19.504,
+            26.24,
+            26.433
+          ]
+        ]
+      ],
+      "measured": 450,
+      "warmups": 75,
+      "fixture": [
+        1001,
+        1002,
+        101
+      ],
+      "jar_bytes": 72486427,
+      "bundle_bytes": 463308
+    },
+    "protection": {
+      "course_a": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+      "course_a_blob_mode_count": 105,
+      "extended_comparison_base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+      "extended_unchanged_excluding_test": 169,
+      "designated_test": "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java",
+      "migration_count": 7
+    },
+    "full_pending": [
+      {
+        "run": 45494597345,
+        "job": 138801601172
+      },
+      {
+        "run": 45493345999,
+        "job": 138797218433
+      },
+      {
+        "run": 45493392042,
+        "job": 138797385434
+      }
+    ],
     "acceptance": "CI_PENDING"
   }
 }
