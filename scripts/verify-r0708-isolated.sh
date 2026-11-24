@@ -85,7 +85,10 @@ run_case concurrency "$concurrency" false false test
 run_case rollback "$rollback" false false test
 run_case reversed "$concurrency+$rollback" true false test
 run_case measurement "$measure" false true package
+run_case measurement_repeat2 "$measure" false true test
+run_case measurement_repeat3 "$measure" false true test
 jar=extended/backend/target/extended-backend-0.1.0-SNAPSHOT.jar
 [[ -s "$jar" && -d extended/frontend/dist ]]
 echo "R08_ARTIFACTS:jar_bytes=$(stat -c %s "$jar") bundle_file_bytes=$(find extended/frontend/dist -type f -printf '%s\n' | awk '{sum+=$1} END{print sum+0}')"
+echo 'R08_REPEAT_OK:fresh_schemas=3 fresh_maven_invocations=3 measured_requests=450 warmup_requests=75'
 echo 'R0708_PREPARATION_OK:individual=true reversed=true http=true cleanup=true'

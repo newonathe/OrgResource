@@ -3441,6 +3441,7 @@ class C1IdentityAcceptanceTest {
         final int warmups = 5, samples = 30;
         long[] elapsed = new long[samples];
         int minBytes = Integer.MAX_VALUE, maxBytes = 0;
+        long firstWarmup = 0;
         for (int i = -warmups; i < samples; i++) {
             HttpRequest request = HttpRequest.newBuilder(URI.create(base() + path))
                     .timeout(java.time.Duration.ofSeconds(15)).GET().build();
@@ -3451,6 +3452,7 @@ class C1IdentityAcceptanceTest {
             JsonObject data = json(response).getAsJsonObject("data");
             if (expectedItems >= 0) assertEquals(expectedItems, data.getAsJsonArray("items").size());
             else assertEquals(1001, data.getAsJsonObject("allocations").get("pending").getAsInt());
+            if (i == -warmups) firstWarmup = duration;
             if (i >= 0) {
                 elapsed[i] = duration;
                 int bytes = response.body().getBytes(StandardCharsets.UTF_8).length;
@@ -3464,6 +3466,7 @@ class C1IdentityAcceptanceTest {
                 "R08_HTTP:%s warmups=%d samples=%d min_ms=%.3f p50_ms=%.3f p95_ms=%.3f max_ms=%.3f body_bytes_min=%d body_bytes_max=%d%n",
                 label, warmups, samples, elapsed[0] / 1e6, elapsed[(int)Math.ceil(.5 * samples)-1] / 1e6,
                 elapsed[(int)Math.ceil(.95 * samples)-1] / 1e6, elapsed[samples-1] / 1e6, minBytes, maxBytes);
+        System.out.printf(java.util.Locale.ROOT, "R08_FIRST_WARMUP:%s ms=%.3f%n", label, firstWarmup / 1e6);
     }
 
     @Test @Order(53)
