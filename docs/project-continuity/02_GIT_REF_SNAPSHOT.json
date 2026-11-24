@@ -871,58 +871,49 @@
   },
   "latest_scoped_observation": {
     "date": "2026-11-25 PHT",
-    "handoff_parent": "eb4956b550dadb0d4dbb604b072dfab15de8c30a",
+    "handoff_parent": "3ad48a7d33518332e8fadd5947fa5ed44e429210",
     "pr53": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
-    "pr54": "852f2f29f58065e9cf581cb70d58f642da343c1f",
-    "pr55": "b48b289f4ddc3dd1fb0ac786487d188921c6909c",
-    "coverage": "Scoped exact live refs and actual reporting and corrected recovery receipts; historical inventory retained",
+    "pr54": "3a1e46cddf0cf1bd519b6c493205727b9310a97a",
+    "pr55": "18f47cc762f5bcf0ed857350b177c4ccdf035ff1",
+    "coverage": "Scoped exact live refs, actual workspace, identity and corrected dedicated receipts; historical inventory retained",
     "candidate_runs": [
       [
-        45488537632,
+        45490152665,
         "Verify",
         "in_progress",
         null
       ],
       [
-        45488706073,
+        45490328103,
         "Verify",
-        "queued",
+        "in_progress",
         null
       ],
       [
-        45488706396,
+        45490328267,
         "R07-R08 isolated preparation",
-        "queued",
+        "in_progress",
         null
       ]
     ],
     "actual_runs": [
       [
-        45485647999,
+        45486716110,
         "Verify",
         "completed",
         "success"
       ],
       [
-        45486540380,
+        45487476059,
         "Verify",
         "completed",
         "success"
-      ]
-    ],
-    "lifecycle_failed_sha": "a034fb1c81ff1521c9bc9c0c32561c9c2cde515c",
-    "lifecycle_correction_runs": [
-      [
-        45489076064,
-        "Verify",
-        "queued",
-        null
       ],
       [
         45489075914,
         "R07-R08 isolated preparation",
-        "queued",
-        null
+        "completed",
+        "success"
       ]
     ]
   }
