@@ -5462,8 +5462,10 @@ class C1IdentityAcceptanceTest {
                 json(read).getAsJsonObject("data").keySet());
         assertEquals(200, get(outsider.client, "/api/v2/orgs/" + foreign.orgPublicId + "/resources/" + foreignId).statusCode());
         String tag = read.headers().firstValue("ETag").orElseThrow();
-        for (Fixture lowRole : List.of(admin, member, lead)) {
-            Session actor = login(lowRole.username, lowRole.password);
+        Session adminActor = login(admin.username, admin.password);
+        Session memberActor = login(member.username, member.password);
+        Session leadActor = login(lead.username, lead.password);
+        for (Session actor : List.of(adminActor, memberActor, leadActor)) {
             assertScopedRefusal(403, home.orgDbId, foreign.orgDbId, () -> get(actor.client, root));
             assertScopedRefusal(403, home.orgDbId, foreign.orgDbId, () -> get(actor.client, item));
             assertScopedRefusal(403, home.orgDbId, foreign.orgDbId, () -> get(actor.client, item + "/movements"));
@@ -5484,6 +5486,101 @@ class C1IdentityAcceptanceTest {
         assertEquals(5, json(get(owner.client, item)).getAsJsonObject("data").get("totalQuantity").getAsInt());
         assertEquals(7, json(get(outsider.client, "/api/v2/orgs/" + foreign.orgPublicId + "/resources/" + foreignId))
                 .getAsJsonObject("data").get("totalQuantity").getAsInt());
+
+        // Reuse both populated tenants and actors for the Allocation routes.
+        long homeResource = json(created).get("id").getAsLong();
+        long foreignResource = json(foreignCreated).get("id").getAsLong();
+        LocalDateTime future = LocalDateTime.now(clock).withNano(0).plusDays(2);
+        long localAllocation = createDenialAllocation(owner, homeResource, future);
+        long remoteAllocation = createDenialAllocation(outsider, foreignResource, future);
+        String allocationRoot = "/api/v2/orgs/" + home.orgPublicId + "/allocations";
+        String localId = allocationRepository.findByIdAndOrganizationId(localAllocation, home.orgDbId).orElseThrow().publicId.toString();
+        String remoteId = allocationRepository.findByIdAndOrganizationId(remoteAllocation, foreign.orgDbId).orElseThrow().publicId.toString();
+        String local = allocationRoot + "/" + localId;
+        String remote = allocationRoot + "/" + remoteId;
+        HttpResponse<String> localRead = get(adminActor.client, local);
+        assertEquals(200, localRead.statusCode());
+        assertEquals(Set.of("id", "resourceId", "status", "quantity", "version"),
+                json(localRead).getAsJsonObject("data").keySet());
+        assertEquals(200, get(outsider.client, "/api/v2/orgs/" + foreign.orgPublicId + "/allocations/" + remoteId).statusCode());
+        String pendingTag = localRead.headers().firstValue("ETag").orElseThrow();
+        for (Session actor : List.of(adminActor, memberActor, leadActor)) {
+            assertScopedRefusal(403, home.orgDbId, foreign.orgDbId, () -> get(actor.client, allocationRoot));
+            for (String action : List.of("approve", "issue", "return", "consume", "cancel")) {
+                int status = actor == leadActor && action.equals("cancel") ? 404 : 403;
+                assertScopedRefusal(status, home.orgDbId, foreign.orgDbId,
+                        () -> modernPost(actor, local + "/" + action, GSON.toJson(new OperationRequest(UUID.randomUUID())),
+                                pendingTag, C1Secrets.bearerToken()));
+            }
+        }
+        assertScopedRefusal(403, home.orgDbId, foreign.orgDbId, () -> get(memberActor.client, local));
+        assertScopedRefusal(404, home.orgDbId, foreign.orgDbId, () -> get(leadActor.client, local));
+        for (Session actor : List.of(owner, keeper)) {
+            assertScopedRefusal(404, home.orgDbId, foreign.orgDbId, () -> get(actor.client, remote));
+            assertScopedRefusal(404, home.orgDbId, foreign.orgDbId, () -> get(actor.client, allocationRoot + "?after=" + remoteId));
+            for (String action : List.of("approve", "issue", "return", "consume", "cancel")) {
+                assertScopedRefusal(404, home.orgDbId, foreign.orgDbId,
+                        () -> modernPost(actor, remote + "/" + action, GSON.toJson(new OperationRequest(UUID.randomUUID())),
+                                pendingTag, C1Secrets.bearerToken()));
+            }
+        }
+        assertScopedRefusal(404, home.orgDbId, foreign.orgDbId, () -> post(owner, remote + "/delete", null, pendingTag));
+        assertScopedRefusal(403, home.orgDbId, foreign.orgDbId, () -> post(keeper, local + "/delete", null, pendingTag));
+        for (String action : List.of("issue", "return", "consume")) {
+            HttpResponse<String> denied = assertScopedRefusal(409, home.orgDbId, foreign.orgDbId,
+                    () -> modernPost(owner, local + "/" + action, GSON.toJson(new OperationRequest(UUID.randomUUID())),
+                            pendingTag, C1Secrets.bearerToken()));
+            assertEquals("INVALID_ALLOCATION_STATE", json(denied).get("code").getAsString());
+        }
+        HttpResponse<String> approved = modernPost(keeper, local + "/approve",
+                GSON.toJson(new OperationRequest(UUID.randomUUID())), pendingTag, C1Secrets.bearerToken());
+        assertEquals(200, approved.statusCode());
+        assertEquals(3, json(get(owner.client, item)).getAsJsonObject("data").get("availableQuantity").getAsInt());
+        String approvedTag = get(owner.client, local).headers().firstValue("ETag").orElseThrow();
+        for (String action : List.of("approve", "issue", "consume")) {
+            HttpResponse<String> denied = assertScopedRefusal(409, home.orgDbId, foreign.orgDbId,
+                    () -> modernPost(owner, local + "/" + action, GSON.toJson(new OperationRequest(UUID.randomUUID())),
+                            approvedTag, C1Secrets.bearerToken()));
+            String code = switch (action) {
+                case "approve" -> "INVALID_ALLOCATION_STATE";
+                case "issue" -> "PROJECT_NOT_ACTIVE";
+                default -> "RESOURCE_TYPE_MISMATCH";
+            };
+            assertEquals(code, json(denied).get("code").getAsString());
+        }
+        for (Session actor : List.of(owner, adminActor)) {
+            HttpResponse<String> denied = assertScopedRefusal(409, home.orgDbId, foreign.orgDbId,
+                    () -> post(actor, local + "/delete", null, approvedTag));
+            assertEquals("HISTORY_PROTECTED", json(denied).get("code").getAsString());
+        }
+        HttpResponse<String> cancelled = modernPost(keeper, local + "/cancel",
+                GSON.toJson(new OperationRequest(UUID.randomUUID())), approvedTag, C1Secrets.bearerToken());
+        assertEquals(200, cancelled.statusCode());
+        assertEquals(5, json(get(owner.client, item)).getAsJsonObject("data").get("availableQuantity").getAsInt());
+        String cancelledTag = get(owner.client, local).headers().firstValue("ETag").orElseThrow();
+        HttpResponse<String> cancelledAgain = assertScopedRefusal(409, home.orgDbId, foreign.orgDbId,
+                () -> modernPost(owner, local + "/cancel", GSON.toJson(new OperationRequest(UUID.randomUUID())),
+                        cancelledTag, C1Secrets.bearerToken()));
+        assertEquals("INVALID_ALLOCATION_STATE", json(cancelledAgain).get("code").getAsString());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=? AND resource_id=?",
+                Integer.class, home.orgDbId, homeResource));
+        assertEquals("PENDING", jdbc.queryForObject("SELECT status FROM allocation WHERE id=? AND organization_id=?",
+                String.class, remoteAllocation, foreign.orgDbId));
+    }
+
+    private long createDenialAllocation(Session actor, long resourceId, LocalDateTime future) throws Exception {
+        HttpResponse<String> department = post(actor, "/api/departments", GSON.toJson(new NameRequest("Fictional denial team")));
+        assertEquals(201, department.statusCode());
+        HttpResponse<String> project = post(actor, "/api/projects", GSON.toJson(new ProjectRequest(
+                json(department).get("id").getAsLong(), "Fictional denial project", future.toString(), future.plusDays(1).toString())));
+        assertEquals(201, project.statusCode());
+        HttpResponse<String> requirement = post(actor, "/api/requirements", GSON.toJson(new RequirementRequest(
+                json(project).get("id").getAsLong(), resourceId, 4)));
+        assertEquals(201, requirement.statusCode());
+        HttpResponse<String> allocation = post(actor, "/api/allocations", GSON.toJson(new AllocationRequest(
+                json(requirement).get("id").getAsLong(), 2, "Fictional denial borrower", null, false)));
+        assertEquals(201, allocation.statusCode());
+        return json(allocation).get("id").getAsLong();
     }
 
     private record Fixture(long orgDbId, UUID orgPublicId, long userDbId, String username, String password,
