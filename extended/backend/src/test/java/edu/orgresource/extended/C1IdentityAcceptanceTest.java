@@ -5302,6 +5302,58 @@ class C1IdentityAcceptanceTest {
         assertEquals(1, memberships.countEffectiveActiveOwners(other.orgDbId));
     }
 
+    @Test @Order(77)
+    void C8R030PasswordRefusalsPreserveCredentialAccountAuditAndBothSessions() throws Exception {
+        Fixture account = newTenant("C8-R030", Membership.Role.OWNER);
+        Fixture foreign = newTenant("C8-R030-foreign", Membership.Role.OWNER);
+        Session current = login(account.username, account.password);
+        Session peer = login(account.username, account.password);
+        Session outsider = login(foreign.username, foreign.password);
+        String endpoint = "/api/v2/account/password";
+        String accountSql = "SELECT id,HEX(public_id) AS public_id,username_key,display_name,status,credential_version,version,created_at,updated_at FROM user_account WHERE id IN (?,?) ORDER BY id";
+        String credentialSql = "SELECT user_id,password_hash,changed_at FROM local_credential WHERE user_id IN (?,?) ORDER BY user_id";
+        String auditSql = "SELECT id,org_id,actor_user_id,action,target_type,target_id,outcome,request_id,created_at FROM audit_event WHERE actor_user_id IN (?,?) ORDER BY id";
+        String recoverySql = "SELECT id,user_id,HEX(code_hash) AS digest,HEX(batch_id) AS batch,created_at,expires_at,used_at,revoked_at FROM account_recovery_code WHERE user_id IN (?,?) ORDER BY id";
+        String sessionSql = "SELECT PRIMARY_ID,SESSION_ID,PRINCIPAL_NAME FROM SPRING_SESSION WHERE PRINCIPAL_NAME IN (?,?) ORDER BY PRIMARY_ID";
+        var accountBefore = jdbc.queryForList(accountSql, account.userDbId, foreign.userDbId);
+        var credentialBefore = jdbc.queryForList(credentialSql, account.userDbId, foreign.userDbId);
+        var auditBefore = jdbc.queryForList(auditSql, account.userDbId, foreign.userDbId);
+        var recoveryBefore = jdbc.queryForList(recoverySql, account.userDbId, foreign.userDbId);
+        var sessionsBefore = jdbc.queryForList(sessionSql, account.username, foreign.username);
+        assertEquals(2, accountBefore.size());
+        assertEquals(2, credentialBefore.size());
+        assertEquals(10, recoveryBefore.size());
+        assertEquals(3, sessionsBefore.size());
+        assertNotEquals(current.sessionId, peer.sessionId);
+        String replacement = "C8-Changed-Password-" + UUID.randomUUID();
+        String valid = GSON.toJson(new PasswordChangeRequest(account.password, replacement));
+        for (int i = 0; i < 3; i++) {
+            HttpResponse<String> denied = switch (i) {
+                case 0 -> post(current, endpoint, GSON.toJson(new PasswordChangeRequest("deliberately-wrong-password", replacement)));
+                case 1 -> post(current, endpoint, GSON.toJson(new PasswordChangeRequest(account.password, account.password)));
+                default -> post(current, endpoint, valid, "invalid-csrf-token", origin());
+            };
+            assertEquals(List.of(401, 422, 403).get(i).intValue(), denied.statusCode());
+            if (i < 2) {
+                assertEquals(List.of("CURRENT_PASSWORD_INVALID", "PASSWORD_REUSE").get(i), json(denied).get("code").getAsString());
+                assertFalse(json(denied).has("data"));
+            }
+            // Never emit credentials, recovery digests, or session identifiers in assertion failures.
+            assertTrue(accountBefore.equals(jdbc.queryForList(accountSql, account.userDbId, foreign.userDbId)), "Denied password change altered account rows.");
+            assertTrue(credentialBefore.equals(jdbc.queryForList(credentialSql, account.userDbId, foreign.userDbId)), "Denied password change altered credential rows.");
+            assertTrue(auditBefore.equals(jdbc.queryForList(auditSql, account.userDbId, foreign.userDbId)), "Denied password change altered actor audit rows.");
+            assertTrue(recoveryBefore.equals(jdbc.queryForList(recoverySql, account.userDbId, foreign.userDbId)), "Denied password change altered recovery rows.");
+            assertTrue(sessionsBefore.equals(jdbc.queryForList(sessionSql, account.username, foreign.username)), "Denied password change rotated or removed a session.");
+            for (Session session : List.of(current, peer, outsider)) {
+                assertTrue(session.sessionId.equals(cookie(session.client)), "Denied password change changed a client cookie.");
+                assertEquals(200, get(session.client, "/api/v2/session").statusCode());
+            }
+        }
+        // Positive change, peer retirement and password usability already have actual #8 evidence.
+        assertTrue(passwordEncoder.matches(account.password, credentials.findByUserId(account.userDbId).orElseThrow().passwordHash));
+        assertFalse(passwordEncoder.matches(replacement, credentials.findByUserId(account.userDbId).orElseThrow().passwordHash));
+    }
+
     private record Fixture(long orgDbId, UUID orgPublicId, long userDbId, String username, String password,
                           long membershipDbId, UUID membershipPublicId, List<String> recoveryCodes) { }
     private static final class Session {
