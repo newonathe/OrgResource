@@ -1027,5 +1027,14 @@
       "Potential locking-read permission incompatibility",
       "Full mixed private path and independent reviewer open"
     ]
+  },
+  "r04_standalone_candidate": {
+    "base": "076c9a5e7c7a1e66b894362864d93b76409196bd",
+    "script": "docs/handoffs/claude-local-execution-2026-11-24/verify_course_a_standalone_candidate.py",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/20_R04_STANDALONE_RELEASE_CANDIDATE.md",
+    "payloads": 18,
+    "java_files": 75,
+    "full_source_files": 120,
+    "acceptance": "CANDIDATE_CI_PENDING"
   }
 }

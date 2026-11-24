@@ -45,3 +45,7 @@ R06B3a VERIFIED_BOUNDED PR52 d3e8a855, CI 45437263264, job 138598356841 actual l
 ## R06B3b public control implementation candidate
 
 PR53 321205f235efe36d615e68998f3ffbd75baf4051, base PR52 d3e8a8550e00e3bb9423d84f51f8141783e71fd1, CI 45441418164. Test assertions staged first 30c68c97; actual red run NOT_RUN. Six changed paths only, 105 A/170 Extended/7 migration blobs unchanged. Session-only DML, real API/browser, persisted session and logout proof, exact non-session/source equality, PIDFD cleanup. Explicit Flyway disabled for observation-only control after actual verified restore, not normal writable migration boot; pessimistic locking SELECT permission may fail. Do not relax domain writes. Actual CI pending. Full private mixed path NOT_IMPLEMENTED/NOT_RUN. See [evidence report](https://github.com/newonathe/OrgResource/blob/321205f235efe36d615e68998f3ffbd75baf4051/evidence/C9/R06B3B_PUBLIC_RECOVERED_CONTROL_2026-11-25.md). R09=false.
+
+## R04 standalone candidate
+
+Report 20 and standalone checker, 18 payloads incl PNG/Java/full ZIP/CI JAR, 6 negatives, actual staged image Newman candidate. Existing source archive CI 45439669603 all three jobs green. New CI pending, no release archive upload. PR53 R06B3b still pending. R09=false.

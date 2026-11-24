@@ -105,6 +105,7 @@ jobs:
           done
           cd ..
           pwsh -NoProfile -File scripts/run-api-acceptance.ps1
+          python3 docs/handoffs/claude-local-execution-2026-11-24/verify_course_a_standalone_candidate.py --jar backend/target/orgresource-0.1.0-SNAPSHOT.jar
           npm --prefix frontend run e2e -- --grep 'the packaged Java application serves'
       - uses: actions/upload-artifact@v4
         with:
