@@ -88,8 +88,25 @@ import javax.validation.ValidatorFactory;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         properties = {"spring.profiles.active=c1-test", "c1.sms.enabled=false", "c1.governance-expiry-delay-ms=86400000"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestMethodOrder(C1IdentityAcceptanceTest.R07Order.class)
 class C1IdentityAcceptanceTest {
+    // Default ordering remains identical to the existing ordered acceptance suite.
+    public static class R07Order implements MethodOrderer {
+        @Override public void orderMethods(org.junit.jupiter.api.MethodOrdererContext context) {
+            new MethodOrderer.OrderAnnotation().orderMethods(context);
+            if ("true".equals(System.getenv("ORGRESOURCE_R07_REVERSE"))) {
+                if (!"true".equals(System.getenv("GITHUB_ACTIONS")))
+                    throw new IllegalStateException("R07 reversal is confined to disposable CI.");
+                java.util.Collections.reverse(context.getMethodDescriptors());
+            }
+        }
+    }
+
+    private static void isolationMarker(String name) {
+        if ("true".equals(System.getenv("ORGRESOURCE_R07_PROBE")))
+            System.out.println("R07_CASE_START:" + name);
+    }
+
     private static final Gson GSON = new Gson();
     private static final String COOKIE = "ORGSESSION";
     private static final String OWNER_SLUG = "c1-seed-workspace";
@@ -1317,6 +1334,7 @@ class C1IdentityAcceptanceTest {
 
     @Test @Order(23)
     void C2_CONCURRENCY01_twoApprovalsAndTwoIssuesCannotDoubleCommitStock() throws Exception {
+        isolationMarker("concurrency");
         Fixture owner = newTenant("C2-race-owner", Membership.Role.OWNER);
         Fixture custodian = fixtureInOrg(owner.orgDbId, Membership.Role.CUSTODIAN);
         Session ownerSession = login(owner.username, owner.password);
@@ -1400,6 +1418,7 @@ class C1IdentityAcceptanceTest {
 
     @Test @Order(24)
     void C2_IDEMP02_failureBetweenQuantityAndMovementRollsBackEverything() throws Exception {
+        isolationMarker("rollback");
         Fixture owner = newTenant("C2-rollback-owner", Membership.Role.OWNER);
         Session session = login(owner.username, owner.password);
         long resourceId = json(post(session, "/api/resources", GSON.toJson(new ResourceRequest(
@@ -3398,6 +3417,53 @@ class C1IdentityAcceptanceTest {
         assertEquals(404, get(foreignActor.client, relatedPath).statusCode());
         String nextRequirementPage = workspacePage(actor, relatedPath).get("nextCursor").getAsString();
         assertEquals(404, get(actor.client, root + "/requirements?limit=50&cursor=" + nextRequirementPage).statusCode());
+        if ("true".equals(System.getenv("ORGRESOURCE_R08_PROBE"))) {
+            assertEquals("true", System.getenv("GITHUB_ACTIONS"));
+            assertEquals(1001, jdbc.queryForObject("SELECT COUNT(*) FROM resource WHERE organization_id=?", Integer.class, owner.orgDbId));
+            assertEquals(1002, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE organization_id=?", Integer.class, owner.orgDbId));
+            assertEquals(101, jdbc.queryForObject("SELECT COUNT(*) FROM resource_requirement WHERE organization_id=?", Integer.class, owner.orgDbId));
+            var before = legacyDenialRows(owner.orgDbId, foreign.orgDbId);
+            long heapBefore = java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+            measureWorkspaceRead(actor, "resource_page", stock, 100);
+            measureWorkspaceRead(actor, "allocation_page", requests, 100);
+            measureWorkspaceRead(actor, "requirement_page", relatedPath, 50);
+            measureWorkspaceRead(actor, "project_page", root + "/projects", 1);
+            measureWorkspaceRead(actor, "overview", root + "/overview", -1);
+            long heapAfter = java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+            assertTrue(before.equals(legacyDenialRows(owner.orgDbId, foreign.orgDbId)), "Measurement reads altered scoped domain rows.");
+            var sizes = jdbc.queryForMap("SELECT COALESCE(SUM(data_length),0) AS data_bytes,COALESCE(SUM(index_length),0) AS index_bytes FROM information_schema.tables WHERE table_schema=DATABASE() AND engine='InnoDB'");
+            System.out.printf("R08_FIXTURE:resources=1001 allocations=1002 requirements=101 heap_before=%d heap_after=%d innodb_data_estimate=%s innodb_index_estimate=%s%n",
+                    heapBefore, heapAfter, sizes.get("data_bytes"), sizes.get("index_bytes"));
+        }
+    }
+
+    private void measureWorkspaceRead(Session actor, String label, String path, int expectedItems) throws Exception {
+        final int warmups = 5, samples = 30;
+        long[] elapsed = new long[samples];
+        int minBytes = Integer.MAX_VALUE, maxBytes = 0;
+        for (int i = -warmups; i < samples; i++) {
+            HttpRequest request = HttpRequest.newBuilder(URI.create(base() + path))
+                    .timeout(java.time.Duration.ofSeconds(15)).GET().build();
+            long start = System.nanoTime();
+            HttpResponse<String> response = actor.client.send(request, HttpResponse.BodyHandlers.ofString());
+            long duration = System.nanoTime() - start;
+            assertEquals(200, response.statusCode());
+            JsonObject data = json(response).getAsJsonObject("data");
+            if (expectedItems >= 0) assertEquals(expectedItems, data.getAsJsonArray("items").size());
+            else assertEquals(1001, data.getAsJsonObject("allocations").get("pending").getAsInt());
+            if (i >= 0) {
+                elapsed[i] = duration;
+                int bytes = response.body().getBytes(StandardCharsets.UTF_8).length;
+                minBytes = Math.min(minBytes, bytes);
+                maxBytes = Math.max(maxBytes, bytes);
+            }
+        }
+        Arrays.sort(elapsed);
+        // Nearest rank, measured serial HTTP round-trip including body transfer.
+        System.out.printf(java.util.Locale.ROOT,
+                "R08_HTTP:%s warmups=%d samples=%d min_ms=%.3f p50_ms=%.3f p95_ms=%.3f max_ms=%.3f body_bytes_min=%d body_bytes_max=%d%n",
+                label, warmups, samples, elapsed[0] / 1e6, elapsed[(int)Math.ceil(.5 * samples)-1] / 1e6,
+                elapsed[(int)Math.ceil(.95 * samples)-1] / 1e6, elapsed[samples-1] / 1e6, minBytes, maxBytes);
     }
 
     @Test @Order(53)
