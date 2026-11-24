@@ -4064,29 +4064,23 @@ class C1IdentityAcceptanceTest {
         long invitationVersion = invitationBefore.version;
         assertEquals(Invitation.Status.INVITED, invitationBefore.status);
 
-        assertEquals(403, post(memberSession, root + "/invitations",
-                GSON.toJson(new RoleRequest("MEMBER"))).statusCode(),
-                "Non-managers cannot grant invitations");
-        assertEquals(404, post(outsiderSession, root + "/invitations/" + invitationId + "/revoke",
-                "", "\"v0\"").statusCode(), "A foreign organization cannot revoke an existing invitation");
-        assertEquals(403, post(memberSession, root + "/invitations/" + invitationId + "/revoke",
-                "", "\"v0\"").statusCode(), "Members cannot revoke active invitations");
+        assertGovernanceRefusal(403, owner.orgDbId, stranger.orgDbId, () -> post(memberSession, root + "/invitations",
+                GSON.toJson(new RoleRequest("MEMBER"))));
+        assertGovernanceRefusal(404, owner.orgDbId, stranger.orgDbId, () -> post(outsiderSession, root + "/invitations/" + invitationId + "/revoke",
+                "", "\"v0\""));
+        assertGovernanceRefusal(403, owner.orgDbId, stranger.orgDbId, () -> post(memberSession, root + "/invitations/" + invitationId + "/revoke",
+                "", "\"v0\""));
         String memberRolePath = root + "/members/" + member.membershipPublicId + "/role";
-        assertEquals(403, post(adminSession, memberRolePath,
-                GSON.toJson(new RoleRequest("ADMIN")), "\"v0\"").statusCode(),
-                "An administrator cannot elevate a member to administrator");
-        assertEquals(404, post(outsiderSession, memberRolePath,
-                GSON.toJson(new RoleRequest("CUSTODIAN")), "\"v0\"").statusCode(),
-                "Foreign members have no role administration rights");
-        assertEquals(412, post(ownerSession, memberRolePath,
-                GSON.toJson(new RoleRequest("LEAD")), "\"v999\"").statusCode(),
-                "A stale If-Match must not modify a valid target");
-        assertEquals(403, post(memberSession, root + "/members/" + owner.membershipPublicId + "/suspend",
-                "", "\"v0\"").statusCode(),
-                "A member cannot suspend the owner");
-        assertEquals(403, post(memberSession, root + "/transfer-ownership",
-                GSON.toJson(new TransferRequest(admin.membershipPublicId, member.password))).statusCode(),
-                "Only an owner may initiate an ownership transfer");
+        assertGovernanceRefusal(403, owner.orgDbId, stranger.orgDbId, () -> post(adminSession, memberRolePath,
+                GSON.toJson(new RoleRequest("ADMIN")), "\"v0\""));
+        assertGovernanceRefusal(404, owner.orgDbId, stranger.orgDbId, () -> post(outsiderSession, memberRolePath,
+                GSON.toJson(new RoleRequest("CUSTODIAN")), "\"v0\""));
+        assertGovernanceRefusal(412, owner.orgDbId, stranger.orgDbId, () -> post(ownerSession, memberRolePath,
+                GSON.toJson(new RoleRequest("LEAD")), "\"v999\""));
+        assertGovernanceRefusal(403, owner.orgDbId, stranger.orgDbId, () -> post(memberSession, root + "/members/" + owner.membershipPublicId + "/suspend",
+                "", "\"v0\""));
+        assertGovernanceRefusal(403, owner.orgDbId, stranger.orgDbId, () -> post(memberSession, root + "/transfer-ownership",
+                GSON.toJson(new TransferRequest(admin.membershipPublicId, member.password))));
 
         Membership memberAfter = memberships.findById(member.membershipDbId).orElseThrow();
         assertEquals(Membership.Role.MEMBER, memberAfter.role);
@@ -4102,6 +4096,58 @@ class C1IdentityAcceptanceTest {
         assertEquals(initialAudits, jdbc.queryForObject(
                 "SELECT COUNT(*) FROM audit_event WHERE org_id=?", Long.class, owner.orgDbId));
         assertEquals(1, memberships.countEffectiveActiveOwners(owner.orgDbId));
+
+        HttpResponse<String> adminInvite = post(adminSession, root + "/invitations", GSON.toJson(new RoleRequest("MEMBER")));
+        assertEquals(201, adminInvite.statusCode());
+        JsonObject inviteData = json(adminInvite).getAsJsonObject("data");
+        assertEquals(Set.of("id", "organizationId", "role", "status", "expiresAt", "version", "bearerToken"), inviteData.keySet());
+        assertEquals("MEMBER", inviteData.get("role").getAsString());
+        assertEquals("INVITED", inviteData.get("status").getAsString());
+        assertEquals(owner.orgPublicId.toString(), inviteData.get("organizationId").getAsString());
+        Invitation persisted = invitations.findByOrganizationIdAndPublicId(owner.orgDbId,
+                UUID.fromString(inviteData.get("id").getAsString())).orElseThrow();
+        assertTrue(java.security.MessageDigest.isEqual(C1Secrets.sha256(inviteData.get("bearerToken").getAsString()), persisted.tokenHash),
+                "Issued token must match persisted hash.");
+        assertEquals(admin.membershipDbId, persisted.invitedByMembershipId.longValue());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM audit_event WHERE org_id=? AND actor_user_id=? AND action='INVITATION_CREATED' AND target_id=?",
+                Integer.class, owner.orgDbId, admin.userDbId, persisted.publicId.toString()));
+        assertGovernanceRefusal(403, owner.orgDbId, stranger.orgDbId,
+                () -> post(adminSession, root + "/invitations", GSON.toJson(new RoleRequest("ADMIN"))));
+        String suspendPath = root + "/members/" + member.membershipPublicId + "/suspend";
+        assertGovernanceRefusal(412, owner.orgDbId, stranger.orgDbId, () -> post(ownerSession, suspendPath, null, "\"v999\""));
+        var suspended = post(ownerSession, suspendPath, null, "\"v0\"");
+        assertEquals(200, suspended.statusCode());
+        assertEquals("\"v1\"", suspended.headers().firstValue("ETag").orElseThrow());
+        assertEquals("SUSPENDED", json(suspended).getAsJsonObject("data").get("status").getAsString());
+        var inactive = assertGovernanceRefusal(404, owner.orgDbId, stranger.orgDbId, () -> post(ownerSession, suspendPath, null, "\"v1\""));
+        assertEquals("NOT_FOUND", json(inactive).get("code").getAsString());
+    }
+
+    private List<List<List<String>>> governanceDenialRows(long firstOrg, long secondOrg) {
+        var result = legacyDenialRows(firstOrg, secondOrg);
+        for (String table : List.of("membership", "invitation", "ownership_transfer", "organization")) {
+            String scope = table.equals("organization") ? "id" : "org_id";
+            result.add(jdbc.query("SELECT * FROM " + table + " WHERE " + scope + " IN (?,?) ORDER BY id",
+                    (rs, rowNumber) -> {
+                        List<String> values = new ArrayList<>();
+                        for (int column = 1; column <= rs.getMetaData().getColumnCount(); column++) {
+                            byte[] bytes = rs.getBytes(column);
+                            values.add(bytes == null ? null : Base64.getEncoder().encodeToString(bytes));
+                        }
+                        return values;
+                    }, firstOrg, secondOrg));
+        }
+        return result;
+    }
+
+    private HttpResponse<String> assertGovernanceRefusal(int expected, long firstOrg, long secondOrg,
+            java.util.concurrent.Callable<HttpResponse<String>> request) throws Exception {
+        var before = governanceDenialRows(firstOrg, secondOrg);
+        HttpResponse<String> response = request.call();
+        assertEquals(expected, response.statusCode());
+        assertTrue(before.equals(governanceDenialRows(firstOrg, secondOrg)),
+                "Governance refusal altered scoped rows.");
+        return response;
     }
 
 
@@ -5403,8 +5449,17 @@ class C1IdentityAcceptanceTest {
         assertEquals(201, fresh.statusCode());
         assertEquals(OwnershipTransfer.Status.EXPIRED, transfers.findById(transfer.id).orElseThrow().status);
         String freshId = json(fresh).getAsJsonObject("data").get("id").getAsString();
-        HttpResponse<String> accepted = post(recipient, root + "/accept-transfer", GSON.toJson(new TransferIdRequest(freshId)),
-                fresh.headers().firstValue("ETag").orElseThrow());
+        String acceptBody = GSON.toJson(new TransferIdRequest(freshId));
+        String freshTag = fresh.headers().firstValue("ETag").orElseThrow();
+        assertGovernanceRefusal(412, home.orgDbId, other.orgDbId,
+                () -> post(recipient, root + "/accept-transfer", acceptBody, "\"v999\""));
+        assertGovernanceRefusal(428, home.orgDbId, other.orgDbId,
+                () -> post(recipient, root + "/accept-transfer", acceptBody, null));
+        assertGovernanceRefusal(404, home.orgDbId, other.orgDbId,
+                () -> post(recipient, "/api/v2/orgs/" + other.orgPublicId + "/accept-transfer", acceptBody, freshTag));
+        assertGovernanceRefusal(404, home.orgDbId, other.orgDbId,
+                () -> post(owner, root + "/accept-transfer", acceptBody, freshTag));
+        HttpResponse<String> accepted = post(recipient, root + "/accept-transfer", acceptBody, freshTag);
         assertEquals(200, accepted.statusCode());
         String currentTag = accepted.headers().firstValue("ETag").orElseThrow();
         assertEquals(OwnershipTransfer.Status.ACCEPTED, transfers.findByOrganizationIdAndPublicId(home.orgDbId, UUID.fromString(freshId)).orElseThrow().status);
