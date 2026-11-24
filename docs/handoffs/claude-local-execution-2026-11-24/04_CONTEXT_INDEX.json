@@ -1070,28 +1070,30 @@
     "failures": 0
   },
   "r03_candidate": {
-    "sha": "74b2450ddd508d5e07a387fa7c1212b42d52779a",
-    "base": "a1ba49aecce96ea24e82b0e2de4e1f210221aaa7",
+    "sha": "9f374d77addd36b9c5985f25d2e874116970aa2d",
+    "base": "74b2450ddd508d5e07a387fa7c1212b42d52779a",
     "pr": 54,
     "runs": [
       [
-        45483605533,
+        45484467643,
+        "Verify",
         "in_progress",
         null
       ]
     ],
-    "report": "evidence/C8/R03_BORROWER_DIRECTORY_CONSENT_CURSOR_CANDIDATE_2026-11-25.md",
+    "report": "evidence/C8/R03_GOVERNANCE_ACCEPT_INVITE_SUSPEND_CANDIDATE_2026-11-25.md",
     "acceptance": "CI_PENDING",
     "routes": [
-      "R051",
-      "R053",
-      "R054",
-      "R055",
-      "R056",
-      "R058"
+      "R077",
+      "R078",
+      "R079",
+      "R080",
+      "R081",
+      "R083"
     ],
     "tests": [
-      54
+      60,
+      76
     ],
     "observed_red": "NOT_RUN"
   },
@@ -1132,30 +1134,28 @@
     "local_gates": "G07 NOT_RUN/NOT_VERIFIED; no distribution"
   },
   "r03_previous_candidate": {
-    "sha": "a1ba49aecce96ea24e82b0e2de4e1f210221aaa7",
-    "base": "590275cf195d44eee05d8ad4902b8ff9482c1941",
+    "sha": "74b2450ddd508d5e07a387fa7c1212b42d52779a",
+    "base": "a1ba49aecce96ea24e82b0e2de4e1f210221aaa7",
     "pr": 54,
     "runs": [
       [
-        45481804571,
+        45483605533,
         "in_progress",
         null
       ]
     ],
-    "report": "evidence/C8/R03_ALLOCATION_TRANSITION_REFUSAL_BATCH_CANDIDATE_2026-11-25.md",
+    "report": "evidence/C8/R03_BORROWER_DIRECTORY_CONSENT_CURSOR_CANDIDATE_2026-11-25.md",
     "acceptance": "CI_PENDING",
     "routes": [
-      "R043",
-      "R044",
-      "R045",
-      "R046",
-      "R047",
-      "R048",
-      "R049",
-      "R050"
+      "R051",
+      "R053",
+      "R054",
+      "R055",
+      "R056",
+      "R058"
     ],
     "tests": [
-      78
+      54
     ],
     "observed_red": "NOT_RUN"
   },
@@ -1396,30 +1396,28 @@
   },
   "r03_pending_candidates": [
     {
-      "sha": "a1ba49aecce96ea24e82b0e2de4e1f210221aaa7",
-      "base": "590275cf195d44eee05d8ad4902b8ff9482c1941",
+      "sha": "74b2450ddd508d5e07a387fa7c1212b42d52779a",
+      "base": "a1ba49aecce96ea24e82b0e2de4e1f210221aaa7",
       "pr": 54,
       "runs": [
         [
-          45481804571,
+          45483605533,
           "in_progress",
           null
         ]
       ],
-      "report": "evidence/C8/R03_ALLOCATION_TRANSITION_REFUSAL_BATCH_CANDIDATE_2026-11-25.md",
+      "report": "evidence/C8/R03_BORROWER_DIRECTORY_CONSENT_CURSOR_CANDIDATE_2026-11-25.md",
       "acceptance": "CI_PENDING",
       "routes": [
-        "R043",
-        "R044",
-        "R045",
-        "R046",
-        "R047",
-        "R048",
-        "R049",
-        "R050"
+        "R051",
+        "R053",
+        "R054",
+        "R055",
+        "R056",
+        "R058"
       ],
       "tests": [
-        78
+        54
       ],
       "observed_red": "NOT_RUN"
     }
@@ -1507,6 +1505,22 @@
         78
       ],
       "scope": "25 stock role/foreign resource/cursor refusal comparisons and exact detail field set",
+      "maven": 103,
+      "identity": 78,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "failures": 0,
+      "verdict": "VERIFIED_BOUNDED"
+    },
+    {
+      "sha": "a1ba49aecce96ea24e82b0e2de4e1f210221aaa7",
+      "run": 45481804571,
+      "job": 138756620003,
+      "pr": 54,
+      "tests": [
+        78
+      ],
+      "scope": "45 allocation refusals with scoped row equality and approve/cancel hold release",
       "maven": 103,
       "identity": 78,
       "playwright": 19,
@@ -1656,5 +1670,31 @@
     },
     "formal_dependencies_preserved": true,
     "full_verify": "IN_PROGRESS"
+  },
+  "r08_repeat_candidate": {
+    "pr": 55,
+    "sha": "c11f47a23a82b0dac4afa8d5d4234280eb16f67e",
+    "base": "30f8d06aa60a65377bad2e8df4443ca860be4e80",
+    "runs": [
+      [
+        45484557507,
+        "R07-R08 isolated preparation",
+        "in_progress",
+        null
+      ],
+      [
+        45484557514,
+        "Verify",
+        "in_progress",
+        null
+      ]
+    ],
+    "report": "evidence/C9/R07_R08_ISOLATION_HTTP_PREPARATION_CANDIDATE_2026-11-25.md",
+    "state": "CANDIDATE",
+    "fresh_schemas": 3,
+    "measurement_requests": 450,
+    "warmups": 75,
+    "actual": "NOT_RUN",
+    "cold_start": false
   }
 }
