@@ -2022,68 +2022,106 @@ class C1IdentityAcceptanceTest {
         assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM resource WHERE id=? AND organization_id=?",
                 Integer.class, createdResourceB, tenantB.orgDbId), "R01 creation must persist only in the active tenant.");
 
+        var readBefore = legacyDenialRows(tenantA.orgDbId, tenantB.orgDbId);
         assertLegacyListOmits(get(ownerB.client, "/api/departments"), departmentA);
         assertLegacyListOmits(get(ownerB.client, "/api/projects"), projectA);
         assertLegacyListOmits(get(ownerB.client, "/api/resources?type=REUSABLE"), resourceA);
         assertLegacyListOmits(get(ownerB.client, "/api/requirements"), requirementA);
         assertLegacyListOmits(get(ownerB.client, "/api/allocations"), allocationA);
 
+        // Existing foreign IDs passed as filters must refuse, not return a misleading empty success.
+        assertEquals(404, get(ownerB.client, "/api/projects?departmentId=" + departmentA).statusCode());
+        assertEquals(404, get(ownerB.client, "/api/requirements?projectId=" + projectA).statusCode());
+        assertEquals(404, get(ownerB.client, "/api/allocations?requirementId=" + requirementA).statusCode());
+        assertTrue(readBefore.equals(legacyDenialRows(tenantA.orgDbId, tenantB.orgDbId)), "Legacy reads altered scoped domain rows.");
+
         List<String> foreignNames = List.of("D03", "D04", "P01", "P03", "P04", "R03", "R04", "R05",
                 "Q01", "Q03", "Q04", "A01", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "IMAGE-01", "IMAGE-02");
-        List<HttpResponse<String>> foreignResponses = List.of(
-                post(ownerB, "/api/departments/" + departmentA + "/update", GSON.toJson(new NameRequest("cross tenant"))),
-                post(ownerB, "/api/departments/" + departmentA + "/delete", null),
-                post(ownerB, "/api/projects", GSON.toJson(new ProjectRequest(departmentA, "C3 Foreign Project", start.toString(), start.plusDays(2).toString()))),
-                post(ownerB, "/api/projects/" + projectA + "/update", GSON.toJson(new ProjectUpdateRequest("C3 Foreign Rename", start.toString(), start.plusDays(2).toString()))),
-                post(ownerB, "/api/projects/" + projectA + "/delete", null),
-                post(ownerB, "/api/resources/" + resourceA + "/update", GSON.toJson(new ResourceUpdateRequest("C3 Foreign Rename", 11, 10))),
-                post(ownerB, "/api/resources/" + resourceA + "/delete", null),
-                get(ownerB.client, "/api/resources/" + resourceA + "/availability"),
-                post(ownerB, "/api/requirements", GSON.toJson(new RequirementRequest(projectA, resourceA, 1))),
-                post(ownerB, "/api/requirements/" + requirementA + "/update", GSON.toJson(new RequirementUpdateRequest(2))),
-                post(ownerB, "/api/requirements/" + requirementA + "/delete", null),
-                post(ownerB, "/api/allocations", GSON.toJson(new AllocationRequest(requirementA, 1, "C3 Foreign Borrower", null, false))),
-                post(ownerB, "/api/allocations/" + allocationA + "/approve", null),
-                post(ownerB, "/api/allocations/" + allocationA + "/issue", null),
-                post(ownerB, "/api/allocations/" + allocationA + "/return", null),
-                post(ownerB, "/api/allocations/" + allocationA + "/consume", null),
-                post(ownerB, "/api/allocations/" + allocationA + "/cancel", null),
-                post(ownerB, "/api/allocations/" + allocationA + "/delete", null),
-                post(ownerB, "/api/allocations/" + allocationA + "/revoke-sms-consent", null),
-                multipartPost(ownerB, "/api/resources/" + resourceA + "/image", "image/png", tinyPng()),
-                get(ownerB.client, "/api/resources/" + resourceA + "/image"));
-        for (int i = 0; i < foreignResponses.size(); i++)
-            assertEquals(404, foreignResponses.get(i).statusCode(), foreignNames.get(i) + " must conceal a foreign tenant record: " + foreignResponses.get(i).body());
+        List<java.util.concurrent.Callable<HttpResponse<String>>> foreignResponses = List.of(
+                () -> post(ownerB, "/api/departments/" + departmentA + "/update", GSON.toJson(new NameRequest("cross tenant"))),
+                () -> post(ownerB, "/api/departments/" + departmentA + "/delete", null),
+                () -> post(ownerB, "/api/projects", GSON.toJson(new ProjectRequest(departmentA, "C3 Foreign Project", start.toString(), start.plusDays(2).toString()))),
+                () -> post(ownerB, "/api/projects/" + projectA + "/update", GSON.toJson(new ProjectUpdateRequest("C3 Foreign Rename", start.toString(), start.plusDays(2).toString()))),
+                () -> post(ownerB, "/api/projects/" + projectA + "/delete", null),
+                () -> post(ownerB, "/api/resources/" + resourceA + "/update", GSON.toJson(new ResourceUpdateRequest("C3 Foreign Rename", 11, 10))),
+                () -> post(ownerB, "/api/resources/" + resourceA + "/delete", null),
+                () -> get(ownerB.client, "/api/resources/" + resourceA + "/availability"),
+                () -> post(ownerB, "/api/requirements", GSON.toJson(new RequirementRequest(projectA, resourceA, 1))),
+                () -> post(ownerB, "/api/requirements/" + requirementA + "/update", GSON.toJson(new RequirementUpdateRequest(2))),
+                () -> post(ownerB, "/api/requirements/" + requirementA + "/delete", null),
+                () -> post(ownerB, "/api/allocations", GSON.toJson(new AllocationRequest(requirementA, 1, "C3 Foreign Borrower", null, false))),
+                () -> post(ownerB, "/api/allocations/" + allocationA + "/approve", null),
+                () -> post(ownerB, "/api/allocations/" + allocationA + "/issue", null),
+                () -> post(ownerB, "/api/allocations/" + allocationA + "/return", null),
+                () -> post(ownerB, "/api/allocations/" + allocationA + "/consume", null),
+                () -> post(ownerB, "/api/allocations/" + allocationA + "/cancel", null),
+                () -> post(ownerB, "/api/allocations/" + allocationA + "/delete", null),
+                () -> post(ownerB, "/api/allocations/" + allocationA + "/revoke-sms-consent", null),
+                () -> multipartPost(ownerB, "/api/resources/" + resourceA + "/image", "image/png", tinyPng()),
+                () -> get(ownerB.client, "/api/resources/" + resourceA + "/image"));
+        assertEquals(foreignNames.size(), foreignResponses.size());
+        for (int i = 0; i < foreignResponses.size(); i++) {
+            var before = legacyDenialRows(tenantA.orgDbId, tenantB.orgDbId);
+            HttpResponse<String> response = foreignResponses.get(i).call();
+            assertEquals(404, response.statusCode(), foreignNames.get(i) + " foreign-record concealment");
+            assertTrue(before.equals(legacyDenialRows(tenantA.orgDbId, tenantB.orgDbId)),
+                    foreignNames.get(i) + " changed scoped domain rows after refusal.");
+        }
 
         Fixture memberFixture = fixtureInOrg(tenantB.orgDbId, Membership.Role.MEMBER);
         Session member = login(memberFixture.username, memberFixture.password);
         List<String> deniedNames = List.of("D01", "D03", "D04", "P01", "P03", "P04", "R01", "R03", "R04", "IMAGE-01",
                 "Q01", "Q03", "Q04", "A01", "A03", "A04", "A05", "A06", "A07", "A08", "A09");
-        List<HttpResponse<String>> deniedResponses = List.of(
-                post(member, "/api/departments", GSON.toJson(new NameRequest("C3 Member Denied Department"))),
-                post(member, "/api/departments/" + departmentB + "/update", GSON.toJson(new NameRequest("C3 Member Rename"))),
-                post(member, "/api/departments/" + departmentB + "/delete", null),
-                post(member, "/api/projects", GSON.toJson(new ProjectRequest(departmentB, "C3 Member Denied Project", start.toString(), start.plusDays(2).toString()))),
-                post(member, "/api/projects/" + projectB + "/update", GSON.toJson(new ProjectUpdateRequest("C3 Member Rename", start.toString(), start.plusDays(2).toString()))),
-                post(member, "/api/projects/" + projectB + "/delete", null),
-                post(member, "/api/resources", GSON.toJson(new ResourceRequest("C3 Member Denied Resource", "CONSUMABLE", 0))),
-                post(member, "/api/resources/" + resourceB + "/update", GSON.toJson(new ResourceUpdateRequest("C3 Member Rename", 11, 10))),
-                post(member, "/api/resources/" + resourceB + "/delete", null),
-                multipartPost(member, "/api/resources/" + resourceB + "/image", "image/png", tinyPng()),
-                post(member, "/api/requirements", GSON.toJson(new RequirementRequest(projectB, resourceB, 1))),
-                post(member, "/api/requirements/" + requirementB + "/update", GSON.toJson(new RequirementUpdateRequest(2))),
-                post(member, "/api/requirements/" + requirementB + "/delete", null),
-                post(member, "/api/allocations", GSON.toJson(new AllocationRequest(requirementB, 1, "C3 Member Denied", null, false))),
-                post(member, "/api/allocations/" + allocationB + "/approve", null),
-                post(member, "/api/allocations/" + allocationB + "/issue", null),
-                post(member, "/api/allocations/" + allocationB + "/return", null),
-                post(member, "/api/allocations/" + allocationB + "/consume", null),
-                post(member, "/api/allocations/" + allocationB + "/cancel", null),
-                post(member, "/api/allocations/" + allocationB + "/delete", null),
-                post(member, "/api/allocations/" + allocationB + "/revoke-sms-consent", null));
+        List<java.util.concurrent.Callable<HttpResponse<String>>> deniedResponses = List.of(
+                () -> post(member, "/api/departments", GSON.toJson(new NameRequest("C3 Member Denied Department"))),
+                () -> post(member, "/api/departments/" + departmentB + "/update", GSON.toJson(new NameRequest("C3 Member Rename"))),
+                () -> post(member, "/api/departments/" + departmentB + "/delete", null),
+                () -> post(member, "/api/projects", GSON.toJson(new ProjectRequest(departmentB, "C3 Member Denied Project", start.toString(), start.plusDays(2).toString()))),
+                () -> post(member, "/api/projects/" + projectB + "/update", GSON.toJson(new ProjectUpdateRequest("C3 Member Rename", start.toString(), start.plusDays(2).toString()))),
+                () -> post(member, "/api/projects/" + projectB + "/delete", null),
+                () -> post(member, "/api/resources", GSON.toJson(new ResourceRequest("C3 Member Denied Resource", "CONSUMABLE", 0))),
+                () -> post(member, "/api/resources/" + resourceB + "/update", GSON.toJson(new ResourceUpdateRequest("C3 Member Rename", 11, 10))),
+                () -> post(member, "/api/resources/" + resourceB + "/delete", null),
+                () -> multipartPost(member, "/api/resources/" + resourceB + "/image", "image/png", tinyPng()),
+                () -> post(member, "/api/requirements", GSON.toJson(new RequirementRequest(projectB, resourceB, 1))),
+                () -> post(member, "/api/requirements/" + requirementB + "/update", GSON.toJson(new RequirementUpdateRequest(2))),
+                () -> post(member, "/api/requirements/" + requirementB + "/delete", null),
+                () -> post(member, "/api/allocations", GSON.toJson(new AllocationRequest(requirementB, 1, "C3 Member Denied", null, false))),
+                () -> post(member, "/api/allocations/" + allocationB + "/approve", null),
+                () -> post(member, "/api/allocations/" + allocationB + "/issue", null),
+                () -> post(member, "/api/allocations/" + allocationB + "/return", null),
+                () -> post(member, "/api/allocations/" + allocationB + "/consume", null),
+                () -> post(member, "/api/allocations/" + allocationB + "/cancel", null),
+                () -> post(member, "/api/allocations/" + allocationB + "/delete", null),
+                () -> post(member, "/api/allocations/" + allocationB + "/revoke-sms-consent", null));
         assertEquals(deniedNames.size(), deniedResponses.size());
-        for (int i = 0; i < deniedResponses.size(); i++)
-            assertEquals(403, deniedResponses.get(i).statusCode(), deniedNames.get(i) + " must reject MEMBER writes: " + deniedResponses.get(i).body());
+        for (int i = 0; i < deniedResponses.size(); i++) {
+            var before = legacyDenialRows(tenantA.orgDbId, tenantB.orgDbId);
+            HttpResponse<String> response = deniedResponses.get(i).call();
+            assertEquals(403, response.statusCode(), deniedNames.get(i) + " MEMBER mutation refusal");
+            assertTrue(before.equals(legacyDenialRows(tenantA.orgDbId, tenantB.orgDbId)),
+                    deniedNames.get(i) + " changed scoped domain rows after refusal.");
+        }
+    }
+
+    // Exact scoped values for fixed test-only tables; byte encoding avoids
+    // array-reference equality for BINARY/VARBINARY/BLOB and never prints data.
+    private List<List<List<String>>> legacyDenialRows(long firstOrg, long secondOrg) {
+        List<List<List<String>>> result = new ArrayList<>();
+        for (String table : List.of("department", "project", "resource", "resource_requirement",
+                "allocation", "stock_movement", "idempotency_key", "audit_event")) {
+            String scope = table.equals("audit_event") ? "org_id" : "organization_id";
+            result.add(jdbc.query("SELECT * FROM " + table + " WHERE " + scope + " IN (?,?) ORDER BY id",
+                    (rs, rowNumber) -> {
+                        List<String> values = new ArrayList<>();
+                        for (int column = 1; column <= rs.getMetaData().getColumnCount(); column++) {
+                            byte[] bytes = rs.getBytes(column);
+                            values.add(bytes == null ? null : Base64.getEncoder().encodeToString(bytes));
+                        }
+                        return values;
+                    }, firstOrg, secondOrg));
+        }
+        return result;
     }
 
     @Test @Order(34)
