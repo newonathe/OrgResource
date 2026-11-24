@@ -871,7 +871,7 @@
   },
   "latest_scoped_observation": {
     "date": "2026-11-25 PHT",
-    "handoff_parent": "ebd9b0d68405c29815cbc741037b74c1ae7cdc31",
+    "handoff_parent": "ed416247869fdca0f9c358d07a4bcdd7ab8c0508",
     "pr53": {
       "head": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
       "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
@@ -906,9 +906,39 @@
       }
     },
     "pr54": {
-      "head": "cfb6e83bdf20e7ebe51315d7229c43babf9d9923",
-      "status": "open draft; prior verified receipt retained"
+      "head": "30ecc88fe662dc331d405a560d109450bfc16282",
+      "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+      "draft": true,
+      "open": true,
+      "runs": [
+        [
+          45477193785,
+          "in_progress",
+          null
+        ]
+      ],
+      "previous_verified": {
+        "sha": "4272bd0e0fbbb9e31354f387de39d5a86131bf1b",
+        "base": "cfb6e83bdf20e7ebe51315d7229c43babf9d9923",
+        "pr": 54,
+        "run": 45472112699,
+        "job": 138722524067,
+        "maven": 101,
+        "identity": 76,
+        "playwright": 19,
+        "failures": 0,
+        "all_jobs_success": true,
+        "routes": [
+          "R083",
+          "R084"
+        ],
+        "tests": [
+          76
+        ],
+        "acceptance": "VERIFIED_BOUNDED",
+        "report": "evidence/C8/R03_DIRECTED_R083_R084_TERMINAL_CANDIDATE_2026-11-25.md"
+      }
     },
-    "coverage": "Scoped PR53 candidate, not entire repository metadata refresh."
+    "coverage": "Scoped PR54 exact receipts and PR53 pending status; not full metadata refresh."
   }
 }

@@ -56,3 +56,5 @@ R03 expiration oracle correction: exact persisted expiry and strict submicroseco
 R04 remote-only bounded scope reconciliation; G07 private/student gates not satisfied. Historical whole-HEAD package and non-loopback test URL check unsafe for new distribution. R06B3b disposable lock-only fixture capability candidate selected to preserve PESSIMISTIC_WRITE semantics and prevent domain DML; no hosted or production grant authorization.
 
 PC-D24 addendum: wait for known isolated timeout supervisor and recheck any late or initially refused PID record via unchanged strict PIDFD guard. Never signal numeric PID; persistent refusal preserves custody. Extracted ordering harness passes, private JVM/PIDFD positive and setup/daemon stalls unverified.
+
+R03 source-oracle reconciliation: #76 actual receipt confirms inactive transfer recipient 404 and accepted transfer revoke 403 based on authorization precedence. Do not force historical route-map blanket 409 onto implementation. R030 candidate uses stable session identity columns, not access timestamps, which legitimately advance. Actual CI pending.

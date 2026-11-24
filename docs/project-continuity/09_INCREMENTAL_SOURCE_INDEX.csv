@@ -66,3 +66,5 @@
 "scripts/test-c9-private-reap-ordering.sh","c6b2ee266def6069e6f3c1b4e066b5fe6105430c","2513","100644","r06b3b_reap_candidate:d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12","PATCH; local extracted harness pass; actual CI pending"
 "scripts/test-c9-local-mixed-preparation.sh","2ebe7e1d70bd6bcb06234d26e2e8936a4319ddd8","6602","100644","r06b3b_reap_candidate:d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12","PATCH; local extracted harness pass; actual CI pending"
 "evidence/C9/R06B3B_PRIVATE_REAP_ORDERING_CANDIDATE_2026-11-25.md","7b536cfe16c8317c8b17f73d3fe48a906c44831a","1158","100644","r06b3b_reap_candidate:d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12","PATCH; local extracted harness pass; actual CI pending"
+"evidence/C8/R03_DIRECTED_R030_PASSWORD_DENIAL_CANDIDATE_2026-11-25.md","cf769da70b2222c1cd2c9f34099c5572eeda625f","1205","100644","r03_r030_candidate:30ecc88fe662dc331d405a560d109450bfc16282","PATCH; actual CI pending"
+"extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","9fae0254b16168bb303ff1b6192121601ca75c5b","412655","100644","r03_r030_candidate:30ecc88fe662dc331d405a560d109450bfc16282","PATCH; actual CI pending"

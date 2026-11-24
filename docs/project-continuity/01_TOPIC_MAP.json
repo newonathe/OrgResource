@@ -344,7 +344,7 @@
         }
       ],
       "authority": "93 route candidate mapping, independent issue34 blocked; current code and actual test evidence.",
-      "next": "R025 #75 actual 100/75/19 pass; 12 directed routes bounded across prior tests, remaining gaps and IR4 open. R035/R038 prior recovery receipt mapped; private R038 remains unverified."
+      "next": "Live PR54 advanced to 4272bd0e0fbbb9e31354f387de39d5a86131bf1b at intake; actual CI45472112699 job138722524067 checkout and 101 Maven/76 identity/19 Playwright zero failures, all three jobs success. #76 inactive recipient 404, expired pending revoke 409, accepted transfer revoke authorization 403; exact scoped transfer/membership/audit preservation. Source precedence corrected versus historical route-map wording. New #77 R030 candidate 30ecc88fe662dc331d405a560d109450bfc16282 on that base: 401 wrong password, 422 reuse, invalid CSRF403; exact scoped account/credential/recovery/actor audit and persisted session identity equality, current/peer/foreign sessions usable. No new app or migration changes; test-only, observed red NOT_RUN, actual candidate CI pending [[45477193785,\"in_progress\",null]]. R06B3b final/intermediate Extended jobs still in progress at observation; prior aggregate proof retained. Inspect exact R030 candidate CI and final cleanup CI45475369786 job138734044884 plus intermediate CI45475142332 job138733247385; reconcile R06B remote engineering and L06 remains blocked. Then continue risk-prioritized R03, R07/R08. R09=false."
     },
     {
       "id": "T12_HOSTING_AND_SYNTHETIC_DATA",
@@ -459,7 +459,7 @@
         }
       ],
       "authority": "Latest live PR47 supersedes snapshot; 12 graph, 14 queue, 15 events, 04 index and 10 external research.",
-      "next": "Inspect actual final cleanup CI45475369786 job138734044884 and intermediate CI45475142332 job138733247385; close remote R06B bounded only after exact-head green and review, keep L06 blocked until R09/L00B/L03/owner consent. In parallel continue R03 next R030 directed password-denial invariants or other actual remaining gap; then R07/R08. R09=false."
+      "next": "Inspect exact R030 candidate CI and final cleanup CI45475369786 job138734044884 plus intermediate CI45475142332 job138733247385; reconcile R06B remote engineering and L06 remains blocked. Then continue risk-prioritized R03, R07/R08. R09=false."
     },
     {
       "id": "T17_UI_DESIGN_AND_USER_EXPERIENCE",

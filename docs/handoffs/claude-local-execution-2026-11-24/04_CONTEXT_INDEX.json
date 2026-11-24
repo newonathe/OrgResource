@@ -1045,6 +1045,63 @@
     "failures": 0
   },
   "r03_candidate": {
+    "sha": "30ecc88fe662dc331d405a560d109450bfc16282",
+    "base": "4272bd0e0fbbb9e31354f387de39d5a86131bf1b",
+    "pr": 54,
+    "runs": [
+      [
+        45477193785,
+        "in_progress",
+        null
+      ]
+    ],
+    "report": "evidence/C8/R03_DIRECTED_R030_PASSWORD_DENIAL_CANDIDATE_2026-11-25.md",
+    "acceptance": "CI_PENDING",
+    "routes": [
+      "R030"
+    ],
+    "tests": [
+      77
+    ],
+    "observed_red": "NOT_RUN"
+  },
+  "proposed_project_instructions": {
+    "path": "docs/project-continuity/10_PROPOSED_PROJECT_INSTRUCTIONS_UNDER_8000.md",
+    "characters": 7974,
+    "status": "PROPOSED_NOT_APPLIED",
+    "limit": 8000
+  },
+  "r03_prior_verified": {
+    "sha": "4272bd0e0fbbb9e31354f387de39d5a86131bf1b",
+    "base": "cfb6e83bdf20e7ebe51315d7229c43babf9d9923",
+    "pr": 54,
+    "run": 45472112699,
+    "job": 138722524067,
+    "maven": 101,
+    "identity": 76,
+    "playwright": 19,
+    "failures": 0,
+    "all_jobs_success": true,
+    "routes": [
+      "R083",
+      "R084"
+    ],
+    "tests": [
+      76
+    ],
+    "acceptance": "VERIFIED_BOUNDED",
+    "report": "evidence/C8/R03_DIRECTED_R083_R084_TERMINAL_CANDIDATE_2026-11-25.md"
+  },
+  "r04_remote_scope": {
+    "state": "VERIFIED_BOUNDED",
+    "source_commit": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+    "candidate": "9ecabdbc51b280ff1dbb2673f72766cfca2ab9a8",
+    "run": 45443590053,
+    "job": 138621166005,
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/24_R04_REMOTE_SCOPE_AND_R06B3B_LOCKING_READ.md",
+    "local_gates": "G07 NOT_RUN/NOT_VERIFIED; no distribution"
+  },
+  "r03_previous_candidate": {
     "sha": "cfb6e83bdf20e7ebe51315d7229c43babf9d9923",
     "base": "bc74332a8904b3022cf5f27f5d31a597455a1def",
     "pr": 54,
@@ -1092,149 +1149,6 @@
     "identity": 75,
     "playwright": 19,
     "failures": 0
-  },
-  "proposed_project_instructions": {
-    "path": "docs/project-continuity/10_PROPOSED_PROJECT_INSTRUCTIONS_UNDER_8000.md",
-    "characters": 7974,
-    "status": "PROPOSED_NOT_APPLIED",
-    "limit": 8000
-  },
-  "r03_prior_verified": {
-    "sha": "bc74332a8904b3022cf5f27f5d31a597455a1def",
-    "base": "4ac7c197b9def27bc507697c9303b147e76ffbd6",
-    "pr": 54,
-    "runs": [
-      [
-        45460588237,
-        "in_progress",
-        null
-      ]
-    ],
-    "report": "evidence/C8/R03_DIRECTED_R017_R040_CANDIDATE_2026-11-25.md",
-    "acceptance": "VERIFIED_BOUNDED",
-    "routes": [
-      "R017",
-      "R040"
-    ],
-    "tests": [
-      73,
-      74
-    ],
-    "jobs": [
-      {
-        "id": 138681753305,
-        "name": "Extended C Java 21, isolated MySQL, Newman and Playwright",
-        "status": "in_progress",
-        "conclusion": null,
-        "steps": [
-          [
-            "Verify Extended C Java 21 backend against isolated MySQL",
-            "completed",
-            "success"
-          ],
-          [
-            "Prove isolated additive replay preserves existing owner and refuses repeat",
-            "in_progress",
-            null
-          ],
-          [
-            "Prove local mixed rehearsal preparation with public fictional originals",
-            "pending",
-            null
-          ]
-        ]
-      },
-      {
-        "id": 138681753731,
-        "name": "Java 8 and isolated MySQL tests",
-        "status": "completed",
-        "conclusion": "success",
-        "steps": []
-      },
-      {
-        "id": 138681754240,
-        "name": "React typecheck, tests, lint, and build",
-        "status": "completed",
-        "conclusion": "success",
-        "steps": []
-      }
-    ],
-    "run": 45460588237,
-    "job": 138681753305,
-    "maven": 99,
-    "identity": 74,
-    "playwright": 19,
-    "failures": 0
-  },
-  "r04_remote_scope": {
-    "state": "VERIFIED_BOUNDED",
-    "source_commit": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
-    "candidate": "9ecabdbc51b280ff1dbb2673f72766cfca2ab9a8",
-    "run": 45443590053,
-    "job": 138621166005,
-    "report": "docs/handoffs/claude-local-execution-2026-11-24/24_R04_REMOTE_SCOPE_AND_R06B3B_LOCKING_READ.md",
-    "local_gates": "G07 NOT_RUN/NOT_VERIFIED; no distribution"
-  },
-  "r03_previous_candidate": {
-    "sha": "bc74332a8904b3022cf5f27f5d31a597455a1def",
-    "base": "4ac7c197b9def27bc507697c9303b147e76ffbd6",
-    "pr": 54,
-    "runs": [
-      [
-        45460588237,
-        "in_progress",
-        null
-      ]
-    ],
-    "report": "evidence/C8/R03_DIRECTED_R017_R040_CANDIDATE_2026-11-25.md",
-    "acceptance": "BACKEND_STEP_SUCCESS_METADATA_ONLY_FULL_RECEIPT_PENDING",
-    "routes": [
-      "R017",
-      "R040"
-    ],
-    "tests": [
-      73,
-      74
-    ],
-    "jobs": [
-      {
-        "id": 138681753305,
-        "name": "Extended C Java 21, isolated MySQL, Newman and Playwright",
-        "status": "in_progress",
-        "conclusion": null,
-        "steps": [
-          [
-            "Verify Extended C Java 21 backend against isolated MySQL",
-            "completed",
-            "success"
-          ],
-          [
-            "Prove isolated additive replay preserves existing owner and refuses repeat",
-            "in_progress",
-            null
-          ],
-          [
-            "Prove local mixed rehearsal preparation with public fictional originals",
-            "pending",
-            null
-          ]
-        ]
-      },
-      {
-        "id": 138681753731,
-        "name": "Java 8 and isolated MySQL tests",
-        "status": "completed",
-        "conclusion": "success",
-        "steps": []
-      },
-      {
-        "id": 138681754240,
-        "name": "React typecheck, tests, lint, and build",
-        "status": "completed",
-        "conclusion": "success",
-        "steps": []
-      }
-    ]
   },
   "r06b3b_public_verified": {
     "sha": "e1d648d5a4c64b69e495cabca7bbd1b4eea0f2f2",
