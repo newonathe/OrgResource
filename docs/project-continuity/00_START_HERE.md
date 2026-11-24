@@ -53,3 +53,7 @@ Report 20 and standalone checker, 18 payloads incl PNG/Java/full ZIP/CI JAR, 6 n
 ## R06B3b first test failure / diagnostic retry
 
 Initial PR53 321205f235efe36d615e68998f3ffbd75baf4051, CI45441418164 Extended job138613273769 TEST_FAILED, prior original preparation markers present, root cause unknown because R06B1-only filter suppressed new markers. Diagnostic candidate b2609e36c090363dc32cb9f6b5c65107e93a262b changes two scripts, adds bounded failure markers/syntax checks; no weakened grants or assertions. See [report21](../handoffs/claude-local-execution-2026-11-24/21_R06B3B_FAILURE_TRIAGE.md). R04 standalone CI45443590053 pending. R09=false.
+
+## R04 standalone actual receipt
+
+Exact 9ecabdbc CI45443590053 Java8 job138621166005 success; actual logs 18 payloads, Java ZIP75, full ZIP120, six negatives, staged real image Newman nine assertions zero failures, hashes and cleanup. No release upload. DOCX, Windows launcher, Eclipse and independent review NOT_RUN. R04 bounded candidate verified; aggregate still IN_PROGRESS until remaining scope reconciled. R09=false.

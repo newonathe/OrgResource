@@ -69,7 +69,7 @@
       "depends_on": [
         "R00"
       ],
-      "receipt": "Source archive verified (report19); new standalone 18-payload/75 Java/120 full ZIP, exact manifests, six negatives and actual staged image Newman candidate report20 pending CI. Actual Windows launcher, DOCX and Eclipse verification separate.",
+      "receipt": "Actual standalone Java8 job138621166005 CI45443590053 exact 9ecabdbc: 18 payloads, 75 Java/120 full source files, six negatives, staged real Newman image 9 assertions zero failed, SHA256 and manifest checked, temporary cleanup; existing 61 Maven, source export/extracted build. Windows launcher, DOCX, Eclipse, independent and rights remain NOT_RUN; aggregate IN_PROGRESS pending scope reconciliation.",
       "notes": "Standalone release fixture/hash and final package verification open; publication rights and student obligations separate; no frozen changes."
     },
     {

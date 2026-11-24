@@ -1045,30 +1045,31 @@
     "payloads": 18,
     "java_files": 75,
     "full_source_files": 120,
-    "acceptance": "CANDIDATE_CI_PENDING",
+    "acceptance": "VERIFIED_BOUNDED",
     "sha": "9ecabdbc51b280ff1dbb2673f72766cfca2ab9a8",
     "run": 45443590053,
     "jobs": [
       [
         138621165337,
+        "Extended C Java 21, isolated MySQL, Newman and Playwright",
         "in_progress",
-        null,
-        [
-          "Prove isolated additive replay preserves existing owner and refuses repeat"
-        ]
+        null
       ],
       [
         138621165947,
+        "React typecheck, tests, lint, and build",
         "completed",
-        "success",
-        []
+        "success"
       ],
       [
         138621166005,
+        "Java 8 and isolated MySQL tests",
         "completed",
-        "success",
-        []
+        "success"
       ]
-    ]
+    ],
+    "job": 138621166005,
+    "newman_assertions": 9,
+    "failures": 0
   }
 }
