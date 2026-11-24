@@ -3696,5 +3696,212 @@
       }
     ],
     "acceptance": "CI_PENDING"
+  },
+  "r07_corrected_full_actual": {
+    "receipt": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
+      "run": 45493345999,
+      "job": 138797218433,
+      "oracle": "actual full PR55 recovery, reminder restart, dedicated evidence and packaged HTTP",
+      "actual": "103 Maven/78 identity/19 Playwright, 60 Newman requests/110 assertions, zero failures/errors/skips, 3/3 jobs success; actual InnoDB deadlock and rollback/retry, response-loss upstream201/downstreamEOF and same-actor temporary receipt/ETag replay across distinct JVM exact domain equality; real C5 independent restore non-session exact and empty sessions, durable replay, role/tenant refusals; reminder stale CLAIMED/DISPATCHING -> UNKNOWN, fresh preserved, exact other rows no transport; cleanup; 450 measured+75 warmups packaged same JVM; public original-only preparation, private positive NOT_RUN"
+    },
+    "markers": [
+      "R07_ACTUAL_DEADLOCK_OK:observed_lock_wait=true mysql_counter_increased=true http503=true exact_rollback=true same_key_retry=true replay_preserved=true",
+      "R07_LOST_RESPONSE_RESTART_OK:distinct_process=true same_schema=true same_actor=true exact_domain_equal=true",
+      "R07_REMINDER_RESTART_OK:distinct_jvm=true stale_claimed_unknown=true stale_dispatching_unknown=true fresh_claim_preserved=true exact_other_rows=true no_transport=true",
+      "C9_RUNTIME_C5_RESTORE_OK: archive_bytes=1039696 independent_server=true non_session_rows_equal=true sessions_empty=true",
+      "C9_RUNTIME_BROWSER_FAIL_CLOSED_OK: actual_metadata_503=22 protected_api_requests=0",
+      "C9_RUNTIME_CLEANUP_OK",
+      "R08_PACKAGED_HTTP_OK:repeats=3 measured=450 warmups=75 same_jvm=true public_fixture=true"
+    ],
+    "metrics": {
+      "scope": "PR55 actual packaged recovered serial HTTP; same-JVM repeat, public fixture",
+      "fixture": {
+        "allocation": 120,
+        "department": 2,
+        "project": 6,
+        "resource": 20,
+        "resource_requirement": 18,
+        "PENDING": 0,
+        "ISSUED": 6,
+        "CONSUMED": 32
+      },
+      "columns": [
+        "min_ms",
+        "p50_ms",
+        "p95_ms",
+        "max_ms",
+        "first_warmup_ms",
+        "body_min",
+        "body_max"
+      ],
+      "workloads": [
+        "resource_page",
+        "allocation_page",
+        "requirement_page",
+        "project_page",
+        "overview"
+      ],
+      "values": [
+        [
+          [
+            14.407,
+            22.672,
+            27.822,
+            36.902,
+            45.016,
+            3125,
+            3125
+          ],
+          [
+            28.647,
+            34.09,
+            43.668,
+            58.424,
+            109.282,
+            75742,
+            75742
+          ],
+          [
+            13.209,
+            16.306,
+            23.128,
+            25.74,
+            21.631,
+            5167,
+            5167
+          ],
+          [
+            10.499,
+            13.808,
+            24.634,
+            27.287,
+            38.185,
+            1050,
+            1050
+          ],
+          [
+            16.837,
+            21.743,
+            28.795,
+            33.392,
+            66.9,
+            1865,
+            1868
+          ]
+        ],
+        [
+          [
+            11.055,
+            13.462,
+            16.024,
+            19.595,
+            16.39,
+            3125,
+            3125
+          ],
+          [
+            21.376,
+            23.846,
+            27.949,
+            40.678,
+            24.362,
+            75742,
+            75742
+          ],
+          [
+            8.892,
+            10.548,
+            12.511,
+            12.615,
+            11.606,
+            5167,
+            5167
+          ],
+          [
+            7.535,
+            8.996,
+            10.873,
+            11.335,
+            9.255,
+            1050,
+            1050
+          ],
+          [
+            13.319,
+            15.074,
+            19.55,
+            21.358,
+            15.566,
+            1868,
+            1868
+          ]
+        ],
+        [
+          [
+            9.2,
+            10.995,
+            17.596,
+            22.412,
+            15.462,
+            3125,
+            3125
+          ],
+          [
+            16.939,
+            20.111,
+            28.354,
+            31.963,
+            20.396,
+            75742,
+            75742
+          ],
+          [
+            7.917,
+            9.983,
+            14.489,
+            19.363,
+            8.962,
+            5167,
+            5167
+          ],
+          [
+            7.111,
+            8.542,
+            14.733,
+            14.854,
+            7.895,
+            1050,
+            1050
+          ],
+          [
+            13.027,
+            16.092,
+            19.828,
+            22.764,
+            18.068,
+            1868,
+            1868
+          ]
+        ]
+      ],
+      "measured": 450,
+      "warmups": 75,
+      "jar_bytes": 72486427,
+      "jar_sha256": "76e5977499edb6a01a0c6de95ce166c2975d08f70bcdbd57680049d1af32c10a"
+    },
+    "full_pending": [
+      {
+        "run": 45493392042,
+        "job": 138797385434
+      },
+      {
+        "run": 45494597345,
+        "job": 138801601172
+      }
+    ],
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/46_R07_RESTART_ACTUAL_AND_C9_SCOPE_RECONCILIATION.md",
+    "acceptance": "VERIFIED_BOUNDED_PR55_ONLY"
   }
 }

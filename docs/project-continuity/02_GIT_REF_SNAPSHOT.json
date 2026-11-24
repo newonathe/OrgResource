@@ -871,21 +871,15 @@
   },
   "latest_scoped_observation": {
     "date": "2026-11-25 PHT",
-    "handoff_parent": "cc73a98b1d12771031154b809b76b8305d10e95a",
+    "handoff_parent": "f03434c205f45682ae9fefa7ddfe37c86d8182f8",
     "pr53": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
     "pr54": "9646ff743c6678af90aa357ee761ac11ed366dff",
     "pr55": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
     "pr56": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
-    "coverage": "Report44 exact protected tree checks, dedicated/Java8 actual, candidate dispatch lock",
+    "coverage": "Report46 actual corrected PR55 restart/packaged and C9 scope map",
     "candidate_runs": [
       [
         45494597345,
-        "Verify",
-        "in_progress",
-        null
-      ],
-      [
-        45493345999,
         "Verify",
         "in_progress",
         null
@@ -921,6 +915,12 @@
         "R07-R08 isolated preparation",
         "completed",
         "success"
+      ],
+      [
+        45493345999,
+        "Verify",
+        "completed",
+        "success"
       ]
     ],
     "job_receipts": [
@@ -939,6 +939,14 @@
         "job": 138801601440,
         "oracle": "frozen Java8 actual regression",
         "actual": "61 Maven, 100 Newman requests/151 assertions, one packaged Playwright, zero failures/errors/skips"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
+        "run": 45493345999,
+        "job": 138797218433,
+        "oracle": "actual full PR55 recovery, reminder restart, dedicated evidence and packaged HTTP",
+        "actual": "103 Maven/78 identity/19 Playwright, 60 Newman requests/110 assertions, zero failures/errors/skips, 3/3 jobs success; actual InnoDB deadlock and rollback/retry, response-loss upstream201/downstreamEOF and same-actor temporary receipt/ETag replay across distinct JVM exact domain equality; real C5 independent restore non-session exact and empty sessions, durable replay, role/tenant refusals; reminder stale CLAIMED/DISPATCHING -> UNKNOWN, fresh preserved, exact other rows no transport; cleanup; 450 measured+75 warmups packaged same JVM; public original-only preparation, private positive NOT_RUN"
       }
     ]
   }

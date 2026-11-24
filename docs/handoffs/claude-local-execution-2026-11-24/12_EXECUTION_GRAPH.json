@@ -163,7 +163,7 @@
         "R03"
       ],
       "receipt": "Remaining bounded C9 concurrency/rollback/consent/restart and failure evidence on real MySQL",
-      "notes": "Formal C9 closure after C8 gate; no unauthorized phase Preparatory source reconciliation can proceed while R03 pending; no formal dependency closure. Reuse Stage1D recovery/durable replay actual receipt. Recovered historical C9 prompt; test isolation (two critical cases fresh/reversed), actual rollback/deadlock/replay/restart/consent gap reconciliation required; preparatory only. Report29 exact fresh schema and reversed order source plan; execution NOT_RUN; #24 rollback/retry candidate pending. #24 actual injected rollback/retry/replay now verified bounded at 7116ab8; reuse, isolated/reversed execution still NOT_RUN. User-authorized parallel preparatory implementation PR55 30f8d06aa60a65377bad2e8df4443ca860be4e80; actual CI pending, formal dependencies unchanged. Report32. Actual independent/reversed selected proof PR55 CI45482691119 verified bounded; remaining failure gaps and formal dependency still open. Actual repeated receipt in report35; preparatory only, formal dependency remains open. Actual startup failure and correction candidate report36; final gate remains open. Correction head dedicated execution passed; does not exercise Stage1B. Full Verify pending. Report38 full startup correction verified bounded, same-process persisted interruption/return-expiry candidate pending; actual process restart, deadlock and lost response remain. R07 lifecycle candidate a034fb1c81ff1521c9bc9c0c32561c9c2cde515c actual full CI45488706073 job138780912749 FAILED at Java test compilation (governanceDenialRows missing on older PR55 base, lines2080/2082); dedicated45488706396 job138780913243 failed before selected receipt. No lifecycle test executed. Correction b48b289f4ddc3dd1fb0ac786487d188921c6909c copies exact 12-table helper from PR54 with distinct r07LifecycleRows name; two call sites corrected, no oracle relaxation; deduplicate only after integration review. Runs [] discover by SHA if absent. Prior startup correction 76a8e68 actual full pass retained. Next inspect all pending actual logs, fix actual failures first, then R033/R034/R036/R037, remaining R07/R08, combined source R09=false. Report39 corrected dedicated suite actual pass; full lifecycle receipt pending. Report40 observed new deadlock/rollback test failure (exact assertion suppressed), full pending; source lost-response/restart candidate not executed. Report41 lifecycle full actual verified bounded. Deadlock initial failure pre-lock-cycle; documented counter correction pending, no actual lost-response/restart executed. Report42 actual deadlock and partial response-loss/JVM readiness; later KeyError, corrected restart and actual reminder restart candidate pending. Report43: Corrected dedicated pass; full restart and integrated CI pending."
+      "notes": "Formal C9 closure after C8 gate; no unauthorized phase Preparatory source reconciliation can proceed while R03 pending; no formal dependency closure. Reuse Stage1D recovery/durable replay actual receipt. Recovered historical C9 prompt; test isolation (two critical cases fresh/reversed), actual rollback/deadlock/replay/restart/consent gap reconciliation required; preparatory only. Report29 exact fresh schema and reversed order source plan; execution NOT_RUN; #24 rollback/retry candidate pending. #24 actual injected rollback/retry/replay now verified bounded at 7116ab8; reuse, isolated/reversed execution still NOT_RUN. User-authorized parallel preparatory implementation PR55 30f8d06aa60a65377bad2e8df4443ca860be4e80; actual CI pending, formal dependencies unchanged. Report32. Actual independent/reversed selected proof PR55 CI45482691119 verified bounded; remaining failure gaps and formal dependency still open. Actual repeated receipt in report35; preparatory only, formal dependency remains open. Actual startup failure and correction candidate report36; final gate remains open. Correction head dedicated execution passed; does not exercise Stage1B. Full Verify pending. Report38 full startup correction verified bounded, same-process persisted interruption/return-expiry candidate pending; actual process restart, deadlock and lost response remain. R07 lifecycle candidate a034fb1c81ff1521c9bc9c0c32561c9c2cde515c actual full CI45488706073 job138780912749 FAILED at Java test compilation (governanceDenialRows missing on older PR55 base, lines2080/2082); dedicated45488706396 job138780913243 failed before selected receipt. No lifecycle test executed. Correction b48b289f4ddc3dd1fb0ac786487d188921c6909c copies exact 12-table helper from PR54 with distinct r07LifecycleRows name; two call sites corrected, no oracle relaxation; deduplicate only after integration review. Runs [] discover by SHA if absent. Prior startup correction 76a8e68 actual full pass retained. Next inspect all pending actual logs, fix actual failures first, then R033/R034/R036/R037, remaining R07/R08, combined source R09=false. Report39 corrected dedicated suite actual pass; full lifecycle receipt pending. Report40 observed new deadlock/rollback test failure (exact assertion suppressed), full pending; source lost-response/restart candidate not executed. Report41 lifecycle full actual verified bounded. Deadlock initial failure pre-lock-cycle; documented counter correction pending, no actual lost-response/restart executed. Report42 actual deadlock and partial response-loss/JVM readiness; later KeyError, corrected restart and actual reminder restart candidate pending. Report43: Corrected dedicated pass; full restart and integrated CI pending. Report46: Corrected PR55 actual full pass, both distinct-JVM markers verified bounded; formal dependency and final combined receipt remain."
     },
     {
       "id": "R08",
@@ -173,7 +173,7 @@
         "R07"
       ],
       "receipt": "Bounded baseline performance, workload/sample counts, p50/p95, DB/JAR/heap/build measurements",
-      "notes": "Do not set unapproved SLO or infer hosted capacity Reuse Stage0 SQL analogue measurements only within their bounds (not HTTP p95); private exact cohort remains local. User-authorized parallel preparatory implementation PR55 30f8d06aa60a65377bad2e8df4443ca860be4e80; actual CI pending, formal dependencies unchanged. Report32. Actual synthetic serial HTTP baseline PR55 CI45482691119 verified bounded; repeated cold/warm, packaged scope and formal dependency remain. PR55 repeated fresh-schema/JVM candidate c11f47a23a82b0dac4afa8d5d4234280eb16f67e actual pending; first warmup not cold-start; formal dependency preserved. Actual repeated receipt in report35; preparatory only, formal dependency remains open. Repeated dedicated receipt retained; full Verify failed later Stage1B (report36), candidate pending. Report39 actual corrected test-context repeated proof and packaged HTTP source candidate; no packaged receipt yet. Report40 repeated isolated proof pass; full packaged candidate pending. Report42 actual packaged HTTP bounded proof, 450+75 requests, full pass. Formal R07 dependency and reproducibility/remaining scope open. Report43: Corrected dedicated pass; full restart and integrated CI pending."
+      "notes": "Do not set unapproved SLO or infer hosted capacity Reuse Stage0 SQL analogue measurements only within their bounds (not HTTP p95); private exact cohort remains local. User-authorized parallel preparatory implementation PR55 30f8d06aa60a65377bad2e8df4443ca860be4e80; actual CI pending, formal dependencies unchanged. Report32. Actual synthetic serial HTTP baseline PR55 CI45482691119 verified bounded; repeated cold/warm, packaged scope and formal dependency remain. PR55 repeated fresh-schema/JVM candidate c11f47a23a82b0dac4afa8d5d4234280eb16f67e actual pending; first warmup not cold-start; formal dependency preserved. Actual repeated receipt in report35; preparatory only, formal dependency remains open. Repeated dedicated receipt retained; full Verify failed later Stage1B (report36), candidate pending. Report39 actual corrected test-context repeated proof and packaged HTTP source candidate; no packaged receipt yet. Report40 repeated isolated proof pass; full packaged candidate pending. Report42 actual packaged HTTP bounded proof, 450+75 requests, full pass. Formal R07 dependency and reproducibility/remaining scope open. Report43: Corrected dedicated pass; full restart and integrated CI pending. Report46: Corrected PR55 repeated packaged HTTP actual pass; formal dependency/remaining measurement scope unchanged."
     },
     {
       "id": "R09",
@@ -188,7 +188,7 @@
         "R08"
       ],
       "receipt": "Reconciled exact final implementation SHA and updated handoff, actual green CI, no unresolved remote engineering for local lane",
-      "notes": "This is the pre-handoff release gate; no launch until ChatGPT declares local queue ready Exact four-hunk source dry-run report37; final heads and actual combined CI not run. Report39 renewed six-hunk exact dry-run on latest heads, source only. Report41 seven-hunk exact latest-head source-only dry-run passed; actual integrated CI not run. Report42 preliminary combined draft PR56 exact blob integration and corrected head, CI pending, dedicated skipped by branch guard. No closure. Report43: Dedicated same-repo and exact-checkout guard candidate 2c626cb251fc3e0a5e3304f9ea5b03f89f55e024; full/dedicated pending. Report44 exact integrated dedicated and Java8 actual passed, source lock candidate only; full Extended pending."
+      "notes": "This is the pre-handoff release gate; no launch until ChatGPT declares local queue ready Exact four-hunk source dry-run report37; final heads and actual combined CI not run. Report39 renewed six-hunk exact dry-run on latest heads, source only. Report41 seven-hunk exact latest-head source-only dry-run passed; actual integrated CI not run. Report42 preliminary combined draft PR56 exact blob integration and corrected head, CI pending, dedicated skipped by branch guard. No closure. Report43: Dedicated same-repo and exact-checkout guard candidate 2c626cb251fc3e0a5e3304f9ea5b03f89f55e024; full/dedicated pending. Report44 exact integrated dedicated and Java8 actual passed, source lock candidate only; full Extended pending. Report46: Corrected source PR55 both restart markers actual; exact PR56 full pending; no closure."
     },
     {
       "id": "L00",
@@ -1478,5 +1478,212 @@
       }
     ],
     "acceptance": "CI_PENDING"
+  },
+  "r07_corrected_full_actual": {
+    "receipt": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
+      "run": 45493345999,
+      "job": 138797218433,
+      "oracle": "actual full PR55 recovery, reminder restart, dedicated evidence and packaged HTTP",
+      "actual": "103 Maven/78 identity/19 Playwright, 60 Newman requests/110 assertions, zero failures/errors/skips, 3/3 jobs success; actual InnoDB deadlock and rollback/retry, response-loss upstream201/downstreamEOF and same-actor temporary receipt/ETag replay across distinct JVM exact domain equality; real C5 independent restore non-session exact and empty sessions, durable replay, role/tenant refusals; reminder stale CLAIMED/DISPATCHING -> UNKNOWN, fresh preserved, exact other rows no transport; cleanup; 450 measured+75 warmups packaged same JVM; public original-only preparation, private positive NOT_RUN"
+    },
+    "markers": [
+      "R07_ACTUAL_DEADLOCK_OK:observed_lock_wait=true mysql_counter_increased=true http503=true exact_rollback=true same_key_retry=true replay_preserved=true",
+      "R07_LOST_RESPONSE_RESTART_OK:distinct_process=true same_schema=true same_actor=true exact_domain_equal=true",
+      "R07_REMINDER_RESTART_OK:distinct_jvm=true stale_claimed_unknown=true stale_dispatching_unknown=true fresh_claim_preserved=true exact_other_rows=true no_transport=true",
+      "C9_RUNTIME_C5_RESTORE_OK: archive_bytes=1039696 independent_server=true non_session_rows_equal=true sessions_empty=true",
+      "C9_RUNTIME_BROWSER_FAIL_CLOSED_OK: actual_metadata_503=22 protected_api_requests=0",
+      "C9_RUNTIME_CLEANUP_OK",
+      "R08_PACKAGED_HTTP_OK:repeats=3 measured=450 warmups=75 same_jvm=true public_fixture=true"
+    ],
+    "metrics": {
+      "scope": "PR55 actual packaged recovered serial HTTP; same-JVM repeat, public fixture",
+      "fixture": {
+        "allocation": 120,
+        "department": 2,
+        "project": 6,
+        "resource": 20,
+        "resource_requirement": 18,
+        "PENDING": 0,
+        "ISSUED": 6,
+        "CONSUMED": 32
+      },
+      "columns": [
+        "min_ms",
+        "p50_ms",
+        "p95_ms",
+        "max_ms",
+        "first_warmup_ms",
+        "body_min",
+        "body_max"
+      ],
+      "workloads": [
+        "resource_page",
+        "allocation_page",
+        "requirement_page",
+        "project_page",
+        "overview"
+      ],
+      "values": [
+        [
+          [
+            14.407,
+            22.672,
+            27.822,
+            36.902,
+            45.016,
+            3125,
+            3125
+          ],
+          [
+            28.647,
+            34.09,
+            43.668,
+            58.424,
+            109.282,
+            75742,
+            75742
+          ],
+          [
+            13.209,
+            16.306,
+            23.128,
+            25.74,
+            21.631,
+            5167,
+            5167
+          ],
+          [
+            10.499,
+            13.808,
+            24.634,
+            27.287,
+            38.185,
+            1050,
+            1050
+          ],
+          [
+            16.837,
+            21.743,
+            28.795,
+            33.392,
+            66.9,
+            1865,
+            1868
+          ]
+        ],
+        [
+          [
+            11.055,
+            13.462,
+            16.024,
+            19.595,
+            16.39,
+            3125,
+            3125
+          ],
+          [
+            21.376,
+            23.846,
+            27.949,
+            40.678,
+            24.362,
+            75742,
+            75742
+          ],
+          [
+            8.892,
+            10.548,
+            12.511,
+            12.615,
+            11.606,
+            5167,
+            5167
+          ],
+          [
+            7.535,
+            8.996,
+            10.873,
+            11.335,
+            9.255,
+            1050,
+            1050
+          ],
+          [
+            13.319,
+            15.074,
+            19.55,
+            21.358,
+            15.566,
+            1868,
+            1868
+          ]
+        ],
+        [
+          [
+            9.2,
+            10.995,
+            17.596,
+            22.412,
+            15.462,
+            3125,
+            3125
+          ],
+          [
+            16.939,
+            20.111,
+            28.354,
+            31.963,
+            20.396,
+            75742,
+            75742
+          ],
+          [
+            7.917,
+            9.983,
+            14.489,
+            19.363,
+            8.962,
+            5167,
+            5167
+          ],
+          [
+            7.111,
+            8.542,
+            14.733,
+            14.854,
+            7.895,
+            1050,
+            1050
+          ],
+          [
+            13.027,
+            16.092,
+            19.828,
+            22.764,
+            18.068,
+            1868,
+            1868
+          ]
+        ]
+      ],
+      "measured": 450,
+      "warmups": 75,
+      "jar_bytes": 72486427,
+      "jar_sha256": "76e5977499edb6a01a0c6de95ce166c2975d08f70bcdbd57680049d1af32c10a"
+    },
+    "full_pending": [
+      {
+        "run": 45493392042,
+        "job": 138797385434
+      },
+      {
+        "run": 45494597345,
+        "job": 138801601172
+      }
+    ],
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/46_R07_RESTART_ACTUAL_AND_C9_SCOPE_RECONCILIATION.md",
+    "acceptance": "VERIFIED_BOUNDED_PR55_ONLY"
   }
 }
