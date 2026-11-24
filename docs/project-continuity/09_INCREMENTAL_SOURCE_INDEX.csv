@@ -33,3 +33,5 @@
 "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","01459fa0f5dbabb3297b33911403b6d47de5cdab","394383","100644","r03_create_candidate:bc74332a8904b3022cf5f27f5d31a597455a1def","PATCH; actual CI pending"
 "evidence/C8/R03_DIRECTED_R025_CANDIDATE_2026-11-25.md","59c492992069ab55976e430a612aa0907af43f6a","2275","100644","r03_image_candidate:cfb6e83bdf20e7ebe51315d7229c43babf9d9923","PATCH; actual CI pending"
 "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","dc1e83f100234a760cad30691a709afb081770a5","401610","100644","r03_image_candidate:cfb6e83bdf20e7ebe51315d7229c43babf9d9923","PATCH; actual CI pending"
+"evidence/C9/R06B3B_PRIVATE_MIXED_API_ORACLE_CANDIDATE_2026-11-25.md","cac0be504ec5ef3c5f80298322fb073f8afbe112","2313","100644","r06b3b_private_api_candidate:a6d3682a8fea6901efb89db9e7e62509a690b0e6","PATCH; unintegrated, NOT_RUN"
+"scripts/verify-c9-private-mixed-api.py","10c1ad4a8c899b48895a0c2bea3a5a8cef13e5d5","8524","100644","r06b3b_private_api_candidate:a6d3682a8fea6901efb89db9e7e62509a690b0e6","PATCH; unintegrated, NOT_RUN"

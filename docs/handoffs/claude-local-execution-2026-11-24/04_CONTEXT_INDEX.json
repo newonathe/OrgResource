@@ -971,81 +971,18 @@
     "state": "SOURCE_CONTRACT_READY_IMPLEMENTATION_OPEN"
   },
   "r06b3b_candidate": {
-    "sha": "e1d648d5a4c64b69e495cabca7bbd1b4eea0f2f2",
-    "base": "68b694adadcca5d7c8a5698d01e86c7e47227800",
+    "sha": "a6d3682a8fea6901efb89db9e7e62509a690b0e6",
+    "base": "e1d648d5a4c64b69e495cabca7bbd1b4eea0f2f2",
     "pr": 53,
-    "run": 45448775860,
-    "acceptance": "LOCKING_READ_CANDIDATE_CI_PENDING",
-    "test_first": "30c68c97211bfe339b01b22c676ed9ea2934f3e5",
-    "protected": {
-      "course": 105,
-      "extended": 170,
-      "migrations": 7
-    },
-    "report": "evidence/C9/R06B3B_LOCKING_READ_CORRECTION_2026-11-25.md",
-    "prior_failed_sha": "321205f235efe36d615e68998f3ffbd75baf4051",
-    "prior_run": 45441418164,
-    "prior_job": 138613273769,
     "runs": [
       [
-        45459113536,
+        45462162577,
         "in_progress",
         null
       ]
     ],
-    "prior_retry_sha": "b2609e36c090363dc32cb9f6b5c65107e93a262b",
-    "prior_retry_run": 45444843268,
-    "prior_retry_job": 138625635986,
-    "prior_api_failed_sha": "f1bcf7e129f7a9b037478aae570610ccf84fa4c4",
-    "prior_api_failed_run": 45448775860,
-    "prior_api_failed_job": 138639769266,
-    "failed_attempt_job": 138656862810,
-    "failed_attempt_reason": "Maven wrapper distribution download failed before tests",
-    "retry_job": 138669505383,
-    "prior_failed_run": 45453565679,
-    "prior_failed_job": 138669505383,
-    "prior_failed_phase": "RESOURCE_DETAIL",
-    "expected_http": 200,
-    "actual_http": 500,
-    "latest_job_metadata": [
-      {
-        "id": 138676495058,
-        "name": "Java 8 and isolated MySQL tests",
-        "status": "completed",
-        "conclusion": "success",
-        "steps": []
-      },
-      {
-        "id": 138676495401,
-        "name": "React typecheck, tests, lint, and build",
-        "status": "completed",
-        "conclusion": "success",
-        "steps": []
-      },
-      {
-        "id": 138676495489,
-        "name": "Extended C Java 21, isolated MySQL, Newman and Playwright",
-        "status": "in_progress",
-        "conclusion": null,
-        "steps": [
-          [
-            "Verify Extended C Java 21 backend against isolated MySQL",
-            "completed",
-            "success"
-          ],
-          [
-            "Prove local mixed rehearsal preparation with public fictional originals",
-            "completed",
-            "success"
-          ],
-          [
-            "Run authenticated Newman and browser acceptance against packaged JAR",
-            "in_progress",
-            null
-          ]
-        ]
-      }
-    ]
+    "acceptance": "PRIVATE_API_ORACLE_UNINTEGRATED",
+    "report": "evidence/C9/R06B3B_PRIVATE_MIXED_API_ORACLE_CANDIDATE_2026-11-25.md"
   },
   "r04_standalone_candidate": {
     "base": "076c9a5e7c7a1e66b894362864d93b76409196bd",
@@ -1093,12 +1030,34 @@
       ]
     ],
     "report": "evidence/C8/R03_DIRECTED_R025_CANDIDATE_2026-11-25.md",
-    "acceptance": "CANDIDATE_CI_PENDING",
+    "acceptance": "INFRASTRUCTURE_RETRY_PENDING",
     "routes": [
       "R025"
     ],
     "tests": [
       75
+    ],
+    "failed_job": 138684239103,
+    "reason": "Maven 3.10.0 ZIP download failed before tests",
+    "retry_jobs": [
+      [
+        138686481378,
+        "Extended C Java 21, isolated MySQL, Newman and Playwright",
+        "in_progress",
+        null
+      ],
+      [
+        138686484144,
+        "Java 8 and isolated MySQL tests",
+        "completed",
+        "success"
+      ],
+      [
+        138686484733,
+        "React typecheck, tests, lint, and build",
+        "completed",
+        "success"
+      ]
     ]
   },
   "proposed_project_instructions": {
@@ -1203,5 +1162,86 @@
         "steps": []
       }
     ]
+  },
+  "r06b3b_public_verified": {
+    "sha": "e1d648d5a4c64b69e495cabca7bbd1b4eea0f2f2",
+    "base": "68b694adadcca5d7c8a5698d01e86c7e47227800",
+    "pr": 53,
+    "run": 45459113536,
+    "acceptance": "VERIFIED_BOUNDED",
+    "test_first": "30c68c97211bfe339b01b22c676ed9ea2934f3e5",
+    "protected": {
+      "course": 105,
+      "extended": 170,
+      "migrations": 7
+    },
+    "report": "evidence/C9/R06B3B_LOCKING_READ_CORRECTION_2026-11-25.md",
+    "prior_failed_sha": "321205f235efe36d615e68998f3ffbd75baf4051",
+    "prior_run": 45441418164,
+    "prior_job": 138613273769,
+    "runs": [
+      [
+        45459113536,
+        "in_progress",
+        null
+      ]
+    ],
+    "prior_retry_sha": "b2609e36c090363dc32cb9f6b5c65107e93a262b",
+    "prior_retry_run": 45444843268,
+    "prior_retry_job": 138625635986,
+    "prior_api_failed_sha": "f1bcf7e129f7a9b037478aae570610ccf84fa4c4",
+    "prior_api_failed_run": 45448775860,
+    "prior_api_failed_job": 138639769266,
+    "failed_attempt_job": 138656862810,
+    "failed_attempt_reason": "Maven wrapper distribution download failed before tests",
+    "retry_job": 138669505383,
+    "prior_failed_run": 45453565679,
+    "prior_failed_job": 138669505383,
+    "prior_failed_phase": "RESOURCE_DETAIL",
+    "expected_http": 200,
+    "actual_http": 500,
+    "latest_job_metadata": [
+      {
+        "id": 138676495058,
+        "name": "Java 8 and isolated MySQL tests",
+        "status": "completed",
+        "conclusion": "success",
+        "steps": []
+      },
+      {
+        "id": 138676495401,
+        "name": "React typecheck, tests, lint, and build",
+        "status": "completed",
+        "conclusion": "success",
+        "steps": []
+      },
+      {
+        "id": 138676495489,
+        "name": "Extended C Java 21, isolated MySQL, Newman and Playwright",
+        "status": "in_progress",
+        "conclusion": null,
+        "steps": [
+          [
+            "Verify Extended C Java 21 backend against isolated MySQL",
+            "completed",
+            "success"
+          ],
+          [
+            "Prove local mixed rehearsal preparation with public fictional originals",
+            "completed",
+            "success"
+          ],
+          [
+            "Run authenticated Newman and browser acceptance against packaged JAR",
+            "in_progress",
+            null
+          ]
+        ]
+      }
+    ],
+    "job": 138676495489,
+    "maven": 91,
+    "playwright": 19,
+    "scheduler_denial_log_matches": 1
   }
 }
