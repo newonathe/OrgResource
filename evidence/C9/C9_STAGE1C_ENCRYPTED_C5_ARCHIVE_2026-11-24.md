@@ -1,6 +1,6 @@
 # C9 Stage 1C — actual C5 encrypted archive: test-first acceptance contract
 
-**2026-11-24 PHT — WRITTEN / NOT RUN.** Base PR #44 at be91d557d4f19d38c759ca77aaa151e793c125fe, exact CI #45326051879 green. C8 #34 remains BLOCKED; hosted #26 LIVE_IMPORT_NOT_RUN. User authorized only bounded C9 Stage 1C. Frozen Course A and Flyway V1–V7 protected.
+**2026-11-24 PHT — VERIFIED CI (bounded fixture; see executed receipt below).** Base PR #44 at be91d557d4f19d38c759ca77aaa151e793c125fe, exact CI #45326051879 green. C8 #34 remains BLOCKED; hosted #26 LIVE_IMPORT_NOT_RUN. User authorized only bounded C9 Stage 1C. Frozen Course A and Flyway V1–V7 protected.
 
 ## Prompt-engineered routing and contract
 
@@ -22,3 +22,23 @@ scripts/verify-c9-encrypted-archive.ps1 defines expected refusals and actual uti
 ## Remaining boundary
 
 Restore ciphertext size limit test is not a 64 MiB source dump stress test. The separate server has no network; Java/JDBC postflight and authenticated JAR restart, receipt replay and browser acceptance on that exact restored instance remain NOT RUN. C5 Windows protected-login regression beyond existing source comparison and prior receipts must be run separately with the original Windows environment. Private full-96, off-host backup and hosted operations remain blocked. No index changes, V8, C10, release or merge.
+
+## Executed receipt — 2026-11-24 PHT
+
+**VERIFIED CI:** source SHA `53edf52bb9443fc4c7d8aebdddb15ce76b37f882`; [run #45342955553](https://github.com/newonathe/OrgResource/actions/runs/45342955553); [Extended job #138270679634](https://github.com/newonathe/OrgResource/actions/runs/45342955553/job/138270679634). All three jobs SUCCESS. Read actual logs, not merely conclusion. The three success markers below were emitted at 06:52:10–11 UTC, followed by successful eight-workspace original-data/stock/state reconciliation at 06:52:14 UTC.
+
+| Test | Observed receipt |
+| --- | --- |
+| Stage 1B raw SQL recovery | MySQL 8.0.46, distinct UUID, no network/ports; 1,034,302 raw bytes, 178/755 ms dump/import; exact 18-table row equality |
+| Actual C5 archive | C9_ACTUAL_C5_ARCHIVE_OK: archive_bytes=1034356 sql_payload_bytes=1034302 backup_ms=569 restore_ms=1270 negative_cases=15 empty_sessions=true |
+| Cross-server restore | C9_ENCRYPTED_CROSS_SERVER_RESTORE_OK: eight_orgs=true allocations_960=true tables_18=true independent_server=true network_none=true row_dump_byte_equal=true source_unchanged=true populated_session_and_attribute_excluded=true |
+| Cleanup | C9_ARCHIVE_CLEANUP_OK: private_workdir_removed=true restorer_removed=true |
+| Regression | 91 Maven tests, zero failures/errors/skips; 110 Newman assertions, zero failed; 19 Playwright passed; Java 8 and React jobs passed |
+
+All fifteen individual C9_ARCHIVE_REFUSAL_OK markers observed: wrong-schema, outside-private-workdir, wrong-plan-hash, existing-archive, wrong-key, missing-key, invalid-key-length, header, nonce, tag, ciphertext, truncated, undersize, oversize, nonempty-target. The eight-org fixture contains 960 allocations and 3,013 synthetic events. Archive overhead was 54 bytes. These command wall times are one isolated fixture/run, not SLA or extrapolated full-96 capacity. The Stage 1B log's c5_aes_gcm_archive=NOT_TESTED describes the preceding raw-SQL test only; Stage 1C's later marker establishes actual encryption.
+
+**Self-review, not independent sign-off:** Tests-first commit 1a5cd5d63b016646700e0b891b3a16957c03681b was authored before implementation; no separate failing run was observed. The crypto core from AesGcm construction through cleanup compared byte-for-byte with #44. Initial tree comparisons verified 105/105 frozen backend/frontend blobs and 7/7 migration blobs unchanged. Only five files differed before this documentation receipt. No runtime fixes required. Existing Windows modes retain their source branches but were not executed on Windows in this run. Archive size refusal is for restore envelope; the 64 MiB source-dump and 1 MiB session-DDL cap stress cases are not exercised. The networkless server receives no JDBC or browser traffic; the successful packaged browser suite uses the normal CI application, not this restorer. No separate reviewer or actual off-host recovery. C8 #34 and hosted #26 remain open; no release or next phase accepted.
+
+**Next proposed bounded stage (not executed):** Stage 1D should restore the actual C5 archive into a newly initialized MySQL8 instance on a distinct, job-local internal Docker network, with no published DB ports and no external network routes. A separately isolated application process/container would connect via least-privilege runtime credentials, validate Flyway without altering prior migration checksums, exercise retired session refusal, fresh OWNER login, membership/tenant denial and permanent idempotent replay, and compare authorized SQL deltas. Reuse the Stage 1C proof intact. Before implementation, resolve the existing CI artifact/container runtime and fixture credentials, the exact original durable receipt fixture and test oracle, and the safe network design; do not create new infrastructure without evidence. No full-96 or hosted access. Obtain next-stage authorization and independent review as required.
+
+This receipt documents the observed source SHA. The documentation-only commit that records it has a separate exact-head CI obligation.
