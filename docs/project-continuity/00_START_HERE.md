@@ -61,3 +61,7 @@ Exact 9ecabdbc CI45443590053 Java8 job138621166005 success; actual logs 18 paylo
 ## R03 directed route evidence candidate / compact project instructions
 
 PR54 22b90b46d4f59423e13ca62b0afd8336019dfad8 based on verified PR52; R031 #67 and R082 #68 real MySQL HTTP test candidates; 2 changed paths only, no product source. CI pending. Existing R029 evidence retained; other gaps and independent IR4 open. PR53 retry status at observation: [[138625635151,"React typecheck, tests, lint, and build","completed","success"],[138625635845,"Java 8 and isolated MySQL tests","completed","success"],[138625635986,"Extended C Java 21, isolated MySQL, Newman and Playwright","in_progress",null]]. Proposed project instructions 7974 chars (limit 8000) stored at docs/project-continuity/10_PROPOSED_PROJECT_INSTRUCTIONS_UNDER_8000.md; not applied. Corrected old receipt enum to FAILED, actual prior evidence unchanged. R09=false.
+
+## R03 executed receipts / R06B3b diagnostic correction
+
+PR54 22b90b46d4f59423e13ca62b0afd8336019dfad8 CI45445707957 Extended138628768792 actual 68 identity/93 Maven/19 Playwright all passed, all three jobs successful. R031/R082 bounded; independent IR4 and remaining gaps open. PR53 b2609e36 second retry actual exit2 after ten refusals; malformed diagnostic source corrected at f1bcf7e129f7a9b037478aae570610ccf84fa4c4 CI45448775860 pending; underlying original failure unknown. Report22. R04 standalone prior CI all three jobs success; local gates separate. R09=false.

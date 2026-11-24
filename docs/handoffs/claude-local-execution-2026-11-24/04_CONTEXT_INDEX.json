@@ -971,11 +971,11 @@
     "state": "SOURCE_CONTRACT_READY_IMPLEMENTATION_OPEN"
   },
   "r06b3b_candidate": {
-    "sha": "b2609e36c090363dc32cb9f6b5c65107e93a262b",
+    "sha": "f1bcf7e129f7a9b037478aae570610ccf84fa4c4",
     "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
     "pr": 53,
-    "run": 45441418164,
-    "acceptance": "DIAGNOSTIC_RETRY_PENDING",
+    "run": 45448775860,
+    "acceptance": "DIAGNOSTIC_CORRECTION_CI_PENDING",
     "test_first": "30c68c97211bfe339b01b22c676ed9ea2934f3e5",
     "protected": {
       "course": 105,
@@ -983,50 +983,6 @@
       "migrations": 7
     },
     "report": "evidence/C9/R06B3B_PUBLIC_RECOVERED_CONTROL_2026-11-25.md",
-    "changed_paths": [
-      {
-        "path": "evidence/C9/R06B3B_PUBLIC_RECOVERED_CONTROL_2026-11-25.md",
-        "blob": "80779e6405c62d916d8fea5ef624f8b362e14931",
-        "bytes": 2434,
-        "mode": "100644"
-      },
-      {
-        "path": "scripts/c9-public-recovered-control.sh",
-        "blob": "506b8820a960649e12333f81ed89595f158c3abc",
-        "bytes": 7844,
-        "mode": "100644"
-      },
-      {
-        "path": "scripts/test-c9-local-mixed-preparation.sh",
-        "blob": "6fa41a2adddf2481ea5a704bd71c71be9feba14b",
-        "bytes": 4634,
-        "mode": "100644"
-      },
-      {
-        "path": "scripts/verify-c9-local-mixed-preparation.sh",
-        "blob": "de663d38bb6b7cdbb7e01fec05a341dc38053041",
-        "bytes": 36146,
-        "mode": "100644"
-      },
-      {
-        "path": "scripts/verify-c9-public-recovered-control.mjs",
-        "blob": "532ac2bb8deb2d656e5e0bcda4dec6e67ddded2f",
-        "bytes": 2875,
-        "mode": "100644"
-      },
-      {
-        "path": "scripts/verify-c9-public-recovered-control.py",
-        "blob": "57c1ff2090bd5e63c5b5918524cd461f2c873d76",
-        "bytes": 3596,
-        "mode": "100644"
-      }
-    ],
-    "limitations": [
-      "No local execution or observed failing test before implementation",
-      "Normal Flyway runtime disabled for observation control; prior actual migration/restore and non-session equality, not normal writable boot",
-      "Potential locking-read permission incompatibility",
-      "Full mixed private path and independent reviewer open"
-    ],
     "prior_failed_sha": "321205f235efe36d615e68998f3ffbd75baf4051",
     "prior_run": 45441418164,
     "prior_job": 138613273769,
@@ -1036,7 +992,10 @@
         "in_progress",
         null
       ]
-    ]
+    ],
+    "prior_retry_sha": "b2609e36c090363dc32cb9f6b5c65107e93a262b",
+    "prior_retry_run": 45444843268,
+    "prior_retry_job": 138625635986
   },
   "r04_standalone_candidate": {
     "base": "076c9a5e7c7a1e66b894362864d93b76409196bd",
@@ -1051,19 +1010,19 @@
     "jobs": [
       [
         138621165337,
-        "Extended C Java 21, isolated MySQL, Newman and Playwright",
-        "in_progress",
-        null
+        "Extended C Java 21",
+        "completed",
+        "success"
       ],
       [
         138621165947,
-        "React typecheck, tests, lint, and build",
+        "React",
         "completed",
         "success"
       ],
       [
         138621166005,
-        "Java 8 and isolated MySQL tests",
+        "Java 8",
         "completed",
         "success"
       ]
@@ -1084,11 +1043,17 @@
       ]
     ],
     "report": "evidence/C8/R03_DIRECTED_R031_R082_CANDIDATE_2026-11-25.md",
-    "acceptance": "CANDIDATE_CI_PENDING",
+    "acceptance": "VERIFIED_BOUNDED",
     "routes": [
       "R031",
       "R082"
-    ]
+    ],
+    "job": 138628768792,
+    "run": 45445707957,
+    "identity_tests": 68,
+    "maven_tests": 93,
+    "playwright": 19,
+    "failures": 0
   },
   "proposed_project_instructions": {
     "path": "docs/project-continuity/10_PROPOSED_PROJECT_INSTRUCTIONS_UNDER_8000.md",

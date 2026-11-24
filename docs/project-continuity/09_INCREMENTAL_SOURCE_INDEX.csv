@@ -18,3 +18,4 @@
 "docs/handoffs/claude-local-execution-2026-11-24/verify_course_a_standalone_candidate.py","1960b7783316c337ceba9a7fbf7b9a785f5b9ac4","8471","100644","r04_standalone_verified:9ecabdbc51b280ff1dbb2673f72766cfca2ab9a8","PATCH; actual Java8 bounded receipt 138621166005"
 "evidence/C8/R03_DIRECTED_R031_R082_CANDIDATE_2026-11-25.md","18ff385052eaeb6aa446f1d44902d0eaf3909dcc","2371","100644","r03_directed_candidate:22b90b46d4f59423e13ca62b0afd8336019dfad8","PATCH; actual CI pending"
 "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","60cb117bcf869ebcf40c501b9fcbcd21037c7749","365928","100644","r03_directed_candidate:22b90b46d4f59423e13ca62b0afd8336019dfad8","PATCH; actual CI pending"
+"scripts/test-c9-local-mixed-preparation.sh","d75e1717d4e574a8a2afc17ed680fa3adbc22c02","5559","100644","r06b3b_literal_filter_candidate:f1bcf7e129f7a9b037478aae570610ccf84fa4c4","PATCH; actual retry pending"

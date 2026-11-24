@@ -46,3 +46,5 @@ PC-D24: initial PR53 actual CI failure; root cause unknown due to filtered diagn
 PC-D23 actual receipt: R04 standalone candidate verified bounded via CI45443590053 job138621166005; no public distribution clearance.
 
 R03 directed test-only candidate PR54; R031/R082 partial scope, independent acceptance open. Compact instructions proposed only, <=8000 measured; no settings change.
+
+PC-D24 diagnostic correction: actual second PR53 failure caused by malformed harness expression; literal filter repair only, original runtime cause unknown. R031/R082 bounded executed; no new product design decision.

@@ -344,7 +344,7 @@
         }
       ],
       "authority": "93 route candidate mapping, independent issue34 blocked; current code and actual test evidence.",
-      "next": "PR54 22b90b46d4f59423e13ca62b0afd8336019dfad8 R031/R082 directed tests pending actual CI; then remaining named gaps; restricted IR4 and independent review open."
+      "next": "PR54 actual 93 Maven/68 identity/19 Playwright, R031 and R082 bounded executed, preserve independent IR4 and remaining gaps; next directed R084/R078/R083/R041."
     },
     {
       "id": "T12_HOSTING_AND_SYNTHETIC_DATA",
@@ -423,7 +423,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "PR53 initial candidate TEST_FAILED, exact cause hidden by old filter; b2609e36 bounded diagnostic retry; read actual failure before repairs.",
+      "next": "PR53 second run exit2, diagnostic wrapper malformed by JS replacement; literal filter correction f1bcf7e1 CI45448775860 pending; original runtime failure unknown.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
