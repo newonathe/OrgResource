@@ -4226,12 +4226,23 @@ class C1IdentityAcceptanceTest {
                 {"resources", Long.toString(resourceId)},
                 {"requirements", Long.toString(requirementId)}
         };
+        var beforeWorkspaceReads = governanceDenialRows(owner.orgDbId, outsider.orgDbId);
         for (Session actor : List.of(ownerSession, adminSession, custodianSession, leadSession, memberSession)) {
             HttpResponse<String> legacyDepartment = get(actor.client, "/api/v2/departments/" + departmentId);
             assertEquals(200, legacyDepartment.statusCode(), legacyDepartment.body());
             assertEquals(departmentId, json(legacyDepartment).get("id").getAsLong());
             for (String[] page : expectedPages) {
                 JsonObject view = workspacePage(actor, "/api/v2/workspace/" + page[0] + "?limit=50");
+                for (var element : view.getAsJsonArray("items")) {
+                    var fields = element.getAsJsonObject().keySet();
+                    switch (page[0]) {
+                        case "resources" -> assertEquals(Set.of("id", "publicId", "name", "type", "totalQuantity", "availableQuantity"), fields);
+                        case "requirements" -> assertEquals(Set.of("id", "projectId", "resourceId", "quantity",
+                                "allocatedQuantity", "shortageQuantity", "projectName", "resourceName",
+                                "resourceType", "projectStartAt", "projectEndAt"), fields);
+                        default -> { }
+                    }
+                }
                 long expectedId = Long.parseLong(page[1]);
                 assertTrue(view.getAsJsonArray("items").asList().stream()
                                 .anyMatch(item -> item.getAsJsonObject().get("id").getAsLong() == expectedId),
@@ -4265,6 +4276,8 @@ class C1IdentityAcceptanceTest {
             assertFalse(overview.toString().contains("Fictional C8 last29 borrower"));
         }
 
+        assertTrue(beforeWorkspaceReads.equals(governanceDenialRows(owner.orgDbId, outsider.orgDbId)),
+                "Authorized and denied workspace reads must not alter scoped domain or governance rows.");
         // Snapshot current tenant data AFTER login and authorized setup, then
         // prove lower roles do not mutate a real Department, Project, Requirement
         // or append-only stock/audit history.
@@ -4349,6 +4362,7 @@ class C1IdentityAcceptanceTest {
                 GSON.toJson(new OrgRequest(home.orgPublicId))).statusCode());
         refreshCsrf(live);
         String pagePath = "/api/v2/workspace/resources?limit=1";
+        var beforeHomeReads = governanceDenialRows(home.orgDbId, away.orgDbId);
         JsonObject first = workspacePage(live, pagePath);
         assertEquals(1, first.getAsJsonArray("items").size());
         assertFalse(first.get("nextCursor").isJsonNull(), "Two resources require a continuation cursor");
@@ -4356,15 +4370,20 @@ class C1IdentityAcceptanceTest {
         JsonObject homeAllocations = workspacePage(live, "/api/v2/workspace/allocations?limit=10");
         assertTrue(homeAllocations.getAsJsonArray("items").asList().stream()
                 .anyMatch(item -> item.getAsJsonObject().get("id").getAsLong() == homeAllocation));
-        assertFalse(workspacePage(live, "/api/v2/workspace/overview").get("allocations").isJsonNull());
+        JsonObject homeOverview = workspacePage(live, "/api/v2/workspace/overview");
+        assertFalse(homeOverview.get("allocations").isJsonNull());
+        assertEquals(Set.of("sampledAt", "departmentCount", "projectActiveCount", "resourceTypeCount",
+                "requirementShortageCount", "resourcePreview", "calendarPreview", "allocations"), homeOverview.keySet());
+        assertTrue(beforeHomeReads.equals(governanceDenialRows(home.orgDbId, away.orgDbId)),
+                "Privileged workspace reads changed persisted domain rows.");
 
         // Same browser, different selected org: the home cursor and original
         // home resource must not produce any away-organization data.
         assertEquals(200, post(live, "/api/v2/session/active-org",
                 GSON.toJson(new OrgRequest(away.orgPublicId))).statusCode());
         refreshCsrf(live);
-        assertEquals(404, get(live.client, pagePath + "&cursor=" + homeCursor).statusCode(),
-                "Cursor must be bound to the organization that issued it");
+        assertGovernanceRefusal(404, home.orgDbId, away.orgDbId, () -> get(live.client, pagePath + "&cursor=" + homeCursor));
+        var beforeAwayReads = governanceDenialRows(home.orgDbId, away.orgDbId);
         JsonObject awayPage = workspacePage(live, "/api/v2/workspace/resources?limit=10");
         assertTrue(awayPage.getAsJsonArray("items").asList().stream()
                 .anyMatch(item -> item.getAsJsonObject().get("id").getAsLong() == awayResource));
@@ -4374,6 +4393,8 @@ class C1IdentityAcceptanceTest {
         assertEquals(403, get(live.client, "/api/v2/workspace/allocations?limit=10").statusCode());
         assertTrue(workspacePage(live, "/api/v2/workspace/overview").get("allocations").isJsonNull());
 
+        assertTrue(beforeAwayReads.equals(governanceDenialRows(home.orgDbId, away.orgDbId)),
+                "Selected-away workspace reads changed scoped domain or governance rows.");
         // Switching back restores legitimate home reads, never remembered
         // CUSTODIAN capabilities after the OWNER changes the DB membership.
         assertEquals(200, post(live, "/api/v2/session/active-org",
@@ -4391,13 +4412,13 @@ class C1IdentityAcceptanceTest {
                 GSON.toJson(new RoleRequest("MEMBER")), "\"v0\"");
         assertEquals(200, demotion.statusCode(), demotion.body());
 
-        assertEquals(403, get(live.client, "/api/v2/workspace/allocations?limit=10").statusCode(),
-                "Same-session membership role must be reloaded from MySQL");
+        assertGovernanceRefusal(403, home.orgDbId, away.orgDbId,
+                () -> get(live.client, "/api/v2/workspace/allocations?limit=10"));
         assertTrue(workspacePage(live, "/api/v2/workspace/overview").get("allocations").isJsonNull());
         assertEquals(200, get(live.client, "/api/v2/workspace/resources?limit=10").statusCode(),
                 "Demotion to MEMBER preserves approved baseline browsing");
-        assertEquals(403, post(live, "/api/resources", GSON.toJson(
-                new ResourceRequest("Fictional forbidden stale Custodian", "CONSUMABLE", 0))).statusCode());
+        assertGovernanceRefusal(403, home.orgDbId, away.orgDbId, () -> post(live, "/api/resources", GSON.toJson(
+                new ResourceRequest("Fictional forbidden stale Custodian", "CONSUMABLE", 0))));
         assertEquals(resourceCount, jdbc.queryForObject(
                 "SELECT COUNT(*) FROM resource WHERE organization_id=?", Integer.class, home.orgDbId));
         assertEquals(allocationCount, jdbc.queryForObject(
@@ -4418,8 +4439,7 @@ class C1IdentityAcceptanceTest {
                 "/api/v2/workspace/resources?limit=10",
                 "/api/v2/workspace/requirements?limit=10",
                 "/api/v2/workspace/allocations?limit=10")) {
-            assertEquals(404, get(live.client, protectedRead).statusCode(),
-                    "Suspended selected-org membership must lose access immediately: " + protectedRead);
+            assertGovernanceRefusal(404, home.orgDbId, away.orgDbId, () -> get(live.client, protectedRead));
         }
         assertEquals(resourceCount, jdbc.queryForObject(
                 "SELECT COUNT(*) FROM resource WHERE organization_id=?", Integer.class, home.orgDbId));
