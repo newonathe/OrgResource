@@ -30,7 +30,7 @@ class Client:
             urllib.request.ProxyHandler({}), urllib.request.HTTPCookieProcessor(self.jar))
         self.csrf = None
 
-    def request(self, method, path, expected, body=None, headers=None):
+    def request(self, method, path, expected, body=None, headers=None, expected_code=None):
         check(path.startswith("/api/"), "API_PATH")
         h = {"Accept": "application/json"}
         if method == "POST":
@@ -51,6 +51,8 @@ class Client:
             etag = response.headers.get("ETag")
         check(status == expected, f"{method} {path.split('?')[0]} expected={expected} actual={status}")
         parsed = json.loads(raw) if raw else None
+        if expected_code is not None:
+            check(isinstance(parsed, dict) and parsed.get("code") == expected_code, "ERROR_CODE_" + expected_code)
         return (parsed.get("data", parsed) if isinstance(parsed, dict) else parsed), etag
 
     def refresh(self):
@@ -143,7 +145,8 @@ def recovered():
     owner.select(s["org"])
     check(owner.cookie() != s["oldSession"], "NEW_SESSION_NOT_DISTINCT")
     ok("restored-owner-login-and-selection")
-    first, _ = owner.request("GET", resource, 200)
+    first, current_etag = owner.request("GET", resource, 200)
+    check(bool(current_etag), "RESTORED_CURRENT_ETAG")
     receipt, _ = owner.request("GET", operation, 200)
     check(first["totalQuantity"] == 1 and first["availableQuantity"] == 1 and
           receipt["kind"] == "RECEIPT" and receipt["operationId"] == s["operation"], "RESTORED_STOCK_OR_RECEIPT")
@@ -151,9 +154,16 @@ def recovered():
                              {"operationId": s["operation"], "quantity": 1},
                              {"If-Match": s["etag"], "Idempotency-Key": s["key"]})
     check(replay["kind"] == "RECEIPT" and replay["operationId"] == s["operation"], "REPLAY_IDENTITY")
-    after, _ = owner.request("GET", resource, 200)
+    # New key isolates durable operation-ID fingerprint from temporary HTTP key reuse.
+    owner.request("POST", resource + "/receive", 409,
+                  {"operationId": s["operation"], "quantity": 2},
+                  {"If-Match": current_etag, "Idempotency-Key": secrets.token_hex(32)},
+                  expected_code="OPERATION_ID_REUSED")
+    ok("durable-changed-payload-conflict")
+    after, after_etag = owner.request("GET", resource, 200)
     moves, _ = owner.request("GET", resource + "/movements?limit=10", 200)
-    check(after["totalQuantity"] == 1 and after["availableQuantity"] == 1 and
+    check(after == first and after_etag == current_etag and
+          after["totalQuantity"] == 1 and after["availableQuantity"] == 1 and
           len(moves["items"]) == 1 and moves["items"][0]["operationId"] == s["operation"],
           "REPLAY_CHANGED_STOCK")
     ok("durable-replay-no-stock-duplication")
@@ -163,6 +173,10 @@ def recovered():
     cust.request("POST", resource + "/receive", 403,
                  {"operationId": s["operation"], "quantity": 1},
                  {"If-Match": s["etag"], "Idempotency-Key": s["key"]})
+    cust.request("POST", resource + "/receive", 403,
+                 {"operationId": str(uuid.uuid4()), "quantity": 1},
+                 {"If-Match": current_etag, "Idempotency-Key": secrets.token_hex(32)})
+    ok("demoted-member-fresh-write-refused")
     cust.request("GET", "/api/v2/orgs/" + s["foreign"] + "/resources", 404)
     ok("demoted-member-and-foreign-tenant-refused")
     suspended = Client().login("c9-runtime-suspended", s["suspendedPassword"])
