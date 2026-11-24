@@ -5228,6 +5228,80 @@ class C1IdentityAcceptanceTest {
         assertArrayEquals(otherFacts, stockFactCounts(other.orgDbId));
     }
 
+
+    @Test @Order(76)
+    void C8R083R084InactiveRecipientsAndTerminalTransfersPreserveExactGovernanceRows() throws Exception {
+        Fixture home = newTenant("C8-transfer-terminal", Membership.Role.OWNER);
+        Fixture admin = fixtureInOrg(home.orgDbId, Membership.Role.ADMIN);
+        Fixture suspended = fixtureInOrg(home.orgDbId, Membership.Role.ADMIN);
+        Fixture disabled = fixtureInOrg(home.orgDbId, Membership.Role.ADMIN);
+        Fixture other = newTenant("C8-transfer-terminal-foreign", Membership.Role.OWNER);
+        Session owner = login(home.username, home.password);
+        Session recipient = login(admin.username, admin.password);
+        String root = "/api/v2/orgs/" + home.orgPublicId;
+        String start = root + "/transfer-ownership";
+        assertEquals(1, jdbc.update("UPDATE membership SET status='SUSPENDED' WHERE id=? AND org_id=?",
+                suspended.membershipDbId, home.orgDbId));
+        assertEquals(1, jdbc.update("UPDATE user_account SET status='DISABLED' WHERE id=?", disabled.userDbId));
+        String transferSql = "SELECT id,HEX(public_id) AS public_id,org_id,from_membership_id,to_membership_id,status,pending_org_id,version,created_at,expires_at,accepted_at FROM ownership_transfer WHERE org_id IN (?,?) ORDER BY id";
+        String memberSql = "SELECT id,HEX(public_id) AS public_id,org_id,user_id,role,status,version,created_at,updated_at FROM membership WHERE org_id IN (?,?) ORDER BY id";
+        String auditSql = "SELECT id,org_id,actor_user_id,action,target_type,target_id,outcome,request_id,created_at FROM audit_event WHERE org_id IN (?,?) ORDER BY id";
+        var before = jdbc.queryForList(transferSql, home.orgDbId, other.orgDbId);
+        var membersBefore = jdbc.queryForList(memberSql, home.orgDbId, other.orgDbId);
+        var auditBefore = jdbc.queryForList(auditSql, home.orgDbId, other.orgDbId);
+        for (Fixture inactive : List.of(suspended, disabled)) {
+            HttpResponse<String> denied = post(owner, start, GSON.toJson(new TransferRequest(inactive.membershipPublicId, home.password)));
+            assertEquals(404, denied.statusCode());
+            assertEquals("NOT_FOUND", json(denied).get("code").getAsString());
+            assertTrue(before.equals(jdbc.queryForList(transferSql, home.orgDbId, other.orgDbId)));
+            assertTrue(membersBefore.equals(jdbc.queryForList(memberSql, home.orgDbId, other.orgDbId)));
+            assertTrue(auditBefore.equals(jdbc.queryForList(auditSql, home.orgDbId, other.orgDbId)));
+        }
+        HttpResponse<String> issued = post(owner, start, GSON.toJson(new TransferRequest(admin.membershipPublicId, home.password)));
+        assertEquals(201, issued.statusCode());
+        String transferId = json(issued).getAsJsonObject("data").get("id").getAsString();
+        String tag = issued.headers().firstValue("ETag").orElseThrow();
+        var transfer = transfers.findByOrganizationIdAndPublicId(home.orgDbId, UUID.fromString(transferId)).orElseThrow();
+        LocalDateTime expired = now().minusMinutes(1);
+        assertEquals(1, jdbc.update("UPDATE ownership_transfer SET created_at=?,expires_at=? WHERE id=? AND org_id=?",
+                Timestamp.valueOf(expired.minusMinutes(1)), Timestamp.valueOf(expired), transfer.id, home.orgDbId));
+        assertEquals(OwnershipTransfer.Status.PENDING, transfers.findById(transfer.id).orElseThrow().status);
+        before = jdbc.queryForList(transferSql, home.orgDbId, other.orgDbId);
+        auditBefore = jdbc.queryForList(auditSql, home.orgDbId, other.orgDbId);
+        HttpResponse<String> expiredRevoke = post(owner, root + "/transfers/" + transferId + "/revoke", "", tag);
+        assertEquals(409, expiredRevoke.statusCode());
+        assertEquals("TRANSFER_NOT_ACTIVE", json(expiredRevoke).get("code").getAsString());
+        assertTrue(before.equals(jdbc.queryForList(transferSql, home.orgDbId, other.orgDbId)));
+        assertTrue(membersBefore.equals(jdbc.queryForList(memberSql, home.orgDbId, other.orgDbId)));
+        assertTrue(auditBefore.equals(jdbc.queryForList(auditSql, home.orgDbId, other.orgDbId)));
+        // The next authorized start expires the old pending row atomically.
+        HttpResponse<String> fresh = post(owner, start, GSON.toJson(new TransferRequest(admin.membershipPublicId, home.password)));
+        assertEquals(201, fresh.statusCode());
+        assertEquals(OwnershipTransfer.Status.EXPIRED, transfers.findById(transfer.id).orElseThrow().status);
+        String freshId = json(fresh).getAsJsonObject("data").get("id").getAsString();
+        HttpResponse<String> accepted = post(recipient, root + "/accept-transfer", GSON.toJson(new TransferIdRequest(freshId)),
+                fresh.headers().firstValue("ETag").orElseThrow());
+        assertEquals(200, accepted.statusCode());
+        String currentTag = accepted.headers().firstValue("ETag").orElseThrow();
+        assertEquals(OwnershipTransfer.Status.ACCEPTED, transfers.findByOrganizationIdAndPublicId(home.orgDbId, UUID.fromString(freshId)).orElseThrow().status);
+        assertEquals(Membership.Role.ADMIN, memberships.findById(home.membershipDbId).orElseThrow().role);
+        assertEquals(Membership.Role.OWNER, memberships.findById(admin.membershipDbId).orElseThrow().role);
+        before = jdbc.queryForList(transferSql, home.orgDbId, other.orgDbId);
+        membersBefore = jdbc.queryForList(memberSql, home.orgDbId, other.orgDbId);
+        auditBefore = jdbc.queryForList(auditSql, home.orgDbId, other.orgDbId);
+        // Authorization precedes terminal status. Neither party can revoke.
+        for (Session actor : List.of(owner, recipient)) {
+            HttpResponse<String> denied = post(actor, root + "/transfers/" + freshId + "/revoke", "", currentTag);
+            assertEquals(403, denied.statusCode());
+            assertEquals("FORBIDDEN", json(denied).get("code").getAsString());
+            assertTrue(before.equals(jdbc.queryForList(transferSql, home.orgDbId, other.orgDbId)));
+            assertTrue(membersBefore.equals(jdbc.queryForList(memberSql, home.orgDbId, other.orgDbId)));
+            assertTrue(auditBefore.equals(jdbc.queryForList(auditSql, home.orgDbId, other.orgDbId)));
+        }
+        assertEquals(1, memberships.countEffectiveActiveOwners(home.orgDbId));
+        assertEquals(1, memberships.countEffectiveActiveOwners(other.orgDbId));
+    }
+
     private record Fixture(long orgDbId, UUID orgPublicId, long userDbId, String username, String password,
                           long membershipDbId, UUID membershipPublicId, List<String> recoveryCodes) { }
     private static final class Session {
