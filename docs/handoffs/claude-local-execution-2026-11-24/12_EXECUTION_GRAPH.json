@@ -65,12 +65,12 @@
     {
       "id": "R04",
       "executor": "CHAT",
-      "state": "IN_PROGRESS",
+      "state": "VERIFIED_BOUNDED",
       "depends_on": [
         "R00"
       ],
-      "receipt": "Actual standalone Java8 job138621166005 CI45443590053 exact 9ecabdbc: 18 payloads, 75 Java/120 full source files, six negatives, staged real Newman image 9 assertions zero failed, SHA256 and manifest checked, temporary cleanup; existing 61 Maven, source export/extracted build. Windows launcher, DOCX, Eclipse, independent and rights remain NOT_RUN; aggregate IN_PROGRESS pending scope reconciliation.",
-      "notes": "Standalone release fixture/hash and final package verification open; publication rights and student obligations separate; no frozen changes."
+      "receipt": "Remote mapping/safe packaging scope per 03_E2E_OWNERSHIP: frozen A 28 route mapping; PR52 actual Java8 61 Maven/100 Newman requests 151 assertions/1 browser; exact 9ecabdbc51b280ff1dbb2673f72766cfca2ab9a8 CI45443590053 job138621166005 actual 61 Maven, exact 120-file/793613-byte source, extracted Java8/React build, seven archive negatives, 18-payload standalone incl 75 Java/120 full source, six negatives, staged actual image Newman 9 assertions zero failures, manifest/hash checks and temporary cleanup. No final package/distribution clearance.",
+      "notes": "Bounded CHAT scope closed; private student-local DOCX source/render, real Windows launch/restart, clean Eclipse import, actual final package validation, rights/Canvas/COA/peer/video/instructor remain NOT_RUN/NOT_VERIFIED in G07, separately authorized. Do not run historical whole-HEAD archive script or point historical acceptance at shared/user schema. Actual remote technical evidence retained; no release."
     },
     {
       "id": "R05",
@@ -151,7 +151,7 @@
       "depends_on": [
         "R06B3a"
       ],
-      "receipt": "PR53 68b694ad CI45453565679 attempt1 Extended job138656862810 blocked before tests: wget failed fetching Maven 3.10.0 distribution ZIP; Java8/React success. Actual same-commit failed-job rerun requested successfully; attempt2 job138669505383 pending. Prior API RuntimeError exact phase still unknown; no change to privileges or application. Private mixed not implemented/run.",
+      "receipt": "PR53 68b694adadcca5d7c8a5698d01e86c7e47227800 CI45453565679 attempt2 Extended job138669505383 actual 91 Maven, original recovery/third server/PIDFD/grants/JAR ready, metadata/auth/owner selection/legacy/workspace reads passed; modern RESOURCE_DETAIL expected200 actual500. Source PESSIMISTIC_WRITE + MySQL FOR UPDATE privilege contract support causal hypothesis; actual SQL error not observed. New e1d648d5a4c64b69e495cabca7bbd1b4eea0f2f2 disposable observer pre-grant refusal then schema LOCK TABLES only, real lock read/rollback, seven prohibited domain DML denials; no production grants or oracle weakening. CI pending; private mixed NOT_IMPLEMENTED/NOT_RUN.",
       "notes": "Potential SELECT FOR UPDATE privilege incompatibility: InventoryService locks organization/membership on detail reads. Do not broaden domain DML to pass. Actual CI failure evidence first. Private same-lifetime path after bounded public control; R07 normal worker separate."
     },
     {
@@ -362,7 +362,7 @@
       "state": "NOT_VERIFIED",
       "depends_on": [],
       "receipt": "Actual Canvas, recording, certificate of authorship/assistance, peer review and instructor requirements",
-      "notes": "Printed December 5 2026 deadline; verify Canvas"
+      "notes": "Printed December 5 2026 deadline; verify Canvas. Separate Course A private owner/student package DOCX exact frozen-source provenance and render, authorized disposable loopback runtime/Windows launcher/restart/Eclipse import, approved allowlisted final artifact hashes, publication rights, video/authorship/peer/instructor obligations. NOT_RUN/NOT_VERIFIED; no use of historical whole-HEAD export for public distribution; no claim L03 Extended C covers Course A."
     }
   ],
   "execution_order": [
@@ -422,7 +422,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "Inspect same-head PR53 retry actual API phase and fix confirmed cause; inspect PR54 #72 exact run; continue remaining R017/R025/R040 and all route gaps; R09=false."
+    "next_action": "Inspect PR53 locking-read direct refusal/success and actual API/browser/rows/cleanup CI; inspect PR54 #72 CI45457441719; continue R017/R025/R040 etc. R04 remote bounded; private academic gates remain G07. R09 false."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -441,24 +441,24 @@
     "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS"
   },
   "r06b3b_candidate": {
-    "sha": "68b694adadcca5d7c8a5698d01e86c7e47227800",
-    "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+    "sha": "e1d648d5a4c64b69e495cabca7bbd1b4eea0f2f2",
+    "base": "68b694adadcca5d7c8a5698d01e86c7e47227800",
     "pr": 53,
     "run": 45448775860,
-    "acceptance": "INFRASTRUCTURE_RETRY_PENDING",
+    "acceptance": "LOCKING_READ_CANDIDATE_CI_PENDING",
     "test_first": "30c68c97211bfe339b01b22c676ed9ea2934f3e5",
     "protected": {
       "course": 105,
       "extended": 170,
       "migrations": 7
     },
-    "report": "evidence/C9/R06B3B_PUBLIC_RECOVERED_CONTROL_2026-11-25.md",
+    "report": "evidence/C9/R06B3B_LOCKING_READ_CORRECTION_2026-11-25.md",
     "prior_failed_sha": "321205f235efe36d615e68998f3ffbd75baf4051",
     "prior_run": 45441418164,
     "prior_job": 138613273769,
     "runs": [
       [
-        45453565679,
+        45459113536,
         "in_progress",
         null
       ]
@@ -471,7 +471,12 @@
     "prior_api_failed_job": 138639769266,
     "failed_attempt_job": 138656862810,
     "failed_attempt_reason": "Maven wrapper distribution download failed before tests",
-    "retry_job": 138669505383
+    "retry_job": 138669505383,
+    "prior_failed_run": 45453565679,
+    "prior_failed_job": 138669505383,
+    "prior_failed_phase": "RESOURCE_DETAIL",
+    "expected_http": 200,
+    "actual_http": 500
   },
   "r03_candidate": {
     "sha": "4ac7c197b9def27bc507697c9303b147e76ffbd6",

@@ -971,24 +971,24 @@
     "state": "SOURCE_CONTRACT_READY_IMPLEMENTATION_OPEN"
   },
   "r06b3b_candidate": {
-    "sha": "68b694adadcca5d7c8a5698d01e86c7e47227800",
-    "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+    "sha": "e1d648d5a4c64b69e495cabca7bbd1b4eea0f2f2",
+    "base": "68b694adadcca5d7c8a5698d01e86c7e47227800",
     "pr": 53,
     "run": 45448775860,
-    "acceptance": "INFRASTRUCTURE_RETRY_PENDING",
+    "acceptance": "LOCKING_READ_CANDIDATE_CI_PENDING",
     "test_first": "30c68c97211bfe339b01b22c676ed9ea2934f3e5",
     "protected": {
       "course": 105,
       "extended": 170,
       "migrations": 7
     },
-    "report": "evidence/C9/R06B3B_PUBLIC_RECOVERED_CONTROL_2026-11-25.md",
+    "report": "evidence/C9/R06B3B_LOCKING_READ_CORRECTION_2026-11-25.md",
     "prior_failed_sha": "321205f235efe36d615e68998f3ffbd75baf4051",
     "prior_run": 45441418164,
     "prior_job": 138613273769,
     "runs": [
       [
-        45453565679,
+        45459113536,
         "in_progress",
         null
       ]
@@ -1001,7 +1001,12 @@
     "prior_api_failed_job": 138639769266,
     "failed_attempt_job": 138656862810,
     "failed_attempt_reason": "Maven wrapper distribution download failed before tests",
-    "retry_job": 138669505383
+    "retry_job": 138669505383,
+    "prior_failed_run": 45453565679,
+    "prior_failed_job": 138669505383,
+    "prior_failed_phase": "RESOURCE_DETAIL",
+    "expected_http": 200,
+    "actual_http": 500
   },
   "r04_standalone_candidate": {
     "base": "076c9a5e7c7a1e66b894362864d93b76409196bd",
@@ -1097,5 +1102,14 @@
     "identity_tests": 71,
     "playwright": 19,
     "failures": 0
+  },
+  "r04_remote_scope": {
+    "state": "VERIFIED_BOUNDED",
+    "source_commit": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+    "candidate": "9ecabdbc51b280ff1dbb2673f72766cfca2ab9a8",
+    "run": 45443590053,
+    "job": 138621166005,
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/24_R04_REMOTE_SCOPE_AND_R06B3B_LOCKING_READ.md",
+    "local_gates": "G07 NOT_RUN/NOT_VERIFIED; no distribution"
   }
 }
