@@ -10,7 +10,9 @@ param(
     [Parameter(Mandatory, ParameterSetName = 'DisposableAcceptance')]
     [switch] $DisposableAcceptance,
     [Parameter(Mandatory, ParameterSetName = 'DisposableDemoAcceptance')]
-    [switch] $DisposableDemoAcceptance
+    [switch] $DisposableDemoAcceptance,
+    [Parameter(Mandatory, ParameterSetName = 'CiIntermediateAcceptance')]
+    [switch] $CiIntermediateAcceptance
 )
 
 $ErrorActionPreference = 'Stop'
@@ -24,7 +26,7 @@ $requiredTables = @('account_recovery_code', 'allocation', 'audit_event', 'depar
     'idempotency_key', 'invitation', 'local_credential', 'membership', 'organization', 'ownership_transfer',
     'project', 'resource', 'resource_requirement', 'spring_session', 'spring_session_attributes', 'stock_movement', 'user_account')
 $clientUser = 'root'
-$disposable = $DisposableAcceptance -or $DisposableDemoAcceptance
+$disposable = $DisposableAcceptance -or $DisposableDemoAcceptance -or $CiIntermediateAcceptance
 
 if (-not [Security.Cryptography.AesGcm]::IsSupported) { throw 'AES-GCM is unavailable on this runtime.' }
 if ($DisposableAcceptance -and $Schema -ne 'orgresource_c1_acceptance') {
@@ -34,6 +36,74 @@ if ($DisposableDemoAcceptance -and ($Schema -notmatch '^orgresource_c8_demo_([a-
     throw 'Demo acceptance authentication requires the guarded C8 disposable schema and port.'
 }
 $demoSuffix = if ($DisposableDemoAcceptance) { $Matches[1] }
+
+# CI-only transport; existing protected-login and Windows modes retain their
+# schema guards, credential policy, loopback TCP and executable resolution.
+$ciContainer = $null
+$ciPassword = $null
+function Read-C9DockerField([string] $Format, [string] $Container) {
+    $value = & docker inspect --type container --format $Format $Container 2>$null
+    if ($LASTEXITCODE -ne 0) { throw 'C9_CI_CONTAINER_INSPECTION_FAILED' }
+    return ($value -join [Environment]::NewLine).Trim()
+}
+if ($CiIntermediateAcceptance) {
+    if (-not $IsLinux -or $env:GITHUB_ACTIONS -cne 'true' -or $env:RUNNER_OS -cne 'Linux' -or
+        $Port -ne 3306 -or $env:EXT_SMS_ENABLED -cne 'false') {
+        throw 'C9_CI_LINUX_ACTIONS_REQUIRED'
+    }
+    $ciSource = 'orgresource_c8_additive_ci_fixture_intermediate'
+    $ciTarget = 'orgresource_c8_additive_ci_fixture_c9_encrypted'
+    if ($env:C9_DB_SCHEMA -cne $ciSource -or
+        ($Mode -eq 'Backup' -and $Schema -cne $ciSource) -or
+        ($Mode -eq 'Restore' -and $Schema -cne $ciTarget)) {
+        throw 'C9_CI_SCHEMA_REQUIRED'
+    }
+    if ($env:MYSQL_CONTAINER -cnotmatch '^[0-9a-f]{64}$' -or
+        $env:GITHUB_RUN_ID -cnotmatch '^[1-9][0-9]{1,17}$' -or
+        $env:GITHUB_RUN_ATTEMPT -cnotmatch '^[1-9][0-9]{0,3}$' -or
+        -not $env:EXT_DB_MIGRATION_PASSWORD -or -not $env:C9_RESTORE_PASSWORD) {
+        throw 'C9_CI_RUN_IDENTITY_REQUIRED'
+    }
+    if (-not $env:RUNNER_TEMP -or -not $env:C9_ARCHIVE_DIR) { throw 'C9_CI_ARCHIVE_PATH_REQUIRED' }
+    $runnerRoot = [IO.Path]::TrimEndingDirectorySeparator([IO.Path]::GetFullPath($env:RUNNER_TEMP))
+    $ciDir = [IO.Path]::TrimEndingDirectorySeparator([IO.Path]::GetFullPath($env:C9_ARCHIVE_DIR))
+    if ([IO.Path]::GetDirectoryName($ciDir) -cne $runnerRoot -or
+        [IO.Path]::GetFileName($ciDir) -cnotmatch '^c9-cross-server\.[A-Za-z0-9]{8}$' -or
+        -not (Test-Path -LiteralPath $ciDir -PathType Container) -or
+        (Get-Item -LiteralPath $ciDir -Force).LinkType -or
+        [IO.Path]::GetDirectoryName($archivePath) -cne $ciDir -or
+        [IO.Path]::GetFileName($archivePath) -cnotmatch '^[a-z0-9-]+\.aesgcm$' -or
+        ((Test-Path -LiteralPath $archivePath) -and (Get-Item -LiteralPath $archivePath -Force).LinkType)) {
+        throw 'C9_CI_ARCHIVE_PATH_REQUIRED'
+    }
+    $expectedPlan = Join-Path $runnerRoot 'c8-additive-intermediate-private.json'
+    if ($env:C9_PLAN_PATH -cne $expectedPlan -or $env:C9_PLAN_SHA -cnotmatch '^[0-9a-f]{64}$' -or
+        -not (Test-Path -LiteralPath $expectedPlan -PathType Leaf) -or
+        (Get-Item -LiteralPath $expectedPlan -Force).LinkType -or
+        (Get-FileHash -LiteralPath $expectedPlan -Algorithm SHA256).Hash.ToLowerInvariant() -cne $env:C9_PLAN_SHA) {
+        throw 'C9_CI_PLAN_REQUIRED'
+    }
+    if ((Read-C9DockerField '{{.Id}}' $env:MYSQL_CONTAINER) -cne $env:MYSQL_CONTAINER -or
+        (Read-C9DockerField '{{.Config.Image}}' $env:MYSQL_CONTAINER) -cne 'mysql:8.0.46') {
+        throw 'C9_CI_SOURCE_CONTAINER_REQUIRED'
+    }
+    if ($Mode -eq 'Backup') {
+        $ciContainer = $env:MYSQL_CONTAINER
+        $ciPassword = $env:EXT_DB_MIGRATION_PASSWORD
+    } else {
+        $ciContainer = "orgresource-c9-restorer-$($env:GITHUB_RUN_ID)-$($env:GITHUB_RUN_ATTEMPT)"
+        $ciPassword = $env:C9_RESTORE_PASSWORD
+        if ((Read-C9DockerField '{{.Id}}' $ciContainer) -ceq $env:MYSQL_CONTAINER -or
+            (Read-C9DockerField '{{.Config.Image}}' $ciContainer) -cne 'mysql:8.0.46' -or
+            (Read-C9DockerField '{{.HostConfig.NetworkMode}}' $ciContainer) -cne 'none' -or
+            (Read-C9DockerField '{{index .Config.Labels "orgresource.c9.run"}}' $ciContainer) -cne "$($env:GITHUB_RUN_ID)-$($env:GITHUB_RUN_ATTEMPT)" -or
+            (Read-C9DockerField '{{len .HostConfig.Binds}}' $ciContainer) -cne '0') {
+            throw 'C9_CI_ISOLATED_RESTORER_REQUIRED'
+        }
+        $published = & docker port $ciContainer 2>$null
+        if ($LASTEXITCODE -ne 0 -or $published) { throw 'C9_CI_ISOLATED_RESTORER_REQUIRED' }
+    }
+}
 if (-not $env:EXT_BACKUP_KEY) { throw 'Protected backup key unavailable.' }
 try { $key = [Convert]::FromBase64String($env:EXT_BACKUP_KEY) } catch { throw 'Protected backup key is invalid.' }
 if ($key.Length -ne 32) {
@@ -53,26 +123,36 @@ function Find-BackupMysqlTool([string] $Tool) {
 
 function Invoke-BackupMysql([string] $Tool, [string[]] $Options, [byte[]] $InputBytes, [long] $OutputLimit = $maxSqlBytes) {
     $info = [Diagnostics.ProcessStartInfo]::new()
-    $info.FileName = Find-BackupMysqlTool $Tool
+    $info.FileName = if ($CiIntermediateAcceptance) { 'docker' } else { Find-BackupMysqlTool $Tool }
     $info.UseShellExecute = $false
     $info.CreateNoWindow = $true
     $info.RedirectStandardError = $true
     $info.RedirectStandardOutput = $true
     $info.RedirectStandardInput = $null -ne $InputBytes
     foreach ($name in @('EXT_BACKUP_KEY', 'EXT_CONTACT_ENCRYPTION_KEY', 'MYSQL_PWD', 'EXT_DB_PASSWORD',
-            'EXT_DB_MIGRATION_PASSWORD', 'EXT_BOOTSTRAP_PASSWORD', 'EXT_TWILIO_AUTH_TOKEN', 'EXT_E2E_PASSWORD')) {
+            'EXT_DB_MIGRATION_PASSWORD', 'EXT_BOOTSTRAP_PASSWORD', 'EXT_TWILIO_AUTH_TOKEN', 'EXT_E2E_PASSWORD',
+            'C9_RESTORE_PASSWORD')) {
         $null = $info.Environment.Remove($name)
     }
-    $info.ArgumentList.Add('--no-defaults')
-    if ($disposable) {
-        $info.ArgumentList.Add('--user=root')
-        $info.ArgumentList.Add('--skip-password')
+    if ($CiIntermediateAcceptance) {
+        if ($Tool -cnotin @('mysql','mysqldump')) { throw 'C9_CI_TOOL_REFUSED' }
+        $info.Environment['MYSQL_PWD'] = $ciPassword
+        foreach ($arg in @('exec','-i','--env','MYSQL_PWD',$ciContainer,$Tool,
+                '--no-defaults','--protocol=socket','--user=root','--default-character-set=utf8mb4') + $Options) {
+            $info.ArgumentList.Add($arg)
+        }
     } else {
-        $info.ArgumentList.Add("--login-path=$LoginPath")
-        $info.ArgumentList.Add("--user=$clientUser")
-    }
-    foreach ($arg in @('--protocol=tcp', '--host=127.0.0.1', "--port=$Port", '--default-character-set=utf8mb4') + $Options) {
-        $info.ArgumentList.Add($arg)
+        $info.ArgumentList.Add('--no-defaults')
+        if ($disposable) {
+            $info.ArgumentList.Add('--user=root')
+            $info.ArgumentList.Add('--skip-password')
+        } else {
+            $info.ArgumentList.Add("--login-path=$LoginPath")
+            $info.ArgumentList.Add("--user=$clientUser")
+        }
+        foreach ($arg in @('--protocol=tcp', '--host=127.0.0.1', "--port=$Port", '--default-character-set=utf8mb4') + $Options) {
+            $info.ArgumentList.Add($arg)
+        }
     }
     $process = [Diagnostics.Process]::Start($info)
     $output = [IO.MemoryStream]::new()
@@ -123,6 +203,14 @@ function Assert-BackupSchema {
     }
     if ($DisposableDemoAcceptance -and (Read-BackupSqlScalar 'SELECT COUNT(*) FROM organization WHERE demo_plan_sha IS NOT NULL') -ne '96') {
         throw 'The disposable C8 backup does not contain the full imported demo cohort.'
+    }
+    if ($CiIntermediateAcceptance) {
+        if ((Read-BackupSqlScalar 'SELECT VERSION()') -cne '8.0.46' -or
+            (Read-BackupSqlScalar 'SELECT COUNT(*) FROM organization WHERE demo_plan_sha IS NOT NULL') -cne '8' -or
+            (Read-BackupSqlScalar "SELECT COUNT(*) FROM organization WHERE demo_plan_sha='$($env:C9_PLAN_SHA)'") -cne '8' -or
+            (Read-BackupSqlScalar 'SELECT COUNT(*) FROM allocation') -cne '960') {
+            throw 'C9_CI_INTERMEDIATE_FIXTURE_REQUIRED'
+        }
     }
 }
 
