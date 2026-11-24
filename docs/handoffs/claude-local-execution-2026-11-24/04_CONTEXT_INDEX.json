@@ -2350,11 +2350,27 @@
       ]
     ],
     "report": "evidence/C9/R07_RETURN_EXPIRY_AND_STALE_CLAIM_CANDIDATE_2026-11-25.md",
-    "acceptance": "CI_PENDING",
+    "acceptance": "FAILED",
     "tests": [
       32
     ],
     "observed_red": "NOT_RUN",
-    "scope": "same-process persisted CLAIMED/DISPATCHING stale recovery; gated concurrent return and expiry, same key replay; NOT actual restart/forced overlap/deadlock/lost network response"
+    "scope": "same-process persisted CLAIMED/DISPATCHING stale recovery; gated concurrent return and expiry, same key replay; NOT actual restart/forced overlap/deadlock/lost network response",
+    "actual_failure": {
+      "sha": "a034fb1c81ff1521c9bc9c0c32561c9c2cde515c",
+      "run": 45488706073,
+      "job": 138780912749,
+      "dedicated_run": 45488706396,
+      "dedicated_job": 138780913243,
+      "verdict": "FAILED",
+      "actual": "Full Verify test compilation cannot find governanceDenialRows(long,long) lines2080/2082; dedicated case failed before selected receipt; no lifecycle execution."
+    }
+  },
+  "r07_lifecycle_correction": {
+    "sha": "b48b289f4ddc3dd1fb0ac786487d188921c6909c",
+    "base": "a034fb1c81ff1521c9bc9c0c32561c9c2cde515c",
+    "runs": [],
+    "report": "evidence/C9/R07_LIFECYCLE_BRANCH_HELPER_CORRECTION_2026-11-25.md",
+    "acceptance": "CI_PENDING"
   }
 }
