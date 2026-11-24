@@ -177,10 +177,6 @@
   ],
   "full_pending": [
     {
-      "run": 45493392042,
-      "job": 138797385434
-    },
-    {
       "run": 45494597345,
       "job": 138801601172
     }
@@ -203,7 +199,8 @@
     "R09 final acceptance must update approved_source_sha and ready_to_launch together with graph, exact actual receipts and owner permission; candidate is never executable authority.",
     "L04 Windows verifier authenticates encrypted C5 archive and compares four-table count/sum/XOR CRC32 fingerprints and allocation count; not exact all-row equality. Retained stopped disposable datadirs require owner-private custody. Native Windows scripts reserve then release loopback ports before launch and poll ping, so require owner-approved exclusive disposable Windows environment without other MySQL servers/listeners or competing launches; no permission broadening or shared database shutdown. If ownership cannot be established, BLOCKED, do not run. Source-only review; actual native behavior NOT_RUN.",
     "L06 report27 is authoritative; actual exact private plan/owner confirmation and POSIX capability required. No interim preparation or duplicate import.",
-    "Report46: corrected PR55 distinct JVM and reminder restart actual full pass; not final integrated proof. Candidate ready=false; no approval."
+    "Report46: corrected PR55 distinct JVM and reminder restart actual full pass; not final integrated proof. Candidate ready=false; no approval.",
+    "Report47: prior combined full actual success; newest full exact-head receipt mandatory."
   ],
   "prior_bounded_receipts": [
     {
@@ -213,6 +210,14 @@
       "job": 138797218433,
       "oracle": "actual full PR55 recovery, reminder restart, dedicated evidence and packaged HTTP",
       "actual": "103 Maven/78 identity/19 Playwright, 60 Newman requests/110 assertions, zero failures/errors/skips, 3/3 jobs success; actual InnoDB deadlock and rollback/retry, response-loss upstream201/downstreamEOF and same-actor temporary receipt/ETag replay across distinct JVM exact domain equality; real C5 independent restore non-session exact and empty sessions, durable replay, role/tenant refusals; reminder stale CLAIMED/DISPATCHING -> UNKNOWN, fresh preserved, exact other rows no transport; cleanup; 450 measured+75 warmups packaged same JVM; public original-only preparation, private positive NOT_RUN"
+    },
+    {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "9d0902b4e8ea2045a30a4ff4a524e213a3b6a7b3",
+      "run": 45493392042,
+      "job": 138797385434,
+      "oracle": "first complete corrected combined full regression",
+      "actual": "103 Maven/78 identity/19 Playwright, 60 Newman requests/110 assertions, all three jobs success, zero failures/errors/skips; real deadlock/rollback/retry, distinct JVM response-loss replay and reminder recovery, C5 exact independent restore, public SQL aggregate/projection, locking denial/positive, seven domain DML denials, real original-only metadata/browser/API/session/logout, exact source/domain row equality, all cleanup; private positive NOT_RUN"
     }
   ]
 }

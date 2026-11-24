@@ -3903,5 +3903,226 @@
     ],
     "report": "docs/handoffs/claude-local-execution-2026-11-24/46_R07_RESTART_ACTUAL_AND_C9_SCOPE_RECONCILIATION.md",
     "acceptance": "VERIFIED_BOUNDED_PR55_ONLY"
+  },
+  "r09_prior_integrated_full_actual": {
+    "receipt": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "9d0902b4e8ea2045a30a4ff4a524e213a3b6a7b3",
+      "run": 45493392042,
+      "job": 138797385434,
+      "oracle": "first complete corrected combined full regression",
+      "actual": "103 Maven/78 identity/19 Playwright, 60 Newman requests/110 assertions, all three jobs success, zero failures/errors/skips; real deadlock/rollback/retry, distinct JVM response-loss replay and reminder recovery, C5 exact independent restore, public SQL aggregate/projection, locking denial/positive, seven domain DML denials, real original-only metadata/browser/API/session/logout, exact source/domain row equality, all cleanup; private positive NOT_RUN"
+    },
+    "timings": [
+      {
+        "sha": "18f47cc762f5bcf0ed857350b177c4ccdf035ff1",
+        "run": 45490328103,
+        "job": 138786607428,
+        "npm_install_reported_s": 3,
+        "vite_reported_ms": 142,
+        "maven_reported_s": 130,
+        "playwright_reported": "1.7m"
+      },
+      {
+        "sha": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
+        "run": 45493345999,
+        "job": 138797218433,
+        "npm_install_reported_s": 4,
+        "vite_reported_ms": 191,
+        "maven_reported_s": 119,
+        "playwright_reported": "1.7m"
+      },
+      {
+        "sha": "9d0902b4e8ea2045a30a4ff4a524e213a3b6a7b3",
+        "run": 45493392042,
+        "job": 138797385434,
+        "npm_install_reported_s": 4,
+        "vite_reported_ms": 220,
+        "maven_reported_s": 130,
+        "playwright_reported": "1.7m"
+      }
+    ],
+    "metrics": {
+      "scope": "prior integrated actual packaged same-JVM serial HTTP, public fixture",
+      "columns": [
+        "min_ms",
+        "p50_ms",
+        "p95_ms",
+        "max_ms",
+        "first_warmup_ms",
+        "body_min",
+        "body_max"
+      ],
+      "workloads": [
+        "resource_page",
+        "allocation_page",
+        "requirement_page",
+        "project_page",
+        "overview"
+      ],
+      "values": [
+        [
+          [
+            18.173,
+            25.594,
+            31.033,
+            34.163,
+            59.953,
+            3125,
+            3125
+          ],
+          [
+            27.941,
+            38.669,
+            51.525,
+            51.98,
+            114.168,
+            75742,
+            75742
+          ],
+          [
+            13.294,
+            16.143,
+            23.98,
+            34.962,
+            21.763,
+            5167,
+            5167
+          ],
+          [
+            11.709,
+            13.366,
+            16.02,
+            19.325,
+            24.379,
+            1050,
+            1050
+          ],
+          [
+            18.154,
+            21.034,
+            26.288,
+            26.309,
+            55.733,
+            1868,
+            1868
+          ]
+        ],
+        [
+          [
+            12.688,
+            14.041,
+            16.323,
+            18.109,
+            15.442,
+            3125,
+            3125
+          ],
+          [
+            21.244,
+            26.878,
+            38.213,
+            38.97,
+            26.329,
+            75742,
+            75742
+          ],
+          [
+            9.759,
+            11.514,
+            13.912,
+            17.364,
+            11.146,
+            5167,
+            5167
+          ],
+          [
+            7.944,
+            10.203,
+            13.475,
+            13.641,
+            10.134,
+            1050,
+            1050
+          ],
+          [
+            15.232,
+            16.671,
+            20.859,
+            22.123,
+            14.743,
+            1868,
+            1868
+          ]
+        ],
+        [
+          [
+            10.038,
+            13.022,
+            15.677,
+            16.047,
+            13.434,
+            3125,
+            3125
+          ],
+          [
+            19.622,
+            21.127,
+            27.513,
+            49.309,
+            25.718,
+            75742,
+            75742
+          ],
+          [
+            8.763,
+            9.787,
+            12.802,
+            14.631,
+            10.022,
+            5167,
+            5167
+          ],
+          [
+            7.906,
+            9.416,
+            14.231,
+            14.737,
+            9.16,
+            1050,
+            1050
+          ],
+          [
+            14.088,
+            16.434,
+            19.6,
+            21.141,
+            19.95,
+            1868,
+            1868
+          ]
+        ]
+      ],
+      "measured": 450,
+      "warmups": 75,
+      "jar_bytes": 72486427,
+      "jar_sha256": "76e5977499edb6a01a0c6de95ce166c2975d08f70bcdbd57680049d1af32c10a",
+      "fixture": {
+        "allocation": 120,
+        "department": 2,
+        "project": 6,
+        "resource": 20,
+        "resource_requirement": 18,
+        "PENDING": 0,
+        "ISSUED": 6,
+        "CONSUMED": 32
+      }
+    },
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/47_PRIOR_INTEGRATED_ACTUAL_AND_BUILD_TIMING_REUSE.md",
+    "final_pending": {
+      "run": 45494597345,
+      "job": 138801601172
+    },
+    "acceptance": "VERIFIED_BOUNDED_PRIOR_INTEGRATED"
   }
 }
