@@ -25,3 +25,5 @@ See 10_CLAUDE_RESEARCH_AND_ADOPTION.md. Use installed /usage and /context or ava
 ## Current launch gate
 
 Read the compact 12_EXECUTION_GRAPH.json task states by deterministic selection, and the 13 compatibility gate only for L06. R09 is OPEN; no local agent launch until ChatGPT finishes remote queue or owner explicitly accepts named incomplete preparation. Claude is not authorized to fix the Windows/POSIX mismatch, add a backup transport, create an importer, alter production source, or attest to operator recovery. Keep independently validated local tasks separate. Do not run older hardcoded SHA commands after a new final reviewed source is supplied.
+
+R06A implementation candidate is on PR #48 only. Do not execute the public CI harness locally or spoof GITHUB_ACTIONS. LocalOriginalAcceptance is pre-import two-original-only transport; it does not support an imported 96 cohort and is not a production backup route. No local run until R09 and specific R06B script are ready.

@@ -62,3 +62,5 @@ L05 private IR4 only if provided; local deterministic join/tallies, no blind rer
 
 ## Usage and resume
 Before first task, use installed CLI's available usage/context indicators if supported; no new telemetry packages. During long shell execution, no repeated LLM polling or log reads. Let native process complete, record exit and safe receipts. Save a tiny local checkpoint outside repo after each completed/failed/blocked task: task ID, exact SHA, evidence status, elapsed seconds, next task; no raw credentials or plan. If context compaction is needed, preserve these, protected boundaries, known blockers and current task; use actual installed CLI support. On limit/interruption, resume from checkpoint and inspect prior verified outputs, never blindly rerun. Do not change account/model or enable extra paid usage without owner action.
+
+R06A candidate PR48 adds local original-only Linux transport plus a GitHub Actions test. This is not a local execution recipe for L06. Do not run CI-only script or bypass its guard. The final R06B local runner must be pinned in 02/04/12 after verified acceptance; do not improvise.

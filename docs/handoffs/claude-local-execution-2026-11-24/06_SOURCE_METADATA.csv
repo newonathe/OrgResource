@@ -832,3 +832,7 @@
 "historical_C6","727c270f0a5f2d34bb3b049124d2d5cfca218f35","evidence/C6/SKEPTICAL_SOURCE_REVIEW_AND_OPEN_VETOES.md","4f82887e0fe57568a08b364cb1bb5ab2056b14a7","100644","11892","METADATA_ONLY_IN_THIS_REGISTER"
 "historical_C6","727c270f0a5f2d34bb3b049124d2d5cfca218f35","evidence/C6/SOURCE_TREE_METADATA.csv","d4a1fb4a2353adae12726de6d2c4ce2f0cec96e3","100644","143327","METADATA_ONLY_IN_THIS_REGISTER"
 "historical_C6","727c270f0a5f2d34bb3b049124d2d5cfca218f35","evidence/C6/VERSIONED_STACK_AND_DEPENDENCY_AUDIT.md","ec59c7c2cef49f9c7edfdad41cde897840965a57","100644","7509","METADATA_ONLY_IN_THIS_REGISTER"
+"R06A_candidate_delta","c91333766f3082b88a8c0414450dcaf6fc934ca2","evidence/C9/R06A_LOCAL_ORIGINAL_TRANSPORT_2026-11-24.md","5d44961dbfcdc903be66d4e99076040d1133dc12","100644","3800","METADATA_ONLY_IN_THIS_REGISTER; source report and exact CI required"
+"R06A_candidate_delta","c91333766f3082b88a8c0414450dcaf6fc934ca2","scripts/extended-c-backup.ps1","aa42e075d32d94a9b0e355bed86e2c31a52004e7","100644","25659","METADATA_ONLY_IN_THIS_REGISTER; source report and exact CI required"
+"R06A_candidate_delta","c91333766f3082b88a8c0414450dcaf6fc934ca2","scripts/verify-c8-additive-isolated.sh","fa37f1dc2d509e52a53058b02e1da6ea47944ab5","100644","39223","METADATA_ONLY_IN_THIS_REGISTER; source report and exact CI required"
+"R06A_candidate_delta","c91333766f3082b88a8c0414450dcaf6fc934ca2","scripts/verify-c9-local-original-transport.sh","6ff616bae32eaab0294ecd09e8d57664c4e3d63f","100644","12403","METADATA_ONLY_IN_THIS_REGISTER; source report and exact CI required"

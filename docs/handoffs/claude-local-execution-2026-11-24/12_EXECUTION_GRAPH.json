@@ -78,12 +78,13 @@
     {
       "id": "R06A",
       "executor": "CHAT",
-      "state": "BLOCKED_PENDING_DESIGN_VALIDATION",
+      "state": "IMPLEMENTED_CI_PENDING",
       "depends_on": [
-        "R05"
+        "R05",
+        "R01"
       ],
-      "receipt": "POSIX native baseline feasibility plus supported local C5 transport with fail-closed scope",
-      "notes": "Windows HMAC utility not compatible with NTFS-only file permissions; no GHA spoof"
+      "receipt": "PR48 c9133376 / CI #45427270775; required C9_LOCAL_ORIGINAL_TRANSPORT_OK, nine individual refusals, C9_LOCAL_POSIX_BASELINE_OK, C9_LOCAL_ORIGINAL_CLEANUP_OK; all jobs green and actual logs",
+      "notes": "Original-only pre-import C5 mode, no private plan, no full mixed import or post-import recovery; native WSL/Linux local prerequisites and independent review open."
     },
     {
       "id": "R06B",
@@ -93,7 +94,7 @@
         "R06A"
       ],
       "receipt": "Executable private mixed runner, review, synthetic guard refusal/positive transport test evidence",
-      "notes": "No real plan in CI or fake operator attestation"
+      "notes": "Requires verified R06A, actual guarded local runner and separate full-cohort C5 support; no public full plan or fabricated operator attestation."
     },
     {
       "id": "R07",
@@ -337,5 +338,13 @@
     "no_v8": true,
     "no_real_sms": true
   },
-  "notes": "Dependencies are necessary gates; not all are sufficient. L08 handback never depends on blocked optional tasks; report statuses. G07 is student independent. Do not read entire CSV/graph into Claude context; deterministic lookup."
+  "notes": "Dependencies are necessary gates; not all are sufficient. L08 handback never depends on blocked optional tasks; report statuses. G07 is student independent. Do not read entire CSV/graph into Claude context; deterministic lookup.",
+  "r06a_candidate": {
+    "sha": "c91333766f3082b88a8c0414450dcaf6fc934ca2",
+    "pr": 48,
+    "run": 45427270775,
+    "status": "in_progress",
+    "conclusion": null,
+    "acceptance": "CI_PENDING_ACTUAL_RECEIPTS"
+  }
 }

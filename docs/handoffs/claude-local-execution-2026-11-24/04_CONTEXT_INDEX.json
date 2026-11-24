@@ -467,6 +467,32 @@
           "bytes": 358848
         }
       ]
+    },
+    {
+      "stage": "R06A original-only transport candidate (ChatGPT review; not local runner)",
+      "ref": "c91333766f3082b88a8c0414450dcaf6fc934ca2",
+      "files": [
+        {
+          "path": "evidence/C9/R06A_LOCAL_ORIGINAL_TRANSPORT_2026-11-24.md",
+          "blob": "5d44961dbfcdc903be66d4e99076040d1133dc12",
+          "bytes": 3800
+        },
+        {
+          "path": "scripts/extended-c-backup.ps1",
+          "blob": "aa42e075d32d94a9b0e355bed86e2c31a52004e7",
+          "bytes": 25659
+        },
+        {
+          "path": "scripts/verify-c8-additive-isolated.sh",
+          "blob": "fa37f1dc2d509e52a53058b02e1da6ea47944ab5",
+          "bytes": 39223
+        },
+        {
+          "path": "scripts/verify-c9-local-original-transport.sh",
+          "blob": "6ff616bae32eaab0294ecd09e8d57664c4e3d63f",
+          "bytes": 12403
+        }
+      ]
     }
   ],
   "private_input": {
@@ -564,5 +590,37 @@
     "source_of_truth": "12_EXECUTION_GRAPH.json",
     "compatibility_gate": "13_MIXED_REHEARSAL_COMPATIBILITY_GATE.md",
     "verified_base_only": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306"
+  },
+  "r06a_candidate": {
+    "sha": "c91333766f3082b88a8c0414450dcaf6fc934ca2",
+    "tree": "c91333766f3082b88a8c0414450dcaf6fc934ca2",
+    "pr": 48,
+    "ci": 45427270775,
+    "status": "in_progress",
+    "conclusion": null,
+    "acceptance": "CI_PENDING_ACTUAL_RECEIPTS",
+    "base": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
+    "changed_paths": [
+      {
+        "path": "evidence/C9/R06A_LOCAL_ORIGINAL_TRANSPORT_2026-11-24.md",
+        "blob": "5d44961dbfcdc903be66d4e99076040d1133dc12",
+        "bytes": 3800
+      },
+      {
+        "path": "scripts/extended-c-backup.ps1",
+        "blob": "aa42e075d32d94a9b0e355bed86e2c31a52004e7",
+        "bytes": 25659
+      },
+      {
+        "path": "scripts/verify-c8-additive-isolated.sh",
+        "blob": "fa37f1dc2d509e52a53058b02e1da6ea47944ab5",
+        "bytes": 39223
+      },
+      {
+        "path": "scripts/verify-c9-local-original-transport.sh",
+        "blob": "6ff616bae32eaab0294ecd09e8d57664c4e3d63f",
+        "bytes": 12403
+      }
+    ]
   }
 }

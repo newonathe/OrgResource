@@ -66,3 +66,5 @@ This is a distinct test, not L04 or #26 live import. **Superseding compatibility
 Provide private receipt file to owner, sanitized aggregate summary here. Check actual child processes stopped; remove only test-owned temporary secrets as script authorizes, retain protected local proof as needed. Record failed cleanup separately. Never upload raw plan, local JAR/source ZIP, MySQL dump, screenshots revealing sensitive data, secrets, archive/key or private IR4 data. Do not send SMS. No actual deployment or merge. Return all unresolved issues to ChatGPT.
 
 **Launch gate:** R09 in 12_EXECUTION_GRAPH.json must be explicitly ready from ChatGPT; all older hardcoded baseline commands are examples for their pinned revision, not authority to run stale code. L08 reports every task including blocked inputs/owner actions.
+
+R06A now has a test-first source candidate on #48; R06B still requires the actual executable local runner and full-96 post-import recovery support. Do not run scripts/verify-c9-local-original-transport.sh on the owner's machine: it is a public synthetic CI test, not L06. See 13 and 12. Native package-first L03/L04 unchanged.
