@@ -14,7 +14,9 @@ param(
     [Parameter(Mandatory, ParameterSetName = 'CiIntermediateAcceptance')]
     [switch] $CiIntermediateAcceptance,
     [Parameter(Mandatory, ParameterSetName = 'LocalOriginalAcceptance')]
-    [switch] $LocalOriginalAcceptance
+    [switch] $LocalOriginalAcceptance,
+    [Parameter(Mandatory, ParameterSetName = 'LocalMixedAcceptance')]
+    [switch] $LocalMixedAcceptance
 )
 
 $ErrorActionPreference = 'Stop'
@@ -28,8 +30,11 @@ $requiredTables = @('account_recovery_code', 'allocation', 'audit_event', 'depar
     'idempotency_key', 'invitation', 'local_credential', 'membership', 'organization', 'ownership_transfer',
     'project', 'resource', 'resource_requirement', 'spring_session', 'spring_session_attributes', 'stock_movement', 'user_account')
 $clientUser = 'root'
-$disposable = $DisposableAcceptance -or $DisposableDemoAcceptance -or $CiIntermediateAcceptance -or $LocalOriginalAcceptance
-$dockerTransport = $CiIntermediateAcceptance -or $LocalOriginalAcceptance
+$localTransport = $LocalOriginalAcceptance -or $LocalMixedAcceptance
+$disposable = $DisposableAcceptance -or $DisposableDemoAcceptance -or $CiIntermediateAcceptance -or $localTransport
+$dockerTransport = $CiIntermediateAcceptance -or $localTransport
+# Full approved data must never be processed in public CI, including Restore.
+if ($LocalMixedAcceptance -and $env:GITHUB_ACTIONS -ceq 'true') { throw 'C9_LOCAL_MIXED_CI_REFUSED' }
 
 if (-not [Security.Cryptography.AesGcm]::IsSupported) { throw 'AES-GCM is unavailable on this runtime.' }
 if ($DisposableAcceptance -and $Schema -ne 'orgresource_c1_acceptance') {
@@ -112,7 +117,7 @@ if ($CiIntermediateAcceptance) {
 # are accidental-target guards, not protection against a hostile Docker owner.
 # No arbitrary server/port or existing production schema is accepted.
 $localDockerHost = 'unix:///var/run/docker.sock'
-if ($LocalOriginalAcceptance) {
+if ($localTransport) {
     if (-not $IsLinux -or $Port -ne 3306 -or $env:EXT_SMS_ENABLED -cne 'false' -or
             $env:EXT_REMINDER_MODE -cne 'DISABLED') { throw 'C9_LOCAL_LINUX_REQUIRED' }
     if (($env:DOCKER_HOST -and $env:DOCKER_HOST -cne $localDockerHost) -or
@@ -121,9 +126,12 @@ if ($LocalOriginalAcceptance) {
     & /usr/bin/test -S /var/run/docker.sock
     if ($LASTEXITCODE -ne 0) { throw 'C9_LOCAL_DOCKER_ENDPOINT_REQUIRED' }
     $token = $env:C9_LOCAL_TOKEN
+    $localSourceRole = if ($LocalMixedAcceptance) { 'restore' } else { 'source' }
+    $localRestoreRole = if ($LocalMixedAcceptance) { 'mixed' } else { 'restore' }
+    $localConfirmation = if ($LocalMixedAcceptance) { "TEST MIXED $token" } else { "TEST ORIGINAL $token" }
     $uuidPattern = '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
     if ($token -cnotmatch '^[0-9a-f]{12}$' -or
-            $env:C9_LOCAL_CONFIRM -cne "TEST ORIGINAL $token" -or
+            $env:C9_LOCAL_CONFIRM -cne $localConfirmation -or
             $env:C9_LOCAL_SOURCE_ID -cnotmatch '^[0-9a-f]{64}$' -or
             $env:C9_LOCAL_RESTORE_ID -cnotmatch '^[0-9a-f]{64}$' -or
             $env:C9_LOCAL_SOURCE_ID -ceq $env:C9_LOCAL_RESTORE_ID -or
@@ -135,8 +143,8 @@ if ($LocalOriginalAcceptance) {
             $env:C9_LOCAL_SOURCE_PASSWORD -ceq $env:C9_LOCAL_RESTORE_PASSWORD) {
         throw 'C9_LOCAL_IDENTITY_REQUIRED'
     }
-    $localSourceSchema = "orgresource_c9_local_${token}_source"
-    $localRestoreSchema = "orgresource_c9_local_${token}_restore"
+    $localSourceSchema = "orgresource_c9_local_${token}_${localSourceRole}"
+    $localRestoreSchema = "orgresource_c9_local_${token}_${localRestoreRole}"
     if (($Mode -eq 'Backup' -and $Schema -cne $localSourceSchema) -or
             ($Mode -eq 'Restore' -and $Schema -cne $localRestoreSchema)) {
         throw 'C9_LOCAL_SCHEMA_REQUIRED'
@@ -168,8 +176,36 @@ if ($LocalOriginalAcceptance) {
             -not (Test-Path -LiteralPath $archivePath -PathType Leaf))) {
         throw 'C9_LOCAL_ARCHIVE_PATH_REQUIRED'
     }
-    foreach ($role in @('source', 'restore')) {
-        $id = if ($role -eq 'source') { $env:C9_LOCAL_SOURCE_ID } else { $env:C9_LOCAL_RESTORE_ID }
+    if ($LocalMixedAcceptance) {
+        # Exact approved plan bytes, never accept an arbitrary tagged fixture.
+        $approvedPlanSha = '3b0f54da85cadb77cd7d8ab2d50c1fdb4b4ee36710b803cf904227e13f08927c'
+        $approvedSourceSha = '57f1f0c680041c39dcf7644a1acca5fcc75dc7d525262547842389da7540b9a2'
+        $approvedDataset = 'orgresource-c8-plan-v1-57f1f0c68004-20deeda9e2af'
+        $planPath = Join-Path $localWork 'approved-plan.json'
+        $canonical = (& /usr/bin/realpath -e -- $planPath 2>$null)
+        if ($LASTEXITCODE -ne 0 -or $canonical -cne $planPath -or
+                -not (Test-Path -LiteralPath $planPath -PathType Leaf) -or
+                (Get-Item -LiteralPath $planPath -Force).LinkType) { throw 'C9_LOCAL_MIXED_PLAN_REQUIRED' }
+        $planMode = (& /usr/bin/stat -c '%a:%u' -- $planPath 2>$null)
+        if ($LASTEXITCODE -ne 0 -or $planMode -cne "600:$localUid" -or
+                [IO.FileInfo]::new($planPath).Length -ne 19265850 -or
+                (Get-FileHash -LiteralPath $planPath -Algorithm SHA256).Hash.ToLowerInvariant() -cne $approvedPlanSha) {
+            throw 'C9_LOCAL_MIXED_PLAN_REQUIRED'
+        }
+        if ([IO.Path]::GetFileName($archivePath) -cne 'mixed.aesgcm') { throw 'C9_LOCAL_MIXED_ARCHIVE_REQUIRED' }
+        if ($Mode -eq 'Restore') {
+            $archiveMode = (& /usr/bin/stat -c '%a:%u' -- $archivePath 2>$null)
+            if ($LASTEXITCODE -ne 0 -or $archiveMode -cne "600:$localUid") { throw 'C9_LOCAL_MIXED_ARCHIVE_REQUIRED' }
+        }
+        if ($Mode -eq 'Restore' -and ($env:C9_LOCAL_MIXED_ARCHIVE_SHA -cnotmatch '^[0-9a-f]{64}$' -or
+                -not (Test-Path -LiteralPath $archivePath -PathType Leaf) -or
+                [IO.FileInfo]::new($archivePath).Length -gt $maxSqlBytes + $cipherOffset -or
+                (Get-FileHash -LiteralPath $archivePath -Algorithm SHA256).Hash.ToLowerInvariant() -cne $env:C9_LOCAL_MIXED_ARCHIVE_SHA)) {
+            throw 'C9_LOCAL_MIXED_ARCHIVE_REQUIRED'
+        }
+    }
+    foreach ($role in @($localSourceRole, $localRestoreRole)) {
+        $id = if ($role -eq $localSourceRole) { $env:C9_LOCAL_SOURCE_ID } else { $env:C9_LOCAL_RESTORE_ID }
         $raw = & docker "--host=$localDockerHost" inspect --type container $id 2>$null
         if ($LASTEXITCODE -ne 0) { throw 'C9_LOCAL_CONTAINER_REQUIRED' }
         try { $records = @($raw -join [Environment]::NewLine | ConvertFrom-Json) }
@@ -228,7 +264,7 @@ function Invoke-BackupMysql([string] $Tool, [string[]] $Options, [byte[]] $Input
         $null = $info.Environment.Remove($name)
     }
     if ($dockerTransport) {
-        if ($LocalOriginalAcceptance) {
+        if ($localTransport) {
             foreach ($name in @('DOCKER_HOST','DOCKER_CONTEXT','DOCKER_TLS_VERIFY','DOCKER_CERT_PATH')) {
                 $null = $info.Environment.Remove($name)
             }
@@ -290,9 +326,25 @@ function Invoke-BackupMysql([string] $Tool, [string[]] $Options, [byte[]] $Input
     }
 }
 
-function Read-BackupSqlScalar([string] $Sql) {
-    $bytes = Invoke-BackupMysql 'mysql' @('--batch', '--skip-column-names', "--database=$Schema", "--execute=$Sql") $null 4096
+function Read-BackupSqlScalar([string] $Sql, [string] $Database = $Schema) {
+    $bytes = Invoke-BackupMysql 'mysql' @('--batch', '--skip-column-names', "--database=$Database", "--execute=$Sql") $null 4096
     return [Text.Encoding]::UTF8.GetString($bytes).Trim()
+}
+
+function Assert-LocalMixedSchema([string] $Database) {
+    $tables = (Read-BackupSqlScalar 'SELECT LOWER(table_name) FROM information_schema.tables WHERE table_schema=DATABASE() ORDER BY LOWER(table_name)' $Database) -split '\r?\n'
+    if (@(Compare-Object $requiredTables $tables).Count -ne 0 -or
+        (Read-BackupSqlScalar 'SELECT COUNT(*) FROM organization' $Database) -cne '98' -or
+        (Read-BackupSqlScalar "SELECT COUNT(*) FROM organization WHERE demo_dataset_id='$approvedDataset' AND demo_source_sha='$approvedSourceSha' AND demo_plan_sha='$approvedPlanSha' AND demo_as_of='2026-11-19' AND demo_reference_key IS NOT NULL" $Database) -cne '96' -or
+        (Read-BackupSqlScalar 'SELECT COUNT(DISTINCT demo_reference_key) FROM organization WHERE demo_dataset_id IS NOT NULL' $Database) -cne '96' -or
+        (Read-BackupSqlScalar "SELECT COUNT(*) FROM organization WHERE demo_dataset_id IS NULL AND demo_source_sha IS NULL AND demo_plan_sha IS NULL AND demo_as_of IS NULL AND demo_reference_key IS NULL AND slug IN ('isolated-original-workspace','isolated-other-original')" $Database) -cne '2' -or
+        (Read-BackupSqlScalar "SELECT COUNT(*) FROM membership m JOIN organization o ON o.id=m.org_id JOIN user_account u ON u.id=m.user_id JOIN local_credential c ON c.user_id=u.id WHERE u.username_key='additive-original-owner' AND u.status='ACTIVE' AND o.status='ACTIVE' AND m.role='OWNER' AND m.status='ACTIVE' AND (o.demo_plan_sha='$approvedPlanSha' OR o.slug='isolated-original-workspace')" $Database) -cne '97' -or
+        (Read-BackupSqlScalar 'SELECT COUNT(*) FROM allocation' $Database) -cne '21060' -or
+        (Read-BackupSqlScalar "SELECT COUNT(*) FROM audit_event a JOIN organization o ON o.id=a.org_id WHERE o.demo_plan_sha='$approvedPlanSha' AND a.action LIKE 'C8_DEMO_%'" $Database) -cne '67370' -or
+        (Read-BackupSqlScalar 'SELECT COUNT(*) FROM SPRING_SESSION' $Database) -cne '0' -or
+        (Read-BackupSqlScalar 'SELECT COUNT(*) FROM SPRING_SESSION_ATTRIBUTES' $Database) -cne '0') {
+        throw 'C9_LOCAL_MIXED_FIXTURE_REQUIRED'
+    }
 }
 
 function Assert-BackupSchema {
@@ -311,6 +363,7 @@ function Assert-BackupSchema {
             throw 'C9_LOCAL_ORIGINAL_FIXTURE_REQUIRED'
         }
     }
+    if ($LocalMixedAcceptance) { Assert-LocalMixedSchema $Schema }
     if ($CiIntermediateAcceptance) {
         if ((Read-BackupSqlScalar 'SELECT VERSION()') -cne '8.0.46' -or
             (Read-BackupSqlScalar 'SELECT COUNT(*) FROM organization WHERE demo_plan_sha IS NOT NULL') -cne '8' -or
@@ -325,7 +378,7 @@ $cipher = [Security.Cryptography.AesGcm]::new($key, 16)
 $sql = $null
 $dump = $null
 try {
-    if ($LocalOriginalAcceptance) {
+    if ($localTransport) {
         # Read both actual MySQL server identities before any dump/import.
         $selectedContainer = $ciContainer
         $selectedPassword = $ciPassword
@@ -339,6 +392,19 @@ try {
                     throw 'C9_LOCAL_SERVER_IDENTITY_REQUIRED'
                 }
             }
+        } finally {
+            $ciContainer = $selectedContainer
+            $ciPassword = $selectedPassword
+        }
+    }
+    if ($LocalMixedAcceptance -and $Mode -eq 'Restore') {
+        # Verify the approved mixed source again, before any target writes.
+        $selectedContainer = $ciContainer
+        $selectedPassword = $ciPassword
+        try {
+            $ciContainer = $env:C9_LOCAL_SOURCE_ID
+            $ciPassword = $env:C9_LOCAL_SOURCE_PASSWORD
+            Assert-LocalMixedSchema $localSourceSchema
         } finally {
             $ciContainer = $selectedContainer
             $ciPassword = $selectedPassword

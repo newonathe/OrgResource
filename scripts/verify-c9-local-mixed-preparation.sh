@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Local-only R06B1/B2. Approved import is an owner-terminal-only disposable rehearsal.
-# All modes create and remove their own two independent disposable servers.
+# Preparation creates two servers; approved-import adds an independent third recovery server.
 set +x
 set -euo pipefail
 umask 077
@@ -74,12 +74,12 @@ echo R06B1_PREFLIGHT_OK:source_hash=true jar_hash=true seven_migration_bytes=tru
 token="$(openssl rand -hex 6)"
 work="$root/orgresource-c9-local-$token"
 mkdir -m 700 -- "$work"
-source_id= target_id= receipt_dir=
+source_id= target_id= mixed_id= receipt_dir=
 cleanup() {
   local result=0 id role remaining
   docker_local info >/dev/null 2>&1 || return 1
-  for role in source restore; do
-    if [ "$role" = source ]; then id="$source_id"; else id="$target_id"; fi
+  for role in source restore mixed; do
+    case "$role" in source) id="$source_id";; restore) id="$target_id";; mixed) id="$mixed_id";; esac
     if [ -n "$id" ] && docker_local container inspect "$id" >/dev/null 2>&1; then
       if [ "$(docker_local inspect --format '{{index .Config.Labels "orgresource.c9.local"}}' "$id")" = "$token" ] &&
          [ "$(docker_local inspect --format '{{index .Config.Labels "orgresource.c9.role"}}' "$id")" = "$role" ]; then
@@ -123,11 +123,11 @@ hmac_key="$(openssl rand -hex 32)"
 if [ "${GITHUB_ACTIONS:-}" = true ]; then
   for value in "$src_password" "$dst_password" "$bootstrap_password" "$migrate_password" "$owner_password" "$ro_password" "$backup_key" "$contact_key" "$hmac_key"; do echo "::add-mask::$value"; done
 fi
-# Only the two newly created test-owned IDs are accepted by helper functions.
+# Only newly created test-owned IDs are accepted by helper functions.
 assert_id() {
   local id="$1" role
   [[ "$id" =~ ^[a-f0-9]{64}$ ]] || fail R06B1_CONTAINER_ID
-  if [ "$id" = "$source_id" ]; then role=source; elif [ "$id" = "$target_id" ]; then role=restore; else fail R06B1_CONTAINER_ID; fi
+  if [ "$id" = "$source_id" ]; then role=source; elif [ "$id" = "$target_id" ]; then role=restore; elif [ "$id" = "$mixed_id" ]; then role=mixed; else fail R06B1_CONTAINER_ID; fi
   [[ "$(docker_local inspect --format '{{.Id}}' "$id")" = "$id" &&
      "$(docker_local inspect --format '{{.Name}}' "$id")" = "/orgresource-c9-local-$token-$role" &&
      "$(docker_local inspect --format '{{.Config.Image}}' "$id")" = mysql:8.0.46 &&
@@ -170,7 +170,7 @@ start_server() {
   id="$(MYSQL_ROOT_PASSWORD="$password" docker_local run -d --rm --pull never --network none \
     --name "orgresource-c9-local-$token-$role" --label "orgresource.c9.local=$token" \
     --label "orgresource.c9.role=$role" --env MYSQL_ROOT_PASSWORD mysql:8.0.46 --bind-address=127.0.0.1 --mysqlx=0)"
-  if [ "$role" = source ]; then source_id="$id"; else target_id="$id"; fi
+  case "$role" in source) source_id="$id";; restore) target_id="$id";; mixed) mixed_id="$id";; *) fail R06B1_CONTAINER_ID;; esac
   for _ in $(seq 1 90); do
     if mysql_at "$id" "$password" -N -B -e 'SELECT 1' >/dev/null 2>&1 &&
        ns_run "$id" bash -c 'exec 3<>/dev/tcp/127.0.0.1/3306' >/dev/null 2>&1; then ready=true; break; fi
@@ -325,6 +325,22 @@ if [ "$mode" = --fixture-only ]; then
   mysql_at "$target_id" "$dst_password" -e "DROP USER 'c9_local_importer'@'%';"
   rows_at "$target_id" "$dst_password" "$target_schema" > "$work/target-grant-after.sql"
   cmp -s "$work/target-before.sql" "$work/target-grant-after.sql" || fail R06B2_GRANT_TEST_CHANGED_ROWS
+  # Public proof of third-server plumbing, without any approved-plan bytes
+  # or pretending that the two-original fixture is a full mixed cohort.
+  phase=third_server_fixture
+  mixed_schema="orgresource_c9_local_${token}_mixed"
+  mixed_password="$(openssl rand -hex 24)"
+  if [ "${GITHUB_ACTIONS:-}" = true ]; then echo "::add-mask::$mixed_password"; fi
+  start_server mixed "$mixed_password" "$mixed_schema"
+  mixed_uuid="$(scalar "$mixed_id" "$mixed_password" "$mixed_schema" 'SELECT @@server_uuid')"
+  [[ "$mixed_id" != "$source_id" && "$mixed_id" != "$target_id" &&
+     "$mixed_uuid" != "$source_uuid" && "$mixed_uuid" != "$target_uuid" &&
+     "$(scalar "$mixed_id" "$mixed_password" "$mixed_schema" 'SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE()')" = 0 ]] || fail R06B3A_THIRD_FIXTURE_BOUNDARY
+  rows_at "$source_id" "$src_password" "$source_schema" > "$work/source-third-fixture.sql"
+  rows_at "$target_id" "$dst_password" "$target_schema" > "$work/target-third-fixture.sql"
+  cmp -s "$work/source-before.sql" "$work/source-third-fixture.sql" &&
+    cmp -s "$work/target-before.sql" "$work/target-third-fixture.sql" || fail R06B3A_THIRD_FIXTURE_CHANGED_ROWS
+  echo R06B3A_THIRD_SERVER_FIXTURE_OK:distinct_ids=true distinct_uuids=true empty_schema=true original_rows_unchanged=true private_plan_used=false
 elif [ "$mode" = --approved-import ]; then
   phase=operator_confirmation
   # This receipt is generated from actual completed recovery and preflight,
@@ -407,13 +423,65 @@ elif [ "$mode" = --approved-import ]; then
   rows_at "$target_id" "$dst_password" "$target_schema" > "$work/imported-after-postflight.sql"
   cmp -s "$work/imported-before-postflight.sql" "$work/imported-after-postflight.sql" || fail R06B2_POSTFLIGHT_CHANGED_ROWS
   printf 'R06B2_LOCAL_MIXED_IMPORT_OK:organizations=98 tagged=96 allocations=21060 events=67370 original_baseline=true independent_readonly_postflight=true populated_preflight_refused=true import_seconds=%s\n' "$import_seconds" | tee "$receipt_dir/result.txt"
-  printf 'post_import_c5=NOT_RUN\nnormal_recovered_browser=NOT_RUN\nhosted_import=NOT_RUN\nindependent_reviewer=OPEN\n' >> "$receipt_dir/result.txt"
+  phase=mixed_recovery
+  # A third freshly initialized server, independent of both original servers.
+  mixed_schema="orgresource_c9_local_${token}_mixed"
+  mixed_password="$(openssl rand -hex 24)"
+  mixed_ro_password="$(openssl rand -hex 24)"
+  mixed_key="$(openssl rand -base64 32 | tr -d '\n')"
+  start_server mixed "$mixed_password" "$mixed_schema"
+  mixed_uuid="$(scalar "$mixed_id" "$mixed_password" "$mixed_schema" 'SELECT @@server_uuid')"
+  [[ "$mixed_uuid" != "$source_uuid" && "$mixed_uuid" != "$target_uuid" ]] || fail R06B3A_SERVER_UUID
+  mixed_archive="$work/mixed.aesgcm"
+  mixed_c5() {
+    env -i "PATH=$PATH" "HOME=$work/home" LANG=C.UTF-8 EXT_SMS_ENABLED=false EXT_REMINDER_MODE=DISABLED \
+      C9_LOCAL_ROOT="$root" C9_LOCAL_TOKEN="$token" C9_LOCAL_CONFIRM="TEST MIXED $token" \
+      C9_LOCAL_SOURCE_ID="$target_id" C9_LOCAL_RESTORE_ID="$mixed_id" C9_LOCAL_SOURCE_UUID="$target_uuid" C9_LOCAL_RESTORE_UUID="$mixed_uuid" \
+      C9_LOCAL_SOURCE_PASSWORD="$dst_password" C9_LOCAL_RESTORE_PASSWORD="$mixed_password" EXT_BACKUP_KEY="$mixed_key" \
+      C9_LOCAL_MIXED_ARCHIVE_SHA="${mixed_archive_sha:-}" \
+      "$pwsh_bin" -NoProfile -NonInteractive -File scripts/extended-c-backup.ps1 \
+        -Mode "$1" -Schema "$2" -Port 3306 -Archive "$mixed_archive" -LocalMixedAcceptance
+  }
+  backup_start="$(date +%s)"
+  mixed_c5 Backup "$target_schema" > "$receipt_dir/mixed-backup-private.log" 2>&1 || fail R06B3A_MIXED_BACKUP_FAILED
+  mixed_backup_seconds="$(( $(date +%s) - backup_start ))"
+  [[ "$(stat -c '%a:%u' "$mixed_archive")" = "600:$(id -u)" ]] || fail R06B3A_MIXED_ARCHIVE_MODE
+  mixed_archive_sha="$(sha256sum "$mixed_archive" | cut -d' ' -f1)"
+  restore_start="$(date +%s)"
+  mixed_c5 Restore "$mixed_schema" > "$receipt_dir/mixed-restore-private.log" 2>&1 || fail R06B3A_MIXED_RESTORE_FAILED
+  mixed_restore_seconds="$(( $(date +%s) - restore_start ))"
+  [[ "$(sha256sum "$mixed_archive" | cut -d' ' -f1)" = "$mixed_archive_sha" ]] || fail R06B3A_ARCHIVE_CHANGED
+  rows_at "$mixed_id" "$mixed_password" "$mixed_schema" > "$work/mixed-restored.sql"
+  cmp -s "$work/imported-after-postflight.sql" "$work/mixed-restored.sql" || fail R06B3A_MIXED_ROWS_MISMATCH
+  [[ "$(scalar "$mixed_id" "$mixed_password" "$mixed_schema" 'SELECT COUNT(*) FROM SPRING_SESSION')" = 0 &&
+     "$(scalar "$mixed_id" "$mixed_password" "$mixed_schema" 'SELECT COUNT(*) FROM SPRING_SESSION_ATTRIBUTES')" = 0 ]] || fail R06B3A_SESSIONS
+  # Actual separate SQL/JDBC comparator on the recovered server. Do not
+  # re-CAPTURE an original baseline after import or pretend the old fingerprint
+  # applies to this server: exact all-row equality transfers the verified rows.
+  mysql_at "$mixed_id" "$mixed_password" -e "CREATE USER 'c9_mixed_ro'@'%' IDENTIFIED BY '$mixed_ro_password'; GRANT SELECT ON $mixed_schema.* TO 'c9_mixed_ro'@'%';"
+  mixed_fp="$(printf '%s\0%s' "$mixed_schema" "$mixed_uuid" | sha256sum | cut -d' ' -f1)"
+  {
+    printf 'EXT_DB_URL=%q\nEXT_DB_USER=c9_mixed_ro\nEXT_DB_PASSWORD=%q\n' "jdbc:mysql://127.0.0.1:3306/$mixed_schema?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC" "$mixed_ro_password"
+    printf 'EXT_C8_HOSTED_EXPECTED_SCHEMA=%q\nEXT_C8_HOSTED_EXPECTED_FINGERPRINT=%q\n' "$mixed_schema" "$mixed_fp"
+    printf 'EXT_C8_HOSTED_ORIGINAL_ORG_PUBLIC_ID=%q\nEXT_C8_HOSTED_OWNER_PUBLIC_ID=%q\n' "$original_org" "$owner_id"
+    printf 'EXT_SMS_ENABLED=false\nEXT_REMINDER_MODE=DISABLED\nEXT_C8_DEMO_PLAN=%q\n' "$work/approved-plan.json"
+  } > "$work/mixed-ro.env"
+  run_java "$mixed_id" "$work/mixed-ro.env" --c8-hosted-demo-postflight > "$receipt_dir/mixed-postflight-private.log" 2>&1 || fail R06B3A_MIXED_POSTFLIGHT_FAILED
+  grep -Fq 'HOSTED_DEMO_POSTFLIGHT_READ_ONLY_OK organizations=96 allocations=21060 events=67370;' "$receipt_dir/mixed-postflight-private.log" || fail R06B3A_MIXED_POSTFLIGHT_MARKER
+  rows_at "$mixed_id" "$mixed_password" "$mixed_schema" > "$work/mixed-after-postflight.sql"
+  rows_at "$target_id" "$dst_password" "$target_schema" > "$work/imported-after-recovery.sql"
+  rows_at "$source_id" "$src_password" "$source_schema" > "$work/original-after-recovery.sql"
+  cmp -s "$work/mixed-restored.sql" "$work/mixed-after-postflight.sql" &&
+    cmp -s "$work/imported-after-postflight.sql" "$work/imported-after-recovery.sql" &&
+    cmp -s "$work/source-before.sql" "$work/original-after-recovery.sql" || fail R06B3A_ROWS_CHANGED
+  printf 'R06B3A_FULL_MIXED_RECOVERY_OK:archive_bytes=%s backup_seconds=%s restore_seconds=%s three_independent_servers=true exact_rows=true sessions_empty=true readonly_postflight=true sources_unchanged=true\n' "$(stat -c '%s' "$mixed_archive")" "$mixed_backup_seconds" "$mixed_restore_seconds" | tee -a "$receipt_dir/result.txt"
+  printf 'post_import_c5=VERIFIED_LOCAL\nnormal_recovered_browser=NOT_RUN\nhosted_import=NOT_RUN\nindependent_reviewer=OPEN\n' >> "$receipt_dir/result.txt"
 fi
 
 phase=cleanup
 cleanup || fail R06B1_CLEANUP_FAILED
 trap - EXIT INT TERM
-for id in "$source_id" "$target_id"; do if docker_local inspect "$id" >/dev/null 2>&1; then fail R06B1_CLEANUP_FAILED; fi; done
+for id in "$source_id" "$target_id" "$mixed_id"; do if [ -n "$id" ] && docker_local inspect "$id" >/dev/null 2>&1; then fail R06B1_CLEANUP_FAILED; fi; done
 [[ ! -e "$work" ]] || fail R06B1_CLEANUP_FAILED
 echo R06B1_CLEANUP_OK
 if [ -n "$receipt_dir" ]; then

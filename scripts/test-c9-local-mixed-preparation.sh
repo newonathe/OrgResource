@@ -45,14 +45,17 @@ refuse plan-link R06B1_PRIVATE_PLAN_REQUIRED bash "$runner" --approved-plan "$ro
 truncate -s 19265850 "$root/size-only.json"
 chmod 600 "$root/size-only.json"
 refuse exact-size-ci R06B1_PRIVATE_PLAN_CI_REFUSED bash "$runner" --approved-plan "$root" "$source_sha" "$jar" "$jar_sha" "$root/size-only.json"
+refuse mixed-backup-ci C9_LOCAL_MIXED_CI_REFUSED pwsh -NoProfile -NonInteractive -File scripts/extended-c-backup.ps1 -Mode Backup -Schema orgresource_c9_local_000000000001_restore -Port 3306 -Archive "$root/no-archive.aesgcm" -LocalMixedAcceptance
+refuse mixed-restore-ci C9_LOCAL_MIXED_CI_REFUSED pwsh -NoProfile -NonInteractive -File scripts/extended-c-backup.ps1 -Mode Restore -Schema orgresource_c9_local_000000000001_mixed -Port 3306 -Archive "$root/no-archive.aesgcm" -LocalMixedAcceptance
+[ ! -e "$root/no-archive.aesgcm" ] || exit 1
 refuse import-ci R06B2_IMPORT_CI_REFUSED bash "$runner" --approved-import "$root" "$source_sha" "$jar" "$jar_sha" "$root/nonexistent-plan.json"
 refuse remote-docker R06B1_LOCAL_DOCKER_REQUIRED env DOCKER_HOST=tcp://127.0.0.1:2375 bash "$runner" --fixture-only "$root" "$source_sha" "$jar" "$jar_sha"
 bash "$runner" --fixture-only "$root" "$source_sha" "$jar" "$jar_sha" > "$root/test-private.log" 2>&1 || {
   grep -E '^R06B1_[A-Z_]+(:[a-zA-Z0-9_= .-]+)?$' "$root/test-private.log" | tail -15 || true
   exit 1
 }
-for marker in R06B2_IMPORTER_GRANTS_OK R06B1_BOOTSTRAP_OK R06B1_ORIGINAL_RESTORE_OK R06B1_BASELINE_OK R06B1_PREPARATION_OK R06B1_CLEANUP_OK; do
+for marker in R06B3A_THIRD_SERVER_FIXTURE_OK R06B2_IMPORTER_GRANTS_OK R06B1_BOOTSTRAP_OK R06B1_ORIGINAL_RESTORE_OK R06B1_BASELINE_OK R06B1_PREPARATION_OK R06B1_CLEANUP_OK; do
   grep -E "^$marker(:|$)" "$root/test-private.log" || exit 1
 done
 [[ "$(count_containers)" = "$before" ]] || exit 1
-echo R06B1_PUBLIC_FIXTURE_TEST_OK:private_plan_used=false importer_run=false precheck_refusals=8
+echo R06B1_PUBLIC_FIXTURE_TEST_OK:private_plan_used=false importer_run=false precheck_refusals=10
