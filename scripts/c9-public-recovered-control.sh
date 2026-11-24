@@ -44,11 +44,30 @@ control_run() {
   for table in SPRING_SESSION SPRING_SESSION_ATTRIBUTES; do
     mysql_at "$target_id" "$dst_password" -e "GRANT INSERT,UPDATE,DELETE ON $target_schema.$table TO 'c9_observer'@'%';"
   done
-  for query in 'UPDATE organization SET id=id WHERE 1=0' 'UPDATE allocation SET id=id WHERE 1=0' 'DELETE FROM idempotency_key WHERE 1=0' 'INSERT INTO audit_event SELECT * FROM audit_event WHERE 1=0' 'UPDATE stock_movement SET id=id WHERE 1=0'; do
+  # InventoryService's read path takes PESSIMISTIC_WRITE locks on org/member.
+  # Prove the SELECT-only limitation on the exact disposable observer account,
+  # then permit locking reads only within this disposable schema. Never grant
+  # domain INSERT/UPDATE/DELETE. No shared/hosted permission change.
+  local original_db owner_membership locking_sql expected_locks
+  original_db="$(scalar "$target_id" "$dst_password" "$target_schema" "SELECT id FROM organization WHERE slug='isolated-original-workspace'")"
+  owner_membership="$(scalar "$target_id" "$dst_password" "$target_schema" "SELECT m.id FROM membership m JOIN user_account u ON u.id=m.user_id WHERE m.org_id=$original_db AND u.username_key='additive-original-owner'")"
+  [[ "$original_db" =~ ^[1-9][0-9]*$ && "$owner_membership" =~ ^[1-9][0-9]*$ ]] || fail R06B3B_CONTROL_LOCK_FIXTURE
+  locking_sql="START TRANSACTION; SELECT id FROM organization WHERE id=$original_db FOR UPDATE; SELECT id FROM membership WHERE id=$owner_membership FOR UPDATE; ROLLBACK;"
+  if MYSQL_PWD="$password" docker_local exec -i --env MYSQL_PWD "$target_id" mysql --no-defaults --protocol=tcp --host=127.0.0.1 -uc9_observer -N -B "$target_schema" -e "$locking_sql" >"$work/control-lock-private.log" 2>&1; then
+    fail R06B3B_CONTROL_LOCK_WITHOUT_PRIVILEGE
+  fi
+  grep -Eq 'ERROR 1142 .*command denied' "$work/control-lock-private.log" || fail R06B3B_CONTROL_LOCK_WRONG_REFUSAL
+  echo R06B3B_CONTROL_LOCKING_READ_REFUSED_OK
+  assert_id "$target_id"
+  mysql_at "$target_id" "$dst_password" -e "GRANT LOCK TABLES ON $target_schema.* TO 'c9_observer'@'%';"
+  expected_locks="$(printf '%s\n%s' "$original_db" "$owner_membership")"
+  [[ "$(MYSQL_PWD="$password" docker_local exec -i --env MYSQL_PWD "$target_id" mysql --no-defaults --protocol=tcp --host=127.0.0.1 -uc9_observer -N -B "$target_schema" -e "$locking_sql" 2>"$work/control-lock-private.log")" = "$expected_locks" ]] || fail R06B3B_CONTROL_LOCKING_READ
+  echo R06B3B_CONTROL_LOCKING_READ_OK:schema_lock_only=true no_domain_dml_granted=true
+  for query in 'UPDATE organization SET id=id WHERE 1=0' 'UPDATE allocation SET id=id WHERE 1=0' 'DELETE FROM idempotency_key WHERE 1=0' 'INSERT INTO audit_event SELECT * FROM audit_event WHERE 1=0' 'UPDATE stock_movement SET id=id WHERE 1=0' 'UPDATE membership SET id=id WHERE 1=0' 'DELETE FROM membership WHERE 1=0'; do
     if MYSQL_PWD="$password" docker_local exec -i --env MYSQL_PWD "$target_id" mysql --no-defaults --protocol=tcp --host=127.0.0.1 -uc9_observer -N -B "$target_schema" -e "$query" >"$work/control-grants.log" 2>&1; then fail R06B3B_CONTROL_UNEXPECTED_GRANT; fi
     grep -Eq 'ERROR 1142 .*command denied' "$work/control-grants.log" || fail R06B3B_CONTROL_WRONG_REFUSAL
   done
-  echo R06B3B_CONTROL_GRANTS_OK:session_dml_only=true five_domain_denials=true
+  echo R06B3B_CONTROL_GRANTS_OK:session_dml_only=true seven_domain_denials=true schema_lock_only=true
   control_domain > "$work/control-before.sql"
   {
     printf 'export EXT_DB_URL=%q\nEXT_DB_USER=c9_observer\nexport EXT_DB_USER\nexport EXT_DB_PASSWORD=%q\n' "jdbc:mysql://127.0.0.1:3306/$target_schema?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC" "$password"
