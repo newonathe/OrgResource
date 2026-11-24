@@ -607,5 +607,12 @@ if [ "$profile" = intermediate ]; then
     bash scripts/verify-c9-cross-server-restore.sh
   original_baseline VERIFY
   check_postflight
+  # Stage 1D runs on independent disposable clones after Stage 1C is cleaned up.
+  bash -n scripts/verify-c9-recovered-application.sh
+  C9_DB_SCHEMA="$schema" C9_PLAN_PATH="$plan" C9_PLAN_SHA="$digest" \
+    C9_RUNTIME_ORG="$original_org" C9_RUNTIME_OWNER_PASSWORD="$owner_password" \
+    bash scripts/verify-c9-recovered-application.sh
+  original_baseline VERIFY
+  check_postflight
 fi
 echo "ISOLATED_ADDITIVE_PROOF_PASSED: original owner/domain unchanged; $expected_workspaces workspaces, $expected_allocations allocations, $expected_events synthetic events; stock/requirements/states clean, repeat refused; no hosted DB used."
