@@ -975,7 +975,7 @@
     "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
     "pr": 53,
     "run": 45448775860,
-    "acceptance": "API_DIAGNOSTIC_RETRY_PENDING",
+    "acceptance": "INFRASTRUCTURE_RETRY_PENDING",
     "test_first": "30c68c97211bfe339b01b22c676ed9ea2934f3e5",
     "protected": {
       "course": 105,
@@ -998,7 +998,10 @@
     "prior_retry_job": 138625635986,
     "prior_api_failed_sha": "f1bcf7e129f7a9b037478aae570610ccf84fa4c4",
     "prior_api_failed_run": 45448775860,
-    "prior_api_failed_job": 138639769266
+    "prior_api_failed_job": 138639769266,
+    "failed_attempt_job": 138656862810,
+    "failed_attempt_reason": "Maven wrapper distribution download failed before tests",
+    "retry_job": 138669505383
   },
   "r04_standalone_candidate": {
     "base": "076c9a5e7c7a1e66b894362864d93b76409196bd",
@@ -1035,6 +1038,33 @@
     "failures": 0
   },
   "r03_candidate": {
+    "sha": "4ac7c197b9def27bc507697c9303b147e76ffbd6",
+    "base": "67d4cad897da432b4967a69b5336b730b5ce40d3",
+    "pr": 54,
+    "runs": [
+      [
+        45457441719,
+        "in_progress",
+        null
+      ]
+    ],
+    "report": "evidence/C8/R03_DIRECTED_R089_R091_CANDIDATE_2026-11-25.md",
+    "acceptance": "CANDIDATE_CI_PENDING",
+    "routes": [
+      "R089",
+      "R091"
+    ],
+    "tests": [
+      72
+    ]
+  },
+  "proposed_project_instructions": {
+    "path": "docs/project-continuity/10_PROPOSED_PROJECT_INSTRUCTIONS_UNDER_8000.md",
+    "characters": 7974,
+    "status": "PROPOSED_NOT_APPLIED",
+    "limit": 8000
+  },
+  "r03_prior_verified": {
     "sha": "67d4cad897da432b4967a69b5336b730b5ce40d3",
     "base": "22b90b46d4f59423e13ca62b0afd8336019dfad8",
     "pr": 54,
@@ -1046,7 +1076,7 @@
       ]
     ],
     "report": "evidence/C8/R03_DIRECTED_R078_R041_R083_R084_CANDIDATE_2026-11-25.md",
-    "acceptance": "CORRECTED_CANDIDATE_CI_PENDING",
+    "acceptance": "VERIFIED_BOUNDED",
     "routes": [
       "R078",
       "R041",
@@ -1060,35 +1090,11 @@
     ],
     "prior_failed_sha": "4410cb17fa1daaac723401fcca17b41b3b1946ed",
     "prior_failed_run": 45450272557,
-    "prior_failed_job": 138645130048
-  },
-  "proposed_project_instructions": {
-    "path": "docs/project-continuity/10_PROPOSED_PROJECT_INSTRUCTIONS_UNDER_8000.md",
-    "characters": 7974,
-    "status": "PROPOSED_NOT_APPLIED",
-    "limit": 8000
-  },
-  "r03_prior_verified": {
-    "sha": "22b90b46d4f59423e13ca62b0afd8336019dfad8",
-    "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
-    "pr": 54,
-    "runs": [
-      [
-        45445707957,
-        "in_progress",
-        null
-      ]
-    ],
-    "report": "evidence/C8/R03_DIRECTED_R031_R082_CANDIDATE_2026-11-25.md",
-    "acceptance": "VERIFIED_BOUNDED",
-    "routes": [
-      "R031",
-      "R082"
-    ],
-    "job": 138628768792,
-    "run": 45445707957,
-    "identity_tests": 68,
-    "maven_tests": 93,
+    "prior_failed_job": 138645130048,
+    "run": 45453508295,
+    "job": 138656650900,
+    "maven_tests": 96,
+    "identity_tests": 71,
     "playwright": 19,
     "failures": 0
   }

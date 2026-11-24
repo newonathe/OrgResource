@@ -24,3 +24,5 @@
 "evidence/C8/R03_DIRECTED_R078_R041_R083_R084_CANDIDATE_2026-11-25.md","eae44993d8eafeb57ff67065285f3b8912f0deb5","3387","100644","corrective_candidate:67d4cad897da432b4967a69b5336b730b5ce40d3","PATCH; actual retry pending"
 "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","8e33739b08e277776aa35322e1276f47b1eebcc4","379619","100644","corrective_candidate:67d4cad897da432b4967a69b5336b730b5ce40d3","PATCH; actual retry pending"
 "scripts/verify-c9-public-recovered-control.py","ba542833e14bb230b15ddd9e677f74386cb0583c","4612","100644","corrective_candidate:68b694adadcca5d7c8a5698d01e86c7e47227800","PATCH; actual retry pending"
+"evidence/C8/R03_DIRECTED_R089_R091_CANDIDATE_2026-11-25.md","2ea164b551317e80f47cc1f42efb0505b6a49018","1958","100644","r03_workspace_cursor_candidate:4ac7c197b9def27bc507697c9303b147e76ffbd6","PATCH; actual CI pending"
+"extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","80651fd7087491406c22274bc6de90b4deaf798c","386460","100644","r03_workspace_cursor_candidate:4ac7c197b9def27bc507697c9303b147e76ffbd6","PATCH; actual CI pending"

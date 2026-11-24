@@ -59,8 +59,8 @@
       "depends_on": [
         "R02"
       ],
-      "receipt": "PR54 4410cb17fa1daaac723401fcca17b41b3b1946ed CI45450272557 job138645130048 actual 96 Maven 1 failure, 0 errors/skips; #69 failed at line4809 nanosecond creation vs DATETIME(6) persisted expiration (170 ns), #70/#71 not failed in aggregate. Correction 67d4cad897da432b4967a69b5336b730b5ce40d3 captures persisted expiry before revoke; strict <1us creation difference and exact stored/response/reloaded equality, no behavior change. Actual retry pending; prior 93/68/19 receipt retained.",
-      "notes": "R029 #66 previously verified; R031/R082 bounded on prior head. New three tests cover four route gaps partially; next remaining R089/R091/R017/R025/R040 and others. No production change."
+      "receipt": "PR54 67d4cad897da432b4967a69b5336b730b5ce40d3 actual CI45453508295 job138656650900 96 Maven/71 identity/19 Playwright all passed, all 3 jobs; #69–71 R078/R041/R083/R084 verified bounded. New #72 R089/R091 candidate 4ac7c197b9def27bc507697c9303b147e76ffbd6 pending CI; prior receipts retained. Independent IR4/review and remaining gaps open.",
+      "notes": "R029/R031/R082/R078/R041/R083/R084 directed bounded executed. #72 R089/R091 new candidate. Next R017/R025/R040 and other remaining gaps; no product change."
     },
     {
       "id": "R04",
@@ -151,7 +151,7 @@
       "depends_on": [
         "R06B3a"
       ],
-      "receipt": "PR53 f1bcf7e129f7a9b037478aae570610ccf84fa4c4 CI45448775860 job138639769266 actual filter PASS, 10 refusals, original restore 33857 bytes/row equality, V2, importer grants, third empty server, PIDFD, five prohibited DML denials, JAR ready; API phase RuntimeError, specific assertion unknown. 68b694adadcca5d7c8a5698d01e86c7e47227800 adds 17 fixed API phase labels, numeric status/uppercase assertion diagnostics only; no permission or oracle change. Retry pending. Private mixed not implemented/run.",
+      "receipt": "PR53 68b694ad CI45453565679 attempt1 Extended job138656862810 blocked before tests: wget failed fetching Maven 3.10.0 distribution ZIP; Java8/React success. Actual same-commit failed-job rerun requested successfully; attempt2 job138669505383 pending. Prior API RuntimeError exact phase still unknown; no change to privileges or application. Private mixed not implemented/run.",
       "notes": "Potential SELECT FOR UPDATE privilege incompatibility: InventoryService locks organization/membership on detail reads. Do not broaden domain DML to pass. Actual CI failure evidence first. Private same-lifetime path after bounded public control; R07 normal worker separate."
     },
     {
@@ -422,7 +422,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "Inspect new PR53 actual API phase/status and repair smallest failing case; inspect corrected PR54 R078 receipt; independent next R089/R091/R017/R025/R040 if needed; R09=false."
+    "next_action": "Inspect same-head PR53 retry actual API phase and fix confirmed cause; inspect PR54 #72 exact run; continue remaining R017/R025/R040 and all route gaps; R09=false."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -445,7 +445,7 @@
     "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
     "pr": 53,
     "run": 45448775860,
-    "acceptance": "API_DIAGNOSTIC_RETRY_PENDING",
+    "acceptance": "INFRASTRUCTURE_RETRY_PENDING",
     "test_first": "30c68c97211bfe339b01b22c676ed9ea2934f3e5",
     "protected": {
       "course": 105,
@@ -468,9 +468,33 @@
     "prior_retry_job": 138625635986,
     "prior_api_failed_sha": "f1bcf7e129f7a9b037478aae570610ccf84fa4c4",
     "prior_api_failed_run": 45448775860,
-    "prior_api_failed_job": 138639769266
+    "prior_api_failed_job": 138639769266,
+    "failed_attempt_job": 138656862810,
+    "failed_attempt_reason": "Maven wrapper distribution download failed before tests",
+    "retry_job": 138669505383
   },
   "r03_candidate": {
+    "sha": "4ac7c197b9def27bc507697c9303b147e76ffbd6",
+    "base": "67d4cad897da432b4967a69b5336b730b5ce40d3",
+    "pr": 54,
+    "runs": [
+      [
+        45457441719,
+        "in_progress",
+        null
+      ]
+    ],
+    "report": "evidence/C8/R03_DIRECTED_R089_R091_CANDIDATE_2026-11-25.md",
+    "acceptance": "CANDIDATE_CI_PENDING",
+    "routes": [
+      "R089",
+      "R091"
+    ],
+    "tests": [
+      72
+    ]
+  },
+  "r03_prior_verified": {
     "sha": "67d4cad897da432b4967a69b5336b730b5ce40d3",
     "base": "22b90b46d4f59423e13ca62b0afd8336019dfad8",
     "pr": 54,
@@ -482,7 +506,7 @@
       ]
     ],
     "report": "evidence/C8/R03_DIRECTED_R078_R041_R083_R084_CANDIDATE_2026-11-25.md",
-    "acceptance": "CORRECTED_CANDIDATE_CI_PENDING",
+    "acceptance": "VERIFIED_BOUNDED",
     "routes": [
       "R078",
       "R041",
@@ -496,29 +520,11 @@
     ],
     "prior_failed_sha": "4410cb17fa1daaac723401fcca17b41b3b1946ed",
     "prior_failed_run": 45450272557,
-    "prior_failed_job": 138645130048
-  },
-  "r03_prior_verified": {
-    "sha": "22b90b46d4f59423e13ca62b0afd8336019dfad8",
-    "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
-    "pr": 54,
-    "runs": [
-      [
-        45445707957,
-        "in_progress",
-        null
-      ]
-    ],
-    "report": "evidence/C8/R03_DIRECTED_R031_R082_CANDIDATE_2026-11-25.md",
-    "acceptance": "VERIFIED_BOUNDED",
-    "routes": [
-      "R031",
-      "R082"
-    ],
-    "job": 138628768792,
-    "run": 45445707957,
-    "identity_tests": 68,
-    "maven_tests": 93,
+    "prior_failed_job": 138645130048,
+    "run": 45453508295,
+    "job": 138656650900,
+    "maven_tests": 96,
+    "identity_tests": 71,
     "playwright": 19,
     "failures": 0
   }
