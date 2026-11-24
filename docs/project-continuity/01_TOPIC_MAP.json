@@ -156,7 +156,7 @@
         }
       ],
       "authority": "Immutable A 7f8c0746; actual course code and evidence separate from Extended.",
-      "next": "R04 reports 16/18, exact source allowlist 17 and temporary ZIP checker; CI and standalone release assembly open; no frozen change."
+      "next": "R04 source archive actual verified bounded CI 45439669603 job 138606956479; standalone release assembly, artifact verification and rights/student separate."
     },
     {
       "id": "T07_EARLY_DEMO",
@@ -423,7 +423,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "Inspect PR52 actual CI, then R06B3b normal recovered valid browser/API; R07/R08 later.",
+      "next": "R06B3a verified bounded, R06B3b implement per handoff 19; scheduler isolation conflict; R07/R08 later.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -541,10 +541,10 @@
   "current_implementation": {
     "candidate": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
     "pr": 52,
-    "verified_base": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
-    "verified_pr": 51,
+    "verified_base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+    "verified_pr": 52,
     "run": 45437263264,
-    "status": "CI_PENDING_ACTUAL_RECEIPTS",
+    "status": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS",
     "source_index_delta": "09_INCREMENTAL_SOURCE_INDEX.csv",
     "handoff_graph": "../handoffs/claude-local-execution-2026-11-24/12_EXECUTION_GRAPH.json"
   }

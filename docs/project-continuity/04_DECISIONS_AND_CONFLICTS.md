@@ -34,3 +34,5 @@ Record ID, effective date, owner/authority, verbatim material intent if public-s
 **PC-D23 — SOURCE FINDING / OPEN:** Historical Course A package script does not separately copy image fixture and uses whole-HEAD archive; current actual Java8 CI verifies JAR and ordered acceptance, not Windows package. Preserve frozen A; separate explicit allowlist and package validation before new distribution. R04 remains IN_PROGRESS; prior publication decision PC-D17 remains.
 
 **PC-D23 addendum:** 120-file exact frozen source allowlist and temporary archive/extraction build candidate. No redistribution clearance; no archive uploaded; actual CI pending. Standalone assembly separate.
+
+**PC-D24 — VERIFIED SOURCE / PROPOSED TEST BOUNDARY:** SMS disabled does not stop lifecycle/receipt/governance worker; normal business clock is live, not offline as-of. R06B3b read/session-only runtime proposed, actual public original-only control and private full positive separate, worker mutation proof R07. Do not fake tags/clock or silently accept row changes. See report 19. R06B3a now verified bounded; R04 source export verified bounded.

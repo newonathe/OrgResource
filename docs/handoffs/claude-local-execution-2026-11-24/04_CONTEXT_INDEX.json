@@ -886,9 +886,9 @@
     "tree": "19f17466cf32e5f5bea1568de7ef3aac47b27150",
     "pr": 52,
     "ci": 45437263264,
-    "status": "in_progress",
-    "conclusion": null,
-    "acceptance": "CI_PENDING_ACTUAL_RECEIPTS",
+    "status": "completed",
+    "conclusion": "success",
+    "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS",
     "base": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
     "changed_paths": [
       {
@@ -927,7 +927,8 @@
         "bytes": 35907,
         "mode": "100644"
       }
-    ]
+    ],
+    "extended_job": 138598356841
   },
   "r04_partial_reconciliation": {
     "ref": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
@@ -958,6 +959,15 @@
     "report": "docs/handoffs/claude-local-execution-2026-11-24/18_R04_SOURCE_EXPORT_CANDIDATE.md",
     "files": 120,
     "bytes": 793613,
-    "acceptance": "CANDIDATE_CI_PENDING"
+    "acceptance": "VERIFIED_BOUNDED_SOURCE_ARCHIVE_ONLY",
+    "verified_sha": "3428c087faa2a09115388918af15538f1eccb4d6",
+    "run": 45439669603,
+    "job": 138606956479,
+    "archive_bytes": 220753
+  },
+  "r06b3b_contract": {
+    "ref": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/19_R06B3A_RECEIPT_AND_R06B3B_EXECUTION_CONTRACT.md",
+    "state": "SOURCE_CONTRACT_READY_IMPLEMENTATION_OPEN"
   }
 }

@@ -36,3 +36,8 @@ The initial 953-version index remains historical. Consult 09_INCREMENTAL_SOURCE_
 See [handoff 16](../handoffs/claude-local-execution-2026-11-24/16_R04_COURSE_A_PACKAGING_RECONCILIATION.md). Actual current Java8 CI and exact frozen tree comparison; R04 package findings open. R06B3a actual Extended receipt still pending, R09 false.
 
 R04 exact source export candidate: handoff 17/18 and checker, 120 files. Pending CI; no release/rights clearance. R09 false.
+
+
+## Authoritative checkpoint — PR52 verified / R04 source archive verified
+
+R06B3a VERIFIED_BOUNDED PR52 d3e8a855, CI 45437263264, job 138598356841 actual logs; 3/3, 10 refusals, independent third EMPTY server, prior grant/C5/V2/cleanup, 91 Maven/19 Playwright. Full private positive NOT_RUN. R04 source ZIP/extraction build verified CI 45439669603 job 138606956479 at 3428c087, exact 120 files, 793613 bytes, ZIP220753, 7 negatives, no archive upload; standalone release open. [Report 19](../handoffs/claude-local-execution-2026-11-24/19_R06B3A_RECEIPT_AND_R06B3B_EXECUTION_CONTRACT.md) is the next R06B3b implementation prompt and evidence; scheduler conflict PC-D24. R09=false. No Claude launch.
