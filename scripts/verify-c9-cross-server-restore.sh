@@ -64,7 +64,16 @@ workdir="$(mktemp -d "$RUNNER_TEMP/c9-cross-server.XXXXXXXX")"
 chmod 700 "$workdir"
 restorer_name="orgresource-c9-restorer-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
 restorer_started=false
+session_seeded=false
+fixture_session_id=00000000-0000-4000-8000-000000000c91
+cleanup_session() {
+  if [ "$session_seeded" = true ]; then
+    source_mysql "$source_schema" -e "DELETE FROM SPRING_SESSION WHERE PRIMARY_ID='$fixture_session_id';"
+    session_seeded=false
+  fi
+}
 cleanup() {
+  cleanup_session >/dev/null 2>&1 || true
   if [ "$restorer_started" = true ]; then
     docker rm --force "$restorer_name" >/dev/null 2>&1 || true
   fi
@@ -123,6 +132,7 @@ restore_password="$(openssl rand -hex 24)"
 echo "::add-mask::$restore_password"
 docker run --detach --rm --network none --name "$restorer_name" \
   --env "MYSQL_ROOT_PASSWORD=$restore_password" \
+  --label "orgresource.c9.run=$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" \
   mysql:8.0.46 --skip-networking > /dev/null ||
   refuse C9_CROSS_SERVER_NEW_CONTAINER_FAILED
 restorer_started=true
@@ -209,3 +219,48 @@ separate_process_and_data_directory=true row_dump_byte_equal=true \
 source_unchanged=true digest_tamper_refused=true nonempty_schema_refused=true \
 c5_aes_gcm_archive=NOT_TESTED approved_full_private_96=NOT_RUN \
 actual_hosted_db=NOT_TOUCHED"
+
+# Stage 1C: real C5 utility, same independent server, new empty schema.
+encrypted_schema=orgresource_c8_additive_ci_fixture_c9_encrypted
+[ "$(restore_mysql --batch --skip-column-names -e \
+  "SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name='$encrypted_schema';")" = 0 ] ||
+  refuse C9_ARCHIVE_TARGET_ALREADY_EXISTS
+restore_mysql -e "CREATE DATABASE $encrypted_schema CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;"
+[ "$(source_mysql --batch --skip-column-names "$source_schema" \
+  -e 'SELECT COUNT(*) FROM SPRING_SESSION_ATTRIBUTES;')" = 0 ] ||
+  refuse C9_ARCHIVE_SESSION_ATTRIBUTES_NOT_EMPTY
+session_seeded=true
+source_mysql "$source_schema" <<'SQL'
+START TRANSACTION;
+INSERT INTO SPRING_SESSION (PRIMARY_ID,SESSION_ID,CREATION_TIME,LAST_ACCESS_TIME,MAX_INACTIVE_INTERVAL,EXPIRY_TIME,PRINCIPAL_NAME)
+VALUES('00000000-0000-4000-8000-000000000c91','00000000-0000-4000-8000-000000000c92',0,0,60,60000,'fictional-c9-session');
+INSERT INTO SPRING_SESSION_ATTRIBUTES (SESSION_PRIMARY_ID,ATTRIBUTE_NAME,ATTRIBUTE_BYTES)
+VALUES('00000000-0000-4000-8000-000000000c91','fictional-c9-attribute',X'010203');
+COMMIT;
+SQL
+source_rows "$source_schema" > "$workdir/source-with-session-before.sql"
+C9_ARCHIVE_DIR="$workdir" C9_RESTORE_PASSWORD="$restore_password" \
+  pwsh -NoProfile -NonInteractive -File scripts/verify-c9-encrypted-archive.ps1
+source_rows "$source_schema" > "$workdir/source-with-session-after.sql"
+cmp -s "$workdir/source-with-session-before.sql" "$workdir/source-with-session-after.sql" ||
+  refuse C9_ARCHIVE_SOURCE_CHANGED_DURING_BACKUP
+[ "$(source_mysql --batch --skip-column-names "$source_schema" \
+  -e 'SELECT COUNT(*) FROM SPRING_SESSION;')" = 1 ] ||
+  refuse C9_ARCHIVE_SOURCE_SESSION_NOT_PRESERVED
+[ "$(source_mysql --batch --skip-column-names "$source_schema" \
+  -e 'SELECT COUNT(*) FROM SPRING_SESSION_ATTRIBUTES;')" = 1 ] ||
+  refuse C9_ARCHIVE_SOURCE_ATTRIBUTE_NOT_PRESERVED
+restore_rows "$encrypted_schema" > "$workdir/encrypted-restored-rows.sql"
+cmp -s "$original_rows" "$workdir/encrypted-restored-rows.sql" ||
+  refuse C9_ARCHIVE_RESTORED_DATA_DIFFERENT
+cleanup_session
+source_rows "$source_schema" > "$workdir/source-after-encrypted.sql"
+cmp -s "$original_rows" "$workdir/source-after-encrypted.sql" ||
+  refuse C9_ARCHIVE_ORIGINAL_SOURCE_CHANGED
+echo "C9_ENCRYPTED_CROSS_SERVER_RESTORE_OK: eight_orgs=true allocations_960=true tables_18=true independent_server=true network_none=true row_dump_byte_equal=true source_unchanged=true populated_session_and_attribute_excluded=true"
+cleanup
+trap - EXIT
+if docker container inspect "$restorer_name" >/dev/null 2>&1 || [ -e "$workdir" ]; then
+  refuse C9_ARCHIVE_CLEANUP_FAILED
+fi
+echo "C9_ARCHIVE_CLEANUP_OK: private_workdir_removed=true restorer_removed=true"
