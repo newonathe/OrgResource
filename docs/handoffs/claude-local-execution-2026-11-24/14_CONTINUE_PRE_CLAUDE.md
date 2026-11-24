@@ -106,3 +106,7 @@ PR54 bc74332a8904b3022cf5f27f5d31a597455a1def CI45460588237 backend verification
 ## Public recovery verified / private API oracle staged
 
 PR53 e1d648d5a4c64b69e495cabca7bbd1b4eea0f2f2 CI45459113536 job138676495489 actual 91 Maven/19 Playwright, all 3 jobs success, locking refusal/success, seven domain DML denials, persisted login/logout, real browser, exact domain/source equality, scheduler denial count1, cleanup. Public VERIFIED_BOUNDED. Private API oracle a6d3682a8fea6901efb89db9e7e62509a690b0e6 unintegrated, no private run; CI [[45462162577,"in_progress",null]]. R025 CI45461292876 job138684239103 Maven download failure before tests, same failed-job retry accepted. R017/R040 actual receipt still required. R09=false.
+
+## Create-route receipt / private SQL oracle candidate
+
+PR54 bc74332a8904b3022cf5f27f5d31a597455a1def CI45460588237 job138681753305 actual 99 Maven/74 identity/19 Playwright, all 3 jobs success; R017/R040 bounded. R025 retry pending actual logs. PR53 e1067c8be387c38993b8d361b7c6059c70b7eeaa independent private SQL projection/parser, exact 98/96/97 scope and stable zero-APPROVED representative, private file custody, ordered modern IDs, unintegrated NOT_RUN; CI [[45463840859,"in_progress",null]]. Previous private API candidate preserved; actual public control e1d648d5 bounded. Browser/PIDFD/runner and public-safe checks open. R09=false.

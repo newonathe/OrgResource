@@ -971,18 +971,18 @@
     "state": "SOURCE_CONTRACT_READY_IMPLEMENTATION_OPEN"
   },
   "r06b3b_candidate": {
-    "sha": "a6d3682a8fea6901efb89db9e7e62509a690b0e6",
-    "base": "e1d648d5a4c64b69e495cabca7bbd1b4eea0f2f2",
+    "sha": "e1067c8be387c38993b8d361b7c6059c70b7eeaa",
+    "base": "a6d3682a8fea6901efb89db9e7e62509a690b0e6",
     "pr": 53,
     "runs": [
       [
-        45462162577,
+        45463840859,
         "in_progress",
         null
       ]
     ],
-    "acceptance": "PRIVATE_API_ORACLE_UNINTEGRATED",
-    "report": "evidence/C9/R06B3B_PRIVATE_MIXED_API_ORACLE_CANDIDATE_2026-11-25.md"
+    "report": "evidence/C9/R06B3B_PRIVATE_MIXED_SQL_ORACLE_CANDIDATE_2026-11-25.md",
+    "acceptance": "PRIVATE_SQL_ORACLE_UNINTEGRATED"
   },
   "r04_standalone_candidate": {
     "base": "076c9a5e7c7a1e66b894362864d93b76409196bd",
@@ -1067,29 +1067,69 @@
     "limit": 8000
   },
   "r03_prior_verified": {
-    "sha": "4ac7c197b9def27bc507697c9303b147e76ffbd6",
-    "base": "67d4cad897da432b4967a69b5336b730b5ce40d3",
+    "sha": "bc74332a8904b3022cf5f27f5d31a597455a1def",
+    "base": "4ac7c197b9def27bc507697c9303b147e76ffbd6",
     "pr": 54,
     "runs": [
       [
-        45457441719,
+        45460588237,
         "in_progress",
         null
       ]
     ],
-    "report": "evidence/C8/R03_DIRECTED_R089_R091_CANDIDATE_2026-11-25.md",
+    "report": "evidence/C8/R03_DIRECTED_R017_R040_CANDIDATE_2026-11-25.md",
     "acceptance": "VERIFIED_BOUNDED",
     "routes": [
-      "R089",
-      "R091"
+      "R017",
+      "R040"
     ],
     "tests": [
-      72
+      73,
+      74
     ],
-    "run": 45457441719,
-    "job": 138670606242,
-    "maven_tests": 97,
-    "identity_tests": 72,
+    "jobs": [
+      {
+        "id": 138681753305,
+        "name": "Extended C Java 21, isolated MySQL, Newman and Playwright",
+        "status": "in_progress",
+        "conclusion": null,
+        "steps": [
+          [
+            "Verify Extended C Java 21 backend against isolated MySQL",
+            "completed",
+            "success"
+          ],
+          [
+            "Prove isolated additive replay preserves existing owner and refuses repeat",
+            "in_progress",
+            null
+          ],
+          [
+            "Prove local mixed rehearsal preparation with public fictional originals",
+            "pending",
+            null
+          ]
+        ]
+      },
+      {
+        "id": 138681753731,
+        "name": "Java 8 and isolated MySQL tests",
+        "status": "completed",
+        "conclusion": "success",
+        "steps": []
+      },
+      {
+        "id": 138681754240,
+        "name": "React typecheck, tests, lint, and build",
+        "status": "completed",
+        "conclusion": "success",
+        "steps": []
+      }
+    ],
+    "run": 45460588237,
+    "job": 138681753305,
+    "maven": 99,
+    "identity": 74,
     "playwright": 19,
     "failures": 0
   },
@@ -1243,5 +1283,39 @@
     "maven": 91,
     "playwright": 19,
     "scheduler_denial_log_matches": 1
+  },
+  "r06b3b_previous_candidate": {
+    "sha": "a6d3682a8fea6901efb89db9e7e62509a690b0e6",
+    "base": "e1d648d5a4c64b69e495cabca7bbd1b4eea0f2f2",
+    "pr": 53,
+    "runs": [
+      [
+        45462162577,
+        "in_progress",
+        null
+      ]
+    ],
+    "acceptance": "PRIVATE_API_ORACLE_UNINTEGRATED",
+    "report": "evidence/C9/R06B3B_PRIVATE_MIXED_API_ORACLE_CANDIDATE_2026-11-25.md",
+    "latest_jobs": [
+      [
+        138687406415,
+        "Java 8 and isolated MySQL tests",
+        "completed",
+        "success"
+      ],
+      [
+        138687406803,
+        "React typecheck, tests, lint, and build",
+        "completed",
+        "success"
+      ],
+      [
+        138687407235,
+        "Extended C Java 21, isolated MySQL, Newman and Playwright",
+        "in_progress",
+        null
+      ]
+    ]
   }
 }

@@ -35,3 +35,7 @@
 "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","dc1e83f100234a760cad30691a709afb081770a5","401610","100644","r03_image_candidate:cfb6e83bdf20e7ebe51315d7229c43babf9d9923","PATCH; actual CI pending"
 "evidence/C9/R06B3B_PRIVATE_MIXED_API_ORACLE_CANDIDATE_2026-11-25.md","cac0be504ec5ef3c5f80298322fb073f8afbe112","2313","100644","r06b3b_private_api_candidate:a6d3682a8fea6901efb89db9e7e62509a690b0e6","PATCH; unintegrated, NOT_RUN"
 "scripts/verify-c9-private-mixed-api.py","10c1ad4a8c899b48895a0c2bea3a5a8cef13e5d5","8524","100644","r06b3b_private_api_candidate:a6d3682a8fea6901efb89db9e7e62509a690b0e6","PATCH; unintegrated, NOT_RUN"
+"evidence/C9/R06B3B_PRIVATE_MIXED_SQL_ORACLE_CANDIDATE_2026-11-25.md","b43f230d9684a5229ee33898996446324c6dccc1","2707","100644","r06b3b_private_sql_candidate:e1067c8be387c38993b8d361b7c6059c70b7eeaa","PATCH; unintegrated, NOT_RUN"
+"scripts/build-c9-private-mixed-expectations.py","b95f5ea513664e03ea32c8aab80e095f4adb6930","6362","100644","r06b3b_private_sql_candidate:e1067c8be387c38993b8d361b7c6059c70b7eeaa","PATCH; unintegrated, NOT_RUN"
+"scripts/c9-private-mixed-expectations.sql","d1db889aab9b11d4284f9f8f3232bda2e7c1fd3d","2461","100644","r06b3b_private_sql_candidate:e1067c8be387c38993b8d361b7c6059c70b7eeaa","PATCH; unintegrated, NOT_RUN"
+"scripts/verify-c9-private-mixed-api.py","a2e35c315d8de63155b3d5047102f76b7a71f0ec","8519","100644","r06b3b_private_sql_candidate:e1067c8be387c38993b8d361b7c6059c70b7eeaa","PATCH; unintegrated, NOT_RUN"
