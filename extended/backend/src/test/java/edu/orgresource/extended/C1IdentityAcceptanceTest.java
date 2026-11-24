@@ -346,21 +346,39 @@ class C1IdentityAcceptanceTest {
         HttpResponse<String> csrf = get(anonymous, "/api/v2/auth/csrf");
         assertEquals(200, csrf.statusCode());
         assertTrue(csrf.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
+        assertEquals(Set.of("data", "requestId"), json(csrf).keySet());
+        assertEquals(Set.of("csrfToken"), json(csrf).getAsJsonObject("data").keySet());
         String oldToken = json(csrf).getAsJsonObject("data").get("csrfToken").getAsString();
+        assertFalse(oldToken.isBlank());
         String preLoginId = cookie(anonymous);
         assertNotNull(preLoginId);
         assertTrue(csrf.headers().firstValue("Set-Cookie").orElse("").contains("HttpOnly"));
         assertFalse(csrf.headers().firstValue("Set-Cookie").orElse("").toLowerCase().contains("secure"));
+        HttpClient otherAnonymous = newClient();
+        String otherToken = json(get(otherAnonymous, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();
+        assertTrue(!oldToken.equals(otherToken), "Two distinct sessions must not share CSRF tokens.");
+        assertTrue(!preLoginId.equals(cookie(otherAnonymous)), "Anonymous sessions must be distinct.");
+        var before = identityAuthRows(owner);
+        var scopedBefore = governanceDenialRows(owner.orgDbId, owner.orgDbId);
+        assertEquals(403, post(anonymous, "/api/v2/auth/login", loginJson(owner), otherToken, origin()).statusCode());
+        assertTrue(before.equals(identityAuthRows(owner)), "Foreign token altered identity facts.");
+        assertEquals(401, get(anonymous, "/api/v2/session").statusCode());
         assertEquals(403, post(anonymous, "/api/v2/auth/login", loginJson(owner), null, origin()).statusCode());
         assertEquals(403, post(anonymous, "/api/v2/auth/login", loginJson(owner), oldToken, "https://attacker.invalid").statusCode());
 
+        assertTrue(before.equals(identityAuthRows(owner)), "Pre-auth CSRF refusals altered identity facts.");
+        assertTrue(scopedBefore.equals(governanceDenialRows(owner.orgDbId, owner.orgDbId)));
         Session session = login(anonymous, owner.username, owner.password, oldToken, preLoginId);
+        assertNull(springSessions.findById(preLoginId));
+        assertEquals(401, get(otherAnonymous, "/api/v2/session").statusCode());
         assertNotEquals(preLoginId, session.sessionId);
         assertNotEquals(oldToken, session.csrf);
         HttpResponse<String> oldCsrf = post(session.client, "/api/departments", GSON.toJson(new NameRequest("old csrf")), oldToken, origin());
         assertEquals(403, oldCsrf.statusCode());
         assertEquals(403, post(session.client, "/api/departments", GSON.toJson(new NameRequest("missing csrf")), null, origin()).statusCode());
         assertEquals(403, post(session.client, "/api/departments", GSON.toJson(new NameRequest("wrong origin")), session.csrf, "http://evil.invalid").statusCode());
+        assertEquals(403, post(session.client, "/api/departments", GSON.toJson(new NameRequest("foreign csrf")), otherToken, origin()).statusCode());
+        assertTrue(scopedBefore.equals(governanceDenialRows(owner.orgDbId, owner.orgDbId)));
         HttpResponse<String> logout = post(session, "/api/v2/auth/logout", "");
         assertEquals(204, logout.statusCode(), logout.body());
         assertEquals(401, get(session.client, "/api/v2/session").statusCode());
@@ -465,12 +483,20 @@ class C1IdentityAcceptanceTest {
 
         HttpClient client = newClient();
         String token = json(get(client, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();
+        var before = identityAuthRows(user);
+        String preAuthId = cookie(client);
         HttpResponse<String> wrongPassword = post(client, "/api/v2/auth/login", "{\"username\":\"" + user.username + "\",\"password\":\"bad\"}", token, origin());
         HttpResponse<String> wrongUser = post(newClientWithCsrf(client, token), "/api/v2/auth/login",
                 "{\"username\":\"missing-" + UUID.randomUUID() + "\",\"password\":\"bad\"}", token, origin());
         assertEquals(401, wrongPassword.statusCode()); assertEquals(401, wrongUser.statusCode());
         assertEquals(json(wrongPassword).get("code"), json(wrongUser).get("code"));
         assertEquals(json(wrongPassword).get("message"), json(wrongUser).get("message"));
+        assertEquals(Set.of("code", "message", "requestId"), json(wrongPassword).keySet());
+        assertEquals(Set.of("code", "message", "requestId"), json(wrongUser).keySet());
+        assertTrue(wrongPassword.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
+        assertTrue(before.equals(identityAuthRows(user)), "Invalid login changed identity facts.");
+        assertTrue(preAuthId.equals(cookie(client)), "Invalid login unexpectedly rotated the session.");
+        assertEquals(401, get(client, "/api/v2/session").statusCode());
 
         HttpClient throttled = newClient();
         String throttleToken = json(get(throttled, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();
@@ -494,16 +520,38 @@ class C1IdentityAcceptanceTest {
         long credentialVersionBefore = accounts.findById(user.userDbId).orElseThrow().credentialVersion;
         HttpClient recovery = newClient();
         String csrf = json(get(recovery, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();
+        var beforeRecovery = identityAuthRows(user);
+        String invalidInput = GSON.toJson(new RecoverRequest(user.username, "fictional-invalid-code", newPassword));
+        assertEquals(403, post(recovery, "/api/v2/auth/recover", invalidInput, null, origin()).statusCode());
+        assertTrue(beforeRecovery.equals(identityAuthRows(user)), "Missing CSRF recovery changed identity facts.");
+        var invalidCode = post(recovery, "/api/v2/auth/recover", invalidInput, csrf, origin());
+        var unknownUser = post(recovery, "/api/v2/auth/recover",
+                GSON.toJson(new RecoverRequest("missing-" + UUID.randomUUID(), rawCode, newPassword)), csrf, origin());
+        assertEquals(200, invalidCode.statusCode());
+        assertEquals(200, unknownUser.statusCode());
+        assertEquals(json(invalidCode).get("data"), json(unknownUser).get("data"));
+        assertTrue(beforeRecovery.equals(identityAuthRows(user)), "Invalid or unknown-account recovery altered identity facts.");
+        assertEquals(200, get(oldSession.client, "/api/v2/session").statusCode());
         HttpResponse<String> recovered = post(recovery, "/api/v2/auth/recover", GSON.toJson(new RecoverRequest(user.username, rawCode, newPassword)), csrf, origin());
         assertEquals(200, recovered.statusCode());
         assertEquals(credentialVersionBefore + 1, accounts.findById(user.userDbId).orElseThrow().credentialVersion);
+        assertEquals(Set.of("data", "requestId"), json(recovered).keySet());
+        assertEquals(Set.of("message"), json(recovered).getAsJsonObject("data").keySet());
+        assertEquals(json(invalidCode).get("data"), json(recovered).get("data"));
+        assertTrue(recovered.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM audit_event WHERE actor_user_id=? AND action='ACCOUNT_RECOVERED'",
+                Integer.class, user.userDbId));
         assertTrue(json(recovered).getAsJsonObject("data").get("message").getAsString().startsWith("If the account"));
         assertEquals(401, get(oldSession.client, "/api/v2/session").statusCode());
         var codeRow = tx.execute(status -> recoveryCodes.lockByUserAndHash(user.userDbId, C1Secrets.sha256(rawCode)).orElseThrow());
         assertNotNull(codeRow.usedAt);
         HttpClient replay = newClient();
         String replayCsrf = json(get(replay, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();
-        assertEquals(200, post(replay, "/api/v2/auth/recover", GSON.toJson(new RecoverRequest(user.username, rawCode, "Another-C1-Password-" + UUID.randomUUID())), replayCsrf, origin()).statusCode());
+        var afterRecovery = identityAuthRows(user);
+        var replayResult = post(replay, "/api/v2/auth/recover", GSON.toJson(new RecoverRequest(user.username, rawCode, "Another-C1-Password-" + UUID.randomUUID())), replayCsrf, origin());
+        assertEquals(200, replayResult.statusCode());
+        assertEquals(json(recovered).get("data"), json(replayResult).get("data"));
+        assertTrue(afterRecovery.equals(identityAuthRows(user)), "Used recovery code replay changed identity facts.");
         assertTrue(passwordEncoder.matches(newPassword, credentials.findByUserId(user.userDbId).orElseThrow().passwordHash));
         Session current = login(user.username, newPassword);
         Session peerSession = login(user.username, newPassword);
@@ -558,6 +606,16 @@ class C1IdentityAcceptanceTest {
         assertTrue(passwordEncoder.matches(passwordA, racedHash) ^ passwordEncoder.matches(passwordB, racedHash));
         assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM account_recovery_code WHERE user_id=? AND used_at IS NOT NULL",
                 Integer.class, raced.userDbId));
+    }
+
+    private List<List<java.util.Map<String, Object>>> identityAuthRows(Fixture fixture) {
+        // Compare without printing credential hashes or recovery digests.
+        return List.of(
+                jdbc.queryForList("SELECT id,HEX(public_id),username_key,display_name,status,credential_version,version,created_at,updated_at FROM user_account WHERE id=?", fixture.userDbId),
+                jdbc.queryForList("SELECT user_id,password_hash,changed_at FROM local_credential WHERE user_id=?", fixture.userDbId),
+                jdbc.queryForList("SELECT id,user_id,HEX(code_hash),HEX(batch_id),created_at,expires_at,used_at,revoked_at FROM account_recovery_code WHERE user_id=? ORDER BY id", fixture.userDbId),
+                jdbc.queryForList("SELECT id,org_id,actor_user_id,action,target_type,target_id,outcome,request_id,created_at FROM audit_event WHERE actor_user_id=? ORDER BY id", fixture.userDbId),
+                jdbc.queryForList("SELECT PRIMARY_ID,SESSION_ID,PRINCIPAL_NAME FROM SPRING_SESSION WHERE PRINCIPAL_NAME=? ORDER BY PRIMARY_ID", fixture.username));
     }
 
     @Test @Order(9)
@@ -2273,6 +2331,11 @@ class C1IdentityAcceptanceTest {
 
         String refreshedCsrf = json(get(session.client, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();
         assertNotEquals(originalCsrf, refreshedCsrf, "Session rotation must also rotate CSRF.");
+        var legacyCsrf = get(session.client, "/api/v2/csrf");
+        assertEquals(200, legacyCsrf.statusCode());
+        assertEquals(Set.of("token"), json(legacyCsrf).keySet());
+        assertTrue(refreshedCsrf.equals(json(legacyCsrf).get("token").getAsString()), "Both authenticated CSRF routes must use the current session token.");
+        assertTrue(legacyCsrf.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
         HttpResponse<String> staleCsrf = post(session.client, "/api/v2/session/active-org",
                 GSON.toJson(new OrgRequest(home.orgPublicId)), originalCsrf, origin());
         assertEquals(403, staleCsrf.statusCode(), "The pre-switch CSRF token must no longer authorize writes.");
@@ -3070,6 +3133,10 @@ class C1IdentityAcceptanceTest {
         HttpResponse<String> response = post(client, "/api/v2/auth/login", GSON.toJson(new LoginRequest(username, password)), preToken, origin());
         assertEquals(200, response.statusCode(), response.body());
         JsonObject data = json(response).getAsJsonObject("data");
+        assertEquals(Set.of("data", "requestId"), json(response).keySet());
+        assertEquals(Set.of("session", "csrfToken"), data.keySet());
+        assertEquals(Set.of("accountId", "displayName", "activeOrgId", "memberships"), data.getAsJsonObject("session").keySet());
+        assertTrue(response.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
         assertTrue(data.getAsJsonObject("session").get("activeOrgId").isJsonNull(),
                 "Login must not select an organization implicitly.");
         var orgs = json(get(client, "/api/v2/orgs")).getAsJsonArray("data");
