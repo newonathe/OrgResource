@@ -344,7 +344,7 @@
         }
       ],
       "authority": "93 route candidate mapping, independent issue34 blocked; current code and actual test evidence.",
-      "next": "PR54 67d4cad8 actual 96/71/19 all pass; R078/R041/R083/R084 bounded; new R089/R091 #72 4ac7c197b9def27bc507697c9303b147e76ffbd6 pending. Remaining gaps/IR4 open."
+      "next": "PR54 4ac7c197 actual 97/72/19 all pass; R089/R091 bounded; new R017/R040 #73/#74 bc74332a8904b3022cf5f27f5d31a597455a1def pending. Remaining gaps/IR4 open."
     },
     {
       "id": "T12_HOSTING_AND_SYNTHETIC_DATA",

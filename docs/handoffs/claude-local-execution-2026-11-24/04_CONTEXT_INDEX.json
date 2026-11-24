@@ -1043,6 +1043,34 @@
     "failures": 0
   },
   "r03_candidate": {
+    "sha": "bc74332a8904b3022cf5f27f5d31a597455a1def",
+    "base": "4ac7c197b9def27bc507697c9303b147e76ffbd6",
+    "pr": 54,
+    "runs": [
+      [
+        45460588237,
+        "in_progress",
+        null
+      ]
+    ],
+    "report": "evidence/C8/R03_DIRECTED_R017_R040_CANDIDATE_2026-11-25.md",
+    "acceptance": "CANDIDATE_CI_PENDING",
+    "routes": [
+      "R017",
+      "R040"
+    ],
+    "tests": [
+      73,
+      74
+    ]
+  },
+  "proposed_project_instructions": {
+    "path": "docs/project-continuity/10_PROPOSED_PROJECT_INSTRUCTIONS_UNDER_8000.md",
+    "characters": 7974,
+    "status": "PROPOSED_NOT_APPLIED",
+    "limit": 8000
+  },
+  "r03_prior_verified": {
     "sha": "4ac7c197b9def27bc507697c9303b147e76ffbd6",
     "base": "67d4cad897da432b4967a69b5336b730b5ce40d3",
     "pr": 54,
@@ -1054,52 +1082,18 @@
       ]
     ],
     "report": "evidence/C8/R03_DIRECTED_R089_R091_CANDIDATE_2026-11-25.md",
-    "acceptance": "CANDIDATE_CI_PENDING",
+    "acceptance": "VERIFIED_BOUNDED",
     "routes": [
       "R089",
       "R091"
     ],
     "tests": [
       72
-    ]
-  },
-  "proposed_project_instructions": {
-    "path": "docs/project-continuity/10_PROPOSED_PROJECT_INSTRUCTIONS_UNDER_8000.md",
-    "characters": 7974,
-    "status": "PROPOSED_NOT_APPLIED",
-    "limit": 8000
-  },
-  "r03_prior_verified": {
-    "sha": "67d4cad897da432b4967a69b5336b730b5ce40d3",
-    "base": "22b90b46d4f59423e13ca62b0afd8336019dfad8",
-    "pr": 54,
-    "runs": [
-      [
-        45453508295,
-        "in_progress",
-        null
-      ]
     ],
-    "report": "evidence/C8/R03_DIRECTED_R078_R041_R083_R084_CANDIDATE_2026-11-25.md",
-    "acceptance": "VERIFIED_BOUNDED",
-    "routes": [
-      "R078",
-      "R041",
-      "R083",
-      "R084"
-    ],
-    "tests": [
-      69,
-      70,
-      71
-    ],
-    "prior_failed_sha": "4410cb17fa1daaac723401fcca17b41b3b1946ed",
-    "prior_failed_run": 45450272557,
-    "prior_failed_job": 138645130048,
-    "run": 45453508295,
-    "job": 138656650900,
-    "maven_tests": 96,
-    "identity_tests": 71,
+    "run": 45457441719,
+    "job": 138670606242,
+    "maven_tests": 97,
+    "identity_tests": 72,
     "playwright": 19,
     "failures": 0
   },
