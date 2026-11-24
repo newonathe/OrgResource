@@ -423,7 +423,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "Local PIDFD and public static/refusal candidate 3299e97674c5815f8705e5464e1e4d2f462c2830 staged, CI pending. Same-lifetime runner integration next. Private API/SQL/browser/local stop NOT_RUN.",
+      "next": "Latest public/static/refusal receipts verified; same-lifetime integration dfcde24882a843524c42e951f6214d12443ac050 staged, exact CI and adversarial review pending. Private positive NOT_RUN.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",

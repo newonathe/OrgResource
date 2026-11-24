@@ -45,3 +45,7 @@
 "scripts/stop-c9-private-mixed-process.py","0197217580f8be98a7324f17b1fa66b342739b69","4079","100644","r06b3b_local_pidfd_candidate:3299e97674c5815f8705e5464e1e4d2f462c2830","PATCH; actual CI pending"
 "scripts/test-c9-local-mixed-preparation.sh","234cb2b628dc85bc8a25da9a713e15385412bc08","5972","100644","r06b3b_local_pidfd_candidate:3299e97674c5815f8705e5464e1e4d2f462c2830","PATCH; actual CI pending"
 "scripts/test-c9-private-mixed-static.py","c4f300739d3f834e1d82c7a88faeff529e75b01c","2869","100644","r06b3b_local_pidfd_candidate:3299e97674c5815f8705e5464e1e4d2f462c2830","PATCH; actual CI pending"
+"evidence/C9/R06B3B_SAME_LIFETIME_RUNTIME_CANDIDATE_2026-11-25.md","d9a3c4093494c9a21f249fc0005cd2c03e1c79c9","2418","100644","r06b3b_same_lifetime_candidate:dfcde24882a843524c42e951f6214d12443ac050","PATCH; actual CI pending"
+"scripts/c9-private-mixed-recovered-control.sh","1380796f6a2272cb1858c4002f4891299e397498","13641","100644","r06b3b_same_lifetime_candidate:dfcde24882a843524c42e951f6214d12443ac050","PATCH; actual CI pending"
+"scripts/test-c9-local-mixed-preparation.sh","213c8e6f498e99ac9157ca8ab27a1e3699c9e48c","6357","100644","r06b3b_same_lifetime_candidate:dfcde24882a843524c42e951f6214d12443ac050","PATCH; actual CI pending"
+"scripts/verify-c9-local-mixed-preparation.sh","c9532e819fca436736b711c021eea7081eb0cdec","36560","100644","r06b3b_same_lifetime_candidate:dfcde24882a843524c42e951f6214d12443ac050","PATCH; actual CI pending"

@@ -151,7 +151,7 @@
       "depends_on": [
         "R06B3a"
       ],
-      "receipt": "Public control e1d648d5 and a6d3682a verified bounded. Private API/SQL/browser staged unintegrated. New 3299e97674c5815f8705e5464e1e4d2f462c2830 local PIDFD guard and actual public-safe static/refusal checks wired to CI wrapper, not yet executed. Exact private work/token/UID/mode, non-host netns, Java argv/exe and PIDFD; actual local stop/selftest NOT_RUN. Same-lifetime runner integration and actual private positive remain.",
+      "receipt": "Actual prior public control regressions e1067c8/1e9d473/3299e97 all 91 Maven/19 browser and 3/3 jobs; newest actual static/refusal markers pass, no private positive. New dfcde24882a843524c42e951f6214d12443ac050 same-lifetime owner-gated integration staged, CI pending. Local PIDFD preflight, SELECT-only projection, session-only observer/locking read/refusals, actual API/browser, full non-session/source comparison/postflight and cleanup wired in source. Actual private positive NOT_RUN; review integration and public CI before marking remote scope bounded.",
       "notes": "Public control VERIFIED_BOUNDED; aggregate IN_PROGRESS. No production DML grants, no normal writable scheduler proof. Private module requires actual SQL-derived expected metadata/97 owner orgs/resource IDs, stable stock oracle; not a runnable private command."
     },
     {
@@ -422,7 +422,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "Implement same-lifetime owner-gated private runner: preflight local Python PIDFD/Node/Chromium before consent, run projection on recovered third schema SELECT-only, session-only DML + LOCK TABLES probe, exact persisted login/logout, private browser, guarded PIDFD stop and full non-session/source rows/postflight/cleanup. No private run or fake cohort in CI; inspect actual static/refusal and prior regression CI. Audit remaining R03 gaps then R07/R08. R09 false."
+    "next_action": "Inspect integrated exact-head CI (bash syntax, direct CI guard refusal, existing public control), adversarial source review and correct actual or confirmed defects. In particular inspect actual private browser selector/response timing and guard cleanup failure boundaries, SQL projection contract and owner scope. Complete remaining R03 route reconciliation, R07 reliability, R08 performance; private local positive remains owner-gated. R09 false."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -441,18 +441,19 @@
     "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS"
   },
   "r06b3b_candidate": {
-    "sha": "3299e97674c5815f8705e5464e1e4d2f462c2830",
-    "base": "1e9d47392e8bc2849c037d0562a464070a474d60",
+    "sha": "dfcde24882a843524c42e951f6214d12443ac050",
+    "base": "3299e97674c5815f8705e5464e1e4d2f462c2830",
     "pr": 53,
     "runs": [
       [
-        45466376744,
+        45469139504,
         "in_progress",
         null
       ]
     ],
-    "report": "evidence/C9/R06B3B_LOCAL_PIDFD_AND_STATIC_CANDIDATE_2026-11-25.md",
-    "acceptance": "LOCAL_PIDFD_AND_STATIC_REFUSALS_CI_PENDING"
+    "report": "evidence/C9/R06B3B_SAME_LIFETIME_RUNTIME_CANDIDATE_2026-11-25.md",
+    "acceptance": "SAME_LIFETIME_INTEGRATION_CI_PENDING",
+    "private_positive": "NOT_RUN"
   },
   "r03_candidate": {
     "sha": "cfb6e83bdf20e7ebe51315d7229c43babf9d9923",
@@ -713,38 +714,29 @@
     "scheduler_denial_log_matches": 1
   },
   "r06b3b_previous_candidate": {
-    "sha": "1e9d47392e8bc2849c037d0562a464070a474d60",
-    "base": "e1067c8be387c38993b8d361b7c6059c70b7eeaa",
+    "sha": "3299e97674c5815f8705e5464e1e4d2f462c2830",
+    "base": "1e9d47392e8bc2849c037d0562a464070a474d60",
     "pr": 53,
     "runs": [
       [
-        45464990215,
+        45466376744,
         "in_progress",
         null
       ]
     ],
-    "report": "evidence/C9/R06B3B_PRIVATE_MIXED_BROWSER_CANDIDATE_2026-11-25.md",
-    "acceptance": "PRIVATE_BROWSER_ORACLE_UNINTEGRATED",
-    "latest_jobs": [
-      [
-        138697393459,
-        "React typecheck, tests, lint, and build",
-        "completed",
-        "success"
-      ],
-      [
-        138697393923,
-        "Extended C Java 21, isolated MySQL, Newman and Playwright",
-        "in_progress",
-        null
-      ],
-      [
-        138697394003,
-        "Java 8 and isolated MySQL tests",
-        "completed",
-        "success"
-      ]
-    ]
+    "report": "evidence/C9/R06B3B_LOCAL_PIDFD_AND_STATIC_CANDIDATE_2026-11-25.md",
+    "acceptance": "VERIFIED_BOUNDED_PUBLIC_STATIC_REFUSALS_ONLY",
+    "receipt": {
+      "sha": "3299e97674c5815f8705e5464e1e4d2f462c2830",
+      "run": 45466376744,
+      "job": 138702268631,
+      "maven": 91,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "public_control": "VERIFIED_BOUNDED",
+      "private_positive": "NOT_RUN",
+      "static_refusals": "VERIFIED_BOUNDED"
+    }
   },
   "r06b3b_public_regression": {
     "sha": "a6d3682a8fea6901efb89db9e7e62509a690b0e6",
@@ -778,5 +770,40 @@
         "success"
       ]
     ]
-  }
+  },
+  "r06b3b_latest_public_receipts": [
+    {
+      "sha": "e1067c8be387c38993b8d361b7c6059c70b7eeaa",
+      "run": 45463840859,
+      "job": 138693330632,
+      "maven": 91,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "public_control": "VERIFIED_BOUNDED",
+      "private_positive": "NOT_RUN",
+      "static_refusals": "NOT_RUN"
+    },
+    {
+      "sha": "1e9d47392e8bc2849c037d0562a464070a474d60",
+      "run": 45464990215,
+      "job": 138697393923,
+      "maven": 91,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "public_control": "VERIFIED_BOUNDED",
+      "private_positive": "NOT_RUN",
+      "static_refusals": "NOT_RUN"
+    },
+    {
+      "sha": "3299e97674c5815f8705e5464e1e4d2f462c2830",
+      "run": 45466376744,
+      "job": 138702268631,
+      "maven": 91,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "public_control": "VERIFIED_BOUNDED",
+      "private_positive": "NOT_RUN",
+      "static_refusals": "VERIFIED_BOUNDED"
+    }
+  ]
 }
