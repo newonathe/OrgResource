@@ -31,3 +31,28 @@
 5. **Still BLOCKED:** actual C5 **AES-GCM** archive and wrong-key decrypt recovery on the 8-org fixture, exact private 96-org dump capacity and secure private transfer, independently restored **off-host** backup, full browser workflow under 96 orgs, independent C8 route acceptances (#34), hosted P0 (#26), approvals to merge/release. No schema/index or Flyway V8 changes; no deployment, real SMS or C10.
 
 **STOP condition:** If the second container's offline initialization or socket auth fails, correct only the documented disposable setup. Never relax `--network none`, use a shared MySQL port, or reuse hosted credentials to make a CI check pass. A successful source-and-restore row match is an isolated proof, not author/reviewer sign-off or product adoption.
+
+## Executed CI receipt — C9 Stage 1B VERIFIED, 2026-11-24 PHT
+
+**Exact source SHA:** `e226b83433afda04d2f4aa426890795dff912407`. **Actual [GitHub Actions #45323657473](https://github.com/newonathe/OrgResource/actions/runs/45323657473): COMPLETED SUCCESS, all three jobs.** The same job also passed 91 Maven tests/66 ordered (0 failed/errored/skipped), the prior small and intermediate C8 synthetic additive and partial-restore safeguards, and independent original-data checks. Newman 48 requests/90 assertions plus 12 requests/20 assertions, zero failures; Playwright 19/19.
+
+**VERIFIED CI Stage 1B marker:** `C9_NETWORK_ISOLATED_CROSS_SERVER_RESTORE_OK` executed after the same-schema C9 Stage 1A proof. On ephemeral MySQL **8.0.46**, eight fictional orgs / 960 allocations / 3,013 synthetic events in the *source*:
+
+| Measured C5-shaped SQL and recovery metric | Actual value | Interpretation |
+| --- | ---: | --- |
+| Main SQL bytes | **1,031,944** | One synthetic intermediate fixture in one CI runner |
+| Transient-session DDL bytes | **2,357** | No live session data |
+| Combined raw SQL bytes | **1,034,301** | Less than existing **67,108,864-byte** C5 SQL cap; C5 AES-GCM archive was **not** created |
+| Backup command runner wall | **167 ms** | Measured mysqldump command-and-file assembly; excludes restorer initialization |
+| Restore command runner wall | **412 ms** | Measured MySQL client import through Docker exec; excludes restorer initialization and postflight |
+| Source vs separate server | **different server UUIDs** | Fresh MySQL process and data directory; no sharing with the original CI MySQL service |
+| Restorer network/ports | **none / zero** | Docker inspected; mysqld `--skip-networking`, UNIX socket only |
+| All-table data-only SQL equality | **true** | Byte-for-byte comparison across all 18 application tables; full independent JDBC postflight on this new networkless server **not run** |
+| Negative controls | **passed** | Tampered SQL digest refused, existing/nonempty target refused before repeated import, wrong-source-schema refused in harness |
+| Original source unchanged | **true** | Source all-table data-only SQL compared before and after, followed by existing original HMAC and exact-plan SELECT-only source postflight |
+
+**Important measured variation:** The Stage 1A earlier [run #45269236702](https://github.com/newonathe/OrgResource/actions/runs/45269236702) had 1,034,299 combined SQL bytes; current Stage 1A and Stage 1B inside the new [run #45323657473](https://github.com/newonathe/OrgResource/actions/runs/45323657473) both measured **1,034,301 bytes**. Two-byte variation was observed across regenerated synthetic fixtures; its cause was **not isolated** and must not be interpreted as measurable production growth. Matching the backup size **within one run** supports internal consistency.
+
+**VERDICT:** **VERIFIED CI — bounded networkless cross-server SQL restore**; **NOT RUN — actual encrypted C5 AES-GCM archive, private full 96-org backup fit, independent off-host restoration, server/JAR restart and authorization continuity on the new instance, full-size API/browser percentiles and reviewer signoff.** This CI-only restorer uses randomly generated ephemeral credentials and no open ports, and removes its container and private SQL temp directory on script exit. It does **not** justify lifting the 64 MiB cap, editing Flyway indexes or deploying to Northflank. Keep C8 independent review #34 and hosted P0 #26 OPEN.
+
+**Evidence discipline:** The successful run above applies to source/test commit `e226b83433afda04d2f4aa426890795dff912407`. A newer commit containing this report needs a separately checked exact-head CI before claiming that newer revision passed.
