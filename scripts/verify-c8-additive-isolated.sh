@@ -593,6 +593,18 @@ if [ "$profile" = intermediate ]; then
     C9_ORIGINAL_ORG_ID="$original_org" C9_OWNER_ID="$owner_id" \
     C9_READONLY_USER="$verifier_user" C9_READONLY_PASSWORD="$verifier_password" \
     bash scripts/verify-c9-isolated-backup-capacity.sh
+  # C9 Stage1B: separate fresh MySQL 8 process/data directory in Docker's
+  # none network with no published ports; restores fiction into NEW instance.
+  bash -n scripts/verify-c9-cross-server-restore.sh
+  if C9_DB_SCHEMA="$schema"_wrong bash scripts/verify-c9-cross-server-restore.sh \
+       > "$RUNNER_TEMP/c9-cross-server-wrong-schema-refusal.log" 2>&1; then
+    echo "C9 independent-server recovery accepted non-fixture source" >&2
+    exit 1
+  fi
+  grep -q C9_CROSS_SERVER_DISPOSABLE_SCHEMA_REQUIRED \
+    "$RUNNER_TEMP/c9-cross-server-wrong-schema-refusal.log"
+  C9_DB_SCHEMA="$schema" C9_PLAN_PATH="$plan" C9_PLAN_SHA="$digest" \
+    bash scripts/verify-c9-cross-server-restore.sh
   original_baseline VERIFY
   check_postflight
 fi

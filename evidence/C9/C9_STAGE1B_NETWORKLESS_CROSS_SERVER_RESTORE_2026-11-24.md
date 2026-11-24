@@ -1,0 +1,58 @@
+# C9 Stage 1B — networkless second-MySQL-server SQL recovery
+
+**Date:** 2026-11-24 PHT. **USER DECISION:** C9 implementation was explicitly authorized November 24. **At authoring:** source/test WRITTEN, exact-head CI NOT RUN; overall C9 and C8 independent acceptance remain BLOCKED. This stage stacks on green [draft PR #43](https://github.com/newonathe/OrgResource/pull/43) head `a7c4ec8192997d38f97a5ed942f1e3cea710f72e`, [CI #45271076175](https://github.com/newonathe/OrgResource/actions/runs/45271076175).
+
+## Evidence problem and bounded choice
+
+**VERIFIED SOURCE:** Stage 1A [report](C9_STAGE1_SQL_BACKUP_CAPACITY_2026-11-24.md) and [CI #45269236702](https://github.com/newonathe/OrgResource/actions/runs/45269236702) proved SQL backup of **1,034,299 bytes** for **8 fictional organizations/960 allocations**, fresh-schema restore in the **same MySQL Docker service**, deterministic all-table row equality and C8 plan-level SELECT-only postflight. The C5 encrypted backup utility caps raw SQL at **64 MiB**, session DDL at **1 MiB**. The exact private **96-org/21,060 allocation/67,370-event** backup size and full-host restore remain unknown. User-owned Northflank DB and private JSON are outside this test.
+
+**DESIGN RECOMMENDATION:** Establish stronger *failure-domain separation* without adding cloud or live operations: restore the same source’s C5-shaped SQL into a **second MySQL 8.0.46 container with a new ephemeral data directory, different server UUID, Docker `--network none`, mysqld `--skip-networking`, zero published ports, and no bind mounts**. Only `docker exec` using its UNIX socket can access the restorer. Generate a disposable random root password; GitHub masks it. No host port, deployment or paid service.
+
+**VERIFIED EXTERNAL FACT (retrieved 2026-11-24):** Docker's [none network-driver documentation](https://docs.docker.com/engine/network/drivers/none/) specifies network isolation with only a loopback device. The [official MySQL image reference](https://hub.docker.com/_/mysql) documents `MYSQL_ROOT_PASSWORD` for fresh initialization; the CLI source uses `mysqldump` with identical SQL shaping flags to the existing C5 utility. These are supporting facts, **not a passed test** until the current CI reports it.
+
+## Files and source-to-test mapping
+
+| File / source examined | Change and exact contract | CI falsification |
+| --- | --- | --- |
+| NEW `scripts/verify-c9-cross-server-restore.sh` | Fail closed unless `GITHUB_ACTIONS=true`, source schema `orgresource_c8_additive_ci_fixture_intermediate`, MySQL service ID is 64 lowercase hex, GitHub run ID/attempt decimal, CI migrator credential and SHA-256-matched intermediate fictional plan. Require 8 tagged orgs, 960 allocations, 0 live sessions, 18 V7 tables. Read original MySQL `@@server_uuid`. | Wrong schema and wrong/missing CI identity refuse before Docker or SQL. No dynamically selectable backup input, target name, schema, host or network. |
+| SAME NEW script | Dump main and transient-session DDL using `extended-c-backup.ps1:153–162` SQL flags, save only to `$RUNNER_TEMP`, enforce session DDL <=1 MiB and combined SQL <=64 MiB, check exact combined byte count/hash, verify deliberate tampered copy fails checksum. Capture deterministic primary-key-ordered all-table data-only SQL. | Source/restore SQL never emitted publicly or uploaded. `C9_CROSS_SERVER_DIGEST_MISMATCH` is negative-case proof of **SHA precheck**, NOT AES-GCM authentication. |
+| SAME NEW script | Start `mysql:8.0.46` with a fresh random root credential, no volumes or published ports and network mode **none**, validate actual Docker network metadata and `docker port` empty. Wait for server, assert MySQL8.0.46 and different server UUID, create a fixed **new** target schema, refuse nonempty target, restore SQL exactly once via container UNIX socket. | On any failure, fail whole Extended CI job, tear down newly created restorer and delete private temp SQL with `trap`. Never stop/reinitialize the original CI MySQL service. |
+| SAME NEW script | Independently dump restored data-only SQL using server-local MySQL client; compare **byte-for-byte** against source for all 18 application tables, verify 8 demo orgs and 960 allocations, refuse second import because target nonempty, re-dump source to confirm unchanged. | Emit bounded `C9_NETWORK_ISOLATED_CROSS_SERVER_RESTORE_OK` receipt: measured raw SQL bytes, measured runner wall times for backup and restore **(not an SLA)**, source-vs-target equality, network disabled, separate server UUID and denial booleans. No rows, credentials or SQL file hashes. |
+| `scripts/verify-c8-additive-isolated.sh` | +12 lines in `profile=intermediate` only, after existing six C9 SQL-query timing samples and same-server Stage 1A restore. Check new script syntax, wrong-schema refusal, run positive second-server test, then verify C8 original-row HMAC and independent SELECT-only source postflight as before. | The prior small/additive/partial C8, Java8, React, Java21/MySQL (91 Maven/66 ordered), Newman 60/110 and Playwright 19 must stay green. V1–V7, Course A and Extended runtime remain byte-unchanged. |
+
+**Review coverage:** fully inspected the two changed Bash scripts (new file complete; additive harness changed tail and setup), `extended-c-backup.ps1:1–226`, `verify-c9-isolated-backup-capacity.sh:1–160`, `verify-extended-c-recovery.ps1:1–120`, `C8AdditiveProofCommand.java:1–88`, `.github/workflows/verify.yml`, `AGENTS.md`, the GOAT and implement/verify skill highlights, and `docs/QUALITY_EVIDENCE_CONTINUOUS_GATE.md`. This is a bounded transitive audit, **not** all 897 repository paths.
+
+## Explicit refusal, acceptance and remaining gaps
+
+1. **Negative guard:** `C9_DB_SCHEMA` wrong → `C9_CROSS_SERVER_DISPOSABLE_SCHEMA_REQUIRED` and no SQL/container. Existing container with that generated name → refusal. Docker network != none, any published port or same source UUID → fail. Wrong/missing plan hash, wrong org/alloc counts, bad server version, incomplete/oversized SQL → refuse.
+2. **Tamper:** private copy with appended tamper comment mismatches SHA and is never imported. This is **plain SQL integrity checking**, not encryption. Nonempty target refuses a second import *before* replay (not an attempted SQL transaction).
+3. **Positive:** different MySQL process with new data directory and UUID; network isolation inspected; MySQL8.0.46 fresh target schema; 18-table row SQL representation compares byte-for-byte, exactly 8/960, source unchanged. The pre-existing Stage 1A SELECT-only postflight already verified the same source fixture's correctness. The independent second server is reachable only by Docker exec via UNIX socket, so **Java/JDBC C8 postflight on the second server itself is NOT RUN**. Do not overstate this.
+4. **Performance evidence:** record actual bytes and runner-observed total duration for dump/restore only. These are one small fixture, command startup included, not cold/warm HTTP p95, reliable throughput or full-size SLA.
+5. **Still BLOCKED:** actual C5 **AES-GCM** archive and wrong-key decrypt recovery on the 8-org fixture, exact private 96-org dump capacity and secure private transfer, independently restored **off-host** backup, full browser workflow under 96 orgs, independent C8 route acceptances (#34), hosted P0 (#26), approvals to merge/release. No schema/index or Flyway V8 changes; no deployment, real SMS or C10.
+
+**STOP condition:** If the second container's offline initialization or socket auth fails, correct only the documented disposable setup. Never relax `--network none`, use a shared MySQL port, or reuse hosted credentials to make a CI check pass. A successful source-and-restore row match is an isolated proof, not author/reviewer sign-off or product adoption.
+
+## Executed CI receipt — C9 Stage 1B VERIFIED, 2026-11-24 PHT
+
+**Exact source SHA:** `e226b83433afda04d2f4aa426890795dff912407`. **Actual [GitHub Actions #45323657473](https://github.com/newonathe/OrgResource/actions/runs/45323657473): COMPLETED SUCCESS, all three jobs.** The same job also passed 91 Maven tests/66 ordered (0 failed/errored/skipped), the prior small and intermediate C8 synthetic additive and partial-restore safeguards, and independent original-data checks. Newman 48 requests/90 assertions plus 12 requests/20 assertions, zero failures; Playwright 19/19.
+
+**VERIFIED CI Stage 1B marker:** `C9_NETWORK_ISOLATED_CROSS_SERVER_RESTORE_OK` executed after the same-schema C9 Stage 1A proof. On ephemeral MySQL **8.0.46**, eight fictional orgs / 960 allocations / 3,013 synthetic events in the *source*:
+
+| Measured C5-shaped SQL and recovery metric | Actual value | Interpretation |
+| --- | ---: | --- |
+| Main SQL bytes | **1,031,944** | One synthetic intermediate fixture in one CI runner |
+| Transient-session DDL bytes | **2,357** | No live session data |
+| Combined raw SQL bytes | **1,034,301** | Less than existing **67,108,864-byte** C5 SQL cap; C5 AES-GCM archive was **not** created |
+| Backup command runner wall | **167 ms** | Measured mysqldump command-and-file assembly; excludes restorer initialization |
+| Restore command runner wall | **412 ms** | Measured MySQL client import through Docker exec; excludes restorer initialization and postflight |
+| Source vs separate server | **different server UUIDs** | Fresh MySQL process and data directory; no sharing with the original CI MySQL service |
+| Restorer network/ports | **none / zero** | Docker inspected; mysqld `--skip-networking`, UNIX socket only |
+| All-table data-only SQL equality | **true** | Byte-for-byte comparison across all 18 application tables; full independent JDBC postflight on this new networkless server **not run** |
+| Negative controls | **passed** | Tampered SQL digest refused, existing/nonempty target refused before repeated import, wrong-source-schema refused in harness |
+| Original source unchanged | **true** | Source all-table data-only SQL compared before and after, followed by existing original HMAC and exact-plan SELECT-only source postflight |
+
+**Important measured variation:** The Stage 1A earlier [run #45269236702](https://github.com/newonathe/OrgResource/actions/runs/45269236702) had 1,034,299 combined SQL bytes; current Stage 1A and Stage 1B inside the new [run #45323657473](https://github.com/newonathe/OrgResource/actions/runs/45323657473) both measured **1,034,301 bytes**. Two-byte variation was observed across regenerated synthetic fixtures; its cause was **not isolated** and must not be interpreted as measurable production growth. Matching the backup size **within one run** supports internal consistency.
+
+**VERDICT:** **VERIFIED CI — bounded networkless cross-server SQL restore**; **NOT RUN — actual encrypted C5 AES-GCM archive, private full 96-org backup fit, independent off-host restoration, server/JAR restart and authorization continuity on the new instance, full-size API/browser percentiles and reviewer signoff.** This CI-only restorer uses randomly generated ephemeral credentials and no open ports, and removes its container and private SQL temp directory on script exit. It does **not** justify lifting the 64 MiB cap, editing Flyway indexes or deploying to Northflank. Keep C8 independent review #34 and hosted P0 #26 OPEN.
+
+**Evidence discipline:** The successful run above applies to source/test commit `e226b83433afda04d2f4aa426890795dff912407`. A newer commit containing this report needs a separately checked exact-head CI before claiming that newer revision passed.
