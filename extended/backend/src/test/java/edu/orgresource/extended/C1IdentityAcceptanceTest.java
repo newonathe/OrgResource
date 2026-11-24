@@ -4793,6 +4793,7 @@ class C1IdentityAcceptanceTest {
         String audit = "SELECT COUNT(*) FROM audit_event WHERE org_id=?";
         var before = jdbc.queryForList(sql, home.orgDbId);
         long auditBefore = jdbc.queryForObject(audit, Long.class, home.orgDbId);
+        LocalDateTime storedExpiry = invitations.findByOrganizationIdAndPublicId(home.orgDbId, id).orElseThrow().expiresAt;
         assertEquals(428, post(owner, revoke, "").statusCode());
         assertEquals(400, post(owner, revoke, "", "W/\"v0\"").statusCode());
         assertEquals(412, post(owner, revoke, "", "\"v999\"").statusCode());
@@ -4806,7 +4807,14 @@ class C1IdentityAcceptanceTest {
         assertEquals("MEMBER", result.get("role").getAsString());
         assertEquals("REVOKED", result.get("status").getAsString());
         assertTrue(!result.has("bearerToken") || result.get("bearerToken").isJsonNull());
-        assertEquals(view.get("expiresAt"), result.get("expiresAt"));
+        // Creation returns the managed entity's nanosecond timestamp; MySQL
+        // DATETIME(6) stores microseconds. Compare persisted expiration exactly
+        // and bound the creation/storage discrepancy to sub-microsecond rounding.
+        LocalDateTime createdExpiry = LocalDateTime.parse(view.get("expiresAt").getAsString());
+        assertTrue(java.time.Duration.between(createdExpiry, storedExpiry).abs().toNanos() < 1000,
+                "Creation expiration differs from stored expiration by at least one microsecond.");
+        assertEquals(storedExpiry, LocalDateTime.parse(result.get("expiresAt").getAsString()));
+        assertEquals(storedExpiry, invitations.findByOrganizationIdAndPublicId(home.orgDbId, id).orElseThrow().expiresAt);
         assertEquals(view.get("version").getAsLong() + 1, result.get("version").getAsLong());
         String next = revoked.headers().firstValue("ETag").orElseThrow();
         assertEquals("\"v" + result.get("version").getAsLong() + "\"", next);
