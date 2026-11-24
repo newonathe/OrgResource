@@ -113,3 +113,9 @@ Actual prior exact CI receipts [{"sha":"e1067c8be387c38993b8d361b7c6059c70b7eeaa
 ## Public SQL projection / private mode hardening candidate
 
 PR53 d941d916c98b69bc19a36f762ad1b8e8e1e8e3ab real public restored original-only SQL projection assertion, full-mixed refusal, unchanged rows, Unicode LF parser regression, explicit private umask077. Source-only; new CI [[45469976846,"in_progress",null]]. Prior integrated dfcde24882a843524c42e951f6214d12443ac050 CI45469139504 latest metadata [[138711997131,"Java 8 and isolated MySQL tests","completed","success"],[138711997732,"Extended C Java 21, isolated MySQL, Newman and Playwright","in_progress",null],[138711997877,"React typecheck, tests, lint, and build","completed","success"]]. Actual logs required; private positive NOT_RUN. R09=false.
+
+## R06B3b executed integration and SQL projection receipt
+
+PR53 d941d916c98b69bc19a36f762ad1b8e8e1e8e3ab CI45469976846 job138714985375 and prior dfcde24882a843524c42e951f6214d12443ac050 CI45469139504 job138711997732: actual logs inspected, each 91 Maven/66 identity/19 Playwright, 0 Maven failures/errors/skips, all three jobs success. Both public control/static/refusal markers pass; latest actual MySQL SELECT-only original-only projection exact owner/resource and mixed refusal. Full private positive NOT_RUN; nonzero aggregate SQL and actual private browser/PIDFD cleanup not demonstrated. R06B3b IN_PROGRESS, R09=false. Complete targeted adversarial review of private browser selectors/API pagination and PIDFD/timeout failure cleanup against actual callers, plus nonzero MySQL aggregate projection proof if feasible without fabricating the approved cohort. Reconcile remote R06B scope versus L06 owner-local gate, finalize command/preconditions, then remaining R03/R07/R08; R09=false.
+
+See `docs/handoffs/claude-local-execution-2026-11-24/25_R06B3B_INTEGRATION_AND_PROJECTION_RECEIPTS.md`.

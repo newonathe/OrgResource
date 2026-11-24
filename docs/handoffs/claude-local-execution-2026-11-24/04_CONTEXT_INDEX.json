@@ -977,13 +977,16 @@
     "runs": [
       [
         45469976846,
-        "in_progress",
-        null
+        "completed",
+        "success"
       ]
     ],
     "report": "evidence/C9/R06B3B_PUBLIC_SQL_PROJECTION_AND_PRIVATE_MODE_HARDENING_2026-11-25.md",
-    "acceptance": "PUBLIC_SQL_PROJECTION_AND_PRIVATE_MODE_CI_PENDING",
-    "private_positive": "NOT_RUN"
+    "acceptance": "VERIFIED_BOUNDED_PUBLIC_ONLY",
+    "private_positive": "NOT_RUN",
+    "run": 45469976846,
+    "job": 138714985375,
+    "receipt_report": "docs/handoffs/claude-local-execution-2026-11-24/25_R06B3B_INTEGRATION_AND_PROJECTION_RECEIPTS.md"
   },
   "r04_standalone_candidate": {
     "base": "076c9a5e7c7a1e66b894362864d93b76409196bd",
@@ -1299,12 +1302,12 @@
     "runs": [
       [
         45469139504,
-        "in_progress",
-        null
+        "completed",
+        "success"
       ]
     ],
     "report": "evidence/C9/R06B3B_SAME_LIFETIME_RUNTIME_CANDIDATE_2026-11-25.md",
-    "acceptance": "SAME_LIFETIME_INTEGRATION_CI_PENDING",
+    "acceptance": "VERIFIED_BOUNDED_PUBLIC_ONLY",
     "private_positive": "NOT_RUN",
     "latest_jobs": [
       [
@@ -1325,7 +1328,9 @@
         "completed",
         "success"
       ]
-    ]
+    ],
+    "run": 45469139504,
+    "job": 138711997732
   },
   "r06b3b_public_regression": {
     "sha": "a6d3682a8fea6901efb89db9e7e62509a690b0e6",
@@ -1393,6 +1398,33 @@
       "public_control": "VERIFIED_BOUNDED",
       "private_positive": "NOT_RUN",
       "static_refusals": "VERIFIED_BOUNDED"
+    },
+    {
+      "sha": "dfcde24882a843524c42e951f6214d12443ac050",
+      "run": 45469139504,
+      "job": 138711997732,
+      "maven": 91,
+      "identity": 66,
+      "playwright": 19,
+      "failures": 0,
+      "all_jobs_success": true,
+      "public_control": "VERIFIED_BOUNDED",
+      "static_refusals": "VERIFIED_BOUNDED",
+      "private_positive": "NOT_RUN"
+    },
+    {
+      "sha": "d941d916c98b69bc19a36f762ad1b8e8e1e8e3ab",
+      "run": 45469976846,
+      "job": 138714985375,
+      "maven": 91,
+      "identity": 66,
+      "playwright": 19,
+      "failures": 0,
+      "all_jobs_success": true,
+      "public_control": "VERIFIED_BOUNDED",
+      "static_refusals": "VERIFIED_BOUNDED",
+      "public_sql_projection": "VERIFIED_BOUNDED",
+      "private_positive": "NOT_RUN"
     }
   ]
 }

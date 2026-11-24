@@ -423,7 +423,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "Same-lifetime integrated candidate pending actual CI. New d941d916c98b69bc19a36f762ad1b8e8e1e8e3ab real public SQL projection test, original-only mixed refusal, Unicode record parsing and explicit private umask; CI pending. Private positive NOT_RUN.",
+      "next": "PR53 d941d916c98b69bc19a36f762ad1b8e8e1e8e3ab CI45469976846 job138714985375 and prior dfcde24882a843524c42e951f6214d12443ac050 CI45469139504 job138711997732: actual logs inspected, each 91 Maven/66 identity/19 Playwright, 0 Maven failures/errors/skips, all three jobs success. Both public control/static/refusal markers pass; latest actual MySQL SELECT-only original-only projection exact owner/resource and mixed refusal. Full private positive NOT_RUN; nonzero aggregate SQL and actual private browser/PIDFD cleanup not demonstrated. R06B3b IN_PROGRESS, R09=false. Complete targeted adversarial review of private browser selectors/API pagination and PIDFD/timeout failure cleanup against actual callers, plus nonzero MySQL aggregate projection proof if feasible without fabricating the approved cohort. Reconcile remote R06B scope versus L06 owner-local gate, finalize command/preconditions, then remaining R03/R07/R08; R09=false.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -459,7 +459,7 @@
         }
       ],
       "authority": "Latest live PR47 supersedes snapshot; 12 graph, 14 queue, 15 events, 04 index and 10 external research.",
-      "next": "R09 false; finish remote engineering before local-only Claude."
+      "next": "Complete targeted adversarial review of private browser selectors/API pagination and PIDFD/timeout failure cleanup against actual callers, plus nonzero MySQL aggregate projection proof if feasible without fabricating the approved cohort. Reconcile remote R06B scope versus L06 owner-local gate, finalize command/preconditions, then remaining R03/R07/R08; R09=false."
     },
     {
       "id": "T17_UI_DESIGN_AND_USER_EXPERIENCE",
