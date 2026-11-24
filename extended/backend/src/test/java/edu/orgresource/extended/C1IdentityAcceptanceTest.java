@@ -346,21 +346,39 @@ class C1IdentityAcceptanceTest {
         HttpResponse<String> csrf = get(anonymous, "/api/v2/auth/csrf");
         assertEquals(200, csrf.statusCode());
         assertTrue(csrf.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
+        assertEquals(Set.of("data", "requestId"), json(csrf).keySet());
+        assertEquals(Set.of("csrfToken"), json(csrf).getAsJsonObject("data").keySet());
         String oldToken = json(csrf).getAsJsonObject("data").get("csrfToken").getAsString();
+        assertFalse(oldToken.isBlank());
         String preLoginId = cookie(anonymous);
         assertNotNull(preLoginId);
         assertTrue(csrf.headers().firstValue("Set-Cookie").orElse("").contains("HttpOnly"));
         assertFalse(csrf.headers().firstValue("Set-Cookie").orElse("").toLowerCase().contains("secure"));
+        HttpClient otherAnonymous = newClient();
+        String otherToken = json(get(otherAnonymous, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();
+        assertTrue(!oldToken.equals(otherToken), "Two distinct sessions must not share CSRF tokens.");
+        assertTrue(!preLoginId.equals(cookie(otherAnonymous)), "Anonymous sessions must be distinct.");
+        var before = identityAuthRows(owner);
+        var scopedBefore = governanceDenialRows(owner.orgDbId, owner.orgDbId);
+        assertEquals(403, post(anonymous, "/api/v2/auth/login", loginJson(owner), otherToken, origin()).statusCode());
+        assertTrue(before.equals(identityAuthRows(owner)), "Foreign token altered identity facts.");
+        assertEquals(401, get(anonymous, "/api/v2/session").statusCode());
         assertEquals(403, post(anonymous, "/api/v2/auth/login", loginJson(owner), null, origin()).statusCode());
         assertEquals(403, post(anonymous, "/api/v2/auth/login", loginJson(owner), oldToken, "https://attacker.invalid").statusCode());
 
+        assertTrue(before.equals(identityAuthRows(owner)), "Pre-auth CSRF refusals altered identity facts.");
+        assertTrue(scopedBefore.equals(governanceDenialRows(owner.orgDbId, owner.orgDbId)));
         Session session = login(anonymous, owner.username, owner.password, oldToken, preLoginId);
+        assertNull(springSessions.findById(preLoginId));
+        assertEquals(401, get(otherAnonymous, "/api/v2/session").statusCode());
         assertNotEquals(preLoginId, session.sessionId);
         assertNotEquals(oldToken, session.csrf);
         HttpResponse<String> oldCsrf = post(session.client, "/api/departments", GSON.toJson(new NameRequest("old csrf")), oldToken, origin());
         assertEquals(403, oldCsrf.statusCode());
         assertEquals(403, post(session.client, "/api/departments", GSON.toJson(new NameRequest("missing csrf")), null, origin()).statusCode());
         assertEquals(403, post(session.client, "/api/departments", GSON.toJson(new NameRequest("wrong origin")), session.csrf, "http://evil.invalid").statusCode());
+        assertEquals(403, post(session.client, "/api/departments", GSON.toJson(new NameRequest("foreign csrf")), otherToken, origin()).statusCode());
+        assertTrue(scopedBefore.equals(governanceDenialRows(owner.orgDbId, owner.orgDbId)));
         HttpResponse<String> logout = post(session, "/api/v2/auth/logout", "");
         assertEquals(204, logout.statusCode(), logout.body());
         assertEquals(401, get(session.client, "/api/v2/session").statusCode());
@@ -376,9 +394,26 @@ class C1IdentityAcceptanceTest {
         Fixture user = fixtureInOrg(one.orgDbId, Membership.Role.CUSTODIAN);
         addMembership(two.orgDbId, user.userDbId, Membership.Role.MEMBER);
         Session session = login(user.username, user.password);
+        var beforeIdentityRead = governanceDenialRows(one.orgDbId, two.orgDbId);
         JsonObject orgs = json(get(session.client, "/api/v2/orgs")).getAsJsonObject();
         assertEquals(2, orgs.getAsJsonArray("data").size());
-        assertEquals(200, post(session, "/api/v2/session/active-org", GSON.toJson(new OrgRequest(one.orgPublicId))).statusCode());
+        var rolesByOrg = new java.util.HashMap<String, String>();
+        for (var element : orgs.getAsJsonArray("data")) {
+            JsonObject row = element.getAsJsonObject();
+            assertEquals(Set.of("id", "slug", "displayName", "role"), row.keySet());
+            assertNull(rolesByOrg.put(row.get("id").getAsString(), row.get("role").getAsString()));
+        }
+        assertEquals(java.util.Map.of(one.orgPublicId.toString(), "CUSTODIAN", two.orgPublicId.toString(), "MEMBER"), rolesByOrg);
+        HttpResponse<String> accountResponse = get(session.client, "/api/v2/account");
+        assertEquals(200, accountResponse.statusCode());
+        JsonObject accountView = json(accountResponse).getAsJsonObject("data");
+        assertEquals(Set.of("id", "username", "displayName", "status"), accountView.keySet());
+        assertEquals(accounts.findById(user.userDbId).orElseThrow().publicId.toString(), accountView.get("id").getAsString());
+        assertEquals("ACTIVE", accountView.get("status").getAsString());
+        assertEquals(401, get(newClient(), "/api/v2/account").statusCode());
+        assertTrue(beforeIdentityRead.equals(governanceDenialRows(one.orgDbId, two.orgDbId)));
+        assertGovernanceRefusal(200, one.orgDbId, two.orgDbId,
+                () -> post(session, "/api/v2/session/active-org", GSON.toJson(new OrgRequest(one.orgPublicId))));
         refreshCsrf(session);
         HttpRequest request = HttpRequest.newBuilder(URI.create(base() + "/api/resources"))
                 .header("Origin", origin()).header("X-CSRF-TOKEN", session.csrf)
@@ -391,6 +426,10 @@ class C1IdentityAcceptanceTest {
         assertEquals(0, jdbc.queryForObject("SELECT COUNT(*) FROM resource WHERE organization_id=? AND name='ID06 resource'", Integer.class, two.orgDbId));
 
         Session owner = login(one.username, one.password);
+        String ownerCookie = cookie(owner.client);
+        assertGovernanceRefusal(404, one.orgDbId, two.orgDbId,
+                () -> post(owner, "/api/v2/session/active-org", GSON.toJson(new OrgRequest(two.orgPublicId))));
+        assertEquals(ownerCookie, cookie(owner.client));
         HttpResponse<String> changed = post(owner, "/api/v2/orgs/" + one.orgPublicId + "/members/" + user.membershipPublicId + "/role",
                 GSON.toJson(new RoleRequest("MEMBER")), "\"v0\"");
         assertEquals(200, changed.statusCode(), changed.body());
@@ -401,7 +440,55 @@ class C1IdentityAcceptanceTest {
         JsonObject liveSession = json(get(session.client, "/api/v2/session")).getAsJsonObject("data");
         assertTrue(liveSession.getAsJsonArray("memberships").asList().stream()
                 .noneMatch(row -> row.getAsJsonObject().get("organizationId").getAsString().equals(one.orgPublicId.toString())));
-        assertEquals(404, post(session, "/api/v2/session/active-org", GSON.toJson(new OrgRequest(UUID.randomUUID()))).statusCode());
+        assertEquals(Set.of("accountId", "displayName", "activeOrgId", "memberships"), liveSession.keySet());
+        assertTrue(liveSession.get("activeOrgId").isJsonNull());
+        assertEquals(accountView.get("id"), liveSession.get("accountId"));
+        assertEquals(1, liveSession.getAsJsonArray("memberships").size());
+        JsonObject remaining = liveSession.getAsJsonArray("memberships").get(0).getAsJsonObject();
+        assertEquals(Set.of("id", "organizationId", "username", "displayName", "role", "status", "version"), remaining.keySet());
+        assertEquals(two.orgPublicId.toString(), remaining.get("organizationId").getAsString());
+        assertEquals("MEMBER", remaining.get("role").getAsString());
+        assertEquals("ACTIVE", remaining.get("status").getAsString());
+        String currentCookie = cookie(session.client);
+        assertGovernanceRefusal(404, one.orgDbId, two.orgDbId,
+                () -> post(session, "/api/v2/session/active-org", GSON.toJson(new OrgRequest(one.orgPublicId))));
+        assertGovernanceRefusal(404, one.orgDbId, two.orgDbId,
+                () -> post(session, "/api/v2/session/active-org", GSON.toJson(new OrgRequest(UUID.randomUUID()))));
+        assertEquals(currentCookie, cookie(session.client));
+        Session existingSelected = login(two.username, two.password);
+        long frozenResourceId = json(post(existingSelected, "/api/resources",
+                GSON.toJson(new ResourceRequest("Fictional existing selected frozen resource", "REUSABLE", 2))))
+                .get("id").getAsLong();
+        String frozenCookie = cookie(existingSelected.client);
+        var activeResources = workspacePage(existingSelected, "/api/v2/workspace/resources");
+        assertEquals(1, activeResources.getAsJsonArray("items").size());
+        assertEquals(frozenResourceId, activeResources.getAsJsonArray("items").get(0).getAsJsonObject().get("id").getAsLong());
+        assertEquals(1, jdbc.update("UPDATE organization SET status='FROZEN' WHERE id=? AND status='ACTIVE'", two.orgDbId));
+        try {
+            var hidden = json(assertGovernanceRefusal(200, one.orgDbId, two.orgDbId,
+                    () -> get(session.client, "/api/v2/orgs"))).getAsJsonArray("data");
+            assertTrue(hidden.isEmpty(), "Frozen organization is absent from the selection list");
+            var view = json(assertGovernanceRefusal(200, one.orgDbId, two.orgDbId,
+                    () -> get(session.client, "/api/v2/session"))).getAsJsonObject("data");
+            assertEquals(remaining, view.getAsJsonArray("memberships").get(0),
+                    "Active membership in a frozen organization remains visible in the session view");
+            assertGovernanceRefusal(404, one.orgDbId, two.orgDbId,
+                    () -> post(session, "/api/v2/session/active-org", GSON.toJson(new OrgRequest(two.orgPublicId))));
+            assertEquals(currentCookie, cookie(session.client));
+            var frozenSelected = json(assertGovernanceRefusal(200, one.orgDbId, two.orgDbId,
+                    () -> get(existingSelected.client, "/api/v2/session"))).getAsJsonObject("data");
+            assertEquals(two.orgPublicId.toString(), frozenSelected.get("activeOrgId").getAsString());
+            var frozenReadsBefore = governanceDenialRows(one.orgDbId, two.orgDbId);
+            assertEquals(activeResources, workspacePage(existingSelected, "/api/v2/workspace/resources"));
+            assertTrue(frozenReadsBefore.equals(governanceDenialRows(one.orgDbId, two.orgDbId)));
+            var frozenDenied = assertGovernanceRefusal(409, one.orgDbId, two.orgDbId,
+                    () -> post(existingSelected, "/api/resources",
+                            GSON.toJson(new ResourceRequest("Fictional frozen write forbidden", "REUSABLE", 1))));
+            assertEquals("ORG_FROZEN", json(frozenDenied).get("code").getAsString());
+            assertEquals(frozenCookie, cookie(existingSelected.client));
+        } finally {
+            assertEquals(1, jdbc.update("UPDATE organization SET status='ACTIVE' WHERE id=? AND status='FROZEN'", two.orgDbId));
+        }
     }
 
     @Test @Order(7)
@@ -415,12 +502,20 @@ class C1IdentityAcceptanceTest {
 
         HttpClient client = newClient();
         String token = json(get(client, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();
+        var before = identityAuthRows(user);
+        String preAuthId = cookie(client);
         HttpResponse<String> wrongPassword = post(client, "/api/v2/auth/login", "{\"username\":\"" + user.username + "\",\"password\":\"bad\"}", token, origin());
         HttpResponse<String> wrongUser = post(newClientWithCsrf(client, token), "/api/v2/auth/login",
                 "{\"username\":\"missing-" + UUID.randomUUID() + "\",\"password\":\"bad\"}", token, origin());
         assertEquals(401, wrongPassword.statusCode()); assertEquals(401, wrongUser.statusCode());
         assertEquals(json(wrongPassword).get("code"), json(wrongUser).get("code"));
         assertEquals(json(wrongPassword).get("message"), json(wrongUser).get("message"));
+        assertEquals(Set.of("code", "message", "requestId"), json(wrongPassword).keySet());
+        assertEquals(Set.of("code", "message", "requestId"), json(wrongUser).keySet());
+        assertTrue(wrongPassword.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
+        assertTrue(before.equals(identityAuthRows(user)), "Invalid login changed identity facts.");
+        assertTrue(preAuthId.equals(cookie(client)), "Invalid login unexpectedly rotated the session.");
+        assertEquals(401, get(client, "/api/v2/session").statusCode());
 
         HttpClient throttled = newClient();
         String throttleToken = json(get(throttled, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();
@@ -444,16 +539,38 @@ class C1IdentityAcceptanceTest {
         long credentialVersionBefore = accounts.findById(user.userDbId).orElseThrow().credentialVersion;
         HttpClient recovery = newClient();
         String csrf = json(get(recovery, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();
+        var beforeRecovery = identityAuthRows(user);
+        String invalidInput = GSON.toJson(new RecoverRequest(user.username, "fictional-invalid-code", newPassword));
+        assertEquals(403, post(recovery, "/api/v2/auth/recover", invalidInput, null, origin()).statusCode());
+        assertTrue(beforeRecovery.equals(identityAuthRows(user)), "Missing CSRF recovery changed identity facts.");
+        var invalidCode = post(recovery, "/api/v2/auth/recover", invalidInput, csrf, origin());
+        var unknownUser = post(recovery, "/api/v2/auth/recover",
+                GSON.toJson(new RecoverRequest("missing-" + UUID.randomUUID(), rawCode, newPassword)), csrf, origin());
+        assertEquals(200, invalidCode.statusCode());
+        assertEquals(200, unknownUser.statusCode());
+        assertEquals(json(invalidCode).get("data"), json(unknownUser).get("data"));
+        assertTrue(beforeRecovery.equals(identityAuthRows(user)), "Invalid or unknown-account recovery altered identity facts.");
+        assertEquals(200, get(oldSession.client, "/api/v2/session").statusCode());
         HttpResponse<String> recovered = post(recovery, "/api/v2/auth/recover", GSON.toJson(new RecoverRequest(user.username, rawCode, newPassword)), csrf, origin());
         assertEquals(200, recovered.statusCode());
         assertEquals(credentialVersionBefore + 1, accounts.findById(user.userDbId).orElseThrow().credentialVersion);
+        assertEquals(Set.of("data", "requestId"), json(recovered).keySet());
+        assertEquals(Set.of("message"), json(recovered).getAsJsonObject("data").keySet());
+        assertEquals(json(invalidCode).get("data"), json(recovered).get("data"));
+        assertTrue(recovered.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM audit_event WHERE actor_user_id=? AND action='ACCOUNT_RECOVERED'",
+                Integer.class, user.userDbId));
         assertTrue(json(recovered).getAsJsonObject("data").get("message").getAsString().startsWith("If the account"));
         assertEquals(401, get(oldSession.client, "/api/v2/session").statusCode());
         var codeRow = tx.execute(status -> recoveryCodes.lockByUserAndHash(user.userDbId, C1Secrets.sha256(rawCode)).orElseThrow());
         assertNotNull(codeRow.usedAt);
         HttpClient replay = newClient();
         String replayCsrf = json(get(replay, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();
-        assertEquals(200, post(replay, "/api/v2/auth/recover", GSON.toJson(new RecoverRequest(user.username, rawCode, "Another-C1-Password-" + UUID.randomUUID())), replayCsrf, origin()).statusCode());
+        var afterRecovery = identityAuthRows(user);
+        var replayResult = post(replay, "/api/v2/auth/recover", GSON.toJson(new RecoverRequest(user.username, rawCode, "Another-C1-Password-" + UUID.randomUUID())), replayCsrf, origin());
+        assertEquals(200, replayResult.statusCode());
+        assertEquals(json(recovered).get("data"), json(replayResult).get("data"));
+        assertTrue(afterRecovery.equals(identityAuthRows(user)), "Used recovery code replay changed identity facts.");
         assertTrue(passwordEncoder.matches(newPassword, credentials.findByUserId(user.userDbId).orElseThrow().passwordHash));
         Session current = login(user.username, newPassword);
         Session peerSession = login(user.username, newPassword);
@@ -508,6 +625,16 @@ class C1IdentityAcceptanceTest {
         assertTrue(passwordEncoder.matches(passwordA, racedHash) ^ passwordEncoder.matches(passwordB, racedHash));
         assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM account_recovery_code WHERE user_id=? AND used_at IS NOT NULL",
                 Integer.class, raced.userDbId));
+    }
+
+    private List<List<java.util.Map<String, Object>>> identityAuthRows(Fixture fixture) {
+        // Compare without printing credential hashes or recovery digests.
+        return List.of(
+                jdbc.queryForList("SELECT id,HEX(public_id),username_key,display_name,status,credential_version,version,created_at,updated_at FROM user_account WHERE id=?", fixture.userDbId),
+                jdbc.queryForList("SELECT user_id,password_hash,changed_at FROM local_credential WHERE user_id=?", fixture.userDbId),
+                jdbc.queryForList("SELECT id,user_id,HEX(code_hash),HEX(batch_id),created_at,expires_at,used_at,revoked_at FROM account_recovery_code WHERE user_id=? ORDER BY id", fixture.userDbId),
+                jdbc.queryForList("SELECT id,org_id,actor_user_id,action,target_type,target_id,outcome,request_id,created_at FROM audit_event WHERE actor_user_id=? ORDER BY id", fixture.userDbId),
+                jdbc.queryForList("SELECT PRIMARY_ID,SESSION_ID,PRINCIPAL_NAME FROM SPRING_SESSION WHERE PRINCIPAL_NAME=? ORDER BY PRIMARY_ID", fixture.username));
     }
 
     @Test @Order(9)
@@ -1416,6 +1543,7 @@ class C1IdentityAcceptanceTest {
         String migrationUser = System.getenv("EXT_DB_MIGRATION_USER");
         String migrationPassword = System.getenv("EXT_DB_MIGRATION_PASSWORD");
         assertTrue(trigger.matches("c2_fail_movement_[a-f0-9]{32}"));
+        var before = legacyDenialRows(owner.orgDbId, owner.orgDbId);
         boolean created = false;
         try (Connection migration = DriverManager.getConnection(migrationUrl, migrationUser, migrationPassword);
              var statement = migration.createStatement()) {
@@ -1425,6 +1553,8 @@ class C1IdentityAcceptanceTest {
             HttpResponse<String> failed = modernPost(session, path + "/receive", body,
                     initial.headers().firstValue("ETag").orElseThrow(), key);
             assertEquals(500, failed.statusCode(), failed.body());
+            assertTrue(before.equals(legacyDenialRows(owner.orgDbId, owner.orgDbId)),
+                    "Forced movement failure must roll back all scoped domain, audit and receipt rows.");
             assertEquals(5, resourceRepository.findByIdAndOrganizationId(resourceId, owner.orgDbId).orElseThrow().totalQuantity);
             assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=? AND resource_id=?",
                     Integer.class, owner.orgDbId, resourceId));
@@ -1434,6 +1564,21 @@ class C1IdentityAcceptanceTest {
             if (created) try (Connection migration = DriverManager.getConnection(migrationUrl, migrationUser, migrationPassword);
                     var statement = migration.createStatement()) { statement.execute("DROP TRIGGER IF EXISTS `" + trigger + "`"); }
         }
+        // Retry the same operation/key/precondition after the injected failure is removed.
+        HttpResponse<String> retried = modernPost(session, path + "/receive", body,
+                initial.headers().firstValue("ETag").orElseThrow(), key);
+        assertEquals(201, retried.statusCode());
+        assertEquals(7, json(retried).getAsJsonObject("data").get("totalQuantity").getAsInt());
+        assertEquals(7L, jdbc.queryForObject("SELECT SUM(delta_total) FROM stock_movement WHERE organization_id=? AND resource_id=?",
+                Long.class, owner.orgDbId, resourceId));
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=? AND operation_public_id=UUID_TO_BIN(?,0) AND kind='RECEIPT'",
+                Integer.class, owner.orgDbId, operationId.toString()));
+        var committed = legacyDenialRows(owner.orgDbId, owner.orgDbId);
+        HttpResponse<String> replay = modernPost(session, path + "/receive", body,
+                initial.headers().firstValue("ETag").orElseThrow(), key);
+        assertEquals(201, replay.statusCode());
+        assertTrue(committed.equals(legacyDenialRows(owner.orgDbId, owner.orgDbId)),
+                "Successful receive replay must not change scoped rows.");
     }
 
     @Test @Order(25)
@@ -1708,9 +1853,10 @@ class C1IdentityAcceptanceTest {
         Session session = login(owner.username, owner.password);
         long departmentId = json(post(session, "/api/departments", GSON.toJson(new NameRequest("C3 Parity Department")))).get("id").getAsLong();
         long duplicateDepartmentId = json(post(session, "/api/departments", GSON.toJson(new NameRequest("C3 Parity Other Department")))).get("id").getAsLong();
-        HttpResponse<String> departmentRename = post(session, "/api/departments/" + duplicateDepartmentId + "/update",
-                GSON.toJson(new NameRequest("C3 Parity Department")));
-        assertEquals(409, departmentRename.statusCode(), departmentRename.body());
+        HttpResponse<String> departmentRename = assertScopedRefusal(409, owner.orgDbId, owner.orgDbId,
+                () -> post(session, "/api/departments/" + duplicateDepartmentId + "/update",
+                        GSON.toJson(new NameRequest("C3 Parity Department"))));
+        assertEquals("DUPLICATE_NAME", json(departmentRename).get("code").getAsString());
         assertEquals(200, post(session, "/api/departments/" + duplicateDepartmentId + "/update",
                 GSON.toJson(new NameRequest("C3 Parity Renamed"))).statusCode());
 
@@ -1747,8 +1893,12 @@ class C1IdentityAcceptanceTest {
                 GSON.toJson(new ProjectUpdateRequest("C3 Parity Renamed Project", now.plusDays(2).toString(), now.plusDays(4).toString())));
         assertEquals(200, projectRenamed.statusCode(), projectRenamed.body());
         assertEquals(departmentId, json(projectRenamed).get("departmentId").getAsLong());
-        HttpResponse<String> projectBlocked = post(session, "/api/projects/" + projectId + "/delete", null);
-        assertEquals(409, projectBlocked.statusCode(), projectBlocked.body());
+        HttpResponse<String> departmentBlocked = assertScopedRefusal(409, owner.orgDbId, otherOwner.orgDbId,
+                () -> post(session, "/api/departments/" + departmentId + "/delete", null));
+        assertEquals("DEPENDENCY_EXISTS", json(departmentBlocked).get("code").getAsString());
+        HttpResponse<String> projectBlocked = assertScopedRefusal(409, owner.orgDbId, otherOwner.orgDbId,
+                () -> post(session, "/api/projects/" + projectId + "/delete", null));
+        assertEquals("DEPENDENCY_EXISTS", json(projectBlocked).get("code").getAsString());
 
         HttpResponse<String> updatedResource = post(session, "/api/resources/" + reusableId + "/update",
                 GSON.toJson(new ResourceUpdateRequest("C3 Parity Reusable Updated", 12, 10)));
@@ -1758,15 +1908,21 @@ class C1IdentityAcceptanceTest {
         HttpResponse<String> availability = get(session.client, "/api/resources/" + reusableId + "/availability");
         assertEquals(200, availability.statusCode(), availability.body());
         assertEquals(12, json(availability).get("availableQuantity").getAsInt());
-        assertEquals(409, post(session, "/api/resources/" + reusableId + "/update",
-                GSON.toJson(new ResourceUpdateRequest("C3 Parity Stale", 11, 10))).statusCode());
-        assertEquals(409, post(session, "/api/resources/" + reusableId + "/delete", null).statusCode());
+        assertScopedRefusal(409, owner.orgDbId, otherOwner.orgDbId,
+                () -> post(session, "/api/resources/" + reusableId + "/update",
+                        GSON.toJson(new ResourceUpdateRequest("C3 Parity Stale", 11, 10))));
+        assertScopedRefusal(409, owner.orgDbId, otherOwner.orgDbId,
+                () -> post(session, "/api/resources/" + reusableId + "/delete", null));
 
         assertEquals(200, post(session, "/api/requirements/" + requirementId + "/update",
                 GSON.toJson(new RequirementUpdateRequest(25))).statusCode());
-        assertEquals(409, post(session, "/api/requirements/" + requirementId + "/update",
-                GSON.toJson(new RequirementUpdateRequest(7))).statusCode());
-        assertEquals(409, post(session, "/api/requirements/" + requirementId + "/delete", null).statusCode());
+        HttpResponse<String> belowCommitments = assertScopedRefusal(409, owner.orgDbId, otherOwner.orgDbId,
+                () -> post(session, "/api/requirements/" + requirementId + "/update",
+                        GSON.toJson(new RequirementUpdateRequest(7))));
+        assertEquals("QUANTITY_BELOW_COMMITMENTS", json(belowCommitments).get("code").getAsString());
+        HttpResponse<String> requirementBlocked = assertScopedRefusal(409, owner.orgDbId, otherOwner.orgDbId,
+                () -> post(session, "/api/requirements/" + requirementId + "/delete", null));
+        assertEquals("DEPENDENCY_EXISTS", json(requirementBlocked).get("code").getAsString());
         assertEquals(200, post(session, "/api/allocations/" + allocationId + "/delete", null).statusCode());
         assertEquals(200, post(session, "/api/requirements/" + requirementId + "/delete", null).statusCode());
         assertEquals(200, post(session, "/api/projects/" + projectId + "/delete", null).statusCode());
@@ -2022,68 +2178,106 @@ class C1IdentityAcceptanceTest {
         assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM resource WHERE id=? AND organization_id=?",
                 Integer.class, createdResourceB, tenantB.orgDbId), "R01 creation must persist only in the active tenant.");
 
+        var readBefore = legacyDenialRows(tenantA.orgDbId, tenantB.orgDbId);
         assertLegacyListOmits(get(ownerB.client, "/api/departments"), departmentA);
         assertLegacyListOmits(get(ownerB.client, "/api/projects"), projectA);
         assertLegacyListOmits(get(ownerB.client, "/api/resources?type=REUSABLE"), resourceA);
         assertLegacyListOmits(get(ownerB.client, "/api/requirements"), requirementA);
         assertLegacyListOmits(get(ownerB.client, "/api/allocations"), allocationA);
 
+        // Existing foreign IDs passed as filters must refuse, not return a misleading empty success.
+        assertEquals(404, get(ownerB.client, "/api/projects?departmentId=" + departmentA).statusCode());
+        assertEquals(404, get(ownerB.client, "/api/requirements?projectId=" + projectA).statusCode());
+        assertEquals(404, get(ownerB.client, "/api/allocations?requirementId=" + requirementA).statusCode());
+        assertTrue(readBefore.equals(legacyDenialRows(tenantA.orgDbId, tenantB.orgDbId)), "Legacy reads altered scoped domain rows.");
+
         List<String> foreignNames = List.of("D03", "D04", "P01", "P03", "P04", "R03", "R04", "R05",
                 "Q01", "Q03", "Q04", "A01", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "IMAGE-01", "IMAGE-02");
-        List<HttpResponse<String>> foreignResponses = List.of(
-                post(ownerB, "/api/departments/" + departmentA + "/update", GSON.toJson(new NameRequest("cross tenant"))),
-                post(ownerB, "/api/departments/" + departmentA + "/delete", null),
-                post(ownerB, "/api/projects", GSON.toJson(new ProjectRequest(departmentA, "C3 Foreign Project", start.toString(), start.plusDays(2).toString()))),
-                post(ownerB, "/api/projects/" + projectA + "/update", GSON.toJson(new ProjectUpdateRequest("C3 Foreign Rename", start.toString(), start.plusDays(2).toString()))),
-                post(ownerB, "/api/projects/" + projectA + "/delete", null),
-                post(ownerB, "/api/resources/" + resourceA + "/update", GSON.toJson(new ResourceUpdateRequest("C3 Foreign Rename", 11, 10))),
-                post(ownerB, "/api/resources/" + resourceA + "/delete", null),
-                get(ownerB.client, "/api/resources/" + resourceA + "/availability"),
-                post(ownerB, "/api/requirements", GSON.toJson(new RequirementRequest(projectA, resourceA, 1))),
-                post(ownerB, "/api/requirements/" + requirementA + "/update", GSON.toJson(new RequirementUpdateRequest(2))),
-                post(ownerB, "/api/requirements/" + requirementA + "/delete", null),
-                post(ownerB, "/api/allocations", GSON.toJson(new AllocationRequest(requirementA, 1, "C3 Foreign Borrower", null, false))),
-                post(ownerB, "/api/allocations/" + allocationA + "/approve", null),
-                post(ownerB, "/api/allocations/" + allocationA + "/issue", null),
-                post(ownerB, "/api/allocations/" + allocationA + "/return", null),
-                post(ownerB, "/api/allocations/" + allocationA + "/consume", null),
-                post(ownerB, "/api/allocations/" + allocationA + "/cancel", null),
-                post(ownerB, "/api/allocations/" + allocationA + "/delete", null),
-                post(ownerB, "/api/allocations/" + allocationA + "/revoke-sms-consent", null),
-                multipartPost(ownerB, "/api/resources/" + resourceA + "/image", "image/png", tinyPng()),
-                get(ownerB.client, "/api/resources/" + resourceA + "/image"));
-        for (int i = 0; i < foreignResponses.size(); i++)
-            assertEquals(404, foreignResponses.get(i).statusCode(), foreignNames.get(i) + " must conceal a foreign tenant record: " + foreignResponses.get(i).body());
+        List<java.util.concurrent.Callable<HttpResponse<String>>> foreignResponses = List.of(
+                () -> post(ownerB, "/api/departments/" + departmentA + "/update", GSON.toJson(new NameRequest("cross tenant"))),
+                () -> post(ownerB, "/api/departments/" + departmentA + "/delete", null),
+                () -> post(ownerB, "/api/projects", GSON.toJson(new ProjectRequest(departmentA, "C3 Foreign Project", start.toString(), start.plusDays(2).toString()))),
+                () -> post(ownerB, "/api/projects/" + projectA + "/update", GSON.toJson(new ProjectUpdateRequest("C3 Foreign Rename", start.toString(), start.plusDays(2).toString()))),
+                () -> post(ownerB, "/api/projects/" + projectA + "/delete", null),
+                () -> post(ownerB, "/api/resources/" + resourceA + "/update", GSON.toJson(new ResourceUpdateRequest("C3 Foreign Rename", 11, 10))),
+                () -> post(ownerB, "/api/resources/" + resourceA + "/delete", null),
+                () -> get(ownerB.client, "/api/resources/" + resourceA + "/availability"),
+                () -> post(ownerB, "/api/requirements", GSON.toJson(new RequirementRequest(projectA, resourceA, 1))),
+                () -> post(ownerB, "/api/requirements/" + requirementA + "/update", GSON.toJson(new RequirementUpdateRequest(2))),
+                () -> post(ownerB, "/api/requirements/" + requirementA + "/delete", null),
+                () -> post(ownerB, "/api/allocations", GSON.toJson(new AllocationRequest(requirementA, 1, "C3 Foreign Borrower", null, false))),
+                () -> post(ownerB, "/api/allocations/" + allocationA + "/approve", null),
+                () -> post(ownerB, "/api/allocations/" + allocationA + "/issue", null),
+                () -> post(ownerB, "/api/allocations/" + allocationA + "/return", null),
+                () -> post(ownerB, "/api/allocations/" + allocationA + "/consume", null),
+                () -> post(ownerB, "/api/allocations/" + allocationA + "/cancel", null),
+                () -> post(ownerB, "/api/allocations/" + allocationA + "/delete", null),
+                () -> post(ownerB, "/api/allocations/" + allocationA + "/revoke-sms-consent", null),
+                () -> multipartPost(ownerB, "/api/resources/" + resourceA + "/image", "image/png", tinyPng()),
+                () -> get(ownerB.client, "/api/resources/" + resourceA + "/image"));
+        assertEquals(foreignNames.size(), foreignResponses.size());
+        for (int i = 0; i < foreignResponses.size(); i++) {
+            var before = legacyDenialRows(tenantA.orgDbId, tenantB.orgDbId);
+            HttpResponse<String> response = foreignResponses.get(i).call();
+            assertEquals(404, response.statusCode(), foreignNames.get(i) + " foreign-record concealment");
+            assertTrue(before.equals(legacyDenialRows(tenantA.orgDbId, tenantB.orgDbId)),
+                    foreignNames.get(i) + " changed scoped domain rows after refusal.");
+        }
 
         Fixture memberFixture = fixtureInOrg(tenantB.orgDbId, Membership.Role.MEMBER);
         Session member = login(memberFixture.username, memberFixture.password);
         List<String> deniedNames = List.of("D01", "D03", "D04", "P01", "P03", "P04", "R01", "R03", "R04", "IMAGE-01",
                 "Q01", "Q03", "Q04", "A01", "A03", "A04", "A05", "A06", "A07", "A08", "A09");
-        List<HttpResponse<String>> deniedResponses = List.of(
-                post(member, "/api/departments", GSON.toJson(new NameRequest("C3 Member Denied Department"))),
-                post(member, "/api/departments/" + departmentB + "/update", GSON.toJson(new NameRequest("C3 Member Rename"))),
-                post(member, "/api/departments/" + departmentB + "/delete", null),
-                post(member, "/api/projects", GSON.toJson(new ProjectRequest(departmentB, "C3 Member Denied Project", start.toString(), start.plusDays(2).toString()))),
-                post(member, "/api/projects/" + projectB + "/update", GSON.toJson(new ProjectUpdateRequest("C3 Member Rename", start.toString(), start.plusDays(2).toString()))),
-                post(member, "/api/projects/" + projectB + "/delete", null),
-                post(member, "/api/resources", GSON.toJson(new ResourceRequest("C3 Member Denied Resource", "CONSUMABLE", 0))),
-                post(member, "/api/resources/" + resourceB + "/update", GSON.toJson(new ResourceUpdateRequest("C3 Member Rename", 11, 10))),
-                post(member, "/api/resources/" + resourceB + "/delete", null),
-                multipartPost(member, "/api/resources/" + resourceB + "/image", "image/png", tinyPng()),
-                post(member, "/api/requirements", GSON.toJson(new RequirementRequest(projectB, resourceB, 1))),
-                post(member, "/api/requirements/" + requirementB + "/update", GSON.toJson(new RequirementUpdateRequest(2))),
-                post(member, "/api/requirements/" + requirementB + "/delete", null),
-                post(member, "/api/allocations", GSON.toJson(new AllocationRequest(requirementB, 1, "C3 Member Denied", null, false))),
-                post(member, "/api/allocations/" + allocationB + "/approve", null),
-                post(member, "/api/allocations/" + allocationB + "/issue", null),
-                post(member, "/api/allocations/" + allocationB + "/return", null),
-                post(member, "/api/allocations/" + allocationB + "/consume", null),
-                post(member, "/api/allocations/" + allocationB + "/cancel", null),
-                post(member, "/api/allocations/" + allocationB + "/delete", null),
-                post(member, "/api/allocations/" + allocationB + "/revoke-sms-consent", null));
+        List<java.util.concurrent.Callable<HttpResponse<String>>> deniedResponses = List.of(
+                () -> post(member, "/api/departments", GSON.toJson(new NameRequest("C3 Member Denied Department"))),
+                () -> post(member, "/api/departments/" + departmentB + "/update", GSON.toJson(new NameRequest("C3 Member Rename"))),
+                () -> post(member, "/api/departments/" + departmentB + "/delete", null),
+                () -> post(member, "/api/projects", GSON.toJson(new ProjectRequest(departmentB, "C3 Member Denied Project", start.toString(), start.plusDays(2).toString()))),
+                () -> post(member, "/api/projects/" + projectB + "/update", GSON.toJson(new ProjectUpdateRequest("C3 Member Rename", start.toString(), start.plusDays(2).toString()))),
+                () -> post(member, "/api/projects/" + projectB + "/delete", null),
+                () -> post(member, "/api/resources", GSON.toJson(new ResourceRequest("C3 Member Denied Resource", "CONSUMABLE", 0))),
+                () -> post(member, "/api/resources/" + resourceB + "/update", GSON.toJson(new ResourceUpdateRequest("C3 Member Rename", 11, 10))),
+                () -> post(member, "/api/resources/" + resourceB + "/delete", null),
+                () -> multipartPost(member, "/api/resources/" + resourceB + "/image", "image/png", tinyPng()),
+                () -> post(member, "/api/requirements", GSON.toJson(new RequirementRequest(projectB, resourceB, 1))),
+                () -> post(member, "/api/requirements/" + requirementB + "/update", GSON.toJson(new RequirementUpdateRequest(2))),
+                () -> post(member, "/api/requirements/" + requirementB + "/delete", null),
+                () -> post(member, "/api/allocations", GSON.toJson(new AllocationRequest(requirementB, 1, "C3 Member Denied", null, false))),
+                () -> post(member, "/api/allocations/" + allocationB + "/approve", null),
+                () -> post(member, "/api/allocations/" + allocationB + "/issue", null),
+                () -> post(member, "/api/allocations/" + allocationB + "/return", null),
+                () -> post(member, "/api/allocations/" + allocationB + "/consume", null),
+                () -> post(member, "/api/allocations/" + allocationB + "/cancel", null),
+                () -> post(member, "/api/allocations/" + allocationB + "/delete", null),
+                () -> post(member, "/api/allocations/" + allocationB + "/revoke-sms-consent", null));
         assertEquals(deniedNames.size(), deniedResponses.size());
-        for (int i = 0; i < deniedResponses.size(); i++)
-            assertEquals(403, deniedResponses.get(i).statusCode(), deniedNames.get(i) + " must reject MEMBER writes: " + deniedResponses.get(i).body());
+        for (int i = 0; i < deniedResponses.size(); i++) {
+            var before = legacyDenialRows(tenantA.orgDbId, tenantB.orgDbId);
+            HttpResponse<String> response = deniedResponses.get(i).call();
+            assertEquals(403, response.statusCode(), deniedNames.get(i) + " MEMBER mutation refusal");
+            assertTrue(before.equals(legacyDenialRows(tenantA.orgDbId, tenantB.orgDbId)),
+                    deniedNames.get(i) + " changed scoped domain rows after refusal.");
+        }
+    }
+
+    // Exact scoped values for fixed test-only tables; byte encoding avoids
+    // array-reference equality for BINARY/VARBINARY/BLOB and never prints data.
+    private List<List<List<String>>> legacyDenialRows(long firstOrg, long secondOrg) {
+        List<List<List<String>>> result = new ArrayList<>();
+        for (String table : List.of("department", "project", "resource", "resource_requirement",
+                "allocation", "stock_movement", "idempotency_key", "audit_event")) {
+            String scope = table.equals("audit_event") ? "org_id" : "organization_id";
+            result.add(jdbc.query("SELECT * FROM " + table + " WHERE " + scope + " IN (?,?) ORDER BY id",
+                    (rs, rowNumber) -> {
+                        List<String> values = new ArrayList<>();
+                        for (int column = 1; column <= rs.getMetaData().getColumnCount(); column++) {
+                            byte[] bytes = rs.getBytes(column);
+                            values.add(bytes == null ? null : Base64.getEncoder().encodeToString(bytes));
+                        }
+                        return values;
+                    }, firstOrg, secondOrg));
+        }
+        return result;
     }
 
     @Test @Order(34)
@@ -2156,6 +2350,11 @@ class C1IdentityAcceptanceTest {
 
         String refreshedCsrf = json(get(session.client, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();
         assertNotEquals(originalCsrf, refreshedCsrf, "Session rotation must also rotate CSRF.");
+        var legacyCsrf = get(session.client, "/api/v2/csrf");
+        assertEquals(200, legacyCsrf.statusCode());
+        assertEquals(Set.of("token"), json(legacyCsrf).keySet());
+        assertTrue(refreshedCsrf.equals(json(legacyCsrf).get("token").getAsString()), "Both authenticated CSRF routes must use the current session token.");
+        assertTrue(legacyCsrf.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
         HttpResponse<String> staleCsrf = post(session.client, "/api/v2/session/active-org",
                 GSON.toJson(new OrgRequest(home.orgPublicId)), originalCsrf, origin());
         assertEquals(403, staleCsrf.statusCode(), "The pre-switch CSRF token must no longer authorize writes.");
@@ -2728,42 +2927,44 @@ class C1IdentityAcceptanceTest {
         Fixture foreign = newTenant("C6-report-other", Membership.Role.OWNER);
         String root = "/api/v2/orgs/" + owner.orgPublicId;
         String exportBody = "{\"format\":\"TENANT_JSON\",\"dataset\":\"RESOURCES\"}";
-        assertEquals(401, get(newClient(), root + "/audit").statusCode());
+        assertGovernanceRefusal(401, owner.orgDbId, foreign.orgDbId, () -> get(newClient(), root + "/audit"));
         HttpClient unselected = newClient();
         String preToken = json(get(unselected, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();
         assertEquals(200, post(unselected, "/api/v2/auth/login", GSON.toJson(new LoginRequest(owner.username, owner.password)),
                 preToken, origin()).statusCode());
-        assertEquals(409, get(unselected, root + "/activity").statusCode());
+        assertGovernanceRefusal(409, owner.orgDbId, foreign.orgDbId, () -> get(unselected, root + "/activity"));
 
         Session foreignSession = login(foreign.username, foreign.password);
-        assertEquals(404, get(foreignSession.client, root + "/activity").statusCode());
-        assertEquals(404, post(foreignSession, root + "/exports", exportBody).statusCode());
+        assertGovernanceRefusal(404, owner.orgDbId, foreign.orgDbId, () -> get(foreignSession.client, root + "/activity"));
+        assertGovernanceRefusal(404, owner.orgDbId, foreign.orgDbId, () -> post(foreignSession, root + "/exports", exportBody));
         Session ownerSession = login(owner.username, owner.password);
-        assertEquals(403, post(ownerSession, root + "/exports", exportBody, "", origin()).statusCode());
+        assertGovernanceRefusal(403, owner.orgDbId, foreign.orgDbId, () -> post(ownerSession, root + "/exports", exportBody, "", origin()));
         addMembership(foreign.orgDbId, owner.userDbId, Membership.Role.MEMBER);
         String unselectedWorkspace = "/api/v2/orgs/" + foreign.orgPublicId;
-        assertEquals(404, get(ownerSession.client, unselectedWorkspace + "/audit").statusCode());
-        assertEquals(404, get(ownerSession.client, unselectedWorkspace + "/activity").statusCode());
-        assertEquals(404, post(ownerSession, unselectedWorkspace + "/exports", exportBody).statusCode());
+        assertGovernanceRefusal(404, owner.orgDbId, foreign.orgDbId, () -> get(ownerSession.client, unselectedWorkspace + "/audit"));
+        assertGovernanceRefusal(404, owner.orgDbId, foreign.orgDbId, () -> get(ownerSession.client, unselectedWorkspace + "/activity"));
+        assertGovernanceRefusal(404, owner.orgDbId, foreign.orgDbId, () -> post(ownerSession, unselectedWorkspace + "/exports", exportBody));
         for (Membership.Role role : List.of(Membership.Role.MEMBER, Membership.Role.LEAD, Membership.Role.CUSTODIAN, Membership.Role.ADMIN)) {
             Fixture actor = fixtureInOrg(owner.orgDbId, role);
             Session session = login(actor.username, actor.password);
             int expected = role == Membership.Role.ADMIN ? 200 : 403;
-            assertEquals(expected, get(session.client, root + "/audit").statusCode());
-            assertEquals(expected, get(session.client, root + "/activity").statusCode());
-            assertEquals(expected, post(session, root + "/exports", exportBody).statusCode());
+            // Reporting is read-only for allowed and denied calls.
+            assertGovernanceRefusal(expected, owner.orgDbId, foreign.orgDbId, () -> get(session.client, root + "/audit"));
+            assertGovernanceRefusal(expected, owner.orgDbId, foreign.orgDbId, () -> get(session.client, root + "/activity"));
+            assertGovernanceRefusal(expected, owner.orgDbId, foreign.orgDbId, () -> post(session, root + "/exports", exportBody));
             if (role == Membership.Role.ADMIN) {
                 HttpResponse<String> suspended = post(ownerSession, root + "/members/" + actor.membershipPublicId + "/suspend", "{}", "\"v0\"");
                 assertEquals(200, suspended.statusCode(), suspended.body());
-                assertEquals(404, get(session.client, root + "/audit").statusCode());
-                assertEquals(404, post(session, root + "/exports", exportBody).statusCode());
+                assertGovernanceRefusal(404, owner.orgDbId, foreign.orgDbId, () -> get(session.client, root + "/audit"));
+                assertGovernanceRefusal(404, owner.orgDbId, foreign.orgDbId, () -> post(session, root + "/exports", exportBody));
             }
         }
-        assertEquals(200, get(ownerSession.client, root + "/audit").statusCode());
-        assertEquals(200, post(ownerSession, root + "/exports", exportBody).statusCode());
+        assertGovernanceRefusal(200, owner.orgDbId, foreign.orgDbId, () -> get(ownerSession.client, root + "/audit"));
+        assertGovernanceRefusal(200, owner.orgDbId, foreign.orgDbId, () -> get(ownerSession.client, root + "/activity"));
+        assertGovernanceRefusal(200, owner.orgDbId, foreign.orgDbId, () -> post(ownerSession, root + "/exports", exportBody));
         assertEquals(1, jdbc.update("UPDATE SPRING_SESSION SET LAST_ACCESS_TIME=0, EXPIRY_TIME=0 WHERE SESSION_ID=?",
                 ownerSession.sessionId));
-        assertEquals(401, get(ownerSession.client, root + "/activity").statusCode());
+        assertGovernanceRefusal(401, owner.orgDbId, foreign.orgDbId, () -> get(ownerSession.client, root + "/activity"));
     }
 
     @Test @Order(46)
@@ -2785,7 +2986,7 @@ class C1IdentityAcceptanceTest {
         tx.executeWithoutResult(transaction -> jdbc.batchUpdate(insert, fixtures));
         assertEquals(201, post(session, "/api/resources", GSON.toJson(new ResourceRequest("C6 Movement Resource", "REUSABLE", 2))).statusCode());
         String filter = root + "/audit?limit=100";
-        HttpResponse<String> firstResponse = get(session.client, filter);
+        HttpResponse<String> firstResponse = assertGovernanceRefusal(200, owner.orgDbId, foreign.orgDbId, () -> get(session.client, filter));
         assertEquals(200, firstResponse.statusCode(), firstResponse.body());
         assertFalse(firstResponse.body().contains("PRIVATE-TARGET-FIXTURE"));
         var first = json(firstResponse).getAsJsonObject("data");
@@ -2794,17 +2995,32 @@ class C1IdentityAcceptanceTest {
                 .getAsJsonObject().get("occurredAt").getAsString()), "UTC timestamp format and microsecond precision");
         String cursor = first.get("nextCursor").getAsString();
         jdbc.update(insert, owner.orgDbId, owner.userDbId, UUID.randomUUID().toString(), tie.plusSeconds(1));
-        var second = json(get(session.client, filter + "&cursor=" + cursor)).getAsJsonObject("data");
+        var second = json(assertGovernanceRefusal(200, owner.orgDbId, foreign.orgDbId, () -> get(session.client, filter + "&cursor=" + cursor))).getAsJsonObject("data");
         Set<String> seen = new java.util.HashSet<>();
         first.getAsJsonArray("items").forEach(row -> assertTrue(seen.add(row.getAsJsonObject().get("id").getAsString())));
         second.getAsJsonArray("items").forEach(row -> assertTrue(seen.add(row.getAsJsonObject().get("id").getAsString())));
         assertTrue(second.get("nextCursor").isJsonNull());
         assertEquals(105, seen.size());
-        assertEquals(400, get(session.client, root + "/audit?limit=-1").statusCode());
-        assertEquals(400, get(session.client, root + "/activity?limit=101").statusCode());
-        assertEquals(400, get(session.client, root + "/activity?cursor=%21bad").statusCode());
-        assertEquals(400, get(foreignSession.client, "/api/v2/orgs/" + foreign.orgPublicId + "/activity?cursor=" + cursor).statusCode());
-        var mixed = json(get(session.client, root + "/activity?cursor=" + cursor)).getAsJsonObject("data").getAsJsonArray("items");
+        assertGovernanceRefusal(400, owner.orgDbId, foreign.orgDbId, () -> get(session.client, root + "/audit?limit=-1"));
+        assertGovernanceRefusal(400, owner.orgDbId, foreign.orgDbId, () -> get(session.client, root + "/activity?limit=101"));
+        assertGovernanceRefusal(400, owner.orgDbId, foreign.orgDbId, () -> get(session.client, root + "/activity?cursor=%21bad"));
+        assertGovernanceRefusal(400, owner.orgDbId, foreign.orgDbId, () -> get(foreignSession.client, "/api/v2/orgs/" + foreign.orgPublicId + "/activity?cursor=" + cursor));
+        var mixed = json(assertGovernanceRefusal(200, owner.orgDbId, foreign.orgDbId, () -> get(session.client, root + "/activity?cursor=" + cursor))).getAsJsonObject("data").getAsJsonArray("items");
+        Set<String> allowedEventFields = Set.of("id", "source", "action", "targetType", "outcome", "requestId",
+                "resourceId", "quantity", "deltaTotal", "deltaIssued", "occurredAt");
+        for (var page : List.of(first.getAsJsonArray("items"), second.getAsJsonArray("items"), mixed)) {
+            for (var element : page) {
+                var event = element.getAsJsonObject();
+                assertTrue(allowedEventFields.containsAll(event.keySet()), "Unexpected reporting field");
+                assertTrue(event.keySet().containsAll(Set.of("id", "source", "action", "targetType", "occurredAt")));
+                if ("AUDIT".equals(event.get("source").getAsString())) {
+                    assertTrue(event.keySet().containsAll(Set.of("outcome", "requestId")));
+                } else {
+                    assertEquals("MOVEMENT", event.get("source").getAsString());
+                    assertTrue(event.keySet().containsAll(Set.of("resourceId", "quantity", "deltaTotal", "deltaIssued")));
+                }
+            }
+        }
         assertTrue(mixed.asList().stream().anyMatch(row -> "MOVEMENT".equals(row.getAsJsonObject().get("source").getAsString())));
         String runtime = jdbc.queryForObject("SELECT CURRENT_USER()", String.class);
         assertNotNull(runtime);
@@ -2837,11 +3053,11 @@ class C1IdentityAcceptanceTest {
         Session other = login(foreign.username, foreign.password);
         String path = "/api/v2/orgs/" + owner.orgPublicId + "/exports";
         assertEquals(201, post(other, "/api/resources", GSON.toJson(new ResourceRequest("Foreign C6 Resource", "REUSABLE", 3))).statusCode());
-        assertEquals(400, post(session, path, "{\"format\":\"PDF\",\"dataset\":\"RESOURCES\"}").statusCode());
-        assertEquals(400, post(session, path, "{\"format\":\"CSV\",\"dataset\":\"ALLOCATIONS\"}").statusCode());
-        assertEquals(400, post(session, path, "{\"format\":\"CSV\",\"dataset\":\"AUDIT\",\"limit\":1}").statusCode());
-        assertEquals(400, post(session, path, "{\"format\":\"CSV\",\"format\":\"TENANT_JSON\",\"dataset\":\"AUDIT\"}").statusCode());
-        assertEquals(400, post(session, path, "{\"format\":\"CSV\",\"dataset\":\"AUDIT\"}" + " ".repeat(1024)).statusCode());
+        assertGovernanceRefusal(400, owner.orgDbId, foreign.orgDbId, () -> post(session, path, "{\"format\":\"PDF\",\"dataset\":\"RESOURCES\"}"));
+        assertGovernanceRefusal(400, owner.orgDbId, foreign.orgDbId, () -> post(session, path, "{\"format\":\"CSV\",\"dataset\":\"ALLOCATIONS\"}"));
+        assertGovernanceRefusal(400, owner.orgDbId, foreign.orgDbId, () -> post(session, path, "{\"format\":\"CSV\",\"dataset\":\"AUDIT\",\"limit\":1}"));
+        assertGovernanceRefusal(400, owner.orgDbId, foreign.orgDbId, () -> post(session, path, "{\"format\":\"CSV\",\"format\":\"TENANT_JSON\",\"dataset\":\"AUDIT\"}"));
+        assertGovernanceRefusal(400, owner.orgDbId, foreign.orgDbId, () -> post(session, path, "{\"format\":\"CSV\",\"dataset\":\"AUDIT\"}" + " ".repeat(1024)));
         String resources = "{\"format\":\"TENANT_JSON\",\"dataset\":\"RESOURCES\"}";
         assertTrue(json(post(session, path, resources)).getAsJsonArray("rows").isEmpty());
         String csv = "{\"format\":\"CSV\",\"dataset\":\"RESOURCES\"}";
@@ -2851,7 +3067,7 @@ class C1IdentityAcceptanceTest {
                     VALUES(UUID_TO_BIN(UUID(),0),?,?,?,'REUSABLE',0)
                     """, owner.orgDbId, name, UUID.randomUUID().toString());
         }
-        HttpResponse<String> file = post(session, path, csv);
+        HttpResponse<String> file = assertGovernanceRefusal(200, owner.orgDbId, foreign.orgDbId, () -> post(session, path, csv));
         assertEquals(200, file.statusCode(), file.body());
         assertTrue(file.headers().firstValue("Content-Type").orElseThrow().startsWith("text/csv"));
         assertTrue(file.headers().firstValue("Content-Disposition").orElseThrow().matches("attachment; filename=\"orgresource-resources-[0-9TZ]+\\.csv\""));
@@ -2863,10 +3079,14 @@ class C1IdentityAcceptanceTest {
         assertTrue(file.body().contains(",\"'\r\n-Example\","));
         assertTrue(file.body().contains(",\"'@Example\","));
         assertTrue(file.body().contains(",\"É, \"\"fictional\"\"\r\nline\","));
-        JsonObject jsonFile = json(post(session, path, resources));
+        JsonObject jsonFile = json(assertGovernanceRefusal(200, owner.orgDbId, foreign.orgDbId, () -> post(session, path, resources)));
         assertEquals(1, jsonFile.get("schemaVersion").getAsInt());
         assertEquals(owner.orgPublicId.toString(), jsonFile.get("organizationId").getAsString());
         assertEquals(5, jsonFile.getAsJsonArray("rows").size());
+        assertEquals(Set.of("schemaVersion", "organizationId", "dataset", "exportedAt", "rows"), jsonFile.keySet());
+        for (var row : jsonFile.getAsJsonArray("rows")) {
+            assertEquals(Set.of("id", "name", "type", "totalQuantity"), row.getAsJsonObject().keySet());
+        }
         assertFalse(jsonFile.toString().contains("Foreign C6 Resource"));
         String root = "/api/v2/orgs/" + owner.orgPublicId;
         HttpResponse<String> invitation = post(session, root + "/invitations", GSON.toJson(new RoleRequest("MEMBER")));
@@ -2875,7 +3095,8 @@ class C1IdentityAcceptanceTest {
         String privateAuditTarget = json(invitation).getAsJsonObject("data").get("id").getAsString();
         assertEquals(201, post(session, "/api/resources", GSON.toJson(new ResourceRequest("C6 persisted movement", "REUSABLE", 2))).statusCode());
         for (String dataset : List.of("AUDIT", "MOVEMENTS")) {
-            HttpResponse<String> safe = post(session, path, GSON.toJson(java.util.Map.of("format", "TENANT_JSON", "dataset", dataset)));
+            HttpResponse<String> safe = assertGovernanceRefusal(200, owner.orgDbId, foreign.orgDbId,
+                    () -> post(session, path, GSON.toJson(java.util.Map.of("format", "TENANT_JSON", "dataset", dataset))));
             assertEquals(200, safe.statusCode());
             assertFalse(json(safe).getAsJsonArray("rows").isEmpty());
             assertFalse(safe.body().contains("actorUserId") || safe.body().contains("targetId")
@@ -2915,7 +3136,7 @@ class C1IdentityAcceptanceTest {
                        CONCAT('C6 export row ',a.n,b.n,c.n),CONCAT('c6 export row ',a.n,b.n,c.n),'REUSABLE',0
                 FROM digit a CROSS JOIN digit b CROSS JOIN digit c
                 """, owner.orgDbId);
-        HttpResponse<String> refused = post(session, path, csv);
+        HttpResponse<String> refused = assertGovernanceRefusal(413, owner.orgDbId, foreign.orgDbId, () -> post(session, path, csv));
         assertEquals(413, refused.statusCode());
         assertEquals("EXPORT_TOO_LARGE", json(refused).get("code").getAsString());
         assertTrue(refused.headers().firstValue("Content-Disposition").isEmpty());
@@ -2931,6 +3152,10 @@ class C1IdentityAcceptanceTest {
         HttpResponse<String> response = post(client, "/api/v2/auth/login", GSON.toJson(new LoginRequest(username, password)), preToken, origin());
         assertEquals(200, response.statusCode(), response.body());
         JsonObject data = json(response).getAsJsonObject("data");
+        assertEquals(Set.of("data", "requestId"), json(response).keySet());
+        assertEquals(Set.of("session", "csrfToken"), data.keySet());
+        assertEquals(Set.of("accountId", "displayName", "activeOrgId", "memberships"), data.getAsJsonObject("session").keySet());
+        assertTrue(response.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
         assertTrue(data.getAsJsonObject("session").get("activeOrgId").isJsonNull(),
                 "Login must not select an organization implicitly.");
         var orgs = json(get(client, "/api/v2/orgs")).getAsJsonArray("data");
@@ -3433,6 +3658,7 @@ class C1IdentityAcceptanceTest {
                 "\"v0\"", UUID.randomUUID().toString()).statusCode());
         String directory = root + "/borrowers?projectId=" + projectKey;
         String directoryOther = root + "/borrowers?projectId=" + otherKey;
+        var directoryBefore = legacyDenialRows(owner.orgDbId, away.orgDbId);
         var first = get(lead.client, directory + "&limit=1");
         assertEquals(200, first.statusCode(), first.body());
         String next = json(first).getAsJsonObject("data").get("nextCursor").getAsString();
@@ -3440,6 +3666,10 @@ class C1IdentityAcceptanceTest {
         assertEquals(404, get(lead.client, directoryOther).statusCode());
         assertEquals(403, get(self.client, directory).statusCode());
         assertEquals(404, get(outsider.client, directory).statusCode());
+        assertScopedRefusal(400, owner.orgDbId, away.orgDbId, () -> get(lead.client, directory + "&limit=0"));
+        assertScopedRefusal(400, owner.orgDbId, away.orgDbId, () -> get(lead.client, directory + "&limit=101"));
+        assertScopedRefusal(400, owner.orgDbId, away.orgDbId, () -> get(lead.client, directory + "&search=" + "x".repeat(101)));
+        assertScopedRefusal(404, owner.orgDbId, away.orgDbId, () -> get(lead.client, directory + "&search=fictional&cursor=" + next));
         var duplicates = json(get(lead.client, directory + "&search=fictional+member")).getAsJsonObject("data").getAsJsonArray("items");
         assertEquals(2, duplicates.size());
         for (var entry : duplicates) {
@@ -3447,6 +3677,7 @@ class C1IdentityAcceptanceTest {
             assertEquals("Fictional MEMBER", entry.getAsJsonObject().get("displayName").getAsString());
         }
 
+        assertTrue(directoryBefore.equals(legacyDenialRows(owner.orgDbId, away.orgDbId)), "Directory reads altered scoped rows.");
         long resource = json(post(officer, "/api/resources", GSON.toJson(new ResourceRequest(
                 "Fictional lights", "REUSABLE", 8)))).get("id").getAsLong();
         long requirement = json(post(officer, "/api/requirements", GSON.toJson(new RequirementRequest(
@@ -3458,12 +3689,12 @@ class C1IdentityAcceptanceTest {
         input.addProperty("operationId", operationId);
         input.addProperty("requirementId", requirementKey.toString());
         input.addProperty("quantity", 2);
-        assertEquals(400, modernPost(lead, root + "/allocations", input.toString(), null, idemKey).statusCode());
+        assertScopedRefusal(400, owner.orgDbId, away.orgDbId, () -> modernPost(lead, root + "/allocations", input.toString(), null, idemKey));
         input.addProperty("borrowerMembershipId", away.membershipPublicId.toString());
-        assertEquals(404, modernPost(lead, root + "/allocations", input.toString(), null, idemKey).statusCode());
+        assertScopedRefusal(404, owner.orgDbId, away.orgDbId, () -> modernPost(lead, root + "/allocations", input.toString(), null, idemKey));
         input.addProperty("borrowerMembershipId", borrower.membershipPublicId.toString());
         input.addProperty("borrowerNameSnapshot", "Injected label");
-        assertEquals(400, modernPost(lead, root + "/allocations", input.toString(), null, idemKey).statusCode());
+        assertScopedRefusal(400, owner.orgDbId, away.orgDbId, () -> modernPost(lead, root + "/allocations", input.toString(), null, idemKey));
         input.remove("borrowerNameSnapshot");
         var created = modernPost(lead, root + "/allocations", input.toString(), null, idemKey);
         assertEquals(201, created.statusCode(), created.body());
@@ -3481,8 +3712,8 @@ class C1IdentityAcceptanceTest {
         String borrowedItem = borrowedRoute + "/" + allocationKey;
         assertEquals(1, json(get(self.client, borrowedRoute)).getAsJsonObject("data").getAsJsonArray("items").size());
         assertTrue(json(get(other.client, borrowedRoute)).getAsJsonObject("data").getAsJsonArray("items").isEmpty());
-        assertEquals(404, get(other.client, borrowedItem).statusCode());
-        assertEquals(404, get(outsider.client, borrowedItem).statusCode());
+        assertScopedRefusal(404, owner.orgDbId, away.orgDbId, () -> get(other.client, borrowedItem));
+        assertScopedRefusal(404, owner.orgDbId, away.orgDbId, () -> get(outsider.client, borrowedItem));
         var view = get(self.client, borrowedItem);
         assertEquals(200, view.statusCode());
         assertTrue(view.body().contains("Fictional light workshop"));
@@ -3508,8 +3739,8 @@ class C1IdentityAcceptanceTest {
         assertFalse(active.toString().matches("(?is).*(phone|borrowerName|actor|provider|ciphertext).*"));
         String revokeOp = UUID.randomUUID().toString(), revokeKey = UUID.randomUUID().toString();
         String revokeBody = "{\"operationId\":\"" + revokeOp + "\"}";
-        assertEquals(404, modernPost(other, revoke, revokeBody, "\"v0\"", revokeKey).statusCode());
-        assertEquals(412, modernPost(self, revoke, revokeBody, "\"v8\"", revokeKey).statusCode());
+        assertScopedRefusal(404, owner.orgDbId, away.orgDbId, () -> modernPost(other, revoke, revokeBody, "\"v0\"", revokeKey));
+        assertScopedRefusal(412, owner.orgDbId, away.orgDbId, () -> modernPost(self, revoke, revokeBody, "\"v8\"", revokeKey));
         assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE id=? AND version=0 AND sms_consent=TRUE "
                 + "AND phone_ciphertext IS NOT NULL AND reminder_outcome='CLAIMED'", Integer.class, allocationId));
         assertEquals(0, jdbc.queryForObject("SELECT COUNT(*) FROM idempotency_key WHERE operation_public_id=UUID_TO_BIN(?,0)",
@@ -3530,16 +3761,54 @@ class C1IdentityAcceptanceTest {
         assertEquals(currentVersion, redundant.headers().firstValue("ETag").orElseThrow());
         assertEquals(json(revoked).get("data"), json(redundant).get("data"));
 
+        // A second real record makes the borrower-specific continuation non-vacuous.
+        JsonObject secondInput = input.deepCopy();
+        secondInput.addProperty("operationId", UUID.randomUUID().toString());
+        secondInput.addProperty("quantity", 1);
+        var secondCreated = modernPost(lead, root + "/allocations", secondInput.toString(), null, C1Secrets.bearerToken());
+        assertEquals(201, secondCreated.statusCode());
+        String secondId = json(secondCreated).getAsJsonObject("data").get("id").getAsString();
+        var borrowedBefore = legacyDenialRows(owner.orgDbId, away.orgDbId);
+        var page = workspacePage(self, borrowedRoute + "?limit=1");
+        assertEquals(1, page.getAsJsonArray("items").size());
+        assertEquals(allocationKey.toString(), page.getAsJsonArray("items").get(0).getAsJsonObject().get("id").getAsString());
+        String borrowedCursor = page.get("nextCursor").getAsString();
+        var terminalPage = workspacePage(self, borrowedRoute + "?limit=1&cursor=" + borrowedCursor);
+        assertEquals(1, terminalPage.getAsJsonArray("items").size());
+        assertEquals(secondId, terminalPage.getAsJsonArray("items").get(0).getAsJsonObject().get("id").getAsString());
+        assertTrue(terminalPage.get("nextCursor").isJsonNull());
+        var borrowedData = json(get(self.client, borrowedItem)).getAsJsonObject("data");
+        assertTrue(Set.of("id", "projectName", "resourceName", "quantity", "status", "createdAt", "approvedAt",
+                "issuedAt", "returnedAt", "consumedAt", "cancelledAt", "smsConsent", "version").containsAll(borrowedData.keySet()));
+        assertTrue(borrowedData.keySet().containsAll(Set.of("id", "projectName", "resourceName", "quantity", "status", "createdAt", "smsConsent", "version")));
+        assertScopedRefusal(404, owner.orgDbId, away.orgDbId, () -> get(other.client, borrowedRoute + "?cursor=" + borrowedCursor));
+        assertScopedRefusal(404, owner.orgDbId, away.orgDbId, () -> get(outsider.client,
+                "/api/v2/orgs/" + away.orgPublicId + "/borrowed-allocations?cursor=" + borrowedCursor));
+        assertScopedRefusal(400, owner.orgDbId, away.orgDbId, () -> get(self.client, borrowedRoute + "?limit=0"));
+        assertScopedRefusal(400, owner.orgDbId, away.orgDbId, () -> get(self.client, borrowedRoute + "?limit=101"));
+        assertScopedRefusal(400, owner.orgDbId, away.orgDbId, () -> get(self.client, borrowedRoute + "?cursor=invalid"));
+        assertTrue(borrowedBefore.equals(legacyDenialRows(owner.orgDbId, away.orgDbId)), "Borrowed reads altered scoped rows.");
+
         // Reinstall an active fictional fixture state before suspending the borrower.
         jdbc.update("UPDATE allocation SET sms_consent=TRUE,phone_ciphertext=?,phone_nonce=?,phone_key_id=? WHERE id=?",
                 syntheticContact.ciphertext(), syntheticContact.nonce(), syntheticContact.keyId(), allocationId);
         assertEquals(200, post(officer, root + "/members/" + borrower.membershipPublicId + "/suspend", "{}", "\"v0\"").statusCode());
-        assertEquals(404, get(self.client, borrowedItem).statusCode());
-        assertEquals(404, get(self.client, root + "/operations/" + revokeOp).statusCode());
+        assertScopedRefusal(404, owner.orgDbId, away.orgDbId, () -> get(self.client, borrowedItem));
+        assertScopedRefusal(404, owner.orgDbId, away.orgDbId, () -> get(self.client, root + "/operations/" + revokeOp));
+        var afterSuspensionDirectory = workspacePage(officer, directory);
+        assertFalse(afterSuspensionDirectory.getAsJsonArray("items").asList().stream().anyMatch(
+                entry -> borrower.membershipPublicId.toString().equals(entry.getAsJsonObject().get("membershipId").getAsString())));
+        assertTrue(afterSuspensionDirectory.getAsJsonArray("items").asList().stream().anyMatch(
+                entry -> sameName.membershipPublicId.toString().equals(entry.getAsJsonObject().get("membershipId").getAsString())));
+        JsonObject suspendedInput = input.deepCopy();
+        suspendedInput.addProperty("operationId", UUID.randomUUID().toString());
+        HttpResponse<String> ineligible = assertScopedRefusal(409, owner.orgDbId, away.orgDbId,
+                () -> modernPost(lead, root + "/allocations", suspendedInput.toString(), null, C1Secrets.bearerToken()));
+        assertEquals("BORROWER_NOT_ELIGIBLE", json(ineligible).get("code").getAsString());
         UUID suspendedOperation = UUID.randomUUID();
-        assertEquals(404, modernPost(self, revoke, GSON.toJson(new OperationRequest(suspendedOperation)),
-                currentVersion, UUID.randomUUID().toString()).statusCode());
-        assertEquals(404, modernPost(self, revoke, revokeBody, "\"v0\"", revokeKey).statusCode());
+        assertScopedRefusal(404, owner.orgDbId, away.orgDbId, () -> modernPost(self, revoke, GSON.toJson(new OperationRequest(suspendedOperation)),
+                currentVersion, UUID.randomUUID().toString()));
+        assertScopedRefusal(404, owner.orgDbId, away.orgDbId, () -> modernPost(self, revoke, revokeBody, "\"v0\"", revokeKey));
         assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE id=? AND sms_consent=TRUE "
                 + "AND phone_ciphertext IS NOT NULL AND status='PENDING'", Integer.class, allocationId));
         assertEquals(0, jdbc.queryForObject("SELECT COUNT(*) FROM idempotency_key WHERE operation_public_id=UUID_TO_BIN(?,0)",
@@ -3553,6 +3822,8 @@ class C1IdentityAcceptanceTest {
         Fixture owner = newTenant("C8 work scope", Membership.Role.OWNER);
         Fixture lead = fixtureInOrg(owner.orgDbId, Membership.Role.LEAD);
         Fixture borrower = fixtureInOrg(owner.orgDbId, Membership.Role.MEMBER);
+        Fixture admin = fixtureInOrg(owner.orgDbId, Membership.Role.ADMIN);
+        Fixture keeper = fixtureInOrg(owner.orgDbId, Membership.Role.CUSTODIAN);
         Session officer = login(owner.username, owner.password);
         Session scoped = login(lead.username, lead.password);
         String root = "/api/v2/orgs/" + owner.orgPublicId;
@@ -3606,6 +3877,27 @@ class C1IdentityAcceptanceTest {
         String own = json(ownCreated).getAsJsonObject("data").get("id").getAsString();
         String other = json(officerCreated).getAsJsonObject("data").get("id").getAsString();
         String ownPath = root + "/allocations/" + own, otherPath = root + "/allocations/" + other;
+        Session adminSession = login(admin.username, admin.password);
+        Session stockSession = login(keeper.username, keeper.password);
+        Session borrowerSession = login(borrower.username, borrower.password);
+        for (Session authorized : List.of(adminSession, stockSession)) {
+            var response = assertGovernanceRefusal(200, owner.orgDbId, owner.orgDbId,
+                    () -> get(authorized.client, path + "/allocations?limit=10"));
+            var records = json(response).getAsJsonObject("data").getAsJsonArray("items");
+            assertEquals(2, records.size());
+            var ids = new java.util.HashSet<String>();
+            for (var element : records) {
+                var entry = element.getAsJsonObject();
+                assertEquals(Set.of("id", "requirementId", "resourceName", "borrowerNameSnapshot", "quantity",
+                        "status", "version", "canCancel", "canDelete"), entry.keySet());
+                ids.add(entry.get("id").getAsString());
+                assertFalse(entry.get("canCancel").getAsBoolean());
+                assertEquals(authorized == adminSession, entry.get("canDelete").getAsBoolean());
+            }
+            assertEquals(Set.of(own, other), ids);
+        }
+        assertGovernanceRefusal(403, owner.orgDbId, owner.orgDbId,
+                () -> get(borrowerSession.client, path + "/allocations"));
         var projectPage = workspacePage(scoped, path + "/allocations?limit=1");
         assertTrue(projectPage.getAsJsonArray("items").get(0).getAsJsonObject().get("canCancel").getAsBoolean());
         String continuation = projectPage.get("nextCursor").getAsString();
@@ -3953,29 +4245,23 @@ class C1IdentityAcceptanceTest {
         long invitationVersion = invitationBefore.version;
         assertEquals(Invitation.Status.INVITED, invitationBefore.status);
 
-        assertEquals(403, post(memberSession, root + "/invitations",
-                GSON.toJson(new RoleRequest("MEMBER"))).statusCode(),
-                "Non-managers cannot grant invitations");
-        assertEquals(404, post(outsiderSession, root + "/invitations/" + invitationId + "/revoke",
-                "", "\"v0\"").statusCode(), "A foreign organization cannot revoke an existing invitation");
-        assertEquals(403, post(memberSession, root + "/invitations/" + invitationId + "/revoke",
-                "", "\"v0\"").statusCode(), "Members cannot revoke active invitations");
+        assertGovernanceRefusal(403, owner.orgDbId, stranger.orgDbId, () -> post(memberSession, root + "/invitations",
+                GSON.toJson(new RoleRequest("MEMBER"))));
+        assertGovernanceRefusal(404, owner.orgDbId, stranger.orgDbId, () -> post(outsiderSession, root + "/invitations/" + invitationId + "/revoke",
+                "", "\"v0\""));
+        assertGovernanceRefusal(403, owner.orgDbId, stranger.orgDbId, () -> post(memberSession, root + "/invitations/" + invitationId + "/revoke",
+                "", "\"v0\""));
         String memberRolePath = root + "/members/" + member.membershipPublicId + "/role";
-        assertEquals(403, post(adminSession, memberRolePath,
-                GSON.toJson(new RoleRequest("ADMIN")), "\"v0\"").statusCode(),
-                "An administrator cannot elevate a member to administrator");
-        assertEquals(404, post(outsiderSession, memberRolePath,
-                GSON.toJson(new RoleRequest("CUSTODIAN")), "\"v0\"").statusCode(),
-                "Foreign members have no role administration rights");
-        assertEquals(412, post(ownerSession, memberRolePath,
-                GSON.toJson(new RoleRequest("LEAD")), "\"v999\"").statusCode(),
-                "A stale If-Match must not modify a valid target");
-        assertEquals(403, post(memberSession, root + "/members/" + owner.membershipPublicId + "/suspend",
-                "", "\"v0\"").statusCode(),
-                "A member cannot suspend the owner");
-        assertEquals(403, post(memberSession, root + "/transfer-ownership",
-                GSON.toJson(new TransferRequest(admin.membershipPublicId, member.password))).statusCode(),
-                "Only an owner may initiate an ownership transfer");
+        assertGovernanceRefusal(403, owner.orgDbId, stranger.orgDbId, () -> post(adminSession, memberRolePath,
+                GSON.toJson(new RoleRequest("ADMIN")), "\"v0\""));
+        assertGovernanceRefusal(404, owner.orgDbId, stranger.orgDbId, () -> post(outsiderSession, memberRolePath,
+                GSON.toJson(new RoleRequest("CUSTODIAN")), "\"v0\""));
+        assertGovernanceRefusal(412, owner.orgDbId, stranger.orgDbId, () -> post(ownerSession, memberRolePath,
+                GSON.toJson(new RoleRequest("LEAD")), "\"v999\""));
+        assertGovernanceRefusal(403, owner.orgDbId, stranger.orgDbId, () -> post(memberSession, root + "/members/" + owner.membershipPublicId + "/suspend",
+                "", "\"v0\""));
+        assertGovernanceRefusal(403, owner.orgDbId, stranger.orgDbId, () -> post(memberSession, root + "/transfer-ownership",
+                GSON.toJson(new TransferRequest(admin.membershipPublicId, member.password))));
 
         Membership memberAfter = memberships.findById(member.membershipDbId).orElseThrow();
         assertEquals(Membership.Role.MEMBER, memberAfter.role);
@@ -3991,6 +4277,58 @@ class C1IdentityAcceptanceTest {
         assertEquals(initialAudits, jdbc.queryForObject(
                 "SELECT COUNT(*) FROM audit_event WHERE org_id=?", Long.class, owner.orgDbId));
         assertEquals(1, memberships.countEffectiveActiveOwners(owner.orgDbId));
+
+        HttpResponse<String> adminInvite = post(adminSession, root + "/invitations", GSON.toJson(new RoleRequest("MEMBER")));
+        assertEquals(201, adminInvite.statusCode());
+        JsonObject inviteData = json(adminInvite).getAsJsonObject("data");
+        assertEquals(Set.of("id", "organizationId", "role", "status", "expiresAt", "version", "bearerToken"), inviteData.keySet());
+        assertEquals("MEMBER", inviteData.get("role").getAsString());
+        assertEquals("INVITED", inviteData.get("status").getAsString());
+        assertEquals(owner.orgPublicId.toString(), inviteData.get("organizationId").getAsString());
+        Invitation persisted = invitations.findByOrganizationIdAndPublicId(owner.orgDbId,
+                UUID.fromString(inviteData.get("id").getAsString())).orElseThrow();
+        assertTrue(java.security.MessageDigest.isEqual(C1Secrets.sha256(inviteData.get("bearerToken").getAsString()), persisted.tokenHash),
+                "Issued token must match persisted hash.");
+        assertEquals(admin.membershipDbId, persisted.invitedByMembershipId.longValue());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM audit_event WHERE org_id=? AND actor_user_id=? AND action='INVITATION_CREATED' AND target_id=?",
+                Integer.class, owner.orgDbId, admin.userDbId, persisted.publicId.toString()));
+        assertGovernanceRefusal(403, owner.orgDbId, stranger.orgDbId,
+                () -> post(adminSession, root + "/invitations", GSON.toJson(new RoleRequest("ADMIN"))));
+        String suspendPath = root + "/members/" + member.membershipPublicId + "/suspend";
+        assertGovernanceRefusal(412, owner.orgDbId, stranger.orgDbId, () -> post(ownerSession, suspendPath, null, "\"v999\""));
+        var suspended = post(ownerSession, suspendPath, null, "\"v0\"");
+        assertEquals(200, suspended.statusCode());
+        assertEquals("\"v1\"", suspended.headers().firstValue("ETag").orElseThrow());
+        assertEquals("SUSPENDED", json(suspended).getAsJsonObject("data").get("status").getAsString());
+        var inactive = assertGovernanceRefusal(404, owner.orgDbId, stranger.orgDbId, () -> post(ownerSession, suspendPath, null, "\"v1\""));
+        assertEquals("NOT_FOUND", json(inactive).get("code").getAsString());
+    }
+
+    private List<List<List<String>>> governanceDenialRows(long firstOrg, long secondOrg) {
+        var result = legacyDenialRows(firstOrg, secondOrg);
+        for (String table : List.of("membership", "invitation", "ownership_transfer", "organization")) {
+            String scope = table.equals("organization") ? "id" : "org_id";
+            result.add(jdbc.query("SELECT * FROM " + table + " WHERE " + scope + " IN (?,?) ORDER BY id",
+                    (rs, rowNumber) -> {
+                        List<String> values = new ArrayList<>();
+                        for (int column = 1; column <= rs.getMetaData().getColumnCount(); column++) {
+                            byte[] bytes = rs.getBytes(column);
+                            values.add(bytes == null ? null : Base64.getEncoder().encodeToString(bytes));
+                        }
+                        return values;
+                    }, firstOrg, secondOrg));
+        }
+        return result;
+    }
+
+    private HttpResponse<String> assertGovernanceRefusal(int expected, long firstOrg, long secondOrg,
+            java.util.concurrent.Callable<HttpResponse<String>> request) throws Exception {
+        var before = governanceDenialRows(firstOrg, secondOrg);
+        HttpResponse<String> response = request.call();
+        assertEquals(expected, response.statusCode());
+        assertTrue(before.equals(governanceDenialRows(firstOrg, secondOrg)),
+                "Governance refusal altered scoped rows.");
+        return response;
     }
 
 
@@ -4032,6 +4370,13 @@ class C1IdentityAcceptanceTest {
                 GSON.toJson(new ResourceRequest("C8 last29 foreign Resource", "REUSABLE", 0))))
                         .get("id").getAsLong();
 
+        long outsiderProjectId = json(post(outsiderSession, "/api/projects", GSON.toJson(new ProjectRequest(
+                outsiderDepartmentId, "C8 last29 foreign Project", "2040-12-10T10:00:00", "2040-12-10T11:00:00")))).get("id").getAsLong();
+        long outsiderRequirementId = json(post(outsiderSession, "/api/requirements", GSON.toJson(new RequirementRequest(
+                outsiderProjectId, outsiderResourceId, 1)))).get("id").getAsLong();
+        assertNotEquals(projectId, outsiderProjectId);
+        assertNotEquals(requirementId, outsiderRequirementId);
+
         // Only authenticated sessions may use this legacy CSRF alias. The
         // intentionally public pre-auth token has a separate /auth/csrf route.
         assertEquals(401, get(newClient(), "/api/v2/csrf").statusCode());
@@ -4047,12 +4392,26 @@ class C1IdentityAcceptanceTest {
                 {"resources", Long.toString(resourceId)},
                 {"requirements", Long.toString(requirementId)}
         };
+        var beforeWorkspaceReads = governanceDenialRows(owner.orgDbId, outsider.orgDbId);
         for (Session actor : List.of(ownerSession, adminSession, custodianSession, leadSession, memberSession)) {
             HttpResponse<String> legacyDepartment = get(actor.client, "/api/v2/departments/" + departmentId);
             assertEquals(200, legacyDepartment.statusCode(), legacyDepartment.body());
             assertEquals(departmentId, json(legacyDepartment).get("id").getAsLong());
+            assertEquals(Set.of("id", "name"), json(legacyDepartment).keySet());
             for (String[] page : expectedPages) {
                 JsonObject view = workspacePage(actor, "/api/v2/workspace/" + page[0] + "?limit=50");
+                for (var element : view.getAsJsonArray("items")) {
+                    var fields = element.getAsJsonObject().keySet();
+                    switch (page[0]) {
+                        case "resources" -> assertEquals(Set.of("id", "publicId", "name", "type", "totalQuantity", "availableQuantity"), fields);
+                        case "requirements" -> assertEquals(Set.of("id", "projectId", "resourceId", "quantity",
+                                "allocatedQuantity", "shortageQuantity", "projectName", "resourceName",
+                                "resourceType", "projectStartAt", "projectEndAt"), fields);
+                        case "departments" -> assertEquals(Set.of("id", "name"), fields);
+                        case "projects" -> assertEquals(Set.of("id", "departmentId", "name", "startAt", "endAt", "departmentName"), fields);
+                        default -> fail("Unknown fixture page " + page[0]);
+                    }
+                }
                 long expectedId = Long.parseLong(page[1]);
                 assertTrue(view.getAsJsonArray("items").asList().stream()
                                 .anyMatch(item -> item.getAsJsonObject().get("id").getAsLong() == expectedId),
@@ -4062,7 +4421,10 @@ class C1IdentityAcceptanceTest {
                         "Selected-org " + page[0] + " must not leak a foreign workspace label");
             }
         }
-        assertEquals(404, get(outsiderSession.client, "/api/v2/departments/" + departmentId).statusCode());
+        assertGovernanceRefusal(404, owner.orgDbId, outsider.orgDbId,
+                () -> get(outsiderSession.client, "/api/v2/departments/" + departmentId));
+        assertGovernanceRefusal(404, owner.orgDbId, outsider.orgDbId,
+                () -> get(ownerSession.client, "/api/v2/departments/0"));
         assertEquals(404, get(ownerSession.client, "/api/v2/departments/" + outsiderDepartmentId).statusCode());
         JsonObject foreignResources = workspacePage(outsiderSession, "/api/v2/workspace/resources?limit=50");
         assertTrue(foreignResources.getAsJsonArray("items").asList().stream()
@@ -4076,9 +4438,49 @@ class C1IdentityAcceptanceTest {
         assertEquals(403, get(leadSession.client, "/api/v2/workspace/allocations?limit=50").statusCode());
         for (Session officer : List.of(ownerSession, adminSession, custodianSession)) {
             JsonObject allocationsPage = workspacePage(officer, "/api/v2/workspace/allocations?limit=50");
-            assertTrue(allocationsPage.getAsJsonArray("items").asList().stream()
-                    .anyMatch(item -> item.getAsJsonObject().get("id").getAsLong() == allocationId));
+            var items = allocationsPage.getAsJsonArray("items");
+            assertEquals(1, items.size());
+            var allocation = items.get(0).getAsJsonObject();
+            assertEquals(allocationId, allocation.get("id").getAsLong());
+            assertEquals(Set.of("id", "publicId", "requirementId", "quantity", "borrowerName", "contactPresent",
+                    "smsConsent", "status", "createdAt", "approvedAt", "issuedAt", "returnedAt", "consumedAt",
+                    "cancelledAt", "cancellationReason", "expiredPendingCleanup", "reminderAttempted",
+                    "reminderOutcome", "requirement"), allocation.keySet());
+            assertEquals(Set.of("id", "projectId", "resourceId", "quantity", "allocatedQuantity", "shortageQuantity",
+                    "projectName", "resourceName", "resourceType", "projectStartAt", "projectEndAt"),
+                    allocation.getAsJsonObject("requirement").keySet());
+            assertEquals(requirementId, allocation.getAsJsonObject("requirement").get("id").getAsLong());
+            assertFalse(allocation.get("contactPresent").getAsBoolean());
+            assertFalse(allocation.get("smsConsent").getAsBoolean());
+            assertGovernanceRefusal(404, owner.orgDbId, outsider.orgDbId,
+                    () -> get(officer.client, "/api/v2/workspace/allocations?projectId=" + outsiderProjectId));
+            assertGovernanceRefusal(404, owner.orgDbId, outsider.orgDbId,
+                    () -> get(officer.client, "/api/v2/workspace/allocations?requirementId=" + outsiderRequirementId));
+            var overview = workspacePage(officer, "/api/v2/workspace/overview");
+            assertEquals(1, overview.get("departmentCount").getAsLong());
+            assertEquals(0, overview.get("projectActiveCount").getAsLong());
+            assertEquals(1, overview.get("resourceTypeCount").getAsLong());
+            assertEquals(1, overview.get("requirementShortageCount").getAsLong());
+            var preview = overview.getAsJsonArray("resourcePreview");
+            assertEquals(1, preview.size());
+            assertEquals(resourceId, preview.get(0).getAsJsonObject().get("id").getAsLong());
+            assertEquals(9, preview.get(0).getAsJsonObject().get("availableQuantity").getAsInt());
+            var calendar = overview.getAsJsonArray("calendarPreview");
+            assertEquals(1, calendar.size());
+            assertEquals(projectId, calendar.get(0).getAsJsonObject().getAsJsonObject("project").get("id").getAsLong());
+            assertFalse(calendar.get(0).getAsJsonObject().get("active").getAsBoolean());
+            var counts = overview.getAsJsonObject("allocations");
+            assertEquals(Set.of("pending", "issued", "overdue", "consumed", "recent"), counts.keySet());
+            assertEquals(1, counts.get("pending").getAsLong());
+            for (String key : List.of("issued", "overdue", "consumed")) assertEquals(0, counts.get(key).getAsLong());
+            var recent = counts.getAsJsonArray("recent");
+            assertEquals(1, recent.size());
+            assertEquals(Set.of("id", "borrowerName", "quantity", "status", "resourceName", "createdAt"),
+                    recent.get(0).getAsJsonObject().keySet());
+            assertEquals(allocationId, recent.get(0).getAsJsonObject().get("id").getAsLong());
         }
+        assertGovernanceRefusal(404, owner.orgDbId, outsider.orgDbId,
+                () -> get(ownerSession.client, "/api/v2/workspace/requirements?projectId=" + outsiderProjectId));
         for (Session lowRole : List.of(memberSession, leadSession)) {
             JsonObject overview = workspacePage(lowRole, "/api/v2/workspace/overview");
             assertTrue(overview.get("allocations").isJsonNull(),
@@ -4086,6 +4488,8 @@ class C1IdentityAcceptanceTest {
             assertFalse(overview.toString().contains("Fictional C8 last29 borrower"));
         }
 
+        assertTrue(beforeWorkspaceReads.equals(governanceDenialRows(owner.orgDbId, outsider.orgDbId)),
+                "Authorized and denied workspace reads must not alter scoped domain or governance rows.");
         // Snapshot current tenant data AFTER login and authorized setup, then
         // prove lower roles do not mutate a real Department, Project, Requirement
         // or append-only stock/audit history.
@@ -4170,6 +4574,7 @@ class C1IdentityAcceptanceTest {
                 GSON.toJson(new OrgRequest(home.orgPublicId))).statusCode());
         refreshCsrf(live);
         String pagePath = "/api/v2/workspace/resources?limit=1";
+        var beforeHomeReads = governanceDenialRows(home.orgDbId, away.orgDbId);
         JsonObject first = workspacePage(live, pagePath);
         assertEquals(1, first.getAsJsonArray("items").size());
         assertFalse(first.get("nextCursor").isJsonNull(), "Two resources require a continuation cursor");
@@ -4177,15 +4582,20 @@ class C1IdentityAcceptanceTest {
         JsonObject homeAllocations = workspacePage(live, "/api/v2/workspace/allocations?limit=10");
         assertTrue(homeAllocations.getAsJsonArray("items").asList().stream()
                 .anyMatch(item -> item.getAsJsonObject().get("id").getAsLong() == homeAllocation));
-        assertFalse(workspacePage(live, "/api/v2/workspace/overview").get("allocations").isJsonNull());
+        JsonObject homeOverview = workspacePage(live, "/api/v2/workspace/overview");
+        assertFalse(homeOverview.get("allocations").isJsonNull());
+        assertEquals(Set.of("sampledAt", "departmentCount", "projectActiveCount", "resourceTypeCount",
+                "requirementShortageCount", "resourcePreview", "calendarPreview", "allocations"), homeOverview.keySet());
+        assertTrue(beforeHomeReads.equals(governanceDenialRows(home.orgDbId, away.orgDbId)),
+                "Privileged workspace reads changed persisted domain rows.");
 
         // Same browser, different selected org: the home cursor and original
         // home resource must not produce any away-organization data.
         assertEquals(200, post(live, "/api/v2/session/active-org",
                 GSON.toJson(new OrgRequest(away.orgPublicId))).statusCode());
         refreshCsrf(live);
-        assertEquals(404, get(live.client, pagePath + "&cursor=" + homeCursor).statusCode(),
-                "Cursor must be bound to the organization that issued it");
+        assertGovernanceRefusal(404, home.orgDbId, away.orgDbId, () -> get(live.client, pagePath + "&cursor=" + homeCursor));
+        var beforeAwayReads = governanceDenialRows(home.orgDbId, away.orgDbId);
         JsonObject awayPage = workspacePage(live, "/api/v2/workspace/resources?limit=10");
         assertTrue(awayPage.getAsJsonArray("items").asList().stream()
                 .anyMatch(item -> item.getAsJsonObject().get("id").getAsLong() == awayResource));
@@ -4195,6 +4605,8 @@ class C1IdentityAcceptanceTest {
         assertEquals(403, get(live.client, "/api/v2/workspace/allocations?limit=10").statusCode());
         assertTrue(workspacePage(live, "/api/v2/workspace/overview").get("allocations").isJsonNull());
 
+        assertTrue(beforeAwayReads.equals(governanceDenialRows(home.orgDbId, away.orgDbId)),
+                "Selected-away workspace reads changed scoped domain or governance rows.");
         // Switching back restores legitimate home reads, never remembered
         // CUSTODIAN capabilities after the OWNER changes the DB membership.
         assertEquals(200, post(live, "/api/v2/session/active-org",
@@ -4212,13 +4624,13 @@ class C1IdentityAcceptanceTest {
                 GSON.toJson(new RoleRequest("MEMBER")), "\"v0\"");
         assertEquals(200, demotion.statusCode(), demotion.body());
 
-        assertEquals(403, get(live.client, "/api/v2/workspace/allocations?limit=10").statusCode(),
-                "Same-session membership role must be reloaded from MySQL");
+        assertGovernanceRefusal(403, home.orgDbId, away.orgDbId,
+                () -> get(live.client, "/api/v2/workspace/allocations?limit=10"));
         assertTrue(workspacePage(live, "/api/v2/workspace/overview").get("allocations").isJsonNull());
         assertEquals(200, get(live.client, "/api/v2/workspace/resources?limit=10").statusCode(),
                 "Demotion to MEMBER preserves approved baseline browsing");
-        assertEquals(403, post(live, "/api/resources", GSON.toJson(
-                new ResourceRequest("Fictional forbidden stale Custodian", "CONSUMABLE", 0))).statusCode());
+        assertGovernanceRefusal(403, home.orgDbId, away.orgDbId, () -> post(live, "/api/resources", GSON.toJson(
+                new ResourceRequest("Fictional forbidden stale Custodian", "CONSUMABLE", 0))));
         assertEquals(resourceCount, jdbc.queryForObject(
                 "SELECT COUNT(*) FROM resource WHERE organization_id=?", Integer.class, home.orgDbId));
         assertEquals(allocationCount, jdbc.queryForObject(
@@ -4239,8 +4651,7 @@ class C1IdentityAcceptanceTest {
                 "/api/v2/workspace/resources?limit=10",
                 "/api/v2/workspace/requirements?limit=10",
                 "/api/v2/workspace/allocations?limit=10")) {
-            assertEquals(404, get(live.client, protectedRead).statusCode(),
-                    "Suspended selected-org membership must lose access immediately: " + protectedRead);
+            assertGovernanceRefusal(404, home.orgDbId, away.orgDbId, () -> get(live.client, protectedRead));
         }
         assertEquals(resourceCount, jdbc.queryForObject(
                 "SELECT COUNT(*) FROM resource WHERE organization_id=?", Integer.class, home.orgDbId));
@@ -4435,6 +4846,7 @@ class C1IdentityAcceptanceTest {
         assertEquals(200, modernPost(homeOwner, homeProjectPath + "/lead-assignment",
                 leadAssignment(UUID.randomUUID().toString(), assigned.membershipPublicId),
                 "\"v0\"", UUID.randomUUID().toString()).statusCode());
+        var readBaseline = legacyDenialRows(home.orgDbId, away.orgDbId);
         // Current, authorized reads prove the populated targets exist.
         assertEquals(200, get(homeOwner.client, homeRoot + "/projects").statusCode());
         assertEquals(200, get(observer.client, homeRoot + "/projects").statusCode());
@@ -4459,6 +4871,8 @@ class C1IdentityAcceptanceTest {
         assertEquals(404, get(awayOwner.client, homeItem).statusCode());
         assertEquals(404, get(homeOwner.client, awayItemFromHome).statusCode());
 
+        assertTrue(readBaseline.equals(legacyDenialRows(home.orgDbId, away.orgDbId)), "ProjectWork reads changed scoped domain rows.");
+
         // Snapshot *actual* pre-existing Project and Requirement values, not
         // just aggregate counts. Include both tenants and non-business effects.
         String beforeProjects = jdbc.queryForList(
@@ -4479,37 +4893,37 @@ class C1IdentityAcceptanceTest {
         };
 
         // CUSTODIAN can read but never update/delete a Project or Requirement.
-        assertEquals(403, post(observer, homeProjectPath + "/update", projectFields, "\"v1\"").statusCode());
-        assertEquals(403, post(observer, homeProjectPath + "/delete", null, "\"v1\"").statusCode());
-        assertEquals(403, post(observer, homeRequirements, homeCreate).statusCode());
-        assertEquals(403, post(observer, homeItem + "/update", "{\"quantity\":5}", "\"v0\"").statusCode());
-        assertEquals(403, post(observer, homeItem + "/delete", null, "\"v0\"").statusCode());
+        assertScopedRefusal(403, home.orgDbId, away.orgDbId, () -> post(observer, homeProjectPath + "/update", projectFields, "\"v1\""));
+        assertScopedRefusal(403, home.orgDbId, away.orgDbId, () -> post(observer, homeProjectPath + "/delete", null, "\"v1\""));
+        assertScopedRefusal(403, home.orgDbId, away.orgDbId, () -> post(observer, homeRequirements, homeCreate));
+        assertScopedRefusal(403, home.orgDbId, away.orgDbId, () -> post(observer, homeItem + "/update", "{\"quantity\":5}", "\"v0\""));
+        assertScopedRefusal(403, home.orgDbId, away.orgDbId, () -> post(observer, homeItem + "/delete", null, "\"v0\""));
 
         // An unassigned LEAD does not receive a write grant over existing work.
-        assertEquals(404, post(otherLead, homeProjectPath + "/update", projectFields, "\"v1\"").statusCode());
-        assertEquals(404, post(otherLead, homeProjectPath + "/delete", null, "\"v1\"").statusCode());
-        assertEquals(404, post(otherLead, homeRequirements, homeCreate).statusCode());
-        assertEquals(404, post(otherLead, homeItem + "/update", "{\"quantity\":5}", "\"v0\"").statusCode());
-        assertEquals(404, post(otherLead, homeItem + "/delete", null, "\"v0\"").statusCode());
+        assertScopedRefusal(404, home.orgDbId, away.orgDbId, () -> post(otherLead, homeProjectPath + "/update", projectFields, "\"v1\""));
+        assertScopedRefusal(404, home.orgDbId, away.orgDbId, () -> post(otherLead, homeProjectPath + "/delete", null, "\"v1\""));
+        assertScopedRefusal(404, home.orgDbId, away.orgDbId, () -> post(otherLead, homeRequirements, homeCreate));
+        assertScopedRefusal(404, home.orgDbId, away.orgDbId, () -> post(otherLead, homeItem + "/update", "{\"quantity\":5}", "\"v0\""));
+        assertScopedRefusal(404, home.orgDbId, away.orgDbId, () -> post(otherLead, homeItem + "/delete", null, "\"v0\""));
 
         // A legitimate OWNER still cannot use an existing foreign Project,
         // Resource, or Requirement by substituting its UUID under their own org.
-        assertEquals(404, post(homeOwner, awayProjectPathFromHome + "/update", projectFields, "\"v0\"").statusCode());
-        assertEquals(404, post(homeOwner, awayProjectPathFromHome + "/delete", null, "\"v0\"").statusCode());
-        assertEquals(404, post(homeOwner, homeRequirements, GSON.toJson(java.util.Map.of(
-                "projectId", homeProject, "resourceId", awayResource, "quantity", 6))).statusCode());
-        assertEquals(404, post(homeOwner, homeRequirements, GSON.toJson(java.util.Map.of(
-                "projectId", awayProject, "resourceId", homeResource, "quantity", 6))).statusCode());
-        assertEquals(404, post(homeOwner, awayItemFromHome + "/update", "{\"quantity\":5}", "\"v0\"").statusCode());
-        assertEquals(404, post(homeOwner, awayItemFromHome + "/delete", null, "\"v0\"").statusCode());
+        assertScopedRefusal(404, home.orgDbId, away.orgDbId, () -> post(homeOwner, awayProjectPathFromHome + "/update", projectFields, "\"v0\""));
+        assertScopedRefusal(404, home.orgDbId, away.orgDbId, () -> post(homeOwner, awayProjectPathFromHome + "/delete", null, "\"v0\""));
+        assertScopedRefusal(404, home.orgDbId, away.orgDbId, () -> post(homeOwner, homeRequirements, GSON.toJson(java.util.Map.of(
+                "projectId", homeProject, "resourceId", awayResource, "quantity", 6))));
+        assertScopedRefusal(404, home.orgDbId, away.orgDbId, () -> post(homeOwner, homeRequirements, GSON.toJson(java.util.Map.of(
+                "projectId", awayProject, "resourceId", homeResource, "quantity", 6))));
+        assertScopedRefusal(404, home.orgDbId, away.orgDbId, () -> post(homeOwner, awayItemFromHome + "/update", "{\"quantity\":5}", "\"v0\""));
+        assertScopedRefusal(404, home.orgDbId, away.orgDbId, () -> post(homeOwner, awayItemFromHome + "/delete", null, "\"v0\""));
 
         // Version guards reject stale/missing preconditions before changing SQL.
-        assertEquals(428, post(homeOwner, homeProjectPath + "/update", projectFields).statusCode());
-        assertEquals(412, post(homeOwner, homeProjectPath + "/update", projectFields, "\"v99\"").statusCode());
-        assertEquals(428, post(homeOwner, homeItem + "/update", "{\"quantity\":5}").statusCode());
-        assertEquals(412, post(homeOwner, homeItem + "/update", "{\"quantity\":5}", "\"v99\"").statusCode());
-        assertEquals(428, post(homeOwner, homeItem + "/delete", null).statusCode());
-        assertEquals(412, post(homeOwner, homeItem + "/delete", null, "\"v99\"").statusCode());
+        assertScopedRefusal(428, home.orgDbId, away.orgDbId, () -> post(homeOwner, homeProjectPath + "/update", projectFields));
+        assertScopedRefusal(412, home.orgDbId, away.orgDbId, () -> post(homeOwner, homeProjectPath + "/update", projectFields, "\"v99\""));
+        assertScopedRefusal(428, home.orgDbId, away.orgDbId, () -> post(homeOwner, homeItem + "/update", "{\"quantity\":5}"));
+        assertScopedRefusal(412, home.orgDbId, away.orgDbId, () -> post(homeOwner, homeItem + "/update", "{\"quantity\":5}", "\"v99\""));
+        assertScopedRefusal(428, home.orgDbId, away.orgDbId, () -> post(homeOwner, homeItem + "/delete", null));
+        assertScopedRefusal(412, home.orgDbId, away.orgDbId, () -> post(homeOwner, homeItem + "/delete", null, "\"v99\""));
 
         assertEquals(beforeProjects, jdbc.queryForList(
                 "SELECT id, name, version, lead_membership_id FROM project WHERE organization_id IN (?,?) ORDER BY id",
@@ -4529,6 +4943,16 @@ class C1IdentityAcceptanceTest {
         }, "All refused ProjectWork writes must leave allocations, movements, receipts and audit untouched");
     }
 
+
+    private HttpResponse<String> assertScopedRefusal(int expected, long firstOrg, long secondOrg,
+            java.util.concurrent.Callable<HttpResponse<String>> request) throws Exception {
+        var before = legacyDenialRows(firstOrg, secondOrg);
+        HttpResponse<String> response = request.call();
+        assertEquals(expected, response.statusCode());
+        assertTrue(before.equals(legacyDenialRows(firstOrg, secondOrg)),
+                "Refused request changed scoped domain rows.");
+        return response;
+    }
 
     @Test @Order(65)
     void C8LeadOptionsFiltersActualMembershipsAndBindsDirectoryCursorsWithoutSqlWrites() throws Exception {
@@ -4582,6 +5006,19 @@ class C1IdentityAcceptanceTest {
                 home.orgDbId).toString();
         long[] homeBefore = stockFactCounts(home.orgDbId), foreignBefore = stockFactCounts(foreign.orgDbId);
 
+        var projectRead = assertGovernanceRefusal(200, home.orgDbId, foreign.orgDbId,
+                () -> get(stock.client, root + "/projects/" + project));
+        var detail = json(projectRead).getAsJsonObject("data");
+        assertEquals(Set.of("id", "name", "startAt", "endAt", "leadMembershipId", "version"), detail.keySet());
+        assertEquals(project.toString(), detail.get("id").getAsString());
+        assertEquals("\"v0\"", projectRead.headers().firstValue("ETag").orElseThrow());
+        assertGovernanceRefusal(404, home.orgDbId, foreign.orgDbId,
+                () -> get(stock.client, root + "/projects/" + foreignProject));
+        assertGovernanceRefusal(403, home.orgDbId, foreign.orgDbId,
+                () -> modernPost(stock, root + "/projects/" + project + "/lead-assignment",
+                        leadAssignment(UUID.randomUUID().toString(), leadOne.membershipPublicId),
+                        "\"v0\"", UUID.randomUUID().toString()));
+        var directoryRowsBefore = governanceDenialRows(home.orgDbId, foreign.orgDbId);
         var response = get(owner.client, directory);
         assertEquals(200, response.statusCode(), response.body());
         var items = json(response).getAsJsonObject("data").getAsJsonArray("items");
@@ -4619,11 +5056,18 @@ class C1IdentityAcceptanceTest {
                 "Cursor must be bound to the specific Project even in the same organization.");
         assertEquals(404, get(owner.client, directory + "?limit=1&search=unrelated&cursor=" + cursor).statusCode(),
                 "Cursor must be bound to the precise directory search.");
-        assertEquals(400, get(owner.client, directory + "?limit=101").statusCode());
+        assertGovernanceRefusal(400, home.orgDbId, foreign.orgDbId,
+                () -> get(owner.client, directory + "?limit=101"));
+        assertGovernanceRefusal(400, home.orgDbId, foreign.orgDbId,
+                () -> get(owner.client, directory + "?limit=0"));
+        assertGovernanceRefusal(400, home.orgDbId, foreign.orgDbId,
+                () -> get(owner.client, directory + "?search=" + "x".repeat(101)));
         assertEquals(400, get(owner.client, directory + "?cursor=%21invalid").statusCode());
         assertTrue(json(get(owner.client, directory + "?search=no-matching-fixture-name"))
                 .getAsJsonObject("data").getAsJsonArray("items").isEmpty());
 
+        assertTrue(directoryRowsBefore.equals(governanceDenialRows(home.orgDbId, foreign.orgDbId)),
+                "Lead option reads and refusals changed scoped rows.");
         assertEquals(membersBefore, jdbc.queryForList(
                 "SELECT id, role, status, version FROM membership WHERE org_id=? ORDER BY id",
                 home.orgDbId).toString());
@@ -4678,6 +5122,858 @@ class C1IdentityAcceptanceTest {
         assertEquals(ownerCount, memberships.countEffectiveActiveOwners(owner.orgDbId));
         assertEquals(401, get(session.client, "/api/v2/session").statusCode());
         assertEquals(401, loginStatus(member.username, member.password));
+    }
+
+    @Test @Order(67)
+    void C8R031RecoveryRotationDenialPreservesCodesAndAuthorizedRotationIsNoStore() throws Exception {
+        Fixture account = newTenant("C8-R031", Membership.Role.OWNER);
+        Session session = login(account.username, account.password);
+        String endpoint = "/api/v2/account/recovery-codes/rotate";
+        String snapshotSql = "SELECT id, HEX(code_hash) AS digest, HEX(batch_id) AS batch, created_at, expires_at, used_at, revoked_at "
+                + "FROM account_recovery_code WHERE user_id=? ORDER BY id";
+        var before = jdbc.queryForList(snapshotSql, account.userDbId);
+        assertEquals(5, before.size());
+        String auditSql = "SELECT COUNT(*) FROM audit_event WHERE actor_user_id=? AND action='RECOVERY_CODES_ROTATED'";
+        long audits = jdbc.queryForObject(auditSql, Long.class, account.userDbId);
+        long version = accounts.findById(account.userDbId).orElseThrow().credentialVersion;
+        HttpResponse<String> denied = post(session, endpoint,
+                GSON.toJson(new CurrentPasswordRequest("deliberately-wrong-password")));
+        assertEquals(401, denied.statusCode());
+        assertEquals("CURRENT_PASSWORD_INVALID", json(denied).get("code").getAsString());
+        assertFalse(json(denied).has("data"));
+        assertTrue(before.equals(jdbc.queryForList(snapshotSql, account.userDbId)), "Denied rotation changed recovery rows.");
+        assertEquals(audits, jdbc.queryForObject(auditSql, Long.class, account.userDbId));
+        assertEquals(version, accounts.findById(account.userDbId).orElseThrow().credentialVersion);
+        assertEquals(200, get(session.client, "/api/v2/session").statusCode());
+        HttpResponse<String> rotated = post(session, endpoint,
+                GSON.toJson(new CurrentPasswordRequest(account.password)));
+        assertEquals(200, rotated.statusCode());
+        assertTrue(rotated.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
+        var data = json(rotated).getAsJsonObject("data");
+        assertEquals(Set.of("codes"), data.keySet());
+        var codes = data.getAsJsonArray("codes");
+        assertEquals(5, codes.size());
+        Set<String> unique = new java.util.HashSet<>();
+        for (var item : codes) {
+            String raw = item.getAsString();
+            assertTrue(unique.add(raw), "Duplicate recovery code.");
+            assertFalse(account.recoveryCodes.contains(raw), "Reused previous recovery code.");
+            assertEquals(1L, jdbc.queryForObject(
+                    "SELECT COUNT(*) FROM account_recovery_code WHERE user_id=? AND code_hash=? AND used_at IS NULL AND revoked_at IS NULL",
+                    Long.class, account.userDbId, C1Secrets.sha256(raw)));
+        }
+        assertEquals(10L, jdbc.queryForObject("SELECT COUNT(*) FROM account_recovery_code WHERE user_id=?", Long.class, account.userDbId));
+        assertEquals(5L, jdbc.queryForObject("SELECT COUNT(*) FROM account_recovery_code WHERE user_id=? AND revoked_at IS NOT NULL", Long.class, account.userDbId));
+        for (String old : account.recoveryCodes)
+            assertEquals(1L, jdbc.queryForObject(
+                    "SELECT COUNT(*) FROM account_recovery_code WHERE user_id=? AND code_hash=? AND revoked_at IS NOT NULL",
+                    Long.class, account.userDbId, C1Secrets.sha256(old)));
+        assertEquals(audits + 1, jdbc.queryForObject(auditSql, Long.class, account.userDbId));
+        assertEquals(version, accounts.findById(account.userDbId).orElseThrow().credentialVersion);
+        assertEquals(200, get(session.client, "/api/v2/session").statusCode());
+        // Never print raw recovery values or hashes in assertions or receipts.
+    }
+
+    @Test @Order(68)
+    void C8R082MemberDirectoryAdminForeignCursorFieldAndReadOnlyBoundaries() throws Exception {
+        Fixture home = newTenant("C8-R082-home", Membership.Role.OWNER);
+        Fixture admin = fixtureInOrg(home.orgDbId, Membership.Role.ADMIN);
+        Fixture member = fixtureInOrg(home.orgDbId, Membership.Role.MEMBER);
+        Fixture foreign = newTenant("C8-R082-foreign", Membership.Role.OWNER);
+        Session ownerSession = login(home.username, home.password);
+        Session adminSession = login(admin.username, admin.password);
+        Session memberSession = login(member.username, member.password);
+        Session foreignSession = login(foreign.username, foreign.password);
+        String endpoint = "/api/v2/orgs/" + home.orgPublicId + "/members";
+        String rows = "SELECT id, org_id, user_id, role, status, version FROM membership WHERE org_id IN (?,?) ORDER BY id";
+        var before = jdbc.queryForList(rows, home.orgDbId, foreign.orgDbId);
+        String auditSql = "SELECT COUNT(*) FROM audit_event WHERE org_id IN (?,?)";
+        long audits = jdbc.queryForObject(auditSql, Long.class, home.orgDbId, foreign.orgDbId);
+        HttpResponse<String> page = get(adminSession.client, endpoint + "?limit=100");
+        assertEquals(200, page.statusCode());
+        assertTrue(page.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
+        var data = json(page).getAsJsonObject("data");
+        assertEquals(Set.of("items", "nextCursor"), data.keySet());
+        assertEquals(3, data.getAsJsonArray("items").size());
+        assertTrue(data.get("nextCursor").isJsonNull());
+        Set<String> ids = new java.util.HashSet<>();
+        for (var item : data.getAsJsonArray("items")) {
+            var row = item.getAsJsonObject();
+            assertEquals(Set.of("id", "displayName", "role", "status", "version"), row.keySet());
+            ids.add(row.get("id").getAsString());
+        }
+        assertEquals(Set.of(home.membershipPublicId.toString(), admin.membershipPublicId.toString(),
+                member.membershipPublicId.toString()), ids);
+        var ownerPage = json(get(ownerSession.client, endpoint + "?limit=100")).getAsJsonObject("data");
+        assertEquals(data, ownerPage);
+        var first = json(get(adminSession.client, endpoint + "?limit=1")).getAsJsonObject("data");
+        assertEquals(1, first.getAsJsonArray("items").size());
+        assertFalse(first.get("nextCursor").isJsonNull());
+        assertEquals(first, json(get(adminSession.client, endpoint + "?limit=0")).getAsJsonObject("data"));
+        assertEquals(data, json(get(adminSession.client, endpoint + "?limit=101")).getAsJsonObject("data"));
+        assertEquals(404, get(adminSession.client, endpoint + "?cursor=" + foreign.membershipPublicId).statusCode());
+        assertEquals(403, get(memberSession.client, endpoint).statusCode());
+        assertEquals(404, get(foreignSession.client, endpoint).statusCode());
+        assertTrue(before.equals(jdbc.queryForList(rows, home.orgDbId, foreign.orgDbId)), "Directory reads changed memberships.");
+        assertEquals(audits, jdbc.queryForObject(auditSql, Long.class, home.orgDbId, foreign.orgDbId));
+        // Small-page clamp compatibility is covered, but >100-row truncation
+        // and complete cross-table read-only proof are separate evidence gaps.
+    }
+
+    @Test @Order(69)
+    void C8R078InvitationRevocationChecksVersionRoleExpiryAndExactRows() throws Exception {
+        Fixture home = newTenant("C8-R078-home", Membership.Role.OWNER);
+        Fixture admin = fixtureInOrg(home.orgDbId, Membership.Role.ADMIN);
+        Session owner = login(home.username, home.password);
+        Session officer = login(admin.username, admin.password);
+        String root = "/api/v2/orgs/" + home.orgPublicId;
+        HttpResponse<String> created = post(owner, root + "/invitations", GSON.toJson(new RoleRequest("MEMBER")));
+        assertEquals(201, created.statusCode());
+        var view = json(created).getAsJsonObject("data");
+        UUID id = UUID.fromString(view.get("id").getAsString());
+        String tag = created.headers().firstValue("ETag").orElseThrow();
+        String revoke = root + "/invitations/" + id + "/revoke";
+        String sql = "SELECT id,org_id,role,status,HEX(token_hash) AS digest,version,created_at,updated_at,expires_at,accepted_by_user_id FROM invitation WHERE org_id=? ORDER BY id";
+        String audit = "SELECT COUNT(*) FROM audit_event WHERE org_id=?";
+        var before = jdbc.queryForList(sql, home.orgDbId);
+        long auditBefore = jdbc.queryForObject(audit, Long.class, home.orgDbId);
+        LocalDateTime storedExpiry = invitations.findByOrganizationIdAndPublicId(home.orgDbId, id).orElseThrow().expiresAt;
+        assertEquals(428, post(owner, revoke, "").statusCode());
+        assertEquals(400, post(owner, revoke, "", "W/\"v0\"").statusCode());
+        assertEquals(412, post(owner, revoke, "", "\"v999\"").statusCode());
+        assertTrue(before.equals(jdbc.queryForList(sql, home.orgDbId)), "Denied revocation changed invitation rows.");
+        assertEquals(auditBefore, jdbc.queryForObject(audit, Long.class, home.orgDbId));
+        HttpResponse<String> revoked = post(officer, revoke, "", tag);
+        assertEquals(200, revoked.statusCode());
+        var result = json(revoked).getAsJsonObject("data");
+        assertEquals(id.toString(), result.get("id").getAsString());
+        assertEquals(home.orgPublicId.toString(), result.get("organizationId").getAsString());
+        assertEquals("MEMBER", result.get("role").getAsString());
+        assertEquals("REVOKED", result.get("status").getAsString());
+        assertTrue(!result.has("bearerToken") || result.get("bearerToken").isJsonNull());
+        // Creation returns the managed entity's nanosecond timestamp; MySQL
+        // DATETIME(6) stores microseconds. Compare persisted expiration exactly
+        // and bound the creation/storage discrepancy to sub-microsecond rounding.
+        LocalDateTime createdExpiry = LocalDateTime.parse(view.get("expiresAt").getAsString());
+        assertTrue(java.time.Duration.between(createdExpiry, storedExpiry).abs().toNanos() < 1000,
+                "Creation expiration differs from stored expiration by at least one microsecond.");
+        assertEquals(storedExpiry, LocalDateTime.parse(result.get("expiresAt").getAsString()));
+        assertEquals(storedExpiry, invitations.findByOrganizationIdAndPublicId(home.orgDbId, id).orElseThrow().expiresAt);
+        assertEquals(view.get("version").getAsLong() + 1, result.get("version").getAsLong());
+        String next = revoked.headers().firstValue("ETag").orElseThrow();
+        assertEquals("\"v" + result.get("version").getAsLong() + "\"", next);
+        assertEquals(Invitation.Status.REVOKED, invitations.findByOrganizationIdAndPublicId(home.orgDbId, id).orElseThrow().status);
+        assertEquals(auditBefore + 1, jdbc.queryForObject(audit, Long.class, home.orgDbId));
+        before = jdbc.queryForList(sql, home.orgDbId);
+        auditBefore = jdbc.queryForObject(audit, Long.class, home.orgDbId);
+        assertEquals(409, post(owner, revoke, "", next).statusCode());
+        assertTrue(before.equals(jdbc.queryForList(sql, home.orgDbId)));
+        assertEquals(auditBefore, jdbc.queryForObject(audit, Long.class, home.orgDbId));
+        HttpResponse<String> adminInvite = post(owner, root + "/invitations", GSON.toJson(new RoleRequest("ADMIN")));
+        assertEquals(201, adminInvite.statusCode());
+        String adminRevoke = root + "/invitations/" + json(adminInvite).getAsJsonObject("data").get("id").getAsString() + "/revoke";
+        before = jdbc.queryForList(sql, home.orgDbId);
+        auditBefore = jdbc.queryForObject(audit, Long.class, home.orgDbId);
+        assertEquals(403, post(officer, adminRevoke, "", adminInvite.headers().firstValue("ETag").orElseThrow()).statusCode());
+        assertTrue(before.equals(jdbc.queryForList(sql, home.orgDbId)));
+        assertEquals(auditBefore, jdbc.queryForObject(audit, Long.class, home.orgDbId));
+    }
+
+    @Test @Order(70)
+    void C8R041ExpiredInvitationCannotRevokeOrRedeemBeforeWorkerRuns() throws Exception {
+        Fixture home = newTenant("C8-R041-home", Membership.Role.OWNER);
+        Fixture outsider = newTenant("C8-R041-outsider", Membership.Role.OWNER);
+        Session owner = login(home.username, home.password);
+        Session foreign = login(outsider.username, outsider.password);
+        String root = "/api/v2/orgs/" + home.orgPublicId;
+        HttpResponse<String> issued = post(owner, root + "/invitations", GSON.toJson(new RoleRequest("LEAD")));
+        assertEquals(201, issued.statusCode());
+        var view = json(issued).getAsJsonObject("data");
+        UUID id = UUID.fromString(view.get("id").getAsString());
+        String token = view.get("bearerToken").getAsString();
+        Invitation row = invitations.findByOrganizationIdAndPublicId(home.orgDbId, id).orElseThrow();
+        // Existing acceptance fixture technique, confined to this fresh fictional invitation.
+        LocalDateTime past = now().minusMinutes(1);
+        assertEquals(1, jdbc.update("UPDATE invitation SET created_at=?,expires_at=? WHERE id=?",
+                Timestamp.valueOf(past.minusMinutes(1)), Timestamp.valueOf(past), row.id));
+        String sql = "SELECT id,status,version,created_at,updated_at,expires_at,accepted_by_user_id,HEX(token_hash) AS digest FROM invitation WHERE id=?";
+        var before = jdbc.queryForList(sql, row.id);
+        long members = memberships.count();
+        long users = accounts.count();
+        long codes = recoveryCodes.count();
+        long audits = jdbc.queryForObject("SELECT COUNT(*) FROM audit_event WHERE org_id=?", Long.class, home.orgDbId);
+        assertEquals(Invitation.Status.INVITED, invitations.findById(row.id).orElseThrow().status);
+        assertEquals(409, post(owner, root + "/invitations/" + id + "/revoke", "",
+                issued.headers().firstValue("ETag").orElseThrow()).statusCode());
+        HttpResponse<String> denied = post(foreign, "/api/v2/invitations/redeem", GSON.toJson(new TokenRequest(token)));
+        assertEquals(404, denied.statusCode());
+        assertEquals("INVITE_INVALID", json(denied).get("code").getAsString());
+        assertFalse(json(denied).has("data"));
+        HttpClient anonymous = newClient();
+        String csrf = json(get(anonymous, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();
+        String username = "expired-" + UUID.randomUUID();
+        HttpResponse<String> newAccount = post(anonymous, "/api/v2/invitations/redeem",
+                GSON.toJson(new RedeemRequest(token, username, "Fictional-Password-" + UUID.randomUUID(), "Expired invitee")), csrf, origin());
+        assertEquals(404, newAccount.statusCode());
+        assertEquals("INVITE_INVALID", json(newAccount).get("code").getAsString());
+        assertEquals(401, get(anonymous, "/api/v2/session").statusCode());
+        assertEquals(200, get(foreign.client, "/api/v2/session").statusCode());
+        assertTrue(accounts.findByUsernameKey(username).isEmpty());
+        assertEquals(members, memberships.count());
+        assertEquals(users, accounts.count());
+        assertEquals(codes, recoveryCodes.count());
+        assertEquals(audits, jdbc.queryForObject("SELECT COUNT(*) FROM audit_event WHERE org_id=?", Long.class, home.orgDbId));
+        assertTrue(before.equals(jdbc.queryForList(sql, row.id)), "Expired invitation denial changed the row.");
+        // No raw invitation token in output or assertion messages.
+    }
+
+    @Test @Order(71)
+    void C8R083R084TransferStartAndRevokePreconditionsPreserveOwnership() throws Exception {
+        Fixture home = newTenant("C8-transfer-home", Membership.Role.OWNER);
+        Fixture admin = fixtureInOrg(home.orgDbId, Membership.Role.ADMIN);
+        Fixture member = fixtureInOrg(home.orgDbId, Membership.Role.MEMBER);
+        Fixture other = newTenant("C8-transfer-other", Membership.Role.OWNER);
+        Fixture otherAdmin = fixtureInOrg(other.orgDbId, Membership.Role.ADMIN);
+        Session owner = login(home.username, home.password);
+        Session foreign = login(other.username, other.password);
+        String root = "/api/v2/orgs/" + home.orgPublicId;
+        String start = root + "/transfer-ownership";
+        String rows = "SELECT id,org_id,from_membership_id,to_membership_id,status,version,created_at,expires_at,accepted_at FROM ownership_transfer WHERE org_id IN (?,?) ORDER BY id";
+        String roles = "SELECT id,org_id,user_id,role,status,version FROM membership WHERE org_id IN (?,?) ORDER BY id";
+        String audit = "SELECT COUNT(*) FROM audit_event WHERE org_id IN (?,?)";
+        var before = jdbc.queryForList(rows, home.orgDbId, other.orgDbId);
+        var rolesBefore = jdbc.queryForList(roles, home.orgDbId, other.orgDbId);
+        long auditBefore = jdbc.queryForObject(audit, Long.class, home.orgDbId, other.orgDbId);
+        assertEquals(401, post(owner, start, GSON.toJson(new TransferRequest(admin.membershipPublicId, "wrong-password"))).statusCode());
+        assertEquals(409, post(owner, start, GSON.toJson(new TransferRequest(member.membershipPublicId, home.password))).statusCode());
+        assertEquals(404, post(owner, start, GSON.toJson(new TransferRequest(otherAdmin.membershipPublicId, home.password))).statusCode());
+        assertTrue(before.equals(jdbc.queryForList(rows, home.orgDbId, other.orgDbId)));
+        assertTrue(rolesBefore.equals(jdbc.queryForList(roles, home.orgDbId, other.orgDbId)));
+        assertEquals(auditBefore, jdbc.queryForObject(audit, Long.class, home.orgDbId, other.orgDbId));
+        HttpResponse<String> issued = post(owner, start, GSON.toJson(new TransferRequest(admin.membershipPublicId, home.password)));
+        assertEquals(201, issued.statusCode());
+        var view = json(issued).getAsJsonObject("data");
+        assertEquals("PENDING", view.get("status").getAsString());
+        assertEquals(home.orgPublicId.toString(), view.get("organizationId").getAsString());
+        assertEquals(home.membershipPublicId.toString(), view.get("fromMembershipId").getAsString());
+        assertEquals(admin.membershipPublicId.toString(), view.get("toMembershipId").getAsString());
+        assertTrue(!view.has("acceptedAt") || view.get("acceptedAt").isJsonNull());
+        String tag = issued.headers().firstValue("ETag").orElseThrow();
+        assertEquals("\"v" + view.get("version").getAsLong() + "\"", tag);
+        assertEquals(auditBefore + 1, jdbc.queryForObject(audit, Long.class, home.orgDbId, other.orgDbId));
+        assertTrue(rolesBefore.equals(jdbc.queryForList(roles, home.orgDbId, other.orgDbId)));
+        String id = view.get("id").getAsString();
+        String revoke = root + "/transfers/" + id + "/revoke";
+        before = jdbc.queryForList(rows, home.orgDbId, other.orgDbId);
+        auditBefore = jdbc.queryForObject(audit, Long.class, home.orgDbId, other.orgDbId);
+        assertEquals(428, post(owner, revoke, "").statusCode());
+        assertEquals(400, post(owner, revoke, "", "W/\"v0\"").statusCode());
+        assertEquals(412, post(owner, revoke, "", "\"v999\"").statusCode());
+        assertEquals(404, post(foreign, "/api/v2/orgs/" + other.orgPublicId + "/transfers/" + id + "/revoke", "", tag).statusCode());
+        assertTrue(before.equals(jdbc.queryForList(rows, home.orgDbId, other.orgDbId)));
+        assertEquals(auditBefore, jdbc.queryForObject(audit, Long.class, home.orgDbId, other.orgDbId));
+        HttpResponse<String> revoked = post(owner, revoke, "", tag);
+        assertEquals(200, revoked.statusCode());
+        var result = json(revoked).getAsJsonObject("data");
+        assertEquals("REVOKED", result.get("status").getAsString());
+        assertEquals(id, result.get("id").getAsString());
+        assertEquals(view.get("version").getAsLong() + 1, result.get("version").getAsLong());
+        String current = revoked.headers().firstValue("ETag").orElseThrow();
+        assertEquals("\"v" + result.get("version").getAsLong() + "\"", current);
+        assertEquals(OwnershipTransfer.Status.REVOKED, transfers.findByOrganizationIdAndPublicId(home.orgDbId, UUID.fromString(id)).orElseThrow().status);
+        assertEquals(auditBefore + 1, jdbc.queryForObject(audit, Long.class, home.orgDbId, other.orgDbId));
+        before = jdbc.queryForList(rows, home.orgDbId, other.orgDbId);
+        auditBefore = jdbc.queryForObject(audit, Long.class, home.orgDbId, other.orgDbId);
+        assertEquals(409, post(owner, revoke, "", current).statusCode());
+        assertTrue(before.equals(jdbc.queryForList(rows, home.orgDbId, other.orgDbId)));
+        assertEquals(auditBefore, jdbc.queryForObject(audit, Long.class, home.orgDbId, other.orgDbId));
+        assertTrue(rolesBefore.equals(jdbc.queryForList(roles, home.orgDbId, other.orgDbId)));
+        assertEquals(1, memberships.countEffectiveActiveOwners(home.orgDbId));
+        assertEquals(1, memberships.countEffectiveActiveOwners(other.orgDbId));
+    }
+
+    @Test @Order(72)
+    void C8R089R091DepartmentAndProjectCursorsBindToWorkspaceAndQuery() throws Exception {
+        Fixture home = newTenant("C8-pages-directed-home", Membership.Role.OWNER);
+        Fixture other = newTenant("C8-pages-directed-other", Membership.Role.OWNER);
+        Fixture member = fixtureInOrg(home.orgDbId, Membership.Role.MEMBER);
+        Session owner = login(home.username, home.password);
+        Session outsider = login(other.username, other.password);
+        Session reader = login(member.username, member.password);
+        List<Long> departmentIds = new ArrayList<>();
+        for (String name : List.of("Directed Alpha", "Directed Beta", "Separate Gamma")) {
+            HttpResponse<String> created = post(owner, "/api/departments", GSON.toJson(new NameRequest(name)));
+            assertEquals(201, created.statusCode());
+            departmentIds.add(json(created).get("id").getAsLong());
+        }
+        List<Long> projectIds = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            HttpResponse<String> created = post(owner, "/api/projects", GSON.toJson(new ProjectRequest(
+                    departmentIds.get(i == 2 ? 1 : 0), "Directed Project " + i,
+                    "2040-12-10T10:00:00", "2040-12-10T11:00:00")));
+            assertEquals(201, created.statusCode());
+            projectIds.add(json(created).get("id").getAsLong());
+        }
+        HttpResponse<String> foreignDepartment = post(outsider, "/api/departments", GSON.toJson(new NameRequest("Directed Foreign")));
+        assertEquals(201, foreignDepartment.statusCode());
+        long foreignId = json(foreignDepartment).get("id").getAsLong();
+        assertEquals(201, post(outsider, "/api/projects", GSON.toJson(new ProjectRequest(foreignId,
+                "Directed Foreign Project", "2040-12-10T10:00:00", "2040-12-10T11:00:00"))).statusCode());
+
+        String deptSql = "SELECT id,organization_id,name,name_key,version FROM department WHERE organization_id IN (?,?) ORDER BY id";
+        String projectSql = "SELECT id,organization_id,department_id,name,HEX(public_id) AS public_id,version,start_at,end_at,lead_membership_id FROM project WHERE organization_id IN (?,?) ORDER BY id";
+        var deptBefore = jdbc.queryForList(deptSql, home.orgDbId, other.orgDbId);
+        var projectBefore = jdbc.queryForList(projectSql, home.orgDbId, other.orgDbId);
+        long[] homeBefore = stockFactCounts(home.orgDbId), otherBefore = stockFactCounts(other.orgDbId);
+        String departments = "/api/v2/workspace/departments";
+        String projects = "/api/v2/workspace/projects";
+
+        var first = workspacePage(reader, departments + "?search=directed&limit=1");
+        assertEquals(Set.of("items", "nextCursor"), first.keySet());
+        assertEquals(1, first.getAsJsonArray("items").size());
+        var firstDept = first.getAsJsonArray("items").get(0).getAsJsonObject();
+        assertEquals(Set.of("id", "name"), firstDept.keySet());
+        assertEquals(departmentIds.get(0).longValue(), firstDept.get("id").getAsLong());
+        String dc = first.get("nextCursor").getAsString();
+        var second = workspacePage(reader, departments + "?search=DIRECTED&limit=1&cursor=" + dc);
+        assertEquals(1, second.getAsJsonArray("items").size());
+        assertEquals(departmentIds.get(1).longValue(), second.getAsJsonArray("items").get(0).getAsJsonObject().get("id").getAsLong());
+        assertTrue(second.get("nextCursor").isJsonNull());
+        assertEquals(404, get(reader.client, departments + "?search=separate&cursor=" + dc).statusCode());
+        assertEquals(404, get(outsider.client, departments + "?search=directed&cursor=" + dc).statusCode());
+        assertEquals(400, get(reader.client, departments + "?limit=0").statusCode());
+        assertEquals(400, get(reader.client, departments + "?limit=101").statusCode());
+        var allDepartments = workspacePage(reader, departments + "?limit=100");
+        assertEquals(departmentIds, allDepartments.getAsJsonArray("items").asList().stream()
+                .map(x -> x.getAsJsonObject().get("id").getAsLong()).toList());
+        assertTrue(allDepartments.get("nextCursor").isJsonNull());
+
+        String projectQuery = projects + "?departmentId=" + departmentIds.get(0) + "&period=UPCOMING&search=directed&limit=1";
+        var firstProjectPage = workspacePage(reader, projectQuery);
+        assertEquals(Set.of("items", "nextCursor"), firstProjectPage.keySet());
+        assertEquals(1, firstProjectPage.getAsJsonArray("items").size());
+        var firstProject = firstProjectPage.getAsJsonArray("items").get(0).getAsJsonObject();
+        assertEquals(Set.of("id", "departmentId", "name", "startAt", "endAt", "departmentName"), firstProject.keySet());
+        assertEquals(projectIds.get(0).longValue(), firstProject.get("id").getAsLong());
+        assertEquals("Directed Alpha", firstProject.get("departmentName").getAsString());
+        String pc = firstProjectPage.get("nextCursor").getAsString();
+        var secondProjectPage = workspacePage(reader, projectQuery + "&cursor=" + pc);
+        assertEquals(1, secondProjectPage.getAsJsonArray("items").size());
+        assertEquals(projectIds.get(1).longValue(), secondProjectPage.getAsJsonArray("items").get(0).getAsJsonObject().get("id").getAsLong());
+        assertTrue(secondProjectPage.get("nextCursor").isJsonNull());
+        assertEquals(404, get(reader.client, projects + "?departmentId=" + departmentIds.get(1) + "&period=UPCOMING&search=directed&cursor=" + pc).statusCode());
+        assertEquals(404, get(reader.client, projects + "?departmentId=" + departmentIds.get(0) + "&period=ACTIVE&search=directed&cursor=" + pc).statusCode());
+        assertEquals(404, get(reader.client, projects + "?departmentId=" + departmentIds.get(0) + "&period=UPCOMING&search=other&cursor=" + pc).statusCode());
+        assertEquals(404, get(outsider.client, projects + "?departmentId=" + foreignId + "&period=UPCOMING&search=directed&cursor=" + pc).statusCode());
+        assertEquals(404, get(reader.client, departments + "?cursor=" + pc).statusCode());
+        assertEquals(400, get(reader.client, projects + "?limit=101").statusCode());
+        var allProjects = workspacePage(reader, projects + "?limit=100");
+        assertEquals(projectIds, allProjects.getAsJsonArray("items").asList().stream()
+                .map(x -> x.getAsJsonObject().get("id").getAsLong()).toList());
+        assertTrue(allProjects.get("nextCursor").isJsonNull());
+        assertTrue(deptBefore.equals(jdbc.queryForList(deptSql, home.orgDbId, other.orgDbId)));
+        assertTrue(projectBefore.equals(jdbc.queryForList(projectSql, home.orgDbId, other.orgDbId)));
+        assertArrayEquals(homeBefore, stockFactCounts(home.orgDbId));
+        assertArrayEquals(otherBefore, stockFactCounts(other.orgDbId));
+    }
+
+    @Test @Order(73)
+    void C8R017AdminProjectCreationValidatesTimeAndPreservesRowsOnRefusal() throws Exception {
+        Fixture home = newTenant("C8-project-create-home", Membership.Role.OWNER);
+        Fixture other = newTenant("C8-project-create-other", Membership.Role.OWNER);
+        Fixture admin = fixtureInOrg(home.orgDbId, Membership.Role.ADMIN);
+        Fixture member = fixtureInOrg(home.orgDbId, Membership.Role.MEMBER);
+        Session owner = login(home.username, home.password);
+        Session outsider = login(other.username, other.password);
+        Session officer = login(admin.username, admin.password);
+        Session reader = login(member.username, member.password);
+        HttpResponse<String> department = post(owner, "/api/departments", GSON.toJson(new NameRequest("Project fixture department")));
+        assertEquals(201, department.statusCode());
+        long departmentId = json(department).get("id").getAsLong();
+        HttpResponse<String> foreign = post(outsider, "/api/departments", GSON.toJson(new NameRequest("Foreign fixture department")));
+        assertEquals(201, foreign.statusCode());
+        long foreignId = json(foreign).get("id").getAsLong();
+        String sql = "SELECT id,organization_id,department_id,name,HEX(public_id) AS public_id,version,start_at,end_at,lead_membership_id FROM project WHERE organization_id IN (?,?) ORDER BY id";
+        var before = jdbc.queryForList(sql, home.orgDbId, other.orgDbId);
+        long[] homeFacts = stockFactCounts(home.orgDbId), otherFacts = stockFactCounts(other.orgDbId);
+        String start = "2040-12-10T10:00:00", end = "2040-12-10T11:00:00";
+        for (ProjectRequest invalid : List.of(
+                new ProjectRequest(departmentId, "Malformed start", "not-a-date", end),
+                new ProjectRequest(departmentId, "Malformed end", start, "not-a-date"),
+                new ProjectRequest(departmentId, "Equal time", start, start),
+                new ProjectRequest(departmentId, "Reverse time", end, start),
+                new ProjectRequest(departmentId, "Past start", "2000-01-01T10:00:00", end))) {
+            HttpResponse<String> rejected = post(officer, "/api/projects", GSON.toJson(invalid));
+            assertEquals(400, rejected.statusCode());
+            assertEquals("VALIDATION_FAILED", json(rejected).get("code").getAsString());
+            assertEquals(before, jdbc.queryForList(sql, home.orgDbId, other.orgDbId));
+            assertArrayEquals(homeFacts, stockFactCounts(home.orgDbId));
+            assertArrayEquals(otherFacts, stockFactCounts(other.orgDbId));
+        }
+        assertEquals(404, post(officer, "/api/projects", GSON.toJson(new ProjectRequest(foreignId, "Foreign", start, end))).statusCode());
+        assertEquals(403, post(reader, "/api/projects", GSON.toJson(new ProjectRequest(departmentId, "Denied member", start, end))).statusCode());
+        assertEquals(before, jdbc.queryForList(sql, home.orgDbId, other.orgDbId));
+        assertArrayEquals(homeFacts, stockFactCounts(home.orgDbId));
+        assertArrayEquals(otherFacts, stockFactCounts(other.orgDbId));
+        HttpResponse<String> created = post(officer, "/api/projects",
+                GSON.toJson(new ProjectRequest(departmentId, "  Fictional  admin project  ", start, end)));
+        assertEquals(201, created.statusCode());
+        var view = json(created);
+        assertEquals(Set.of("id", "departmentId", "name", "startAt", "endAt"), view.keySet());
+        assertEquals(departmentId, view.get("departmentId").getAsLong());
+        assertEquals("Fictional admin project", view.get("name").getAsString());
+        assertEquals(start, view.get("startAt").getAsString());
+        assertEquals(end, view.get("endAt").getAsString());
+        long id = view.get("id").getAsLong();
+        var rows = jdbc.queryForList(sql, home.orgDbId, other.orgDbId);
+        assertEquals(before.size() + 1, rows.size());
+        assertEquals(before, rows.stream().filter(row -> ((Number) row.get("id")).longValue() != id).toList());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM project WHERE id=? AND organization_id=? AND department_id=? AND name=? AND start_at=? AND end_at=? AND version=0 AND lead_membership_id IS NULL",
+                Integer.class, id, home.orgDbId, departmentId, "Fictional admin project",
+                Timestamp.valueOf(LocalDateTime.parse(start)), Timestamp.valueOf(LocalDateTime.parse(end))));
+        // Legacy createProject does not append a governance or stock event.
+        assertArrayEquals(homeFacts, stockFactCounts(home.orgDbId));
+        assertArrayEquals(otherFacts, stockFactCounts(other.orgDbId));
+    }
+
+    @Test @Order(74)
+    void C8R040V2DepartmentCreationNormalizesNamesAndRejectsScopedConflicts() throws Exception {
+        Fixture home = newTenant("C8-department-create-home", Membership.Role.OWNER);
+        Fixture other = newTenant("C8-department-create-other", Membership.Role.OWNER);
+        Fixture admin = fixtureInOrg(home.orgDbId, Membership.Role.ADMIN);
+        Fixture member = fixtureInOrg(home.orgDbId, Membership.Role.MEMBER);
+        Session officer = login(admin.username, admin.password);
+        Session outsider = login(other.username, other.password);
+        Session reader = login(member.username, member.password);
+        String path = "/api/v2/departments";
+        String sql = "SELECT id,organization_id,name,name_key,version FROM department WHERE organization_id IN (?,?) ORDER BY id";
+        HttpResponse<String> foreign = post(outsider, path, GSON.toJson(new NameRequest("Fictional shared name")));
+        assertEquals(201, foreign.statusCode());
+        var before = jdbc.queryForList(sql, home.orgDbId, other.orgDbId);
+        long[] homeFacts = stockFactCounts(home.orgDbId), otherFacts = stockFactCounts(other.orgDbId);
+        HttpResponse<String> created = post(officer, path, GSON.toJson(new NameRequest("  Fictional   shared name  ")));
+        assertEquals(201, created.statusCode());
+        var view = json(created);
+        assertEquals(Set.of("id", "name"), view.keySet());
+        assertEquals("Fictional shared name", view.get("name").getAsString());
+        long id = view.get("id").getAsLong();
+        var rows = jdbc.queryForList(sql, home.orgDbId, other.orgDbId);
+        assertEquals(before.size() + 1, rows.size());
+        assertEquals(before, rows.stream().filter(row -> ((Number) row.get("id")).longValue() != id).toList());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM department WHERE id=? AND organization_id=? AND name=? AND name_key=? AND version=0",
+                Integer.class, id, home.orgDbId, "Fictional shared name", "fictional shared name"));
+        assertArrayEquals(homeFacts, stockFactCounts(home.orgDbId));
+        assertArrayEquals(otherFacts, stockFactCounts(other.orgDbId));
+        HttpResponse<String> duplicate = post(officer, path, GSON.toJson(new NameRequest("FICTIONAL SHARED NAME")));
+        assertEquals(409, duplicate.statusCode());
+        assertEquals("DATA_CONFLICT", json(duplicate).get("code").getAsString());
+        assertEquals(rows, jdbc.queryForList(sql, home.orgDbId, other.orgDbId));
+        for (String invalid : List.of("", "   ", "x".repeat(101))) {
+            HttpResponse<String> rejected = post(officer, path, GSON.toJson(new NameRequest(invalid)));
+            assertEquals(400, rejected.statusCode());
+            assertEquals("VALIDATION_FAILED", json(rejected).get("code").getAsString());
+            assertEquals(rows, jdbc.queryForList(sql, home.orgDbId, other.orgDbId));
+        }
+        assertEquals(403, post(reader, path, GSON.toJson(new NameRequest("Denied member"))).statusCode());
+        assertEquals(rows, jdbc.queryForList(sql, home.orgDbId, other.orgDbId));
+        assertArrayEquals(homeFacts, stockFactCounts(home.orgDbId));
+        assertArrayEquals(otherFacts, stockFactCounts(other.orgDbId));
+    }
+
+    @Test @Order(75)
+    void C8R025CustodianImageWritePreservesExactBytesAcrossRefusals() throws Exception {
+        Fixture home = newTenant("C8-image-directed-home", Membership.Role.OWNER);
+        Fixture other = newTenant("C8-image-directed-other", Membership.Role.OWNER);
+        Fixture custodian = fixtureInOrg(home.orgDbId, Membership.Role.CUSTODIAN);
+        Fixture admin = fixtureInOrg(home.orgDbId, Membership.Role.ADMIN);
+        Fixture member = fixtureInOrg(home.orgDbId, Membership.Role.MEMBER);
+        Session owner = login(home.username, home.password);
+        Session outsider = login(other.username, other.password);
+        Session keeper = login(custodian.username, custodian.password);
+        Session officer = login(admin.username, admin.password);
+        Session reader = login(member.username, member.password);
+        HttpResponse<String> created = post(owner, "/api/resources",
+                GSON.toJson(new ResourceRequest("Directed fictional image resource", "REUSABLE", 0)));
+        assertEquals(201, created.statusCode());
+        long resourceId = json(created).get("id").getAsLong();
+        HttpResponse<String> foreign = post(outsider, "/api/resources",
+                GSON.toJson(new ResourceRequest("Foreign fictional image resource", "REUSABLE", 0)));
+        assertEquals(201, foreign.statusCode());
+        long foreignId = json(foreign).get("id").getAsLong();
+        String imagePath = "/api/resources/" + resourceId + "/image";
+        String foreignPath = "/api/resources/" + foreignId + "/image";
+        String sql = "SELECT id,organization_id,HEX(public_id) AS public_id,name,name_key,type,total_quantity,version,"
+                + "HEX(image_bytes) AS image_hex,image_content_type FROM resource WHERE organization_id IN (?,?) ORDER BY id";
+        var initial = jdbc.queryForList(sql, home.orgDbId, other.orgDbId);
+        long[] homeFacts = stockFactCounts(home.orgDbId), otherFacts = stockFactCounts(other.orgDbId);
+        byte[] jpeg = noisyJpeg();
+        byte[] png = tinyPng();
+        String digest = java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(jpeg));
+        HttpResponse<String> uploaded = multipartPost(keeper, imagePath, "image/jpeg", jpeg);
+        assertEquals(200, uploaded.statusCode());
+        var view = json(uploaded);
+        assertEquals(Set.of("resourceId", "contentType", "sizeBytes", "sha256"), view.keySet());
+        assertEquals(resourceId, view.get("resourceId").getAsLong());
+        assertEquals("image/jpeg", view.get("contentType").getAsString());
+        assertEquals(jpeg.length, view.get("sizeBytes").getAsInt());
+        assertEquals(digest, view.get("sha256").getAsString());
+        var accepted = jdbc.queryForList(sql, home.orgDbId, other.orgDbId);
+        assertEquals(initial.size(), accepted.size());
+        var expected = initial.stream().map(row -> {
+            var copy = new java.util.LinkedHashMap<String, Object>(row);
+            if (((Number) copy.get("id")).longValue() == resourceId) {
+                copy.put("version", ((Number) copy.get("version")).longValue() + 1);
+                copy.put("image_hex", java.util.HexFormat.of().withUpperCase().formatHex(jpeg));
+                copy.put("image_content_type", "image/jpeg");
+            }
+            return copy;
+        }).toList();
+        // Compare numeric versions without assuming the JDBC integer wrapper type.
+        assertTrue(expected.stream().allMatch(row -> accepted.stream().anyMatch(actual ->
+                ((Number) actual.get("id")).longValue() == ((Number) row.get("id")).longValue()
+                && ((Number) actual.get("version")).longValue() == ((Number) row.get("version")).longValue()
+                && row.entrySet().stream().filter(entry -> !entry.getKey().equals("version"))
+                        .allMatch(entry -> java.util.Objects.equals(entry.getValue(), actual.get(entry.getKey()))))),
+                "Image upload changed unexpected resource fields.");
+        assertR025PreservedImage(reader, imagePath, jpeg, accepted, sql, home, other, resourceId, homeFacts, otherFacts);
+        assertEquals(403, multipartPost(officer, imagePath, "image/png", png).statusCode());
+        assertR025PreservedImage(reader, imagePath, jpeg, accepted, sql, home, other, resourceId, homeFacts, otherFacts);
+        assertEquals(403, multipartPost(reader, imagePath, "image/png", png).statusCode());
+        assertR025PreservedImage(reader, imagePath, jpeg, accepted, sql, home, other, resourceId, homeFacts, otherFacts);
+        assertEquals(404, multipartPost(outsider, imagePath, "image/png", png).statusCode());
+        assertR025PreservedImage(reader, imagePath, jpeg, accepted, sql, home, other, resourceId, homeFacts, otherFacts);
+        assertEquals(404, multipartPost(keeper, foreignPath, "image/png", png).statusCode());
+        assertR025PreservedImage(reader, imagePath, jpeg, accepted, sql, home, other, resourceId, homeFacts, otherFacts);
+        assertEquals(403, multipartPost(keeper, imagePath, "image/png", png, false).statusCode());
+        assertR025PreservedImage(reader, imagePath, jpeg, accepted, sql, home, other, resourceId, homeFacts, otherFacts);
+        assertEquals(400, multipartPost(keeper, imagePath, "image/jpeg", png).statusCode());
+        assertR025PreservedImage(reader, imagePath, jpeg, accepted, sql, home, other, resourceId, homeFacts, otherFacts);
+        assertEquals(413, multipartPost(keeper, imagePath, "image/png", new byte[ResourceImageSupport.MAX_BYTES + 1]).statusCode());
+        assertR025PreservedImage(reader, imagePath, jpeg, accepted, sql, home, other, resourceId, homeFacts, otherFacts);
+        assertEquals(404, get(outsider.client, imagePath).statusCode());
+        assertR025PreservedImage(reader, imagePath, jpeg, accepted, sql, home, other, resourceId, homeFacts, otherFacts);
+        String modernImageDelete = "/api/v2/orgs/" + home.orgPublicId + "/resources/"
+                + resourceRepository.findById(resourceId).orElseThrow().publicId + "/image/delete";
+        String version = get(keeper.client, modernImageDelete.replace("/image/delete", ""))
+                .headers().firstValue("ETag").orElseThrow();
+        assertGovernanceRefusal(403, home.orgDbId, other.orgDbId,
+                () -> post(officer, modernImageDelete, null, version));
+        assertR025PreservedImage(reader, imagePath, jpeg, accepted, sql, home, other, resourceId, homeFacts, otherFacts);
+        assertGovernanceRefusal(412, home.orgDbId, other.orgDbId,
+                () -> post(keeper, modernImageDelete, null, "\"v999\""));
+        assertR025PreservedImage(reader, imagePath, jpeg, accepted, sql, home, other, resourceId, homeFacts, otherFacts);
+        var removed = post(keeper, modernImageDelete, null, version);
+        assertEquals(200, removed.statusCode(), removed.body());
+        assertNull(jdbc.queryForObject("SELECT image_bytes FROM resource WHERE id=?", byte[].class, resourceId));
+        assertNull(jdbc.queryForObject("SELECT image_content_type FROM resource WHERE id=?", String.class, resourceId));
+        assertEquals(404, get(reader.client, imagePath).statusCode());
+        long priorVersion = Long.parseLong(version.substring(2, version.length() - 1));
+        assertEquals("\"v" + (priorVersion + 1) + "\"", removed.headers().firstValue("ETag").orElseThrow());
+        assertEquals(priorVersion + 1, jdbc.queryForObject("SELECT version FROM resource WHERE id=?", Long.class, resourceId));
+        assertArrayEquals(homeFacts, stockFactCounts(home.orgDbId));
+        assertArrayEquals(otherFacts, stockFactCounts(other.orgDbId));
+    }
+
+    private void assertR025PreservedImage(Session reader, String path, byte[] jpeg,
+            List<java.util.Map<String, Object>> expectedRows, String sql, Fixture home, Fixture other,
+            long resourceId, long[] homeFacts, long[] otherFacts) throws Exception {
+        assertTrue(expectedRows.equals(jdbc.queryForList(sql, home.orgDbId, other.orgDbId)),
+                "Image request changed scoped resource rows.");
+        assertArrayEquals(jpeg, jdbc.queryForObject("SELECT image_bytes FROM resource WHERE id=? AND organization_id=?",
+                byte[].class, resourceId, home.orgDbId));
+        HttpResponse<byte[]> served = reader.client.send(HttpRequest.newBuilder(URI.create(base() + path))
+                .GET().build(), HttpResponse.BodyHandlers.ofByteArray());
+        assertEquals(200, served.statusCode());
+        assertArrayEquals(jpeg, served.body());
+        assertEquals("image/jpeg", served.headers().firstValue("Content-Type").orElse("").split(";")[0]);
+        assertEquals("nosniff", served.headers().firstValue("X-Content-Type-Options").orElse(""));
+        assertTrue(served.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
+        assertArrayEquals(homeFacts, stockFactCounts(home.orgDbId));
+        assertArrayEquals(otherFacts, stockFactCounts(other.orgDbId));
+    }
+
+
+    @Test @Order(76)
+    void C8R083R084InactiveRecipientsAndTerminalTransfersPreserveExactGovernanceRows() throws Exception {
+        Fixture home = newTenant("C8-transfer-terminal", Membership.Role.OWNER);
+        Fixture admin = fixtureInOrg(home.orgDbId, Membership.Role.ADMIN);
+        Fixture suspended = fixtureInOrg(home.orgDbId, Membership.Role.ADMIN);
+        Fixture disabled = fixtureInOrg(home.orgDbId, Membership.Role.ADMIN);
+        Fixture other = newTenant("C8-transfer-terminal-foreign", Membership.Role.OWNER);
+        Session owner = login(home.username, home.password);
+        Session recipient = login(admin.username, admin.password);
+        String root = "/api/v2/orgs/" + home.orgPublicId;
+        String start = root + "/transfer-ownership";
+        assertEquals(1, jdbc.update("UPDATE membership SET status='SUSPENDED' WHERE id=? AND org_id=?",
+                suspended.membershipDbId, home.orgDbId));
+        assertEquals(1, jdbc.update("UPDATE user_account SET status='DISABLED' WHERE id=?", disabled.userDbId));
+        String transferSql = "SELECT id,HEX(public_id) AS public_id,org_id,from_membership_id,to_membership_id,status,pending_org_id,version,created_at,expires_at,accepted_at FROM ownership_transfer WHERE org_id IN (?,?) ORDER BY id";
+        String memberSql = "SELECT id,HEX(public_id) AS public_id,org_id,user_id,role,status,version,created_at,updated_at FROM membership WHERE org_id IN (?,?) ORDER BY id";
+        String auditSql = "SELECT id,org_id,actor_user_id,action,target_type,target_id,outcome,request_id,created_at FROM audit_event WHERE org_id IN (?,?) ORDER BY id";
+        var before = jdbc.queryForList(transferSql, home.orgDbId, other.orgDbId);
+        var membersBefore = jdbc.queryForList(memberSql, home.orgDbId, other.orgDbId);
+        var auditBefore = jdbc.queryForList(auditSql, home.orgDbId, other.orgDbId);
+        for (Fixture inactive : List.of(suspended, disabled)) {
+            HttpResponse<String> denied = post(owner, start, GSON.toJson(new TransferRequest(inactive.membershipPublicId, home.password)));
+            assertEquals(404, denied.statusCode());
+            assertEquals("NOT_FOUND", json(denied).get("code").getAsString());
+            assertTrue(before.equals(jdbc.queryForList(transferSql, home.orgDbId, other.orgDbId)));
+            assertTrue(membersBefore.equals(jdbc.queryForList(memberSql, home.orgDbId, other.orgDbId)));
+            assertTrue(auditBefore.equals(jdbc.queryForList(auditSql, home.orgDbId, other.orgDbId)));
+        }
+        HttpResponse<String> issued = post(owner, start, GSON.toJson(new TransferRequest(admin.membershipPublicId, home.password)));
+        assertEquals(201, issued.statusCode());
+        String transferId = json(issued).getAsJsonObject("data").get("id").getAsString();
+        String tag = issued.headers().firstValue("ETag").orElseThrow();
+        var transfer = transfers.findByOrganizationIdAndPublicId(home.orgDbId, UUID.fromString(transferId)).orElseThrow();
+        LocalDateTime expired = now().minusMinutes(1);
+        assertEquals(1, jdbc.update("UPDATE ownership_transfer SET created_at=?,expires_at=? WHERE id=? AND org_id=?",
+                Timestamp.valueOf(expired.minusMinutes(1)), Timestamp.valueOf(expired), transfer.id, home.orgDbId));
+        assertEquals(OwnershipTransfer.Status.PENDING, transfers.findById(transfer.id).orElseThrow().status);
+        before = jdbc.queryForList(transferSql, home.orgDbId, other.orgDbId);
+        auditBefore = jdbc.queryForList(auditSql, home.orgDbId, other.orgDbId);
+        HttpResponse<String> expiredRevoke = post(owner, root + "/transfers/" + transferId + "/revoke", "", tag);
+        assertEquals(409, expiredRevoke.statusCode());
+        assertEquals("TRANSFER_NOT_ACTIVE", json(expiredRevoke).get("code").getAsString());
+        assertTrue(before.equals(jdbc.queryForList(transferSql, home.orgDbId, other.orgDbId)));
+        assertTrue(membersBefore.equals(jdbc.queryForList(memberSql, home.orgDbId, other.orgDbId)));
+        assertTrue(auditBefore.equals(jdbc.queryForList(auditSql, home.orgDbId, other.orgDbId)));
+        // The next authorized start expires the old pending row atomically.
+        HttpResponse<String> fresh = post(owner, start, GSON.toJson(new TransferRequest(admin.membershipPublicId, home.password)));
+        assertEquals(201, fresh.statusCode());
+        assertEquals(OwnershipTransfer.Status.EXPIRED, transfers.findById(transfer.id).orElseThrow().status);
+        String freshId = json(fresh).getAsJsonObject("data").get("id").getAsString();
+        String acceptBody = GSON.toJson(new TransferIdRequest(freshId));
+        String freshTag = fresh.headers().firstValue("ETag").orElseThrow();
+        assertGovernanceRefusal(412, home.orgDbId, other.orgDbId,
+                () -> post(recipient, root + "/accept-transfer", acceptBody, "\"v999\""));
+        assertGovernanceRefusal(428, home.orgDbId, other.orgDbId,
+                () -> post(recipient, root + "/accept-transfer", acceptBody, null));
+        assertGovernanceRefusal(404, home.orgDbId, other.orgDbId,
+                () -> post(recipient, "/api/v2/orgs/" + other.orgPublicId + "/accept-transfer", acceptBody, freshTag));
+        assertGovernanceRefusal(404, home.orgDbId, other.orgDbId,
+                () -> post(owner, root + "/accept-transfer", acceptBody, freshTag));
+        HttpResponse<String> accepted = post(recipient, root + "/accept-transfer", acceptBody, freshTag);
+        assertEquals(200, accepted.statusCode());
+        String currentTag = accepted.headers().firstValue("ETag").orElseThrow();
+        assertEquals(OwnershipTransfer.Status.ACCEPTED, transfers.findByOrganizationIdAndPublicId(home.orgDbId, UUID.fromString(freshId)).orElseThrow().status);
+        assertEquals(Membership.Role.ADMIN, memberships.findById(home.membershipDbId).orElseThrow().role);
+        assertEquals(Membership.Role.OWNER, memberships.findById(admin.membershipDbId).orElseThrow().role);
+        before = jdbc.queryForList(transferSql, home.orgDbId, other.orgDbId);
+        membersBefore = jdbc.queryForList(memberSql, home.orgDbId, other.orgDbId);
+        auditBefore = jdbc.queryForList(auditSql, home.orgDbId, other.orgDbId);
+        // Authorization precedes terminal status. Neither party can revoke.
+        for (Session actor : List.of(owner, recipient)) {
+            HttpResponse<String> denied = post(actor, root + "/transfers/" + freshId + "/revoke", "", currentTag);
+            assertEquals(403, denied.statusCode());
+            assertEquals("FORBIDDEN", json(denied).get("code").getAsString());
+            assertTrue(before.equals(jdbc.queryForList(transferSql, home.orgDbId, other.orgDbId)));
+            assertTrue(membersBefore.equals(jdbc.queryForList(memberSql, home.orgDbId, other.orgDbId)));
+            assertTrue(auditBefore.equals(jdbc.queryForList(auditSql, home.orgDbId, other.orgDbId)));
+        }
+        assertEquals(1, memberships.countEffectiveActiveOwners(home.orgDbId));
+        assertEquals(1, memberships.countEffectiveActiveOwners(other.orgDbId));
+    }
+
+    @Test @Order(77)
+    void C8R030PasswordRefusalsPreserveCredentialAccountAuditAndBothSessions() throws Exception {
+        Fixture account = newTenant("C8-R030", Membership.Role.OWNER);
+        Fixture foreign = newTenant("C8-R030-foreign", Membership.Role.OWNER);
+        Session current = login(account.username, account.password);
+        Session peer = login(account.username, account.password);
+        Session outsider = login(foreign.username, foreign.password);
+        String endpoint = "/api/v2/account/password";
+        String accountSql = "SELECT id,HEX(public_id) AS public_id,username_key,display_name,status,credential_version,version,created_at,updated_at FROM user_account WHERE id IN (?,?) ORDER BY id";
+        String credentialSql = "SELECT user_id,password_hash,changed_at FROM local_credential WHERE user_id IN (?,?) ORDER BY user_id";
+        String auditSql = "SELECT id,org_id,actor_user_id,action,target_type,target_id,outcome,request_id,created_at FROM audit_event WHERE actor_user_id IN (?,?) ORDER BY id";
+        String recoverySql = "SELECT id,user_id,HEX(code_hash) AS digest,HEX(batch_id) AS batch,created_at,expires_at,used_at,revoked_at FROM account_recovery_code WHERE user_id IN (?,?) ORDER BY id";
+        String sessionSql = "SELECT PRIMARY_ID,SESSION_ID,PRINCIPAL_NAME FROM SPRING_SESSION WHERE PRINCIPAL_NAME IN (?,?) ORDER BY PRIMARY_ID";
+        var accountBefore = jdbc.queryForList(accountSql, account.userDbId, foreign.userDbId);
+        var credentialBefore = jdbc.queryForList(credentialSql, account.userDbId, foreign.userDbId);
+        var auditBefore = jdbc.queryForList(auditSql, account.userDbId, foreign.userDbId);
+        var recoveryBefore = jdbc.queryForList(recoverySql, account.userDbId, foreign.userDbId);
+        var sessionsBefore = jdbc.queryForList(sessionSql, account.username, foreign.username);
+        assertEquals(2, accountBefore.size());
+        assertEquals(2, credentialBefore.size());
+        assertEquals(10, recoveryBefore.size());
+        assertEquals(3, sessionsBefore.size());
+        assertNotEquals(current.sessionId, peer.sessionId);
+        String replacement = "C8-Changed-Password-" + UUID.randomUUID();
+        String valid = GSON.toJson(new PasswordChangeRequest(account.password, replacement));
+        for (int i = 0; i < 3; i++) {
+            HttpResponse<String> denied = switch (i) {
+                case 0 -> post(current, endpoint, GSON.toJson(new PasswordChangeRequest("deliberately-wrong-password", replacement)));
+                case 1 -> post(current, endpoint, GSON.toJson(new PasswordChangeRequest(account.password, account.password)));
+                default -> post(current, endpoint, valid, "invalid-csrf-token", origin());
+            };
+            assertEquals(List.of(401, 422, 403).get(i).intValue(), denied.statusCode());
+            if (i < 2) {
+                assertEquals(List.of("CURRENT_PASSWORD_INVALID", "PASSWORD_REUSE").get(i), json(denied).get("code").getAsString());
+                assertFalse(json(denied).has("data"));
+            }
+            // Never emit credentials, recovery digests, or session identifiers in assertion failures.
+            assertTrue(accountBefore.equals(jdbc.queryForList(accountSql, account.userDbId, foreign.userDbId)), "Denied password change altered account rows.");
+            assertTrue(credentialBefore.equals(jdbc.queryForList(credentialSql, account.userDbId, foreign.userDbId)), "Denied password change altered credential rows.");
+            assertTrue(auditBefore.equals(jdbc.queryForList(auditSql, account.userDbId, foreign.userDbId)), "Denied password change altered actor audit rows.");
+            assertTrue(recoveryBefore.equals(jdbc.queryForList(recoverySql, account.userDbId, foreign.userDbId)), "Denied password change altered recovery rows.");
+            assertTrue(sessionsBefore.equals(jdbc.queryForList(sessionSql, account.username, foreign.username)), "Denied password change rotated or removed a session.");
+            for (Session session : List.of(current, peer, outsider)) {
+                assertTrue(session.sessionId.equals(cookie(session.client)), "Denied password change changed a client cookie.");
+                assertEquals(200, get(session.client, "/api/v2/session").statusCode());
+            }
+        }
+        // Positive change, peer retirement and password usability already have actual #8 evidence.
+        assertTrue(passwordEncoder.matches(account.password, credentials.findByUserId(account.userDbId).orElseThrow().passwordHash));
+        assertFalse(passwordEncoder.matches(replacement, credentials.findByUserId(account.userDbId).orElseThrow().passwordHash));
+    }
+
+    @Test @Order(78)
+    void C8StockRoleAndRealForeignResourceRefusalsPreserveScopedRows() throws Exception {
+        Fixture home = newTenant("C8-stock-denial", Membership.Role.OWNER);
+        Fixture foreign = newTenant("C8-stock-foreign", Membership.Role.OWNER);
+        Fixture admin = fixtureInOrg(home.orgDbId, Membership.Role.ADMIN);
+        Fixture member = fixtureInOrg(home.orgDbId, Membership.Role.MEMBER);
+        Fixture lead = fixtureInOrg(home.orgDbId, Membership.Role.LEAD);
+        Fixture custodian = fixtureInOrg(home.orgDbId, Membership.Role.CUSTODIAN);
+        Session owner = login(home.username, home.password);
+        Session outsider = login(foreign.username, foreign.password);
+        Session keeper = login(custodian.username, custodian.password);
+        HttpResponse<String> created = post(owner, "/api/resources",
+                GSON.toJson(new ResourceRequest("Fictional stock denial home", "REUSABLE", 5)));
+        HttpResponse<String> foreignCreated = post(outsider, "/api/resources",
+                GSON.toJson(new ResourceRequest("Fictional stock denial foreign", "REUSABLE", 7)));
+        assertEquals(201, created.statusCode());
+        assertEquals(201, foreignCreated.statusCode());
+        String homeId = json(created).get("publicId").getAsString();
+        String foreignId = json(foreignCreated).get("publicId").getAsString();
+        String root = "/api/v2/orgs/" + home.orgPublicId + "/resources";
+        String item = root + "/" + homeId;
+        String foreignItem = root + "/" + foreignId;
+        HttpResponse<String> read = get(keeper.client, item);
+        assertEquals(200, read.statusCode());
+        assertEquals(Set.of("id", "name", "type", "totalQuantity", "availableQuantity", "version"),
+                json(read).getAsJsonObject("data").keySet());
+        assertEquals(200, get(outsider.client, "/api/v2/orgs/" + foreign.orgPublicId + "/resources/" + foreignId).statusCode());
+        String tag = read.headers().firstValue("ETag").orElseThrow();
+        Session adminActor = login(admin.username, admin.password);
+        Session memberActor = login(member.username, member.password);
+        Session leadActor = login(lead.username, lead.password);
+        for (Session actor : List.of(adminActor, memberActor, leadActor)) {
+            assertScopedRefusal(403, home.orgDbId, foreign.orgDbId, () -> get(actor.client, root));
+            assertScopedRefusal(403, home.orgDbId, foreign.orgDbId, () -> get(actor.client, item));
+            assertScopedRefusal(403, home.orgDbId, foreign.orgDbId, () -> get(actor.client, item + "/movements"));
+            assertScopedRefusal(403, home.orgDbId, foreign.orgDbId, () -> modernPost(actor, item + "/receive",
+                    GSON.toJson(new ReceiveRequest(UUID.randomUUID(), 1)), tag, C1Secrets.bearerToken()));
+            assertScopedRefusal(403, home.orgDbId, foreign.orgDbId, () -> modernPost(actor, item + "/adjust",
+                    GSON.toJson(new AdjustRequest(UUID.randomUUID(), 6)), tag, C1Secrets.bearerToken()));
+        }
+        for (Session actor : List.of(owner, keeper)) {
+            assertScopedRefusal(404, home.orgDbId, foreign.orgDbId, () -> get(actor.client, foreignItem));
+            assertScopedRefusal(404, home.orgDbId, foreign.orgDbId, () -> get(actor.client, foreignItem + "/movements"));
+            assertScopedRefusal(404, home.orgDbId, foreign.orgDbId, () -> get(actor.client, root + "?after=" + foreignId));
+            assertScopedRefusal(404, home.orgDbId, foreign.orgDbId, () -> modernPost(actor, foreignItem + "/receive",
+                    GSON.toJson(new ReceiveRequest(UUID.randomUUID(), 1)), tag, C1Secrets.bearerToken()));
+            assertScopedRefusal(404, home.orgDbId, foreign.orgDbId, () -> modernPost(actor, foreignItem + "/adjust",
+                    GSON.toJson(new AdjustRequest(UUID.randomUUID(), 8)), tag, C1Secrets.bearerToken()));
+        }
+        assertEquals(5, json(get(owner.client, item)).getAsJsonObject("data").get("totalQuantity").getAsInt());
+        assertEquals(7, json(get(outsider.client, "/api/v2/orgs/" + foreign.orgPublicId + "/resources/" + foreignId))
+                .getAsJsonObject("data").get("totalQuantity").getAsInt());
+
+        // Reuse both populated tenants and actors for the Allocation routes.
+        long homeResource = json(created).get("id").getAsLong();
+        long foreignResource = json(foreignCreated).get("id").getAsLong();
+        LocalDateTime future = LocalDateTime.now(clock).withNano(0).plusDays(2);
+        long localAllocation = createDenialAllocation(owner, homeResource, future);
+        long remoteAllocation = createDenialAllocation(outsider, foreignResource, future);
+        String allocationRoot = "/api/v2/orgs/" + home.orgPublicId + "/allocations";
+        String localId = allocationRepository.findByIdAndOrganizationId(localAllocation, home.orgDbId).orElseThrow().publicId.toString();
+        String remoteId = allocationRepository.findByIdAndOrganizationId(remoteAllocation, foreign.orgDbId).orElseThrow().publicId.toString();
+        String local = allocationRoot + "/" + localId;
+        String remote = allocationRoot + "/" + remoteId;
+        HttpResponse<String> localRead = get(adminActor.client, local);
+        assertEquals(200, localRead.statusCode());
+        assertEquals(Set.of("id", "resourceId", "status", "quantity", "version"),
+                json(localRead).getAsJsonObject("data").keySet());
+        assertEquals(200, get(outsider.client, "/api/v2/orgs/" + foreign.orgPublicId + "/allocations/" + remoteId).statusCode());
+        String pendingTag = localRead.headers().firstValue("ETag").orElseThrow();
+        for (Session actor : List.of(adminActor, memberActor, leadActor)) {
+            assertScopedRefusal(403, home.orgDbId, foreign.orgDbId, () -> get(actor.client, allocationRoot));
+            for (String action : List.of("approve", "issue", "return", "consume", "cancel")) {
+                int status = actor == leadActor && action.equals("cancel") ? 404 : 403;
+                assertScopedRefusal(status, home.orgDbId, foreign.orgDbId,
+                        () -> modernPost(actor, local + "/" + action, GSON.toJson(new OperationRequest(UUID.randomUUID())),
+                                pendingTag, C1Secrets.bearerToken()));
+            }
+        }
+        assertScopedRefusal(403, home.orgDbId, foreign.orgDbId, () -> get(memberActor.client, local));
+        assertScopedRefusal(404, home.orgDbId, foreign.orgDbId, () -> get(leadActor.client, local));
+        for (Session actor : List.of(owner, keeper)) {
+            assertScopedRefusal(404, home.orgDbId, foreign.orgDbId, () -> get(actor.client, remote));
+            assertScopedRefusal(404, home.orgDbId, foreign.orgDbId, () -> get(actor.client, allocationRoot + "?after=" + remoteId));
+            for (String action : List.of("approve", "issue", "return", "consume", "cancel")) {
+                assertScopedRefusal(404, home.orgDbId, foreign.orgDbId,
+                        () -> modernPost(actor, remote + "/" + action, GSON.toJson(new OperationRequest(UUID.randomUUID())),
+                                pendingTag, C1Secrets.bearerToken()));
+            }
+        }
+        assertScopedRefusal(404, home.orgDbId, foreign.orgDbId, () -> post(owner, remote + "/delete", null, pendingTag));
+        assertScopedRefusal(403, home.orgDbId, foreign.orgDbId, () -> post(keeper, local + "/delete", null, pendingTag));
+        for (String action : List.of("issue", "return", "consume")) {
+            HttpResponse<String> denied = assertScopedRefusal(409, home.orgDbId, foreign.orgDbId,
+                    () -> modernPost(owner, local + "/" + action, GSON.toJson(new OperationRequest(UUID.randomUUID())),
+                            pendingTag, C1Secrets.bearerToken()));
+            assertEquals("INVALID_ALLOCATION_STATE", json(denied).get("code").getAsString());
+        }
+        HttpResponse<String> approved = modernPost(keeper, local + "/approve",
+                GSON.toJson(new OperationRequest(UUID.randomUUID())), pendingTag, C1Secrets.bearerToken());
+        assertEquals(200, approved.statusCode());
+        assertEquals(3, json(get(owner.client, item)).getAsJsonObject("data").get("availableQuantity").getAsInt());
+        String approvedTag = get(owner.client, local).headers().firstValue("ETag").orElseThrow();
+        for (String action : List.of("approve", "issue", "consume")) {
+            HttpResponse<String> denied = assertScopedRefusal(409, home.orgDbId, foreign.orgDbId,
+                    () -> modernPost(owner, local + "/" + action, GSON.toJson(new OperationRequest(UUID.randomUUID())),
+                            approvedTag, C1Secrets.bearerToken()));
+            String code = switch (action) {
+                case "approve" -> "INVALID_ALLOCATION_STATE";
+                case "issue" -> "PROJECT_NOT_ACTIVE";
+                default -> "RESOURCE_TYPE_MISMATCH";
+            };
+            assertEquals(code, json(denied).get("code").getAsString());
+        }
+        for (Session actor : List.of(owner, adminActor)) {
+            HttpResponse<String> denied = assertScopedRefusal(409, home.orgDbId, foreign.orgDbId,
+                    () -> post(actor, local + "/delete", null, approvedTag));
+            assertEquals("HISTORY_PROTECTED", json(denied).get("code").getAsString());
+        }
+        HttpResponse<String> cancelled = modernPost(keeper, local + "/cancel",
+                GSON.toJson(new OperationRequest(UUID.randomUUID())), approvedTag, C1Secrets.bearerToken());
+        assertEquals(200, cancelled.statusCode());
+        assertEquals(5, json(get(owner.client, item)).getAsJsonObject("data").get("availableQuantity").getAsInt());
+        String cancelledTag = get(owner.client, local).headers().firstValue("ETag").orElseThrow();
+        HttpResponse<String> cancelledAgain = assertScopedRefusal(409, home.orgDbId, foreign.orgDbId,
+                () -> modernPost(owner, local + "/cancel", GSON.toJson(new OperationRequest(UUID.randomUUID())),
+                        cancelledTag, C1Secrets.bearerToken()));
+        assertEquals("INVALID_ALLOCATION_STATE", json(cancelledAgain).get("code").getAsString());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=? AND resource_id=?",
+                Integer.class, home.orgDbId, homeResource));
+        assertEquals("PENDING", jdbc.queryForObject("SELECT status FROM allocation WHERE id=? AND organization_id=?",
+                String.class, remoteAllocation, foreign.orgDbId));
+    }
+
+    private long createDenialAllocation(Session actor, long resourceId, LocalDateTime future) throws Exception {
+        HttpResponse<String> department = post(actor, "/api/departments", GSON.toJson(new NameRequest("Fictional denial team")));
+        assertEquals(201, department.statusCode());
+        HttpResponse<String> project = post(actor, "/api/projects", GSON.toJson(new ProjectRequest(
+                json(department).get("id").getAsLong(), "Fictional denial project", future.toString(), future.plusDays(1).toString())));
+        assertEquals(201, project.statusCode());
+        HttpResponse<String> requirement = post(actor, "/api/requirements", GSON.toJson(new RequirementRequest(
+                json(project).get("id").getAsLong(), resourceId, 4)));
+        assertEquals(201, requirement.statusCode());
+        HttpResponse<String> allocation = post(actor, "/api/allocations", GSON.toJson(new AllocationRequest(
+                json(requirement).get("id").getAsLong(), 2, "Fictional denial borrower", null, false)));
+        assertEquals(201, allocation.statusCode());
+        return json(allocation).get("id").getAsLong();
     }
 
     private record Fixture(long orgDbId, UUID orgPublicId, long userDbId, String username, String password,
