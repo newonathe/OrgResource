@@ -10,6 +10,19 @@ root="$(mktemp -d "$RUNNER_TEMP/c9-mixed-prep-test.XXXXXXXX")"
 trap 'rm -rf -- "$root"' EXIT
 runner=scripts/verify-c9-local-mixed-preparation.sh
 bash -n "$runner"
+bash -n scripts/c9-local-operator-gate.sh
+source scripts/c9-local-operator-gate.sh
+fp="$(printf '%064d' 1)"
+digest="$(printf '%064d' 2)"
+expected="I VERIFIED ISOLATED RESTORE $fp $digest"
+c9_operator_response_matches "$fp" "$digest" "$expected" || exit 1
+for reply in "" "$expected " "yes" "I VERIFIED ISOLATED RESTORE $digest $fp"; do
+  if c9_operator_response_matches "$fp" "$digest" "$reply"; then exit 1; fi
+done
+if c9_operator_response_matches malformed "$digest" "$expected"; then exit 1; fi
+if c9_require_operator_confirmation "$fp" "$digest" > "$root/gate-private.log" 2>&1; then exit 1; fi
+grep -Fq R06B2_OPERATOR_CI_REFUSED "$root/gate-private.log" || exit 1
+echo R06B2_CONFIRMATION_CONTRACT_OK:exact_match=true negative_matches_refused=true actual_ci_operator_gate_refused=true
 count_containers() { docker --host=unix:///var/run/docker.sock ps -a --filter 'label=orgresource.c9.local' --format '{{.ID}}' | sort; }
 before="$(count_containers)"
 refuse() {
@@ -32,13 +45,14 @@ refuse plan-link R06B1_PRIVATE_PLAN_REQUIRED bash "$runner" --approved-plan "$ro
 truncate -s 19265850 "$root/size-only.json"
 chmod 600 "$root/size-only.json"
 refuse exact-size-ci R06B1_PRIVATE_PLAN_CI_REFUSED bash "$runner" --approved-plan "$root" "$source_sha" "$jar" "$jar_sha" "$root/size-only.json"
+refuse import-ci R06B2_IMPORT_CI_REFUSED bash "$runner" --approved-import "$root" "$source_sha" "$jar" "$jar_sha" "$root/nonexistent-plan.json"
 refuse remote-docker R06B1_LOCAL_DOCKER_REQUIRED env DOCKER_HOST=tcp://127.0.0.1:2375 bash "$runner" --fixture-only "$root" "$source_sha" "$jar" "$jar_sha"
 bash "$runner" --fixture-only "$root" "$source_sha" "$jar" "$jar_sha" > "$root/test-private.log" 2>&1 || {
   grep -E '^R06B1_[A-Z_]+(:[a-zA-Z0-9_= .-]+)?$' "$root/test-private.log" | tail -15 || true
   exit 1
 }
-for marker in R06B1_BOOTSTRAP_OK R06B1_ORIGINAL_RESTORE_OK R06B1_BASELINE_OK R06B1_PREPARATION_OK R06B1_CLEANUP_OK; do
+for marker in R06B2_IMPORTER_GRANTS_OK R06B1_BOOTSTRAP_OK R06B1_ORIGINAL_RESTORE_OK R06B1_BASELINE_OK R06B1_PREPARATION_OK R06B1_CLEANUP_OK; do
   grep -E "^$marker(:|$)" "$root/test-private.log" || exit 1
 done
 [[ "$(count_containers)" = "$before" ]] || exit 1
-echo R06B1_PUBLIC_FIXTURE_TEST_OK:private_plan_used=false importer_run=false precheck_refusals=7
+echo R06B1_PUBLIC_FIXTURE_TEST_OK:private_plan_used=false importer_run=false precheck_refusals=8
