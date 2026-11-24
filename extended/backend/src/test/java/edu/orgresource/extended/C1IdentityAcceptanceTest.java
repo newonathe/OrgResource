@@ -5136,6 +5136,98 @@ class C1IdentityAcceptanceTest {
         assertArrayEquals(otherFacts, stockFactCounts(other.orgDbId));
     }
 
+    @Test @Order(75)
+    void C8R025CustodianImageWritePreservesExactBytesAcrossRefusals() throws Exception {
+        Fixture home = newTenant("C8-image-directed-home", Membership.Role.OWNER);
+        Fixture other = newTenant("C8-image-directed-other", Membership.Role.OWNER);
+        Fixture custodian = fixtureInOrg(home.orgDbId, Membership.Role.CUSTODIAN);
+        Fixture admin = fixtureInOrg(home.orgDbId, Membership.Role.ADMIN);
+        Fixture member = fixtureInOrg(home.orgDbId, Membership.Role.MEMBER);
+        Session owner = login(home.username, home.password);
+        Session outsider = login(other.username, other.password);
+        Session keeper = login(custodian.username, custodian.password);
+        Session officer = login(admin.username, admin.password);
+        Session reader = login(member.username, member.password);
+        HttpResponse<String> created = post(owner, "/api/resources",
+                GSON.toJson(new ResourceRequest("Directed fictional image resource", "REUSABLE", 0)));
+        assertEquals(201, created.statusCode());
+        long resourceId = json(created).get("id").getAsLong();
+        HttpResponse<String> foreign = post(outsider, "/api/resources",
+                GSON.toJson(new ResourceRequest("Foreign fictional image resource", "REUSABLE", 0)));
+        assertEquals(201, foreign.statusCode());
+        long foreignId = json(foreign).get("id").getAsLong();
+        String imagePath = "/api/resources/" + resourceId + "/image";
+        String foreignPath = "/api/resources/" + foreignId + "/image";
+        String sql = "SELECT id,organization_id,HEX(public_id) AS public_id,name,name_key,type,total_quantity,version,"
+                + "HEX(image_bytes) AS image_hex,image_content_type FROM resource WHERE organization_id IN (?,?) ORDER BY id";
+        var initial = jdbc.queryForList(sql, home.orgDbId, other.orgDbId);
+        long[] homeFacts = stockFactCounts(home.orgDbId), otherFacts = stockFactCounts(other.orgDbId);
+        byte[] jpeg = noisyJpeg();
+        byte[] png = tinyPng();
+        String digest = java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(jpeg));
+        HttpResponse<String> uploaded = multipartPost(keeper, imagePath, "image/jpeg", jpeg);
+        assertEquals(200, uploaded.statusCode());
+        var view = json(uploaded);
+        assertEquals(Set.of("resourceId", "contentType", "sizeBytes", "sha256"), view.keySet());
+        assertEquals(resourceId, view.get("resourceId").getAsLong());
+        assertEquals("image/jpeg", view.get("contentType").getAsString());
+        assertEquals(jpeg.length, view.get("sizeBytes").getAsInt());
+        assertEquals(digest, view.get("sha256").getAsString());
+        var accepted = jdbc.queryForList(sql, home.orgDbId, other.orgDbId);
+        assertEquals(initial.size(), accepted.size());
+        var expected = initial.stream().map(row -> {
+            var copy = new java.util.LinkedHashMap<String, Object>(row);
+            if (((Number) copy.get("id")).longValue() == resourceId) {
+                copy.put("version", ((Number) copy.get("version")).longValue() + 1);
+                copy.put("image_hex", java.util.HexFormat.of().withUpperCase().formatHex(jpeg));
+                copy.put("image_content_type", "image/jpeg");
+            }
+            return copy;
+        }).toList();
+        // Compare numeric versions without assuming the JDBC integer wrapper type.
+        assertTrue(expected.stream().allMatch(row -> accepted.stream().anyMatch(actual ->
+                ((Number) actual.get("id")).longValue() == ((Number) row.get("id")).longValue()
+                && ((Number) actual.get("version")).longValue() == ((Number) row.get("version")).longValue()
+                && row.entrySet().stream().filter(entry -> !entry.getKey().equals("version"))
+                        .allMatch(entry -> java.util.Objects.equals(entry.getValue(), actual.get(entry.getKey()))))),
+                "Image upload changed unexpected resource fields.");
+        assertR025PreservedImage(reader, imagePath, jpeg, accepted, sql, home, other, resourceId, homeFacts, otherFacts);
+        assertEquals(403, multipartPost(officer, imagePath, "image/png", png).statusCode());
+        assertR025PreservedImage(reader, imagePath, jpeg, accepted, sql, home, other, resourceId, homeFacts, otherFacts);
+        assertEquals(403, multipartPost(reader, imagePath, "image/png", png).statusCode());
+        assertR025PreservedImage(reader, imagePath, jpeg, accepted, sql, home, other, resourceId, homeFacts, otherFacts);
+        assertEquals(404, multipartPost(outsider, imagePath, "image/png", png).statusCode());
+        assertR025PreservedImage(reader, imagePath, jpeg, accepted, sql, home, other, resourceId, homeFacts, otherFacts);
+        assertEquals(404, multipartPost(keeper, foreignPath, "image/png", png).statusCode());
+        assertR025PreservedImage(reader, imagePath, jpeg, accepted, sql, home, other, resourceId, homeFacts, otherFacts);
+        assertEquals(403, multipartPost(keeper, imagePath, "image/png", png, false).statusCode());
+        assertR025PreservedImage(reader, imagePath, jpeg, accepted, sql, home, other, resourceId, homeFacts, otherFacts);
+        assertEquals(400, multipartPost(keeper, imagePath, "image/jpeg", png).statusCode());
+        assertR025PreservedImage(reader, imagePath, jpeg, accepted, sql, home, other, resourceId, homeFacts, otherFacts);
+        assertEquals(413, multipartPost(keeper, imagePath, "image/png", new byte[ResourceImageSupport.MAX_BYTES + 1]).statusCode());
+        assertR025PreservedImage(reader, imagePath, jpeg, accepted, sql, home, other, resourceId, homeFacts, otherFacts);
+        assertEquals(404, get(outsider.client, imagePath).statusCode());
+        assertR025PreservedImage(reader, imagePath, jpeg, accepted, sql, home, other, resourceId, homeFacts, otherFacts);
+    }
+
+    private void assertR025PreservedImage(Session reader, String path, byte[] jpeg,
+            List<java.util.Map<String, Object>> expectedRows, String sql, Fixture home, Fixture other,
+            long resourceId, long[] homeFacts, long[] otherFacts) throws Exception {
+        assertTrue(expectedRows.equals(jdbc.queryForList(sql, home.orgDbId, other.orgDbId)),
+                "Image request changed scoped resource rows.");
+        assertArrayEquals(jpeg, jdbc.queryForObject("SELECT image_bytes FROM resource WHERE id=? AND organization_id=?",
+                byte[].class, resourceId, home.orgDbId));
+        HttpResponse<byte[]> served = reader.client.send(HttpRequest.newBuilder(URI.create(base() + path))
+                .GET().build(), HttpResponse.BodyHandlers.ofByteArray());
+        assertEquals(200, served.statusCode());
+        assertArrayEquals(jpeg, served.body());
+        assertEquals("image/jpeg", served.headers().firstValue("Content-Type").orElse("").split(";")[0]);
+        assertEquals("nosniff", served.headers().firstValue("X-Content-Type-Options").orElse(""));
+        assertTrue(served.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
+        assertArrayEquals(homeFacts, stockFactCounts(home.orgDbId));
+        assertArrayEquals(otherFacts, stockFactCounts(other.orgDbId));
+    }
+
     private record Fixture(long orgDbId, UUID orgPublicId, long userDbId, String username, String password,
                           long membershipDbId, UUID membershipPublicId, List<String> recoveryCodes) { }
     private static final class Session {
