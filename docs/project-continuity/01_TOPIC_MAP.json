@@ -423,7 +423,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "PR53 321205f2 public recovered original control candidate, CI 45441418164; inspect exact receipt, resolve lock privilege compatibility, implement private mixed same-lifetime acceptance; R07 worker separate.",
+      "next": "PR53 initial candidate TEST_FAILED, exact cause hidden by old filter; b2609e36 bounded diagnostic retry; read actual failure before repairs.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",

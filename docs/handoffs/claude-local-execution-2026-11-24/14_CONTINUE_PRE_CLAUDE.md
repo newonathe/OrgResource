@@ -62,3 +62,7 @@ PR53 321205f235efe36d615e68998f3ffbd75baf4051, base PR52 d3e8a8550e00e3bb9423d84
 ## R04 standalone candidate
 
 Report 20 and standalone checker, 18 payloads incl PNG/Java/full ZIP/CI JAR, 6 negatives, actual staged image Newman candidate. Existing source archive CI 45439669603 all three jobs green. New CI pending, no release archive upload. PR53 R06B3b still pending. R09=false.
+
+## R06B3b first test failure / diagnostic retry
+
+Initial PR53 321205f235efe36d615e68998f3ffbd75baf4051, CI45441418164 Extended job138613273769 TEST_FAILED, prior original preparation markers present, root cause unknown because R06B1-only filter suppressed new markers. Diagnostic candidate b2609e36c090363dc32cb9f6b5c65107e93a262b changes two scripts, adds bounded failure markers/syntax checks; no weakened grants or assertions. See [report21](21_R06B3B_FAILURE_TRIAGE.md). R04 standalone CI45443590053 pending. R09=false.

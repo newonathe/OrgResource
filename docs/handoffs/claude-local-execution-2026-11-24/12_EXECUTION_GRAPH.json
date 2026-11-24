@@ -151,7 +151,7 @@
       "depends_on": [
         "R06B3a"
       ],
-      "receipt": "Public original-only candidate PR53 321205f2 (test assertions 30c68c97; no observed red run), CI 45441418164 pending actual job logs; new session-only grants, actual auth/metadata/read/browser assertions, PIDFD stop, exact non-session/source row equality. Full private mixed runtime NOT_IMPLEMENTED/NOT_RUN.",
+      "receipt": "PR53 321205f2 CI45441418164 Extended138613273769 FAILED actual public fixture step after prior preparation; R06B1-only diagnostic filter hid R06B2/B3/PIDFD markers; exact cause UNKNOWN. b2609e36 diagnostic+syntax candidate, no safety/permission/assertion changes.",
       "notes": "Potential SELECT FOR UPDATE privilege incompatibility: InventoryService locks organization/membership on detail reads. Do not broaden domain DML to pass. Actual CI failure evidence first. Private same-lifetime path after bounded public control; R07 normal worker separate."
     },
     {
@@ -422,7 +422,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "Inspect actual PR53 CI 45441418164; resolve any public recovered control failures with exact receipts; implement local-only R06B3b full mixed path; close R06B/R03/R04/R07/R08/R09."
+    "next_action": "Inspect PR53 b2609e36 actual retry logs; isolate actual cause, repair without widening permissions; R04 standalone 45443590053 pending; R03/R07/R08/R09."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -441,17 +441,27 @@
     "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS"
   },
   "r06b3b_candidate": {
-    "sha": "321205f235efe36d615e68998f3ffbd75baf4051",
+    "sha": "b2609e36c090363dc32cb9f6b5c65107e93a262b",
     "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
     "pr": 53,
     "run": 45441418164,
-    "acceptance": "CANDIDATE_CI_PENDING_PUBLIC_CONTROL_ONLY",
+    "acceptance": "DIAGNOSTIC_RETRY_PENDING",
     "test_first": "30c68c97211bfe339b01b22c676ed9ea2934f3e5",
     "protected": {
       "course": 105,
       "extended": 170,
       "migrations": 7
     },
-    "report": "evidence/C9/R06B3B_PUBLIC_RECOVERED_CONTROL_2026-11-25.md"
+    "report": "evidence/C9/R06B3B_PUBLIC_RECOVERED_CONTROL_2026-11-25.md",
+    "prior_failed_sha": "321205f235efe36d615e68998f3ffbd75baf4051",
+    "prior_run": 45441418164,
+    "prior_job": 138613273769,
+    "runs": [
+      [
+        45444843268,
+        "in_progress",
+        null
+      ]
+    ]
   }
 }

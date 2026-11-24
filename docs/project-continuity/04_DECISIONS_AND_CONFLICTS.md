@@ -40,3 +40,5 @@ Record ID, effective date, owner/authority, verbatim material intent if public-s
 **PC-D24 implementation addendum (candidate):** PR53 original-only public control, runtime SELECT and session DML, five denial probes, explicit Flyway-disabled observation process after prior actual restore, no product changes. Locking reads may fail with SELECT-only; resolve from actual CI, do not broaden domain DML for convenience. Private same-lifetime path and normal worker proof remain separate.
 
 **PC-D23 standalone addendum:** source-relative temporary 18-payload candidate, exact ZIP and manifest plus actual staged image Newman, CI pending. Original historical packaging script untouched. No DOCX/Windows/Eclipse or redistribution claim.
+
+PC-D24: initial PR53 actual CI failure; root cause unknown due to filtered diagnostics. Diagnostic retry preserves session-only privilege and all oracles; no policy changes. Proposed user project instructions delivered in chat only.
