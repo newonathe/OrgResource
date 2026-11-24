@@ -59,8 +59,8 @@
       "depends_on": [
         "R02"
       ],
-      "receipt": "PR54 bc74332a8904b3022cf5f27f5d31a597455a1def actual CI45460588237 job138681753305 99 Maven/74 identity/19 Playwright zero failures/errors/skips; 3/3 jobs; R017/R040 #73/#74 bounded. R025 cfb6e83b retry CI45461292876 latest metadata [[138686481378,\"Extended C Java 21, isolated MySQL, Newman and Playwright\",\"in_progress\",null],[138686484144,\"Java 8 and isolated MySQL tests\",\"completed\",\"success\"],[138686484733,\"React typecheck, tests, lint, and build\",\"completed\",\"success\"]]. Actual retry logs required.",
-      "notes": "R029/R031/R082/R078/R041/R083/R084/R089/R091/R017/R040 bounded executed. R025 pending actual retry; remaining gaps/independent IR4 open."
+      "receipt": "PR54 cfb6e83bdf20e7ebe51315d7229c43babf9d9923 actual CI45461292876 attempt2 job138686481378 100 Maven/75 identity/19 Playwright all pass, zero failures/errors/skips, 3/3 jobs. R025 #75 bounded verified; prior Maven download failure before tests retained. R017/R040 #73/#74 prior actual 99/74/19, other directed receipts retained.",
+      "notes": "R029/R031/R082/R078/R041/R083/R084/R089/R091/R017/R040/R025 directed bounded executed. Remaining route oracle gaps and independent IR4 open; do not treat 100 tests as complete acceptance."
     },
     {
       "id": "R04",
@@ -151,7 +151,7 @@
       "depends_on": [
         "R06B3a"
       ],
-      "receipt": "Public control e1d648d5 CI45459113536 actual verified bounded (91 Maven/19 browser, lock refusal/success, session DML only, seven denied domain writes, exact domain/source rows, one scheduler denial, cleanup). Private API a6d3682a plus independent SQL projection/parser e1067c8be387c38993b8d361b7c6059c70b7eeaa staged, unintegrated NOT_RUN. Exact DTO/order source confirmed, representative detail requires zero APPROVED allocations to avoid time-dependence. Private browser, local PIDFD, same-lifetime runner and actual refusal/static verification remain. Full private positive NOT_RUN.",
+      "receipt": "Public control e1d648d5 verified bounded; a6d3682a CI45462162577 job138687407235 actual regression 91 Maven/19 browser, lock refusal/success, seven DML denials, persisted session/logout, exact non-session/source rows, one scheduler denial, cleanup, 3/3 jobs. Private API and SQL candidates not executed by public CI. New 1e9d47392e8bc2849c037d0562a464070a474d60 private browser oracle staged unintegrated; local PIDFD, owner-gated runner, public-safe static/refusal checks and actual private run remain.",
       "notes": "Public control VERIFIED_BOUNDED; aggregate IN_PROGRESS. No production DML grants, no normal writable scheduler proof. Private module requires actual SQL-derived expected metadata/97 owner orgs/resource IDs, stable stock oracle; not a runnable private command."
     },
     {
@@ -422,7 +422,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "Private browser verifier, local PIDFD boundary and same-lifetime runner integration; verify exact private SQL projection schema/guards with public-safe checks, no fake full cohort. Inspect R025 retry logs, all private candidate CI. R03 remaining gaps and R07/R08, R09 false."
+    "next_action": "Implement guarded local PIDFD self-test/stop and same-lifetime owner-terminal runner; integrate SQL projection/API/browser only after actual full recovered postflight, exact non-session/source equality, privacy-safe checks. Inspect previous/new CI, audit remaining R03 route gaps then R07/R08. R09 false."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -441,18 +441,18 @@
     "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS"
   },
   "r06b3b_candidate": {
-    "sha": "e1067c8be387c38993b8d361b7c6059c70b7eeaa",
-    "base": "a6d3682a8fea6901efb89db9e7e62509a690b0e6",
+    "sha": "1e9d47392e8bc2849c037d0562a464070a474d60",
+    "base": "e1067c8be387c38993b8d361b7c6059c70b7eeaa",
     "pr": 53,
     "runs": [
       [
-        45463840859,
+        45464990215,
         "in_progress",
         null
       ]
     ],
-    "report": "evidence/C9/R06B3B_PRIVATE_MIXED_SQL_ORACLE_CANDIDATE_2026-11-25.md",
-    "acceptance": "PRIVATE_SQL_ORACLE_UNINTEGRATED"
+    "report": "evidence/C9/R06B3B_PRIVATE_MIXED_BROWSER_CANDIDATE_2026-11-25.md",
+    "acceptance": "PRIVATE_BROWSER_ORACLE_UNINTEGRATED"
   },
   "r03_candidate": {
     "sha": "cfb6e83bdf20e7ebe51315d7229c43babf9d9923",
@@ -466,7 +466,7 @@
       ]
     ],
     "report": "evidence/C8/R03_DIRECTED_R025_CANDIDATE_2026-11-25.md",
-    "acceptance": "INFRASTRUCTURE_RETRY_PENDING",
+    "acceptance": "VERIFIED_BOUNDED",
     "routes": [
       "R025"
     ],
@@ -494,7 +494,14 @@
         "completed",
         "success"
       ]
-    ]
+    ],
+    "run": 45461292876,
+    "job": 138686481378,
+    "attempt": 2,
+    "maven": 100,
+    "identity": 75,
+    "playwright": 19,
+    "failures": 0
   },
   "r03_prior_verified": {
     "sha": "bc74332a8904b3022cf5f27f5d31a597455a1def",
@@ -706,37 +713,46 @@
     "scheduler_denial_log_matches": 1
   },
   "r06b3b_previous_candidate": {
-    "sha": "a6d3682a8fea6901efb89db9e7e62509a690b0e6",
-    "base": "e1d648d5a4c64b69e495cabca7bbd1b4eea0f2f2",
+    "sha": "e1067c8be387c38993b8d361b7c6059c70b7eeaa",
+    "base": "a6d3682a8fea6901efb89db9e7e62509a690b0e6",
     "pr": 53,
     "runs": [
       [
-        45462162577,
+        45463840859,
         "in_progress",
         null
       ]
     ],
-    "acceptance": "PRIVATE_API_ORACLE_UNINTEGRATED",
-    "report": "evidence/C9/R06B3B_PRIVATE_MIXED_API_ORACLE_CANDIDATE_2026-11-25.md",
+    "report": "evidence/C9/R06B3B_PRIVATE_MIXED_SQL_ORACLE_CANDIDATE_2026-11-25.md",
+    "acceptance": "PRIVATE_SQL_ORACLE_UNINTEGRATED",
     "latest_jobs": [
       [
-        138687406415,
-        "Java 8 and isolated MySQL tests",
-        "completed",
-        "success"
-      ],
-      [
-        138687406803,
+        138693330411,
         "React typecheck, tests, lint, and build",
         "completed",
         "success"
       ],
       [
-        138687407235,
+        138693330632,
         "Extended C Java 21, isolated MySQL, Newman and Playwright",
         "in_progress",
         null
+      ],
+      [
+        138693330652,
+        "Java 8 and isolated MySQL tests",
+        "completed",
+        "success"
       ]
     ]
+  },
+  "r06b3b_public_regression": {
+    "sha": "a6d3682a8fea6901efb89db9e7e62509a690b0e6",
+    "run": 45462162577,
+    "job": 138687407235,
+    "acceptance": "VERIFIED_BOUNDED_PUBLIC_ONLY",
+    "maven": 91,
+    "playwright": 19,
+    "private_positive": "NOT_RUN"
   }
 }

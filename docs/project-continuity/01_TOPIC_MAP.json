@@ -344,7 +344,7 @@
         }
       ],
       "authority": "93 route candidate mapping, independent issue34 blocked; current code and actual test evidence.",
-      "next": "R017/R040 #73/#74 actual 99/74/19, all 3 jobs success; route map updated. R025 retry pending actual receipt."
+      "next": "R025 #75 actual 100/75/19 pass; 12 directed routes bounded across prior tests, remaining gaps and IR4 open."
     },
     {
       "id": "T12_HOSTING_AND_SYNTHETIC_DATA",
@@ -423,7 +423,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "Public control verified; private API + independent SQL generator e1067c8be387c38993b8d361b7c6059c70b7eeaa staged unintegrated. Browser/PIDFD/runner and actual private receipt pending.",
+      "next": "Public control regression a6d3682a verified actual; new private browser 1e9d47392e8bc2849c037d0562a464070a474d60 unintegrated, SQL/API/browser candidates NOT_RUN; local PIDFD/runner/refusal checks next.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",

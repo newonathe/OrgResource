@@ -971,18 +971,18 @@
     "state": "SOURCE_CONTRACT_READY_IMPLEMENTATION_OPEN"
   },
   "r06b3b_candidate": {
-    "sha": "e1067c8be387c38993b8d361b7c6059c70b7eeaa",
-    "base": "a6d3682a8fea6901efb89db9e7e62509a690b0e6",
+    "sha": "1e9d47392e8bc2849c037d0562a464070a474d60",
+    "base": "e1067c8be387c38993b8d361b7c6059c70b7eeaa",
     "pr": 53,
     "runs": [
       [
-        45463840859,
+        45464990215,
         "in_progress",
         null
       ]
     ],
-    "report": "evidence/C9/R06B3B_PRIVATE_MIXED_SQL_ORACLE_CANDIDATE_2026-11-25.md",
-    "acceptance": "PRIVATE_SQL_ORACLE_UNINTEGRATED"
+    "report": "evidence/C9/R06B3B_PRIVATE_MIXED_BROWSER_CANDIDATE_2026-11-25.md",
+    "acceptance": "PRIVATE_BROWSER_ORACLE_UNINTEGRATED"
   },
   "r04_standalone_candidate": {
     "base": "076c9a5e7c7a1e66b894362864d93b76409196bd",
@@ -1030,7 +1030,7 @@
       ]
     ],
     "report": "evidence/C8/R03_DIRECTED_R025_CANDIDATE_2026-11-25.md",
-    "acceptance": "INFRASTRUCTURE_RETRY_PENDING",
+    "acceptance": "VERIFIED_BOUNDED",
     "routes": [
       "R025"
     ],
@@ -1058,7 +1058,14 @@
         "completed",
         "success"
       ]
-    ]
+    ],
+    "run": 45461292876,
+    "job": 138686481378,
+    "attempt": 2,
+    "maven": 100,
+    "identity": 75,
+    "playwright": 19,
+    "failures": 0
   },
   "proposed_project_instructions": {
     "path": "docs/project-continuity/10_PROPOSED_PROJECT_INSTRUCTIONS_UNDER_8000.md",
@@ -1285,37 +1292,46 @@
     "scheduler_denial_log_matches": 1
   },
   "r06b3b_previous_candidate": {
-    "sha": "a6d3682a8fea6901efb89db9e7e62509a690b0e6",
-    "base": "e1d648d5a4c64b69e495cabca7bbd1b4eea0f2f2",
+    "sha": "e1067c8be387c38993b8d361b7c6059c70b7eeaa",
+    "base": "a6d3682a8fea6901efb89db9e7e62509a690b0e6",
     "pr": 53,
     "runs": [
       [
-        45462162577,
+        45463840859,
         "in_progress",
         null
       ]
     ],
-    "acceptance": "PRIVATE_API_ORACLE_UNINTEGRATED",
-    "report": "evidence/C9/R06B3B_PRIVATE_MIXED_API_ORACLE_CANDIDATE_2026-11-25.md",
+    "report": "evidence/C9/R06B3B_PRIVATE_MIXED_SQL_ORACLE_CANDIDATE_2026-11-25.md",
+    "acceptance": "PRIVATE_SQL_ORACLE_UNINTEGRATED",
     "latest_jobs": [
       [
-        138687406415,
-        "Java 8 and isolated MySQL tests",
-        "completed",
-        "success"
-      ],
-      [
-        138687406803,
+        138693330411,
         "React typecheck, tests, lint, and build",
         "completed",
         "success"
       ],
       [
-        138687407235,
+        138693330632,
         "Extended C Java 21, isolated MySQL, Newman and Playwright",
         "in_progress",
         null
+      ],
+      [
+        138693330652,
+        "Java 8 and isolated MySQL tests",
+        "completed",
+        "success"
       ]
     ]
+  },
+  "r06b3b_public_regression": {
+    "sha": "a6d3682a8fea6901efb89db9e7e62509a690b0e6",
+    "run": 45462162577,
+    "job": 138687407235,
+    "acceptance": "VERIFIED_BOUNDED_PUBLIC_ONLY",
+    "maven": 91,
+    "playwright": 19,
+    "private_positive": "NOT_RUN"
   }
 }
