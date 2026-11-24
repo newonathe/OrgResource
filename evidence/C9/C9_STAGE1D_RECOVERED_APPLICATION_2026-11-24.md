@@ -17,3 +17,7 @@ The cloned mixed intermediate fixture intentionally returns DEMO_CLASSIFICATION_
 5. Exact-head CI + marker evidence and independent reviewer remain distinct. Do not claim full browser workflow, full private 96, off-host recovery, maximum source archive capacity, Windows protected-login rerun, or release acceptance. Do not merge/deploy/advance C10.
 
 Source mapping: existing C5 Windows recovery verifier (real pre-backup session and expired receipt), verify-extended-c1.ps1 (invite/receive/demotion/prune sequence), C5 utility and Stage 1C harness, C1 session/auth/security config, V2/V3/V7 DDL, application.properties and c1-test profile, DemoProvenance and App.tsx gate, existing Playwright config. New tests authored first; no deliberate red execution for this test-only integration, no runtime claim until logs.
+
+## Test-only implementation candidate
+
+The existing backup utility is unmodified. The new guarded harness clones the existing job fixture, creates genuine source state via API, prunes only the named expired receipt, uses the actual C5 utility to restore onto another network-none server with loopback TCP only, launches the same packaged JAR in each network namespace as the runner UID, and verifies SQL, API and real mixed-cohort Chromium refusal. The existing Stage 1C raw/encrypted proof is unchanged; original HMAC/postflight run before and after Stage 1D. No runtime evidence at authoring; exact-head CI and independent reviewer are outstanding. The browser gate may consume its full 120-second retry budget. No full authenticated UI claim.
