@@ -815,5 +815,26 @@
         "mode": "100644"
       }
     ]
+  },
+  "project_wide_continuity": {
+    "root": "PROJECT_CONTEXT_START_HERE.md",
+    "directory": "docs/project-continuity",
+    "locator_issue": 50,
+    "topic_map": "01_TOPIC_MAP.json",
+    "ref_snapshot": "02_GIT_REF_SNAPSHOT.json",
+    "file_index": "03_DOCUMENT_VERSION_INDEX.csv",
+    "decision_register": "04_DECISIONS_AND_CONFLICTS.md",
+    "event_schema": "05_CONTEXT_EVENT_SCHEMA.json",
+    "event_ledger": "06_CONTEXT_EVENTS.jsonl",
+    "project_instructions_appendix": "07_PROJECT_INSTRUCTIONS_APPENDIX.md",
+    "private_source_boundary": "08_PRIVATE_SOURCE_BOUNDARY.md",
+    "index_ref": "eb3a90fdc4e9c0fd7502bba753c5d64774885bcc",
+    "topics": 18,
+    "prs": 46,
+    "branches": 49,
+    "non_pr_issues": 5,
+    "tree_snapshots": 11,
+    "unique_file_versions": 953,
+    "scope": "All OrgResource chats and task topics; exact refs and retrieval not omniscient transcript recall. Actual Project settings not changed."
   }
 }

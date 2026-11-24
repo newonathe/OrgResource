@@ -1,0 +1,211 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OrgResource cross-chat material context event (public-safe)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event_id",
+    "date",
+    "topic_ids",
+    "kind",
+    "authority",
+    "summary",
+    "source_refs",
+    "affected_tasks",
+    "state",
+    "next_action",
+    "privacy",
+    "gaps"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.:-]+$"
+    },
+    "date": {
+      "type": "string"
+    },
+    "topic_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "kind": {
+      "enum": [
+        "USER_DECISION",
+        "RESEARCH",
+        "DISCOVERY",
+        "CONFLICT",
+        "PLAN",
+        "IMPLEMENTATION",
+        "TEST",
+        "STATE",
+        "RISK",
+        "SOURCE_AUDIT",
+        "CORRECTION",
+        "CHECKPOINT"
+      ]
+    },
+    "authority": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "source_refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "locator",
+          "depth"
+        ],
+        "properties": {
+          "locator": {
+            "type": "string"
+          },
+          "ref": {
+            "type": "string"
+          },
+          "blob": {
+            "type": "string"
+          },
+          "ranges": {
+            "type": "string"
+          },
+          "depth": {
+            "enum": [
+              "FULL",
+              "RELEVANT_RANGES",
+              "PATCH",
+              "METADATA",
+              "REPORTED_ONLY",
+              "UNREAD",
+              "INACCESSIBLE"
+            ]
+          },
+          "observed": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "artifact_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "alternatives": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "supersedes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "affected_tasks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "test_receipts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "status",
+          "oracle",
+          "actual"
+        ],
+        "properties": {
+          "status": {
+            "enum": [
+              "VERIFIED_BOUNDED",
+              "SOURCE_ONLY",
+              "REPORTED_ONLY",
+              "FAILED",
+              "NOT_RUN",
+              "BLOCKED"
+            ]
+          },
+          "sha": {
+            "type": "string"
+          },
+          "run": {
+            "type": [
+              "integer",
+              "string"
+            ]
+          },
+          "job": {
+            "type": [
+              "integer",
+              "string"
+            ]
+          },
+          "oracle": {
+            "type": "string"
+          },
+          "actual": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "state": {
+      "enum": [
+        "CURRENT",
+        "HISTORICAL",
+        "SUPERSEDED",
+        "PROPOSED",
+        "OPEN",
+        "CANDIDATE",
+        "VERIFIED_BOUNDED",
+        "BLOCKED",
+        "NOT_RUN"
+      ]
+    },
+    "next_action": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "privacy": {
+      "enum": [
+        "PUBLIC_SAFE",
+        "PRIVATE_REFERENCE_ONLY"
+      ]
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
