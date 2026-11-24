@@ -157,15 +157,19 @@ restore_rows() {
 }
 ready=false
 for attempt in $(seq 1 90); do
-  if restore_mysql --batch --skip-column-names -e 'SELECT 1;' > /dev/null 2>&1; then
+  # The image runs a temporary socket-only server during initialization.
+  # Require the final exec'd mysqld as container PID 1 before accepting SQL.
+  if [ "$(docker exec "$restorer_name" cat /proc/1/comm 2>/dev/null)" = mysqld ] &&
+     restore_mysql --batch --skip-column-names -e 'SELECT 1;' > /dev/null 2>&1; then
     ready=true
     break
   fi
   sleep 1
 done
 [ "$ready" = true ] || refuse C9_CROSS_SERVER_STARTUP_TIMEOUT
-[ "$(restore_mysql --batch --skip-column-names -e 'SELECT VERSION();')" = 8.0.46 ] ||
-  refuse C9_CROSS_SERVER_WRONG_MYSQL_VERSION
+restore_version="$(restore_mysql --batch --skip-column-names -e 'SELECT VERSION();')" ||
+  refuse C9_CROSS_SERVER_VERSION_QUERY_FAILED
+[ "$restore_version" = 8.0.46 ] || refuse C9_CROSS_SERVER_WRONG_MYSQL_VERSION
 restore_uuid="$(restore_mysql --batch --skip-column-names -e 'SELECT @@server_uuid;')"
 [[ "$restore_uuid" =~ ^[a-f0-9-]{36}$ ]] && [ "$source_uuid" != "$restore_uuid" ] ||
   refuse C9_CROSS_SERVER_NOT_INDEPENDENT_DATABASE
