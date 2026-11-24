@@ -65,12 +65,12 @@
     {
       "id": "R04",
       "executor": "CHAT",
-      "state": "OPEN",
+      "state": "IN_PROGRESS",
       "depends_on": [
         "R00"
       ],
-      "receipt": "Frozen course compliance/source and 28-operation mapping; packaging completeness vs historical allowlist",
-      "notes": "Student obligations separate"
+      "receipt": "Partial: handoff 16 R04 source/CI audit; actual PR52 job 138598356335 Java8 61 Maven, 100 requests/151 assertions Newman, 1 packaged Playwright; 105 frozen A blobs unchanged; 28 collection routes; packaging fixture/whole-HEAD gaps.",
+      "notes": "R04-PKG01/02/03: safe exact allowlist/export, clean extract/rebuild, artifact verification still OPEN. No frozen A edits. Student obligations separate."
     },
     {
       "id": "R05",

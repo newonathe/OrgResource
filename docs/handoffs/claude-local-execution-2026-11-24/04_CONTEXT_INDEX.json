@@ -928,5 +928,26 @@
         "mode": "100644"
       }
     ]
+  },
+  "r04_partial_reconciliation": {
+    "ref": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+    "frozen": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+    "run": 45437263264,
+    "job": 138598356335,
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/16_R04_COURSE_A_PACKAGING_RECONCILIATION.md",
+    "source_refs": [
+      {
+        "ref": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+        "path": "scripts/package-release.ps1",
+        "blob": "317d19ab31d243e85e737887e297cd1b6d8fa8be"
+      },
+      {
+        "ref": "727c270f0a5f2d34bb3b049124d2d5cfca218f35",
+        "path": "evidence/C6/SAFE_CI_AND_PUBLIC_MIRROR_DECISION.md",
+        "blob": "6180cc38655c1571876a5f197a7846bf2e77de0e"
+      }
+    ],
+    "acceptance": "R04_IN_PROGRESS",
+    "remaining": "safe allowlist and actual package checks"
   }
 }

@@ -156,7 +156,7 @@
         }
       ],
       "authority": "Immutable A 7f8c0746; actual course code and evidence separate from Extended.",
-      "next": "R04 packaging/compliance and student-only gates. Do not edit."
+      "next": "R04 partial reconciliation report handoff 16: actual current Java8 CI and 28 routes; source export allowlist, standalone image fixture and clean package/rebuild checks remain. Preserve frozen A."
     },
     {
       "id": "T07_EARLY_DEMO",

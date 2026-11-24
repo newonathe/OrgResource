@@ -30,3 +30,7 @@ Do not claim absolute losslessness. This is a durable reference-based transfer s
 PR51 `17bd5bf05dba9481a5aff14af1bdb6654f0505b6`, CI 45434204255, job 138587448867: all 3 jobs succeeded; actual 8 intake refusals, confirmation contract and real MySQL SELECT/write-denial grants, original C5 33,858 bytes, exact restore/V2/cleanup, 91 Maven/19 Playwright. R06B2 is VERIFIED_BOUNDED, not an actual private import or operator approval. PR52 `d3e8a8550e00e3bb9423d84f51f8141783e71fd1`, CI 45437263264 in progress at update, is candidate for separate LocalMixedAcceptance actual C5, third independent server, restored read-only postflight, row equality, size/timing and cleanup; public CI refusal/third empty fixture checks only. Full private positive NOT_RUN; R06B3b valid recovered browser/API next; R03/R04/R07/R08 remain open, R09 false. No new product Java or migration changes, no host, private input, real SMS, merge/deploy or independent self-signoff.
 
 The initial 953-version index remains historical. Consult 09_INCREMENTAL_SOURCE_INDEX.csv for new candidate delta; exact live refs and updated topic map override earlier status.
+
+## R04 partial parallel checkpoint
+
+See [handoff 16](../handoffs/claude-local-execution-2026-11-24/16_R04_COURSE_A_PACKAGING_RECONCILIATION.md). Actual current Java8 CI and exact frozen tree comparison; R04 package findings open. R06B3a actual Extended receipt still pending, R09 false.
