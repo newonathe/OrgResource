@@ -871,15 +871,27 @@
   },
   "latest_scoped_observation": {
     "date": "2026-11-25 PHT",
-    "handoff_parent": "2dc8527a43a8489748372a5dc8421123cddc6aa5",
+    "handoff_parent": "4ece9d8212d09eaa2a0dd9327c9541d98a5373ef",
     "pr53": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
-    "pr54": "b3eb16e5ddf757e67cfa8296eb56f9f340ef632c",
-    "pr55": "c11f47a23a82b0dac4afa8d5d4234280eb16f67e",
-    "coverage": "Scoped exact live PR refs and candidate receipt, historical initial inventory retained",
+    "pr54": "7ff4f8d7bbeb1e83068f380ebfcaa3216a4f727b",
+    "pr55": "76a8e687581bd1b70582822a38b657744e22d387",
+    "coverage": "Scoped exact live PR refs; initial historical inventory retained",
     "candidate_runs": [
       [
-        45485647999,
+        45486716110,
         "Verify",
+        "queued",
+        null
+      ],
+      [
+        45486540380,
+        "Verify",
+        "in_progress",
+        null
+      ],
+      [
+        45486540376,
+        "R07-R08 isolated preparation",
         "in_progress",
         null
       ]
