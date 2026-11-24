@@ -59,7 +59,7 @@
       "depends_on": [
         "R02"
       ],
-      "receipt": "Prior PR54 22b90b46d4f59423e13ca62b0afd8336019dfad8 actual CI45445707957 job138628768792 93 Maven/68 identity/19 Playwright, R031/R082 bounded; new head 4410cb17fa1daaac723401fcca17b41b3b1946ed tests #69 R078, #70 R041/R078, #71 R083/R084 pending actual CI. Independent IR4/review open.",
+      "receipt": "PR54 4410cb17fa1daaac723401fcca17b41b3b1946ed CI45450272557 job138645130048 actual 96 Maven 1 failure, 0 errors/skips; #69 failed at line4809 nanosecond creation vs DATETIME(6) persisted expiration (170 ns), #70/#71 not failed in aggregate. Correction 67d4cad897da432b4967a69b5336b730b5ce40d3 captures persisted expiry before revoke; strict <1us creation difference and exact stored/response/reloaded equality, no behavior change. Actual retry pending; prior 93/68/19 receipt retained.",
       "notes": "R029 #66 previously verified; R031/R082 bounded on prior head. New three tests cover four route gaps partially; next remaining R089/R091/R017/R025/R040 and others. No production change."
     },
     {
@@ -151,7 +151,7 @@
       "depends_on": [
         "R06B3a"
       ],
-      "receipt": "Initial 321205f2 run45441418164 failed after preparation; exact cause hidden. b2609e36 CI45444843268 job138625635986 failed exit2 after ten refusals, actual malformed wrapper source found. f1bcf7e1 fixes literal regex and duplicate suffix, tests synthetic safe marker filter; CI45448775860 pending. Underlying initial failure still UNKNOWN; private mixed path NOT_IMPLEMENTED/NOT_RUN.",
+      "receipt": "PR53 f1bcf7e129f7a9b037478aae570610ccf84fa4c4 CI45448775860 job138639769266 actual filter PASS, 10 refusals, original restore 33857 bytes/row equality, V2, importer grants, third empty server, PIDFD, five prohibited DML denials, JAR ready; API phase RuntimeError, specific assertion unknown. 68b694adadcca5d7c8a5698d01e86c7e47227800 adds 17 fixed API phase labels, numeric status/uppercase assertion diagnostics only; no permission or oracle change. Retry pending. Private mixed not implemented/run.",
       "notes": "Potential SELECT FOR UPDATE privilege incompatibility: InventoryService locks organization/membership on detail reads. Do not broaden domain DML to pass. Actual CI failure evidence first. Private same-lifetime path after bounded public control; R07 normal worker separate."
     },
     {
@@ -422,7 +422,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "Inspect actual PR53 f1bcf7e1 diagnostic retry 45448775860 and resolve first actual underlying failure; advance independent directed route gaps R084/R078/R083/R041 if CI pending. Reconcile R04 remaining remote/local scope. R09 false."
+    "next_action": "Inspect new PR53 actual API phase/status and repair smallest failing case; inspect corrected PR54 R078 receipt; independent next R089/R091/R017/R025/R040 if needed; R09=false."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -441,11 +441,11 @@
     "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS"
   },
   "r06b3b_candidate": {
-    "sha": "f1bcf7e129f7a9b037478aae570610ccf84fa4c4",
+    "sha": "68b694adadcca5d7c8a5698d01e86c7e47227800",
     "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
     "pr": 53,
     "run": 45448775860,
-    "acceptance": "DIAGNOSTIC_CORRECTION_CI_PENDING",
+    "acceptance": "API_DIAGNOSTIC_RETRY_PENDING",
     "test_first": "30c68c97211bfe339b01b22c676ed9ea2934f3e5",
     "protected": {
       "course": 105,
@@ -458,28 +458,31 @@
     "prior_job": 138613273769,
     "runs": [
       [
-        45444843268,
+        45453565679,
         "in_progress",
         null
       ]
     ],
     "prior_retry_sha": "b2609e36c090363dc32cb9f6b5c65107e93a262b",
     "prior_retry_run": 45444843268,
-    "prior_retry_job": 138625635986
+    "prior_retry_job": 138625635986,
+    "prior_api_failed_sha": "f1bcf7e129f7a9b037478aae570610ccf84fa4c4",
+    "prior_api_failed_run": 45448775860,
+    "prior_api_failed_job": 138639769266
   },
   "r03_candidate": {
-    "sha": "4410cb17fa1daaac723401fcca17b41b3b1946ed",
+    "sha": "67d4cad897da432b4967a69b5336b730b5ce40d3",
     "base": "22b90b46d4f59423e13ca62b0afd8336019dfad8",
     "pr": 54,
     "runs": [
       [
-        45450272557,
+        45453508295,
         "in_progress",
         null
       ]
     ],
     "report": "evidence/C8/R03_DIRECTED_R078_R041_R083_R084_CANDIDATE_2026-11-25.md",
-    "acceptance": "CANDIDATE_CI_PENDING",
+    "acceptance": "CORRECTED_CANDIDATE_CI_PENDING",
     "routes": [
       "R078",
       "R041",
@@ -490,7 +493,10 @@
       69,
       70,
       71
-    ]
+    ],
+    "prior_failed_sha": "4410cb17fa1daaac723401fcca17b41b3b1946ed",
+    "prior_failed_run": 45450272557,
+    "prior_failed_job": 138645130048
   },
   "r03_prior_verified": {
     "sha": "22b90b46d4f59423e13ca62b0afd8336019dfad8",

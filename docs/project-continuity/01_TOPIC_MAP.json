@@ -344,7 +344,7 @@
         }
       ],
       "authority": "93 route candidate mapping, independent issue34 blocked; current code and actual test evidence.",
-      "next": "PR54 4410cb17fa1daaac723401fcca17b41b3b1946ed three new tests #69–71, four directed route gaps R078/R041/R083/R084; actual CI pending. Prior R031/R082 verified; independent IR4 open."
+      "next": "PR54 #69 actual precision oracle failure, correction 67d4cad897da432b4967a69b5336b730b5ce40d3 pending. Prior directed receipts retained; remaining route gaps/IR4 open."
     },
     {
       "id": "T12_HOSTING_AND_SYNTHETIC_DATA",
@@ -423,7 +423,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "PR53 second run exit2, diagnostic wrapper malformed by JS replacement; literal filter correction f1bcf7e1 CI45448775860 pending; original runtime failure unknown.",
+      "next": "PR53 actual JAR ready and grant denial proof; API RuntimeError exact assertion unknown. 68b694adadcca5d7c8a5698d01e86c7e47227800 fixed phase/numeric diagnostics pending; no DML widening.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",

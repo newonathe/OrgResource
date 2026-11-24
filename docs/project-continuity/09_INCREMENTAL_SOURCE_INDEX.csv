@@ -21,3 +21,6 @@
 "scripts/test-c9-local-mixed-preparation.sh","d75e1717d4e574a8a2afc17ed680fa3adbc22c02","5559","100644","r06b3b_literal_filter_candidate:f1bcf7e129f7a9b037478aae570610ccf84fa4c4","PATCH; actual retry pending"
 "evidence/C8/R03_DIRECTED_R078_R041_R083_R084_CANDIDATE_2026-11-25.md","be3571ec6e73696eeab805b82b418bf648233daa","2515","100644","r03_directed_batch2_candidate:4410cb17fa1daaac723401fcca17b41b3b1946ed","PATCH; actual CI pending"
 "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","d0fc88ac1ed7a90b86a5f517fd4129ce44aac793","378810","100644","r03_directed_batch2_candidate:4410cb17fa1daaac723401fcca17b41b3b1946ed","PATCH; actual CI pending"
+"evidence/C8/R03_DIRECTED_R078_R041_R083_R084_CANDIDATE_2026-11-25.md","eae44993d8eafeb57ff67065285f3b8912f0deb5","3387","100644","corrective_candidate:67d4cad897da432b4967a69b5336b730b5ce40d3","PATCH; actual retry pending"
+"extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","8e33739b08e277776aa35322e1276f47b1eebcc4","379619","100644","corrective_candidate:67d4cad897da432b4967a69b5336b730b5ce40d3","PATCH; actual retry pending"
+"scripts/verify-c9-public-recovered-control.py","ba542833e14bb230b15ddd9e677f74386cb0583c","4612","100644","corrective_candidate:68b694adadcca5d7c8a5698d01e86c7e47227800","PATCH; actual retry pending"

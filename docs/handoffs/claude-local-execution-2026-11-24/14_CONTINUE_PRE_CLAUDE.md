@@ -82,3 +82,7 @@ PR54 22b90b46d4f59423e13ca62b0afd8336019dfad8 CI45445707957 Extended138628768792
 ## R03 second directed test batch
 
 PR54 4410cb17fa1daaac723401fcca17b41b3b1946ed based on verified 22b90b46d4f59423e13ca62b0afd8336019dfad8; tests #69–71 R078/R041/R083/R084, three new tests, four route gaps partially targeted; CI [[45450272557,"in_progress",null]] pending, no product change. Prior 93 Maven/68 identity/19 Playwright receipt retained. Expected 96/71/19, not observed. R06B3b CI45448775860 status [[138639769266,"Extended C Java 21, isolated MySQL, Newman and Playwright","in_progress",null,["Prove isolated additive replay preserves existing owner and refuses repeat"]],[138639770088,"React typecheck, tests, lint, and build","completed","success",[]],[138639770350,"Java 8 and isolated MySQL tests","completed","success",[]]]; no inferred success. R09=false.
+
+## Actual failures and corrective candidates
+
+PR54 4410cb17fa1daaac723401fcca17b41b3b1946ed CI45450272557 job138645130048 actual 96 Maven/1 failure #69 expiry 170ns precision discrepancy; 67d4cad897da432b4967a69b5336b730b5ce40d3 fixes persisted oracle, new CI [[45453508295,"in_progress",null]]. PR53 f1bcf7e129f7a9b037478aae570610ccf84fa4c4 CI45448775860 job138639769266 actual filter/ten refusals/original recovery/V2/third server/PIDFD/five DML denials/JAR ready PASS; API RuntimeError exact assertion unknown. 68b694adadcca5d7c8a5698d01e86c7e47227800 adds static phase and numeric diagnostics, no permissions/oracles changed, CI [[45453565679,"in_progress",null]]. See report23. No private positive, R09=false.

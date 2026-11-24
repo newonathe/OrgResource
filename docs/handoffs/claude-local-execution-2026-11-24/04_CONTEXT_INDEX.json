@@ -971,11 +971,11 @@
     "state": "SOURCE_CONTRACT_READY_IMPLEMENTATION_OPEN"
   },
   "r06b3b_candidate": {
-    "sha": "f1bcf7e129f7a9b037478aae570610ccf84fa4c4",
+    "sha": "68b694adadcca5d7c8a5698d01e86c7e47227800",
     "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
     "pr": 53,
     "run": 45448775860,
-    "acceptance": "DIAGNOSTIC_CORRECTION_CI_PENDING",
+    "acceptance": "API_DIAGNOSTIC_RETRY_PENDING",
     "test_first": "30c68c97211bfe339b01b22c676ed9ea2934f3e5",
     "protected": {
       "course": 105,
@@ -988,14 +988,17 @@
     "prior_job": 138613273769,
     "runs": [
       [
-        45444843268,
+        45453565679,
         "in_progress",
         null
       ]
     ],
     "prior_retry_sha": "b2609e36c090363dc32cb9f6b5c65107e93a262b",
     "prior_retry_run": 45444843268,
-    "prior_retry_job": 138625635986
+    "prior_retry_job": 138625635986,
+    "prior_api_failed_sha": "f1bcf7e129f7a9b037478aae570610ccf84fa4c4",
+    "prior_api_failed_run": 45448775860,
+    "prior_api_failed_job": 138639769266
   },
   "r04_standalone_candidate": {
     "base": "076c9a5e7c7a1e66b894362864d93b76409196bd",
@@ -1032,18 +1035,18 @@
     "failures": 0
   },
   "r03_candidate": {
-    "sha": "4410cb17fa1daaac723401fcca17b41b3b1946ed",
+    "sha": "67d4cad897da432b4967a69b5336b730b5ce40d3",
     "base": "22b90b46d4f59423e13ca62b0afd8336019dfad8",
     "pr": 54,
     "runs": [
       [
-        45450272557,
+        45453508295,
         "in_progress",
         null
       ]
     ],
     "report": "evidence/C8/R03_DIRECTED_R078_R041_R083_R084_CANDIDATE_2026-11-25.md",
-    "acceptance": "CANDIDATE_CI_PENDING",
+    "acceptance": "CORRECTED_CANDIDATE_CI_PENDING",
     "routes": [
       "R078",
       "R041",
@@ -1054,7 +1057,10 @@
       69,
       70,
       71
-    ]
+    ],
+    "prior_failed_sha": "4410cb17fa1daaac723401fcca17b41b3b1946ed",
+    "prior_failed_run": 45450272557,
+    "prior_failed_job": 138645130048
   },
   "proposed_project_instructions": {
     "path": "docs/project-continuity/10_PROPOSED_PROJECT_INSTRUCTIONS_UNDER_8000.md",

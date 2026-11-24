@@ -50,3 +50,5 @@ R03 directed test-only candidate PR54; R031/R082 partial scope, independent acce
 PC-D24 diagnostic correction: actual second PR53 failure caused by malformed harness expression; literal filter repair only, original runtime cause unknown. R031/R082 bounded executed; no new product design decision.
 
 R03 second directed batch: PR54 test-only candidate #69–71; no new production-policy decision. Prior actual receipts preserved.
+
+R03 expiration oracle correction: exact persisted expiry and strict submicrosecond creation/storage difference; no product change. R06B3b API phase diagnostic only; no grant changes.
