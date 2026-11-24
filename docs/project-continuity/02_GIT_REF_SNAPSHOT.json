@@ -874,7 +874,7 @@
     "handoff_parent": "eb4956b550dadb0d4dbb604b072dfab15de8c30a",
     "pr53": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
     "pr54": "852f2f29f58065e9cf581cb70d58f642da343c1f",
-    "pr55": "a034fb1c81ff1521c9bc9c0c32561c9c2cde515c",
+    "pr55": "b48b289f4ddc3dd1fb0ac786487d188921c6909c",
     "coverage": "Scoped exact live refs and actual reporting and corrected recovery receipts; historical inventory retained",
     "candidate_runs": [
       [
@@ -908,6 +908,21 @@
         "Verify",
         "completed",
         "success"
+      ]
+    ],
+    "lifecycle_failed_sha": "a034fb1c81ff1521c9bc9c0c32561c9c2cde515c",
+    "lifecycle_correction_runs": [
+      [
+        45489076064,
+        "Verify",
+        "queued",
+        null
+      ],
+      [
+        45489075914,
+        "R07-R08 isolated preparation",
+        "queued",
+        null
       ]
     ]
   }

@@ -103,3 +103,5 @@
 "evidence/C8/R03_PROJECT_READ_LEAD_AND_IMAGE_DELETE_CANDIDATE_2026-11-25.md","f5a756492be2c71ec99042f95193dafe4055cdc8","1341","100644","candidate:852f2f29f58065e9cf581cb70d58f642da343c1f","PATCH; actual CI pending"
 "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","9f3799e15cc88636ad6a38029b7d71466f5ca351","440379","100644","candidate:a034fb1c81ff1521c9bc9c0c32561c9c2cde515c","PATCH; actual CI pending"
 "evidence/C9/R07_RETURN_EXPIRY_AND_STALE_CLAIM_CANDIDATE_2026-11-25.md","41115cae6bc728de6c6248cbd2352a619a86e012","1469","100644","candidate:a034fb1c81ff1521c9bc9c0c32561c9c2cde515c","PATCH; actual CI pending"
+"extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","ef9823118ff5ab1080a2d39a67ddc51209560750","441333","100644","candidate:b48b289f4ddc3dd1fb0ac786487d188921c6909c","PATCH; actual CI pending"
+"evidence/C9/R07_LIFECYCLE_BRANCH_HELPER_CORRECTION_2026-11-25.md","381d1082c52399402315d700d55b5c248c9b16dc","879","100644","candidate:b48b289f4ddc3dd1fb0ac786487d188921c6909c","PATCH; actual CI pending"
