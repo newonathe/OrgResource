@@ -4776,6 +4776,170 @@ class C1IdentityAcceptanceTest {
         // and complete cross-table read-only proof are separate evidence gaps.
     }
 
+    @Test @Order(69)
+    void C8R078InvitationRevocationChecksVersionRoleExpiryAndExactRows() throws Exception {
+        Fixture home = newTenant("C8-R078-home", Membership.Role.OWNER);
+        Fixture admin = fixtureInOrg(home.orgDbId, Membership.Role.ADMIN);
+        Session owner = login(home.username, home.password);
+        Session officer = login(admin.username, admin.password);
+        String root = "/api/v2/orgs/" + home.orgPublicId;
+        HttpResponse<String> created = post(owner, root + "/invitations", GSON.toJson(new RoleRequest("MEMBER")));
+        assertEquals(201, created.statusCode());
+        var view = json(created).getAsJsonObject("data");
+        UUID id = UUID.fromString(view.get("id").getAsString());
+        String tag = created.headers().firstValue("ETag").orElseThrow();
+        String revoke = root + "/invitations/" + id + "/revoke";
+        String sql = "SELECT id,org_id,role,status,HEX(token_hash) AS digest,version,created_at,updated_at,expires_at,accepted_by_user_id FROM invitation WHERE org_id=? ORDER BY id";
+        String audit = "SELECT COUNT(*) FROM audit_event WHERE org_id=?";
+        var before = jdbc.queryForList(sql, home.orgDbId);
+        long auditBefore = jdbc.queryForObject(audit, Long.class, home.orgDbId);
+        assertEquals(428, post(owner, revoke, "").statusCode());
+        assertEquals(400, post(owner, revoke, "", "W/\"v0\"").statusCode());
+        assertEquals(412, post(owner, revoke, "", "\"v999\"").statusCode());
+        assertTrue(before.equals(jdbc.queryForList(sql, home.orgDbId)), "Denied revocation changed invitation rows.");
+        assertEquals(auditBefore, jdbc.queryForObject(audit, Long.class, home.orgDbId));
+        HttpResponse<String> revoked = post(officer, revoke, "", tag);
+        assertEquals(200, revoked.statusCode());
+        var result = json(revoked).getAsJsonObject("data");
+        assertEquals(id.toString(), result.get("id").getAsString());
+        assertEquals(home.orgPublicId.toString(), result.get("organizationId").getAsString());
+        assertEquals("MEMBER", result.get("role").getAsString());
+        assertEquals("REVOKED", result.get("status").getAsString());
+        assertTrue(!result.has("bearerToken") || result.get("bearerToken").isJsonNull());
+        assertEquals(view.get("expiresAt"), result.get("expiresAt"));
+        assertEquals(view.get("version").getAsLong() + 1, result.get("version").getAsLong());
+        String next = revoked.headers().firstValue("ETag").orElseThrow();
+        assertEquals("\"v" + result.get("version").getAsLong() + "\"", next);
+        assertEquals(Invitation.Status.REVOKED, invitations.findByOrganizationIdAndPublicId(home.orgDbId, id).orElseThrow().status);
+        assertEquals(auditBefore + 1, jdbc.queryForObject(audit, Long.class, home.orgDbId));
+        before = jdbc.queryForList(sql, home.orgDbId);
+        auditBefore = jdbc.queryForObject(audit, Long.class, home.orgDbId);
+        assertEquals(409, post(owner, revoke, "", next).statusCode());
+        assertTrue(before.equals(jdbc.queryForList(sql, home.orgDbId)));
+        assertEquals(auditBefore, jdbc.queryForObject(audit, Long.class, home.orgDbId));
+        HttpResponse<String> adminInvite = post(owner, root + "/invitations", GSON.toJson(new RoleRequest("ADMIN")));
+        assertEquals(201, adminInvite.statusCode());
+        String adminRevoke = root + "/invitations/" + json(adminInvite).getAsJsonObject("data").get("id").getAsString() + "/revoke";
+        before = jdbc.queryForList(sql, home.orgDbId);
+        auditBefore = jdbc.queryForObject(audit, Long.class, home.orgDbId);
+        assertEquals(403, post(officer, adminRevoke, "", adminInvite.headers().firstValue("ETag").orElseThrow()).statusCode());
+        assertTrue(before.equals(jdbc.queryForList(sql, home.orgDbId)));
+        assertEquals(auditBefore, jdbc.queryForObject(audit, Long.class, home.orgDbId));
+    }
+
+    @Test @Order(70)
+    void C8R041ExpiredInvitationCannotRevokeOrRedeemBeforeWorkerRuns() throws Exception {
+        Fixture home = newTenant("C8-R041-home", Membership.Role.OWNER);
+        Fixture outsider = newTenant("C8-R041-outsider", Membership.Role.OWNER);
+        Session owner = login(home.username, home.password);
+        Session foreign = login(outsider.username, outsider.password);
+        String root = "/api/v2/orgs/" + home.orgPublicId;
+        HttpResponse<String> issued = post(owner, root + "/invitations", GSON.toJson(new RoleRequest("LEAD")));
+        assertEquals(201, issued.statusCode());
+        var view = json(issued).getAsJsonObject("data");
+        UUID id = UUID.fromString(view.get("id").getAsString());
+        String token = view.get("bearerToken").getAsString();
+        Invitation row = invitations.findByOrganizationIdAndPublicId(home.orgDbId, id).orElseThrow();
+        // Existing acceptance fixture technique, confined to this fresh fictional invitation.
+        LocalDateTime past = now().minusMinutes(1);
+        assertEquals(1, jdbc.update("UPDATE invitation SET created_at=?,expires_at=? WHERE id=?",
+                Timestamp.valueOf(past.minusMinutes(1)), Timestamp.valueOf(past), row.id));
+        String sql = "SELECT id,status,version,created_at,updated_at,expires_at,accepted_by_user_id,HEX(token_hash) AS digest FROM invitation WHERE id=?";
+        var before = jdbc.queryForList(sql, row.id);
+        long members = memberships.count();
+        long users = accounts.count();
+        long codes = recoveryCodes.count();
+        long audits = jdbc.queryForObject("SELECT COUNT(*) FROM audit_event WHERE org_id=?", Long.class, home.orgDbId);
+        assertEquals(Invitation.Status.INVITED, invitations.findById(row.id).orElseThrow().status);
+        assertEquals(409, post(owner, root + "/invitations/" + id + "/revoke", "",
+                issued.headers().firstValue("ETag").orElseThrow()).statusCode());
+        HttpResponse<String> denied = post(foreign, "/api/v2/invitations/redeem", GSON.toJson(new TokenRequest(token)));
+        assertEquals(404, denied.statusCode());
+        assertEquals("INVITE_INVALID", json(denied).get("code").getAsString());
+        assertFalse(json(denied).has("data"));
+        HttpClient anonymous = newClient();
+        String csrf = json(get(anonymous, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();
+        String username = "expired-" + UUID.randomUUID();
+        HttpResponse<String> newAccount = post(anonymous, "/api/v2/invitations/redeem",
+                GSON.toJson(new RedeemRequest(token, username, "Fictional-Password-" + UUID.randomUUID(), "Expired invitee")), csrf, origin());
+        assertEquals(404, newAccount.statusCode());
+        assertEquals("INVITE_INVALID", json(newAccount).get("code").getAsString());
+        assertEquals(401, get(anonymous, "/api/v2/session").statusCode());
+        assertEquals(200, get(foreign.client, "/api/v2/session").statusCode());
+        assertTrue(accounts.findByUsernameKey(username).isEmpty());
+        assertEquals(members, memberships.count());
+        assertEquals(users, accounts.count());
+        assertEquals(codes, recoveryCodes.count());
+        assertEquals(audits, jdbc.queryForObject("SELECT COUNT(*) FROM audit_event WHERE org_id=?", Long.class, home.orgDbId));
+        assertTrue(before.equals(jdbc.queryForList(sql, row.id)), "Expired invitation denial changed the row.");
+        // No raw invitation token in output or assertion messages.
+    }
+
+    @Test @Order(71)
+    void C8R083R084TransferStartAndRevokePreconditionsPreserveOwnership() throws Exception {
+        Fixture home = newTenant("C8-transfer-home", Membership.Role.OWNER);
+        Fixture admin = fixtureInOrg(home.orgDbId, Membership.Role.ADMIN);
+        Fixture member = fixtureInOrg(home.orgDbId, Membership.Role.MEMBER);
+        Fixture other = newTenant("C8-transfer-other", Membership.Role.OWNER);
+        Fixture otherAdmin = fixtureInOrg(other.orgDbId, Membership.Role.ADMIN);
+        Session owner = login(home.username, home.password);
+        Session foreign = login(other.username, other.password);
+        String root = "/api/v2/orgs/" + home.orgPublicId;
+        String start = root + "/transfer-ownership";
+        String rows = "SELECT id,org_id,from_membership_id,to_membership_id,status,version,created_at,expires_at,accepted_at FROM ownership_transfer WHERE org_id IN (?,?) ORDER BY id";
+        String roles = "SELECT id,org_id,user_id,role,status,version FROM membership WHERE org_id IN (?,?) ORDER BY id";
+        String audit = "SELECT COUNT(*) FROM audit_event WHERE org_id IN (?,?)";
+        var before = jdbc.queryForList(rows, home.orgDbId, other.orgDbId);
+        var rolesBefore = jdbc.queryForList(roles, home.orgDbId, other.orgDbId);
+        long auditBefore = jdbc.queryForObject(audit, Long.class, home.orgDbId, other.orgDbId);
+        assertEquals(401, post(owner, start, GSON.toJson(new TransferRequest(admin.membershipPublicId, "wrong-password"))).statusCode());
+        assertEquals(409, post(owner, start, GSON.toJson(new TransferRequest(member.membershipPublicId, home.password))).statusCode());
+        assertEquals(404, post(owner, start, GSON.toJson(new TransferRequest(otherAdmin.membershipPublicId, home.password))).statusCode());
+        assertTrue(before.equals(jdbc.queryForList(rows, home.orgDbId, other.orgDbId)));
+        assertTrue(rolesBefore.equals(jdbc.queryForList(roles, home.orgDbId, other.orgDbId)));
+        assertEquals(auditBefore, jdbc.queryForObject(audit, Long.class, home.orgDbId, other.orgDbId));
+        HttpResponse<String> issued = post(owner, start, GSON.toJson(new TransferRequest(admin.membershipPublicId, home.password)));
+        assertEquals(201, issued.statusCode());
+        var view = json(issued).getAsJsonObject("data");
+        assertEquals("PENDING", view.get("status").getAsString());
+        assertEquals(home.orgPublicId.toString(), view.get("organizationId").getAsString());
+        assertEquals(home.membershipPublicId.toString(), view.get("fromMembershipId").getAsString());
+        assertEquals(admin.membershipPublicId.toString(), view.get("toMembershipId").getAsString());
+        assertTrue(!view.has("acceptedAt") || view.get("acceptedAt").isJsonNull());
+        String tag = issued.headers().firstValue("ETag").orElseThrow();
+        assertEquals("\"v" + view.get("version").getAsLong() + "\"", tag);
+        assertEquals(auditBefore + 1, jdbc.queryForObject(audit, Long.class, home.orgDbId, other.orgDbId));
+        assertTrue(rolesBefore.equals(jdbc.queryForList(roles, home.orgDbId, other.orgDbId)));
+        String id = view.get("id").getAsString();
+        String revoke = root + "/transfers/" + id + "/revoke";
+        before = jdbc.queryForList(rows, home.orgDbId, other.orgDbId);
+        auditBefore = jdbc.queryForObject(audit, Long.class, home.orgDbId, other.orgDbId);
+        assertEquals(428, post(owner, revoke, "").statusCode());
+        assertEquals(400, post(owner, revoke, "", "W/\"v0\"").statusCode());
+        assertEquals(412, post(owner, revoke, "", "\"v999\"").statusCode());
+        assertEquals(404, post(foreign, "/api/v2/orgs/" + other.orgPublicId + "/transfers/" + id + "/revoke", "", tag).statusCode());
+        assertTrue(before.equals(jdbc.queryForList(rows, home.orgDbId, other.orgDbId)));
+        assertEquals(auditBefore, jdbc.queryForObject(audit, Long.class, home.orgDbId, other.orgDbId));
+        HttpResponse<String> revoked = post(owner, revoke, "", tag);
+        assertEquals(200, revoked.statusCode());
+        var result = json(revoked).getAsJsonObject("data");
+        assertEquals("REVOKED", result.get("status").getAsString());
+        assertEquals(id, result.get("id").getAsString());
+        assertEquals(view.get("version").getAsLong() + 1, result.get("version").getAsLong());
+        String current = revoked.headers().firstValue("ETag").orElseThrow();
+        assertEquals("\"v" + result.get("version").getAsLong() + "\"", current);
+        assertEquals(OwnershipTransfer.Status.REVOKED, transfers.findByOrganizationIdAndPublicId(home.orgDbId, UUID.fromString(id)).orElseThrow().status);
+        assertEquals(auditBefore + 1, jdbc.queryForObject(audit, Long.class, home.orgDbId, other.orgDbId));
+        before = jdbc.queryForList(rows, home.orgDbId, other.orgDbId);
+        auditBefore = jdbc.queryForObject(audit, Long.class, home.orgDbId, other.orgDbId);
+        assertEquals(409, post(owner, revoke, "", current).statusCode());
+        assertTrue(before.equals(jdbc.queryForList(rows, home.orgDbId, other.orgDbId)));
+        assertEquals(auditBefore, jdbc.queryForObject(audit, Long.class, home.orgDbId, other.orgDbId));
+        assertTrue(rolesBefore.equals(jdbc.queryForList(roles, home.orgDbId, other.orgDbId)));
+        assertEquals(1, memberships.countEffectiveActiveOwners(home.orgDbId));
+        assertEquals(1, memberships.countEffectiveActiveOwners(other.orgDbId));
+    }
+
     private record Fixture(long orgDbId, UUID orgPublicId, long userDbId, String username, String password,
                           long membershipDbId, UUID membershipPublicId, List<String> recoveryCodes) { }
     private static final class Session {
