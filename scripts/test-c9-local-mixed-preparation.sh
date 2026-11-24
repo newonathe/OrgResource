@@ -12,6 +12,7 @@ runner=scripts/verify-c9-local-mixed-preparation.sh
 bash -n "$runner"
 bash -n scripts/c9-local-operator-gate.sh
 bash -n scripts/c9-public-recovered-control.sh
+bash -n scripts/c9-private-mixed-recovered-control.sh
 python3 -m py_compile scripts/verify-c9-public-recovered-control.py
 node --check scripts/verify-c9-public-recovered-control.mjs
 node --check scripts/verify-c9-private-mixed-browser.mjs
@@ -19,6 +20,9 @@ python3 -B scripts/test-c9-private-mixed-static.py
 if node scripts/verify-c9-private-mixed-browser.mjs > "$root/private-browser-refusal.log" 2>&1; then exit 1; fi
 grep -Fxq R06B3B_MIXED_BROWSER_FAILED:INTAKE "$root/private-browser-refusal.log"
 echo R06B3B_PRIVATE_BROWSER_CI_REFUSED_OK
+if bash -c 'set -eu; mode=--approved-import; fail(){ echo "$1" >&2; exit 1; }; source scripts/c9-private-mixed-recovered-control.sh; mixed_runtime_guard' > "$root/private-runner-refusal.log" 2>&1; then exit 1; fi
+grep -Fxq R06B3B_PRIVATE_OWNER_LOCAL_ONLY "$root/private-runner-refusal.log"
+echo R06B3B_PRIVATE_RUNNER_CI_REFUSED_OK
 source scripts/c9-local-operator-gate.sh
 fp="$(printf '%064d' 1)"
 digest="$(printf '%064d' 2)"

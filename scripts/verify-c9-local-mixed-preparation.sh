@@ -76,9 +76,12 @@ work="$root/orgresource-c9-local-$token"
 mkdir -m 700 -- "$work"
 source_id= target_id= mixed_id= receipt_dir=
 control_supervisor=
+mixed_supervisor=
+mixed_owner_confirmed=false
 cleanup() {
   local result=0 id role remaining
   if [ -n "$control_supervisor" ]; then control_stop || return 1; fi
+  if [ -n "$mixed_supervisor" ]; then mixed_runtime_stop || return 1; fi
   docker_local info >/dev/null 2>&1 || return 1
   for role in source restore mixed; do
     case "$role" in source) id="$source_id";; restore) id="$target_id";; mixed) id="$mixed_id";; esac
@@ -349,6 +352,9 @@ if [ "$mode" = --fixture-only ]; then
     control_run
   fi
 elif [ "$mode" = --approved-import ]; then
+  phase=private_runtime_preflight
+  source scripts/c9-private-mixed-recovered-control.sh
+  mixed_runtime_preflight
   phase=operator_confirmation
   # This receipt is generated from actual completed recovery and preflight,
   # not a fabricated claim. It is local-only and contains no raw rows/keys.
@@ -360,13 +366,14 @@ elif [ "$mode" = --approved-import ]; then
     printf 'scope=LOCAL_DISPOSABLE_ONLY\nsource_sha=%s\njar_sha256=%s\nplan_sha256=%s\n' "$source_sha" "$jar_sha" "$approved_sha"
     printf 'source_server_uuid=%s\nrestore_server_uuid=%s\ntarget_fingerprint_sha256=%s\n' "$source_uuid" "$target_uuid" "$fp"
     printf 'archive_sha256=%s\narchive_bytes=%s\noriginal_rows_sha256=%s\nrestored_rows_sha256=%s\nbaseline_sha256=%s\n' "$archive_sha" "$(stat -c '%s' "$archive")" "$row_sha" "$row_sha" "$baseline_sha"
-    printf 'actual_c5_restore=true\nindependent_server=true\nexact_rows_equal=true\nsessions_empty=true\nreadonly_preflight=true\nbaseline_verify=true\noriginal_source_unchanged=true\nhosted_import=false\noff_host_restore=false\n'
+    printf 'scope_after_consent=ONE_DISPOSABLE_IMPORT_RECOVERY_AND_READ_SESSION_RUNTIME\nactual_c5_restore=true\nindependent_server=true\nexact_rows_equal=true\nsessions_empty=true\nreadonly_preflight=true\nbaseline_verify=true\noriginal_source_unchanged=true\nhosted_import=false\noff_host_restore=false\n'
   } > "$restore_receipt"
   receipt_sha="$(sha256sum "$restore_receipt" | cut -d' ' -f1)"
   source scripts/c9-local-operator-gate.sh
   cat "$restore_receipt"
   printf 'restore_receipt_sha256=%s\n' "$receipt_sha"
   c9_require_operator_confirmation "$fp" "$receipt_sha" || fail R06B2_OPERATOR_DECLINED
+  mixed_owner_confirmed=true
   # Bind the operator's decision to this same live, quiescent target.
   [[ "$(scalar "$source_id" "$src_password" "$source_schema" 'SELECT @@server_uuid')" = "$source_uuid" &&
      "$(scalar "$target_id" "$dst_password" "$target_schema" 'SELECT @@server_uuid')" = "$target_uuid" &&
@@ -482,7 +489,9 @@ elif [ "$mode" = --approved-import ]; then
     cmp -s "$work/imported-after-postflight.sql" "$work/imported-after-recovery.sql" &&
     cmp -s "$work/source-before.sql" "$work/original-after-recovery.sql" || fail R06B3A_ROWS_CHANGED
   printf 'R06B3A_FULL_MIXED_RECOVERY_OK:archive_bytes=%s backup_seconds=%s restore_seconds=%s three_independent_servers=true exact_rows=true sessions_empty=true readonly_postflight=true sources_unchanged=true\n' "$(stat -c '%s' "$mixed_archive")" "$mixed_backup_seconds" "$mixed_restore_seconds" | tee -a "$receipt_dir/result.txt"
-  printf 'post_import_c5=VERIFIED_LOCAL\nnormal_recovered_browser=NOT_RUN\nhosted_import=NOT_RUN\nindependent_reviewer=OPEN\n' >> "$receipt_dir/result.txt"
+  phase=private_mixed_runtime
+  mixed_runtime_run
+  printf 'post_import_c5=VERIFIED_LOCAL\nnormal_recovered_browser=VERIFIED_LOCAL_OBSERVATION_ONLY\nhosted_import=NOT_RUN\nindependent_reviewer=OPEN\n' >> "$receipt_dir/result.txt"
 fi
 
 phase=cleanup
