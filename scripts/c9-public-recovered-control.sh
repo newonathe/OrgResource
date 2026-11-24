@@ -31,7 +31,8 @@ control_run() {
   assert_id "$target_id"
   local password foreign resource table query session node_bin ready=false
   node_bin="$(command -v node)" || fail R06B3B_CONTROL_NODE
-  python3 scripts/stop-c9-isolated-process.py --self-test
+  python3 scripts/stop-c9-isolated-process.py --self-test || fail R06B3B_CONTROL_PIDFD_SELF_TEST
+  echo R06B3B_CONTROL_PIDFD_SELF_TEST_OK
   [[ "$(scalar "$target_id" "$dst_password" "$target_schema" 'SELECT COUNT(*) FROM organization')" = 2 &&
      "$(scalar "$target_id" "$dst_password" "$target_schema" 'SELECT COUNT(*) FROM organization WHERE demo_dataset_id IS NOT NULL')" = 0 ]] || fail R06B3B_CONTROL_FIXTURE
   foreign="$(scalar "$target_id" "$dst_password" "$target_schema" "SELECT BIN_TO_UUID(public_id,0) FROM organization WHERE slug='isolated-other-original'")"
@@ -77,6 +78,7 @@ control_run() {
   control_private() {
     ns_run "$target_id" bash -ec 'source "$1"; shift; exec "$@"' _ "$work/control.env" "$@"
   }
+  echo R06B3B_CONTROL_JAR_READY_OK
   control_private python3 scripts/verify-c9-public-recovered-control.py login || fail R06B3B_CONTROL_API_LOGIN
   session="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["cookie"])' "$work/control-session.json")"
   [[ "$session" =~ ^[a-f0-9-]{36}$ ]] || fail R06B3B_CONTROL_SESSION_ID

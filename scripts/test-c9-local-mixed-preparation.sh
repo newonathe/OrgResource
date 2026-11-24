@@ -11,6 +11,9 @@ trap 'rm -rf -- "$root"' EXIT
 runner=scripts/verify-c9-local-mixed-preparation.sh
 bash -n "$runner"
 bash -n scripts/c9-local-operator-gate.sh
+bash -n scripts/c9-public-recovered-control.sh
+python3 -m py_compile scripts/verify-c9-public-recovered-control.py
+node --check scripts/verify-c9-public-recovered-control.mjs
 source scripts/c9-local-operator-gate.sh
 fp="$(printf '%064d' 1)"
 digest="$(printf '%064d' 2)"
@@ -51,7 +54,16 @@ refuse mixed-restore-ci C9_LOCAL_MIXED_CI_REFUSED pwsh -NoProfile -NonInteractiv
 refuse import-ci R06B2_IMPORT_CI_REFUSED bash "$runner" --approved-import "$root" "$source_sha" "$jar" "$jar_sha" "$root/nonexistent-plan.json"
 refuse remote-docker R06B1_LOCAL_DOCKER_REQUIRED env DOCKER_HOST=tcp://127.0.0.1:2375 bash "$runner" --fixture-only "$root" "$source_sha" "$jar" "$jar_sha"
 bash "$runner" --fixture-only "$root" "$source_sha" "$jar" "$jar_sha" > "$root/test-private.log" 2>&1 || {
-  grep -E '^R06B1_[A-Z_]+(:[a-zA-Z0-9_= .-]+)?$' "$root/test-private.log" | tail -15 || true
+  # Only fixed safe markers and numeric status, never arbitrary JVM/SQL/HTTP logs.
+  grep -E '^(R06B[123][AB]?_[A-Z_]+(:[a-zA-Z0-9_= .-]+)?|C9_RUNTIME_PIDFD_(GUARD_OK|FAILURE)(:[a-zA-Z0-9_= .-]+)?)
+  exit 1
+}
+for marker in R06B3B_CONTROL_GRANTS_OK R06B3B_CONTROL_API_LOGIN_OK R06B3B_CONTROL_PERSISTED_SESSION_OK R06B3B_CONTROL_API_LOGOUT_OK R06B3B_CONTROL_BROWSER_OK R06B3B_CONTROL_ROWS_OK R06B3A_THIRD_SERVER_FIXTURE_OK R06B2_IMPORTER_GRANTS_OK R06B1_BOOTSTRAP_OK R06B1_ORIGINAL_RESTORE_OK R06B1_BASELINE_OK R06B1_PREPARATION_OK R06B1_CLEANUP_OK; do
+  grep -E "^$marker(:|$)" "$root/test-private.log" || exit 1
+done
+[[ "$(count_containers)" = "$before" ]] || exit 1
+echo R06B1_PUBLIC_FIXTURE_TEST_OK:private_plan_used=false importer_run=false precheck_refusals=10
+ "$root/test-private.log" | tail -35 || true
   exit 1
 }
 for marker in R06B3B_CONTROL_GRANTS_OK R06B3B_CONTROL_API_LOGIN_OK R06B3B_CONTROL_PERSISTED_SESSION_OK R06B3B_CONTROL_API_LOGOUT_OK R06B3B_CONTROL_BROWSER_OK R06B3B_CONTROL_ROWS_OK R06B3A_THIRD_SERVER_FIXTURE_OK R06B2_IMPORTER_GRANTS_OK R06B1_BOOTSTRAP_OK R06B1_ORIGINAL_RESTORE_OK R06B1_BASELINE_OK R06B1_PREPARATION_OK R06B1_CLEANUP_OK; do
