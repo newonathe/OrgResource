@@ -1070,30 +1070,27 @@
     "failures": 0
   },
   "r03_candidate": {
-    "sha": "7ff4f8d7bbeb1e83068f380ebfcaa3216a4f727b",
-    "base": "b3eb16e5ddf757e67cfa8296eb56f9f340ef632c",
+    "sha": "afdfefca995949ba917bb4ab3f99dfd14cbebd1b",
+    "base": "7ff4f8d7bbeb1e83068f380ebfcaa3216a4f727b",
     "pr": 54,
     "runs": [
       [
-        45486716110,
+        45487476059,
         "Verify",
-        "queued",
+        "in_progress",
         null
       ]
     ],
-    "report": "evidence/C8/R03_WORKSPACE_READ_PRESERVATION_CANDIDATE_2026-11-25.md",
+    "report": "evidence/C8/R03_IDENTITY_SESSION_READ_CANDIDATE_2026-11-25.md",
     "acceptance": "CI_PENDING",
     "routes": [
-      "R088",
-      "R089",
-      "R090",
-      "R091",
-      "R092",
-      "R093"
+      "R032",
+      "R085",
+      "R086",
+      "R087"
     ],
     "tests": [
-      61,
-      62
+      6
     ],
     "observed_red": "NOT_RUN"
   },
@@ -1418,6 +1415,34 @@
         45,
         46,
         47
+      ],
+      "observed_red": "NOT_RUN"
+    },
+    {
+      "sha": "7ff4f8d7bbeb1e83068f380ebfcaa3216a4f727b",
+      "base": "b3eb16e5ddf757e67cfa8296eb56f9f340ef632c",
+      "pr": 54,
+      "runs": [
+        [
+          45486716110,
+          "Verify",
+          "queued",
+          null
+        ]
+      ],
+      "report": "evidence/C8/R03_WORKSPACE_READ_PRESERVATION_CANDIDATE_2026-11-25.md",
+      "acceptance": "CI_PENDING",
+      "routes": [
+        "R088",
+        "R089",
+        "R090",
+        "R091",
+        "R092",
+        "R093"
+      ],
+      "tests": [
+        61,
+        62
       ],
       "observed_red": "NOT_RUN"
     }
@@ -1998,6 +2023,241 @@
     ],
     "report": "evidence/C9/R07_CROSS_SERVER_STARTUP_RACE_CANDIDATE_2026-11-25.md",
     "acceptance": "CI_PENDING",
-    "observed_red": "actual original failure; targeted reproduction NOT_RUN"
+    "observed_red": "actual original failure; targeted reproduction NOT_RUN",
+    "dedicated_actual": {
+      "sha": "76a8e687581bd1b70582822a38b657744e22d387",
+      "pr": 55,
+      "run": 45486540376,
+      "job": 138773351759,
+      "verdict": "VERIFIED_BOUNDED",
+      "selected": [
+        [
+          "concurrency",
+          1,
+          20
+        ],
+        [
+          "rollback",
+          1,
+          12
+        ],
+        [
+          "reversed",
+          2,
+          12
+        ],
+        [
+          "measurement",
+          1,
+          19
+        ],
+        [
+          "measurement_repeat2",
+          1,
+          18
+        ],
+        [
+          "measurement_repeat3",
+          1,
+          18
+        ]
+      ],
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "cleanup_all": true,
+      "measured": 450,
+      "warmups": 75,
+      "fixture": {
+        "resources": 1001,
+        "allocations": 1002,
+        "requirements": 101
+      },
+      "workloads": [
+        "resource_page",
+        "allocation_page",
+        "requirement_page",
+        "project_page",
+        "overview"
+      ],
+      "columns": [
+        "min_ms",
+        "p50_ms",
+        "p95_ms",
+        "max_ms",
+        "first_warmup_ms"
+      ],
+      "measurements": [
+        [
+          [
+            11.032,
+            14.984,
+            19.183,
+            20.888,
+            15.725
+          ],
+          [
+            15.05,
+            19.332,
+            28.421,
+            37.24,
+            20.945
+          ],
+          [
+            9.916,
+            12.168,
+            16.668,
+            18.277,
+            15.821
+          ],
+          [
+            6.756,
+            9.365,
+            11.89,
+            35.09,
+            9.3
+          ],
+          [
+            14.609,
+            17.632,
+            20,
+            22.272,
+            43.124
+          ]
+        ],
+        [
+          [
+            10.899,
+            13.88,
+            20.776,
+            21.16,
+            19.249
+          ],
+          [
+            15.106,
+            18.949,
+            23.778,
+            30.22,
+            22.911
+          ],
+          [
+            9.179,
+            11.128,
+            15.946,
+            20.898,
+            23.166
+          ],
+          [
+            7.047,
+            7.951,
+            9.589,
+            11.625,
+            7.982
+          ],
+          [
+            13.312,
+            15.286,
+            22.324,
+            30.891,
+            16.739
+          ]
+        ],
+        [
+          [
+            10.554,
+            13.727,
+            18.09,
+            18.9,
+            21.158
+          ],
+          [
+            14.786,
+            17.367,
+            22.375,
+            24.268,
+            21.211
+          ],
+          [
+            9.451,
+            10.925,
+            14.237,
+            14.591,
+            14.939
+          ],
+          [
+            6.115,
+            7.181,
+            9.721,
+            10.67,
+            9.705
+          ],
+          [
+            13.764,
+            15.836,
+            18.651,
+            20.618,
+            16.547
+          ]
+        ]
+      ],
+      "heap_samples": [
+        [
+          255479528,
+          122351984
+        ],
+        [
+          101798992,
+          166299232
+        ],
+        [
+          212256640,
+          259257440
+        ]
+      ],
+      "innodb_estimate": [
+        294912,
+        950272
+      ],
+      "body_bytes": [
+        15124,
+        70925,
+        13864,
+        242,
+        2022
+      ],
+      "scope": "test-context serial HTTP, no packaged or cold-start/SLA claim; not proof of Stage1B correction"
+    }
+  },
+  "r09_integration_preflight": {
+    "base52": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+    "pr53": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
+    "pr54_at_preflight": "7ff4f8d7bbeb1e83068f380ebfcaa3216a4f727b",
+    "pr55": "76a8e687581bd1b70582822a38b657744e22d387",
+    "pr55_branchpoint": "a1ba49aecce96ea24e82b0e2de4e1f210221aaa7",
+    "delta_counts": [
+      27,
+      17,
+      7
+    ],
+    "shared_path": "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java",
+    "test_blobs": [
+      "d96a5d1cf7891009ffce7378fc23d3cf51170aad",
+      "f737106571242c67e651b777f150e4f67be190c7",
+      "6a64b6fd36c0f43506ffbb53697ba1f0d3db36bc"
+    ],
+    "hunks": 4,
+    "exact_base_reproduction": true,
+    "unique_anchor_counts": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "ordered_tests_before_after": [
+      78,
+      78
+    ],
+    "state": "SOURCE_ONLY_DRY_RUN",
+    "notes": "No combined source written or run; refresh final heads; PR53 27 changed paths disjoint, PR55 7 paths relative to branchpoint (6 disjoint); use exact patches/expected SHA; do not merge main."
   }
 }
