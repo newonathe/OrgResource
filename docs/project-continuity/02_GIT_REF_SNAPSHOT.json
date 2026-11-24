@@ -871,27 +871,21 @@
   },
   "latest_scoped_observation": {
     "date": "2026-11-25 PHT",
-    "handoff_parent": "a183f5acdc136cb9148a23043d828535204087ec",
+    "handoff_parent": "8ca8cae9d02a2ea6f00ade59d4b5f86944f3b7a2",
     "pr53": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
     "pr54": "9646ff743c6678af90aa357ee761ac11ed366dff",
     "pr55": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
-    "pr56": "9d0902b4e8ea2045a30a4ff4a524e213a3b6a7b3",
-    "coverage": "Exact auth/packaged/deadlock receipts, restart failure and source correction, preliminary combined candidate",
+    "pr56": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "coverage": "Report43 actual residual and dedicated receipt, failures, same-repo integrated guard",
     "candidate_runs": [
       [
-        45493345999,
-        "Verify",
-        "queued",
-        null
-      ],
-      [
-        45493345989,
+        45494597313,
         "R07-R08 isolated preparation",
         "in_progress",
         null
       ],
       [
-        45493192571,
+        45494597345,
         "Verify",
         "in_progress",
         null
@@ -899,33 +893,23 @@
     ],
     "actual_runs": [
       [
-        45490152665,
+        45491538911,
         "Verify",
         "completed",
         "success"
       ],
       [
-        45490328103,
-        "Verify",
-        "completed",
-        "success"
-      ],
-      [
-        45491974383,
+        45493345989,
         "R07-R08 isolated preparation",
         "completed",
         "success"
       ],
       [
-        45491974364,
+        45493192571,
         "Verify",
         "completed",
         "failure"
       ]
-    ],
-    "integrated_dedicated_initial": [
-      45493192652,
-      "skipped"
     ]
   }
 }

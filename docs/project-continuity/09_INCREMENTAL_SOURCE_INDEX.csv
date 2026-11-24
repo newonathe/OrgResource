@@ -128,3 +128,6 @@
 "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","d4153e2f428c5f97dc0f4b1862826155e82f8820","481602","100644","candidate:9d0902b4e8ea2045a30a4ff4a524e213a3b6a7b3","PATCH; actual combined/restart CI pending"
 "evidence/C9/R09_INTEGRATED_EVIDENCE_CANDIDATE_2026-11-25.md","3db170f065a27107e9110ee5436f7e9b625e30f5","5664","100644","candidate:9d0902b4e8ea2045a30a4ff4a524e213a3b6a7b3","PATCH; actual combined/restart CI pending"
 "evidence/C9/R09_INTEGRATED_RESTART_RECEIPT_CORRECTION_2026-11-25.md","6413c47ea9c49d3402a01cccf0218b56f2c813a6","769","100644","candidate:9d0902b4e8ea2045a30a4ff4a524e213a3b6a7b3","PATCH; actual combined/restart CI pending"
+".github/workflows/r07-r08-preparation.yml","1cc798fbc66e0b11b1598bcc409fdc8d4b421f17","2557","100644","candidate:2c626cb251fc3e0a5e3304f9ea5b03f89f55e024","FULL source; actual CI pending"
+"scripts/verify-r0708-isolated.sh","b6e15a6d9598050793c66ab8eb54f435ecb4f3a6","6748","100644","candidate:2c626cb251fc3e0a5e3304f9ea5b03f89f55e024","FULL source; actual CI pending"
+"evidence/C9/R09_DEDICATED_INTEGRATED_GUARD_CANDIDATE_2026-11-25.md","f44c08bfe76c717e2b4bb9f5ba27ffb2e4cf0a0e","1159","100644","candidate:2c626cb251fc3e0a5e3304f9ea5b03f89f55e024","FULL source; actual CI pending"

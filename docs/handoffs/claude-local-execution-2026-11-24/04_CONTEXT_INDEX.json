@@ -3334,5 +3334,197 @@
     "correction_report": "evidence/C9/R09_INTEGRATED_RESTART_RECEIPT_CORRECTION_2026-11-25.md",
     "acceptance": "CI_PENDING",
     "dedicated_note": "workflow exact head_ref guard skips PR56; source PR55 dedicated evidence retained, final integrated dedicated scope decision open; full Verify runs on draft"
+  },
+  "r09_dedicated_integrated_candidate": {
+    "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "pr": 56,
+    "base": "9d0902b4e8ea2045a30a4ff4a524e213a3b6a7b3",
+    "runs": [
+      [
+        45494597313,
+        "R07-R08 isolated preparation",
+        "in_progress",
+        null
+      ],
+      [
+        45494597345,
+        "Verify",
+        "in_progress",
+        null
+      ]
+    ],
+    "receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "9646ff743c6678af90aa357ee761ac11ed366dff",
+        "run": 45491538911,
+        "job": 138790893717,
+        "oracle": "#6/#61 workspace residual",
+        "actual": "103 Maven/78 identity/19 Playwright, zero failures/errors/skips; all three jobs pass, recovery and cleanup markers observed"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
+        "run": 45493345989,
+        "job": 138797218318,
+        "oracle": "six fresh/reverse selected cases",
+        "actual": "1+1+2+1+1+1 tests; 450 measured/75 warmups; all six cleanups; not full restart proof"
+      },
+      {
+        "status": "FAILED",
+        "sha": "c68252db41f562d0230269844794048471dac0cf",
+        "run": 45493192571,
+        "job": 138796666634,
+        "oracle": "combined Stage1D",
+        "actual": "103 Maven/78 identity and real deadlock pass; upstream201/downstreamEOF and restarted JAR ready then KeyError; remaining restore/browser NOT_RUN"
+      },
+      {
+        "status": "FAILED",
+        "sha": "c68252db41f562d0230269844794048471dac0cf",
+        "run": 45493192571,
+        "job": 138796667488,
+        "oracle": "Java8 Maven verification",
+        "actual": "Maven distribution wget failed before Maven tests; not product failure"
+      }
+    ],
+    "metrics": {
+      "scope": "PR55 dedicated test-context serial HTTP; not packaged or cold",
+      "workloads": [
+        "resource_page",
+        "allocation_page",
+        "requirement_page",
+        "project_page",
+        "overview"
+      ],
+      "columns": [
+        "min_ms",
+        "p50_ms",
+        "p95_ms",
+        "max_ms"
+      ],
+      "values": [
+        [
+          [
+            11.125,
+            15.414,
+            20.471,
+            27.153
+          ],
+          [
+            17.313,
+            20.024,
+            30.795,
+            34.968
+          ],
+          [
+            10.451,
+            12.255,
+            25.706,
+            30.58
+          ],
+          [
+            6.594,
+            9.307,
+            21.479,
+            23.377
+          ],
+          [
+            13.91,
+            15.775,
+            23.968,
+            28.482
+          ]
+        ],
+        [
+          [
+            12.385,
+            15.034,
+            19.538,
+            20.337
+          ],
+          [
+            17.466,
+            21.393,
+            28.883,
+            30.266
+          ],
+          [
+            10.055,
+            12.748,
+            16.996,
+            18.759
+          ],
+          [
+            6.583,
+            8.792,
+            12.067,
+            25.093
+          ],
+          [
+            13.943,
+            17.4,
+            24.057,
+            27.457
+          ]
+        ],
+        [
+          [
+            12.038,
+            15.286,
+            19.588,
+            19.962
+          ],
+          [
+            15.905,
+            19.363,
+            24.518,
+            24.53
+          ],
+          [
+            9.723,
+            11.9,
+            16.087,
+            16.121
+          ],
+          [
+            7.371,
+            8.234,
+            11.429,
+            12.541
+          ],
+          [
+            17.594,
+            19.473,
+            30.355,
+            31.651
+          ]
+        ]
+      ],
+      "measured": 450,
+      "warmups": 75,
+      "fixture": [
+        1001,
+        1002,
+        101
+      ],
+      "jar_bytes": 72486427,
+      "bundle_bytes": 463308
+    },
+    "paths": [
+      {
+        "path": ".github/workflows/r07-r08-preparation.yml",
+        "blob": "1cc798fbc66e0b11b1598bcc409fdc8d4b421f17"
+      },
+      {
+        "path": "scripts/verify-r0708-isolated.sh",
+        "blob": "b6e15a6d9598050793c66ab8eb54f435ecb4f3a6"
+      },
+      {
+        "path": "evidence/C9/R09_DEDICATED_INTEGRATED_GUARD_CANDIDATE_2026-11-25.md",
+        "blob": "f44c08bfe76c717e2b4bb9f5ba27ffb2e4cf0a0e"
+      }
+    ],
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/43_WORKSPACE_RESIDUAL_ACTUAL_AND_INTEGRATED_DEDICATED_GATE.md",
+    "acceptance": "CI_PENDING"
   }
 }
