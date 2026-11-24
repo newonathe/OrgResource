@@ -4473,6 +4473,7 @@ class C1IdentityAcceptanceTest {
         assertEquals(200, modernPost(homeOwner, homeProjectPath + "/lead-assignment",
                 leadAssignment(UUID.randomUUID().toString(), assigned.membershipPublicId),
                 "\"v0\"", UUID.randomUUID().toString()).statusCode());
+        var readBaseline = legacyDenialRows(home.orgDbId, away.orgDbId);
         // Current, authorized reads prove the populated targets exist.
         assertEquals(200, get(homeOwner.client, homeRoot + "/projects").statusCode());
         assertEquals(200, get(observer.client, homeRoot + "/projects").statusCode());
@@ -4497,6 +4498,8 @@ class C1IdentityAcceptanceTest {
         assertEquals(404, get(awayOwner.client, homeItem).statusCode());
         assertEquals(404, get(homeOwner.client, awayItemFromHome).statusCode());
 
+        assertTrue(readBaseline.equals(legacyDenialRows(home.orgDbId, away.orgDbId)), "ProjectWork reads changed scoped domain rows.");
+
         // Snapshot *actual* pre-existing Project and Requirement values, not
         // just aggregate counts. Include both tenants and non-business effects.
         String beforeProjects = jdbc.queryForList(
@@ -4517,37 +4520,37 @@ class C1IdentityAcceptanceTest {
         };
 
         // CUSTODIAN can read but never update/delete a Project or Requirement.
-        assertEquals(403, post(observer, homeProjectPath + "/update", projectFields, "\"v1\"").statusCode());
-        assertEquals(403, post(observer, homeProjectPath + "/delete", null, "\"v1\"").statusCode());
-        assertEquals(403, post(observer, homeRequirements, homeCreate).statusCode());
-        assertEquals(403, post(observer, homeItem + "/update", "{\"quantity\":5}", "\"v0\"").statusCode());
-        assertEquals(403, post(observer, homeItem + "/delete", null, "\"v0\"").statusCode());
+        assertScopedRefusal(403, home.orgDbId, away.orgDbId, () -> post(observer, homeProjectPath + "/update", projectFields, "\"v1\""));
+        assertScopedRefusal(403, home.orgDbId, away.orgDbId, () -> post(observer, homeProjectPath + "/delete", null, "\"v1\""));
+        assertScopedRefusal(403, home.orgDbId, away.orgDbId, () -> post(observer, homeRequirements, homeCreate));
+        assertScopedRefusal(403, home.orgDbId, away.orgDbId, () -> post(observer, homeItem + "/update", "{\"quantity\":5}", "\"v0\""));
+        assertScopedRefusal(403, home.orgDbId, away.orgDbId, () -> post(observer, homeItem + "/delete", null, "\"v0\""));
 
         // An unassigned LEAD does not receive a write grant over existing work.
-        assertEquals(404, post(otherLead, homeProjectPath + "/update", projectFields, "\"v1\"").statusCode());
-        assertEquals(404, post(otherLead, homeProjectPath + "/delete", null, "\"v1\"").statusCode());
-        assertEquals(404, post(otherLead, homeRequirements, homeCreate).statusCode());
-        assertEquals(404, post(otherLead, homeItem + "/update", "{\"quantity\":5}", "\"v0\"").statusCode());
-        assertEquals(404, post(otherLead, homeItem + "/delete", null, "\"v0\"").statusCode());
+        assertScopedRefusal(404, home.orgDbId, away.orgDbId, () -> post(otherLead, homeProjectPath + "/update", projectFields, "\"v1\""));
+        assertScopedRefusal(404, home.orgDbId, away.orgDbId, () -> post(otherLead, homeProjectPath + "/delete", null, "\"v1\""));
+        assertScopedRefusal(404, home.orgDbId, away.orgDbId, () -> post(otherLead, homeRequirements, homeCreate));
+        assertScopedRefusal(404, home.orgDbId, away.orgDbId, () -> post(otherLead, homeItem + "/update", "{\"quantity\":5}", "\"v0\""));
+        assertScopedRefusal(404, home.orgDbId, away.orgDbId, () -> post(otherLead, homeItem + "/delete", null, "\"v0\""));
 
         // A legitimate OWNER still cannot use an existing foreign Project,
         // Resource, or Requirement by substituting its UUID under their own org.
-        assertEquals(404, post(homeOwner, awayProjectPathFromHome + "/update", projectFields, "\"v0\"").statusCode());
-        assertEquals(404, post(homeOwner, awayProjectPathFromHome + "/delete", null, "\"v0\"").statusCode());
-        assertEquals(404, post(homeOwner, homeRequirements, GSON.toJson(java.util.Map.of(
-                "projectId", homeProject, "resourceId", awayResource, "quantity", 6))).statusCode());
-        assertEquals(404, post(homeOwner, homeRequirements, GSON.toJson(java.util.Map.of(
-                "projectId", awayProject, "resourceId", homeResource, "quantity", 6))).statusCode());
-        assertEquals(404, post(homeOwner, awayItemFromHome + "/update", "{\"quantity\":5}", "\"v0\"").statusCode());
-        assertEquals(404, post(homeOwner, awayItemFromHome + "/delete", null, "\"v0\"").statusCode());
+        assertScopedRefusal(404, home.orgDbId, away.orgDbId, () -> post(homeOwner, awayProjectPathFromHome + "/update", projectFields, "\"v0\""));
+        assertScopedRefusal(404, home.orgDbId, away.orgDbId, () -> post(homeOwner, awayProjectPathFromHome + "/delete", null, "\"v0\""));
+        assertScopedRefusal(404, home.orgDbId, away.orgDbId, () -> post(homeOwner, homeRequirements, GSON.toJson(java.util.Map.of(
+                "projectId", homeProject, "resourceId", awayResource, "quantity", 6))));
+        assertScopedRefusal(404, home.orgDbId, away.orgDbId, () -> post(homeOwner, homeRequirements, GSON.toJson(java.util.Map.of(
+                "projectId", awayProject, "resourceId", homeResource, "quantity", 6))));
+        assertScopedRefusal(404, home.orgDbId, away.orgDbId, () -> post(homeOwner, awayItemFromHome + "/update", "{\"quantity\":5}", "\"v0\""));
+        assertScopedRefusal(404, home.orgDbId, away.orgDbId, () -> post(homeOwner, awayItemFromHome + "/delete", null, "\"v0\""));
 
         // Version guards reject stale/missing preconditions before changing SQL.
-        assertEquals(428, post(homeOwner, homeProjectPath + "/update", projectFields).statusCode());
-        assertEquals(412, post(homeOwner, homeProjectPath + "/update", projectFields, "\"v99\"").statusCode());
-        assertEquals(428, post(homeOwner, homeItem + "/update", "{\"quantity\":5}").statusCode());
-        assertEquals(412, post(homeOwner, homeItem + "/update", "{\"quantity\":5}", "\"v99\"").statusCode());
-        assertEquals(428, post(homeOwner, homeItem + "/delete", null).statusCode());
-        assertEquals(412, post(homeOwner, homeItem + "/delete", null, "\"v99\"").statusCode());
+        assertScopedRefusal(428, home.orgDbId, away.orgDbId, () -> post(homeOwner, homeProjectPath + "/update", projectFields));
+        assertScopedRefusal(412, home.orgDbId, away.orgDbId, () -> post(homeOwner, homeProjectPath + "/update", projectFields, "\"v99\""));
+        assertScopedRefusal(428, home.orgDbId, away.orgDbId, () -> post(homeOwner, homeItem + "/update", "{\"quantity\":5}"));
+        assertScopedRefusal(412, home.orgDbId, away.orgDbId, () -> post(homeOwner, homeItem + "/update", "{\"quantity\":5}", "\"v99\""));
+        assertScopedRefusal(428, home.orgDbId, away.orgDbId, () -> post(homeOwner, homeItem + "/delete", null));
+        assertScopedRefusal(412, home.orgDbId, away.orgDbId, () -> post(homeOwner, homeItem + "/delete", null, "\"v99\""));
 
         assertEquals(beforeProjects, jdbc.queryForList(
                 "SELECT id, name, version, lead_membership_id FROM project WHERE organization_id IN (?,?) ORDER BY id",
@@ -4567,6 +4570,14 @@ class C1IdentityAcceptanceTest {
         }, "All refused ProjectWork writes must leave allocations, movements, receipts and audit untouched");
     }
 
+
+    private void assertScopedRefusal(int expected, long firstOrg, long secondOrg,
+            java.util.concurrent.Callable<HttpResponse<String>> request) throws Exception {
+        var before = legacyDenialRows(firstOrg, secondOrg);
+        assertEquals(expected, request.call().statusCode());
+        assertTrue(before.equals(legacyDenialRows(firstOrg, secondOrg)),
+                "Refused ProjectWork request changed scoped domain rows.");
+    }
 
     @Test @Order(65)
     void C8LeadOptionsFiltersActualMembershipsAndBindsDirectoryCursorsWithoutSqlWrites() throws Exception {
