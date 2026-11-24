@@ -4,7 +4,7 @@ Snapshot: PR #46 ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306, CI #45419347291 compl
 
 | ID | Scope / state | Executor / prerequisites | Exact completion receipt |
 |---|---|---|---|
-| R00 | CI latest #46 | CHAT; refresh head/jobs | Exact source, all 3 jobs and stage markers; failure reproduction if needed |
+| R00 | CI latest #46 | CHAT; VERIFIED on ec8600f5, refresh for later head | All 3 jobs and actual Stage 1D markers; see executed receipt in 00_START_HERE.md |
 | R01 | Stage 1D source review gaps | CHAT; latest runtime first | Changed-payload 409 with exact code; new demoted write 403; PID namespace identity; verify no mutation and actual markers; no weaker isolation |
 | R02 | C8 93 routes | CHAT; 05_ROUTE_GAP_MAP.csv + full policy oracle; local L05 supplements | 93 unique routes (11 project/report,33 stock,20 identity,29 legacy); each real positive, meaningful negative, field/SQL and separate review. No blanket acceptance |
 | R03 | C8 focused gap closure | CHAT; independent oracle before tests | R029 deterministic disable already has later #66 candidate, verify before duplicating; R082 cursor/fields, R084/R078 versioned revoke, R083/R041/R031 password/expired token, R089/R091 scoped cursors, R017 invalid project time, R025 image bytes, R040 duplicate/invalid dept; 05 includes every remaining source-stated gap |

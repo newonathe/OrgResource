@@ -11,8 +11,13 @@
     "conclusion": "success"
   },
   "last_verified": {
-    "sha": "09e3e5a0b2a1e87132c8f7ba9fb44ab1c50de2c0",
-    "ci": 45414895612
+    "sha": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306",
+    "ci": 45419347291,
+    "previous_stage1c": {
+      "sha": "09e3e5a0b2a1e87132c8f7ba9fb44ab1c50de2c0",
+      "ci": 45414895612
+    },
+    "evidence": "actual job logs verified; 00_START_HERE.md"
   },
   "frozen_course_a": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
   "protected_migrations": "V1–V7",

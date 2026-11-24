@@ -12,3 +12,15 @@ Date: 2026-11-24 PHT. This is a **prepared execution handoff**, not a new implem
 **Protection:** Course A 7f8c0746da18fd54b47f430ac1435ac36e605d67; Flyway V1–V7; no merge/main/deploy, V8, speculative indexes, C10/C11, real SMS, paid services or public raw plans/dumps/receipts. C8 #34 stays BLOCKED; hosted #26 LIVE_IMPORT_NOT_RUN. DEC-D01 #27 proposed only.
 
 The packet reduces context duplication by pointing to actual sources. It does not guarantee zero errors, unlimited usage, available credentials, or successful local execution.
+
+## Stage 1D executed receipt — November 24, 2026 PHT (recorded by ChatGPT)
+
+**VERIFIED bounded CI** at `ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306`, [run #45419347291](https://github.com/newonathe/OrgResource/actions/runs/45419347291), all 3 jobs success; Extended [job 138534262344](https://github.com/newonathe/OrgResource/actions/runs/45419347291/job/138534262344). Actual logs inspected, not only conclusion.
+
+- Stage 1C repeat: archive 1,034,355 bytes, SQL payload 1,034,301, 468/771 ms backup/restore, 15 negative cases, empty sessions, cleanup.
+- Stage 1D: source packaged JAR ready; real authenticated session and committed receipt; durable source fixture; actual encrypted C5 archive 1,039,695 bytes; distinct server, non-session rows equal, empty sessions; restored JAR ready; old cookie retired; fresh owner selection; replay no duplicate stock; demoted member and foreign denial; suspended member refusal; actual metadata 503.
+- Real Chromium: 22 metadata HTTP 503 responses, zero protected API requests. Normal authenticated browser UI on a valid recovered cohort remains NOT_RUN. No classification override.
+- Final marker: C9_RECOVERED_APPLICATION_OK (packaged JAR, unchanged migration history, old cookie retired, owner login, durable replay, scoped denials, non-session rows unchanged, original fixture unchanged, browser mixed fail-closed). C9_RUNTIME_CLEANUP_OK. Intermediate additive 8 tagged orgs, 960 allocations, 3013 events, original owner/domain unchanged and repeat refused. 91 Maven tests, zero failures/errors/skips; 19 Playwright tests passed; Java 8 and React jobs successful. These are bounded test measurements, not production certification.
+- Remaining self-review strengthening R01: changed payload conflict, fresh denied mutation, namespace/PID validation before kill. Independent review open. Full exact private96, actual host, off-host, Windows native/protected-login current regression, normal recovered valid-cohort UI, formal C8/C9 acceptance remain open. No merge or deployment.
+
+This receipt is for the exact implementation SHA above. The docs-only handoff commit has its own CI gate. No application or migration code altered.
