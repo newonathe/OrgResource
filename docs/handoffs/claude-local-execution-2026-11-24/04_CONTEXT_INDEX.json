@@ -1070,27 +1070,32 @@
     "failures": 0
   },
   "r03_candidate": {
-    "sha": "afdfefca995949ba917bb4ab3f99dfd14cbebd1b",
-    "base": "7ff4f8d7bbeb1e83068f380ebfcaa3216a4f727b",
+    "sha": "852f2f29f58065e9cf581cb70d58f642da343c1f",
+    "base": "afdfefca995949ba917bb4ab3f99dfd14cbebd1b",
     "pr": 54,
     "runs": [
       [
-        45487476059,
+        45488537632,
         "Verify",
         "in_progress",
         null
       ]
     ],
-    "report": "evidence/C8/R03_IDENTITY_SESSION_READ_CANDIDATE_2026-11-25.md",
+    "report": "evidence/C8/R03_PROJECT_READ_LEAD_AND_IMAGE_DELETE_CANDIDATE_2026-11-25.md",
     "acceptance": "CI_PENDING",
     "routes": [
-      "R032",
-      "R085",
-      "R086",
-      "R087"
+      "R039",
+      "R059",
+      "R061",
+      "R062",
+      "R064",
+      "R072"
     ],
     "tests": [
-      6
+      55,
+      61,
+      65,
+      75
     ],
     "observed_red": "NOT_RUN"
   },
@@ -1393,32 +1398,6 @@
   },
   "r03_pending_candidates": [
     {
-      "sha": "b3eb16e5ddf757e67cfa8296eb56f9f340ef632c",
-      "base": "9f374d77addd36b9c5985f25d2e874116970aa2d",
-      "pr": 54,
-      "runs": [
-        [
-          45485647999,
-          "Verify",
-          "in_progress",
-          null
-        ]
-      ],
-      "report": "evidence/C8/R03_REPORTING_READ_ONLY_CANDIDATE_2026-11-25.md",
-      "acceptance": "CI_PENDING",
-      "routes": [
-        "R042",
-        "R052",
-        "R057"
-      ],
-      "tests": [
-        45,
-        46,
-        47
-      ],
-      "observed_red": "NOT_RUN"
-    },
-    {
       "sha": "7ff4f8d7bbeb1e83068f380ebfcaa3216a4f727b",
       "base": "b3eb16e5ddf757e67cfa8296eb56f9f340ef632c",
       "pr": 54,
@@ -1443,6 +1422,31 @@
       "tests": [
         61,
         62
+      ],
+      "observed_red": "NOT_RUN"
+    },
+    {
+      "sha": "afdfefca995949ba917bb4ab3f99dfd14cbebd1b",
+      "base": "7ff4f8d7bbeb1e83068f380ebfcaa3216a4f727b",
+      "pr": 54,
+      "runs": [
+        [
+          45487476059,
+          "Verify",
+          "in_progress",
+          null
+        ]
+      ],
+      "report": "evidence/C8/R03_IDENTITY_SESSION_READ_CANDIDATE_2026-11-25.md",
+      "acceptance": "CI_PENDING",
+      "routes": [
+        "R032",
+        "R085",
+        "R086",
+        "R087"
+      ],
+      "tests": [
+        6
       ],
       "observed_red": "NOT_RUN"
     }
@@ -1586,6 +1590,30 @@
       "tests": [
         60,
         76
+      ],
+      "maven": 103,
+      "identity": 78,
+      "playwright": 19,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "all_jobs_success": true,
+      "verdict": "VERIFIED_BOUNDED"
+    },
+    {
+      "sha": "b3eb16e5ddf757e67cfa8296eb56f9f340ef632c",
+      "pr": 54,
+      "run": 45485647999,
+      "job": 138770176863,
+      "tests": [
+        45,
+        46,
+        47
+      ],
+      "routes": [
+        "R042",
+        "R052",
+        "R057"
       ],
       "maven": 103,
       "identity": 78,
@@ -2022,7 +2050,7 @@
       ]
     ],
     "report": "evidence/C9/R07_CROSS_SERVER_STARTUP_RACE_CANDIDATE_2026-11-25.md",
-    "acceptance": "CI_PENDING",
+    "acceptance": "VERIFIED_BOUNDED",
     "observed_red": "actual original failure; targeted reproduction NOT_RUN",
     "dedicated_actual": {
       "sha": "76a8e687581bd1b70582822a38b657744e22d387",
@@ -2226,6 +2254,49 @@
         2022
       ],
       "scope": "test-context serial HTTP, no packaged or cold-start/SLA claim; not proof of Stage1B correction"
+    },
+    "full_actual": {
+      "sha": "76a8e687581bd1b70582822a38b657744e22d387",
+      "pr": 55,
+      "run": 45486540380,
+      "job": 138773351738,
+      "maven": 103,
+      "identity": 78,
+      "playwright": 19,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "all_jobs_success": true,
+      "verdict": "VERIFIED_BOUNDED",
+      "stage1b": {
+        "mysql": "8.0.46",
+        "orgs": 8,
+        "allocations": 960,
+        "sql_bytes": 1034301,
+        "backup_ms": 143,
+        "restore_ms": 396,
+        "network_none": true,
+        "independent_uuid": true,
+        "exact_rows": true,
+        "original_unchanged": true,
+        "tamper_refused": true,
+        "nonempty_refused": true
+      },
+      "stage1c": {
+        "archive_bytes": 1034355,
+        "backup_ms": 424,
+        "restore_ms": 871,
+        "negative_cases": 15,
+        "empty_sessions": true,
+        "exact_rows": true,
+        "cleanup": true
+      },
+      "stage1d": {
+        "archive_bytes": 1039695,
+        "exact_non_session_rows": true,
+        "cleanup": true
+      },
+      "cause": "prior transient initialization socket race hypothesis, not conclusively reproduced"
     }
   },
   "r09_integration_preflight": {
@@ -2259,5 +2330,31 @@
     ],
     "state": "SOURCE_ONLY_DRY_RUN",
     "notes": "No combined source written or run; refresh final heads; PR53 27 changed paths disjoint, PR55 7 paths relative to branchpoint (6 disjoint); use exact patches/expected SHA; do not merge main."
+  },
+  "r07_lifecycle_candidate": {
+    "sha": "a034fb1c81ff1521c9bc9c0c32561c9c2cde515c",
+    "base": "76a8e687581bd1b70582822a38b657744e22d387",
+    "pr": 55,
+    "runs": [
+      [
+        45488706073,
+        "Verify",
+        "queued",
+        null
+      ],
+      [
+        45488706396,
+        "R07-R08 isolated preparation",
+        "queued",
+        null
+      ]
+    ],
+    "report": "evidence/C9/R07_RETURN_EXPIRY_AND_STALE_CLAIM_CANDIDATE_2026-11-25.md",
+    "acceptance": "CI_PENDING",
+    "tests": [
+      32
+    ],
+    "observed_red": "NOT_RUN",
+    "scope": "same-process persisted CLAIMED/DISPATCHING stale recovery; gated concurrent return and expiry, same key replay; NOT actual restart/forced overlap/deadlock/lost network response"
   }
 }
