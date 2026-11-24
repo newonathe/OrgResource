@@ -277,6 +277,25 @@ grant_app "$target_id" "$target_password" "$target_schema"
 write_env "$target_schema" "$work/target.env"
 start_app "$target_id" "$work/target.env" restored
 run_private "$target_id" "$work/target.env" "$python_bin" scripts/verify-c9-recovered-api.py recovered
+# R08: reuse the already running, isolated packaged JAR and the public synthetic
+# restored fixture. Select a tagged workspace whose OWNER and counts are independently
+# resolved from the restored database; never measure a user/hosted database.
+r08_org="$(scalar "$target_id" "$target_password" "$target_schema" "SELECT BIN_TO_UUID(o.public_id,0) FROM organization o JOIN membership m ON m.org_id=o.id JOIN user_account u ON u.id=m.user_id WHERE o.demo_plan_sha='$C9_PLAN_SHA' AND o.status='ACTIVE' AND m.status='ACTIVE' AND m.role='OWNER' AND u.username_key='additive-original-owner' ORDER BY o.id LIMIT 1")"
+[[ "$r08_org" =~ ^[0-9a-f-]{36}$ ]] || fail R08_PACKAGED_ORG_REQUIRED
+r08_scope="organization_id=(SELECT id FROM organization WHERE public_id=UUID_TO_BIN('$r08_org',0))"
+for table in department project resource resource_requirement allocation; do
+  count="$(scalar "$target_id" "$target_password" "$target_schema" "SELECT COUNT(*) FROM $table WHERE $r08_scope")"
+  [[ "$count" =~ ^[1-9][0-9]*$ ]] || fail R08_PACKAGED_NONEMPTY_FIXTURE_REQUIRED
+  printf '%s\t%s\n' "$table" "$count" >> "$work/r08-counts.tsv"
+done
+for status in PENDING ISSUED CONSUMED; do
+  count="$(scalar "$target_id" "$target_password" "$target_schema" "SELECT COUNT(*) FROM allocation WHERE $r08_scope AND status='$status'")"
+  [[ "$count" =~ ^[0-9]+$ ]] || fail R08_PACKAGED_STATUS_COUNT_REQUIRED
+  printf '%s\t%s\n' "$status" "$count" >> "$work/r08-counts.tsv"
+done
+run_private "$target_id" "$work/target.env" env PYTHONDONTWRITEBYTECODE=1 "$python_bin" scripts/verify-r08-packaged-http.py "$r08_org" "$work/r08-counts.tsv"
+echo "R08_PACKAGED_ARTIFACT:jar_bytes=$(stat -c%s "$jar") jar_sha256=$(sha256sum "$jar" | cut -d' ' -f1)"
+# Existing later all-domain exact row comparison covers every measurement read.
 # Browser must see real 503: this is mixed intermediate, not approved mixed full.
 ns_run "$target_id" "$node_bin" extended/frontend/e2e/c9-recovered-browser.mjs
 stop_app
