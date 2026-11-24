@@ -83,3 +83,5 @@
 "scripts/verify-r0708-isolated.sh","09dd75f374ed6aa3ec291899178d053643c5a1ba","6001","100644","r07_r08_preparation:30f8d06aa60a65377bad2e8df4443ca860be4e80","candidate; actual CI pending"
 "scripts/verify-r0708-receipt.py","f8433fcf27fe8a51c5b438254ff2acd8957dbf53","2532","100644","r07_r08_preparation:30f8d06aa60a65377bad2e8df4443ca860be4e80","candidate; actual CI pending"
 ".github/workflows/r07-r08-preparation.yml","0202d470f34bcd7d13ef608ef9e1e17f0fdadb78","2411","100644","r07_r08_preparation:30f8d06aa60a65377bad2e8df4443ca860be4e80","candidate; actual CI pending"
+"evidence/C8/R03_BORROWER_DIRECTORY_CONSENT_CURSOR_CANDIDATE_2026-11-25.md","e2de07788631f76ee3866392485935d6b1f9cd94","1189","100644","r03_borrower_candidate:74b2450ddd508d5e07a387fa7c1212b42d52779a","PATCH; actual CI pending"
+"extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","cf0553286ad61b30de999b59f0b4784b61f12830","435621","100644","r03_borrower_candidate:74b2450ddd508d5e07a387fa7c1212b42d52779a","PATCH; actual CI pending"
