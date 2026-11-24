@@ -101,6 +101,10 @@ original_baseline() {
     --c8-hosted-original-baseline
 }
 original_baseline CAPTURE
+if [ "$mode" = small ]; then
+  C9_ORIGINAL_TEST_SCHEMA="$schema" C9_ORIGINAL_TEST_ORG="$original_org" C9_ORIGINAL_TEST_OWNER="$owner_id" \
+    bash scripts/verify-c9-local-original-transport.sh
+fi
 # Hash the *full original owner/org/credential/membership row values*, not just counts.
 # Never emit the credential material or the hash to public CI logs.
 original_snapshot_sql="SELECT HEX(o.public_id),o.slug,o.display_name,o.status,o.version,o.created_at,o.updated_at,\
