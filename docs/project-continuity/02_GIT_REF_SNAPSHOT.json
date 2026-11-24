@@ -871,33 +871,41 @@
   },
   "latest_scoped_observation": {
     "date": "2026-11-25 PHT",
-    "handoff_parent": "04c37df5c6373443689a9850594fd7cd2dfc2e41",
+    "handoff_parent": "eb4956b550dadb0d4dbb604b072dfab15de8c30a",
     "pr53": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
-    "pr54": "afdfefca995949ba917bb4ab3f99dfd14cbebd1b",
-    "pr55": "76a8e687581bd1b70582822a38b657744e22d387",
-    "coverage": "Scoped exact live refs and actual dedicated receipt; historical inventory retained",
+    "pr54": "852f2f29f58065e9cf581cb70d58f642da343c1f",
+    "pr55": "a034fb1c81ff1521c9bc9c0c32561c9c2cde515c",
+    "coverage": "Scoped exact live refs and actual reporting and corrected recovery receipts; historical inventory retained",
     "candidate_runs": [
       [
-        45487476059,
+        45488537632,
         "Verify",
         "in_progress",
         null
       ],
       [
-        45486716110,
+        45488706073,
         "Verify",
-        "in_progress",
+        "queued",
         null
+      ],
+      [
+        45488706396,
+        "R07-R08 isolated preparation",
+        "queued",
+        null
+      ]
+    ],
+    "actual_runs": [
+      [
+        45485647999,
+        "Verify",
+        "completed",
+        "success"
       ],
       [
         45486540380,
         "Verify",
-        "in_progress",
-        null
-      ],
-      [
-        45486540376,
-        "R07-R08 isolated preparation",
         "completed",
         "success"
       ]
