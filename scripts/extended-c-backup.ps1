@@ -12,7 +12,9 @@ param(
     [Parameter(Mandatory, ParameterSetName = 'DisposableDemoAcceptance')]
     [switch] $DisposableDemoAcceptance,
     [Parameter(Mandatory, ParameterSetName = 'CiIntermediateAcceptance')]
-    [switch] $CiIntermediateAcceptance
+    [switch] $CiIntermediateAcceptance,
+    [Parameter(Mandatory, ParameterSetName = 'LocalOriginalAcceptance')]
+    [switch] $LocalOriginalAcceptance
 )
 
 $ErrorActionPreference = 'Stop'
@@ -26,7 +28,8 @@ $requiredTables = @('account_recovery_code', 'allocation', 'audit_event', 'depar
     'idempotency_key', 'invitation', 'local_credential', 'membership', 'organization', 'ownership_transfer',
     'project', 'resource', 'resource_requirement', 'spring_session', 'spring_session_attributes', 'stock_movement', 'user_account')
 $clientUser = 'root'
-$disposable = $DisposableAcceptance -or $DisposableDemoAcceptance -or $CiIntermediateAcceptance
+$disposable = $DisposableAcceptance -or $DisposableDemoAcceptance -or $CiIntermediateAcceptance -or $LocalOriginalAcceptance
+$dockerTransport = $CiIntermediateAcceptance -or $LocalOriginalAcceptance
 
 if (-not [Security.Cryptography.AesGcm]::IsSupported) { throw 'AES-GCM is unavailable on this runtime.' }
 if ($DisposableAcceptance -and $Schema -ne 'orgresource_c1_acceptance') {
@@ -104,6 +107,96 @@ if ($CiIntermediateAcceptance) {
         if ($LASTEXITCODE -ne 0 -or $published) { throw 'C9_CI_ISOLATED_RESTORER_REQUIRED' }
     }
 }
+
+# Separate local Linux original-only proof. Explicit run-generated identities
+# are accidental-target guards, not protection against a hostile Docker owner.
+# No arbitrary server/port or existing production schema is accepted.
+$localDockerHost = 'unix:///var/run/docker.sock'
+if ($LocalOriginalAcceptance) {
+    if (-not $IsLinux -or $Port -ne 3306 -or $env:EXT_SMS_ENABLED -cne 'false' -or
+            $env:EXT_REMINDER_MODE -cne 'DISABLED') { throw 'C9_LOCAL_LINUX_REQUIRED' }
+    if (($env:DOCKER_HOST -and $env:DOCKER_HOST -cne $localDockerHost) -or
+            ($env:DOCKER_CONTEXT -and $env:DOCKER_CONTEXT -cne 'default') -or
+            $env:DOCKER_TLS_VERIFY -or $env:DOCKER_CERT_PATH) { throw 'C9_LOCAL_DOCKER_ENDPOINT_REQUIRED' }
+    & /usr/bin/test -S /var/run/docker.sock
+    if ($LASTEXITCODE -ne 0) { throw 'C9_LOCAL_DOCKER_ENDPOINT_REQUIRED' }
+    $token = $env:C9_LOCAL_TOKEN
+    $uuidPattern = '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+    if ($token -cnotmatch '^[0-9a-f]{12}$' -or
+            $env:C9_LOCAL_CONFIRM -cne "TEST ORIGINAL $token" -or
+            $env:C9_LOCAL_SOURCE_ID -cnotmatch '^[0-9a-f]{64}$' -or
+            $env:C9_LOCAL_RESTORE_ID -cnotmatch '^[0-9a-f]{64}$' -or
+            $env:C9_LOCAL_SOURCE_ID -ceq $env:C9_LOCAL_RESTORE_ID -or
+            $env:C9_LOCAL_SOURCE_UUID -cnotmatch $uuidPattern -or
+            $env:C9_LOCAL_RESTORE_UUID -cnotmatch $uuidPattern -or
+            $env:C9_LOCAL_SOURCE_UUID -ceq $env:C9_LOCAL_RESTORE_UUID -or
+            $env:C9_LOCAL_SOURCE_PASSWORD -cnotmatch '^[0-9a-f]{48}$' -or
+            $env:C9_LOCAL_RESTORE_PASSWORD -cnotmatch '^[0-9a-f]{48}$' -or
+            $env:C9_LOCAL_SOURCE_PASSWORD -ceq $env:C9_LOCAL_RESTORE_PASSWORD) {
+        throw 'C9_LOCAL_IDENTITY_REQUIRED'
+    }
+    $localSourceSchema = "orgresource_c9_local_${token}_source"
+    $localRestoreSchema = "orgresource_c9_local_${token}_restore"
+    if (($Mode -eq 'Backup' -and $Schema -cne $localSourceSchema) -or
+            ($Mode -eq 'Restore' -and $Schema -cne $localRestoreSchema)) {
+        throw 'C9_LOCAL_SCHEMA_REQUIRED'
+    }
+    $localUid = (& /usr/bin/id -u)
+    if ($LASTEXITCODE -ne 0 -or $localUid -notmatch '^[1-9][0-9]*$' -or
+            -not $env:C9_LOCAL_ROOT -or -not [IO.Path]::IsPathFullyQualified($env:C9_LOCAL_ROOT)) {
+        throw 'C9_LOCAL_ARCHIVE_PATH_REQUIRED'
+    }
+    $localRoot = [IO.Path]::TrimEndingDirectorySeparator([IO.Path]::GetFullPath($env:C9_LOCAL_ROOT))
+    $localWork = Join-Path $localRoot "orgresource-c9-local-$token"
+    foreach ($directory in @($localRoot, $localWork)) {
+        $canonical = (& /usr/bin/realpath -e -- $directory 2>$null)
+        if ($LASTEXITCODE -ne 0 -or $canonical -cne $directory -or
+                -not (Test-Path -LiteralPath $directory -PathType Container)) {
+            throw 'C9_LOCAL_ARCHIVE_PATH_REQUIRED'
+        }
+        $privateMode = (& /usr/bin/stat -c '%a:%u' -- $directory 2>$null)
+        if ($LASTEXITCODE -ne 0 -or $privateMode -cne "700:${localUid}") {
+            throw 'C9_LOCAL_ARCHIVE_PATH_REQUIRED'
+        }
+    }
+    if ([IO.Path]::GetDirectoryName($archivePath) -cne $localWork -or
+            [IO.Path]::GetFileName($archivePath) -cnotmatch '^[a-z0-9-]+\.aesgcm$') {
+        throw 'C9_LOCAL_ARCHIVE_PATH_REQUIRED'
+    }
+    & /usr/bin/test -L $archivePath
+    if ($LASTEXITCODE -eq 0 -or ((Test-Path -LiteralPath $archivePath) -and
+            -not (Test-Path -LiteralPath $archivePath -PathType Leaf))) {
+        throw 'C9_LOCAL_ARCHIVE_PATH_REQUIRED'
+    }
+    foreach ($role in @('source', 'restore')) {
+        $id = if ($role -eq 'source') { $env:C9_LOCAL_SOURCE_ID } else { $env:C9_LOCAL_RESTORE_ID }
+        $raw = & docker "--host=$localDockerHost" inspect --type container $id 2>$null
+        if ($LASTEXITCODE -ne 0) { throw 'C9_LOCAL_CONTAINER_REQUIRED' }
+        try { $records = @($raw -join [Environment]::NewLine | ConvertFrom-Json) }
+        catch { throw 'C9_LOCAL_CONTAINER_REQUIRED' }
+        if ($records.Count -ne 1) { throw 'C9_LOCAL_CONTAINER_REQUIRED' }
+        $container = $records[0]
+        if ($container.Id -cne $id -or $container.Name -cne "/orgresource-c9-local-$token-$role" -or
+                $container.Config.Image -cne 'mysql:8.0.46' -or -not $container.State.Running -or
+                $container.Config.Labels.'orgresource.c9.local' -cne $token -or
+                $container.Config.Labels.'orgresource.c9.role' -cne $role -or
+                $container.HostConfig.NetworkMode -cne 'none' -or $container.HostConfig.Privileged -or
+                $container.HostConfig.PidMode -eq 'host' -or $container.HostConfig.IpcMode -eq 'host' -or
+                @($container.HostConfig.Binds | Where-Object { $_ }).Count -ne 0 -or
+                @($container.HostConfig.Mounts | Where-Object { $_ }).Count -ne 0 -or
+                @($container.HostConfig.VolumesFrom | Where-Object { $_ }).Count -ne 0 -or
+                @($container.Mounts).Count -ne 1 -or $container.Mounts[0].Type -cne 'volume' -or
+                $container.Mounts[0].Destination -cne '/var/lib/mysql' -or
+                $container.Mounts[0].Name -cnotmatch '^[a-f0-9]{64}$') {
+            throw 'C9_LOCAL_CONTAINER_REQUIRED'
+        }
+        $published = & docker "--host=$localDockerHost" port $id 2>$null
+        if ($LASTEXITCODE -ne 0 -or $published) { throw 'C9_LOCAL_CONTAINER_REQUIRED' }
+    }
+    $ciContainer = if ($Mode -eq 'Backup') { $env:C9_LOCAL_SOURCE_ID } else { $env:C9_LOCAL_RESTORE_ID }
+    $ciPassword = if ($Mode -eq 'Backup') { $env:C9_LOCAL_SOURCE_PASSWORD } else { $env:C9_LOCAL_RESTORE_PASSWORD }
+}
+
 if (-not $env:EXT_BACKUP_KEY) { throw 'Protected backup key unavailable.' }
 try { $key = [Convert]::FromBase64String($env:EXT_BACKUP_KEY) } catch { throw 'Protected backup key is invalid.' }
 if ($key.Length -ne 32) {
@@ -123,7 +216,7 @@ function Find-BackupMysqlTool([string] $Tool) {
 
 function Invoke-BackupMysql([string] $Tool, [string[]] $Options, [byte[]] $InputBytes, [long] $OutputLimit = $maxSqlBytes) {
     $info = [Diagnostics.ProcessStartInfo]::new()
-    $info.FileName = if ($CiIntermediateAcceptance) { 'docker' } else { Find-BackupMysqlTool $Tool }
+    $info.FileName = if ($dockerTransport) { 'docker' } else { Find-BackupMysqlTool $Tool }
     $info.UseShellExecute = $false
     $info.CreateNoWindow = $true
     $info.RedirectStandardError = $true
@@ -131,10 +224,16 @@ function Invoke-BackupMysql([string] $Tool, [string[]] $Options, [byte[]] $Input
     $info.RedirectStandardInput = $null -ne $InputBytes
     foreach ($name in @('EXT_BACKUP_KEY', 'EXT_CONTACT_ENCRYPTION_KEY', 'MYSQL_PWD', 'EXT_DB_PASSWORD',
             'EXT_DB_MIGRATION_PASSWORD', 'EXT_BOOTSTRAP_PASSWORD', 'EXT_TWILIO_AUTH_TOKEN', 'EXT_E2E_PASSWORD',
-            'C9_RESTORE_PASSWORD')) {
+            'C9_RESTORE_PASSWORD', 'C9_LOCAL_SOURCE_PASSWORD', 'C9_LOCAL_RESTORE_PASSWORD', 'EXT_C8_BASELINE_HMAC_HEX')) {
         $null = $info.Environment.Remove($name)
     }
-    if ($CiIntermediateAcceptance) {
+    if ($dockerTransport) {
+        if ($LocalOriginalAcceptance) {
+            foreach ($name in @('DOCKER_HOST','DOCKER_CONTEXT','DOCKER_TLS_VERIFY','DOCKER_CERT_PATH')) {
+                $null = $info.Environment.Remove($name)
+            }
+            $info.ArgumentList.Add("--host=$localDockerHost")
+        }
         if ($Tool -cnotin @('mysql','mysqldump')) { throw 'C9_CI_TOOL_REFUSED' }
         $info.Environment['MYSQL_PWD'] = $ciPassword
         foreach ($arg in @('exec','-i','--env','MYSQL_PWD',$ciContainer,$Tool,
@@ -204,6 +303,14 @@ function Assert-BackupSchema {
     if ($DisposableDemoAcceptance -and (Read-BackupSqlScalar 'SELECT COUNT(*) FROM organization WHERE demo_plan_sha IS NOT NULL') -ne '96') {
         throw 'The disposable C8 backup does not contain the full imported demo cohort.'
     }
+    if ($LocalOriginalAcceptance) {
+        if ((Read-BackupSqlScalar "SELECT COUNT(*) FROM organization") -cne '2' -or
+            (Read-BackupSqlScalar "SELECT COUNT(*) FROM organization WHERE demo_dataset_id IS NOT NULL OR demo_plan_sha IS NOT NULL") -cne '0' -or
+            (Read-BackupSqlScalar "SELECT COUNT(*) FROM organization WHERE slug IN ('isolated-original-workspace','isolated-other-original')") -cne '2' -or
+            (Read-BackupSqlScalar "SELECT COUNT(*) FROM organization o JOIN membership m ON m.org_id=o.id JOIN user_account u ON u.id=m.user_id JOIN local_credential c ON c.user_id=u.id WHERE o.slug='isolated-original-workspace' AND u.username_key='additive-original-owner' AND o.status='ACTIVE' AND u.status='ACTIVE' AND m.role='OWNER' AND m.status='ACTIVE'") -cne '1') {
+            throw 'C9_LOCAL_ORIGINAL_FIXTURE_REQUIRED'
+        }
+    }
     if ($CiIntermediateAcceptance) {
         if ((Read-BackupSqlScalar 'SELECT VERSION()') -cne '8.0.46' -or
             (Read-BackupSqlScalar 'SELECT COUNT(*) FROM organization WHERE demo_plan_sha IS NOT NULL') -cne '8' -or
@@ -218,6 +325,25 @@ $cipher = [Security.Cryptography.AesGcm]::new($key, 16)
 $sql = $null
 $dump = $null
 try {
+    if ($LocalOriginalAcceptance) {
+        # Read both actual MySQL server identities before any dump/import.
+        $selectedContainer = $ciContainer
+        $selectedPassword = $ciPassword
+        try {
+            foreach ($role in @('source','restore')) {
+                $ciContainer = if ($role -eq 'source') { $env:C9_LOCAL_SOURCE_ID } else { $env:C9_LOCAL_RESTORE_ID }
+                $ciPassword = if ($role -eq 'source') { $env:C9_LOCAL_SOURCE_PASSWORD } else { $env:C9_LOCAL_RESTORE_PASSWORD }
+                $expectedUuid = if ($role -eq 'source') { $env:C9_LOCAL_SOURCE_UUID } else { $env:C9_LOCAL_RESTORE_UUID }
+                $identityBytes = Invoke-BackupMysql 'mysql' @('--batch','--skip-column-names',"--execute=SELECT CONCAT(VERSION(),' ',@@server_uuid)") $null 4096
+                if ([Text.Encoding]::UTF8.GetString($identityBytes).Trim() -cne "8.0.46 $expectedUuid") {
+                    throw 'C9_LOCAL_SERVER_IDENTITY_REQUIRED'
+                }
+            }
+        } finally {
+            $ciContainer = $selectedContainer
+            $ciPassword = $selectedPassword
+        }
+    }
     if (-not $disposable) {
         # The editor masks the password. Check that an explicit path exists before a
         # MySQL client could fall back to its ordinary client login group.
