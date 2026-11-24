@@ -1416,6 +1416,7 @@ class C1IdentityAcceptanceTest {
         String migrationUser = System.getenv("EXT_DB_MIGRATION_USER");
         String migrationPassword = System.getenv("EXT_DB_MIGRATION_PASSWORD");
         assertTrue(trigger.matches("c2_fail_movement_[a-f0-9]{32}"));
+        var before = legacyDenialRows(owner.orgDbId, owner.orgDbId);
         boolean created = false;
         try (Connection migration = DriverManager.getConnection(migrationUrl, migrationUser, migrationPassword);
              var statement = migration.createStatement()) {
@@ -1425,6 +1426,8 @@ class C1IdentityAcceptanceTest {
             HttpResponse<String> failed = modernPost(session, path + "/receive", body,
                     initial.headers().firstValue("ETag").orElseThrow(), key);
             assertEquals(500, failed.statusCode(), failed.body());
+            assertTrue(before.equals(legacyDenialRows(owner.orgDbId, owner.orgDbId)),
+                    "Forced movement failure must roll back all scoped domain, audit and receipt rows.");
             assertEquals(5, resourceRepository.findByIdAndOrganizationId(resourceId, owner.orgDbId).orElseThrow().totalQuantity);
             assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=? AND resource_id=?",
                     Integer.class, owner.orgDbId, resourceId));
@@ -1434,6 +1437,21 @@ class C1IdentityAcceptanceTest {
             if (created) try (Connection migration = DriverManager.getConnection(migrationUrl, migrationUser, migrationPassword);
                     var statement = migration.createStatement()) { statement.execute("DROP TRIGGER IF EXISTS `" + trigger + "`"); }
         }
+        // Retry the same operation/key/precondition after the injected failure is removed.
+        HttpResponse<String> retried = modernPost(session, path + "/receive", body,
+                initial.headers().firstValue("ETag").orElseThrow(), key);
+        assertEquals(201, retried.statusCode());
+        assertEquals(7, json(retried).getAsJsonObject("data").get("totalQuantity").getAsInt());
+        assertEquals(7L, jdbc.queryForObject("SELECT SUM(delta_total) FROM stock_movement WHERE organization_id=? AND resource_id=?",
+                Long.class, owner.orgDbId, resourceId));
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=? AND operation_public_id=UUID_TO_BIN(?,0) AND kind='RECEIPT'",
+                Integer.class, owner.orgDbId, operationId.toString()));
+        var committed = legacyDenialRows(owner.orgDbId, owner.orgDbId);
+        HttpResponse<String> replay = modernPost(session, path + "/receive", body,
+                initial.headers().firstValue("ETag").orElseThrow(), key);
+        assertEquals(201, replay.statusCode());
+        assertTrue(committed.equals(legacyDenialRows(owner.orgDbId, owner.orgDbId)),
+                "Successful receive replay must not change scoped rows.");
     }
 
     @Test @Order(25)
@@ -1708,9 +1726,10 @@ class C1IdentityAcceptanceTest {
         Session session = login(owner.username, owner.password);
         long departmentId = json(post(session, "/api/departments", GSON.toJson(new NameRequest("C3 Parity Department")))).get("id").getAsLong();
         long duplicateDepartmentId = json(post(session, "/api/departments", GSON.toJson(new NameRequest("C3 Parity Other Department")))).get("id").getAsLong();
-        HttpResponse<String> departmentRename = post(session, "/api/departments/" + duplicateDepartmentId + "/update",
-                GSON.toJson(new NameRequest("C3 Parity Department")));
-        assertEquals(409, departmentRename.statusCode(), departmentRename.body());
+        HttpResponse<String> departmentRename = assertScopedRefusal(409, owner.orgDbId, owner.orgDbId,
+                () -> post(session, "/api/departments/" + duplicateDepartmentId + "/update",
+                        GSON.toJson(new NameRequest("C3 Parity Department"))));
+        assertEquals("DUPLICATE_NAME", json(departmentRename).get("code").getAsString());
         assertEquals(200, post(session, "/api/departments/" + duplicateDepartmentId + "/update",
                 GSON.toJson(new NameRequest("C3 Parity Renamed"))).statusCode());
 
@@ -1747,8 +1766,12 @@ class C1IdentityAcceptanceTest {
                 GSON.toJson(new ProjectUpdateRequest("C3 Parity Renamed Project", now.plusDays(2).toString(), now.plusDays(4).toString())));
         assertEquals(200, projectRenamed.statusCode(), projectRenamed.body());
         assertEquals(departmentId, json(projectRenamed).get("departmentId").getAsLong());
-        HttpResponse<String> projectBlocked = post(session, "/api/projects/" + projectId + "/delete", null);
-        assertEquals(409, projectBlocked.statusCode(), projectBlocked.body());
+        HttpResponse<String> departmentBlocked = assertScopedRefusal(409, owner.orgDbId, otherOwner.orgDbId,
+                () -> post(session, "/api/departments/" + departmentId + "/delete", null));
+        assertEquals("DEPENDENCY_EXISTS", json(departmentBlocked).get("code").getAsString());
+        HttpResponse<String> projectBlocked = assertScopedRefusal(409, owner.orgDbId, otherOwner.orgDbId,
+                () -> post(session, "/api/projects/" + projectId + "/delete", null));
+        assertEquals("DEPENDENCY_EXISTS", json(projectBlocked).get("code").getAsString());
 
         HttpResponse<String> updatedResource = post(session, "/api/resources/" + reusableId + "/update",
                 GSON.toJson(new ResourceUpdateRequest("C3 Parity Reusable Updated", 12, 10)));
@@ -1758,15 +1781,21 @@ class C1IdentityAcceptanceTest {
         HttpResponse<String> availability = get(session.client, "/api/resources/" + reusableId + "/availability");
         assertEquals(200, availability.statusCode(), availability.body());
         assertEquals(12, json(availability).get("availableQuantity").getAsInt());
-        assertEquals(409, post(session, "/api/resources/" + reusableId + "/update",
-                GSON.toJson(new ResourceUpdateRequest("C3 Parity Stale", 11, 10))).statusCode());
-        assertEquals(409, post(session, "/api/resources/" + reusableId + "/delete", null).statusCode());
+        assertScopedRefusal(409, owner.orgDbId, otherOwner.orgDbId,
+                () -> post(session, "/api/resources/" + reusableId + "/update",
+                        GSON.toJson(new ResourceUpdateRequest("C3 Parity Stale", 11, 10))));
+        assertScopedRefusal(409, owner.orgDbId, otherOwner.orgDbId,
+                () -> post(session, "/api/resources/" + reusableId + "/delete", null));
 
         assertEquals(200, post(session, "/api/requirements/" + requirementId + "/update",
                 GSON.toJson(new RequirementUpdateRequest(25))).statusCode());
-        assertEquals(409, post(session, "/api/requirements/" + requirementId + "/update",
-                GSON.toJson(new RequirementUpdateRequest(7))).statusCode());
-        assertEquals(409, post(session, "/api/requirements/" + requirementId + "/delete", null).statusCode());
+        HttpResponse<String> belowCommitments = assertScopedRefusal(409, owner.orgDbId, otherOwner.orgDbId,
+                () -> post(session, "/api/requirements/" + requirementId + "/update",
+                        GSON.toJson(new RequirementUpdateRequest(7))));
+        assertEquals("QUANTITY_BELOW_COMMITMENTS", json(belowCommitments).get("code").getAsString());
+        HttpResponse<String> requirementBlocked = assertScopedRefusal(409, owner.orgDbId, otherOwner.orgDbId,
+                () -> post(session, "/api/requirements/" + requirementId + "/delete", null));
+        assertEquals("DEPENDENCY_EXISTS", json(requirementBlocked).get("code").getAsString());
         assertEquals(200, post(session, "/api/allocations/" + allocationId + "/delete", null).statusCode());
         assertEquals(200, post(session, "/api/requirements/" + requirementId + "/delete", null).statusCode());
         assertEquals(200, post(session, "/api/projects/" + projectId + "/delete", null).statusCode());
@@ -4571,12 +4600,14 @@ class C1IdentityAcceptanceTest {
     }
 
 
-    private void assertScopedRefusal(int expected, long firstOrg, long secondOrg,
+    private HttpResponse<String> assertScopedRefusal(int expected, long firstOrg, long secondOrg,
             java.util.concurrent.Callable<HttpResponse<String>> request) throws Exception {
         var before = legacyDenialRows(firstOrg, secondOrg);
-        assertEquals(expected, request.call().statusCode());
+        HttpResponse<String> response = request.call();
+        assertEquals(expected, response.statusCode());
         assertTrue(before.equals(legacyDenialRows(firstOrg, secondOrg)),
-                "Refused ProjectWork request changed scoped domain rows.");
+                "Refused request changed scoped domain rows.");
+        return response;
     }
 
     @Test @Order(65)
