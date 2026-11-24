@@ -4680,6 +4680,102 @@ class C1IdentityAcceptanceTest {
         assertEquals(401, loginStatus(member.username, member.password));
     }
 
+    @Test @Order(67)
+    void C8R031RecoveryRotationDenialPreservesCodesAndAuthorizedRotationIsNoStore() throws Exception {
+        Fixture account = newTenant("C8-R031", Membership.Role.OWNER);
+        Session session = login(account.username, account.password);
+        String endpoint = "/api/v2/account/recovery-codes/rotate";
+        String snapshotSql = "SELECT id, HEX(code_hash) AS digest, HEX(batch_id) AS batch, created_at, expires_at, used_at, revoked_at "
+                + "FROM account_recovery_code WHERE user_id=? ORDER BY id";
+        var before = jdbc.queryForList(snapshotSql, account.userDbId);
+        assertEquals(5, before.size());
+        String auditSql = "SELECT COUNT(*) FROM audit_event WHERE actor_user_id=? AND action='RECOVERY_CODES_ROTATED'";
+        long audits = jdbc.queryForObject(auditSql, Long.class, account.userDbId);
+        long version = accounts.findById(account.userDbId).orElseThrow().credentialVersion;
+        HttpResponse<String> denied = post(session, endpoint,
+                GSON.toJson(new CurrentPasswordRequest("deliberately-wrong-password")));
+        assertEquals(401, denied.statusCode());
+        assertEquals("CURRENT_PASSWORD_INVALID", json(denied).get("code").getAsString());
+        assertFalse(json(denied).has("data"));
+        assertTrue(before.equals(jdbc.queryForList(snapshotSql, account.userDbId)), "Denied rotation changed recovery rows.");
+        assertEquals(audits, jdbc.queryForObject(auditSql, Long.class, account.userDbId));
+        assertEquals(version, accounts.findById(account.userDbId).orElseThrow().credentialVersion);
+        assertEquals(200, get(session.client, "/api/v2/session").statusCode());
+        HttpResponse<String> rotated = post(session, endpoint,
+                GSON.toJson(new CurrentPasswordRequest(account.password)));
+        assertEquals(200, rotated.statusCode());
+        assertTrue(rotated.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
+        var data = json(rotated).getAsJsonObject("data");
+        assertEquals(Set.of("codes"), data.keySet());
+        var codes = data.getAsJsonArray("codes");
+        assertEquals(5, codes.size());
+        Set<String> unique = new java.util.HashSet<>();
+        for (var item : codes) {
+            String raw = item.getAsString();
+            assertTrue(unique.add(raw), "Duplicate recovery code.");
+            assertFalse(account.recoveryCodes.contains(raw), "Reused previous recovery code.");
+            assertEquals(1L, jdbc.queryForObject(
+                    "SELECT COUNT(*) FROM account_recovery_code WHERE user_id=? AND code_hash=? AND used_at IS NULL AND revoked_at IS NULL",
+                    Long.class, account.userDbId, C1Secrets.sha256(raw)));
+        }
+        assertEquals(10L, jdbc.queryForObject("SELECT COUNT(*) FROM account_recovery_code WHERE user_id=?", Long.class, account.userDbId));
+        assertEquals(5L, jdbc.queryForObject("SELECT COUNT(*) FROM account_recovery_code WHERE user_id=? AND revoked_at IS NOT NULL", Long.class, account.userDbId));
+        for (String old : account.recoveryCodes)
+            assertEquals(1L, jdbc.queryForObject(
+                    "SELECT COUNT(*) FROM account_recovery_code WHERE user_id=? AND code_hash=? AND revoked_at IS NOT NULL",
+                    Long.class, account.userDbId, C1Secrets.sha256(old)));
+        assertEquals(audits + 1, jdbc.queryForObject(auditSql, Long.class, account.userDbId));
+        assertEquals(version, accounts.findById(account.userDbId).orElseThrow().credentialVersion);
+        assertEquals(200, get(session.client, "/api/v2/session").statusCode());
+        // Never print raw recovery values or hashes in assertions or receipts.
+    }
+
+    @Test @Order(68)
+    void C8R082MemberDirectoryAdminForeignCursorFieldAndReadOnlyBoundaries() throws Exception {
+        Fixture home = newTenant("C8-R082-home", Membership.Role.OWNER);
+        Fixture admin = fixtureInOrg(home.orgDbId, Membership.Role.ADMIN);
+        Fixture member = fixtureInOrg(home.orgDbId, Membership.Role.MEMBER);
+        Fixture foreign = newTenant("C8-R082-foreign", Membership.Role.OWNER);
+        Session ownerSession = login(home.username, home.password);
+        Session adminSession = login(admin.username, admin.password);
+        Session memberSession = login(member.username, member.password);
+        Session foreignSession = login(foreign.username, foreign.password);
+        String endpoint = "/api/v2/orgs/" + home.orgPublicId + "/members";
+        String rows = "SELECT id, org_id, user_id, role, status, version FROM membership WHERE org_id IN (?,?) ORDER BY id";
+        var before = jdbc.queryForList(rows, home.orgDbId, foreign.orgDbId);
+        String auditSql = "SELECT COUNT(*) FROM audit_event WHERE org_id IN (?,?)";
+        long audits = jdbc.queryForObject(auditSql, Long.class, home.orgDbId, foreign.orgDbId);
+        HttpResponse<String> page = get(adminSession.client, endpoint + "?limit=100");
+        assertEquals(200, page.statusCode());
+        assertTrue(page.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
+        var data = json(page).getAsJsonObject("data");
+        assertEquals(Set.of("items", "nextCursor"), data.keySet());
+        assertEquals(3, data.getAsJsonArray("items").size());
+        assertTrue(data.get("nextCursor").isJsonNull());
+        Set<String> ids = new java.util.HashSet<>();
+        for (var item : data.getAsJsonArray("items")) {
+            var row = item.getAsJsonObject();
+            assertEquals(Set.of("id", "displayName", "role", "status", "version"), row.keySet());
+            ids.add(row.get("id").getAsString());
+        }
+        assertEquals(Set.of(home.membershipPublicId.toString(), admin.membershipPublicId.toString(),
+                member.membershipPublicId.toString()), ids);
+        var ownerPage = json(get(ownerSession.client, endpoint + "?limit=100")).getAsJsonObject("data");
+        assertEquals(data, ownerPage);
+        var first = json(get(adminSession.client, endpoint + "?limit=1")).getAsJsonObject("data");
+        assertEquals(1, first.getAsJsonArray("items").size());
+        assertFalse(first.get("nextCursor").isJsonNull());
+        assertEquals(first, json(get(adminSession.client, endpoint + "?limit=0")).getAsJsonObject("data"));
+        assertEquals(data, json(get(adminSession.client, endpoint + "?limit=101")).getAsJsonObject("data"));
+        assertEquals(404, get(adminSession.client, endpoint + "?cursor=" + foreign.membershipPublicId).statusCode());
+        assertEquals(403, get(memberSession.client, endpoint).statusCode());
+        assertEquals(404, get(foreignSession.client, endpoint).statusCode());
+        assertTrue(before.equals(jdbc.queryForList(rows, home.orgDbId, foreign.orgDbId)), "Directory reads changed memberships.");
+        assertEquals(audits, jdbc.queryForObject(auditSql, Long.class, home.orgDbId, foreign.orgDbId));
+        // Small-page clamp compatibility is covered, but >100-row truncation
+        // and complete cross-table read-only proof are separate evidence gaps.
+    }
+
     private record Fixture(long orgDbId, UUID orgPublicId, long userDbId, String username, String password,
                           long membershipDbId, UUID membershipPublicId, List<String> recoveryCodes) { }
     private static final class Session {
