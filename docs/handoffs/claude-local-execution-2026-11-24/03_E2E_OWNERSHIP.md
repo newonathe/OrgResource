@@ -59,3 +59,9 @@ R06A depends on accepted R01 plus actual PR48 runtime markers. R06B must use thi
 R01 PR46 b62ff3c6 exact CI #45425950575 and R06A PR48 c9133376 exact CI #45427270775 are VERIFIED BOUNDED with actual logs inspected. R06B1 PR49 406ce2af CI #45430758956 pending actual receipts. The canonical cross-chat protocol is 14_CONTINUE_PRE_CLAUDE.md (GitHub issue #50), dependency state is 12_EXECUTION_GRAPH.json and historical receipts are 15_CONTINUATION_LEDGER.jsonl. Older dated statuses are historical. R09 remains false; no Claude launch, private plan import, operator attestation, host, merge or deployment. Independent review open.
 
 R06B aggregate now depends on R06B1 (fresh executable preparation candidate), R06B2 (actual operator-gated exact-plan importer and postflight), R06B3 (full post-import encrypted recovery and valid mixed browser). Graph 12 has 31 checked dependency nodes, no cycles. No local L06 until all three and final R09. R03/R04/R07/R08 remote engineering remains. The earlier R06A/R01 pending wording is superseded.
+
+## Superseding checkpoint — 2026-11-25 PHT
+
+R06B1 PR49 406ce2af exact CI #45430758956 / Extended job 138575101070 VERIFIED BOUNDED: 7 refusal cases, actual fresh bootstrap, C5 archive 33,858 bytes, independent exact row restore, read-only V2 baseline and cleanup, 3/3 jobs, 91 Maven/19 Playwright. R06B2 PR51 17bd5bf0 exact CI #45434204255 in progress, source-only candidate; no actual private import or operator attestation. Current graph 12, continuation 14 and ledger 15 supersede older status text. R09 false; no local launch, hosted operation, merge/deploy or independent self-signoff.
+
+R06B2 candidate includes owner-gated import and postflight but actual exact-plan positive remains local-only; R06B3 full imported C5/normal browser is still an implementation dependency. L06 is blocked; no Claude task added to repair missing engineering. No route acceptance advanced from a local runner guard test.
