@@ -3736,6 +3736,8 @@ class C1IdentityAcceptanceTest {
         Fixture owner = newTenant("C8 work scope", Membership.Role.OWNER);
         Fixture lead = fixtureInOrg(owner.orgDbId, Membership.Role.LEAD);
         Fixture borrower = fixtureInOrg(owner.orgDbId, Membership.Role.MEMBER);
+        Fixture admin = fixtureInOrg(owner.orgDbId, Membership.Role.ADMIN);
+        Fixture keeper = fixtureInOrg(owner.orgDbId, Membership.Role.CUSTODIAN);
         Session officer = login(owner.username, owner.password);
         Session scoped = login(lead.username, lead.password);
         String root = "/api/v2/orgs/" + owner.orgPublicId;
@@ -3789,6 +3791,27 @@ class C1IdentityAcceptanceTest {
         String own = json(ownCreated).getAsJsonObject("data").get("id").getAsString();
         String other = json(officerCreated).getAsJsonObject("data").get("id").getAsString();
         String ownPath = root + "/allocations/" + own, otherPath = root + "/allocations/" + other;
+        Session adminSession = login(admin.username, admin.password);
+        Session stockSession = login(keeper.username, keeper.password);
+        Session borrowerSession = login(borrower.username, borrower.password);
+        for (Session authorized : List.of(adminSession, stockSession)) {
+            var response = assertGovernanceRefusal(200, owner.orgDbId, owner.orgDbId,
+                    () -> get(authorized.client, path + "/allocations?limit=10"));
+            var records = json(response).getAsJsonObject("data").getAsJsonArray("items");
+            assertEquals(2, records.size());
+            var ids = new java.util.HashSet<String>();
+            for (var element : records) {
+                var entry = element.getAsJsonObject();
+                assertEquals(Set.of("id", "requirementId", "resourceName", "borrowerNameSnapshot", "quantity",
+                        "status", "version", "canCancel", "canDelete"), entry.keySet());
+                ids.add(entry.get("id").getAsString());
+                assertFalse(entry.get("canCancel").getAsBoolean());
+                assertEquals(authorized == adminSession, entry.get("canDelete").getAsBoolean());
+            }
+            assertEquals(Set.of(own, other), ids);
+        }
+        assertGovernanceRefusal(403, owner.orgDbId, owner.orgDbId,
+                () -> get(borrowerSession.client, path + "/allocations"));
         var projectPage = workspacePage(scoped, path + "/allocations?limit=1");
         assertTrue(projectPage.getAsJsonArray("items").get(0).getAsJsonObject().get("canCancel").getAsBoolean());
         String continuation = projectPage.get("nextCursor").getAsString();
@@ -4281,6 +4304,7 @@ class C1IdentityAcceptanceTest {
             HttpResponse<String> legacyDepartment = get(actor.client, "/api/v2/departments/" + departmentId);
             assertEquals(200, legacyDepartment.statusCode(), legacyDepartment.body());
             assertEquals(departmentId, json(legacyDepartment).get("id").getAsLong());
+            assertEquals(Set.of("id", "name"), json(legacyDepartment).keySet());
             for (String[] page : expectedPages) {
                 JsonObject view = workspacePage(actor, "/api/v2/workspace/" + page[0] + "?limit=50");
                 for (var element : view.getAsJsonArray("items")) {
@@ -4302,7 +4326,10 @@ class C1IdentityAcceptanceTest {
                         "Selected-org " + page[0] + " must not leak a foreign workspace label");
             }
         }
-        assertEquals(404, get(outsiderSession.client, "/api/v2/departments/" + departmentId).statusCode());
+        assertGovernanceRefusal(404, owner.orgDbId, outsider.orgDbId,
+                () -> get(outsiderSession.client, "/api/v2/departments/" + departmentId));
+        assertGovernanceRefusal(404, owner.orgDbId, outsider.orgDbId,
+                () -> get(ownerSession.client, "/api/v2/departments/0"));
         assertEquals(404, get(ownerSession.client, "/api/v2/departments/" + outsiderDepartmentId).statusCode());
         JsonObject foreignResources = workspacePage(outsiderSession, "/api/v2/workspace/resources?limit=50");
         assertTrue(foreignResources.getAsJsonArray("items").asList().stream()
@@ -4844,6 +4871,19 @@ class C1IdentityAcceptanceTest {
                 home.orgDbId).toString();
         long[] homeBefore = stockFactCounts(home.orgDbId), foreignBefore = stockFactCounts(foreign.orgDbId);
 
+        var projectRead = assertGovernanceRefusal(200, home.orgDbId, foreign.orgDbId,
+                () -> get(stock.client, root + "/projects/" + project));
+        var detail = json(projectRead).getAsJsonObject("data");
+        assertEquals(Set.of("id", "name", "startAt", "endAt", "leadMembershipId", "version"), detail.keySet());
+        assertEquals(project.toString(), detail.get("id").getAsString());
+        assertEquals("\"v0\"", projectRead.headers().firstValue("ETag").orElseThrow());
+        assertGovernanceRefusal(404, home.orgDbId, foreign.orgDbId,
+                () -> get(stock.client, root + "/projects/" + foreignProject));
+        assertGovernanceRefusal(403, home.orgDbId, foreign.orgDbId,
+                () -> modernPost(stock, root + "/projects/" + project + "/lead-assignment",
+                        leadAssignment(UUID.randomUUID().toString(), leadOne.membershipPublicId),
+                        "\"v0\"", UUID.randomUUID().toString()));
+        var directoryRowsBefore = governanceDenialRows(home.orgDbId, foreign.orgDbId);
         var response = get(owner.client, directory);
         assertEquals(200, response.statusCode(), response.body());
         var items = json(response).getAsJsonObject("data").getAsJsonArray("items");
@@ -4881,11 +4921,18 @@ class C1IdentityAcceptanceTest {
                 "Cursor must be bound to the specific Project even in the same organization.");
         assertEquals(404, get(owner.client, directory + "?limit=1&search=unrelated&cursor=" + cursor).statusCode(),
                 "Cursor must be bound to the precise directory search.");
-        assertEquals(400, get(owner.client, directory + "?limit=101").statusCode());
+        assertGovernanceRefusal(400, home.orgDbId, foreign.orgDbId,
+                () -> get(owner.client, directory + "?limit=101"));
+        assertGovernanceRefusal(400, home.orgDbId, foreign.orgDbId,
+                () -> get(owner.client, directory + "?limit=0"));
+        assertGovernanceRefusal(400, home.orgDbId, foreign.orgDbId,
+                () -> get(owner.client, directory + "?search=" + "x".repeat(101)));
         assertEquals(400, get(owner.client, directory + "?cursor=%21invalid").statusCode());
         assertTrue(json(get(owner.client, directory + "?search=no-matching-fixture-name"))
                 .getAsJsonObject("data").getAsJsonArray("items").isEmpty());
 
+        assertTrue(directoryRowsBefore.equals(governanceDenialRows(home.orgDbId, foreign.orgDbId)),
+                "Lead option reads and refusals changed scoped rows.");
         assertEquals(membersBefore, jdbc.queryForList(
                 "SELECT id, role, status, version FROM membership WHERE org_id=? ORDER BY id",
                 home.orgDbId).toString());
@@ -5470,6 +5517,26 @@ class C1IdentityAcceptanceTest {
         assertR025PreservedImage(reader, imagePath, jpeg, accepted, sql, home, other, resourceId, homeFacts, otherFacts);
         assertEquals(404, get(outsider.client, imagePath).statusCode());
         assertR025PreservedImage(reader, imagePath, jpeg, accepted, sql, home, other, resourceId, homeFacts, otherFacts);
+        String modernImageDelete = "/api/v2/orgs/" + home.orgPublicId + "/resources/"
+                + resourceRepository.findById(resourceId).orElseThrow().publicId + "/image/delete";
+        String version = get(keeper.client, modernImageDelete.replace("/image/delete", ""))
+                .headers().firstValue("ETag").orElseThrow();
+        assertGovernanceRefusal(403, home.orgDbId, other.orgDbId,
+                () -> post(officer, modernImageDelete, null, version));
+        assertR025PreservedImage(reader, imagePath, jpeg, accepted, sql, home, other, resourceId, homeFacts, otherFacts);
+        assertGovernanceRefusal(412, home.orgDbId, other.orgDbId,
+                () -> post(keeper, modernImageDelete, null, "\"v999\""));
+        assertR025PreservedImage(reader, imagePath, jpeg, accepted, sql, home, other, resourceId, homeFacts, otherFacts);
+        var removed = post(keeper, modernImageDelete, null, version);
+        assertEquals(200, removed.statusCode(), removed.body());
+        assertNull(jdbc.queryForObject("SELECT image_bytes FROM resource WHERE id=?", byte[].class, resourceId));
+        assertNull(jdbc.queryForObject("SELECT image_content_type FROM resource WHERE id=?", String.class, resourceId));
+        assertEquals(404, get(reader.client, imagePath).statusCode());
+        long priorVersion = Long.parseLong(version.substring(2, version.length() - 1));
+        assertEquals("\"v" + (priorVersion + 1) + "\"", removed.headers().firstValue("ETag").orElseThrow());
+        assertEquals(priorVersion + 1, jdbc.queryForObject("SELECT version FROM resource WHERE id=?", Long.class, resourceId));
+        assertArrayEquals(homeFacts, stockFactCounts(home.orgDbId));
+        assertArrayEquals(otherFacts, stockFactCounts(other.orgDbId));
     }
 
     private void assertR025PreservedImage(Session reader, String path, byte[] jpeg,
