@@ -355,6 +355,118 @@
           "bytes": 15610
         }
       ]
+    },
+    {
+      "stage": "current Stage1D candidate delta (read only if task requires)",
+      "ref": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
+      "files": [
+        {
+          "path": "CURRENT_STATUS_AND_NEXT_ACTIONS.md",
+          "blob": "bd1606711033e706e74edc7f38e12a9cf9ec8893",
+          "bytes": 21935
+        },
+        {
+          "path": "NEXT_CHAT_START_HERE.md",
+          "blob": "96fb2e633993c4d688bdb7cf1b3cd2aa441ac910",
+          "bytes": 53444
+        },
+        {
+          "path": "evidence/C9/C9_STAGE1D_RECOVERED_APPLICATION_2026-11-24.md",
+          "blob": "7d71f7f2a2d2c6b5ab679cc8481fbce0889bfb4e",
+          "bytes": 6937
+        },
+        {
+          "path": "scripts/stop-c9-isolated-process.py",
+          "blob": "1fd74f1cf47b71758fbee661b930bf80f46390ed",
+          "bytes": 3482
+        },
+        {
+          "path": "scripts/verify-c9-recovered-api.py",
+          "blob": "57313fb10be14232e306dfc1263f32d125bd4e77",
+          "bytes": 9981
+        },
+        {
+          "path": "scripts/verify-c9-recovered-application.sh",
+          "blob": "9d2ec6edf719f0bd8e3633fd61dc2714e571644c",
+          "bytes": 17778
+        }
+      ]
+    },
+    {
+      "stage": "R06 compatibility and R01/R029 review; ChatGPT only until local script pinned",
+      "ref": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306",
+      "files": [
+        {
+          "path": "extended/backend/src/main/java/edu/orgresource/extended/demo/C8HostedOriginalBaseline.java",
+          "blob": "085041e018011facd19e18e7dd8e62437db18d10",
+          "bytes": 12840
+        },
+        {
+          "path": "extended/backend/src/main/java/edu/orgresource/extended/demo/C8HostedDemoPreflight.java",
+          "blob": "15905e34c3d4fb611550e379e76efa9a66077b5e",
+          "bytes": 10453
+        },
+        {
+          "path": "extended/backend/src/main/java/edu/orgresource/extended/demo/C8HostedDemoImportCommand.java",
+          "blob": "d88da763dccdef22e1d913b1204ab6bc58a67827",
+          "bytes": 8033
+        },
+        {
+          "path": "extended/backend/src/main/java/edu/orgresource/extended/demo/C8HostedDemoPostflight.java",
+          "blob": "00735310115c6b12f9af78c4e4b810e9e9e2134d",
+          "bytes": 31976
+        },
+        {
+          "path": "extended/backend/src/main/java/edu/orgresource/extended/demo/C8FlywayHistory.java",
+          "blob": "d4d97fc84b78947fa13d0f3d664d258e3148a8f3",
+          "bytes": 3285
+        },
+        {
+          "path": "extended/backend/src/main/java/edu/orgresource/extended/service/DemoProvenance.java",
+          "blob": "a1c81da8d7931c12e07dacac1339b8151e63b3bc",
+          "bytes": 4908
+        },
+        {
+          "path": "extended/backend/src/main/java/edu/orgresource/extended/service/C8DemoImporter.java",
+          "blob": "df5dc43d43d222393d862da928c22544877243e9",
+          "bytes": 27148
+        },
+        {
+          "path": "scripts/extended-c-backup.ps1",
+          "blob": "ef33b722c7e12cb7a4ba81d1108d35493f4974a4",
+          "bytes": 17502
+        },
+        {
+          "path": "scripts/verify-extended-c6a-operator.ps1",
+          "blob": "4015ba4117c720f06b97671c0448b92976d172ed",
+          "bytes": 20793
+        },
+        {
+          "path": "scripts/verify-c8-additive-isolated.sh",
+          "blob": "eec4c685f7ab3327cf2771d4a1da8e9f8bf96f3d",
+          "bytes": 39026
+        },
+        {
+          "path": "scripts/verify-c9-recovered-application.sh",
+          "blob": "28a5a57422e5440c993612df402afb5292d68054",
+          "bytes": 17227
+        },
+        {
+          "path": "scripts/verify-c9-recovered-api.py",
+          "blob": "ee2e889b916b2fe1f7f5d92553a54964b79b71e4",
+          "bytes": 9027
+        },
+        {
+          "path": "extended/frontend/e2e/c9-recovered-browser.mjs",
+          "blob": "0f144543ade5eefd6027f5e8597de1c57bdf6fb0",
+          "bytes": 1677
+        },
+        {
+          "path": "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java",
+          "blob": "3c990fab2ed6cbe1d10cbdd3feacf71cd48746cc",
+          "bytes": 358848
+        }
+      ]
     }
   ],
   "private_input": {
@@ -400,5 +512,57 @@
       "lines": "73–96",
       "ref": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306"
     }
+  },
+  "latest_verified_documentation": {
+    "sha": "cf823697277c196a00fd107ce025004fc971c3f9",
+    "ci": 45423253554,
+    "actual_logs_inspected": true
+  },
+  "current_candidate": {
+    "sha": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
+    "tree": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
+    "pr": 46,
+    "ci": 45425950575,
+    "status": "in_progress",
+    "conclusion": null,
+    "acceptance": "CI_PENDING",
+    "changed_paths": [
+      {
+        "path": "CURRENT_STATUS_AND_NEXT_ACTIONS.md",
+        "blob": "bd1606711033e706e74edc7f38e12a9cf9ec8893",
+        "bytes": 21935
+      },
+      {
+        "path": "NEXT_CHAT_START_HERE.md",
+        "blob": "96fb2e633993c4d688bdb7cf1b3cd2aa441ac910",
+        "bytes": 53444
+      },
+      {
+        "path": "evidence/C9/C9_STAGE1D_RECOVERED_APPLICATION_2026-11-24.md",
+        "blob": "7d71f7f2a2d2c6b5ab679cc8481fbce0889bfb4e",
+        "bytes": 6937
+      },
+      {
+        "path": "scripts/stop-c9-isolated-process.py",
+        "blob": "1fd74f1cf47b71758fbee661b930bf80f46390ed",
+        "bytes": 3482
+      },
+      {
+        "path": "scripts/verify-c9-recovered-api.py",
+        "blob": "57313fb10be14232e306dfc1263f32d125bd4e77",
+        "bytes": 9981
+      },
+      {
+        "path": "scripts/verify-c9-recovered-application.sh",
+        "blob": "9d2ec6edf719f0bd8e3633fd61dc2714e571644c",
+        "bytes": 17778
+      }
+    ]
+  },
+  "launch_gate": {
+    "ready": false,
+    "source_of_truth": "12_EXECUTION_GRAPH.json",
+    "compatibility_gate": "13_MIXED_REHEARSAL_COMPATIBILITY_GATE.md",
+    "verified_base_only": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306"
   }
 }

@@ -4,7 +4,7 @@ This is a command runbook for a **fresh, clean, detached source worktree at the 
 
 ## One small launch from the owner's repository
 
-Fetch the handoff branch and reviewed implementation ref. Verify origin is newonathe/OrgResource, working tree status, actual PR #46 current HEAD and CI, then create a new worktree at approved source SHA (the exact initial implementation tested by CI #45419347291 is ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306). Handoff docs are available via git show or a separate read-only checkout. Do not change the user's existing branch or worktree. Keep new worktree outside private evidence dir; stop if checkout path exists. Owner-selected actual paths, never placeholders executed as literals.
+First check R09 in 12_EXECUTION_GRAPH.json. **Do not execute while ready_to_launch=false unless owner explicitly authorizes a named independent local slice.** Fetch the handoff branch and final reviewed implementation ref. The literal worktree SHA below is a historical verified example; use the exact newly approved source SHA, not latest branch by assumption. Verify origin is newonathe/OrgResource, working tree status, actual PR #46 current HEAD and CI, then create a new worktree at approved source SHA (the exact initial implementation tested by CI #45419347291 is ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306). Handoff docs are available via git show or a separate read-only checkout. Do not change the user's existing branch or worktree. Keep new worktree outside private evidence dir; stop if checkout path exists. Owner-selected actual paths, never placeholders executed as literals.
 
 ```powershell
 git fetch origin
@@ -58,7 +58,7 @@ $DemoExit = $LASTEXITCODE
 "DEMO_EXIT=$DemoExit"
 ```
 
-L05 private IR4 only if provided; local deterministic join/tallies, no blind rerun. L06 full approved mixed rehearsal remains blocked until ChatGPT's reviewed guarded runner. Off-host proof separate operator gate. Return summary 08. Continue independent work if input missing; do not try to fix remote code here. No guarantee of permission-free, quota-free or error-free execution.
+L05 private IR4 only if provided; local deterministic join/tallies, no blind rerun. L06 full approved mixed rehearsal remains blocked until ChatGPT's reviewed POSIX-compatible actual-C5 guarded runner and operator restore attestation (13). Do not run Windows-only baseline, spoof GitHub Actions, or change permissions/code to bypass the baseline. Off-host proof separate operator gate. Return summary 08. Continue independent work if input missing; do not try to fix remote code here. No guarantee of permission-free, quota-free or error-free execution.
 
 ## Usage and resume
 Before first task, use installed CLI's available usage/context indicators if supported; no new telemetry packages. During long shell execution, no repeated LLM polling or log reads. Let native process complete, record exit and safe receipts. Save a tiny local checkpoint outside repo after each completed/failed/blocked task: task ID, exact SHA, evidence status, elapsed seconds, next task; no raw credentials or plan. If context compaction is needed, preserve these, protected boundaries, known blockers and current task; use actual installed CLI support. On limit/interruption, resume from checkpoint and inspect prior verified outputs, never blindly rerun. Do not change account/model or enable extra paid usage without owner action.

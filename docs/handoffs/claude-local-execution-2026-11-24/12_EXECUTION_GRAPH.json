@@ -1,0 +1,341 @@
+{
+  "schema": "orgresource.pre_handoff.execution_graph.v2",
+  "date": "2026-11-24 PHT",
+  "ready_to_launch": false,
+  "decision": "Owner requested finish all ChatGPT-side work before Claude. Continue remote engineering; local-only candidate packet is not a launch authorization.",
+  "verified_source": {
+    "sha": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306",
+    "run": 45419347291
+  },
+  "verified_docs": {
+    "sha": "cf823697277c196a00fd107ce025004fc971c3f9",
+    "run": 45423253554
+  },
+  "candidate": {
+    "sha": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
+    "run": 45425950575,
+    "status": "in_progress",
+    "conclusion": null,
+    "acceptance": "CI_PENDING"
+  },
+  "tasks": [
+    {
+      "id": "R00",
+      "executor": "CHAT",
+      "state": "VERIFIED_BOUNDED",
+      "depends_on": [],
+      "receipt": "PR46 ec8600f5 CI 45419347291 and docs-only cf823697 CI 45423253554, actual job logs",
+      "notes": "No repeated Linux suite solely for local handoff"
+    },
+    {
+      "id": "R01",
+      "executor": "CHAT",
+      "state": "CI_PENDING",
+      "depends_on": [
+        "R00"
+      ],
+      "receipt": "Candidate b62ff3c6 CI 45425950575: pidfd guard, changed payload 409 code, fresh MEMBER denied, all row equality",
+      "notes": "Do not credit candidate until actual markers and exact jobs reviewed"
+    },
+    {
+      "id": "R02",
+      "executor": "CHAT",
+      "state": "SOURCE_RECONCILED_REVIEW_OPEN",
+      "depends_on": [
+        "R00"
+      ],
+      "receipt": "93 unique route rows; source-to-test map plus addenda",
+      "notes": "0/93 independently accepted in reconciliation; no broad retest by default"
+    },
+    {
+      "id": "R03",
+      "executor": "CHAT",
+      "state": "OPEN",
+      "depends_on": [
+        "R02"
+      ],
+      "receipt": "Directed per-route gap closure, actual tests and SQL effects, stable route IDs",
+      "notes": "R029 #66 already executed; check R082/R084/R078/R083/R041/R031/R089/R091/R017/R025/R040 and all other CSV gaps; no role redesign"
+    },
+    {
+      "id": "R04",
+      "executor": "CHAT",
+      "state": "OPEN",
+      "depends_on": [
+        "R00"
+      ],
+      "receipt": "Frozen course compliance/source and 28-operation mapping; packaging completeness vs historical allowlist",
+      "notes": "Student obligations separate"
+    },
+    {
+      "id": "R05",
+      "executor": "CHAT",
+      "state": "VERIFIED_BOUNDED",
+      "depends_on": [],
+      "receipt": "PR41–45 receipts including actual C5 Stage1C archive and networkless restore",
+      "notes": "No speculative indexes"
+    },
+    {
+      "id": "R06A",
+      "executor": "CHAT",
+      "state": "BLOCKED_PENDING_DESIGN_VALIDATION",
+      "depends_on": [
+        "R05"
+      ],
+      "receipt": "POSIX native baseline feasibility plus supported local C5 transport with fail-closed scope",
+      "notes": "Windows HMAC utility not compatible with NTFS-only file permissions; no GHA spoof"
+    },
+    {
+      "id": "R06B",
+      "executor": "CHAT",
+      "state": "OPEN",
+      "depends_on": [
+        "R06A"
+      ],
+      "receipt": "Executable private mixed runner, review, synthetic guard refusal/positive transport test evidence",
+      "notes": "No real plan in CI or fake operator attestation"
+    },
+    {
+      "id": "R07",
+      "executor": "CHAT",
+      "state": "OPEN",
+      "depends_on": [
+        "R01",
+        "R03"
+      ],
+      "receipt": "Remaining bounded C9 concurrency/rollback/consent/restart and failure evidence on real MySQL",
+      "notes": "Formal C9 closure after C8 gate; no unauthorized phase"
+    },
+    {
+      "id": "R08",
+      "executor": "CHAT",
+      "state": "OPEN",
+      "depends_on": [
+        "R07"
+      ],
+      "receipt": "Bounded baseline performance, workload/sample counts, p50/p95, DB/JAR/heap/build measurements",
+      "notes": "Do not set unapproved SLO or infer hosted capacity"
+    },
+    {
+      "id": "R09",
+      "executor": "CHAT",
+      "state": "OPEN",
+      "depends_on": [
+        "R01",
+        "R03",
+        "R04",
+        "R06B",
+        "R07",
+        "R08"
+      ],
+      "receipt": "Reconciled exact final implementation SHA and updated handoff, actual green CI, no unresolved remote engineering for local lane",
+      "notes": "This is the pre-handoff release gate; no launch until ChatGPT declares local queue ready"
+    },
+    {
+      "id": "L00",
+      "executor": "CLAUDE_LOCAL",
+      "state": "WAITING_FOR_R09",
+      "depends_on": [
+        "R09"
+      ],
+      "receipt": "Owner-approved private local path, exact source/worktree, toolchain + hash checks",
+      "notes": "No secrets/host variables, no scans of unrelated files"
+    },
+    {
+      "id": "L00B",
+      "executor": "CLAUDE_LOCAL",
+      "state": "PRIVATE_INPUT_REQUIRED",
+      "depends_on": [
+        "L00"
+      ],
+      "receipt": "Approved byte length 19265850, SHA256 3b0f54da85cadb77cd7d8ab2d50c1fdb4b4ee36710b803cf904227e13f08927c",
+      "notes": "No data regeneration or public upload"
+    },
+    {
+      "id": "L03",
+      "executor": "CLAUDE_LOCAL",
+      "state": "WAITING_FOR_R09",
+      "depends_on": [
+        "L00"
+      ],
+      "receipt": "Actual package script once, extraction, verified JAR SHA and migration bytes, private logs",
+      "notes": "Windows PS7.4+, Java21, MySQL8 native, Node24, Python pywinpty"
+    },
+    {
+      "id": "L01",
+      "executor": "CLAUDE_LOCAL",
+      "state": "NESTED_IN_L03",
+      "depends_on": [
+        "L03"
+      ],
+      "receipt": "Actual nested verify-extended-c1 -VerifyRecovery completion",
+      "notes": "Fallback only missing evidence; not separate automatic run"
+    },
+    {
+      "id": "L02",
+      "executor": "CLAUDE_LOCAL",
+      "state": "NESTED_IN_L03",
+      "depends_on": [
+        "L03"
+      ],
+      "receipt": "Actual nested C6a protected-login/outage/oversize completion",
+      "notes": "Fallback only missing evidence"
+    },
+    {
+      "id": "L04",
+      "executor": "CLAUDE_LOCAL",
+      "state": "WAITING_FOR_PRIVATE_INPUT",
+      "depends_on": [
+        "L03",
+        "L00B"
+      ],
+      "receipt": "Exact full standalone 96: state/count/ledger/actual encrypted restore, private measurements",
+      "notes": "Reuse exact verified JAR, no extra build; not mixed or host"
+    },
+    {
+      "id": "L05",
+      "executor": "CLAUDE_LOCAL",
+      "state": "PRIVATE_INPUT_REQUIRED",
+      "depends_on": [
+        "L00"
+      ],
+      "receipt": "Restricted IR4 case join/tallies and receipt location",
+      "notes": "Independent of L03/04; 22320 history rows not rerun wholesale"
+    },
+    {
+      "id": "L06",
+      "executor": "CLAUDE_LOCAL",
+      "state": "BLOCKED",
+      "depends_on": [
+        "L00B",
+        "L03",
+        "R06B"
+      ],
+      "receipt": "Exact full mixed 96 plus 2 original fixture orgs, real C5 restore, actual preflight/V2 baseline/one import/SELECT-only postflight/valid browser",
+      "notes": "POSIX execution environment and explicit operator attestation required; not same as L04; no host"
+    },
+    {
+      "id": "L07",
+      "executor": "OWNER_OPERATOR",
+      "state": "NOT_RUN",
+      "depends_on": [
+        "L06"
+      ],
+      "receipt": "Actual independent off-host recovery and reviewed key custody/RTO/RPO",
+      "notes": "Separate authorized machine/service, not same host two processes"
+    },
+    {
+      "id": "L08",
+      "executor": "CLAUDE_LOCAL",
+      "state": "WAITING_FOR_LOCAL_QUEUE",
+      "depends_on": [
+        "L00"
+      ],
+      "receipt": "Sanitized receipt rows for all L tasks; dependency blocks explicit",
+      "notes": "Finalize even when independent tasks blocked; never waits for operator to declare success"
+    },
+    {
+      "id": "G01",
+      "executor": "INDEPENDENT_REVIEWER_OWNER",
+      "state": "BLOCKED",
+      "depends_on": [
+        "R03",
+        "L05"
+      ],
+      "receipt": "93 route acceptance and separate reviewer actual evidence; C8 #34",
+      "notes": "No fabricated signature or blanket equivalence"
+    },
+    {
+      "id": "G02",
+      "executor": "OWNER_OPERATOR",
+      "state": "LIVE_IMPORT_NOT_RUN",
+      "depends_on": [
+        "L06",
+        "L07"
+      ],
+      "receipt": "Actual authorized host read-only security inventory, native backup/off-host restore, approved maintenance/import/postflight",
+      "notes": "Additional actual target-clone proof required; no automated host action"
+    },
+    {
+      "id": "G03",
+      "executor": "OWNER_REVIEWER",
+      "state": "BLOCKED",
+      "depends_on": [
+        "G01",
+        "R07",
+        "R08",
+        "L06"
+      ],
+      "receipt": "C9 exit evidence, private performance, independent review",
+      "notes": "No next-phase implementation implied"
+    },
+    {
+      "id": "G04",
+      "executor": "OWNER_AUTHORIZATION",
+      "state": "NOT_RUN",
+      "depends_on": [
+        "G03"
+      ],
+      "receipt": "C10 separate approval, real HTTPS/proxy/cookies/ops/off-host proof",
+      "notes": "No hosting/spending approval"
+    },
+    {
+      "id": "G05",
+      "executor": "OWNER_AUTHORIZATION",
+      "state": "NOT_RUN",
+      "depends_on": [
+        "G04"
+      ],
+      "receipt": "C11 independent release and final artifact/source proof",
+      "notes": "No merge/release by agent"
+    },
+    {
+      "id": "G06",
+      "executor": "OWNER",
+      "state": "PROPOSED_ONLY",
+      "depends_on": [],
+      "receipt": "DEC-D01 #27 four policy decisions",
+      "notes": "No V8 now"
+    },
+    {
+      "id": "G07",
+      "executor": "STUDENT",
+      "state": "NOT_VERIFIED",
+      "depends_on": [],
+      "receipt": "Actual Canvas, recording, certificate of authorship/assistance, peer review and instructor requirements",
+      "notes": "Printed December 5 2026 deadline; verify Canvas"
+    }
+  ],
+  "execution_order": [
+    "R00",
+    "R01",
+    "R02",
+    "R03",
+    "R04",
+    "R05",
+    "R06A",
+    "R06B",
+    "R07",
+    "R08",
+    "R09",
+    "L00",
+    "L03",
+    "L01/L02 nested",
+    "L00B/L05 independently",
+    "L04",
+    "L06 with operator gate",
+    "L08"
+  ],
+  "protected": {
+    "course_a": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+    "migration_baseline": "45bcdfc7285598de3fe98684448aa65b5dd47e12",
+    "migration_count": 7,
+    "ci_proof_source": "09e3e5a0b2a1e87132c8f7ba9fb44ab1c50de2c0",
+    "no_merge": true,
+    "no_host": true,
+    "no_private_upload": true,
+    "no_v8": true,
+    "no_real_sms": true
+  },
+  "notes": "Dependencies are necessary gates; not all are sufficient. L08 handback never depends on blocked optional tasks; report statuses. G07 is student independent. Do not read entire CSV/graph into Claude context; deterministic lookup."
+}
