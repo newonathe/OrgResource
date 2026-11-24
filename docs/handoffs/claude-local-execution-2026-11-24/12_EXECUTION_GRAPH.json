@@ -151,7 +151,7 @@
       "depends_on": [
         "R06B3a"
       ],
-      "receipt": "PR53 d941d916c98b69bc19a36f762ad1b8e8e1e8e3ab CI45469976846 job138714985375 and prior dfcde24882a843524c42e951f6214d12443ac050 CI45469139504 job138711997732: actual logs inspected, each 91 Maven/66 identity/19 Playwright, 0 Maven failures/errors/skips, all three jobs success. Both public control/static/refusal markers pass; latest actual MySQL SELECT-only original-only projection exact owner/resource and mixed refusal. Full private positive NOT_RUN; nonzero aggregate SQL and actual private browser/PIDFD cleanup not demonstrated. R06B3b IN_PROGRESS, R09=false. Complete targeted adversarial review of private browser selectors/API pagination and PIDFD/timeout failure cleanup against actual callers, plus nonzero MySQL aggregate projection proof if feasible without fabricating the approved cohort. Reconcile remote R06B scope versus L06 owner-local gate, finalize command/preconditions, then remaining R03/R07/R08; R09=false.",
+      "receipt": "PR53 8c6000a481172e2e31a479065abc6e0d296e8c4c stages independent public nonzero SQL aggregate verification on the initially empty third disposable server after original-only control. Actual V1–V7 schema-only copy, two untagged fictional orgs, 3 resources/6 allocations/9 movements; signed adjustment, issued/returned, consumption, approved count, separate same-name tenant rows, stable detail 7/7 and approved refusal. SELECT-only denial and exact fixture/source/restored domain row comparisons. CI [[45473244425,\"in_progress\",null]] at intake; new actual execution NOT_RUN in this session. Prior d941d916c98b69bc19a36f762ad1b8e8e1e8e3ab CI45469976846 public verified bounded remains authoritative. No private plan or product changes. Inspect actual exact-head aggregate CI logs, diagnose failures without weakening oracle; finish frontend/API pagination, selectors and PIDFD timeout/early-start review. Reconcile R06B remote scope/L06 and final command, then R03/R07/R08. R09=false.",
       "notes": "Public fixture and refusal proofs bounded; full private mixed positive, nonzero aggregate projection and final targeted source review open. No production grants or normal writable scheduler proof."
     },
     {
@@ -422,7 +422,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "Complete targeted adversarial review of private browser selectors/API pagination and PIDFD/timeout failure cleanup against actual callers, plus nonzero MySQL aggregate projection proof if feasible without fabricating the approved cohort. Reconcile remote R06B scope versus L06 owner-local gate, finalize command/preconditions, then remaining R03/R07/R08; R09=false."
+    "next_action": "Inspect actual exact-head aggregate CI logs, diagnose failures without weakening oracle; finish frontend/API pagination, selectors and PIDFD timeout/early-start review. Reconcile R06B remote scope/L06 and final command, then R03/R07/R08. R09=false."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -441,22 +441,19 @@
     "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS"
   },
   "r06b3b_candidate": {
-    "sha": "d941d916c98b69bc19a36f762ad1b8e8e1e8e3ab",
-    "base": "dfcde24882a843524c42e951f6214d12443ac050",
+    "sha": "8c6000a481172e2e31a479065abc6e0d296e8c4c",
+    "base": "d941d916c98b69bc19a36f762ad1b8e8e1e8e3ab",
     "pr": 53,
     "runs": [
       [
-        45469976846,
-        "completed",
-        "success"
+        45473244425,
+        "in_progress",
+        null
       ]
     ],
-    "report": "evidence/C9/R06B3B_PUBLIC_SQL_PROJECTION_AND_PRIVATE_MODE_HARDENING_2026-11-25.md",
-    "acceptance": "VERIFIED_BOUNDED_PUBLIC_ONLY",
-    "private_positive": "NOT_RUN",
-    "run": 45469976846,
-    "job": 138714985375,
-    "receipt_report": "docs/handoffs/claude-local-execution-2026-11-24/25_R06B3B_INTEGRATION_AND_PROJECTION_RECEIPTS.md"
+    "report": "evidence/C9/R06B3B_NONZERO_PUBLIC_SQL_AGGREGATES_CANDIDATE_2026-11-25.md",
+    "acceptance": "PUBLIC_NONZERO_AGGREGATES_CI_PENDING",
+    "private_positive": "NOT_RUN"
   },
   "r03_candidate": {
     "sha": "cfb6e83bdf20e7ebe51315d7229c43babf9d9923",
@@ -717,41 +714,22 @@
     "scheduler_denial_log_matches": 1
   },
   "r06b3b_previous_candidate": {
-    "sha": "dfcde24882a843524c42e951f6214d12443ac050",
-    "base": "3299e97674c5815f8705e5464e1e4d2f462c2830",
+    "sha": "d941d916c98b69bc19a36f762ad1b8e8e1e8e3ab",
+    "base": "dfcde24882a843524c42e951f6214d12443ac050",
     "pr": 53,
     "runs": [
       [
-        45469139504,
+        45469976846,
         "completed",
         "success"
       ]
     ],
-    "report": "evidence/C9/R06B3B_SAME_LIFETIME_RUNTIME_CANDIDATE_2026-11-25.md",
+    "report": "evidence/C9/R06B3B_PUBLIC_SQL_PROJECTION_AND_PRIVATE_MODE_HARDENING_2026-11-25.md",
     "acceptance": "VERIFIED_BOUNDED_PUBLIC_ONLY",
     "private_positive": "NOT_RUN",
-    "latest_jobs": [
-      [
-        138711997131,
-        "Java 8 and isolated MySQL tests",
-        "completed",
-        "success"
-      ],
-      [
-        138711997732,
-        "Extended C Java 21, isolated MySQL, Newman and Playwright",
-        "in_progress",
-        null
-      ],
-      [
-        138711997877,
-        "React typecheck, tests, lint, and build",
-        "completed",
-        "success"
-      ]
-    ],
-    "run": 45469139504,
-    "job": 138711997732
+    "run": 45469976846,
+    "job": 138714985375,
+    "receipt_report": "docs/handoffs/claude-local-execution-2026-11-24/25_R06B3B_INTEGRATION_AND_PROJECTION_RECEIPTS.md"
   },
   "r06b3b_public_regression": {
     "sha": "a6d3682a8fea6901efb89db9e7e62509a690b0e6",

@@ -871,46 +871,25 @@
   },
   "latest_scoped_observation": {
     "date": "2026-11-25 PHT",
-    "handoff_parent": "0dc75393f1b3aa7e9a1706168f7a6353dd9a9d90",
+    "handoff_parent": "f4b01e3dbd2cedfd7b3f299231caa540150baf73",
     "pr53": {
-      "head": "d941d916c98b69bc19a36f762ad1b8e8e1e8e3ab",
+      "head": "8c6000a481172e2e31a479065abc6e0d296e8c4c",
       "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
       "draft": true,
       "open": true,
-      "receipts": [
-        {
-          "sha": "dfcde24882a843524c42e951f6214d12443ac050",
-          "run": 45469139504,
-          "job": 138711997732,
-          "maven": 91,
-          "identity": 66,
-          "playwright": 19,
-          "failures": 0,
-          "all_jobs_success": true,
-          "public_control": "VERIFIED_BOUNDED",
-          "static_refusals": "VERIFIED_BOUNDED",
-          "private_positive": "NOT_RUN"
-        },
-        {
-          "sha": "d941d916c98b69bc19a36f762ad1b8e8e1e8e3ab",
-          "run": 45469976846,
-          "job": 138714985375,
-          "maven": 91,
-          "identity": 66,
-          "playwright": 19,
-          "failures": 0,
-          "all_jobs_success": true,
-          "public_control": "VERIFIED_BOUNDED",
-          "static_refusals": "VERIFIED_BOUNDED",
-          "public_sql_projection": "VERIFIED_BOUNDED",
-          "private_positive": "NOT_RUN"
-        }
-      ]
+      "runs": [
+        [
+          45473244425,
+          "in_progress",
+          null
+        ]
+      ],
+      "previous_verified": "d941d916c98b69bc19a36f762ad1b8e8e1e8e3ab"
     },
     "pr54": {
       "head": "cfb6e83bdf20e7ebe51315d7229c43babf9d9923",
       "status": "open draft; prior verified receipt retained"
     },
-    "coverage": "Scoped PR and actual CI receipt reconciliation; older full metadata snapshot retained."
+    "coverage": "Scoped PR53 candidate, not entire repository metadata refresh."
   }
 }

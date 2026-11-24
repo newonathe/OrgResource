@@ -971,22 +971,19 @@
     "state": "SOURCE_CONTRACT_READY_IMPLEMENTATION_OPEN"
   },
   "r06b3b_candidate": {
-    "sha": "d941d916c98b69bc19a36f762ad1b8e8e1e8e3ab",
-    "base": "dfcde24882a843524c42e951f6214d12443ac050",
+    "sha": "8c6000a481172e2e31a479065abc6e0d296e8c4c",
+    "base": "d941d916c98b69bc19a36f762ad1b8e8e1e8e3ab",
     "pr": 53,
     "runs": [
       [
-        45469976846,
-        "completed",
-        "success"
+        45473244425,
+        "in_progress",
+        null
       ]
     ],
-    "report": "evidence/C9/R06B3B_PUBLIC_SQL_PROJECTION_AND_PRIVATE_MODE_HARDENING_2026-11-25.md",
-    "acceptance": "VERIFIED_BOUNDED_PUBLIC_ONLY",
-    "private_positive": "NOT_RUN",
-    "run": 45469976846,
-    "job": 138714985375,
-    "receipt_report": "docs/handoffs/claude-local-execution-2026-11-24/25_R06B3B_INTEGRATION_AND_PROJECTION_RECEIPTS.md"
+    "report": "evidence/C9/R06B3B_NONZERO_PUBLIC_SQL_AGGREGATES_CANDIDATE_2026-11-25.md",
+    "acceptance": "PUBLIC_NONZERO_AGGREGATES_CI_PENDING",
+    "private_positive": "NOT_RUN"
   },
   "r04_standalone_candidate": {
     "base": "076c9a5e7c7a1e66b894362864d93b76409196bd",
@@ -1296,41 +1293,22 @@
     "scheduler_denial_log_matches": 1
   },
   "r06b3b_previous_candidate": {
-    "sha": "dfcde24882a843524c42e951f6214d12443ac050",
-    "base": "3299e97674c5815f8705e5464e1e4d2f462c2830",
+    "sha": "d941d916c98b69bc19a36f762ad1b8e8e1e8e3ab",
+    "base": "dfcde24882a843524c42e951f6214d12443ac050",
     "pr": 53,
     "runs": [
       [
-        45469139504,
+        45469976846,
         "completed",
         "success"
       ]
     ],
-    "report": "evidence/C9/R06B3B_SAME_LIFETIME_RUNTIME_CANDIDATE_2026-11-25.md",
+    "report": "evidence/C9/R06B3B_PUBLIC_SQL_PROJECTION_AND_PRIVATE_MODE_HARDENING_2026-11-25.md",
     "acceptance": "VERIFIED_BOUNDED_PUBLIC_ONLY",
     "private_positive": "NOT_RUN",
-    "latest_jobs": [
-      [
-        138711997131,
-        "Java 8 and isolated MySQL tests",
-        "completed",
-        "success"
-      ],
-      [
-        138711997732,
-        "Extended C Java 21, isolated MySQL, Newman and Playwright",
-        "in_progress",
-        null
-      ],
-      [
-        138711997877,
-        "React typecheck, tests, lint, and build",
-        "completed",
-        "success"
-      ]
-    ],
-    "run": 45469139504,
-    "job": 138711997732
+    "run": 45469976846,
+    "job": 138714985375,
+    "receipt_report": "docs/handoffs/claude-local-execution-2026-11-24/25_R06B3B_INTEGRATION_AND_PROJECTION_RECEIPTS.md"
   },
   "r06b3b_public_regression": {
     "sha": "a6d3682a8fea6901efb89db9e7e62509a690b0e6",
