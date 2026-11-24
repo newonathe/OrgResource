@@ -1070,31 +1070,27 @@
     "failures": 0
   },
   "r03_candidate": {
-    "sha": "7116ab8c350c9c7728a7ef0963cf320e7d296afb",
-    "base": "cf7324af9a664788e7367dbd9854531e33a38d7a",
+    "sha": "590275cf195d44eee05d8ad4902b8ff9482c1941",
+    "base": "7116ab8c350c9c7728a7ef0963cf320e7d296afb",
     "pr": 54,
     "runs": [
       [
-        45479172555,
+        45480855446,
         "in_progress",
         null
       ]
     ],
-    "report": "evidence/C8/R03_STATE_REFUSALS_AND_ROLLBACK_RETRY_CANDIDATE_2026-11-25.md",
+    "report": "evidence/C8/R03_STOCK_ROLE_FOREIGN_RESOURCE_CANDIDATE_2026-11-25.md",
     "acceptance": "CI_PENDING",
     "routes": [
-      "R010",
-      "R011",
-      "R014",
-      "R018",
-      "R019",
-      "R023",
-      "R026",
-      "R074"
+      "R071",
+      "R073",
+      "R074",
+      "R075",
+      "R076"
     ],
     "tests": [
-      24,
-      29
+      78
     ],
     "observed_red": "NOT_RUN"
   },
@@ -1135,30 +1131,31 @@
     "local_gates": "G07 NOT_RUN/NOT_VERIFIED; no distribution"
   },
   "r03_previous_candidate": {
-    "sha": "cf7324af9a664788e7367dbd9854531e33a38d7a",
-    "base": "2f61a900e3a4f83cea283809efd15cd637076d0d",
+    "sha": "7116ab8c350c9c7728a7ef0963cf320e7d296afb",
+    "base": "cf7324af9a664788e7367dbd9854531e33a38d7a",
     "pr": 54,
     "runs": [
       [
-        45478317640,
+        45479172555,
         "in_progress",
         null
       ]
     ],
-    "report": "evidence/C8/R03_PROJECTWORK_PER_DENIAL_ROWS_CANDIDATE_2026-11-25.md",
+    "report": "evidence/C8/R03_STATE_REFUSALS_AND_ROLLBACK_RETRY_CANDIDATE_2026-11-25.md",
     "acceptance": "CI_PENDING",
     "routes": [
-      "R060",
-      "R063",
-      "R065",
-      "R066",
-      "R067",
-      "R068",
-      "R069",
-      "R070"
+      "R010",
+      "R011",
+      "R014",
+      "R018",
+      "R019",
+      "R023",
+      "R026",
+      "R074"
     ],
     "tests": [
-      64
+      24,
+      29
     ],
     "observed_red": "NOT_RUN"
   },
@@ -1399,76 +1396,6 @@
   },
   "r03_pending_candidates": [
     {
-      "sha": "30ecc88fe662dc331d405a560d109450bfc16282",
-      "base": "4272bd0e0fbbb9e31354f387de39d5a86131bf1b",
-      "pr": 54,
-      "runs": [
-        [
-          45477193785,
-          "in_progress",
-          null
-        ]
-      ],
-      "report": "evidence/C8/R03_DIRECTED_R030_PASSWORD_DENIAL_CANDIDATE_2026-11-25.md",
-      "acceptance": "CI_PENDING",
-      "routes": [
-        "R030"
-      ],
-      "tests": [
-        77
-      ],
-      "observed_red": "NOT_RUN"
-    },
-    {
-      "sha": "2f61a900e3a4f83cea283809efd15cd637076d0d",
-      "base": "30ecc88fe662dc331d405a560d109450bfc16282",
-      "pr": 54,
-      "runs": [
-        [
-          45477804709,
-          "in_progress",
-          null
-        ]
-      ],
-      "report": "evidence/C8/R03_LEGACY_DENIAL_ROW_BATCH_CANDIDATE_2026-11-25.md",
-      "acceptance": "CI_PENDING",
-      "routes": [
-        "R001",
-        "R002",
-        "R003",
-        "R004",
-        "R005",
-        "R006",
-        "R007",
-        "R008",
-        "R009",
-        "R010",
-        "R011",
-        "R012",
-        "R013",
-        "R014",
-        "R015",
-        "R016",
-        "R017",
-        "R018",
-        "R019",
-        "R020",
-        "R021",
-        "R022",
-        "R023",
-        "R024",
-        "R025",
-        "R026",
-        "R027",
-        "R028"
-      ],
-      "tests": [
-        33
-      ],
-      "observed_red": "NOT_RUN",
-      "scope": "42 per-denial checks; 3 filtered GET negatives; grouped read equality"
-    },
-    {
       "sha": "cf7324af9a664788e7367dbd9854531e33a38d7a",
       "base": "2f61a900e3a4f83cea283809efd15cd637076d0d",
       "pr": 54,
@@ -1495,6 +1422,35 @@
         64
       ],
       "observed_red": "NOT_RUN"
+    },
+    {
+      "sha": "7116ab8c350c9c7728a7ef0963cf320e7d296afb",
+      "base": "cf7324af9a664788e7367dbd9854531e33a38d7a",
+      "pr": 54,
+      "runs": [
+        [
+          45479172555,
+          "in_progress",
+          null
+        ]
+      ],
+      "report": "evidence/C8/R03_STATE_REFUSALS_AND_ROLLBACK_RETRY_CANDIDATE_2026-11-25.md",
+      "acceptance": "CI_PENDING",
+      "routes": [
+        "R010",
+        "R011",
+        "R014",
+        "R018",
+        "R019",
+        "R023",
+        "R026",
+        "R074"
+      ],
+      "tests": [
+        24,
+        29
+      ],
+      "observed_red": "NOT_RUN"
     }
   ],
   "r07_preparation": {
@@ -1510,5 +1466,35 @@
     ],
     "fresh_schema_required": true,
     "actual_runs": "NOT_RUN"
-  }
+  },
+  "r03_actual_receipts": [
+    {
+      "sha": "30ecc88fe662dc331d405a560d109450bfc16282",
+      "run": 45477193785,
+      "job": 138740427695,
+      "test": 77,
+      "scope": "R030 password denials and row/session invariants",
+      "pr": 54,
+      "maven": 102,
+      "identity": 77,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "failures": 0,
+      "verdict": "VERIFIED_BOUNDED"
+    },
+    {
+      "sha": "2f61a900e3a4f83cea283809efd15cd637076d0d",
+      "run": 45477804709,
+      "job": 138742565670,
+      "test": 33,
+      "scope": "42 legacy refusal snapshots and 3 foreign filters",
+      "pr": 54,
+      "maven": 102,
+      "identity": 77,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "failures": 0,
+      "verdict": "VERIFIED_BOUNDED"
+    }
+  ]
 }
