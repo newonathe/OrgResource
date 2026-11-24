@@ -871,12 +871,12 @@
   },
   "latest_scoped_observation": {
     "date": "2026-11-25 PHT",
-    "handoff_parent": "17bae23d42366453227892bf5125ec57737b7e4d",
+    "handoff_parent": "3a2f8e047c5c8ff4607e1304586180c2e603667a",
     "pr53": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
     "pr54": "9646ff743c6678af90aa357ee761ac11ed366dff",
     "pr55": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
     "pr56": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
-    "coverage": "Report48 final exact full/dedicated actual; bounded R09 technical ready",
+    "coverage": "Report49 final adversarial dispatch audit; all four actual final jobs inspected; 40 exact pins; 33-node DAG checked; owner initiation required",
     "candidate_runs": [],
     "actual_runs": [
       [
@@ -962,7 +962,16 @@
         "job": 138801601172,
         "oracle": "final exact integrated full Extended regression",
         "actual": "actual checkout, 93 registered policy routes each once, 103 Maven/78 identity zero failures/errors/skips; 60 Newman requests/110 assertions and 19 Playwright zero failures; real deadlock rollback/retry, lost HTTP response and same actor replay across distinct JVM, stale reminder claims recover UNKNOWN and fresh preserved, exact domain rows/no transport; actual independent C5 restore 1039696 bytes, sessions empty, durable replay and role denials, invalid mixed metadata fail closed; public R06B3b SQL aggregate/projection, lock and seven DML denials, metadata200 original-only API/browser and persisted session/logout, exact non-session/source equality, 15 archive refusals, 10 local prechecks, all cleanup, 450+75 packaged HTTP"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+        "run": 45494597345,
+        "job": 138801600647,
+        "oracle": "React final actual",
+        "actual": "3 files/15 tests, typecheck/lint/build complete"
       }
-    ]
+    ],
+    "next_action": "Owner explicitly initiates L00 then L03 with actual nested L01/L02 receipts, L04/L05 as eligible, L06 separate owner-terminal POSIX proof, L07 separately authorized, L08 sanitized results. If no local receipt or new material evidence, do not restart remote engineering or trigger unchanged-source CI."
   }
 }
