@@ -1496,9 +1496,12 @@ class C1IdentityAcceptanceTest {
             try (var rs = inspect.executeQuery("SELECT @@GLOBAL.innodb_deadlock_detect")) {
                 assertTrue(rs.next() && rs.getBoolean(1), "Actual MySQL deadlock detection is required.");
             }
+            String deadlockMetric = "SELECT COUNT, STATUS FROM information_schema.INNODB_METRICS WHERE NAME='lock_deadlocks'";
             long deadlocksBefore;
-            try (var rs = inspect.executeQuery("SHOW GLOBAL STATUS LIKE 'Innodb_deadlocks'")) {
-                assertTrue(rs.next()); deadlocksBefore = rs.getLong(2);
+            try (var rs = inspect.executeQuery(deadlockMetric)) {
+                assertTrue(rs.next(), "MySQL must expose the InnoDB lock_deadlocks metric.");
+                assertEquals("enabled", rs.getString(2));
+                deadlocksBefore = rs.getLong(1);
             }
             lock.execute("SET SESSION innodb_lock_wait_timeout=10");
             blocker.setAutoCommit(false);
@@ -1525,8 +1528,10 @@ class C1IdentityAcceptanceTest {
                 var conflict = pending.get(30, TimeUnit.SECONDS);
                 assertEquals(503, conflict.statusCode(), conflict.body());
                 assertEquals("TRANSIENT_TRANSACTION_CONFLICT", json(conflict).get("code").getAsString());
-                try (var rs = inspect.executeQuery("SHOW GLOBAL STATUS LIKE 'Innodb_deadlocks'")) {
-                    assertTrue(rs.next() && rs.getLong(2) > deadlocksBefore, "InnoDB must report an actual deadlock.");
+                try (var rs = inspect.executeQuery(deadlockMetric)) {
+                    assertTrue(rs.next(), "The InnoDB lock_deadlocks metric must remain available.");
+                    assertEquals("enabled", rs.getString(2));
+                    assertTrue(rs.getLong(1) > deadlocksBefore, "InnoDB must report an actual deadlock.");
                 }
             } finally {
                 blocker.rollback();
