@@ -97,3 +97,5 @@
 "evidence/C9/R07_CROSS_SERVER_STARTUP_RACE_CANDIDATE_2026-11-25.md","8e7d80ecff63e0fc8dbef3b18850007b801daf6e","1477","100644","candidate:76a8e687581bd1b70582822a38b657744e22d387","PATCH; actual CI pending"
 "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","6a64b6fd36c0f43506ffbb53697ba1f0d3db36bc","444522","100644","candidate:7ff4f8d7bbeb1e83068f380ebfcaa3216a4f727b","PATCH; actual CI pending"
 "evidence/C8/R03_WORKSPACE_READ_PRESERVATION_CANDIDATE_2026-11-25.md","0e9ef3c3491dce46ab41235489ccb607d98061e1","1366","100644","candidate:7ff4f8d7bbeb1e83068f380ebfcaa3216a4f727b","PATCH; actual CI pending"
+"extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","431d5d2fb71e73017a80d177dfccf09dceb28800","448436","100644","candidate:afdfefca995949ba917bb4ab3f99dfd14cbebd1b","PATCH; actual CI pending"
+"evidence/C8/R03_IDENTITY_SESSION_READ_CANDIDATE_2026-11-25.md","6d07f0d1b5d069b36064ed03008f8c819b799589","1311","100644","candidate:afdfefca995949ba917bb4ab3f99dfd14cbebd1b","PATCH; actual CI pending"
