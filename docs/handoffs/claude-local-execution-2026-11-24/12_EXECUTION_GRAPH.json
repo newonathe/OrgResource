@@ -4,19 +4,24 @@
   "ready_to_launch": false,
   "decision": "Owner requested finish all ChatGPT-side work before Claude. Continue remote engineering; local-only candidate packet is not a launch authorization.",
   "verified_source": {
-    "sha": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306",
-    "run": 45419347291
+    "sha": "c91333766f3082b88a8c0414450dcaf6fc934ca2",
+    "pr": 48,
+    "run": 45427270775,
+    "extended_job": 138562564604,
+    "actual_logs_inspected": true
   },
   "verified_docs": {
-    "sha": "cf823697277c196a00fd107ce025004fc971c3f9",
-    "run": 45423253554
+    "sha": "230fdbf30abdcf679f01f2ee4000989ca807c999",
+    "run": 45427467814,
+    "workflow_conclusion": "success",
+    "actual_logs_inspected": false
   },
   "candidate": {
     "sha": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
     "run": 45425950575,
-    "status": "in_progress",
-    "conclusion": null,
-    "acceptance": "CI_PENDING"
+    "status": "completed",
+    "conclusion": "success",
+    "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS"
   },
   "tasks": [
     {
@@ -30,12 +35,12 @@
     {
       "id": "R01",
       "executor": "CHAT",
-      "state": "CI_PENDING",
+      "state": "VERIFIED_BOUNDED",
       "depends_on": [
         "R00"
       ],
-      "receipt": "Candidate b62ff3c6 CI 45425950575: pidfd guard, changed payload 409 code, fresh MEMBER denied, all row equality",
-      "notes": "Do not credit candidate until actual markers and exact jobs reviewed"
+      "receipt": "b62ff3c6 CI 45425950575 job 138557865307 actual PIDFD guard/conflict/fresh denied mutation/recovery/cleanup; 3/3 jobs, 91 Maven, 19 Playwright; repeated PR48",
+      "notes": "Independent review open; valid-cohort browser NOT_RUN"
     },
     {
       "id": "R02",
@@ -78,23 +83,55 @@
     {
       "id": "R06A",
       "executor": "CHAT",
-      "state": "IMPLEMENTED_CI_PENDING",
+      "state": "VERIFIED_BOUNDED",
       "depends_on": [
         "R05",
         "R01"
       ],
-      "receipt": "PR48 c9133376 / CI #45427270775; required C9_LOCAL_ORIGINAL_TRANSPORT_OK, nine individual refusals, C9_LOCAL_POSIX_BASELINE_OK, C9_LOCAL_ORIGINAL_CLEANUP_OK; all jobs green and actual logs",
-      "notes": "Original-only pre-import C5 mode, no private plan, no full mixed import or post-import recovery; native WSL/Linux local prerequisites and independent review open."
+      "receipt": "c9133376 CI 45427270775 job 138562564604 nine refusal labels, archive 33892 bytes, independent servers, all rows equal, actual V2 mode0600/wrong mode/symlink refusal, cleanup, 3/3 jobs",
+      "notes": "Original-only, public synthetic fixture; owner-local platform and independent review open"
     },
     {
       "id": "R06B",
       "executor": "CHAT",
-      "state": "OPEN",
+      "state": "IN_PROGRESS",
+      "depends_on": [
+        "R06B1",
+        "R06B2",
+        "R06B3"
+      ],
+      "receipt": "Integrated guarded exact private mixed runner; prepare, operator-gated import/postflight, full post-import C5 restore and valid browser, synthetic guard tests, exact CI, final reviewed local command",
+      "notes": "Aggregate gate; no private plan CI or fabricated attestation"
+    },
+    {
+      "id": "R06B1",
+      "executor": "CHAT",
+      "state": "IMPLEMENTED_CI_PENDING",
       "depends_on": [
         "R06A"
       ],
-      "receipt": "Executable private mixed runner, review, synthetic guard refusal/positive transport test evidence",
-      "notes": "Requires verified R06A, actual guarded local runner and separate full-cohort C5 support; no public full plan or fabricated operator attestation."
+      "receipt": "PR49 406ce2af CI 45430758956; seven refusal markers, actual bootstrap, original C5 restore, V2 readonly, no importer/attestation, cleanup, public fixture marker and all 3 jobs",
+      "notes": "Preparation only; exact private preflight positive NOT_RUN. Not final L06 command."
+    },
+    {
+      "id": "R06B2",
+      "executor": "CHAT",
+      "state": "OPEN",
+      "depends_on": [
+        "R06B1"
+      ],
+      "receipt": "Same-lifetime guarded preparation + actual local owner/operator restoration attestation; exact approved preflight, fingerprint, V2 VERIFY, one importer, independent SELECT-only postflight; no writes on refusal",
+      "notes": "Public synthetic guard tests; positive exact private import local only. Separate operator authority."
+    },
+    {
+      "id": "R06B3",
+      "executor": "CHAT",
+      "state": "OPEN",
+      "depends_on": [
+        "R06B2"
+      ],
+      "receipt": "Separate constrained full-mixed C5 transport, independent fresh restored target, exact 96 tags plus originals, raw cap and row equality, valid mixed metadata/normal packaged browser, scoped reads and performance",
+      "notes": "Public synthetic guard tests; full private positive local only, no production mode broadening."
     },
     {
       "id": "R07",
@@ -315,6 +352,9 @@
     "R04",
     "R05",
     "R06A",
+    "R06B1",
+    "R06B2",
+    "R06B3",
     "R06B",
     "R07",
     "R08",
@@ -343,8 +383,22 @@
     "sha": "c91333766f3082b88a8c0414450dcaf6fc934ca2",
     "pr": 48,
     "run": 45427270775,
+    "status": "completed",
+    "conclusion": "success",
+    "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS"
+  },
+  "r06b1_candidate": {
+    "sha": "406ce2af1c4905bf7b845bcc072f71903327e0a1",
+    "pr": 49,
+    "run": 45430758956,
     "status": "in_progress",
     "conclusion": null,
     "acceptance": "CI_PENDING_ACTUAL_RECEIPTS"
+  },
+  "continuation": {
+    "issue": 50,
+    "entry": "14_CONTINUE_PRE_CLAUDE.md",
+    "ledger": "15_CONTINUATION_LEDGER.jsonl",
+    "next_action": "Inspect PR49 exact CI 45430758956 actual R06B1 markers, fix bounded failure if needed, then R06B2/B3 and remaining remote tasks. No Claude launch."
   }
 }

@@ -11,13 +11,22 @@
     "conclusion": "success"
   },
   "last_verified": {
-    "sha": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306",
-    "ci": 45419347291,
+    "sha": "c91333766f3082b88a8c0414450dcaf6fc934ca2",
+    "tree": "f275de92f518971a7529c8cc2f1ea378260017e9",
+    "pr": 48,
+    "ci": 45427270775,
+    "extended_job": 138562564604,
+    "previous_stage1d": {
+      "sha": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
+      "pr": 46,
+      "ci": 45425950575,
+      "extended_job": 138557865307
+    },
     "previous_stage1c": {
       "sha": "09e3e5a0b2a1e87132c8f7ba9fb44ab1c50de2c0",
       "ci": 45414895612
     },
-    "evidence": "actual job logs verified; 00_START_HERE.md"
+    "evidence": "actual exact-head logs inspected; 14 and 15"
   },
   "frozen_course_a": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
   "protected_migrations": "V1–V7",
@@ -493,6 +502,42 @@
           "bytes": 12403
         }
       ]
+    },
+    {
+      "stage": "R06B1 candidate delta; ChatGPT review only",
+      "ref": "406ce2af1c4905bf7b845bcc072f71903327e0a1",
+      "files": [
+        {
+          "path": ".github/workflows/verify.yml",
+          "blob": "07211e17037233db806488b3542162ac53846737",
+          "bytes": 13392
+        },
+        {
+          "path": "CURRENT_STATUS_AND_NEXT_ACTIONS.md",
+          "blob": "35316160a22210e677e6d2f22b8dbcc0df36da1b",
+          "bytes": 22850
+        },
+        {
+          "path": "NEXT_CHAT_START_HERE.md",
+          "blob": "d898eed312dbf5f44422d1815a8d3a3169c87c5b",
+          "bytes": 54359
+        },
+        {
+          "path": "evidence/C9/R06B1_LOCAL_MIXED_PREPARATION_2026-11-24.md",
+          "blob": "f8f9b9b59ac242d0dafce9ab6cdbee3cf13a9aaf",
+          "bytes": 5708
+        },
+        {
+          "path": "scripts/test-c9-local-mixed-preparation.sh",
+          "blob": "b3e2fd42524a9f1c2897477ec0c36641052ce8c6",
+          "bytes": 2936
+        },
+        {
+          "path": "scripts/verify-c9-local-mixed-preparation.sh",
+          "blob": "77ead5b0c21ebeec2d8ffa1525bdb5bdaf19ed3d",
+          "bytes": 19442
+        }
+      ]
     }
   ],
   "private_input": {
@@ -540,18 +585,19 @@
     }
   },
   "latest_verified_documentation": {
-    "sha": "cf823697277c196a00fd107ce025004fc971c3f9",
-    "ci": 45423253554,
-    "actual_logs_inspected": true
+    "sha": "230fdbf30abdcf679f01f2ee4000989ca807c999",
+    "ci": 45427467814,
+    "workflow_conclusion": "success",
+    "actual_logs_inspected": false
   },
   "current_candidate": {
     "sha": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
     "tree": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
     "pr": 46,
     "ci": 45425950575,
-    "status": "in_progress",
-    "conclusion": null,
-    "acceptance": "CI_PENDING",
+    "status": "completed",
+    "conclusion": "success",
+    "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS",
     "changed_paths": [
       {
         "path": "CURRENT_STATUS_AND_NEXT_ACTIONS.md",
@@ -589,16 +635,16 @@
     "ready": false,
     "source_of_truth": "12_EXECUTION_GRAPH.json",
     "compatibility_gate": "13_MIXED_REHEARSAL_COMPATIBILITY_GATE.md",
-    "verified_base_only": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306"
+    "verified_base_only": "c91333766f3082b88a8c0414450dcaf6fc934ca2"
   },
   "r06a_candidate": {
     "sha": "c91333766f3082b88a8c0414450dcaf6fc934ca2",
-    "tree": "c91333766f3082b88a8c0414450dcaf6fc934ca2",
+    "tree": "f275de92f518971a7529c8cc2f1ea378260017e9",
     "pr": 48,
     "ci": 45427270775,
-    "status": "in_progress",
-    "conclusion": null,
-    "acceptance": "CI_PENDING_ACTUAL_RECEIPTS",
+    "status": "completed",
+    "conclusion": "success",
+    "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS",
     "base": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
     "changed_paths": [
       {
@@ -622,5 +668,60 @@
         "bytes": 12403
       }
     ]
+  },
+  "r06b1_candidate": {
+    "sha": "406ce2af1c4905bf7b845bcc072f71903327e0a1",
+    "tree": "81d9f55696cb001065524641abe864a77f79b16d",
+    "pr": 49,
+    "ci": 45430758956,
+    "status": "in_progress",
+    "conclusion": null,
+    "acceptance": "CI_PENDING_ACTUAL_RECEIPTS",
+    "base": "c91333766f3082b88a8c0414450dcaf6fc934ca2",
+    "changed_paths": [
+      {
+        "path": ".github/workflows/verify.yml",
+        "blob": "07211e17037233db806488b3542162ac53846737",
+        "bytes": 13392,
+        "mode": "100644"
+      },
+      {
+        "path": "CURRENT_STATUS_AND_NEXT_ACTIONS.md",
+        "blob": "35316160a22210e677e6d2f22b8dbcc0df36da1b",
+        "bytes": 22850,
+        "mode": "100644"
+      },
+      {
+        "path": "NEXT_CHAT_START_HERE.md",
+        "blob": "d898eed312dbf5f44422d1815a8d3a3169c87c5b",
+        "bytes": 54359,
+        "mode": "100644"
+      },
+      {
+        "path": "evidence/C9/R06B1_LOCAL_MIXED_PREPARATION_2026-11-24.md",
+        "blob": "f8f9b9b59ac242d0dafce9ab6cdbee3cf13a9aaf",
+        "bytes": 5708,
+        "mode": "100644"
+      },
+      {
+        "path": "scripts/test-c9-local-mixed-preparation.sh",
+        "blob": "b3e2fd42524a9f1c2897477ec0c36641052ce8c6",
+        "bytes": 2936,
+        "mode": "100644"
+      },
+      {
+        "path": "scripts/verify-c9-local-mixed-preparation.sh",
+        "blob": "77ead5b0c21ebeec2d8ffa1525bdb5bdaf19ed3d",
+        "bytes": 19442,
+        "mode": "100644"
+      }
+    ]
+  },
+  "continuation": {
+    "locator_issue": 50,
+    "entry": "14_CONTINUE_PRE_CLAUDE.md",
+    "event_ledger": "15_CONTINUATION_LEDGER.jsonl",
+    "state_authority": "12_EXECUTION_GRAPH.json",
+    "instruction": "New project chat continue => live refs/receipts and resume remote queue until R09; no implicit Claude launch or host"
   }
 }
