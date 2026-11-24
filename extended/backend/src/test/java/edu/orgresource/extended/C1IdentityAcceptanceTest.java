@@ -376,9 +376,26 @@ class C1IdentityAcceptanceTest {
         Fixture user = fixtureInOrg(one.orgDbId, Membership.Role.CUSTODIAN);
         addMembership(two.orgDbId, user.userDbId, Membership.Role.MEMBER);
         Session session = login(user.username, user.password);
+        var beforeIdentityRead = governanceDenialRows(one.orgDbId, two.orgDbId);
         JsonObject orgs = json(get(session.client, "/api/v2/orgs")).getAsJsonObject();
         assertEquals(2, orgs.getAsJsonArray("data").size());
-        assertEquals(200, post(session, "/api/v2/session/active-org", GSON.toJson(new OrgRequest(one.orgPublicId))).statusCode());
+        var rolesByOrg = new java.util.HashMap<String, String>();
+        for (var element : orgs.getAsJsonArray("data")) {
+            JsonObject row = element.getAsJsonObject();
+            assertEquals(Set.of("id", "slug", "displayName", "role"), row.keySet());
+            assertNull(rolesByOrg.put(row.get("id").getAsString(), row.get("role").getAsString()));
+        }
+        assertEquals(java.util.Map.of(one.orgPublicId.toString(), "CUSTODIAN", two.orgPublicId.toString(), "MEMBER"), rolesByOrg);
+        HttpResponse<String> accountResponse = get(session.client, "/api/v2/account");
+        assertEquals(200, accountResponse.statusCode());
+        JsonObject accountView = json(accountResponse).getAsJsonObject("data");
+        assertEquals(Set.of("id", "username", "displayName", "status"), accountView.keySet());
+        assertEquals(accounts.findById(user.userDbId).orElseThrow().publicId.toString(), accountView.get("id").getAsString());
+        assertEquals("ACTIVE", accountView.get("status").getAsString());
+        assertEquals(401, get(newClient(), "/api/v2/account").statusCode());
+        assertTrue(beforeIdentityRead.equals(governanceDenialRows(one.orgDbId, two.orgDbId)));
+        assertGovernanceRefusal(200, one.orgDbId, two.orgDbId,
+                () -> post(session, "/api/v2/session/active-org", GSON.toJson(new OrgRequest(one.orgPublicId))));
         refreshCsrf(session);
         HttpRequest request = HttpRequest.newBuilder(URI.create(base() + "/api/resources"))
                 .header("Origin", origin()).header("X-CSRF-TOKEN", session.csrf)
@@ -391,6 +408,10 @@ class C1IdentityAcceptanceTest {
         assertEquals(0, jdbc.queryForObject("SELECT COUNT(*) FROM resource WHERE organization_id=? AND name='ID06 resource'", Integer.class, two.orgDbId));
 
         Session owner = login(one.username, one.password);
+        String ownerCookie = cookie(owner.client);
+        assertGovernanceRefusal(404, one.orgDbId, two.orgDbId,
+                () -> post(owner, "/api/v2/session/active-org", GSON.toJson(new OrgRequest(two.orgPublicId))));
+        assertEquals(ownerCookie, cookie(owner.client));
         HttpResponse<String> changed = post(owner, "/api/v2/orgs/" + one.orgPublicId + "/members/" + user.membershipPublicId + "/role",
                 GSON.toJson(new RoleRequest("MEMBER")), "\"v0\"");
         assertEquals(200, changed.statusCode(), changed.body());
@@ -401,7 +422,36 @@ class C1IdentityAcceptanceTest {
         JsonObject liveSession = json(get(session.client, "/api/v2/session")).getAsJsonObject("data");
         assertTrue(liveSession.getAsJsonArray("memberships").asList().stream()
                 .noneMatch(row -> row.getAsJsonObject().get("organizationId").getAsString().equals(one.orgPublicId.toString())));
-        assertEquals(404, post(session, "/api/v2/session/active-org", GSON.toJson(new OrgRequest(UUID.randomUUID()))).statusCode());
+        assertEquals(Set.of("accountId", "displayName", "activeOrgId", "memberships"), liveSession.keySet());
+        assertTrue(liveSession.get("activeOrgId").isJsonNull());
+        assertEquals(accountView.get("id"), liveSession.get("accountId"));
+        assertEquals(1, liveSession.getAsJsonArray("memberships").size());
+        JsonObject remaining = liveSession.getAsJsonArray("memberships").get(0).getAsJsonObject();
+        assertEquals(Set.of("id", "organizationId", "username", "displayName", "role", "status", "version"), remaining.keySet());
+        assertEquals(two.orgPublicId.toString(), remaining.get("organizationId").getAsString());
+        assertEquals("MEMBER", remaining.get("role").getAsString());
+        assertEquals("ACTIVE", remaining.get("status").getAsString());
+        String currentCookie = cookie(session.client);
+        assertGovernanceRefusal(404, one.orgDbId, two.orgDbId,
+                () -> post(session, "/api/v2/session/active-org", GSON.toJson(new OrgRequest(one.orgPublicId))));
+        assertGovernanceRefusal(404, one.orgDbId, two.orgDbId,
+                () -> post(session, "/api/v2/session/active-org", GSON.toJson(new OrgRequest(UUID.randomUUID()))));
+        assertEquals(currentCookie, cookie(session.client));
+        assertEquals(1, jdbc.update("UPDATE organization SET status='FROZEN' WHERE id=? AND status='ACTIVE'", two.orgDbId));
+        try {
+            var hidden = json(assertGovernanceRefusal(200, one.orgDbId, two.orgDbId,
+                    () -> get(session.client, "/api/v2/orgs"))).getAsJsonArray("data");
+            assertTrue(hidden.isEmpty(), "Frozen organization is absent from the selection list");
+            var view = json(assertGovernanceRefusal(200, one.orgDbId, two.orgDbId,
+                    () -> get(session.client, "/api/v2/session"))).getAsJsonObject("data");
+            assertEquals(remaining, view.getAsJsonArray("memberships").get(0),
+                    "Active membership in a frozen organization remains visible in the session view");
+            assertGovernanceRefusal(404, one.orgDbId, two.orgDbId,
+                    () -> post(session, "/api/v2/session/active-org", GSON.toJson(new OrgRequest(two.orgPublicId))));
+            assertEquals(currentCookie, cookie(session.client));
+        } finally {
+            assertEquals(1, jdbc.update("UPDATE organization SET status='ACTIVE' WHERE id=? AND status='FROZEN'", two.orgDbId));
+        }
     }
 
     @Test @Order(7)
