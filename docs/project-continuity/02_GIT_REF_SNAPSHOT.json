@@ -874,7 +874,7 @@
     "handoff_parent": "6a4fb6c9369d20d3a1df71e8f31a467d9f9e139f",
     "pr53": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
     "pr54": "9646ff743c6678af90aa357ee761ac11ed366dff",
-    "pr55": "849a1284ef0b5ff641f1a933d2aedb60627ddf7a",
+    "pr55": "ef634ce7469f0b94b09ddcef097ad14a8c6e0206",
     "coverage": "Exact project actual, prior dedicated repeat, new observed deadlock candidate failure, source residual/restart candidate",
     "candidate_runs": [
       [
@@ -908,6 +908,21 @@
         "R07-R08 isolated preparation",
         "completed",
         "failure"
+      ]
+    ],
+    "deadlock_failed_sha": "849a1284ef0b5ff641f1a933d2aedb60627ddf7a",
+    "deadlock_correction_runs": [
+      [
+        45491974364,
+        "Verify",
+        "queued",
+        null
+      ],
+      [
+        45491974383,
+        "R07-R08 isolated preparation",
+        "queued",
+        null
       ]
     ]
   }

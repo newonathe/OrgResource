@@ -116,3 +116,5 @@
 "scripts/verify-c9-recovered-application.sh","e8d3614ad569205d9025f592a6e317ddd38edba0","20407","100644","candidate:849a1284ef0b5ff641f1a933d2aedb60627ddf7a","PATCH; dedicated rollback case failed; full pending"
 "scripts/verify-c9-recovered-api.py","d468cb6fd75cd27bb56e883c7aa9b43fcc10b541","14433","100644","candidate:849a1284ef0b5ff641f1a933d2aedb60627ddf7a","PATCH; dedicated rollback case failed; full pending"
 "evidence/C9/R07_ACTUAL_DEADLOCK_AND_LOST_RESPONSE_RESTART_CANDIDATE_2026-11-25.md","c4d9159959489508a1414aeb7c0cf0beb4291d69","2076","100644","candidate:849a1284ef0b5ff641f1a933d2aedb60627ddf7a","PATCH; dedicated rollback case failed; full pending"
+"extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","39ccc6e9852c41f54367b569761898a255dbb70b","447168","100644","candidate:ef634ce7469f0b94b09ddcef097ad14a8c6e0206","PATCH; actual CI pending"
+"evidence/C9/R07_DEADLOCK_COUNTER_CORRECTION_2026-11-25.md","e8e338478b1b0c9f698a6aa8cb550b3b3cfd58f9","1344","100644","candidate:ef634ce7469f0b94b09ddcef097ad14a8c6e0206","PATCH; actual CI pending"
