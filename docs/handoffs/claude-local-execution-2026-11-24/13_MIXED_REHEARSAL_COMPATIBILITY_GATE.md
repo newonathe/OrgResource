@@ -61,3 +61,7 @@ Final L06 must use one guarded lifetime (three test-owned servers, first origina
 ## Superseding L06 command contract (source-reviewed; still blocked)
 
 See [report27](27_R06B3B_AGGREGATE_RECEIPT_AND_L06_COMMAND_CONTRACT.md). The integrated same-lifetime command is now source-implemented; final exact-head CI and R09 authorization remain mandatory. Do not run interim preparation separately, automate confirmation, or use a private positive in CI. Final implementation SHA must be pinned at R09; L06 remains NOT_RUN/BLOCKED. Windows L03/L04 unaffected.
+
+## Remote gate checkpoint — R06B VERIFIED_BOUNDED
+
+Report28 records actual final PR53 CI45475369786. Integrated L06 runner remote engineering complete within public scope; still BLOCKED pending final R09 SHA, local prerequisites and direct owner consent. Report27 command contract remains authoritative; no actual private positive or independent acceptance.
