@@ -23,6 +23,28 @@ mixed_runtime_preflight() {
   ' > "$work/mixed-browser-preflight.log" 2>&1 || fail R06B3B_PRIVATE_BROWSER_PREFLIGHT
   echo R06B3B_PRIVATE_RUNTIME_PREFLIGHT_OK:pidfd_child=true isolated_chromium=true
 }
+# Do not signal the supervisor or a bare numeric PID. A record may appear
+# after our first check, or before the recorded shell execs the verified JVM.
+# On initial refusal, allow the existing isolated timeout supervisor to finish;
+# then recheck the record with the same strict PIDFD guard. Persistent refusal
+# retains the work directory and containers for owner inspection.
+mixed_runtime_pidfd_stop() {
+  python3 -B scripts/stop-c9-private-mixed-process.py "$work" "$1" "$java_bin"
+}
+mixed_runtime_reap() {
+  local namespace="$1" record="$work/mixed-runtime.pid"
+  if [ -s "$record" ]; then
+    if mixed_runtime_pidfd_stop "$namespace"; then
+      wait "$mixed_supervisor" 2>/dev/null || true
+      return 0
+    fi
+    echo R06B3B_PRIVATE_PIDFD_RECHECK_AFTER_SUPERVISOR
+  fi
+  wait "$mixed_supervisor" 2>/dev/null || true
+  if [ -e "$record" ] || [ -L "$record" ]; then
+    mixed_runtime_pidfd_stop "$namespace" || return 1
+  fi
+}
 mixed_runtime_stop() {
   if [ -n "$mixed_supervisor" ]; then
     local pid namespace
@@ -31,13 +53,7 @@ mixed_runtime_stop() {
     pid="$(docker_local inspect --format '{{.State.Pid}}' "$mixed_id")" || return 1
     namespace="$(sudo -n readlink "/proc/$pid/ns/net")" || return 1
     [[ "$namespace" = "$mixed_runtime_namespace" ]] || return 1
-    if [ ! -s "$work/mixed-runtime.pid" ]; then
-      wait "$mixed_supervisor" 2>/dev/null || true
-      [[ ! -e "$work/mixed-runtime.pid" ]] || return 1
-    else
-      python3 -B scripts/stop-c9-private-mixed-process.py "$work" "$namespace" "$java_bin" || return 1
-      wait "$mixed_supervisor" 2>/dev/null || true
-    fi
+    mixed_runtime_reap "$namespace" || return 1
     mixed_supervisor=
     rm -f -- "$work/mixed-runtime.pid"
   fi

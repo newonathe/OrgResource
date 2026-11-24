@@ -14,6 +14,8 @@ bash -n scripts/c9-local-operator-gate.sh
 bash -n scripts/c9-public-recovered-control.sh
 bash -n scripts/c9-public-aggregate-projection.sh
 bash -n scripts/c9-private-mixed-recovered-control.sh
+bash -n scripts/test-c9-private-reap-ordering.sh
+bash scripts/test-c9-private-reap-ordering.sh
 python3 -m py_compile scripts/verify-c9-public-recovered-control.py
 node --check scripts/verify-c9-public-recovered-control.mjs
 node --check scripts/verify-c9-private-mixed-browser.mjs
