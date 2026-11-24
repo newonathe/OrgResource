@@ -2438,7 +2438,7 @@
       ]
     ],
     "report": "evidence/C9/R07_LIFECYCLE_BRANCH_HELPER_CORRECTION_2026-11-25.md",
-    "acceptance": "CI_PENDING",
+    "acceptance": "VERIFIED_BOUNDED",
     "dedicated_actual": {
       "sha": "b48b289f4ddc3dd1fb0ac786487d188921c6909c",
       "pr": 55,
@@ -2598,6 +2598,20 @@
         2022
       ],
       "scope": "same isolated test-context workloads; does not execute #32"
+    },
+    "full_actual": {
+      "sha": "b48b289f4ddc3dd1fb0ac786487d188921c6909c",
+      "run": 45489076064,
+      "job": 138782207514,
+      "maven": 103,
+      "identity": 78,
+      "playwright": 19,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "all_jobs_success": true,
+      "verdict": "VERIFIED_BOUNDED",
+      "scope": "#32 actual same-process persisted claim state recovery and gated return/expiry, not process restart"
     }
   },
   "r08_packaged_candidate": {
@@ -2783,17 +2797,25 @@
     }
   },
   "r09_integration_preflight_latest": {
+    "pr53": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
+    "pr54": "9646ff743c6678af90aa357ee761ac11ed366dff",
+    "pr55": "ef634ce7469f0b94b09ddcef097ad14a8c6e0206",
     "base55": "a1ba49aecce96ea24e82b0e2de4e1f210221aaa7",
-    "pr54": "3a1e46cddf0cf1bd519b6c493205727b9310a97a",
-    "pr55": "18f47cc762f5bcf0ed857350b177c4ccdf035ff1",
-    "test_blobs": [
-      "d96a5d1cf7891009ffce7378fc23d3cf51170aad",
-      "ef9823118ff5ab1080a2d39a67ddc51209560750",
-      "fb16708f40e4a476b4a56e77ea81a26c5832b613"
+    "deltaCounts": [
+      27,
+      21,
+      15
     ],
-    "hunks": 6,
+    "shared": "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java",
+    "testBlobs": [
+      "d96a5d1cf7891009ffce7378fc23d3cf51170aad",
+      "39ccc6e9852c41f54367b569761898a255dbb70b",
+      "f21cd6b6b0646322eefafd95dcd71b2798e3011c"
+    ],
+    "hunks": 7,
     "exact_base_reproduction": true,
-    "unique_anchor_counts": [
+    "unique_anchors": [
+      1,
       1,
       1,
       1,
@@ -2801,7 +2823,7 @@
       1,
       1
     ],
-    "ordered_tests_before_after": [
+    "tests_before_after": [
       78,
       78
     ],
@@ -2826,7 +2848,7 @@
       ]
     ],
     "report": "evidence/C9/R07_ACTUAL_DEADLOCK_AND_LOST_RESPONSE_RESTART_CANDIDATE_2026-11-25.md",
-    "acceptance": "FAILED_DEDICATED_FULL_PENDING",
+    "acceptance": "FAILED",
     "scope": "actual reverse-order SQL lock blocker, intended observed deadlock HTTP503 exact rollback and retry; loopback upstream201/downstream EOF, stop/start same schema, same actor replay and exact domain dump. Not actual reminder claim restart.",
     "actual_failure": {
       "run": 45491263013,
@@ -2837,6 +2859,39 @@
       "errors": 0,
       "skips": 0,
       "detail": "Dedicated runner filtered diagnostic to summary; exact assertion not yet known. Full job138789912276 pending. Concurrency case1 passed and cleanup confirmed. Remaining cases did not execute."
+    },
+    "actual_full_failure": {
+      "sha": "849a1284ef0b5ff641f1a933d2aedb60627ddf7a",
+      "run": 45491262809,
+      "job": 138789912276,
+      "dedicated_run": 45491263013,
+      "dedicated_job": 138789899851,
+      "verdict": "FAILED",
+      "actual": "78 identity/103 Maven tests, 1 failure, zero errors/skips. #24 line1501 rs.next false on SHOW GLOBAL STATUS LIKE 'Innodb_deadlocks', before blocker/HTTP lock cycle; lost-response/restart and packaged stages not reached."
     }
+  },
+  "r07_deadlock_counter_correction": {
+    "sha": "ef634ce7469f0b94b09ddcef097ad14a8c6e0206",
+    "base": "849a1284ef0b5ff641f1a933d2aedb60627ddf7a",
+    "runs": [
+      [
+        45491974364,
+        "Verify",
+        "queued",
+        null
+      ],
+      [
+        45491974383,
+        "R07-R08 isolated preparation",
+        "queued",
+        null
+      ]
+    ],
+    "report": "evidence/C9/R07_DEADLOCK_COUNTER_CORRECTION_2026-11-25.md",
+    "acceptance": "CI_PENDING",
+    "source_authority": [
+      "https://dev.mysql.com/doc/refman/8.0/en/innodb-information-schema-metrics-table.html",
+      "https://dev.mysql.com/doc/refman/8.0/en/information-schema-innodb-metrics-table.html"
+    ]
   }
 }
