@@ -193,6 +193,10 @@ if ($localTransport) {
             throw 'C9_LOCAL_MIXED_PLAN_REQUIRED'
         }
         if ([IO.Path]::GetFileName($archivePath) -cne 'mixed.aesgcm') { throw 'C9_LOCAL_MIXED_ARCHIVE_REQUIRED' }
+        if ($Mode -eq 'Restore') {
+            $archiveMode = (& /usr/bin/stat -c '%a:%u' -- $archivePath 2>$null)
+            if ($LASTEXITCODE -ne 0 -or $archiveMode -cne "600:$localUid") { throw 'C9_LOCAL_MIXED_ARCHIVE_REQUIRED' }
+        }
         if ($Mode -eq 'Restore' -and ($env:C9_LOCAL_MIXED_ARCHIVE_SHA -cnotmatch '^[0-9a-f]{64}$' -or
                 -not (Test-Path -LiteralPath $archivePath -PathType Leaf) -or
                 [IO.FileInfo]::new($archivePath).Length -gt $maxSqlBytes + $cipherOffset -or

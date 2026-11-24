@@ -325,6 +325,22 @@ if [ "$mode" = --fixture-only ]; then
   mysql_at "$target_id" "$dst_password" -e "DROP USER 'c9_local_importer'@'%';"
   rows_at "$target_id" "$dst_password" "$target_schema" > "$work/target-grant-after.sql"
   cmp -s "$work/target-before.sql" "$work/target-grant-after.sql" || fail R06B2_GRANT_TEST_CHANGED_ROWS
+  # Public proof of third-server plumbing, without any approved-plan bytes
+  # or pretending that the two-original fixture is a full mixed cohort.
+  phase=third_server_fixture
+  mixed_schema="orgresource_c9_local_${token}_mixed"
+  mixed_password="$(openssl rand -hex 24)"
+  if [ "${GITHUB_ACTIONS:-}" = true ]; then echo "::add-mask::$mixed_password"; fi
+  start_server mixed "$mixed_password" "$mixed_schema"
+  mixed_uuid="$(scalar "$mixed_id" "$mixed_password" "$mixed_schema" 'SELECT @@server_uuid')"
+  [[ "$mixed_id" != "$source_id" && "$mixed_id" != "$target_id" &&
+     "$mixed_uuid" != "$source_uuid" && "$mixed_uuid" != "$target_uuid" &&
+     "$(scalar "$mixed_id" "$mixed_password" "$mixed_schema" 'SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE()')" = 0 ]] || fail R06B3A_THIRD_FIXTURE_BOUNDARY
+  rows_at "$source_id" "$src_password" "$source_schema" > "$work/source-third-fixture.sql"
+  rows_at "$target_id" "$dst_password" "$target_schema" > "$work/target-third-fixture.sql"
+  cmp -s "$work/source-before.sql" "$work/source-third-fixture.sql" &&
+    cmp -s "$work/target-before.sql" "$work/target-third-fixture.sql" || fail R06B3A_THIRD_FIXTURE_CHANGED_ROWS
+  echo R06B3A_THIRD_SERVER_FIXTURE_OK:distinct_ids=true distinct_uuids=true empty_schema=true original_rows_unchanged=true private_plan_used=false
 elif [ "$mode" = --approved-import ]; then
   phase=operator_confirmation
   # This receipt is generated from actual completed recovery and preflight,
@@ -429,6 +445,7 @@ elif [ "$mode" = --approved-import ]; then
   backup_start="$(date +%s)"
   mixed_c5 Backup "$target_schema" > "$receipt_dir/mixed-backup-private.log" 2>&1 || fail R06B3A_MIXED_BACKUP_FAILED
   mixed_backup_seconds="$(( $(date +%s) - backup_start ))"
+  [[ "$(stat -c '%a:%u' "$mixed_archive")" = "600:$(id -u)" ]] || fail R06B3A_MIXED_ARCHIVE_MODE
   mixed_archive_sha="$(sha256sum "$mixed_archive" | cut -d' ' -f1)"
   restore_start="$(date +%s)"
   mixed_c5 Restore "$mixed_schema" > "$receipt_dir/mixed-restore-private.log" 2>&1 || fail R06B3A_MIXED_RESTORE_FAILED

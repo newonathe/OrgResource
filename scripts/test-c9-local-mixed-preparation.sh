@@ -54,7 +54,7 @@ bash "$runner" --fixture-only "$root" "$source_sha" "$jar" "$jar_sha" > "$root/t
   grep -E '^R06B1_[A-Z_]+(:[a-zA-Z0-9_= .-]+)?$' "$root/test-private.log" | tail -15 || true
   exit 1
 }
-for marker in R06B2_IMPORTER_GRANTS_OK R06B1_BOOTSTRAP_OK R06B1_ORIGINAL_RESTORE_OK R06B1_BASELINE_OK R06B1_PREPARATION_OK R06B1_CLEANUP_OK; do
+for marker in R06B3A_THIRD_SERVER_FIXTURE_OK R06B2_IMPORTER_GRANTS_OK R06B1_BOOTSTRAP_OK R06B1_ORIGINAL_RESTORE_OK R06B1_BASELINE_OK R06B1_PREPARATION_OK R06B1_CLEANUP_OK; do
   grep -E "^$marker(:|$)" "$root/test-private.log" || exit 1
 done
 [[ "$(count_containers)" = "$before" ]] || exit 1
