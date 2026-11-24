@@ -350,6 +350,9 @@ if [ "$mode" = --fixture-only ]; then
     phase=public_recovered_control
     source scripts/c9-public-recovered-control.sh
     control_run
+    phase=public_aggregate_projection
+    source scripts/c9-public-aggregate-projection.sh
+    public_aggregate_projection
   fi
 elif [ "$mode" = --approved-import ]; then
   phase=private_runtime_preflight
