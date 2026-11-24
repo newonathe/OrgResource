@@ -1,0 +1,13 @@
+# C9 Stage 1C — actual C5 encrypted archive: test-first acceptance contract
+
+**2026-11-24 PHT — WRITTEN / NOT RUN.** Base PR #44 at be91d557d4f19d38c759ca77aaa151e793c125fe, exact CI #45326051879 green. C8 #34 remains BLOCKED; hosted #26 LIVE_IMPORT_NOT_RUN. User authorized only bounded C9 Stage 1C. Frozen Course A and Flyway V1–V7 protected.
+
+## Prompt-engineered routing and contract
+
+Use deterministic ref/blob comparisons and the current GPT-6.2 session for Sol-like high-risk cross-file work; no separately dispatched model or reviewer. Superpowers plan -> tests first -> narrow implementation -> exact-head CI -> separate review. Existing C5 archive codec and guards remain the authority. Add a dedicated CI-only PowerShell parameter set with fixed source/target schema, Docker socket transport, exact intermediate plan SHA, private runner directory, fixed runner/container identity and no network on restore. No alternative encryption codec, no hosted access, no arbitrary host/port, no changes to Windows modes or migration files.
+
+Acceptance: actual C5 Backup and Restore on 8 tagged fictional orgs / 960 allocations / 18 tables; verify existing archive refusal, wrong/missing/invalid-length key, header/nonce/tag/ciphertext corruption, truncation, undersize/oversize, wrong schema/path/plan hash and nonempty target. Negative target stays empty until first correct-key restore; then final all-table row equality establishes nonempty refusal preservation. Insert one fictional session and attribute into the disposable source after Stage 1B, assert both survive backup/restore and neither appears in target, delete precisely that fixture and compare source again. Require different server UUID, no published ports, network none, private workdir and restorer cleanup. No raw SQL, secrets or archive artifacts are uploaded. SQL payload limit unchanged at 64 MiB (session DDL 1 MiB); oversize test covers restore container-size refusal, not generating an over-limit source dump. Record actual bounded measurements and exact job receipt. Full private 96, off-host recovery, restored JAR/auth/replay on this networkless server and independent reviewer are NOT RUN/BLOCKED.
+
+## Test-first commit
+
+scripts/verify-c9-encrypted-archive.ps1 defines expected refusals and actual utility invocations; scripts/verify-c9-cross-server-restore.sh adds fixture setup, independent row checks and cleanup. At this commit the new CI-only parameter set does not exist yet. Red runtime not observed; this is a test-first source commit, not a claimed reproduced failure. Implementation follows in the next commit; CI will run against the combined draft head.
