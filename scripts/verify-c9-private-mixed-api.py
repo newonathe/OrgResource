@@ -103,7 +103,7 @@ def run():
             root = "/api/v2/orgs/" + org["id"] + "/resources"
             modern, _ = client.request("GET", root + "?limit=100", 200)
             require(modern["nextCursor"] is None and len(modern["items"]) == len(org["modernIds"]))
-            require({x["id"] for x in modern["items"]} == set(org["modernIds"]))
+            require([x["id"] for x in modern["items"]] == org["modernIds"])
             detail, etag = client.request("GET", root + "/" + org["detail"]["id"], 200)
             require(detail == org["detail"] and etag == '"v' + str(detail["version"]) + '"')
             client.request("GET", root + "/" + expected[other_label]["detail"]["id"], 404)
