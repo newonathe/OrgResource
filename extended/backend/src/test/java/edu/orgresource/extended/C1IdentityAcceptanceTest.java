@@ -1471,6 +1471,78 @@ class C1IdentityAcceptanceTest {
         assertEquals(201, replay.statusCode());
         assertTrue(committed.equals(legacyDenialRows(owner.orgDbId, owner.orgDbId)),
                 "Successful receive replay must not change scoped rows.");
+        // Actual InnoDB lock cycle: service locks organization then resource;
+        // a heavier disposable transaction deliberately uses reverse order.
+        for (int i = 0; i < 4; i++) {
+            assertEquals(201, post(session, "/api/resources", GSON.toJson(new ResourceRequest(
+                    "C2 Deadlock Weight " + i, "CONSUMABLE", 0))).statusCode());
+        }
+        var deadlockBefore = r07LifecycleRows(owner.orgDbId, owner.orgDbId);
+        String deadlockEtag = get(session.client, path).headers().firstValue("ETag").orElseThrow();
+        UUID deadlockOperation = UUID.randomUUID();
+        String deadlockBody = GSON.toJson(new ReceiveRequest(deadlockOperation, 1));
+        String deadlockKey = C1Secrets.bearerToken();
+        var pool = Executors.newSingleThreadExecutor();
+        try (Connection blocker = DriverManager.getConnection(migrationUrl, migrationUser, migrationPassword);
+             Connection monitor = DriverManager.getConnection(migrationUrl, migrationUser, migrationPassword);
+             var lock = blocker.createStatement(); var inspect = monitor.createStatement()) {
+            assertTrue(blocker.getCatalog().matches("orgresource_c[12]_[A-Za-z0-9_]+"));
+            assertEquals(blocker.getCatalog(), monitor.getCatalog());
+            assertEquals(jdbc.queryForObject("SELECT DATABASE()", String.class), blocker.getCatalog());
+            long connectionId;
+            try (var rs = lock.executeQuery("SELECT CONNECTION_ID()")) {
+                assertTrue(rs.next()); connectionId = rs.getLong(1);
+            }
+            try (var rs = inspect.executeQuery("SELECT @@GLOBAL.innodb_deadlock_detect")) {
+                assertTrue(rs.next() && rs.getBoolean(1), "Actual MySQL deadlock detection is required.");
+            }
+            long deadlocksBefore;
+            try (var rs = inspect.executeQuery("SHOW GLOBAL STATUS LIKE 'Innodb_deadlocks'")) {
+                assertTrue(rs.next()); deadlocksBefore = rs.getLong(2);
+            }
+            lock.execute("SET SESSION innodb_lock_wait_timeout=10");
+            blocker.setAutoCommit(false);
+            try {
+                assertEquals(5, lock.executeUpdate("UPDATE resource SET version=version+1 WHERE organization_id=" + owner.orgDbId));
+                var pending = pool.submit(() -> modernPost(session, path + "/receive", deadlockBody, deadlockEtag, deadlockKey));
+                boolean waiting = false;
+                long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+                String waitSql = "SELECT COUNT(*) FROM performance_schema.data_lock_waits w "
+                        + "JOIN performance_schema.data_locks l ON l.ENGINE=w.ENGINE AND l.ENGINE_LOCK_ID=w.BLOCKING_ENGINE_LOCK_ID "
+                        + "JOIN performance_schema.threads t ON t.THREAD_ID=l.THREAD_ID "
+                        + "WHERE t.PROCESSLIST_ID=" + connectionId + " AND l.OBJECT_SCHEMA='" + blocker.getCatalog()
+                        + "' AND l.OBJECT_NAME='resource'";
+                while (System.nanoTime() < deadline && !pending.isDone()) {
+                    try (var rs = inspect.executeQuery(waitSql)) {
+                        assertTrue(rs.next()); if (rs.getLong(1) > 0) { waiting = true; break; }
+                    }
+                    Thread.sleep(50);
+                }
+                assertTrue(waiting, "The HTTP transaction must be observed waiting on the resource held by the blocker.");
+                try (var rs = lock.executeQuery("SELECT id FROM organization WHERE id=" + owner.orgDbId + " FOR UPDATE")) {
+                    assertTrue(rs.next(), "The heavier blocker must survive the actual lock cycle.");
+                }
+                var conflict = pending.get(30, TimeUnit.SECONDS);
+                assertEquals(503, conflict.statusCode(), conflict.body());
+                assertEquals("TRANSIENT_TRANSACTION_CONFLICT", json(conflict).get("code").getAsString());
+                try (var rs = inspect.executeQuery("SHOW GLOBAL STATUS LIKE 'Innodb_deadlocks'")) {
+                    assertTrue(rs.next() && rs.getLong(2) > deadlocksBefore, "InnoDB must report an actual deadlock.");
+                }
+            } finally {
+                blocker.rollback();
+            }
+        } finally { pool.shutdownNow(); }
+        assertTrue(deadlockBefore.equals(r07LifecycleRows(owner.orgDbId, owner.orgDbId)),
+                "Deadlock victim and rolled-back blocker must preserve exact domain rows.");
+        var deadlockRetry = modernPost(session, path + "/receive", deadlockBody, deadlockEtag, deadlockKey);
+        assertEquals(201, deadlockRetry.statusCode(), deadlockRetry.body());
+        assertEquals(8, json(deadlockRetry).getAsJsonObject("data").get("totalQuantity").getAsInt());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM stock_movement WHERE organization_id=? AND operation_public_id=UUID_TO_BIN(?,0) AND kind='RECEIPT'",
+                Integer.class, owner.orgDbId, deadlockOperation.toString()));
+        var deadlockCommitted = r07LifecycleRows(owner.orgDbId, owner.orgDbId);
+        assertEquals(201, modernPost(session, path + "/receive", deadlockBody, deadlockEtag, deadlockKey).statusCode());
+        assertTrue(deadlockCommitted.equals(r07LifecycleRows(owner.orgDbId, owner.orgDbId)));
+        System.out.println("R07_ACTUAL_DEADLOCK_OK:observed_lock_wait=true mysql_counter_increased=true http503=true exact_rollback=true same_key_retry=true replay_preserved=true");
     }
 
     @Test @Order(25)

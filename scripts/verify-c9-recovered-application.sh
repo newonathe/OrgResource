@@ -218,6 +218,16 @@ grant_app "$source_id" "$source_password" "$source_schema"
 write_env "$source_schema" "$work/source.env"
 start_app "$source_id" "$work/source.env" source
 run_private "$source_id" "$work/source.env" "$python_bin" scripts/verify-c9-recovered-api.py seed
+source_process_before="$(cat "$app_pidfile")"
+stop_app
+domain_at "$source_id" "$source_password" "$source_schema" > "$work/pre-restart-domain.sql"
+start_app "$source_id" "$work/source.env" source-restarted
+[[ "$(cat "$app_pidfile")" != "$source_process_before" ]] || fail R07_RESTART_PROCESS_NOT_DISTINCT
+run_private "$source_id" "$work/source.env" "$python_bin" scripts/verify-c9-recovered-api.py source-replay
+domain_at "$source_id" "$source_password" "$source_schema" > "$work/post-restart-domain.sql"
+cmp -s "$work/pre-restart-domain.sql" "$work/post-restart-domain.sql" || fail R07_RESTART_REPLAY_CHANGED_DOMAIN
+echo R07_LOST_RESPONSE_RESTART_OK:distinct_process=true same_schema=true same_actor=true exact_domain_equal=true
+run_private "$source_id" "$work/source.env" "$python_bin" scripts/verify-c9-recovered-api.py source-demote
 stop_app
 
 operation="$("$python_bin" -c 'import json,sys; print(json.load(open(sys.argv[1]))["operation"])' "$work/state.json")"
