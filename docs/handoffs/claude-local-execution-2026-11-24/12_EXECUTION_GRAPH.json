@@ -4,15 +4,15 @@
   "ready_to_launch": false,
   "decision": "Owner requested finish all ChatGPT-side work before Claude. Continue remote engineering; local-only candidate packet is not a launch authorization.",
   "verified_source": {
-    "sha": "c91333766f3082b88a8c0414450dcaf6fc934ca2",
-    "pr": 48,
-    "run": 45427270775,
-    "extended_job": 138562564604,
+    "sha": "406ce2af1c4905bf7b845bcc072f71903327e0a1",
+    "pr": 49,
+    "run": 45430758956,
+    "extended_job": 138575101070,
     "actual_logs_inspected": true
   },
   "verified_docs": {
-    "sha": "230fdbf30abdcf679f01f2ee4000989ca807c999",
-    "run": 45427467814,
+    "sha": "ac8df46f8aa11d7562e5b0e7ce2a8eba1534c5da",
+    "run": 45431494042,
     "workflow_conclusion": "success",
     "actual_logs_inspected": false
   },
@@ -106,22 +106,22 @@
     {
       "id": "R06B1",
       "executor": "CHAT",
-      "state": "IMPLEMENTED_CI_PENDING",
+      "state": "VERIFIED_BOUNDED",
       "depends_on": [
         "R06A"
       ],
-      "receipt": "PR49 406ce2af CI 45430758956; seven refusal markers, actual bootstrap, original C5 restore, V2 readonly, no importer/attestation, cleanup, public fixture marker and all 3 jobs",
-      "notes": "Preparation only; exact private preflight positive NOT_RUN. Not final L06 command."
+      "receipt": "PR49 406ce2af CI 45430758956 job 138575101070 actual seven refusals, fresh bootstrap, 33858-byte original archive, exact rows, V2 mode0600 readonly, cleanup, 3/3 jobs, 91 Maven/19 Playwright",
+      "notes": "Public fixture only; private exact plan positive and independent review NOT_RUN."
     },
     {
       "id": "R06B2",
       "executor": "CHAT",
-      "state": "OPEN",
+      "state": "IMPLEMENTED_CI_PENDING",
       "depends_on": [
         "R06B1"
       ],
-      "receipt": "Same-lifetime guarded preparation + actual local owner/operator restoration attestation; exact approved preflight, fingerprint, V2 VERIFY, one importer, independent SELECT-only postflight; no writes on refusal",
-      "notes": "Public synthetic guard tests; positive exact private import local only. Separate operator authority."
+      "receipt": "PR51 17bd5bf05dba9481a5aff14af1bdb6654f0505b6 CI 45434204255; require R06B2_CONFIRMATION_CONTRACT_OK, import-ci refusal, R06B2_IMPORTER_GRANTS_OK, all eight precheck refusals, prior preparation/cleanup and 3/3 jobs; actual private positive local only",
+      "notes": "Owner terminal required; no automated consent. No local import yet. Same-lifetime actual C5 recovery+baseline+actual importer/postflight; R06B3 must integrate full post-import recovery/browser before final L06."
     },
     {
       "id": "R06B3",
@@ -391,14 +391,22 @@
     "sha": "406ce2af1c4905bf7b845bcc072f71903327e0a1",
     "pr": 49,
     "run": 45430758956,
-    "status": "in_progress",
-    "conclusion": null,
-    "acceptance": "CI_PENDING_ACTUAL_RECEIPTS"
+    "status": "completed",
+    "conclusion": "success",
+    "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS"
   },
   "continuation": {
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "Inspect PR49 exact CI 45430758956 actual R06B1 markers, fix bounded failure if needed, then R06B2/B3 and remaining remote tasks. No Claude launch."
+    "next_action": "Refresh PR51 17bd5bf05dba9481a5aff14af1bdb6654f0505b6, CI 45434204255 by exact SHA; inspect R06B2 actual public guard/grant receipts, repair bounded failures, then R06B3 and R03/R04/R07/R08; no Claude launch."
+  },
+  "r06b2_candidate": {
+    "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+    "pr": 51,
+    "run": 45434204255,
+    "status": "in_progress",
+    "conclusion": null,
+    "acceptance": "CI_PENDING_ACTUAL_RECEIPTS"
   }
 }
