@@ -53,19 +53,23 @@ refuse mixed-restore-ci C9_LOCAL_MIXED_CI_REFUSED pwsh -NoProfile -NonInteractiv
 [ ! -e "$root/no-archive.aesgcm" ] || exit 1
 refuse import-ci R06B2_IMPORT_CI_REFUSED bash "$runner" --approved-import "$root" "$source_sha" "$jar" "$jar_sha" "$root/nonexistent-plan.json"
 refuse remote-docker R06B1_LOCAL_DOCKER_REQUIRED env DOCKER_HOST=tcp://127.0.0.1:2375 bash "$runner" --fixture-only "$root" "$source_sha" "$jar" "$jar_sha"
-bash "$runner" --fixture-only "$root" "$source_sha" "$jar" "$jar_sha" > "$root/test-private.log" 2>&1 || {
-  # Only fixed safe markers and numeric status, never arbitrary JVM/SQL/HTTP logs.
-  grep -E '^(R06B[123][AB]?_[A-Z_]+(:[a-zA-Z0-9_= .-]+)?|C9_RUNTIME_PIDFD_(GUARD_OK|FAILURE)(:[a-zA-Z0-9_= .-]+)?)
-  exit 1
+# Emit only fixed receipt lines; a failure may contain private SQL/JVM details.
+safe_receipts() {
+  grep -E '^(R06B([123]|3[AB])_[A-Z_]+(:[a-zA-Z0-9_= .-]+)?|C9_RUNTIME_PIDFD_(GUARD_OK|FAILURE)(:[a-zA-Z0-9_= .-]+)?)$' "$1" | tail -35
 }
-for marker in R06B3B_CONTROL_GRANTS_OK R06B3B_CONTROL_API_LOGIN_OK R06B3B_CONTROL_PERSISTED_SESSION_OK R06B3B_CONTROL_API_LOGOUT_OK R06B3B_CONTROL_BROWSER_OK R06B3B_CONTROL_ROWS_OK R06B3A_THIRD_SERVER_FIXTURE_OK R06B2_IMPORTER_GRANTS_OK R06B1_BOOTSTRAP_OK R06B1_ORIGINAL_RESTORE_OK R06B1_BASELINE_OK R06B1_PREPARATION_OK R06B1_CLEANUP_OK; do
-  grep -E "^$marker(:|$)" "$root/test-private.log" || exit 1
-done
-[[ "$(count_containers)" = "$before" ]] || exit 1
-echo R06B1_PUBLIC_FIXTURE_TEST_OK:private_plan_used=false importer_run=false precheck_refusals=10
- "$root/test-private.log" | tail -35 || true
-  exit 1
-}
+# Exercise the diagnostic filter itself, including the R06B3b failure category.
+printf '%s\n' R06B3B_CONTROL_API_FAILED:RuntimeError R06B2_IMPORTER_GRANTS_OK C9_RUNTIME_PIDFD_FAILURE:ValueError 'UNSAFE raw private body' > "$root/filter-fixture.log"
+expected_filter="$(printf '%s\n' R06B3B_CONTROL_API_FAILED:RuntimeError R06B2_IMPORTER_GRANTS_OK C9_RUNTIME_PIDFD_FAILURE:ValueError)"
+[[ "$(safe_receipts "$root/filter-fixture.log")" = "$expected_filter" ]] || exit 1
+echo R06B3B_DIAGNOSTIC_FILTER_OK
+if bash "$runner" --fixture-only "$root" "$source_sha" "$jar" "$jar_sha" > "$root/test-private.log" 2>&1; then
+  :
+else
+  rc=$?
+  safe_receipts "$root/test-private.log" || true
+  echo "R06B3B_RUNNER_EXIT:$rc"
+  exit "$rc"
+fi
 for marker in R06B3B_CONTROL_GRANTS_OK R06B3B_CONTROL_API_LOGIN_OK R06B3B_CONTROL_PERSISTED_SESSION_OK R06B3B_CONTROL_API_LOGOUT_OK R06B3B_CONTROL_BROWSER_OK R06B3B_CONTROL_ROWS_OK R06B3A_THIRD_SERVER_FIXTURE_OK R06B2_IMPORTER_GRANTS_OK R06B1_BOOTSTRAP_OK R06B1_ORIGINAL_RESTORE_OK R06B1_BASELINE_OK R06B1_PREPARATION_OK R06B1_CLEANUP_OK; do
   grep -E "^$marker(:|$)" "$root/test-private.log" || exit 1
 done
