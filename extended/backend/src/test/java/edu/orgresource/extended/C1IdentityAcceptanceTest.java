@@ -3500,6 +3500,7 @@ class C1IdentityAcceptanceTest {
                 "\"v0\"", UUID.randomUUID().toString()).statusCode());
         String directory = root + "/borrowers?projectId=" + projectKey;
         String directoryOther = root + "/borrowers?projectId=" + otherKey;
+        var directoryBefore = legacyDenialRows(owner.orgDbId, away.orgDbId);
         var first = get(lead.client, directory + "&limit=1");
         assertEquals(200, first.statusCode(), first.body());
         String next = json(first).getAsJsonObject("data").get("nextCursor").getAsString();
@@ -3507,6 +3508,10 @@ class C1IdentityAcceptanceTest {
         assertEquals(404, get(lead.client, directoryOther).statusCode());
         assertEquals(403, get(self.client, directory).statusCode());
         assertEquals(404, get(outsider.client, directory).statusCode());
+        assertScopedRefusal(400, owner.orgDbId, away.orgDbId, () -> get(lead.client, directory + "&limit=0"));
+        assertScopedRefusal(400, owner.orgDbId, away.orgDbId, () -> get(lead.client, directory + "&limit=101"));
+        assertScopedRefusal(400, owner.orgDbId, away.orgDbId, () -> get(lead.client, directory + "&search=" + "x".repeat(101)));
+        assertScopedRefusal(404, owner.orgDbId, away.orgDbId, () -> get(lead.client, directory + "&search=fictional&cursor=" + next));
         var duplicates = json(get(lead.client, directory + "&search=fictional+member")).getAsJsonObject("data").getAsJsonArray("items");
         assertEquals(2, duplicates.size());
         for (var entry : duplicates) {
@@ -3514,6 +3519,7 @@ class C1IdentityAcceptanceTest {
             assertEquals("Fictional MEMBER", entry.getAsJsonObject().get("displayName").getAsString());
         }
 
+        assertTrue(directoryBefore.equals(legacyDenialRows(owner.orgDbId, away.orgDbId)), "Directory reads altered scoped rows.");
         long resource = json(post(officer, "/api/resources", GSON.toJson(new ResourceRequest(
                 "Fictional lights", "REUSABLE", 8)))).get("id").getAsLong();
         long requirement = json(post(officer, "/api/requirements", GSON.toJson(new RequirementRequest(
@@ -3525,12 +3531,12 @@ class C1IdentityAcceptanceTest {
         input.addProperty("operationId", operationId);
         input.addProperty("requirementId", requirementKey.toString());
         input.addProperty("quantity", 2);
-        assertEquals(400, modernPost(lead, root + "/allocations", input.toString(), null, idemKey).statusCode());
+        assertScopedRefusal(400, owner.orgDbId, away.orgDbId, () -> modernPost(lead, root + "/allocations", input.toString(), null, idemKey));
         input.addProperty("borrowerMembershipId", away.membershipPublicId.toString());
-        assertEquals(404, modernPost(lead, root + "/allocations", input.toString(), null, idemKey).statusCode());
+        assertScopedRefusal(404, owner.orgDbId, away.orgDbId, () -> modernPost(lead, root + "/allocations", input.toString(), null, idemKey));
         input.addProperty("borrowerMembershipId", borrower.membershipPublicId.toString());
         input.addProperty("borrowerNameSnapshot", "Injected label");
-        assertEquals(400, modernPost(lead, root + "/allocations", input.toString(), null, idemKey).statusCode());
+        assertScopedRefusal(400, owner.orgDbId, away.orgDbId, () -> modernPost(lead, root + "/allocations", input.toString(), null, idemKey));
         input.remove("borrowerNameSnapshot");
         var created = modernPost(lead, root + "/allocations", input.toString(), null, idemKey);
         assertEquals(201, created.statusCode(), created.body());
@@ -3548,8 +3554,8 @@ class C1IdentityAcceptanceTest {
         String borrowedItem = borrowedRoute + "/" + allocationKey;
         assertEquals(1, json(get(self.client, borrowedRoute)).getAsJsonObject("data").getAsJsonArray("items").size());
         assertTrue(json(get(other.client, borrowedRoute)).getAsJsonObject("data").getAsJsonArray("items").isEmpty());
-        assertEquals(404, get(other.client, borrowedItem).statusCode());
-        assertEquals(404, get(outsider.client, borrowedItem).statusCode());
+        assertScopedRefusal(404, owner.orgDbId, away.orgDbId, () -> get(other.client, borrowedItem));
+        assertScopedRefusal(404, owner.orgDbId, away.orgDbId, () -> get(outsider.client, borrowedItem));
         var view = get(self.client, borrowedItem);
         assertEquals(200, view.statusCode());
         assertTrue(view.body().contains("Fictional light workshop"));
@@ -3575,8 +3581,8 @@ class C1IdentityAcceptanceTest {
         assertFalse(active.toString().matches("(?is).*(phone|borrowerName|actor|provider|ciphertext).*"));
         String revokeOp = UUID.randomUUID().toString(), revokeKey = UUID.randomUUID().toString();
         String revokeBody = "{\"operationId\":\"" + revokeOp + "\"}";
-        assertEquals(404, modernPost(other, revoke, revokeBody, "\"v0\"", revokeKey).statusCode());
-        assertEquals(412, modernPost(self, revoke, revokeBody, "\"v8\"", revokeKey).statusCode());
+        assertScopedRefusal(404, owner.orgDbId, away.orgDbId, () -> modernPost(other, revoke, revokeBody, "\"v0\"", revokeKey));
+        assertScopedRefusal(412, owner.orgDbId, away.orgDbId, () -> modernPost(self, revoke, revokeBody, "\"v8\"", revokeKey));
         assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE id=? AND version=0 AND sms_consent=TRUE "
                 + "AND phone_ciphertext IS NOT NULL AND reminder_outcome='CLAIMED'", Integer.class, allocationId));
         assertEquals(0, jdbc.queryForObject("SELECT COUNT(*) FROM idempotency_key WHERE operation_public_id=UUID_TO_BIN(?,0)",
@@ -3597,16 +3603,54 @@ class C1IdentityAcceptanceTest {
         assertEquals(currentVersion, redundant.headers().firstValue("ETag").orElseThrow());
         assertEquals(json(revoked).get("data"), json(redundant).get("data"));
 
+        // A second real record makes the borrower-specific continuation non-vacuous.
+        JsonObject secondInput = input.deepCopy();
+        secondInput.addProperty("operationId", UUID.randomUUID().toString());
+        secondInput.addProperty("quantity", 1);
+        var secondCreated = modernPost(lead, root + "/allocations", secondInput.toString(), null, C1Secrets.bearerToken());
+        assertEquals(201, secondCreated.statusCode());
+        String secondId = json(secondCreated).getAsJsonObject("data").get("id").getAsString();
+        var borrowedBefore = legacyDenialRows(owner.orgDbId, away.orgDbId);
+        var page = workspacePage(self, borrowedRoute + "?limit=1");
+        assertEquals(1, page.getAsJsonArray("items").size());
+        assertEquals(allocationKey.toString(), page.getAsJsonArray("items").get(0).getAsJsonObject().get("id").getAsString());
+        String borrowedCursor = page.get("nextCursor").getAsString();
+        var terminalPage = workspacePage(self, borrowedRoute + "?limit=1&cursor=" + borrowedCursor);
+        assertEquals(1, terminalPage.getAsJsonArray("items").size());
+        assertEquals(secondId, terminalPage.getAsJsonArray("items").get(0).getAsJsonObject().get("id").getAsString());
+        assertTrue(terminalPage.get("nextCursor").isJsonNull());
+        var borrowedData = json(get(self.client, borrowedItem)).getAsJsonObject("data");
+        assertTrue(Set.of("id", "projectName", "resourceName", "quantity", "status", "createdAt", "approvedAt",
+                "issuedAt", "returnedAt", "consumedAt", "cancelledAt", "smsConsent", "version").containsAll(borrowedData.keySet()));
+        assertTrue(borrowedData.keySet().containsAll(Set.of("id", "projectName", "resourceName", "quantity", "status", "createdAt", "smsConsent", "version")));
+        assertScopedRefusal(404, owner.orgDbId, away.orgDbId, () -> get(other.client, borrowedRoute + "?cursor=" + borrowedCursor));
+        assertScopedRefusal(404, owner.orgDbId, away.orgDbId, () -> get(outsider.client,
+                "/api/v2/orgs/" + away.orgPublicId + "/borrowed-allocations?cursor=" + borrowedCursor));
+        assertScopedRefusal(400, owner.orgDbId, away.orgDbId, () -> get(self.client, borrowedRoute + "?limit=0"));
+        assertScopedRefusal(400, owner.orgDbId, away.orgDbId, () -> get(self.client, borrowedRoute + "?limit=101"));
+        assertScopedRefusal(400, owner.orgDbId, away.orgDbId, () -> get(self.client, borrowedRoute + "?cursor=invalid"));
+        assertTrue(borrowedBefore.equals(legacyDenialRows(owner.orgDbId, away.orgDbId)), "Borrowed reads altered scoped rows.");
+
         // Reinstall an active fictional fixture state before suspending the borrower.
         jdbc.update("UPDATE allocation SET sms_consent=TRUE,phone_ciphertext=?,phone_nonce=?,phone_key_id=? WHERE id=?",
                 syntheticContact.ciphertext(), syntheticContact.nonce(), syntheticContact.keyId(), allocationId);
         assertEquals(200, post(officer, root + "/members/" + borrower.membershipPublicId + "/suspend", "{}", "\"v0\"").statusCode());
-        assertEquals(404, get(self.client, borrowedItem).statusCode());
-        assertEquals(404, get(self.client, root + "/operations/" + revokeOp).statusCode());
+        assertScopedRefusal(404, owner.orgDbId, away.orgDbId, () -> get(self.client, borrowedItem));
+        assertScopedRefusal(404, owner.orgDbId, away.orgDbId, () -> get(self.client, root + "/operations/" + revokeOp));
+        var afterSuspensionDirectory = workspacePage(officer, directory);
+        assertFalse(afterSuspensionDirectory.getAsJsonArray("items").asList().stream().anyMatch(
+                entry -> borrower.membershipPublicId.toString().equals(entry.getAsJsonObject().get("membershipId").getAsString())));
+        assertTrue(afterSuspensionDirectory.getAsJsonArray("items").asList().stream().anyMatch(
+                entry -> sameName.membershipPublicId.toString().equals(entry.getAsJsonObject().get("membershipId").getAsString())));
+        JsonObject suspendedInput = input.deepCopy();
+        suspendedInput.addProperty("operationId", UUID.randomUUID().toString());
+        HttpResponse<String> ineligible = assertScopedRefusal(409, owner.orgDbId, away.orgDbId,
+                () -> modernPost(lead, root + "/allocations", suspendedInput.toString(), null, C1Secrets.bearerToken()));
+        assertEquals("BORROWER_NOT_ELIGIBLE", json(ineligible).get("code").getAsString());
         UUID suspendedOperation = UUID.randomUUID();
-        assertEquals(404, modernPost(self, revoke, GSON.toJson(new OperationRequest(suspendedOperation)),
-                currentVersion, UUID.randomUUID().toString()).statusCode());
-        assertEquals(404, modernPost(self, revoke, revokeBody, "\"v0\"", revokeKey).statusCode());
+        assertScopedRefusal(404, owner.orgDbId, away.orgDbId, () -> modernPost(self, revoke, GSON.toJson(new OperationRequest(suspendedOperation)),
+                currentVersion, UUID.randomUUID().toString()));
+        assertScopedRefusal(404, owner.orgDbId, away.orgDbId, () -> modernPost(self, revoke, revokeBody, "\"v0\"", revokeKey));
         assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM allocation WHERE id=? AND sms_consent=TRUE "
                 + "AND phone_ciphertext IS NOT NULL AND status='PENDING'", Integer.class, allocationId));
         assertEquals(0, jdbc.queryForObject("SELECT COUNT(*) FROM idempotency_key WHERE operation_public_id=UUID_TO_BIN(?,0)",
