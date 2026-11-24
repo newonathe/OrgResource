@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Local-only R06B1. No importer invocation, no hosted database.
-# Both modes create and remove their own two independent disposable servers.
+# Local-only R06B1/B2. Approved import is an owner-terminal-only disposable rehearsal.
+# All modes create and remove their own two independent disposable servers.
+set +x
 set -euo pipefail
 umask 077
 fail() { printf '%s\n' "$1" >&2; exit 1; }
@@ -8,7 +9,11 @@ phase=intake
 trap 'echo "R06B1_FAILURE_PHASE:$phase" >&2' ERR
 [[ $# -eq 5 || $# -eq 6 ]] || fail R06B1_ARGUMENTS
 mode="$1"; root="$2"; source_sha="$3"; jar="$4"; jar_sha="$5"; plan="${6:-}"
-[[ ( "$mode" = --fixture-only && $# -eq 5 ) || ( "$mode" = --approved-plan && $# -eq 6 ) ]] || fail R06B1_ARGUMENTS
+[[ ( "$mode" = --fixture-only && $# -eq 5 ) || ( ( "$mode" = --approved-plan || "$mode" = --approved-import ) && $# -eq 6 ) ]] || fail R06B1_ARGUMENTS
+if [ "$mode" = --approved-import ]; then
+  [ "${GITHUB_ACTIONS:-}" != true ] || fail R06B2_IMPORT_CI_REFUSED
+  [[ -t 0 && -t 1 && -t 2 ]] || fail R06B2_OWNER_TERMINAL_REQUIRED
+fi
 repo="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
 cd "$repo"
 [[ "$(uname -s)" = Linux && "$(id -u)" != 0 ]] || fail R06B1_LINUX_NONROOT_REQUIRED
@@ -44,7 +49,7 @@ except Exception:
     sys.exit(1)
 PY
 approved_sha=3b0f54da85cadb77cd7d8ab2d50c1fdb4b4ee36710b803cf904227e13f08927c
-if [ "$mode" = --approved-plan ]; then
+if [ "$mode" != --fixture-only ]; then
   [[ "$plan" = /* && -f "$plan" && "$(realpath -e -- "$plan")" = "$plan" && "$(stat -c '%a:%u' -- "$plan")" = "600:$(id -u)" ]] || fail R06B1_PRIVATE_PLAN_REQUIRED
   case "$plan" in "$repo/"*) fail R06B1_PRIVATE_PLAN_REQUIRED;; esac
   [[ "$(stat -c '%s' -- "$plan")" = 19265850 ]] || fail R06B1_APPROVED_PLAN_MISMATCH
@@ -69,7 +74,7 @@ echo R06B1_PREFLIGHT_OK:source_hash=true jar_hash=true seven_migration_bytes=tru
 token="$(openssl rand -hex 6)"
 work="$root/orgresource-c9-local-$token"
 mkdir -m 700 -- "$work"
-source_id= target_id=
+source_id= target_id= receipt_dir=
 cleanup() {
   local result=0 id role remaining
   docker_local info >/dev/null 2>&1 || return 1
@@ -89,7 +94,7 @@ cleanup() {
   if [ "$result" = 0 ]; then rm -rf -- "$work" || result=1; fi
   return "$result"
 }
-trap 'code=$?; cleanup || { echo R06B1_CLEANUP_FAILED >&2; code=1; }; exit "$code"' EXIT
+trap 'code=$?; cleanup || { echo R06B1_CLEANUP_FAILED >&2; code=1; }; if [ -n "$receipt_dir" ]; then printf "exit=%s\nphase=%s\n" "$code" "$phase" > "$receipt_dir/status.txt"; fi; exit "$code"' EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 mkdir -m 700 -- "$work/home"
@@ -98,7 +103,7 @@ cp -- "$jar" "$work/verified.jar"
 chmod 600 "$work/verified.jar"
 [[ "$(sha256sum -- "$work/verified.jar" | cut -d' ' -f1)" = "$jar_sha" ]] || fail R06B1_JAR_HASH_MISMATCH
 jar="$work/verified.jar"
-if [ "$mode" = --approved-plan ]; then
+if [ "$mode" != --fixture-only ]; then
   # Snapshot the approved bytes into private custody; recheck before database work.
   cp -- "$plan" "$work/approved-plan.json"
   chmod 600 "$work/approved-plan.json"
@@ -176,8 +181,9 @@ start_server() {
   mysql_at "$id" "$password" -e "CREATE DATABASE $schema CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;"
 }
 run_java() {
-  local id="$1" settings="$2" command="$3"
-  ns_run "$id" timeout --signal=TERM --kill-after=10s 240s bash -ec 'set -a; source "$1"; set +a; shift; exec "$@"' \
+  local id="$1" settings="$2" command="$3" limit=240s
+  case "$command" in --c8-hosted-demo-import) limit=1800s;; --c8-hosted-demo-postflight) limit=900s;; esac
+  ns_run "$id" timeout --signal=TERM --kill-after=10s "$limit" bash -ec 'set -a; source "$1"; set +a; shift; exec "$@"' \
     _ "$settings" "$java_bin" -Xmx768m -jar "$jar" "$command"
 }
 phase=bootstrap
@@ -257,9 +263,9 @@ baseline="$work/baseline.properties"
   printf 'EXT_C8_HOSTED_ORIGINAL_ORG_PUBLIC_ID=%q\nEXT_C8_HOSTED_OWNER_PUBLIC_ID=%q\n' "$original_org" "$owner_id"
   printf 'EXT_C8_BASELINE_HMAC_HEX=%q\nEXT_C8_BASELINE_FILE=%q\nEXT_C8_BASELINE_MODE=CAPTURE\n' "$hmac_key" "$baseline"
   printf 'EXT_SMS_ENABLED=false\nEXT_REMINDER_MODE=DISABLED\n'
-  if [ "$mode" = --approved-plan ]; then printf 'EXT_C8_DEMO_PLAN=%q\n' "$work/approved-plan.json"; fi
+  if [ "$mode" != --fixture-only ]; then printf 'EXT_C8_DEMO_PLAN=%q\n' "$work/approved-plan.json"; fi
 } > "$work/ro.env"
-if [ "$mode" = --approved-plan ]; then
+if [ "$mode" != --fixture-only ]; then
   phase=approved_preflight
   run_java "$target_id" "$work/ro.env" --c8-hosted-demo-preflight > "$work/preflight-private.log" 2>&1 || fail R06B1_APPROVED_PREFLIGHT_FAILED
   for line in HOSTED_DEMO_PREFLIGHT_READ_ONLY_OK "target_fingerprint_sha256=$fp" original_organization_count=2 flyway_version=7 approved_full_plan=96_workspaces_21060_requests database_writes=0; do
@@ -281,9 +287,136 @@ rows_at "$target_id" "$dst_password" "$target_schema" > "$work/target-after.sql"
 cmp -s "$work/source-before.sql" "$work/source-after.sql" && cmp -s "$work/target-before.sql" "$work/target-after.sql" || fail R06B1_PREPARATION_CHANGED_ROWS
 echo R06B1_BASELINE_OK:actual_v2=true readonly=true mode_0600=true source_and_target_rows_unchanged=true
 echo R06B1_PREPARATION_OK:importer_run=false attestation_created=false
+
+# Fixture-only scope for a real grant test and the eventual private importer.
+# No account credential writes or ledger mutation/delete privileges.
+grant_importer() {
+  local password="$1" table
+  mysql_at "$target_id" "$dst_password" -e "CREATE USER 'c9_local_importer'@'%' IDENTIFIED BY '$password'; GRANT SELECT ON $target_schema.* TO 'c9_local_importer'@'%';"
+  for table in organization user_account membership department project resource resource_requirement allocation; do
+    mysql_at "$target_id" "$dst_password" -e "GRANT INSERT,UPDATE ON $target_schema.$table TO 'c9_local_importer'@'%';"
+  done
+  for table in stock_movement audit_event; do
+    mysql_at "$target_id" "$dst_password" -e "GRANT INSERT ON $target_schema.$table TO 'c9_local_importer'@'%';"
+  done
+}
+importer_sql() {
+  local password="$1" query="$2"
+  assert_id "$target_id"
+  MYSQL_PWD="$password" docker_local exec -i --env MYSQL_PWD "$target_id" mysql --no-defaults --protocol=tcp --host=127.0.0.1 -uc9_local_importer -N -B "$target_schema" -e "$query"
+}
+check_importer_grants() {
+  local password="$1" query
+  [[ "$(importer_sql "$password" 'SELECT COUNT(*) FROM organization')" = 2 ]] || fail R06B2_IMPORTER_SELECT
+  # SQL has no qualifying rows; a privilege regression is a failure even if
+  # a zero-row write would not change data. Require actual MySQL 1142.
+  for query in 'UPDATE stock_movement SET id=id WHERE 1=0' 'UPDATE audit_event SET id=id WHERE 1=0' 'DELETE FROM allocation WHERE 1=0' 'INSERT INTO local_credential SELECT * FROM local_credential WHERE 1=0'; do
+    if importer_sql "$password" "$query" >"$work/grant-private.log" 2>&1; then fail R06B2_UNEXPECTED_GRANT; fi
+    grep -Eq 'ERROR 1142 .*command denied' "$work/grant-private.log" || fail R06B2_WRONG_GRANT_REFUSAL
+  done
+  echo R06B2_IMPORTER_GRANTS_OK:select=true ledger_update_denied=true delete_denied=true credential_insert_denied=true
+}
+if [ "$mode" = --fixture-only ]; then
+  phase=importer_grants
+  importer_password="$(openssl rand -hex 24)"
+  if [ "${GITHUB_ACTIONS:-}" = true ]; then echo "::add-mask::$importer_password"; fi
+  grant_importer "$importer_password"
+  check_importer_grants "$importer_password"
+  mysql_at "$target_id" "$dst_password" -e "DROP USER 'c9_local_importer'@'%';"
+  rows_at "$target_id" "$dst_password" "$target_schema" > "$work/target-grant-after.sql"
+  cmp -s "$work/target-before.sql" "$work/target-grant-after.sql" || fail R06B2_GRANT_TEST_CHANGED_ROWS
+elif [ "$mode" = --approved-import ]; then
+  phase=operator_confirmation
+  # This receipt is generated from actual completed recovery and preflight,
+  # not a fabricated claim. It is local-only and contains no raw rows/keys.
+  archive_sha="$(sha256sum "$archive" | cut -d' ' -f1)"
+  baseline_sha="$(sha256sum "$baseline" | cut -d' ' -f1)"
+  row_sha="$(sha256sum "$work/source-before.sql" | cut -d' ' -f1)"
+  restore_receipt="$work/restore-receipt.txt"
+  {
+    printf 'scope=LOCAL_DISPOSABLE_ONLY\nsource_sha=%s\njar_sha256=%s\nplan_sha256=%s\n' "$source_sha" "$jar_sha" "$approved_sha"
+    printf 'source_server_uuid=%s\nrestore_server_uuid=%s\ntarget_fingerprint_sha256=%s\n' "$source_uuid" "$target_uuid" "$fp"
+    printf 'archive_sha256=%s\narchive_bytes=%s\noriginal_rows_sha256=%s\nrestored_rows_sha256=%s\nbaseline_sha256=%s\n' "$archive_sha" "$(stat -c '%s' "$archive")" "$row_sha" "$row_sha" "$baseline_sha"
+    printf 'actual_c5_restore=true\nindependent_server=true\nexact_rows_equal=true\nsessions_empty=true\nreadonly_preflight=true\nbaseline_verify=true\noriginal_source_unchanged=true\nhosted_import=false\noff_host_restore=false\n'
+  } > "$restore_receipt"
+  receipt_sha="$(sha256sum "$restore_receipt" | cut -d' ' -f1)"
+  source scripts/c9-local-operator-gate.sh
+  cat "$restore_receipt"
+  printf 'restore_receipt_sha256=%s\n' "$receipt_sha"
+  c9_require_operator_confirmation "$fp" "$receipt_sha" || fail R06B2_OPERATOR_DECLINED
+  # Bind the operator's decision to this same live, quiescent target.
+  [[ "$(scalar "$source_id" "$src_password" "$source_schema" 'SELECT @@server_uuid')" = "$source_uuid" &&
+     "$(scalar "$target_id" "$dst_password" "$target_schema" 'SELECT @@server_uuid')" = "$target_uuid" &&
+     "$(sha256sum "$restore_receipt" | cut -d' ' -f1)" = "$receipt_sha" &&
+     "$(sha256sum "$archive" | cut -d' ' -f1)" = "$archive_sha" &&
+     "$(sha256sum "$baseline" | cut -d' ' -f1)" = "$baseline_sha" &&
+     "$(sha256sum "$work/approved-plan.json" | cut -d' ' -f1)" = "$approved_sha" &&
+     "$(sha256sum "$jar" | cut -d' ' -f1)" = "$jar_sha" ]] || fail R06B2_APPROVED_IDENTITY_CHANGED
+  rows_at "$source_id" "$src_password" "$source_schema" > "$work/source-confirmed.sql"
+  rows_at "$target_id" "$dst_password" "$target_schema" > "$work/target-confirmed.sql"
+  cmp -s "$work/source-before.sql" "$work/source-confirmed.sql" && cmp -s "$work/target-before.sql" "$work/target-confirmed.sql" || fail R06B2_APPROVED_ROWS_CHANGED
+  run_java "$target_id" "$work/ro.env" --c8-hosted-original-baseline > "$work/confirm-baseline-private.log" 2>&1 || fail R06B2_APPROVED_BASELINE_CHANGED
+  grep -q C8_ORIGINAL_BASELINE_READ_ONLY_OK "$work/confirm-baseline-private.log" || fail R06B2_APPROVED_BASELINE_CHANGED
+  # Retain restricted diagnostics/receipt outside the deleted test workdir.
+  # The root is owner-only 0700; never publish these raw logs.
+  candidate_receipt_dir="$root/orgresource-c9-receipt-$token"
+  mkdir -m 700 -- "$candidate_receipt_dir"
+  receipt_dir="$candidate_receipt_dir"
+  cp -- "$restore_receipt" "$receipt_dir/restore-receipt.txt"
+  printf 'operator_confirmation_received=true\nrestore_receipt_sha256=%s\nscope=LOCAL_DISPOSABLE_ONLY\n' "$receipt_sha" > "$receipt_dir/operator-receipt.txt"
+  phase=importer_grants
+  importer_password="$(openssl rand -hex 24)"
+  grant_importer "$importer_password"
+  check_importer_grants "$importer_password"
+  cp -- "$work/ro.env" "$work/import.env"
+  {
+    printf '\nEXT_DB_USER=c9_local_importer\nEXT_DB_PASSWORD=%q\n' "$importer_password"
+    printf 'EXT_CONTACT_ENCRYPTION_KEY=%q\n' "$contact_key"
+    printf 'EXT_C8_HOSTED_CONFIRM=%q\nEXT_C8_HOSTED_BACKUP_ID=%q\n' "IMPORT 96 INTO $fp" "local-original-$token"
+    printf 'EXT_C8_HOSTED_RESTORE_EVIDENCE_SHA256=%q\nEXT_C8_HOSTED_RESTORE_ATTESTATION=%q\n' "$receipt_sha" 'I VERIFIED ISOLATED RESTORE'
+  } >> "$work/import.env"
+  phase=import
+  import_exit=0
+  import_started="$(date +%s)"
+  # Exactly one real import attempt. Never retry an incomplete cohort.
+  run_java "$target_id" "$work/import.env" --c8-hosted-demo-import > "$receipt_dir/import-private.log" 2>&1 || import_exit=$?
+  import_seconds="$(( $(date +%s) - import_started ))"
+  rm -f -- "$work/import.env"
+  mysql_at "$target_id" "$dst_password" -e "DROP USER 'c9_local_importer'@'%';"
+  printf 'import_exit=%s\nimport_elapsed_seconds=%s\n' "$import_exit" "$import_seconds" > "$receipt_dir/import-result.txt"
+  phase=post_import_baseline
+  # Independent SELECT-only verification even if the command timed out/failed.
+  run_java "$target_id" "$work/ro.env" --c8-hosted-original-baseline > "$receipt_dir/baseline-private.log" 2>&1 || fail R06B2_ORIGINAL_BASELINE_FAILED
+  grep -q C8_ORIGINAL_BASELINE_READ_ONLY_OK "$receipt_dir/baseline-private.log" || fail R06B2_ORIGINAL_BASELINE_FAILED
+  rows_at "$source_id" "$src_password" "$source_schema" > "$work/source-post-import.sql"
+  cmp -s "$work/source-before.sql" "$work/source-post-import.sql" || fail R06B2_ORIGINAL_SOURCE_CHANGED
+  [ "$import_exit" = 0 ] || fail R06B2_IMPORT_INCOMPLETE_NO_RETRY
+  grep -q '^HOSTED_IMPORT_COMPLETE:' "$receipt_dir/import-private.log" || fail R06B2_IMPORT_MARKER_MISSING
+  phase=postflight
+  rows_at "$target_id" "$dst_password" "$target_schema" > "$work/imported-before-postflight.sql"
+  [[ "$(scalar "$target_id" "$dst_password" "$target_schema" 'SELECT COUNT(*) FROM organization')" = 98 &&
+     "$(scalar "$target_id" "$dst_password" "$target_schema" "SELECT COUNT(*) FROM organization WHERE demo_plan_sha='$approved_sha'")" = 96 &&
+     "$(scalar "$target_id" "$dst_password" "$target_schema" 'SELECT COUNT(*) FROM SPRING_SESSION')" = 0 &&
+     "$(scalar "$target_id" "$dst_password" "$target_schema" 'SELECT COUNT(*) FROM SPRING_SESSION_ATTRIBUTES')" = 0 ]] || fail R06B2_MIXED_COUNTS
+  run_java "$target_id" "$work/ro.env" --c8-hosted-demo-postflight > "$receipt_dir/postflight-private.log" 2>&1 || fail R06B2_POSTFLIGHT_FAILED
+  grep -Fq 'HOSTED_DEMO_POSTFLIGHT_READ_ONLY_OK organizations=96 allocations=21060 events=67370;' "$receipt_dir/postflight-private.log" || fail R06B2_POSTFLIGHT_MARKER
+  # Preflight must reject the now-populated cohort before a second write.
+  # Do not invoke the importer a second time.
+  if run_java "$target_id" "$work/ro.env" --c8-hosted-demo-preflight > "$receipt_dir/repeat-refusal-private.log" 2>&1; then fail R06B2_POPULATED_PREFLIGHT_ACCEPTED; fi
+  grep -Fq 'existing or partial demo cohort' "$receipt_dir/repeat-refusal-private.log" || fail R06B2_WRONG_REPEAT_REFUSAL
+  rows_at "$target_id" "$dst_password" "$target_schema" > "$work/imported-after-postflight.sql"
+  cmp -s "$work/imported-before-postflight.sql" "$work/imported-after-postflight.sql" || fail R06B2_POSTFLIGHT_CHANGED_ROWS
+  printf 'R06B2_LOCAL_MIXED_IMPORT_OK:organizations=98 tagged=96 allocations=21060 events=67370 original_baseline=true independent_readonly_postflight=true populated_preflight_refused=true import_seconds=%s\n' "$import_seconds" | tee "$receipt_dir/result.txt"
+  printf 'post_import_c5=NOT_RUN\nnormal_recovered_browser=NOT_RUN\nhosted_import=NOT_RUN\nindependent_reviewer=OPEN\n' >> "$receipt_dir/result.txt"
+fi
+
 phase=cleanup
 cleanup || fail R06B1_CLEANUP_FAILED
 trap - EXIT INT TERM
 for id in "$source_id" "$target_id"; do if docker_local inspect "$id" >/dev/null 2>&1; then fail R06B1_CLEANUP_FAILED; fi; done
 [[ ! -e "$work" ]] || fail R06B1_CLEANUP_FAILED
 echo R06B1_CLEANUP_OK
+if [ -n "$receipt_dir" ]; then
+  printf "exit=0\nphase=cleanup\n" > "$receipt_dir/status.txt"
+  echo R06B2_PRIVATE_RECEIPT_RETAINED:owner_local_only
+fi
