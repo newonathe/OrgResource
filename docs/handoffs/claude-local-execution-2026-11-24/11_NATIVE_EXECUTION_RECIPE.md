@@ -1,20 +1,49 @@
 # 11 — Native execution recipe (minimal model turns, package-first)
 
+**CURRENT DISPATCH AUTHORITY (2026-11-25 PHT, Report48):** R09 technical remote preparation is VERIFIED_BOUNDED; graph 12 and lock 45 ready=true at PR56 `2c626cb251fc3e0a5e3304f9ea5b03f89f55e024`, exact full CI45494597345 and dedicated45494597313 passed with actual logs. Owner explicitly initiates local queue and supplies authorized prerequisites; no automatic local action. Historical checkpoints below are retained as history, not instructions. Use 09/11, report27 L06 single guarded owner-terminal command; G01/G03/private/host/student/release gates remain open. No C8/C9 formal acceptance or deployment implied.
+
 **Current mandatory gate (supersedes historical examples below):** Read `45_LOCAL_DISPATCH_SOURCE_LOCK.json` and `12_EXECUTION_GRAPH.json` from the live handoff branch. Both must be ready and the lock must provide a non-null approved exact source SHA authorized by the owner. Candidate SHA is not execution authority. Verify the pinned source blobs and seven migrations; no historical checkout, no native task while R09=false. L06 uses report27 single owner-terminal command. Native Windows L03/L04 require owner-approved exclusive disposable environment with no unrelated MySQL servers/listeners or competing launches; if custody/identity cannot be established, BLOCKED. L04 encrypted restore proves four-table fingerprints and allocation count, not full all-row equality. Separate R04 temporary packaging tools reference remains outside Extended source. No independent approval implied.
 
 This is a command runbook for a **fresh, clean, detached source worktree at the reviewed implementation SHA**, and the separately fetched handoff. It is not permission automation or a new tested script. Native commands use existing repository guard logic; no fake CI env, global config changes, elevated privileges, or broad script/PowerShell wildcard permissions. The owner explicitly supplies a private, locally stored, restricted directory (not inside a Git tree, shared/cloud-sync/UNC path or reparse-point tree) and optional exact private plan/IR4 path. Do not search unrelated personal files. Keep raw logs private; terminal output may be retained by Claude. Do not import or attach private logs to Claude memory. Verify native exits and actual receipt markers locally; no copy/paste of sensitive output.
 
 ## One small launch from the owner's repository
 
-First check R09 in 12_EXECUTION_GRAPH.json. **Do not execute this Claude queue while ready_to_launch=false.** Fetch the handoff branch and final reviewed implementation ref. The literal worktree SHA below is a historical verified example; use the exact newly approved source SHA, not latest branch by assumption. Verify origin is newonathe/OrgResource, working tree status, actual PR #46 current HEAD and CI, then create a new worktree at approved source SHA (the exact initial implementation tested by CI #45419347291 is ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306). Handoff docs are available via git show or a separate read-only checkout. Do not change the user's existing branch or worktree. Keep new worktree outside private evidence dir; stop if checkout path exists. Owner-selected actual paths, never placeholders executed as literals.
+Owner verifies live PR56 and actual full/dedicated CI before launch. Use exact checked handoff SHA and source lock; never use historical PR46 or a latest-branch assumption. Keep existing worktree untouched and private root separate. The following source-reviewed PowerShell recipe is not a claim of native execution; inspect errors and stop before any task if check fails. Do not paste owner paths or git credential diagnostics into public receipts.
 
 ```powershell
-git fetch origin
-git fetch origin refs/heads/docs/claude-local-execution-handoff-2026-11-24
-git show FETCH_HEAD:docs/handoffs/claude-local-execution-2026-11-24/09_LAUNCH_PROMPT.md
-# If using this reviewed baseline, create a fresh unique worktree at a new path:
-# $Gate and $Dispatch read from the LIVE handoff worktree before any checkout.
-if ($Gate.ready_to_launch -ne $true -or $Dispatch.ready_to_launch -ne $true -or $Dispatch.approved_source_sha -cnotmatch '^[a-f0-9]{40}
+# Run only after owner explicitly initiates the local queue; from the trusted existing repo.
+# $NewSourceWorktree is an owner-selected absolute, nonexistent path outside private output.
+function Invoke-CheckedGit {
+    $result = & git @args
+    if ($LASTEXITCODE -ne 0) { throw 'Git command failed; inspect safe diagnostics locally.' }
+    $result
+}
+$origin = (Invoke-CheckedGit config --get remote.origin.url) -join ''
+if ($origin -cnotin @('https://github.com/newonathe/OrgResource.git','https://github.com/newonathe/OrgResource','git@github.com:newonathe/OrgResource.git','git@github.com:newonathe/OrgResource')) { throw 'Unexpected origin.' }
+$packet = 'docs/handoffs/claude-local-execution-2026-11-24'
+Invoke-CheckedGit fetch origin refs/heads/docs/claude-local-execution-handoff-2026-11-24
+$HandoffSha = (Invoke-CheckedGit rev-parse FETCH_HEAD) -join ''
+$Gate = ((Invoke-CheckedGit show "${HandoffSha}:$packet/12_EXECUTION_GRAPH.json") -join "`n") | ConvertFrom-Json
+$Dispatch = ((Invoke-CheckedGit show "${HandoffSha}:$packet/45_LOCAL_DISPATCH_SOURCE_LOCK.json") -join "`n") | ConvertFrom-Json
+$FinalSourceSha = $Dispatch.approved_source_sha
+if ($Gate.ready_to_launch -ne $true -or $Dispatch.ready_to_launch -ne $true -or $FinalSourceSha -cnotmatch '^[a-f0-9]{40}$' -or $Gate.verified_source.sha -cne $FinalSourceSha -or $Dispatch.candidate_source_sha -cne $FinalSourceSha -or $Dispatch.repository -cne 'newonathe/OrgResource' -or ($Gate.tasks | Where-Object id -eq 'R09').state -cne 'VERIFIED_BOUNDED') { throw 'R09 technical gate or source lock mismatch.' }
+Invoke-CheckedGit fetch origin refs/heads/test/r09-integrated-evidence-candidate-2026-11-25
+if (((Invoke-CheckedGit rev-parse FETCH_HEAD) -join '') -cne $FinalSourceSha) { throw 'Live implementation ref changed; return to ChatGPT.' }
+if (((Invoke-CheckedGit rev-parse "${FinalSourceSha}^{tree}") -join '') -cne $Dispatch.approved_source_tree) { throw 'Source tree mismatch.' }
+foreach ($entry in @($Dispatch.source_files) + @($Dispatch.migrations)) {
+    $actual = (Invoke-CheckedGit ls-tree $FinalSourceSha -- $entry.path) -join ''
+    $expected = '{0} blob {1}' -f $entry.mode, $entry.blob
+    $expected += "`t" + $entry.path
+    if ($actual -cne $expected) { throw 'Pinned source blob/mode mismatch.' }
+}
+if ($Dispatch.source_files.Count -ne 16 -or $Dispatch.migrations.Count -ne 7) { throw 'Source lock inventory mismatch.' }
+Invoke-CheckedGit diff --exit-code 7f8c0746da18fd54b47f430ac1435ac36e605d67 $FinalSourceSha -- backend frontend
+Invoke-CheckedGit diff --exit-code 45bcdfc7285598de3fe98684448aa65b5dd47e12 $FinalSourceSha -- extended/backend/src/main/resources/db/migration
+# Review actual exact CI runs (full 45494597345, dedicated 45494597313) and live PR56 before proceeding.
+if ([string]::IsNullOrWhiteSpace($NewSourceWorktree) -or ![IO.Path]::IsPathFullyQualified($NewSourceWorktree) -or (Test-Path -LiteralPath $NewSourceWorktree)) { throw 'Owner must choose a fresh absolute source path.' }
+Invoke-CheckedGit worktree add --detach $NewSourceWorktree $FinalSourceSha
+if (((Invoke-CheckedGit -C $NewSourceWorktree rev-parse HEAD) -join '') -cne $FinalSourceSha) { throw 'Detached checkout mismatch.' }
+if (@(Invoke-CheckedGit -C $NewSourceWorktree status --porcelain --untracked-files=all).Count -ne 0) { throw 'Fresh checkout is not clean.' }
 ```
 
 Run Claude Code interactively in the new source worktree with the short launch prompt (09). Read AGENTS/QA mandatory policy; no duplicated plan-mode design. In the handoff docs worktree, use selective deterministic context retrieval; do not paste whole manifest or CSV into agent context. The exact refs are in 04. For example:

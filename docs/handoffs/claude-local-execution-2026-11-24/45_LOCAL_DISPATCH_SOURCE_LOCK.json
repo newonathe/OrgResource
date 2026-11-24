@@ -1,12 +1,12 @@
 {
   "schema": "orgresource-local-dispatch-source-lock-v1",
   "date": "2026-11-25 PHT",
-  "ready_to_launch": false,
-  "approved_source_sha": null,
+  "ready_to_launch": true,
+  "approved_source_sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
   "candidate_source_sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
   "repository": "newonathe/OrgResource",
   "graph": "12_EXECUTION_GRAPH.json",
-  "status": "CANDIDATE_ONLY",
+  "status": "VERIFIED_BOUNDED_REMOTE_PREPARATION_ONLY",
   "source_files": [
     {
       "path": "AGENTS.md",
@@ -173,14 +173,17 @@
       "job": 138801601440,
       "oracle": "frozen Java8 actual regression",
       "actual": "61 Maven, 100 Newman requests/151 assertions, one packaged Playwright, zero failures/errors/skips"
-    }
-  ],
-  "full_pending": [
+    },
     {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
       "run": 45494597345,
-      "job": 138801601172
+      "job": 138801601172,
+      "oracle": "final exact integrated full Extended regression",
+      "actual": "actual checkout, 93 registered policy routes each once, 103 Maven/78 identity zero failures/errors/skips; 60 Newman requests/110 assertions and 19 Playwright zero failures; real deadlock rollback/retry, lost HTTP response and same actor replay across distinct JVM, stale reminder claims recover UNKNOWN and fresh preserved, exact domain rows/no transport; actual independent C5 restore 1039696 bytes, sessions empty, durable replay and role denials, invalid mixed metadata fail closed; public R06B3b SQL aggregate/projection, lock and seven DML denials, metadata200 original-only API/browser and persisted session/logout, exact non-session/source equality, 15 archive refusals, 10 local prechecks, all cleanup, 450+75 packaged HTTP"
     }
   ],
+  "full_pending": [],
   "local_queue": [
     "L00",
     "L03",
@@ -200,7 +203,8 @@
     "L04 Windows verifier authenticates encrypted C5 archive and compares four-table count/sum/XOR CRC32 fingerprints and allocation count; not exact all-row equality. Retained stopped disposable datadirs require owner-private custody. Native Windows scripts reserve then release loopback ports before launch and poll ping, so require owner-approved exclusive disposable Windows environment without other MySQL servers/listeners or competing launches; no permission broadening or shared database shutdown. If ownership cannot be established, BLOCKED, do not run. Source-only review; actual native behavior NOT_RUN.",
     "L06 report27 is authoritative; actual exact private plan/owner confirmation and POSIX capability required. No interim preparation or duplicate import.",
     "Report46: corrected PR55 distinct JVM and reminder restart actual full pass; not final integrated proof. Candidate ready=false; no approval.",
-    "Report47: prior combined full actual success; newest full exact-head receipt mandatory."
+    "Report47: prior combined full actual success; newest full exact-head receipt mandatory.",
+    "Report48: approved_source_sha denotes ChatGPT-reviewed source identity, not owner consent. All 23 pins matched exact tree. Owner explicitly initiates local queue; L06 separate real terminal confirmation. No native PS execution observed."
   ],
   "prior_bounded_receipts": [
     {
@@ -219,5 +223,7 @@
       "oracle": "first complete corrected combined full regression",
       "actual": "103 Maven/78 identity/19 Playwright, 60 Newman requests/110 assertions, all three jobs success, zero failures/errors/skips; real deadlock/rollback/retry, distinct JVM response-loss replay and reminder recovery, C5 exact independent restore, public SQL aggregate/projection, locking denial/positive, seven domain DML denials, real original-only metadata/browser/API/session/logout, exact source/domain row equality, all cleanup; private positive NOT_RUN"
     }
-  ]
+  ],
+  "approved_source_tree": "d55cecc7afd240da455014e2d9f1b61bb0e74f40",
+  "owner_launch_required": true
 }

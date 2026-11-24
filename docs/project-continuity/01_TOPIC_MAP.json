@@ -344,7 +344,7 @@
         }
       ],
       "authority": "93 route candidate mapping, independent issue34 blocked; current code and actual test evidence.",
-      "next": "Report46: PR55 corrected 5afd326f4bd4e03c6027a9a639de682a1996d5e1 CI45493345999/job138797218433 exact checkout and actual logs: full 103 Maven/78 identity/19 Playwright, Newman 60 requests/110 assertions, all three jobs success. R07_LOST_RESPONSE_RESTART_OK and R07_REMINDER_RESTART_OK actually observed, same actor exact receipt/ETag and domain equality across distinct JVM; staged persisted stale claims recover UNKNOWN, fresh preserved, exact other rows, no transport (not a crash during actual transport). Actual InnoDB deadlock, C5 independent restore, 15 archive refusals, 10 local prechecks, cleanup; R08 packaged 450+75 on public eight-org recovered fixture. Earlier failure at KeyError retained, corrected full pass. PR56 exact 2c626cb251fc3e0a5e3304f9ea5b03f89f55e024 dedicated/Java8 already passed; older integrated 9d0902b4 full job138797385434 browser stage active, latest full job138801601172 additive stage active at observation. C9 scope matrix reconciles existing browser pre-forward abort/delayed commit and exact retry (no redundant new proxy), SQL analogues vs exact Hibernate, full private/hosted/cold/independent gaps. No product or verification code edits in this pass. R09=false pending final combined receipt and explicit scope closure; no Claude launch/merge/deploy."
+      "next": "Report48: 93/93 bounded directed receipts, independent G01 open; issue34 remains BLOCKED."
     },
     {
       "id": "T12_HOSTING_AND_SYNTHETIC_DATA",
@@ -423,7 +423,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "Report47: PR56 prior corrected 9d0902b4e8ea2045a30a4ff4a524e213a3b6a7b3 CI45493392042/job138797385434 actual full pass, 103 Maven/78 identity/19 Playwright, Newman 60/110, all three jobs success. Both real restart markers, actual deadlock, encrypted independent C5 exact rows, 450+75 packaged HTTP and public R06B3b SQL aggregate/projection, locking/grants, original-only browser/API/persisted session/logout, cleanup observed together for first time. Private positive not run. Latest 2c626cb251fc3e0a5e3304f9ea5b03f89f55e024 still full job138801601172 in progress (additive stage at last observation), exact dedicated and Java8 actual pass retained. Three historical successful Extended logs reused for npm package-install reported 3/4/4s, Vite reported 142/191/220ms, Maven total 130/119/130s, Playwright reported 1.7m each; identical packaged JAR SHA across three, different test source/runner; NOT controlled cold/warm benchmark or speedup. No new CI triggered. R09=false pending final exact full receipt and explicit remaining-scope reconciliation; no Claude launch/merge/deploy.",
+      "next": "Report48: R07/R08 bounded public exact-head proof complete; G03 formal/private/independent outstanding.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -459,7 +459,7 @@
         }
       ],
       "authority": "Latest live PR47 supersedes snapshot; 12 graph, 14 queue, 15 events, 04 index and 10 external research.",
-      "next": "Report47: PR56 prior corrected 9d0902b4e8ea2045a30a4ff4a524e213a3b6a7b3 CI45493392042/job138797385434 actual full pass, 103 Maven/78 identity/19 Playwright, Newman 60/110, all three jobs success. Both real restart markers, actual deadlock, encrypted independent C5 exact rows, 450+75 packaged HTTP and public R06B3b SQL aggregate/projection, locking/grants, original-only browser/API/persisted session/logout, cleanup observed together for first time. Private positive not run. Latest 2c626cb251fc3e0a5e3304f9ea5b03f89f55e024 still full job138801601172 in progress (additive stage at last observation), exact dedicated and Java8 actual pass retained. Three historical successful Extended logs reused for npm package-install reported 3/4/4s, Vite reported 142/191/220ms, Maven total 130/119/130s, Playwright reported 1.7m each; identical packaged JAR SHA across three, different test source/runner; NOT controlled cold/warm benchmark or speedup. No new CI triggered. R09=false pending final exact full receipt and explicit remaining-scope reconciliation; no Claude launch/merge/deploy."
+      "next": "Report48: R09 technical ready=true; owner explicitly initiates local queue using graph/lock/09; local receipts NOT_RUN."
     },
     {
       "id": "T17_UI_DESIGN_AND_USER_EXPERIENCE",

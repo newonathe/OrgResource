@@ -2,47 +2,58 @@
   "schema": "orgresource.claude.local.handoff.v1",
   "date": "2026-11-24 Asia/Manila",
   "repository": "newonathe/OrgResource",
-  "source_ref": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306",
-  "source_tree": "735742407327d8ad26e4b2e6ba2c60b446688bb8",
-  "source_pr": 46,
+  "source_ref": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+  "source_tree": "d55cecc7afd240da455014e2d9f1b61bb0e74f40",
+  "source_pr": 56,
   "source_ci": {
-    "id": 45419347291,
+    "id": 45494597345,
     "status": "completed",
-    "conclusion": "success"
+    "conclusion": "success",
+    "extended_job": 138801601172,
+    "dedicated_run": 45494597313,
+    "dedicated_job": 138801600507
   },
   "last_verified": {
-    "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
-    "tree": "432383c58f60d26ab2f05e08ce31bd6996b7d56b",
-    "pr": 51,
-    "ci": 45434204255,
-    "extended_job": 138587448867,
-    "previous_r06b1": {
-      "sha": "406ce2af1c4905bf7b845bcc072f71903327e0a1",
-      "tree": "81d9f55696cb001065524641abe864a77f79b16d",
-      "pr": 49,
-      "ci": 45430758956,
-      "extended_job": 138575101070,
-      "previous_r06a": {
-        "sha": "c91333766f3082b88a8c0414450dcaf6fc934ca2",
-        "tree": "f275de92f518971a7529c8cc2f1ea378260017e9",
-        "pr": 48,
-        "ci": 45427270775,
-        "extended_job": 138562564604,
-        "previous_stage1d": {
-          "sha": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
-          "pr": 46,
-          "ci": 45425950575,
-          "extended_job": 138557865307
+    "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "tree": "d55cecc7afd240da455014e2d9f1b61bb0e74f40",
+    "pr": 56,
+    "ci": 45494597345,
+    "extended_job": 138801601172,
+    "evidence": "Report48 actual final logs and dedicated receipt",
+    "previous": {
+      "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+      "tree": "432383c58f60d26ab2f05e08ce31bd6996b7d56b",
+      "pr": 51,
+      "ci": 45434204255,
+      "extended_job": 138587448867,
+      "previous_r06b1": {
+        "sha": "406ce2af1c4905bf7b845bcc072f71903327e0a1",
+        "tree": "81d9f55696cb001065524641abe864a77f79b16d",
+        "pr": 49,
+        "ci": 45430758956,
+        "extended_job": 138575101070,
+        "previous_r06a": {
+          "sha": "c91333766f3082b88a8c0414450dcaf6fc934ca2",
+          "tree": "f275de92f518971a7529c8cc2f1ea378260017e9",
+          "pr": 48,
+          "ci": 45427270775,
+          "extended_job": 138562564604,
+          "previous_stage1d": {
+            "sha": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
+            "pr": 46,
+            "ci": 45425950575,
+            "extended_job": 138557865307
+          },
+          "previous_stage1c": {
+            "sha": "09e3e5a0b2a1e87132c8f7ba9fb44ab1c50de2c0",
+            "ci": 45414895612
+          },
+          "evidence": "actual exact-head logs inspected; 14 and 15"
         },
-        "previous_stage1c": {
-          "sha": "09e3e5a0b2a1e87132c8f7ba9fb44ab1c50de2c0",
-          "ci": 45414895612
-        },
-        "evidence": "actual exact-head logs inspected; 14 and 15"
+        "evidence": "actual exact-head logs inspected; 14/15"
       },
-      "evidence": "actual exact-head logs inspected; 14/15"
-    },
-    "evidence": "actual exact-head logs inspected; handoff14/15 and global06"
+      "evidence": "actual exact-head logs inspected; handoff14/15 and global06"
+    }
   },
   "frozen_course_a": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
   "protected_migrations": "V1–V7",
@@ -651,12 +662,12 @@
   "C8_issue34": "BLOCKED",
   "DEC_D01_issue27": "PROPOSED_ONLY",
   "local_execution_order": [
-    "L00",
-    "L03 (includes L01 and L02 with verified nested receipts)",
-    "L04",
-    "L05 independent",
-    "L06 BLOCKED pending R09, L00B/L03 and owner consent; remote R06B verified bounded",
-    "L07 OPERATOR_ONLY",
+    "L00 after explicit owner launch",
+    "L03 (includes L01/L02 only with actual nested receipts)",
+    "L04 exact private plan",
+    "L05 independent restricted IR4",
+    "L06 gated private POSIX owner-terminal import",
+    "L07 separate OPERATOR_ONLY",
     "L08 sanitized handback"
   ],
   "research": {
@@ -720,11 +731,14 @@
     ]
   },
   "launch_gate": {
-    "ready": false,
+    "ready": true,
     "source_of_truth": "12_EXECUTION_GRAPH.json",
     "compatibility_gate": "13_MIXED_REHEARSAL_COMPATIBILITY_GATE.md",
-    "verified_base_only": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
-    "candidate_lock": "45_LOCAL_DISPATCH_SOURCE_LOCK.json"
+    "verified_base_only": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "candidate_lock": "45_LOCAL_DISPATCH_SOURCE_LOCK.json",
+    "approved_source_sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "owner_launch_required": true,
+    "scope": "BOUNDED_REMOTE_PREPARATION_ONLY"
   },
   "r06a_candidate": {
     "sha": "c91333766f3082b88a8c0414450dcaf6fc934ca2",
@@ -4124,5 +4138,232 @@
       "job": 138801601172
     },
     "acceptance": "VERIFIED_BOUNDED_PRIOR_INTEGRATED"
+  },
+  "historical_source_ref": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306",
+  "historical_source_tree": "735742407327d8ad26e4b2e6ba2c60b446688bb8",
+  "historical_source_pr": 46,
+  "historical_source_ci": {
+    "id": 45419347291,
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "r09_final_actual": {
+    "receipt": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+      "run": 45494597345,
+      "job": 138801601172,
+      "oracle": "final exact integrated full Extended regression",
+      "actual": "actual checkout, 93 registered policy routes each once, 103 Maven/78 identity zero failures/errors/skips; 60 Newman requests/110 assertions and 19 Playwright zero failures; real deadlock rollback/retry, lost HTTP response and same actor replay across distinct JVM, stale reminder claims recover UNKNOWN and fresh preserved, exact domain rows/no transport; actual independent C5 restore 1039696 bytes, sessions empty, durable replay and role denials, invalid mixed metadata fail closed; public R06B3b SQL aggregate/projection, lock and seven DML denials, metadata200 original-only API/browser and persisted session/logout, exact non-session/source equality, 15 archive refusals, 10 local prechecks, all cleanup, 450+75 packaged HTTP"
+    },
+    "source_tree": "d55cecc7afd240da455014e2d9f1b61bb0e74f40",
+    "full_jobs": [
+      {
+        "id": 138801600647,
+        "status": "success",
+        "review": "METADATA"
+      },
+      {
+        "id": 138801601172,
+        "status": "success",
+        "review": "ACTUAL_LOGS"
+      },
+      {
+        "id": 138801601440,
+        "status": "success",
+        "review": "ACTUAL_LOGS"
+      }
+    ],
+    "dedicated": {
+      "run": 45494597313,
+      "job": 138801600507,
+      "status": "success",
+      "actual_logs_inspected": true
+    },
+    "metrics": {
+      "scope": "actual final packaged recovered public serial HTTP, three repeats same JVM",
+      "columns": [
+        "min_ms",
+        "p50_ms",
+        "p95_ms",
+        "max_ms",
+        "first_warmup_ms",
+        "body_min",
+        "body_max"
+      ],
+      "workloads": [
+        "resource_page",
+        "allocation_page",
+        "requirement_page",
+        "project_page",
+        "overview"
+      ],
+      "values": [
+        [
+          [
+            18.503,
+            22.917,
+            25.436,
+            25.773,
+            49.641,
+            3125,
+            3125
+          ],
+          [
+            29.869,
+            33.928,
+            45.513,
+            51.061,
+            114.526,
+            75742,
+            75742
+          ],
+          [
+            11,
+            13.75,
+            17.356,
+            20.24,
+            18.607,
+            5167,
+            5167
+          ],
+          [
+            10.081,
+            12.411,
+            19.344,
+            22.709,
+            17.669,
+            1050,
+            1050
+          ],
+          [
+            15.607,
+            19.243,
+            25.361,
+            26.473,
+            46.555,
+            1868,
+            1868
+          ]
+        ],
+        [
+          [
+            11.452,
+            14.299,
+            17.386,
+            20.154,
+            12.459,
+            3125,
+            3125
+          ],
+          [
+            20.292,
+            23.94,
+            31.934,
+            35.773,
+            22.798,
+            75742,
+            75742
+          ],
+          [
+            8.645,
+            10.473,
+            13.029,
+            15.822,
+            11.631,
+            5167,
+            5167
+          ],
+          [
+            7.745,
+            10.11,
+            30.757,
+            30.823,
+            9.004,
+            1050,
+            1050
+          ],
+          [
+            13.482,
+            15.063,
+            18.375,
+            19.041,
+            15.825,
+            1868,
+            1868
+          ]
+        ],
+        [
+          [
+            8.962,
+            13.254,
+            15.681,
+            15.977,
+            12.59,
+            3125,
+            3125
+          ],
+          [
+            17.392,
+            19.32,
+            23.875,
+            31.552,
+            19.398,
+            75742,
+            75742
+          ],
+          [
+            8.093,
+            10.236,
+            12.624,
+            13.824,
+            10.765,
+            5167,
+            5167
+          ],
+          [
+            6.556,
+            8.759,
+            13.83,
+            15.057,
+            6.535,
+            1050,
+            1050
+          ],
+          [
+            11.689,
+            14.005,
+            17.797,
+            20.136,
+            19.155,
+            1868,
+            1868
+          ]
+        ]
+      ],
+      "measured": 450,
+      "warmups": 75,
+      "fixture": {
+        "allocation": 120,
+        "department": 2,
+        "project": 6,
+        "resource": 20,
+        "resource_requirement": 18,
+        "PENDING": 0,
+        "ISSUED": 6,
+        "CONSUMED": 32
+      },
+      "jar_bytes": 72486427,
+      "jar_sha256": "76e5977499edb6a01a0c6de95ce166c2975d08f70bcdbd57680049d1af32c10a"
+    },
+    "protected": {
+      "course_a": 105,
+      "migrations": 7,
+      "dispatch_pins": 23,
+      "all_same": true
+    },
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/48_FINAL_INTEGRATED_RECEIPT_AND_R09_LOCAL_DISPATCH.md",
+    "acceptance": "VERIFIED_BOUNDED_REMOTE_PREPARATION_ONLY",
+    "owner_launch_required": true
   }
 }

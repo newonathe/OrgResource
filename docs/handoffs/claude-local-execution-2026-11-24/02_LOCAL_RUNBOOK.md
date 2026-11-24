@@ -1,17 +1,12 @@
 # 02 — Local-only sequential execution runbook (Windows)
 
+**CURRENT DISPATCH AUTHORITY (2026-11-25 PHT, Report48):** R09 technical remote preparation is VERIFIED_BOUNDED; graph 12 and lock 45 ready=true at PR56 `2c626cb251fc3e0a5e3304f9ea5b03f89f55e024`, exact full CI45494597345 and dedicated45494597313 passed with actual logs. Owner explicitly initiates local queue and supplies authorized prerequisites; no automatic local action. Historical checkpoints below are retained as history, not instructions. Use 09/11, report27 L06 single guarded owner-terminal command; G01/G03/private/host/student/release gates remain open. No C8/C9 formal acceptance or deployment implied.
+
 **Execution candidate; not run by ChatGPT on the owner's machine.** Existing scripts are the source of truth; inspect full script before executing. Use PowerShell 7.4+ on Windows, Java 21, installed MySQL 8.0 client/server, Node 24, npm and Python (including pywinpty for protected-login operator drill). Check actual versions against .github/workflows/verify.yml and script requirements. Do not assume installed software, elevate privileges, change a service or install paid dependencies. Report missing prerequisite; continue independent tasks. Never call the Browser/Chrome plugin. CLI Playwright only.
 
 ## L00 — checkout, guard, environment and private inputs (deterministic)
-Use a fresh worktree off the exact latest reviewed implementation; handoff branch is docs-only. If worktree has unrelated changes, leave untouched. Fetch remote refs; check PR #46, latest relevant successor and exact Actions result. Validate frozen trees and V1–V7 before any run:
+Use the checked exact-source launch procedure in 11, not historical PR46 or a comparison requiring the older C5 script to remain byte-identical (authorized additive transport changes already occurred). Verify current graph/lock and pinned source blobs, frozen Course A and exact V1–V7 as in 11. After owner starts the clean detached worktree, inspect actual tool versions without dumping remote URLs or environment values:
 ```powershell
-git remote -v
-git status --porcelain
-git fetch origin
-git rev-parse HEAD
-git diff --exit-code 7f8c0746da18fd54b47f430ac1435ac36e605d67 HEAD -- backend frontend
-git diff --exit-code 45bcdfc7285598de3fe98684448aa65b5dd47e12 HEAD -- extended/backend/src/main/resources/db/migration
-git diff --exit-code 09e3e5a0b2a1e87132c8f7ba9fb44ab1c50de2c0 HEAD -- scripts/extended-c-backup.ps1 scripts/verify-c9-cross-server-restore.sh scripts/verify-c9-encrypted-archive.ps1
 $PSVersionTable.PSVersion
 java -version
 node -v

@@ -871,20 +871,13 @@
   },
   "latest_scoped_observation": {
     "date": "2026-11-25 PHT",
-    "handoff_parent": "9a4ee2f153979e132aea72f8791f27b4f464b6d2",
+    "handoff_parent": "17bae23d42366453227892bf5125ec57737b7e4d",
     "pr53": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
     "pr54": "9646ff743c6678af90aa357ee761ac11ed366dff",
     "pr55": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
     "pr56": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
-    "coverage": "Report47 first corrected integrated full actual and build timing reuse",
-    "candidate_runs": [
-      [
-        45494597345,
-        "Verify",
-        "in_progress",
-        null
-      ]
-    ],
+    "coverage": "Report48 final exact full/dedicated actual; bounded R09 technical ready",
+    "candidate_runs": [],
     "actual_runs": [
       [
         45491538911,
@@ -918,6 +911,12 @@
       ],
       [
         45493392042,
+        "Verify",
+        "completed",
+        "success"
+      ],
+      [
+        45494597345,
         "Verify",
         "completed",
         "success"
@@ -955,6 +954,14 @@
         "job": 138797385434,
         "oracle": "first complete corrected combined full regression",
         "actual": "103 Maven/78 identity/19 Playwright, 60 Newman requests/110 assertions, all three jobs success, zero failures/errors/skips; real deadlock/rollback/retry, distinct JVM response-loss replay and reminder recovery, C5 exact independent restore, public SQL aggregate/projection, locking denial/positive, seven domain DML denials, real original-only metadata/browser/API/session/logout, exact source/domain row equality, all cleanup; private positive NOT_RUN"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+        "run": 45494597345,
+        "job": 138801601172,
+        "oracle": "final exact integrated full Extended regression",
+        "actual": "actual checkout, 93 registered policy routes each once, 103 Maven/78 identity zero failures/errors/skips; 60 Newman requests/110 assertions and 19 Playwright zero failures; real deadlock rollback/retry, lost HTTP response and same actor replay across distinct JVM, stale reminder claims recover UNKNOWN and fresh preserved, exact domain rows/no transport; actual independent C5 restore 1039696 bytes, sessions empty, durable replay and role denials, invalid mixed metadata fail closed; public R06B3b SQL aggregate/projection, lock and seven DML denials, metadata200 original-only API/browser and persisted session/logout, exact non-session/source equality, 15 archive refusals, 10 local prechecks, all cleanup, 450+75 packaged HTTP"
       }
     ]
   }

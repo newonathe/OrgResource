@@ -1,5 +1,7 @@
 # 08 — Return template (one compact report, not another plan)
 
+**CURRENT DISPATCH AUTHORITY (2026-11-25 PHT, Report48):** R09 technical remote preparation is VERIFIED_BOUNDED; graph 12 and lock 45 ready=true at PR56 `2c626cb251fc3e0a5e3304f9ea5b03f89f55e024`, exact full CI45494597345 and dedicated45494597313 passed with actual logs. Owner explicitly initiates local queue and supplies authorized prerequisites; no automatic local action. Historical checkpoints below are retained as history, not instructions. Use 09/11, report27 L06 single guarded owner-terminal command; G01/G03/private/host/student/release gates remain open. No C8/C9 formal acceptance or deployment implied.
+
 Tested SHA / source branch / date / tool versions:
 Task | Status | Exit | Elapsed | Actual markers or bounded result
 L00 ... L08 (all rows, include NOT_RUN/BLOCKED)
@@ -15,7 +17,7 @@ Next action: send result back to ChatGPT. No new planning, implementation, merge
 
 Report L01/L02 as COVERED_BY_L03 only if nested actual passing receipts observed; include same SHA and parent command. Report package V1–V7 byte comparison and historical allowlist omissions. Report actual model/usage/cache breakdown where available, repeated native runs avoided, elapsed time; no guessed token or dollar savings. Do not paste private paths into public output or memory.
 
-Include exact final ChatGPT-authorized SHA and pre-handoff gate R09. For L06 record POSIX compatibility/actual C5 transport and explicit operator receipt or BLOCKED; never manufacture operator attestation. Include no raw private path in public handback. Distinguish historical 93-route candidate mapping, 18 new directed route addenda, and independent review (OPEN).
+Include exact final ChatGPT-authorized SHA and pre-handoff gate R09. For L06 record POSIX compatibility/actual C5 transport and explicit operator receipt or BLOCKED; never manufacture operator attestation. Include no raw private path in public handback. Distinguish 93/93 bounded remote directed evidence from 0/93 independently accepted; G01 review OPEN.
 
 ## Superseding continuation checkpoint (2026-11-24 PHT)
 

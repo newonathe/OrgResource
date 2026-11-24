@@ -1,5 +1,7 @@
 # 01 — Claude local execution contract
 
+**CURRENT DISPATCH AUTHORITY (2026-11-25 PHT, Report48):** R09 technical remote preparation is VERIFIED_BOUNDED; graph 12 and lock 45 ready=true at PR56 `2c626cb251fc3e0a5e3304f9ea5b03f89f55e024`, exact full CI45494597345 and dedicated45494597313 passed with actual logs. Owner explicitly initiates local queue and supplies authorized prerequisites; no automatic local action. Historical checkpoints below are retained as history, not instructions. Use 09/11, report27 L06 single guarded owner-terminal command; G01/G03/private/host/student/release gates remain open. No C8/C9 formal acceptance or deployment implied.
+
 ## Authority and execution boundary
 Owner's current direction: all remote work that ChatGPT can perform stays there; local coding agent only executes local-dependent work. AGENTS.md and the full quality gate apply, current assignment and syllabus remain academic authority, Canvas is student verified. Current source wins over stale drafts; owner authorization wins over optional future designs. Do not reduce audit depth or acceptance criteria to satisfy time/token limits; complete all safe possible work and mark anything blocked or not run.
 
@@ -24,7 +26,7 @@ See 10_CLAUDE_RESEARCH_AND_ADOPTION.md. Use installed /usage and /context or ava
 
 ## Current launch gate
 
-Read the compact 12_EXECUTION_GRAPH.json task states by deterministic selection, and the 13 compatibility gate only for L06. R09 is OPEN; no local agent launch until ChatGPT finishes remote queue or owner explicitly accepts named incomplete preparation. Claude is not authorized to fix the Windows/POSIX mismatch, add a backup transport, create an importer, alter production source, or attest to operator recovery. Keep independently validated local tasks separate. Do not run older hardcoded SHA commands after a new final reviewed source is supplied.
+Read the compact 12_EXECUTION_GRAPH.json task states by deterministic selection, and the 13 compatibility gate only for L06. Historical checkpoint: R09 was OPEN. Current Report48/graph/lock supersede it; owner explicitly initiates only the reviewed local queue. Claude is not authorized to fix the Windows/POSIX mismatch, add a backup transport, create an importer, alter production source, or attest to operator recovery. Keep independently validated local tasks separate. Do not run older hardcoded SHA commands after a new final reviewed source is supplied.
 
 R06A implementation candidate is on PR #48 only. Do not execute the public CI harness locally or spoof GITHUB_ACTIONS. LocalOriginalAcceptance is pre-import two-original-only transport; it does not support an imported 96 cohort and is not a production backup route. No local run until R09 and specific R06B script are ready.
 

@@ -1,5 +1,7 @@
 # OrgResource — Claude Code local execution packet
 
+**CURRENT DISPATCH AUTHORITY (2026-11-25 PHT, Report48):** R09 technical remote preparation is VERIFIED_BOUNDED; graph 12 and lock 45 ready=true at PR56 `2c626cb251fc3e0a5e3304f9ea5b03f89f55e024`, exact full CI45494597345 and dedicated45494597313 passed with actual logs. Owner explicitly initiates local queue and supplies authorized prerequisites; no automatic local action. Historical checkpoints below are retained as history, not instructions. Use 09/11, report27 L06 single guarded owner-terminal command; G01/G03/private/host/student/release gates remain open. No C8/C9 formal acceptance or deployment implied.
+
 Date: 2026-11-24 PHT. This is a **prepared execution handoff**, not a new implementation, independent acceptance or release authorization. Read this first. The owner wants remote source/CI/test design and all decisions kept in ChatGPT. Claude Code is a local execution worker for the smallest work requiring local filesystem, terminal, MySQL, packaged browser, private fixtures and restricted historical evidence. It is NOT a new project architect.
 
 ## Start

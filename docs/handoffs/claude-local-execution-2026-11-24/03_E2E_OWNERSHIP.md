@@ -1,5 +1,7 @@
 # 03 — End-to-end ownership, dependency and acceptance map
 
+**CURRENT DISPATCH AUTHORITY (2026-11-25 PHT, Report48):** R09 technical remote preparation is VERIFIED_BOUNDED; graph 12 and lock 45 ready=true at PR56 `2c626cb251fc3e0a5e3304f9ea5b03f89f55e024`, exact full CI45494597345 and dedicated45494597313 passed with actual logs. Owner explicitly initiates local queue and supplies authorized prerequisites; no automatic local action. Historical checkpoints below are retained as history, not instructions. Use 09/11, report27 L06 single guarded owner-terminal command; G01/G03/private/host/student/release gates remain open. No C8/C9 formal acceptance or deployment implied.
+
 Snapshot: PR #46 ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306, CI #45419347291 completed/success; prior #45 green #45414895612. main is skeleton 16e781c837dd7e1f0481fb7a01e49c27d80a91e8. Source lineage is stacked: #2→3→4→5→6→8→11→12 (frozen academic A)→13→14→15→16→17→18→19→20→22→25→28→29→31→32→33→35→36→37→38→39→40→41→42→43→44→45→46. Parallel historical documents #21/#23/#24 are not merged into this line; use exact refs in 04_CONTEXT_INDEX.json. #1/#7/#9/#10 separate historical branches; do not blindly merge. All current release/merge decisions remain owner-gated.
 
 | ID | Scope / state | Executor / prerequisites | Exact completion receipt |
