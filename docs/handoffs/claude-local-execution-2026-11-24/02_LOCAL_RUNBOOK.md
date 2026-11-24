@@ -23,21 +23,25 @@ Check each native exit code separately. Use JAVA_HOME actually pointing to Java2
 
 Private plan L00b: owner supplies absolute path to exact fictional-events-v1.local.json outside repo. Check actual byte length 19265850 and SHA256 3b0f54da85cadb77cd7d8ab2d50c1fdb4b4ee36710b803cf904227e13f08927c via Get-Item and Get-FileHash; case-normalize. Source SHA 57f1f0c680041c39dcf7644a1acca5fcc75dc7d525262547842389da7540b9a2, flags synthetic=true scope LOCAL_ONLY_DRY_RUN. Counts 96/248/713/1312/2139/462/21060/67370 (org/dept/project/resource/requirement/persona/allocation/event). Do not regenerate, download lookalike or change newline. Existing Java preflight enforces approved bytes and aggregate IDs. Hash check is mandatory; no raw data pasted. If absent/mismatched, mark L04/L06 BLOCKED, continue other tasks.
 
-## L01 — actual Windows C1/C5 recovery (existing guarded verifier)
+## Primary order — package-first (superseding older sequence)
+
+After L00, execute L03 once. Source scripts/package-extended-c.ps1 lines 73–96 actually extracts the committed source, runs the L01 verifier with -VerifyRecovery, then L02 operator drill on the extracted JAR. If both nested receipts pass, L01/L02 are covered by L03; do not rerun them in advance. See 11_NATIVE_EXECUTION_RECIPE.md for fresh worktree, log redirection, exact package/hash checks and verified JAR reuse for L04. L05 independent. If packaging fails, isolate first failure and use L01/L02 below only for missing required evidence.
+
+## L01 — actual Windows C1/C5 recovery (fallback or nested receipt)
 From exact clean tested source, run once:
 ```powershell
 pwsh -NoProfile -File .\scripts\verify-extended-c1.ps1 -VerifyRecovery
 ```
 Read full verifier + dot-sourced recovery script first. No -SkipFrontend. This includes local native build, real MySQL, original API/browser tests, C5 encrypted archive, session exclusion, wrong key/tamper, receipt replay, suspended/foreign role, contact key correctness, packaged app/browser after restore. Capture actual markers and exit, tested SHA, time and private output folder. A failed command is TEST_FAILED; no editing protected files. Existing historical C5 evidence can be cited as prior, not current proof. This run is Windows disposable-mode regression, not protected-login drill or off-host. If it fails, only continue independent tasks with validated JAR; otherwise L02/L04 depend on clean correct packaged JAR.
 
-## L02 — protected-login operator drill (existing C6a, no external database)
+## L02 — protected-login operator drill (fallback or nested receipt; no external database)
 ```powershell
 $jar = (Resolve-Path .\extended\backend\target\extended-backend-0.1.0-SNAPSHOT.jar).Path
 pwsh -NoProfile -File .\scripts\verify-extended-c6a-operator.ps1 -JarPath $jar -Python python.exe
 ```
 Verify actual script requirements, including Python pywinpty and correct client version. This creates its own isolated MySQL servers, private login paths and ephemeral secrets; never use actual protected login paths. Require actual positive protected-login restore, wrong/insufficient grants, genuinely partial import/refusal, new empty target recovery, original source intact, failed SQL/outage while app alive, recovery login/browser, over-limit source dump refused without archive, cleanup and no secret leakage. Prior C6a receipt is not current run. Record archive bytes/duration/exit privately. It does not prove 64 MiB full96 capacity or off-host transfer.
 
-## L03 — clean local package and extraction
+## L03 — primary combined clean local package, recovery and operator drill
 Use a new nonexistent output directory under approved private parent, outside source checkout and with no reparse points, as required by package script. Read it in full; use existing filename convention and record legacy C6a naming as packaging scope risk, do not rename binaries or promise complete C8/C9 source coverage if script allowlist omits evidence. 
 ```powershell
 pwsh -NoProfile -File .\scripts\package-extended-c.ps1 -Destination $NewPrivateReleaseDir -Python python.exe
@@ -45,7 +49,7 @@ pwsh -NoProfile -File .\scripts\package-extended-c.ps1 -Destination $NewPrivateR
 Check exit, source SHA, JAR/source archive SHA256, manifests, actual zip entries against allowlist, extraction/build/first-run receipts if present. No upload ZIP/JAR automatically. Distinguish exact source identity from reproducible binary byte equality. Report missing modern packaging paths to ChatGPT; no broad rewrite. This package is not approved release.
 
 ## L04 — exact private 96 standalone local proof (existing script)
-Require L00b and clean JAR. Use:
+Require L00b and a verified JAR from L03 (or separately verified exact source build). L03 builds under extracted source, so copy exact verified JAR to fresh worktree's ignored target path only after manifest/hash and all V1–V7 archive checks; no overwrite, see 11. Use:
 ```powershell
 $hash = '3b0f54da85cadb77cd7d8ab2d50c1fdb4b4ee36710b803cf904227e13f08927c'
 pwsh -NoProfile -File .\scripts\verify-c8-demo-import.ps1 -Plan $PrivatePlanAbsolutePath -Sha256 $hash
@@ -58,5 +62,5 @@ If owner makes the restricted ledger available locally, deterministic parse and 
 ## L06 — full-96 approved mixed additive rehearsal: CHAT-PREPARED HARNESS REQUIRED
 This is a distinct test, not L04 or #26 live import. Do not use production variables, pretend a CI-only env, relax C5 schema guards, or manually target a pre-existing service. ChatGPT must supply a reviewed guarded script before Claude runs it. Exact design and required oracles are in 03_E2E_OWNERSHIP.md. Must use exact private file, separate disposable prepopulated fictional original fixture (owner, second original org, related records and immutable history), independently restored fresh target before import; actual C5 protected login, exact target fingerprint and V2 HMAC CAPTURE/VERIFY, independent SELECT-only postflight and valid mixed metadata 200. If no script/authorization, mark BLOCKED and continue other tasks. No invented restore attestation or repeated partial target writes. Actual Northflank clone and off-host proof remain operator-gated, separate.
 
-## L07 — local-only evidence after execution
+## L08 — local-only evidence after execution (L07 off-host remains operator-only)
 Provide private receipt file to owner, sanitized aggregate summary here. Check actual child processes stopped; remove only test-owned temporary secrets as script authorizes, retain protected local proof as needed. Record failed cleanup separately. Never upload raw plan, local JAR/source ZIP, MySQL dump, screenshots revealing sensitive data, secrets, archive/key or private IR4 data. Do not send SMS. No actual deployment or merge. Return all unresolved issues to ChatGPT.

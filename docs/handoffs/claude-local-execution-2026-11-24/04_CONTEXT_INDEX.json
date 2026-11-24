@@ -378,5 +378,27 @@
   "independent_acceptance": "OPEN",
   "hosted_issue26": "LIVE_IMPORT_NOT_RUN",
   "C8_issue34": "BLOCKED",
-  "DEC_D01_issue27": "PROPOSED_ONLY"
+  "DEC_D01_issue27": "PROPOSED_ONLY",
+  "local_execution_order": [
+    "L00",
+    "L03 (includes L01 and L02 with verified nested receipts)",
+    "L04",
+    "L05 independent",
+    "L06 BLOCKED pending chat-authored harness",
+    "L07 OPERATOR_ONLY",
+    "L08 sanitized handback"
+  ],
+  "research": {
+    "date": "2026-11-24",
+    "decision": "native package-first; no third-party install; on-demand context",
+    "references": [
+      "10_CLAUDE_RESEARCH_AND_ADOPTION.md",
+      "11_NATIVE_EXECUTION_RECIPE.md"
+    ],
+    "native_source": {
+      "path": "scripts/package-extended-c.ps1",
+      "lines": "73–96",
+      "ref": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306"
+    }
+  }
 }

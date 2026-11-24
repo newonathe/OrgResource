@@ -2,7 +2,7 @@
 
 Tested SHA / source branch / date / tool versions:
 Task | Status | Exit | Elapsed | Actual markers or bounded result
-L00 ... L07 (all rows, include NOT_RUN/BLOCKED)
+L00 ... L08 (all rows, include NOT_RUN/BLOCKED)
 Private file SHA match? yes/no/unavailable (never paste plan).
 Counts and measured bytes/timing if observed. Distinguish standalone vs mixed and Windows disposable vs protected-login vs off-host.
 Protected A and V1–V7 checks: actual commands/results.
@@ -12,3 +12,5 @@ Current issues: #34 BLOCKED, #26 LIVE_IMPORT_NOT_RUN, #27 PROPOSED.
 Owner-local evidence directory: communicate privately, never public GitHub.
 Token/model/effort/session/retry count if reported, otherwise NOT_AVAILABLE.
 Next action: send result back to ChatGPT. No new planning, implementation, merge or deployment.
+
+Report L01/L02 as COVERED_BY_L03 only if nested actual passing receipts observed; include same SHA and parent command. Report package V1–V7 byte comparison and historical allowlist omissions. Report actual model/usage/cache breakdown where available, repeated native runs avoided, elapsed time; no guessed token or dollar savings. Do not paste private paths into public output or memory.

@@ -19,7 +19,8 @@
     "BLOCKED",
     "NOT_RUN",
     "SOURCE_ONLY",
-    "CONDITIONAL"
+    "CONDITIONAL",
+    "COVERED_BY_L03"
   ],
   "example": {
     "task_id": "L01",
@@ -44,7 +45,13 @@
       "model": "NOT_AVAILABLE",
       "effort": "NOT_AVAILABLE",
       "sessions": 1,
-      "retries": 0
+      "retries": 0,
+      "cache_read_tokens": "NOT_AVAILABLE",
+      "cache_write_tokens": "NOT_AVAILABLE",
+      "input_tokens": "NOT_AVAILABLE",
+      "output_tokens": "NOT_AVAILABLE",
+      "subscription_usage_delta": "NOT_AVAILABLE",
+      "duplicate_native_runs_avoided": 0
     },
     "protected_checks": {
       "course_a": "NOT_RUN",
@@ -52,5 +59,6 @@
       "stage1c": "NOT_RUN"
     },
     "privacy": "No raw JSON, secrets, database dumps, cookies, contacts, credentials, archive/key or restricted case IDs in public output"
-  }
+  },
+  "nested_receipt_rule": "COVERED_BY_L03 only for L01/L02 when actual nested commands and passing markers inspected on same source SHA; record parent command, actual nested receipt and private locator; no fabricated standalone exit."
 }

@@ -17,3 +17,7 @@ Only create a fresh worktree and private output dirs; use existing scripts again
 
 ## Required output
 One concise sanitized summary using 08_RETURN_TEMPLATE.md; retain full private receipt outside repo, provide paths only to owner locally. Actual commands/exit codes/test marker, exact tested SHA, local tool versions, source hashes and failure category. No claim independent review if self-review; no hosted success. Return to ChatGPT for diagnosis, remote code/CI changes, next phase and owner decisions.
+
+## Research-driven supersession (Nov 24)
+
+See 10_CLAUDE_RESEARCH_AND_ADOPTION.md. Use installed /usage and /context or available equivalents; record plan quota separately from API estimate, don't infer billing. Never use --dangerously-skip-permissions, blanket allow of pwsh/bash/python, or unattended auto mode; prompt rules are not OS sandbox enforcement. Existing repository-local skills suffice; do not install RTK, ccusage, new agent teams or marketplace plugins. Do not auto-import packet files into CLAUDE.md. Preserve checkpoint through compaction and keep private logs/paths out of memory and model context. Prefer package-first L03, not sequential redundant L01+L02+L03. Do not duplicate full suite unless distinct required evidence is missing. See 11_NATIVE_EXECUTION_RECIPE.md.
