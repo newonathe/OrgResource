@@ -1071,5 +1071,29 @@
     "job": 138621166005,
     "newman_assertions": 9,
     "failures": 0
+  },
+  "r03_candidate": {
+    "sha": "22b90b46d4f59423e13ca62b0afd8336019dfad8",
+    "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+    "pr": 54,
+    "runs": [
+      [
+        45445707957,
+        "in_progress",
+        null
+      ]
+    ],
+    "report": "evidence/C8/R03_DIRECTED_R031_R082_CANDIDATE_2026-11-25.md",
+    "acceptance": "CANDIDATE_CI_PENDING",
+    "routes": [
+      "R031",
+      "R082"
+    ]
+  },
+  "proposed_project_instructions": {
+    "path": "docs/project-continuity/10_PROPOSED_PROJECT_INSTRUCTIONS_UNDER_8000.md",
+    "characters": 7974,
+    "status": "PROPOSED_NOT_APPLIED",
+    "limit": 8000
   }
 }

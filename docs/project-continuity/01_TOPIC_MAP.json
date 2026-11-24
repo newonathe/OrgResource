@@ -344,7 +344,7 @@
         }
       ],
       "authority": "93 route candidate mapping, independent issue34 blocked; current code and actual test evidence.",
-      "next": "R03 close directed gaps; do not equate candidate map with independent acceptance."
+      "next": "PR54 22b90b46d4f59423e13ca62b0afd8336019dfad8 R031/R082 directed tests pending actual CI; then remaining named gaps; restricted IR4 and independent review open."
     },
     {
       "id": "T12_HOSTING_AND_SYNTHETIC_DATA",

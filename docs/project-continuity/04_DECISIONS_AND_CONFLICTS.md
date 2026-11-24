@@ -44,3 +44,5 @@ Record ID, effective date, owner/authority, verbatim material intent if public-s
 PC-D24: initial PR53 actual CI failure; root cause unknown due to filtered diagnostics. Diagnostic retry preserves session-only privilege and all oracles; no policy changes. Proposed user project instructions delivered in chat only.
 
 PC-D23 actual receipt: R04 standalone candidate verified bounded via CI45443590053 job138621166005; no public distribution clearance.
+
+R03 directed test-only candidate PR54; R031/R082 partial scope, independent acceptance open. Compact instructions proposed only, <=8000 measured; no settings change.

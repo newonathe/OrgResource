@@ -55,11 +55,11 @@
     {
       "id": "R03",
       "executor": "CHAT",
-      "state": "OPEN",
+      "state": "IN_PROGRESS",
       "depends_on": [
         "R02"
       ],
-      "receipt": "Directed per-route gap closure, actual tests and SQL effects, stable route IDs",
+      "receipt": "PR54 22b90b46d4f59423e13ca62b0afd8336019dfad8 separate verified PR52 base; R031 #67 recovery rotation and R082 #68 directory admin/foreign cursor/fields/read-only directed real MySQL tests staged, actual CI pending; no product change. Other route gaps and IR4/independent review remain open.",
       "notes": "R029 #66 already executed; check R082/R084/R078/R083/R041/R031/R089/R091/R017/R025/R040 and all other CSV gaps; no role redesign"
     },
     {
@@ -462,6 +462,24 @@
         "in_progress",
         null
       ]
+    ]
+  },
+  "r03_candidate": {
+    "sha": "22b90b46d4f59423e13ca62b0afd8336019dfad8",
+    "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+    "pr": 54,
+    "runs": [
+      [
+        45445707957,
+        "in_progress",
+        null
+      ]
+    ],
+    "report": "evidence/C8/R03_DIRECTED_R031_R082_CANDIDATE_2026-11-25.md",
+    "acceptance": "CANDIDATE_CI_PENDING",
+    "routes": [
+      "R031",
+      "R082"
     ]
   }
 }

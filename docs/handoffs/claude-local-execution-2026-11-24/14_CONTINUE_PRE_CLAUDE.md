@@ -70,3 +70,7 @@ Initial PR53 321205f235efe36d615e68998f3ffbd75baf4051, CI45441418164 Extended jo
 ## R04 standalone actual receipt
 
 Exact 9ecabdbc CI45443590053 Java8 job138621166005 success; actual logs 18 payloads, Java ZIP75, full ZIP120, six negatives, staged real image Newman nine assertions zero failures, hashes and cleanup. No release upload. DOCX, Windows launcher, Eclipse and independent review NOT_RUN. R04 bounded candidate verified; aggregate still IN_PROGRESS until remaining scope reconciled. R09=false.
+
+## R03 directed route evidence candidate / compact project instructions
+
+PR54 22b90b46d4f59423e13ca62b0afd8336019dfad8 based on verified PR52; R031 #67 and R082 #68 real MySQL HTTP test candidates; 2 changed paths only, no product source. CI pending. Existing R029 evidence retained; other gaps and independent IR4 open. PR53 retry status at observation: [[138625635151,"React typecheck, tests, lint, and build","completed","success"],[138625635845,"Java 8 and isolated MySQL tests","completed","success"],[138625635986,"Extended C Java 21, isolated MySQL, Newman and Playwright","in_progress",null]]. Proposed project instructions 7974 chars (limit 8000) stored at docs/project-continuity/10_PROPOSED_PROJECT_INSTRUCTIONS_UNDER_8000.md; not applied. Corrected old receipt enum to FAILED, actual prior evidence unchanged. R09=false.
