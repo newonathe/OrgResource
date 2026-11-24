@@ -871,7 +871,7 @@
   },
   "latest_scoped_observation": {
     "date": "2026-11-25 PHT",
-    "handoff_parent": "dd0698bf6bcadae38751783bc4a8b6b3c1042b0d",
+    "handoff_parent": "0356241ddbb7268d3ff5dd094d463097f23f3020",
     "pr53": {
       "head": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
       "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
@@ -967,10 +967,6 @@
         {
           "sha": "7116ab8c350c9c7728a7ef0963cf320e7d296afb",
           "run": 45479172555
-        },
-        {
-          "sha": "cf7324af9a664788e7367dbd9854531e33a38d7a",
-          "run": 45478317640
         }
       ],
       "actual_receipts": [
@@ -995,6 +991,20 @@
           "test": 33,
           "scope": "42 legacy refusal snapshots and 3 foreign filters",
           "pr": 54,
+          "maven": 102,
+          "identity": 77,
+          "playwright": 19,
+          "all_jobs_success": true,
+          "failures": 0,
+          "verdict": "VERIFIED_BOUNDED"
+        },
+        {
+          "sha": "cf7324af9a664788e7367dbd9854531e33a38d7a",
+          "run": 45478317640,
+          "job": 138744361938,
+          "pr": 54,
+          "test": 64,
+          "scope": "22 ProjectWork per-denial exact eight-table comparisons and grouped read equality",
           "maven": 102,
           "identity": 77,
           "playwright": 19,

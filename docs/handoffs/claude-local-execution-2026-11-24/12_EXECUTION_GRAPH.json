@@ -59,7 +59,7 @@
       "depends_on": [
         "R02"
       ],
-      "receipt": "PR54 R030 30ecc88fe662dc331d405a560d109450bfc16282 actual CI45477193785 job138740427695 and legacy 2f61a900e3a4f83cea283809efd15cd637076d0d actual CI45477804709 job138742565670 both checkout confirmed 102 Maven/77 identity/19 Playwright, zero failures/errors/skips, 3/3 jobs success, cleanup. R030 and #33 bounded actual evidence accepted; remaining roles/state/privacy/independent IR4 open. New PR54 590275cf195d44eee05d8ad4902b8ff9482c1941 #78 stock role/foreign resource: 25 per-request eight-table exact row comparisons, ADMIN/MEMBER/LEAD403, OWNER/CUSTODIAN404 actual foreign resource or cursor, exact resource detail field set and original 5/7 quantities. Source InventoryService relevant ranges and actual DTO checked, no product/migration change. CI [[45480855446,\"in_progress\",null]]. Prior ProjectWork/state rollback runs now at packaged Newman/browser step, full receipts pending. R07 preparation remains source-only (report29); no formal dependency bypass. Check remaining exact-head runs at intake and before checkpoint: ProjectWork 45478317640 job138744361938, state/rollback 45479172555 job138747356841, stock role [[45480855446,\"in_progress\",null]] (discover by SHA if absent). Consume actual failures first; batch remaining high-risk R03 allocation transition/governance/privacy gaps; reconcile R07 isolation plan and R08 actual measurements as dependencies permit. Final combined implementation SHA not selected; R09=false.",
+      "receipt": "PR54 R030 30ecc88fe662dc331d405a560d109450bfc16282 actual CI45477193785 job138740427695 and legacy 2f61a900e3a4f83cea283809efd15cd637076d0d actual CI45477804709 job138742565670 both checkout confirmed 102 Maven/77 identity/19 Playwright, zero failures/errors/skips, 3/3 jobs success, cleanup. R030 and #33 bounded actual evidence accepted; remaining roles/state/privacy/independent IR4 open. New PR54 590275cf195d44eee05d8ad4902b8ff9482c1941 #78 stock role/foreign resource: 25 per-request eight-table exact row comparisons, ADMIN/MEMBER/LEAD403, OWNER/CUSTODIAN404 actual foreign resource or cursor, exact resource detail field set and original 5/7 quantities. Source InventoryService relevant ranges and actual DTO checked, no product/migration change. CI [[45480855446,\"in_progress\",null]]. Prior ProjectWork/state rollback runs now at packaged Newman/browser step, full receipts pending. R07 preparation remains source-only (report29); no formal dependency bypass. Check remaining exact-head runs at intake and before checkpoint: ProjectWork 45478317640 job138744361938, state/rollback 45479172555 job138747356841, stock role [[45480855446,\"in_progress\",null]] (discover by SHA if absent). Consume actual failures first; batch remaining high-risk R03 allocation transition/governance/privacy gaps; reconcile R07 isolation plan and R08 actual measurements as dependencies permit. Final combined implementation SHA not selected; R09=false. Final recheck: ProjectWork cf7324af CI45478317640 job138744361938 completed success, exact checkout, identity77/Maven102 zero failures/errors/skips, cleanup, 19 Playwright, 3/3 jobs. #64 bounded actual evidence accepted; state/rollback 45479172555 and stock-role 45480855446 remain pending. Independent review and route-specific residuals remain open.",
       "notes": "R029/R031/R082/R078/R041/R083/R084/R089/R091/R017/R040/R025 directed bounded executed. Remaining route oracle gaps and independent IR4 open; do not treat 100 tests as complete acceptance. R035 public recovered logout stale replay/session deletion/domain equality and R038 original-only exact metadata public receipts reused; independent acceptance remains open."
     },
     {
@@ -422,7 +422,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "Check remaining exact-head runs at intake and before checkpoint: ProjectWork 45478317640 job138744361938, state/rollback 45479172555 job138747356841, stock role [[45480855446,\"in_progress\",null]] (discover by SHA if absent). Consume actual failures first; batch remaining high-risk R03 allocation transition/governance/privacy gaps; reconcile R07 isolation plan and R08 actual measurements as dependencies permit. Final combined implementation SHA not selected; R09=false."
+    "next_action": "Check state/rollback CI45479172555 job138747356841 and stock-role CI45480855446 job138753279268 at intake and before checkpoint; consume actual logs, fix failures, batch remaining allocation transition/governance/privacy gaps; R07 isolation and R08 measurements remain dependent. R09=false."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -817,34 +817,6 @@
   },
   "r03_pending_candidates": [
     {
-      "sha": "cf7324af9a664788e7367dbd9854531e33a38d7a",
-      "base": "2f61a900e3a4f83cea283809efd15cd637076d0d",
-      "pr": 54,
-      "runs": [
-        [
-          45478317640,
-          "in_progress",
-          null
-        ]
-      ],
-      "report": "evidence/C8/R03_PROJECTWORK_PER_DENIAL_ROWS_CANDIDATE_2026-11-25.md",
-      "acceptance": "CI_PENDING",
-      "routes": [
-        "R060",
-        "R063",
-        "R065",
-        "R066",
-        "R067",
-        "R068",
-        "R069",
-        "R070"
-      ],
-      "tests": [
-        64
-      ],
-      "observed_red": "NOT_RUN"
-    },
-    {
       "sha": "7116ab8c350c9c7728a7ef0963cf320e7d296afb",
       "base": "cf7324af9a664788e7367dbd9854531e33a38d7a",
       "pr": 54,
@@ -910,6 +882,20 @@
       "test": 33,
       "scope": "42 legacy refusal snapshots and 3 foreign filters",
       "pr": 54,
+      "maven": 102,
+      "identity": 77,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "failures": 0,
+      "verdict": "VERIFIED_BOUNDED"
+    },
+    {
+      "sha": "cf7324af9a664788e7367dbd9854531e33a38d7a",
+      "run": 45478317640,
+      "job": 138744361938,
+      "pr": 54,
+      "test": 64,
+      "scope": "22 ProjectWork per-denial exact eight-table comparisons and grouped read equality",
       "maven": 102,
       "identity": 77,
       "playwright": 19,

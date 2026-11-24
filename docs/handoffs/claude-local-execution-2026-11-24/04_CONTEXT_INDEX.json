@@ -1396,34 +1396,6 @@
   },
   "r03_pending_candidates": [
     {
-      "sha": "cf7324af9a664788e7367dbd9854531e33a38d7a",
-      "base": "2f61a900e3a4f83cea283809efd15cd637076d0d",
-      "pr": 54,
-      "runs": [
-        [
-          45478317640,
-          "in_progress",
-          null
-        ]
-      ],
-      "report": "evidence/C8/R03_PROJECTWORK_PER_DENIAL_ROWS_CANDIDATE_2026-11-25.md",
-      "acceptance": "CI_PENDING",
-      "routes": [
-        "R060",
-        "R063",
-        "R065",
-        "R066",
-        "R067",
-        "R068",
-        "R069",
-        "R070"
-      ],
-      "tests": [
-        64
-      ],
-      "observed_red": "NOT_RUN"
-    },
-    {
       "sha": "7116ab8c350c9c7728a7ef0963cf320e7d296afb",
       "base": "cf7324af9a664788e7367dbd9854531e33a38d7a",
       "pr": 54,
@@ -1489,6 +1461,20 @@
       "test": 33,
       "scope": "42 legacy refusal snapshots and 3 foreign filters",
       "pr": 54,
+      "maven": 102,
+      "identity": 77,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "failures": 0,
+      "verdict": "VERIFIED_BOUNDED"
+    },
+    {
+      "sha": "cf7324af9a664788e7367dbd9854531e33a38d7a",
+      "run": 45478317640,
+      "job": 138744361938,
+      "pr": 54,
+      "test": 64,
+      "scope": "22 ProjectWork per-denial exact eight-table comparisons and grouped read equality",
       "maven": 102,
       "identity": 77,
       "playwright": 19,
