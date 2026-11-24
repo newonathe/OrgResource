@@ -871,7 +871,7 @@
   },
   "latest_scoped_observation": {
     "date": "2026-11-25 PHT",
-    "handoff_parent": "0356241ddbb7268d3ff5dd094d463097f23f3020",
+    "handoff_parent": "6bc88100616aaafe2b5acfb60af5fcc8aef83eb3",
     "pr53": {
       "head": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
       "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
@@ -926,13 +926,13 @@
       }
     },
     "pr54": {
-      "head": "590275cf195d44eee05d8ad4902b8ff9482c1941",
+      "head": "a1ba49aecce96ea24e82b0e2de4e1f210221aaa7",
       "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
       "draft": true,
       "open": true,
       "runs": [
         [
-          45480855446,
+          45481804571,
           "in_progress",
           null
         ]
@@ -965,8 +965,9 @@
       },
       "prior_pending": [
         {
-          "sha": "7116ab8c350c9c7728a7ef0963cf320e7d296afb",
-          "run": 45479172555
+          "sha": "590275cf195d44eee05d8ad4902b8ff9482c1941",
+          "run": 45480855446,
+          "job": 138753279268
         }
       ],
       "actual_receipts": [
@@ -1011,9 +1012,26 @@
           "all_jobs_success": true,
           "failures": 0,
           "verdict": "VERIFIED_BOUNDED"
+        },
+        {
+          "sha": "7116ab8c350c9c7728a7ef0963cf320e7d296afb",
+          "run": 45479172555,
+          "job": 138747356841,
+          "pr": 54,
+          "tests": [
+            24,
+            29
+          ],
+          "scope": "seven state refusals, exact injected MySQL rollback, same operation retry/replay",
+          "maven": 102,
+          "identity": 77,
+          "playwright": 19,
+          "all_jobs_success": true,
+          "failures": 0,
+          "verdict": "VERIFIED_BOUNDED"
         }
       ]
     },
-    "coverage": "Scoped PR54 actual receipts and candidate; PR53 verified bounded unchanged."
+    "coverage": "Scoped PR54 actual receipt and candidate; PR53 verified bounded unchanged."
   }
 }

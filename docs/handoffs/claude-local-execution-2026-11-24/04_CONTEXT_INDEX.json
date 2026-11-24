@@ -1070,24 +1070,27 @@
     "failures": 0
   },
   "r03_candidate": {
-    "sha": "590275cf195d44eee05d8ad4902b8ff9482c1941",
-    "base": "7116ab8c350c9c7728a7ef0963cf320e7d296afb",
+    "sha": "a1ba49aecce96ea24e82b0e2de4e1f210221aaa7",
+    "base": "590275cf195d44eee05d8ad4902b8ff9482c1941",
     "pr": 54,
     "runs": [
       [
-        45480855446,
+        45481804571,
         "in_progress",
         null
       ]
     ],
-    "report": "evidence/C8/R03_STOCK_ROLE_FOREIGN_RESOURCE_CANDIDATE_2026-11-25.md",
+    "report": "evidence/C8/R03_ALLOCATION_TRANSITION_REFUSAL_BATCH_CANDIDATE_2026-11-25.md",
     "acceptance": "CI_PENDING",
     "routes": [
-      "R071",
-      "R073",
-      "R074",
-      "R075",
-      "R076"
+      "R043",
+      "R044",
+      "R045",
+      "R046",
+      "R047",
+      "R048",
+      "R049",
+      "R050"
     ],
     "tests": [
       78
@@ -1131,31 +1134,27 @@
     "local_gates": "G07 NOT_RUN/NOT_VERIFIED; no distribution"
   },
   "r03_previous_candidate": {
-    "sha": "7116ab8c350c9c7728a7ef0963cf320e7d296afb",
-    "base": "cf7324af9a664788e7367dbd9854531e33a38d7a",
+    "sha": "590275cf195d44eee05d8ad4902b8ff9482c1941",
+    "base": "7116ab8c350c9c7728a7ef0963cf320e7d296afb",
     "pr": 54,
     "runs": [
       [
-        45479172555,
+        45480855446,
         "in_progress",
         null
       ]
     ],
-    "report": "evidence/C8/R03_STATE_REFUSALS_AND_ROLLBACK_RETRY_CANDIDATE_2026-11-25.md",
+    "report": "evidence/C8/R03_STOCK_ROLE_FOREIGN_RESOURCE_CANDIDATE_2026-11-25.md",
     "acceptance": "CI_PENDING",
     "routes": [
-      "R010",
-      "R011",
-      "R014",
-      "R018",
-      "R019",
-      "R023",
-      "R026",
-      "R074"
+      "R071",
+      "R073",
+      "R074",
+      "R075",
+      "R076"
     ],
     "tests": [
-      24,
-      29
+      78
     ],
     "observed_red": "NOT_RUN"
   },
@@ -1396,31 +1395,27 @@
   },
   "r03_pending_candidates": [
     {
-      "sha": "7116ab8c350c9c7728a7ef0963cf320e7d296afb",
-      "base": "cf7324af9a664788e7367dbd9854531e33a38d7a",
+      "sha": "590275cf195d44eee05d8ad4902b8ff9482c1941",
+      "base": "7116ab8c350c9c7728a7ef0963cf320e7d296afb",
       "pr": 54,
       "runs": [
         [
-          45479172555,
+          45480855446,
           "in_progress",
           null
         ]
       ],
-      "report": "evidence/C8/R03_STATE_REFUSALS_AND_ROLLBACK_RETRY_CANDIDATE_2026-11-25.md",
+      "report": "evidence/C8/R03_STOCK_ROLE_FOREIGN_RESOURCE_CANDIDATE_2026-11-25.md",
       "acceptance": "CI_PENDING",
       "routes": [
-        "R010",
-        "R011",
-        "R014",
-        "R018",
-        "R019",
-        "R023",
-        "R026",
-        "R074"
+        "R071",
+        "R073",
+        "R074",
+        "R075",
+        "R076"
       ],
       "tests": [
-        24,
-        29
+        78
       ],
       "observed_red": "NOT_RUN"
     }
@@ -1475,6 +1470,23 @@
       "pr": 54,
       "test": 64,
       "scope": "22 ProjectWork per-denial exact eight-table comparisons and grouped read equality",
+      "maven": 102,
+      "identity": 77,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "failures": 0,
+      "verdict": "VERIFIED_BOUNDED"
+    },
+    {
+      "sha": "7116ab8c350c9c7728a7ef0963cf320e7d296afb",
+      "run": 45479172555,
+      "job": 138747356841,
+      "pr": 54,
+      "tests": [
+        24,
+        29
+      ],
+      "scope": "seven state refusals, exact injected MySQL rollback, same operation retry/replay",
       "maven": 102,
       "identity": 77,
       "playwright": 19,
