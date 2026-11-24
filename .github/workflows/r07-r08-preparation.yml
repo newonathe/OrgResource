@@ -6,7 +6,7 @@ permissions:
   contents: read
 jobs:
   isolated-preparation:
-    if: github.head_ref == 'test/c9-r07-r08-preparation-2026-11-25'
+    if: github.event.pull_request.head.repo.full_name == github.repository && (github.head_ref == 'test/c9-r07-r08-preparation-2026-11-25' || github.head_ref == 'test/r09-integrated-evidence-candidate-2026-11-25')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     services:

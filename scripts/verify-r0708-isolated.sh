@@ -5,7 +5,18 @@ umask 077
 [[ "${GITHUB_ACTIONS:-}" == true && "${RUNNER_OS:-}" == Linux ]]
 [[ "${ORGRESOURCE_R0708_JOB:-}" == dedicated ]]
 [[ "${GITHUB_REPOSITORY:-}" == newonathe/OrgResource && "${GITHUB_EVENT_NAME:-}" == pull_request ]]
-[[ "${GITHUB_HEAD_REF:-}" == test/c9-r07-r08-preparation-2026-11-25 ]]
+case "${GITHUB_HEAD_REF:-}" in
+  test/c9-r07-r08-preparation-2026-11-25|test/r09-integrated-evidence-candidate-2026-11-25) ;;
+  *) exit 1 ;;
+esac
+# Require the actual same-repository PR event and exact checkout before DB operations.
+python3 - "${GITHUB_EVENT_PATH:?}" "${GITHUB_HEAD_REF}" "$(git rev-parse HEAD)" <<'PY'
+import json, sys
+with open(sys.argv[1], encoding="utf-8") as f:
+    head = json.load(f)["pull_request"]["head"]
+if head["repo"]["full_name"] != "newonathe/OrgResource" or head["ref"] != sys.argv[2] or head["sha"] != sys.argv[3]:
+    raise SystemExit("R0708_PR_IDENTITY_REFUSED")
+PY
 [[ -z "${DOCKER_HOST:-}${DOCKER_CONTEXT:-}${DOCKER_TLS_VERIFY:-}${DOCKER_CERT_PATH:-}" ]]
 [[ "$(docker context show)" == default ]]
 [[ -d "${RUNNER_TEMP:?}" && "$RUNNER_TEMP" == "$(realpath "$RUNNER_TEMP")" ]]
