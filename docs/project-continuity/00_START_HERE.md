@@ -65,3 +65,7 @@ PR54 22b90b46d4f59423e13ca62b0afd8336019dfad8 based on verified PR52; R031 #67 a
 ## R03 executed receipts / R06B3b diagnostic correction
 
 PR54 22b90b46d4f59423e13ca62b0afd8336019dfad8 CI45445707957 Extended138628768792 actual 68 identity/93 Maven/19 Playwright all passed, all three jobs successful. R031/R082 bounded; independent IR4 and remaining gaps open. PR53 b2609e36 second retry actual exit2 after ten refusals; malformed diagnostic source corrected at f1bcf7e129f7a9b037478aae570610ccf84fa4c4 CI45448775860 pending; underlying original failure unknown. Report22. R04 standalone prior CI all three jobs success; local gates separate. R09=false.
+
+## R03 second directed test batch
+
+PR54 4410cb17fa1daaac723401fcca17b41b3b1946ed based on verified 22b90b46d4f59423e13ca62b0afd8336019dfad8; tests #69–71 R078/R041/R083/R084, three new tests, four route gaps partially targeted; CI [[45450272557,"in_progress",null]] pending, no product change. Prior 93 Maven/68 identity/19 Playwright receipt retained. Expected 96/71/19, not observed. R06B3b CI45448775860 status [[138639769266,"Extended C Java 21, isolated MySQL, Newman and Playwright","in_progress",null,["Prove isolated additive replay preserves existing owner and refuses repeat"]],[138639770088,"React typecheck, tests, lint, and build","completed","success",[]],[138639770350,"Java 8 and isolated MySQL tests","completed","success",[]]]; no inferred success. R09=false.

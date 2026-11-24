@@ -59,8 +59,8 @@
       "depends_on": [
         "R02"
       ],
-      "receipt": "PR54 22b90b46d4f59423e13ca62b0afd8336019dfad8 CI45445707957, Extended job138628768792 actual logs: all three jobs success, 68 identity class tests, 93 total Maven, 0 failures/errors/skips; 19 Playwright; #67 R031 and #68 R082 executed bounded. Other route gaps, independent review/IR4 open; R03 remains IN_PROGRESS.",
-      "notes": "R029 #66 previously executed. R031 wrong password and recovery rotation bounded; R082 role, foreign real cursor, exact fields and scoped rows bounded, >100 true truncation and broader read-only proof open. Next R084/R078/R083/R041 etc. No role redesign."
+      "receipt": "Prior PR54 22b90b46d4f59423e13ca62b0afd8336019dfad8 actual CI45445707957 job138628768792 93 Maven/68 identity/19 Playwright, R031/R082 bounded; new head 4410cb17fa1daaac723401fcca17b41b3b1946ed tests #69 R078, #70 R041/R078, #71 R083/R084 pending actual CI. Independent IR4/review open.",
+      "notes": "R029 #66 previously verified; R031/R082 bounded on prior head. New three tests cover four route gaps partially; next remaining R089/R091/R017/R025/R040 and others. No production change."
     },
     {
       "id": "R04",
@@ -468,6 +468,31 @@
     "prior_retry_job": 138625635986
   },
   "r03_candidate": {
+    "sha": "4410cb17fa1daaac723401fcca17b41b3b1946ed",
+    "base": "22b90b46d4f59423e13ca62b0afd8336019dfad8",
+    "pr": 54,
+    "runs": [
+      [
+        45450272557,
+        "in_progress",
+        null
+      ]
+    ],
+    "report": "evidence/C8/R03_DIRECTED_R078_R041_R083_R084_CANDIDATE_2026-11-25.md",
+    "acceptance": "CANDIDATE_CI_PENDING",
+    "routes": [
+      "R078",
+      "R041",
+      "R083",
+      "R084"
+    ],
+    "tests": [
+      69,
+      70,
+      71
+    ]
+  },
+  "r03_prior_verified": {
     "sha": "22b90b46d4f59423e13ca62b0afd8336019dfad8",
     "base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
     "pr": 54,

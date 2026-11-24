@@ -48,3 +48,5 @@ PC-D23 actual receipt: R04 standalone candidate verified bounded via CI454435900
 R03 directed test-only candidate PR54; R031/R082 partial scope, independent acceptance open. Compact instructions proposed only, <=8000 measured; no settings change.
 
 PC-D24 diagnostic correction: actual second PR53 failure caused by malformed harness expression; literal filter repair only, original runtime cause unknown. R031/R082 bounded executed; no new product design decision.
+
+R03 second directed batch: PR54 test-only candidate #69–71; no new production-policy decision. Prior actual receipts preserved.
