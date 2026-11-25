@@ -5074,5 +5074,21 @@
       "redaction_recommended": 7
     },
     "next": "Advance CPX08/09 exact scope and CPX10 defer/approve decision; remaining semantic privacy/rights review (51 unread), H01 custody owner decision, H02–H06 authorized successor/native/independent acceptance. L06 HOLD, Claude paused; no product/migration/host action."
+  },
+  "owner_review_packet": {
+    "ref": "7b93f95b830c0669634ef72b16f82162f429ff15",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/68_OWNER_DECISIONS_AND_INDEPENDENT_REVIEW_DISPATCH.md",
+    "recovered_report": "docs/handoffs/claude-local-execution-2026-11-24/67_CPX08_10_SELECTIVE_MODERNIZATION_AND_OPERATIONS.md",
+    "privacy": {
+      "full": 34,
+      "relevant_ranges": 6,
+      "metadata": 3,
+      "unread": 43,
+      "redaction_recommended": 7
+    },
+    "route_count": 93,
+    "independent_open": 93,
+    "status": "SOURCE_ONLY",
+    "next": "Remaining privacy (43 unread), G01 independent reviewer/IR4 actual factor receipts, H01 A–C consent and H02–H06 native successor acceptance; L06 HOLD and no CPX implementation."
   }
 }
