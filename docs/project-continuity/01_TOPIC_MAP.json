@@ -384,7 +384,7 @@
         }
       ],
       "authority": "Parallel PR24 source inventory and publication vetoes; metadata != content inspection.",
-      "next": "Remaining privacy 34 unread; exact high-risk G01 assertion and receipt reconciliation; H01 owner consent/H02–H06 accepted native successor; L06 HOLD/no WSL.",
+      "next": "Remaining 20 privacy paths; later R04 standalone actual receipt, rights/remediation packet and high-risk route helpers; H01 consent/H02–H06 accepted native successor; L06 HOLD/no WSL.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
@@ -495,6 +495,18 @@
           "blob": "2beb5c66db7168b3e087fd4b602941c91061c93f",
           "ref": "dc590a427f3948a8576bcff75678a1aebe8dbb62",
           "review": "SOURCE_ONLY privacy and route-gap triage"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/65_PR57_PRIVACY_REVIEW_INDEX.csv",
+          "blob": "119c687f4af3aca02957f63b22b4490da05109e4",
+          "ref": "33c72547ddfd99134db1b5fbbaf7474c014034bc",
+          "review": "SOURCE_ONLY privacy and historical actual receipt recheck"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/70_PACKAGING_PRIVACY_AND_ROUTE_RECEIPT_RECHECK.md",
+          "blob": "f626090f9e2a4d4b8fc31f12befd3d2ff119e312",
+          "ref": "33c72547ddfd99134db1b5fbbaf7474c014034bc",
+          "review": "SOURCE_ONLY privacy and historical actual receipt recheck"
         }
       ]
     },
@@ -813,7 +825,7 @@
         }
       ],
       "authority": "Latest live PR47 supersedes snapshot; 12 graph, 14 queue, 15 events, 04 index and 10 external research.",
-      "next": "Remaining privacy 34 unread; exact high-risk G01 assertion and receipt reconciliation; H01 owner consent/H02–H06 accepted native successor; L06 HOLD/no WSL.",
+      "next": "Remaining 20 privacy paths; later R04 standalone actual receipt, rights/remediation packet and high-risk route helpers; H01 consent/H02–H06 accepted native successor; L06 HOLD/no WSL.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -974,6 +986,18 @@
           "blob": "d689508e75eeafad27ebc590601f5f3772387b0b",
           "ref": "dc590a427f3948a8576bcff75678a1aebe8dbb62",
           "review": "SOURCE_ONLY privacy and route-gap triage"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/70_PACKAGING_PRIVACY_AND_ROUTE_RECEIPT_RECHECK.md",
+          "blob": "f626090f9e2a4d4b8fc31f12befd3d2ff119e312",
+          "ref": "33c72547ddfd99134db1b5fbbaf7474c014034bc",
+          "review": "SOURCE_ONLY privacy and historical actual receipt recheck"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/12_EXECUTION_GRAPH.json",
+          "blob": "ef63d1d2e7b6b933ded827370a4fed2edc8c54dc",
+          "ref": "33c72547ddfd99134db1b5fbbaf7474c014034bc",
+          "review": "SOURCE_ONLY privacy and historical actual receipt recheck"
         }
       ]
     },
