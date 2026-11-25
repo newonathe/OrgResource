@@ -384,7 +384,7 @@
         }
       ],
       "authority": "Parallel PR24 source inventory and publication vetoes; metadata != content inspection.",
-      "next": "Five non-full privacy reviews (all ranges): appended master, context index, historical graph, two ledgers. Continue chunked semantic review; proposed 13-path remediation and payload rights remain owner-gated. G01 R031 runtime log-redaction and independent IR4 open; H01–H06 accepted native successor critical; L06 HOLD/no WSL.",
+      "next": "Three non-full privacy reviews: appended master (next contiguous1584 onward; prior selected ranges reused), historical continuation ledger and global context ledger. Complete chunked semantic review, not only regex. Retain 13-path remediation proposal and underlying rights/owner approvals. G01 residual R031 log-redaction/IR4 and H01–H06 accepted native successor remain open; L06 HOLD/no WSL.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
@@ -923,7 +923,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "Five non-full privacy reviews (all ranges): appended master, context index, historical graph, two ledgers. Continue chunked semantic review; proposed 13-path remediation and payload rights remain owner-gated. G01 R031 runtime log-redaction and independent IR4 open; H01–H06 accepted native successor critical; L06 HOLD/no WSL.",
+      "next": "Three non-full privacy reviews: appended master (next contiguous1584 onward; prior selected ranges reused), historical continuation ledger and global context ledger. Complete chunked semantic review, not only regex. Retain 13-path remediation proposal and underlying rights/owner approvals. G01 residual R031 log-redaction/IR4 and H01–H06 accepted native successor remain open; L06 HOLD/no WSL.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
