@@ -1,5 +1,7 @@
 # Report44 — integrated dedicated actual and local dispatch preflight
 
+> HISTORICAL RECEIPT ONLY — current dispatch authority is Report56 and graph12/lock45/context04 HOLD. Earlier WSL, R09 or Report27 launch instructions do not authorize any local execution. Current no-WSL constraint and H01–H06 gates apply. See Report69. Original evidence below retained.
+
 ## Scope
 Consume actual completed exact-head logs, compare nontruncated protected trees, pin candidate command closure and remove stale executable checkout instruction. Inline source/receipt reconciliation; no local or independent review claimed. No production edit.
 

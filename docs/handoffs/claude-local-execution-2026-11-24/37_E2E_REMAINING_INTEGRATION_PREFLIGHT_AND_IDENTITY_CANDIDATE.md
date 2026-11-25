@@ -1,5 +1,7 @@
 # Report 37 — remaining E2E work, integration preflight and identity candidate
 
+> HISTORICAL RECEIPT ONLY — current dispatch authority is Report56 and graph12/lock45/context04 HOLD. Earlier WSL, R09 or Report27 launch instructions do not authorize any local execution. Current no-WSL constraint and H01–H06 gates apply. See Report69. Original evidence below retained.
+
 2026-11-25 PHT. Actual live PR47/53/54/55, issue50/26/27/34, graph/ownership, route register, R07 report29, exact source/session DTO and patch inspection. Current model inline, no independent reviewer. No local container execution this pass. No production/migration/frozen changes or protected data access. R09 dependencies retained.
 
 ## Exact receipts and dry-run
