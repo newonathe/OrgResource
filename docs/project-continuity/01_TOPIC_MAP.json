@@ -567,6 +567,18 @@
           "blob": "73e662fe29541cadabb9d787d407515d2e421dd3",
           "ref": "730159c61995f215218e1941ab7b19d771653845",
           "review": "SOURCE_ONLY full index privacy review and proposed remediation scope; no payload rights or new runtime"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/65_PR57_PRIVACY_REVIEW_INDEX.csv",
+          "blob": "a48a8e3fd2372afa0cb86575932f391747238fbe",
+          "ref": "89fe634dd6e99f7a23d6d16f67859d8c6addf907",
+          "review": "SOURCE_ONLY route-map privacy and R031 residual source/test reconciliation; no new runtime"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/76_ROUTE_MAP_PRIVACY_AND_RECOVERY_CODE_RESIDUAL.md",
+          "blob": "13bf1f4cf88bef8bbc3ba1dda67009a3c9077f1a",
+          "ref": "89fe634dd6e99f7a23d6d16f67859d8c6addf907",
+          "review": "SOURCE_ONLY route-map privacy and R031 residual source/test reconciliation; no new runtime"
         }
       ]
     },
@@ -611,6 +623,18 @@
           "blob": "e21121e1418c214c08378824062d603a3d0d65b6",
           "ref": "e4a0d41caf48f763fcc5f41686acd8c05a3607a9",
           "review": "SOURCE_ONLY structured privacy; actual historical recovered-control log recheck; no new runtime"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/76_ROUTE_MAP_PRIVACY_AND_RECOVERY_CODE_RESIDUAL.md",
+          "blob": "13bf1f4cf88bef8bbc3ba1dda67009a3c9077f1a",
+          "ref": "89fe634dd6e99f7a23d6d16f67859d8c6addf907",
+          "review": "SOURCE_ONLY route-map privacy and R031 residual source/test reconciliation; no new runtime"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/12_EXECUTION_GRAPH.json",
+          "blob": "7fb8126f616ead5c882d752866c0dcf7b90f9f4c",
+          "ref": "89fe634dd6e99f7a23d6d16f67859d8c6addf907",
+          "review": "SOURCE_ONLY route-map privacy and R031 residual source/test reconciliation; no new runtime"
         }
       ]
     },
@@ -1132,6 +1156,18 @@
           "blob": "73e662fe29541cadabb9d787d407515d2e421dd3",
           "ref": "730159c61995f215218e1941ab7b19d771653845",
           "review": "SOURCE_ONLY full index privacy review and proposed remediation scope; no payload rights or new runtime"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/65_PR57_PRIVACY_REVIEW_INDEX.csv",
+          "blob": "a48a8e3fd2372afa0cb86575932f391747238fbe",
+          "ref": "89fe634dd6e99f7a23d6d16f67859d8c6addf907",
+          "review": "SOURCE_ONLY route-map privacy and R031 residual source/test reconciliation; no new runtime"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/76_ROUTE_MAP_PRIVACY_AND_RECOVERY_CODE_RESIDUAL.md",
+          "blob": "13bf1f4cf88bef8bbc3ba1dda67009a3c9077f1a",
+          "ref": "89fe634dd6e99f7a23d6d16f67859d8c6addf907",
+          "review": "SOURCE_ONLY route-map privacy and R031 residual source/test reconciliation; no new runtime"
         }
       ]
     },
