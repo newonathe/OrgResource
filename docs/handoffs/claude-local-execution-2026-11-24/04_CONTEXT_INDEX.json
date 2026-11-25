@@ -1348,7 +1348,7 @@
     "event_ledger": "15_CONTINUATION_LEDGER.jsonl",
     "state_authority": "12_EXECUTION_GRAPH.json",
     "instruction": "New project chat continue => live refs/receipts and resume remote queue until R09; no implicit Claude launch or host",
-    "next_action": "Claude resumes actual L03/L04 on verified SHA, audits local project evidence directory for IR4, prepares Course A independently in frozen worktree without interfering with DB tests, checks existing WSL prerequisites read-only and obtains explicit owner environment/transfer consent if needed; L06 owner types actual challenge, L07 separate machine/operator; maintain L08 and #34/#26/#27 decisions; no new remote work without actual failure or separate phase authorization."
+    "next_action": "Continue existing Windows L03/L04/L05 and Course A technical lanes. Propose/implement separately scoped no-WSL L06 verification adapter only after scope confirmed; synthetic actual Windows proof before private use; do not alter existing Linux runner or locked source; owner challenge, off-host and production gates unchanged."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -5032,5 +5032,6 @@
     "acceptance": "VERIFIED_BOUNDED_REMOTE_PREPARATION_ONLY",
     "owner_launch_required": true
   },
-  "production_blocker_plan": "docs/handoffs/claude-local-execution-2026-11-24/53_WINDOWS_ONLY_PRODUCTION_GATE_RESOLUTION.md"
+  "production_blocker_plan": "docs/handoffs/claude-local-execution-2026-11-24/53_WINDOWS_ONLY_PRODUCTION_GATE_RESOLUTION.md",
+  "no_wsl_alternative": "docs/handoffs/claude-local-execution-2026-11-24/54_L06_NO_WSL_ALTERNATIVE.md"
 }

@@ -152,3 +152,13 @@ Claude resumes actual L03/L04 on verified SHA, audits local project evidence dir
 
 Detailed plan: `docs/handoffs/claude-local-execution-2026-11-24/53_WINDOWS_ONLY_PRODUCTION_GATE_RESOLUTION.md`.
 
+
+
+## No-WSL alternative — Report54
+
+Owner asks whether WSL can be avoided. Prefer no WSL; Windows-native tooling for L06 is feasible in principle, not a currently verified equivalent. Existing L04 and C1 Windows PowerShell native MySQL harnesses are reusable only for bounded controls; Linux L06 relies on Linux network namespace, PIDFD and owner TTY. Proposed separate Windows harness, preferably in network-disabled Windows Sandbox if supported and approved; validate actual loopback, network isolation, Job Object containment, ACLs, three independent datadirs, direct owner challenge, all original L06 oracles and refusal/cleanup before private input. Alternative existing isolated Linux VM on Windows without WSL if owner accepts; same host not off-host. No WSL installation, feature enabling, new source, new gate or permissions authorized by this question alone. Existing R09 remains ready; L06 blocked on equivalent harness and prerequisites.
+
+Continue existing Windows L03/L04/L05 and Course A technical lanes. Propose/implement separately scoped no-WSL L06 verification adapter only after scope confirmed; synthetic actual Windows proof before private use; do not alter existing Linux runner or locked source; owner challenge, off-host and production gates unchanged.
+
+Detailed proposal: `docs/handoffs/claude-local-execution-2026-11-24/54_L06_NO_WSL_ALTERNATIVE.md`.
+

@@ -335,7 +335,7 @@
         "R06B"
       ],
       "receipt": "Exact full mixed 96 plus 2 original fixture orgs, real C5 restore, actual preflight/V2 baseline/one import/SELECT-only postflight/valid browser",
-      "notes": "R09 reapproved; L03 verified JAR, L00B exact plan, POSIX prerequisites and separate direct owner terminal confirmation required. Windows-only owner may use WSL2, existing capabilities verified read-only; explicit setup/transfer approval and direct challenge still needed."
+      "notes": "R09 reapproved; L03 verified JAR, L00B exact plan, POSIX prerequisites and separate direct owner terminal confirmation required. Windows-only owner may use WSL2, existing capabilities verified read-only; explicit setup/transfer approval and direct challenge still needed. Report54 prefers no WSL; Windows-native adapter PROPOSED_ONLY, existing POSIX command remains verified bounded, no equivalent native proof yet."
     },
     {
       "id": "L07",
@@ -486,7 +486,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "Claude resumes actual L03/L04 on verified SHA, audits local project evidence directory for IR4, prepares Course A independently in frozen worktree without interfering with DB tests, checks existing WSL prerequisites read-only and obtains explicit owner environment/transfer consent if needed; L06 owner types actual challenge, L07 separate machine/operator; maintain L08 and #34/#26/#27 decisions; no new remote work without actual failure or separate phase authorization."
+    "next_action": "Continue existing Windows L03/L04/L05 and Course A technical lanes. Propose/implement separately scoped no-WSL L06 verification adapter only after scope confirmed; synthetic actual Windows proof before private use; do not alter existing Linux runner or locked source; owner challenge, off-host and production gates unchanged."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -2293,5 +2293,6 @@
     "acceptance": "VERIFIED_BOUNDED_REMOTE_PREPARATION_ONLY",
     "owner_launch_required": true
   },
-  "production_blocker_plan": "docs/handoffs/claude-local-execution-2026-11-24/53_WINDOWS_ONLY_PRODUCTION_GATE_RESOLUTION.md"
+  "production_blocker_plan": "docs/handoffs/claude-local-execution-2026-11-24/53_WINDOWS_ONLY_PRODUCTION_GATE_RESOLUTION.md",
+  "no_wsl_alternative": "docs/handoffs/claude-local-execution-2026-11-24/54_L06_NO_WSL_ALTERNATIVE.md"
 }
