@@ -634,7 +634,7 @@
         }
       ],
       "authority": "93 route candidate mapping, independent issue34 blocked; current code and actual test evidence.",
-      "next": "Inspect actual PR58 exact-head CI45702182390 job logs and the two new methods #79/#80; repair only observed failures without weakening oracles. Separately design/stage a protected-output R031 runtime log-capture check (NOT_RUN). G01 independent IR4 remains blocked; 13 privacy remediation flags owner-gated, H01–H06 native successor and L06 HOLD/no WSL unchanged.",
+      "next": "Inspect actual PR58 exact-head CI45702182390 job logs and #79/#80 discovery/counts; repair observed failures only. R031 scanner synthetic 24/24, actual protected capture driver and Java21/MySQL log oracle NOT_RUN; build minimal guarded driver per Report81, no public raw output. Independent IR4/G01 blocked, 13 owner-gated privacy flags, H01–H06 native successor and L06 HOLD/no WSL unchanged.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/74_STRUCTURED_PRIVACY_AND_RECOVERED_ROUTE_RECEIPTS.md",
@@ -665,6 +665,18 @@
           "blob": "1f8ce7bd6a3902045c2517ffeb867f2870cc872d",
           "ref": "9208f29a7877ea7e5d51a5cc0ed72d67dafe0624",
           "review": "PATCH staged #79/#80, 134 added lines, no executed receipt"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/80_R031_CAPTURE_SCANNER.mjs",
+          "blob": "d2c9719e9dfd7310d06fcf3e3fb46ef45485ec8e",
+          "ref": "23afd24d49182285888bb6ebdc39550d3322c9be",
+          "review": "FULL scanner 24/24 synthetic JS; runtime NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/81_R031_SCANNER_AND_CAPTURE_BOUNDARY.md",
+          "blob": "ff70767b232c8ea15df093032b82cdbb62353063",
+          "ref": "50c1cfc749339165af27a6586d47093626200788",
+          "review": "FULL report; bounded source and metadata only"
         }
       ]
     },
@@ -953,7 +965,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "Inspect actual PR58 exact-head CI45702182390 job logs and the two new methods #79/#80; repair only observed failures without weakening oracles. Separately design/stage a protected-output R031 runtime log-capture check (NOT_RUN). G01 independent IR4 remains blocked; 13 privacy remediation flags owner-gated, H01–H06 native successor and L06 HOLD/no WSL unchanged.",
+      "next": "Inspect actual PR58 exact-head CI45702182390 job logs and #79/#80 discovery/counts; repair observed failures only. R031 scanner synthetic 24/24, actual protected capture driver and Java21/MySQL log oracle NOT_RUN; build minimal guarded driver per Report81, no public raw output. Independent IR4/G01 blocked, 13 owner-gated privacy flags, H01–H06 native successor and L06 HOLD/no WSL unchanged.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -1228,6 +1240,18 @@
           "blob": "1f8ce7bd6a3902045c2517ffeb867f2870cc872d",
           "ref": "9208f29a7877ea7e5d51a5cc0ed72d67dafe0624",
           "review": "PATCH staged #79/#80, 134 added lines, no executed receipt"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/80_R031_CAPTURE_SCANNER.mjs",
+          "blob": "d2c9719e9dfd7310d06fcf3e3fb46ef45485ec8e",
+          "ref": "23afd24d49182285888bb6ebdc39550d3322c9be",
+          "review": "FULL scanner 24/24 synthetic JS; runtime NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/81_R031_SCANNER_AND_CAPTURE_BOUNDARY.md",
+          "blob": "ff70767b232c8ea15df093032b82cdbb62353063",
+          "ref": "50c1cfc749339165af27a6586d47093626200788",
+          "review": "FULL report; bounded source and metadata only"
         }
       ]
     },
@@ -1374,7 +1398,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "Inspect actual PR58 exact-head CI45702182390 job logs and the two new methods #79/#80; repair only observed failures without weakening oracles. Separately design/stage a protected-output R031 runtime log-capture check (NOT_RUN). G01 independent IR4 remains blocked; 13 privacy remediation flags owner-gated, H01–H06 native successor and L06 HOLD/no WSL unchanged.",
+      "next": "Inspect actual PR58 exact-head CI45702182390 job logs and #79/#80 discovery/counts; repair observed failures only. R031 scanner synthetic 24/24, actual protected capture driver and Java21/MySQL log oracle NOT_RUN; build minimal guarded driver per Report81, no public raw output. Independent IR4/G01 blocked, 13 owner-gated privacy flags, H01–H06 native successor and L06 HOLD/no WSL unchanged.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -1405,6 +1429,18 @@
           "blob": "1f8ce7bd6a3902045c2517ffeb867f2870cc872d",
           "ref": "9208f29a7877ea7e5d51a5cc0ed72d67dafe0624",
           "review": "PATCH staged #79/#80, 134 added lines, no executed receipt"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/80_R031_CAPTURE_SCANNER.mjs",
+          "blob": "d2c9719e9dfd7310d06fcf3e3fb46ef45485ec8e",
+          "ref": "23afd24d49182285888bb6ebdc39550d3322c9be",
+          "review": "FULL scanner 24/24 synthetic JS; runtime NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/81_R031_SCANNER_AND_CAPTURE_BOUNDARY.md",
+          "blob": "ff70767b232c8ea15df093032b82cdbb62353063",
+          "ref": "50c1cfc749339165af27a6586d47093626200788",
+          "review": "FULL report; bounded source and metadata only"
         }
       ]
     }
