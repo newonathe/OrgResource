@@ -1253,14 +1253,20 @@
     ]
   },
   "launch_gate": {
-    "ready": true,
+    "ready": false,
     "source_of_truth": "12_EXECUTION_GRAPH.json",
     "compatibility_gate": "13_MIXED_REHEARSAL_COMPATIBILITY_GATE.md",
     "verified_base_only": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
     "candidate_lock": "45_LOCAL_DISPATCH_SOURCE_LOCK.json",
     "approved_source_sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
     "owner_launch_required": true,
-    "scope": "BOUNDED_REMOTE_PREPARATION_ONLY"
+    "scope": "BOUNDED_REMOTE_PREPARATION_ONLY",
+    "current_dispatch_hold": {
+      "state": "HOLD",
+      "authority": "Report56 and Reports59–62",
+      "reason": "H01 custody and H02–H06 successor/native/independent acceptance pending; owner direct confirmation separate",
+      "historical_approved_source_preserved": true
+    }
   },
   "r06a_candidate": {
     "sha": "c91333766f3082b88a8c0414450dcaf6fc934ca2",
@@ -5054,5 +5060,19 @@
     "main_ci": "UNVERIFIED",
     "scope": "SOURCE_ONLY_SELECTED_RANGES",
     "optional_product": "PROPOSED_ONLY"
+  },
+  "product_settlement_checkpoint": {
+    "parent": "c17a49a716a1dbdcebe8b47f2a2be4386942e0f1",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/60_CRITICAL_PATH_AND_PRODUCT_CONTRACTS.md",
+    "privacy_index": "docs/handoffs/claude-local-execution-2026-11-24/65_PR57_PRIVACY_REVIEW_INDEX.csv",
+    "scope": "CPX05/06/07 PROPOSED_ONLY",
+    "privacy": {
+      "full": 26,
+      "relevant_ranges": 6,
+      "metadata": 3,
+      "unread": 51,
+      "redaction_recommended": 7
+    },
+    "next": "Advance CPX08/09 exact scope and CPX10 defer/approve decision; remaining semantic privacy/rights review (51 unread), H01 custody owner decision, H02–H06 authorized successor/native/independent acceptance. L06 HOLD, Claude paused; no product/migration/host action."
   }
 }

@@ -1,5 +1,9 @@
 # 14 — Current cross-chat continuation protocol
 
+## Current — CPX05/06/07 and machine-readable HOLD (2026-11-25 PHT)
+
+CPX05 partial settlement, CPX06 forecast-first and CPX07 bounded single-request reporting refined PROPOSED_ONLY (Report60 H). V3 whole-batch constraints conflict, no schema change. Six more exact-main docs fully reviewed: 26 full/6 selected/3 metadata/51 unread, seven redaction/minimization recommendations. Report27 launch marked historical; stale ready flags in graph12/lock45/index04 corrected false under Report56 HOLD, retaining historical R09 proof. Main 96741bbd295a2d1e7b4bbf6a75cb558a793b09bd unchanged, actual prior CI45576702774 retained (success metadata rechecked). No new application/private/native execution or approval. Advance CPX08/09 exact scope and CPX10 defer/approve decision; remaining semantic privacy/rights review (51 unread), H01 custody owner decision, H02–H06 authorized successor/native/independent acceptance. L06 HOLD, Claude paused; no product/migration/host action.
+
 ## Current — launch authority reconciliation and CPX03/04 contracts (2026-11-25 PHT)
 
 At 79ad73db128f6b86a34be37ab9d2917d47d2e377, Report60 G refines create-only CSV import and governance listing/inbox/transfer proposals against actual main source; no feature or migration authorization. Five old handoff launch/ownership entry points marked historical under Report56 HOLD, including CLAUDE.md and 09; no main or guarded source change. Index65 privacy coverage now 20 full,6 relevant ranges,3 metadata,57 unread; six redaction recommendations, not clearance. Exact main 96741bbd295a2d1e7b4bbf6a75cb558a793b09bd and CI45576702774 unchanged. Advance CPX05/06 explicit settlement/reservation policy and CPX07 reporting contracts, then CPX08/09 scope; complete unread semantic privacy/rights review. H01 retention decision, H02–H06 authorized successor, native actual tests and independent acceptance remain open. Keep L06 HOLD and all P0/phase/owner gates.

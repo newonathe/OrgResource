@@ -1,7 +1,7 @@
 {
   "schema": "orgresource-local-dispatch-source-lock-v1",
   "date": "2026-11-25 PHT",
-  "ready_to_launch": true,
+  "ready_to_launch": false,
   "approved_source_sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
   "candidate_source_sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
   "repository": "newonathe/OrgResource",
@@ -438,5 +438,11 @@
       "actual": "Actual log: wget failed to fetch pinned Maven 3.10.0 distribution at clean verify start; exit1 before Java test execution. Java8/React jobs success metadata; no source/test failure observed from Extended job. Rerun failed workflow jobs only accepted by GitHub API; next attempt actual logs pending."
     }
   ],
-  "large_batch_contract": "docs/handoffs/claude-local-execution-2026-11-24/51_LARGE_BATCH_LOCAL_EXECUTION_AND_RESUME_CONTRACT.md"
+  "large_batch_contract": "docs/handoffs/claude-local-execution-2026-11-24/51_LARGE_BATCH_LOCAL_EXECUTION_AND_RESUME_CONTRACT.md",
+  "current_dispatch_hold": {
+    "state": "HOLD",
+    "authority": "Report56 and Reports59–62",
+    "reason": "H01 custody and H02–H06 successor/native/independent acceptance pending; owner direct confirmation separate",
+    "historical_approved_source_preserved": true
+  }
 }

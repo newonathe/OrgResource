@@ -1,8 +1,8 @@
 {
   "schema": "orgresource.pre_handoff.execution_graph.v2",
   "date": "2026-11-24 PHT",
-  "ready_to_launch": true,
-  "decision": "R09 REAPPROVED VERIFIED_BOUNDED on fbfe961f861478c1727efa1ebf5df209f81f2c5d tree 180f9708b78a9479d50531edbd04e0dee48a57e7. Actual exact-head Windows guard 17/17, full retry Extended 103/103 Maven (78 identity), Java8 61/61, React 15/15, dedicated 7 selected method executions, all five final jobs successful; all actual logs inspected. Original Maven distribution fetch failure before tests preserved. Source delta exactly test fixture and focused Windows workflow; production unchanged, protected A105/105, V1–V7 7/7, 42 exact unique pins (40 prior +2 changed paths). Actual native L03 prior reported failure preserved; new native run NOT_RUN, no verified local JAR yet. Owner authorized routine eligible continuation; direct L06 confirmation remains mandatory.",
+  "ready_to_launch": false,
+  "decision": "POST_LOCAL_HOLD: R09 historical bounded remote preparation retained; no new Claude launch. Report56 H01 custody + accepted H02–H06 successor, independent/native acceptance and direct owner confirmation required before L06.",
   "verified_source": {
     "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
     "tree": "180f9708b78a9479d50531edbd04e0dee48a57e7",
@@ -486,7 +486,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "Keep Claude paused. Finish Report56 A04-A07 harness review and minimal L07 export/custody design; postmerge A02/A03 privacy review of 86 integration paths, especially historical 4174-line master; check exact-main CI separately. Prepare G01 and C9 residuals. Decide product scope after P0 #26, preserve V1-V7 and frozen A; DEC-D01, full modern API and other optional gaps need explicit approval. Academic parallel."
+    "next_action": "Advance CPX08/09 exact scope and CPX10 defer/approve decision; remaining semantic privacy/rights review (51 unread), H01 custody owner decision, H02–H06 authorized successor/native/independent acceptance. L06 HOLD, Claude paused; no product/migration/host action."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -2399,5 +2399,20 @@
       "redaction_recommended": 6
     },
     "next": "Advance CPX05/06 explicit settlement/reservation policy and CPX07 reporting contracts, then CPX08/09 scope; complete unread semantic privacy/rights review. H01 retention decision, H02–H06 authorized successor, native actual tests and independent acceptance remain open. Keep L06 HOLD and all P0/phase/owner gates."
+  },
+  "historical_pre_hold_launch_decision": "R09 REAPPROVED VERIFIED_BOUNDED on fbfe961f861478c1727efa1ebf5df209f81f2c5d tree 180f9708b78a9479d50531edbd04e0dee48a57e7. Actual exact-head Windows guard 17/17, full retry Extended 103/103 Maven (78 identity), Java8 61/61, React 15/15, dedicated 7 selected method executions, all five final jobs successful; all actual logs inspected. Original Maven distribution fetch failure before tests preserved. Source delta exactly test fixture and focused Windows workflow; production unchanged, protected A105/105, V1–V7 7/7, 42 exact unique pins (40 prior +2 changed paths). Actual native L03 prior reported failure preserved; new native run NOT_RUN, no verified local JAR yet. Owner authorized routine eligible continuation; direct L06 confirmation remains mandatory.",
+  "product_settlement_checkpoint": {
+    "parent": "c17a49a716a1dbdcebe8b47f2a2be4386942e0f1",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/60_CRITICAL_PATH_AND_PRODUCT_CONTRACTS.md",
+    "privacy_index": "docs/handoffs/claude-local-execution-2026-11-24/65_PR57_PRIVACY_REVIEW_INDEX.csv",
+    "scope": "CPX05/06/07 PROPOSED_ONLY",
+    "privacy": {
+      "full": 26,
+      "relevant_ranges": 6,
+      "metadata": 3,
+      "unread": 51,
+      "redaction_recommended": 7
+    },
+    "next": "Advance CPX08/09 exact scope and CPX10 defer/approve decision; remaining semantic privacy/rights review (51 unread), H01 custody owner decision, H02–H06 authorized successor/native/independent acceptance. L06 HOLD, Claude paused; no product/migration/host action."
   }
 }
