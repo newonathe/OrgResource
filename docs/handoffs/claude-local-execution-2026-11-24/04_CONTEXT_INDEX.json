@@ -5124,5 +5124,26 @@
     ],
     "independent_open": 93,
     "next": "Remaining 20 privacy paths; later R04 standalone actual receipt, rights/remediation packet and high-risk route helpers; H01 consent/H02–H06 accepted native successor; L06 HOLD/no WSL."
+  },
+  "publication_review_checkpoint": {
+    "ref": "1ac25d519e62811998f8373e9f2d9d8d0775337c",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/71_STANDALONE_RECEIPT_PRIVACY_REMEDIATION_AND_REFUSAL_SCOPE.md",
+    "privacy": {
+      "full": 65,
+      "relevant_ranges": 6,
+      "metadata": 3,
+      "unread": 12,
+      "redaction_recommended": 10
+    },
+    "standalone_receipt": {
+      "sha": "9ecabdbc51b280ff1dbb2673f72766cfca2ab9a8",
+      "run": 45443590053,
+      "job": 138621166005,
+      "payloads": 18,
+      "status": "VERIFIED_BOUNDED"
+    },
+    "scoped_tables": 12,
+    "independent_open": 93,
+    "next": "Review 12 unread paths and six partial/three metadata paths in bounded semantic chunks; obtain owner decision on ten-path sanitization and rights packet; reconcile G01 remaining route factors. H01 consent and H02–H06 accepted Windows successor critical; L06 HOLD/no WSL."
   }
 }
