@@ -6189,6 +6189,140 @@ class C1IdentityAcceptanceTest {
         return json(allocation).get("id").getAsLong();
     }
 
+
+    @Test @Order(79)
+    void G01R082MemberDirectoryCrossesActualHundredRowBoundary() throws Exception {
+        Fixture home = newTenant("G01-R082", Membership.Role.OWNER);
+        Fixture admin = fixtureInOrg(home.orgDbId, Membership.Role.ADMIN);
+        Fixture away = newTenant("G01-R082-away", Membership.Role.OWNER);
+        List<Fixture> fixtures = new ArrayList<>(List.of(home, admin));
+        for (int i = 0; i < 99; i++)
+            fixtures.add(fixtureInOrg(home.orgDbId, Membership.Role.MEMBER));
+        List<String> expected = fixtures.stream()
+                .sorted(java.util.Comparator.comparingLong(Fixture::membershipDbId))
+                .map(f -> f.membershipPublicId.toString()).toList();
+        assertEquals(101, expected.size());
+        assertEquals(101, new java.util.HashSet<>(expected).size());
+        assertEquals(101L, jdbc.queryForObject("SELECT COUNT(*) FROM membership WHERE org_id=?", Long.class, home.orgDbId));
+        Session officer = login(admin.username, admin.password);
+        Session owner = login(home.username, home.password);
+        Session outsider = login(away.username, away.password);
+        String path = "/api/v2/orgs/" + home.orgPublicId + "/members";
+        var before = governanceDenialRows(home.orgDbId, away.orgDbId);
+        var first = checkedG01Page(officer, path + "?limit=100");
+        assertEquals(expected.subList(0, 100), memberPageIds(first));
+        String cursor = first.get("nextCursor").getAsString();
+        assertEquals(expected.get(99), cursor);
+        assertEquals(first, checkedG01Page(officer, path + "?limit=101"));
+        assertEquals(first, checkedG01Page(owner, path + "?limit=100"));
+        var second = checkedG01Page(officer, path + "?limit=100&cursor=" + cursor);
+        assertEquals(expected.subList(100, 101), memberPageIds(second));
+        assertTrue(second.get("nextCursor").isJsonNull());
+        var empty = checkedG01Page(officer, path + "?limit=100&cursor=" + expected.get(100));
+        assertTrue(memberPageIds(empty).isEmpty());
+        assertTrue(empty.get("nextCursor").isJsonNull());
+        assertEquals(404, get(officer.client, path + "?cursor=" + away.membershipPublicId).statusCode());
+        assertEquals(404, get(outsider.client, path + "?cursor=" + cursor).statusCode());
+        assertTrue(before.equals(governanceDenialRows(home.orgDbId, away.orgDbId)),
+                "Member directory pagination changed scoped domain/governance rows.");
+    }
+
+    private JsonObject checkedG01Page(Session actor, String path) throws Exception {
+        HttpResponse<String> response = get(actor.client, path);
+        assertEquals(200, response.statusCode());
+        assertTrue(response.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
+        JsonObject data = json(response).getAsJsonObject("data");
+        assertEquals(Set.of("items", "nextCursor"), data.keySet());
+        return data;
+    }
+
+    private List<String> memberPageIds(JsonObject page) {
+        List<String> ids = new ArrayList<>();
+        for (var item : page.getAsJsonArray("items")) {
+            var row = item.getAsJsonObject();
+            assertEquals(Set.of("id", "displayName", "role", "status", "version"), row.keySet());
+            ids.add(row.get("id").getAsString());
+        }
+        return ids;
+    }
+
+    @Test @Order(80)
+    void G01R089R091WorkspacePagesCrossActualHundredRowBoundary() throws Exception {
+        Fixture home = newTenant("G01-pages", Membership.Role.OWNER);
+        Fixture away = newTenant("G01-pages-away", Membership.Role.OWNER);
+        Fixture member = fixtureInOrg(home.orgDbId, Membership.Role.MEMBER);
+        List<Long> departmentIds = new ArrayList<>(), projectIds = new ArrayList<>();
+        // Setup only: direct fictional JPA fixtures avoid 200 redundant HTTP create
+        // operations; all assertions below exercise the real HTTP/JPA/MySQL read path.
+        tx.executeWithoutResult(status -> {
+            LocalDateTime start = LocalDateTime.of(2040, 12, 10, 10, 0);
+            Department first = null;
+            for (int i = 0; i < 101; i++) {
+                String name = "Page-boundary department " + i;
+                Department department = departmentRepository.saveAndFlush(new Department(
+                        home.orgDbId, name, name.toLowerCase(java.util.Locale.ROOT)));
+                departmentIds.add(department.id);
+                if (first == null) first = department;
+                Project project = projectRepository.saveAndFlush(new Project(
+                        home.orgDbId, first, "Page-boundary project " + i, start, start.plusHours(1)));
+                projectIds.add(project.id);
+            }
+            Department excluded = departmentRepository.saveAndFlush(new Department(
+                    home.orgDbId, "Excluded department", "excluded department"));
+            projectRepository.saveAndFlush(new Project(home.orgDbId, excluded,
+                    "Page-boundary other department", start, start.plusHours(1)));
+            Department foreign = departmentRepository.saveAndFlush(new Department(
+                    away.orgDbId, "Page-boundary foreign", "page-boundary foreign"));
+            projectRepository.saveAndFlush(new Project(away.orgDbId, foreign,
+                    "Page-boundary foreign project", start, start.plusHours(1)));
+        });
+        departmentIds.sort(Long::compareTo);
+        projectIds.sort(Long::compareTo);
+        assertEquals(101, new java.util.HashSet<>(departmentIds).size());
+        assertEquals(101, new java.util.HashSet<>(projectIds).size());
+        assertEquals(102L, jdbc.queryForObject("SELECT COUNT(*) FROM department WHERE organization_id=?", Long.class, home.orgDbId));
+        assertEquals(102L, jdbc.queryForObject("SELECT COUNT(*) FROM project WHERE organization_id=?", Long.class, home.orgDbId));
+        Session reader = login(member.username, member.password);
+        Session outsider = login(away.username, away.password);
+        String dept = "/api/v2/workspace/departments?search=page-boundary";
+        String proj = "/api/v2/workspace/projects?departmentId=" + departmentIds.get(0)
+                + "&period=UPCOMING&search=page-boundary";
+        var before = governanceDenialRows(home.orgDbId, away.orgDbId);
+        String dc = assertG01WorkspaceBoundary(reader, dept, departmentIds, Set.of("id", "name"));
+        String pc = assertG01WorkspaceBoundary(reader, proj, projectIds,
+                Set.of("id", "departmentId", "name", "startAt", "endAt", "departmentName"));
+        assertEquals(400, get(reader.client, dept + "&limit=101").statusCode());
+        assertEquals(400, get(reader.client, proj + "&limit=101").statusCode());
+        assertEquals(404, get(outsider.client, dept + "&cursor=" + dc).statusCode());
+        assertEquals(404, get(reader.client, dept + "&cursor=" + pc).statusCode());
+        assertEquals(404, get(reader.client,
+                "/api/v2/workspace/departments?search=excluded&cursor=" + dc).statusCode());
+        assertEquals(404, get(reader.client, proj.replace("UPCOMING", "ENDED") + "&cursor=" + pc).statusCode());
+        assertTrue(before.equals(governanceDenialRows(home.orgDbId, away.orgDbId)),
+                "Workspace pagination changed scoped domain/governance rows.");
+    }
+
+    private String assertG01WorkspaceBoundary(Session actor, String path, List<Long> expected,
+            Set<String> fields) throws Exception {
+        var first = checkedG01Page(actor, path + "&limit=100");
+        assertEquals(expected.subList(0, 100), g01WorkspaceIds(first, fields));
+        String cursor = first.get("nextCursor").getAsString();
+        var second = checkedG01Page(actor, path + "&limit=100&cursor=" + cursor);
+        assertEquals(expected.subList(100, 101), g01WorkspaceIds(second, fields));
+        assertTrue(second.get("nextCursor").isJsonNull());
+        return cursor;
+    }
+
+    private List<Long> g01WorkspaceIds(JsonObject page, Set<String> fields) {
+        List<Long> ids = new ArrayList<>();
+        for (var item : page.getAsJsonArray("items")) {
+            var row = item.getAsJsonObject();
+            assertEquals(fields, row.keySet());
+            ids.add(row.get("id").getAsLong());
+        }
+        return ids;
+    }
+
     private record Fixture(long orgDbId, UUID orgPublicId, long userDbId, String username, String password,
                           long membershipDbId, UUID membershipPublicId, List<String> recoveryCodes) { }
     private static final class Session {
