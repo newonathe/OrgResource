@@ -19,10 +19,10 @@ function envGuard(){
  check(!Object.keys(process.env).some(k=>inheritedDenied.test(k)));
 }
 function docker(args,extra={},input="",timeout=30000){
- const r=spawnSync("docker",args,{shell:false,encoding:"utf8",input,
+ const r=spawnSync("docker",["--context","default",...args],{shell:false,encoding:"utf8",input,
   env:{PATH:process.env.PATH,HOME:process.env.HOME,...extra},
   maxBuffer:1024*1024,timeout,stdio:["pipe","pipe","pipe"]});
- return {ok:r.status===0&&!r.error,code:r.status,out:(r.stdout||"").trim()};
+ return {ok:r.status===0&&!r.error,code:r.status,out:(r.stdout||"").trim(),err:(r.stderr||"").trim()};
 }
 function must(args,extra,input,timeout){const r=docker(args,extra,input,timeout);check(r.ok);return r.out;}
 function inspect(id){check(idPattern.test(id));const v=JSON.parse(must(["inspect",id]));check(v.length===1&&v[0].Id===id);return v[0];}
@@ -43,18 +43,20 @@ export async function withR031Database(action){
  const nonce=hex(12),name="orgresource-r031-"+nonce,schema="orgresource_c1_r031_"+nonce;
  const root=hex(32),migratorPassword=hex(24),runtimePassword=hex(24),verifierPassword=hex(24);
  const migrator="r031_m_"+nonce.slice(0,12),runtime="r031_r_"+nonce.slice(0,12),verifier="r031_v_"+nonce.slice(0,12);
- let id=null,imageId=null,created=false,cleanup=false,completed=false;
+ let id=null,imageId=null,created=false,cleanup=false,completed=false,volumeName=null;
  function sql(user,password,statement,{database=schema,expectedDenied=false,rootSocket=false}={}){
   check(id&&idPattern.test(id));
   const args=["exec","-i","-e","MYSQL_PWD",id,"mysql","--batch","--raw","--skip-column-names","--connect-timeout=3",
    ...(rootSocket?["--protocol=socket"]:["--protocol=tcp","-h","127.0.0.1"]),"-u",user];
   if(database)args.push(database);
   const r=docker(args,{MYSQL_PWD:password},statement+"\n");
-  if(expectedDenied){check(!r.ok&&r.code===1);return null;}
+  if(expectedDenied){check(!r.ok&&r.code===1&&/^ERROR 1142 \(42000\) at line 1:/m.test(r.err));return null;}
   check(r.ok);return r.out;
  }
  try{
   // Pull only the same MySQL release as the accepted Extended CI workflow.
+  const ctx=JSON.parse(must(["context","inspect","default"]));
+  check(ctx.length===1&&ctx[0].Name==="default"&&ctx[0].Endpoints?.docker?.Host==="unix:///var/run/docker.sock");
   must(["pull",IMAGE],{},"",180000);
   imageId=must(["image","inspect",IMAGE,"--format","{{.Id}}"]);check(/^sha256:[0-9a-f]{64}$/.test(imageId));
   const c=docker(["create","--name",name,"--label","orgresource.r031.owner="+nonce,
@@ -75,6 +77,8 @@ export async function withR031Database(action){
   }
   check(ready);
   const v=inspect(id);verifyOwnership(v,id,name,nonce,imageId);check(v.State.Running===true);
+  check(v.Mounts.length===1&&v.Mounts[0].Type==="volume"&&v.Mounts[0].Destination==="/var/lib/mysql");
+  volumeName=v.Mounts[0].Name;check(idPattern.test(volumeName));
   const port=boundPort(v);
   const version=sql("root",root,"SELECT VERSION();",{database:null,rootSocket:true});check(/^8\.0\.46(?:[-+].*)?$/.test(version));
   const uuid=sql("root",root,"SELECT @@server_uuid;",{database:null,rootSocket:true});check(uuidPattern.test(uuid));
@@ -112,7 +116,9 @@ export async function withR031Database(action){
   if(created&&id){
    try{verifyOwnership(inspect(id),id,name,nonce,imageId);must(["rm","-f","-v",id]);
     const list=must(["ps","-a","--no-trunc","--filter","label=orgresource.r031.owner="+nonce,"--format","{{.ID}}"]);
-    check(list==="");cleanup=true;
+    check(list==="");
+    if(volumeName){const volumes=must(["volume","ls","--format","{{.Name}}"]).split("\n");check(!volumes.includes(volumeName));}
+    cleanup=true;
    }catch{cleanup=false;}
   }
   check(cleanup&&completed);
@@ -121,7 +127,7 @@ export async function withR031Database(action){
 async function main(){
  check(process.argv.length===2);
  await withR031Database(async db=>{db.verify();check(db.url.startsWith("jdbc:mysql://127.0.0.1:"));});
- console.log("R031_MYSQL_GUARD_OK:version=8.0.46 identity=true empty=true role_denials=true loopback=true cleanup=true app_not_run=true");
+ console.log("R031_MYSQL_GUARD_OK:version=8.0.46 identity=true empty=true role_denials=1142 loopback=true local_docker_context=true volume_removed=true cleanup=true app_not_run=true");
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)
  main().catch(()=>{console.log("R031_MYSQL_GUARD_REFUSED");process.exitCode=1;});
