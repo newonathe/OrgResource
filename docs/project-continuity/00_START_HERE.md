@@ -1,5 +1,10 @@
 # OrgResource — universal project context entry point
 
+## Current — exact-main CI and recovery transitive checkpoint (2026-11-25 PHT)
+
+Report62 continuation at b2310af2d90215e7f7bf794c22e0b07d1a54a94f: exact-main Verify 45576702774 on 96741bbd295a2d1e7b4bbf6a75cb558a793b09bd, all3 jobs successful; actual logs inspected (Java8 61/151, React15, Extended103/78/38/19, actual recovery/deadlock/restart/refusal markers). Earlier empty workflow lookup superseded by direct Actions/check-runs. 11 pinned oracle sources and 20/20 counted replacements confirmed by deterministic JS text check; no native derivation execution. C5 full source reviewed, archive/serializer and off-host input boundaries refined. Two Course A export helpers full and workflow selected ranges reviewed, privacy/rights closure remains open. Complete remaining H01–H06 transitive method-body/SQL/runtime review and prepare authorized harness-only successor and fictional native tests; obtain explicit retention/transfer and independent/owner acceptance before L06. Complete remaining semantic privacy/rights review of integration paths, prepare G01 route-factor review, decide CPX only after P0/approval. Keep Claude paused and L06 HOLD. Exact-main CI evidence now bounded verified.
+
+
 ## Current source review checkpoint (2026-11-25)
 See [root current entry](../../PROJECT_CONTEXT_START_HERE.md), [Report62](../../docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md), [63 route impact index](../../docs/handoffs/claude-local-execution-2026-11-24/63_CPX_EXISTING_ROUTE_IMPACT_INDEX.csv), Report60 F. 25/25 harness files source reviewed, 93/93 routes conservatively mapped, all H01–H06 corrective/native/independent acceptance still open. No new runtime results or permission. L06 HOLD. Exact-main CI lookup empty; prior PR57 evidence preserved. Continue targeted pre-Claude work and privacy review; explicit owner decisions remain mandatory.
 

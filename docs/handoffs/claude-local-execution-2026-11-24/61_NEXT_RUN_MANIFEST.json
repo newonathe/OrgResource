@@ -16,7 +16,9 @@
       "57_FEATURE_SCOPE_RECONCILIATION_AND_PR57_MERGED.md",
       "58_PRODUCT_COMPLETION_PROGRAM.md",
       "59_ORCHESTRATOR_EXECUTION_CONTRACT.md",
-      "60_CRITICAL_PATH_AND_PRODUCT_CONTRACTS.md"
+      "60_CRITICAL_PATH_AND_PRODUCT_CONTRACTS.md",
+      "62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
+      "63_CPX_EXISTING_ROUTE_IMPACT_INDEX.csv"
     ],
     "owner_delegation": "AUTHORIZED_SCOPED",
     "phase_approval": "NOT_INFERRED",
@@ -186,5 +188,13 @@
     "If product scope deferred, record approved disposition; do not fake pass.",
     "Run all eligible independent work; blocked tasks do not justify bypass. No uncontrolled retries or quota purchases.",
     "No tests or implementation executed by this manifest; source coverage incomplete."
-  ]
+  ],
+  "checkpoint": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
+    "ref": "b2310af2d90215e7f7bf794c22e0b07d1a54a94f",
+    "main_ci": 45576702774,
+    "main_ci_status": "VERIFIED_BOUNDED",
+    "harness_derivation": "SOURCE_ONLY 11 files 20 replacements",
+    "next": "Complete remaining H01–H06 transitive method-body/SQL/runtime review and prepare authorized harness-only successor and fictional native tests; obtain explicit retention/transfer and independent/owner acceptance before L06. Complete remaining semantic privacy/rights review of integration paths, prepare G01 route-factor review, decide CPX only after P0/approval. Keep Claude paused and L06 HOLD. Exact-main CI evidence now bounded verified."
+  }
 }

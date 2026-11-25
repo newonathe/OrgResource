@@ -969,5 +969,27 @@
     "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
     "native_harness": "72de0c106621dabc26a63390003f46c86d63b066",
     "merged": true
+  },
+  "exact_main_postmerge_receipt": {
+    "sha": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "run": 45576702774,
+    "status": "VERIFIED_BOUNDED",
+    "jobs": [
+      {
+        "job": 139076319203,
+        "actual": "61 Maven; 100/151 Newman; separate standalone 4/9; one packaged browser; 120-file candidate and cleanup"
+      },
+      {
+        "job": 139076319540,
+        "actual": "15 tests, lint/typecheck/build"
+      },
+      {
+        "job": 139076319641,
+        "actual": "103 Maven/78 identity, 38 frontend, 60/110 Newman, 19 Playwright, actual deadlock/restart/C5/R08/public SQL and cleanup"
+      }
+    ],
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
+    "report_ref": "b2310af2d90215e7f7bf794c22e0b07d1a54a94f",
+    "next_action": "Complete remaining H01–H06 transitive method-body/SQL/runtime review and prepare authorized harness-only successor and fictional native tests; obtain explicit retention/transfer and independent/owner acceptance before L06. Complete remaining semantic privacy/rights review of integration paths, prepare G01 route-factor review, decide CPX only after P0/approval. Keep Claude paused and L06 HOLD. Exact-main CI evidence now bounded verified."
   }
 }

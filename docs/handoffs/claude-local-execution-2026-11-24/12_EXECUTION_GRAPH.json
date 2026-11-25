@@ -335,7 +335,7 @@
         "R06B"
       ],
       "receipt": "Exact full mixed 96 plus 2 original fixture orgs, real C5 restore, actual preflight/V2 baseline/one import/SELECT-only postflight/valid browser",
-      "notes": "R09 reapproved; L03 verified JAR, L00B exact plan, POSIX prerequisites and separate direct owner terminal confirmation required. Windows-only owner may use WSL2, existing capabilities verified read-only; explicit setup/transfer approval and direct challenge still needed. Report54 prefers no WSL; Windows-native adapter PROPOSED_ONLY, existing POSIX command remains verified bounded, no equivalent native proof yet. Report55: Harness-only72de0c10 fictional proof reported, 25 added paths verified; integrated PR57 fails harness delta guard. BLOCKED until exact harness acceptance and actual owner run. Report56 BLOCKED: resolve L07 retention contract before actual run, full review and owner acceptance; exact harness-only successor, no WSL."
+      "notes": "R09 reapproved; L03 verified JAR, L00B exact plan, POSIX prerequisites and separate direct owner terminal confirmation required. Windows-only owner may use WSL2, existing capabilities verified read-only; explicit setup/transfer approval and direct challenge still needed. Report54 prefers no WSL; Windows-native adapter PROPOSED_ONLY, existing POSIX command remains verified bounded, no equivalent native proof yet. Report55: Harness-only72de0c10 fictional proof reported, 25 added paths verified; integrated PR57 fails harness delta guard. BLOCKED until exact harness acceptance and actual owner run. Report56 BLOCKED: resolve L07 retention contract before actual run, full review and owner acceptance; exact harness-only successor, no WSL. Report62 continuation: C5 archive/serializer and off-host contract refined; H01–H06 remain open, exact-main CI bounded verified. No acceptance or state release."
     },
     {
       "id": "L07",
@@ -345,7 +345,7 @@
         "L06"
       ],
       "receipt": "Actual independent off-host recovery and reviewed key custody/RTO/RPO",
-      "notes": "Separate authorized machine/service, not same host two processes Same laptop Windows+WSL not off-host. Report56: current Windows harness deletes mixed archive during cleanup; in-memory key and owner login material not retained. Resolve before L06; no offhost proof."
+      "notes": "Separate authorized machine/service, not same host two processes Same laptop Windows+WSL not off-host. Report56: current Windows harness deletes mixed archive during cleanup; in-memory key and owner login material not retained. Resolve before L06; no offhost proof. Report62 continuation: C5 archive/serializer and off-host contract refined; H01–H06 remain open, exact-main CI bounded verified. No acceptance or state release."
     },
     {
       "id": "L08",
@@ -2321,5 +2321,36 @@
     "main_ci": "UNVERIFIED",
     "scope": "SOURCE_ONLY_SELECTED_RANGES",
     "optional_product": "PROPOSED_ONLY"
+  },
+  "postmerge_main_actual": {
+    "sha": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "run": 45576702774,
+    "status": "VERIFIED_BOUNDED",
+    "jobs": [
+      {
+        "job": 139076319203,
+        "actual": "61 Maven; 100/151 Newman; separate standalone 4/9; one packaged browser; 120-file candidate and cleanup"
+      },
+      {
+        "job": 139076319540,
+        "actual": "15 tests, lint/typecheck/build"
+      },
+      {
+        "job": 139076319641,
+        "actual": "103 Maven/78 identity, 38 frontend, 60/110 Newman, 19 Playwright, actual deadlock/restart/C5/R08/public SQL and cleanup"
+      }
+    ],
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
+    "report_ref": "b2310af2d90215e7f7bf794c22e0b07d1a54a94f",
+    "next_action": "Complete remaining H01–H06 transitive method-body/SQL/runtime review and prepare authorized harness-only successor and fictional native tests; obtain explicit retention/transfer and independent/owner acceptance before L06. Complete remaining semantic privacy/rights review of integration paths, prepare G01 route-factor review, decide CPX only after P0/approval. Keep Claude paused and L06 HOLD. Exact-main CI evidence now bounded verified."
+  },
+  "harness_transitive_checkpoint": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
+    "ref": "b2310af2d90215e7f7bf794c22e0b07d1a54a94f",
+    "source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "harness": "72de0c106621dabc26a63390003f46c86d63b066",
+    "derivation": "11 files, 20 exact replacement counts SOURCE_ONLY",
+    "native": "NOT_RUN",
+    "next": "Complete remaining H01–H06 transitive method-body/SQL/runtime review and prepare authorized harness-only successor and fictional native tests; obtain explicit retention/transfer and independent/owner acceptance before L06. Complete remaining semantic privacy/rights review of integration paths, prepare G01 route-factor review, decide CPX only after P0/approval. Keep Claude paused and L06 HOLD. Exact-main CI evidence now bounded verified."
   }
 }
