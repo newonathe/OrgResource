@@ -191,10 +191,16 @@
   ],
   "checkpoint": {
     "report": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
-    "ref": "b2310af2d90215e7f7bf794c22e0b07d1a54a94f",
+    "ref": "7022b693dc580bc178bd46a21cd4cee61f71249d",
     "main_ci": 45576702774,
     "main_ci_status": "VERIFIED_BOUNDED",
     "harness_derivation": "SOURCE_ONLY 11 files 20 replacements",
-    "next": "Complete remaining H01–H06 transitive method-body/SQL/runtime review and prepare authorized harness-only successor and fictional native tests; obtain explicit retention/transfer and independent/owner acceptance before L06. Complete remaining semantic privacy/rights review of integration paths, prepare G01 route-factor review, decide CPX only after P0/approval. Keep Claude paused and L06 HOLD. Exact-main CI evidence now bounded verified."
+    "next": "Prepare H02/H03/H05 exact scoped corrective/regression contracts; finish privacy semantic review, beginning with appended historical master and confirmed redaction decision; H04 native baseline/candidate test and harness-only implementation after owner acceptance of scope. Keep L06 HOLD, Claude paused; owner retention/transfer and independent/off-host/other gates remain.",
+    "h04": {
+      "test": "docs/handoffs/claude-local-execution-2026-11-24/64_H04_PROBE_SHAPE_REGRESSION.ps1",
+      "cases": 31,
+      "state": "NOT_RUN"
+    },
+    "privacy_index": "docs/handoffs/claude-local-execution-2026-11-24/65_PR57_PRIVACY_REVIEW_INDEX.csv"
   }
 }

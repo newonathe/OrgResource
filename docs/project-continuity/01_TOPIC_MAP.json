@@ -56,7 +56,33 @@
         }
       ],
       "authority": "Historical decisions, O1/O3 snapshot, early risks; not present on active lineage.",
-      "next": "Read master continuity and decision checklist, supersede stale counts/state with actual source."
+      "next": "Prepare H02/H03/H05 exact scoped corrective/regression contracts; finish privacy semantic review, beginning with appended historical master and confirmed redaction decision; H04 native baseline/candidate test and harness-only implementation after owner acceptance of scope. Keep L06 HOLD, Claude paused; owner retention/transfer and independent/off-host/other gates remain.",
+      "latest_sources": [
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "6db7ddca4b1ad210e42d2622c75f7858a8af3e70",
+          "ref": "7022b693dc580bc178bd46a21cd4cee61f71249d",
+          "review": "Staged test / source-only review; no native acceptance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/64_H04_PROBE_SHAPE_REGRESSION.ps1",
+          "kind": "file",
+          "count": 1,
+          "blob": "cc3618bd0348eaa83748bd1ad5d24d68eb57d8d9",
+          "ref": "7022b693dc580bc178bd46a21cd4cee61f71249d",
+          "review": "Staged test / source-only review; no native acceptance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/65_PR57_PRIVACY_REVIEW_INDEX.csv",
+          "kind": "file",
+          "count": 1,
+          "blob": "ea6b95d50645720f2bee4e4693c0b228f1ffb240",
+          "ref": "7022b693dc580bc178bd46a21cd4cee61f71249d",
+          "review": "Staged test / source-only review; no native acceptance"
+        }
+      ]
     },
     {
       "id": "T03_RESEARCH_AND_PRODUCT_EVOLUTION",
@@ -334,7 +360,7 @@
         }
       ],
       "authority": "Parallel PR24 source inventory and publication vetoes; metadata != content inspection.",
-      "next": "Complete remaining H01–H06 transitive method-body/SQL/runtime review and prepare authorized harness-only successor and fictional native tests; obtain explicit retention/transfer and independent/owner acceptance before L06. Complete remaining semantic privacy/rights review of integration paths, prepare G01 route-factor review, decide CPX only after P0/approval. Keep Claude paused and L06 HOLD. Exact-main CI evidence now bounded verified.",
+      "next": "Prepare H02/H03/H05 exact scoped corrective/regression contracts; finish privacy semantic review, beginning with appended historical master and confirmed redaction decision; H04 native baseline/candidate test and harness-only implementation after owner acceptance of scope. Keep L06 HOLD, Claude paused; owner retention/transfer and independent/off-host/other gates remain.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
@@ -343,6 +369,30 @@
           "blob": "5fcd9fc7aee3bda8359c186ba203b3018299ab95",
           "ref": "b2310af2d90215e7f7bf794c22e0b07d1a54a94f",
           "review": "SOURCE_ONLY and actual exact-main CI log receipt; native/private not run"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "6db7ddca4b1ad210e42d2622c75f7858a8af3e70",
+          "ref": "7022b693dc580bc178bd46a21cd4cee61f71249d",
+          "review": "Staged test / source-only review; no native acceptance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/64_H04_PROBE_SHAPE_REGRESSION.ps1",
+          "kind": "file",
+          "count": 1,
+          "blob": "cc3618bd0348eaa83748bd1ad5d24d68eb57d8d9",
+          "ref": "7022b693dc580bc178bd46a21cd4cee61f71249d",
+          "review": "Staged test / source-only review; no native acceptance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/65_PR57_PRIVACY_REVIEW_INDEX.csv",
+          "kind": "file",
+          "count": 1,
+          "blob": "ea6b95d50645720f2bee4e4693c0b228f1ffb240",
+          "ref": "7022b693dc580bc178bd46a21cd4cee61f71249d",
+          "review": "Staged test / source-only review; no native acceptance"
         }
       ]
     },
@@ -495,7 +545,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "Complete remaining H01–H06 transitive method-body/SQL/runtime review and prepare authorized harness-only successor and fictional native tests; obtain explicit retention/transfer and independent/owner acceptance before L06. Complete remaining semantic privacy/rights review of integration paths, prepare G01 route-factor review, decide CPX only after P0/approval. Keep Claude paused and L06 HOLD. Exact-main CI evidence now bounded verified.",
+      "next": "Prepare H02/H03/H05 exact scoped corrective/regression contracts; finish privacy semantic review, beginning with appended historical master and confirmed redaction decision; H04 native baseline/candidate test and harness-only implementation after owner acceptance of scope. Keep L06 HOLD, Claude paused; owner retention/transfer and independent/off-host/other gates remain.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -548,6 +598,30 @@
           "blob": "5fcd9fc7aee3bda8359c186ba203b3018299ab95",
           "ref": "b2310af2d90215e7f7bf794c22e0b07d1a54a94f",
           "review": "SOURCE_ONLY and actual exact-main CI log receipt; native/private not run"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "6db7ddca4b1ad210e42d2622c75f7858a8af3e70",
+          "ref": "7022b693dc580bc178bd46a21cd4cee61f71249d",
+          "review": "Staged test / source-only review; no native acceptance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/64_H04_PROBE_SHAPE_REGRESSION.ps1",
+          "kind": "file",
+          "count": 1,
+          "blob": "cc3618bd0348eaa83748bd1ad5d24d68eb57d8d9",
+          "ref": "7022b693dc580bc178bd46a21cd4cee61f71249d",
+          "review": "Staged test / source-only review; no native acceptance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/65_PR57_PRIVACY_REVIEW_INDEX.csv",
+          "kind": "file",
+          "count": 1,
+          "blob": "ea6b95d50645720f2bee4e4693c0b228f1ffb240",
+          "ref": "7022b693dc580bc178bd46a21cd4cee61f71249d",
+          "review": "Staged test / source-only review; no native acceptance"
         }
       ]
     },
@@ -571,7 +645,7 @@
         }
       ],
       "authority": "Latest live PR47 supersedes snapshot; 12 graph, 14 queue, 15 events, 04 index and 10 external research.",
-      "next": "Complete remaining H01–H06 transitive method-body/SQL/runtime review and prepare authorized harness-only successor and fictional native tests; obtain explicit retention/transfer and independent/owner acceptance before L06. Complete remaining semantic privacy/rights review of integration paths, prepare G01 route-factor review, decide CPX only after P0/approval. Keep Claude paused and L06 HOLD. Exact-main CI evidence now bounded verified.",
+      "next": "Prepare H02/H03/H05 exact scoped corrective/regression contracts; finish privacy semantic review, beginning with appended historical master and confirmed redaction decision; H04 native baseline/candidate test and harness-only implementation after owner acceptance of scope. Keep L06 HOLD, Claude paused; owner retention/transfer and independent/off-host/other gates remain.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -612,6 +686,30 @@
           "blob": "5fcd9fc7aee3bda8359c186ba203b3018299ab95",
           "ref": "b2310af2d90215e7f7bf794c22e0b07d1a54a94f",
           "review": "SOURCE_ONLY and actual exact-main CI log receipt; native/private not run"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "6db7ddca4b1ad210e42d2622c75f7858a8af3e70",
+          "ref": "7022b693dc580bc178bd46a21cd4cee61f71249d",
+          "review": "Staged test / source-only review; no native acceptance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/64_H04_PROBE_SHAPE_REGRESSION.ps1",
+          "kind": "file",
+          "count": 1,
+          "blob": "cc3618bd0348eaa83748bd1ad5d24d68eb57d8d9",
+          "ref": "7022b693dc580bc178bd46a21cd4cee61f71249d",
+          "review": "Staged test / source-only review; no native acceptance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/65_PR57_PRIVACY_REVIEW_INDEX.csv",
+          "kind": "file",
+          "count": 1,
+          "blob": "ea6b95d50645720f2bee4e4693c0b228f1ffb240",
+          "ref": "7022b693dc580bc178bd46a21cd4cee61f71249d",
+          "review": "Staged test / source-only review; no native acceptance"
         }
       ]
     },

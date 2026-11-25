@@ -2352,5 +2352,21 @@
     "derivation": "11 files, 20 exact replacement counts SOURCE_ONLY",
     "native": "NOT_RUN",
     "next": "Complete remaining H01–H06 transitive method-body/SQL/runtime review and prepare authorized harness-only successor and fictional native tests; obtain explicit retention/transfer and independent/owner acceptance before L06. Complete remaining semantic privacy/rights review of integration paths, prepare G01 route-factor review, decide CPX only after P0/approval. Keep Claude paused and L06 HOLD. Exact-main CI evidence now bounded verified."
+  },
+  "h04_privacy_checkpoint": {
+    "ref": "7022b693dc580bc178bd46a21cd4cee61f71249d",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
+    "test": "docs/handoffs/claude-local-execution-2026-11-24/64_H04_PROBE_SHAPE_REGRESSION.ps1",
+    "privacy_index": "docs/handoffs/claude-local-execution-2026-11-24/65_PR57_PRIVACY_REVIEW_INDEX.csv",
+    "case_count": 31,
+    "native": "NOT_RUN",
+    "privacy": {
+      "full": 5,
+      "relevant_ranges": 5,
+      "metadata": 7,
+      "unread": 69,
+      "redaction_recommended": 5
+    },
+    "next": "Prepare H02/H03/H05 exact scoped corrective/regression contracts; finish privacy semantic review, beginning with appended historical master and confirmed redaction decision; H04 native baseline/candidate test and harness-only implementation after owner acceptance of scope. Keep L06 HOLD, Claude paused; owner retention/transfer and independent/off-host/other gates remain."
   }
 }
