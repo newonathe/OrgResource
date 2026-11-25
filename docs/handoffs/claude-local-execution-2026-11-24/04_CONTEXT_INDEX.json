@@ -1348,7 +1348,7 @@
     "event_ledger": "15_CONTINUATION_LEDGER.jsonl",
     "state_authority": "12_EXECUTION_GRAPH.json",
     "instruction": "New project chat continue => live refs/receipts and resume remote queue until R09; no implicit Claude launch or host",
-    "next_action": "Owner has initiated the eligible local queue; Claude may resume now from fresh detached exact approved source, recheck L00/L00B, run L03 once and verify actual nested L01/L02, then L04/L05 as eligible; L06 direct owner-terminal consent separately mandatory, L07 operator separate, L08 sanitized handback. Prior failed package must not be reused. No new remote work absent actual failure/source drift or separate authorization."
+    "next_action": "Claude resumes actual L03/L04 on verified SHA, audits local project evidence directory for IR4, prepares Course A independently in frozen worktree without interfering with DB tests, checks existing WSL prerequisites read-only and obtains explicit owner environment/transfer consent if needed; L06 owner types actual challenge, L07 separate machine/operator; maintain L08 and #34/#26/#27 decisions; no new remote work without actual failure or separate phase authorization."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -5031,5 +5031,6 @@
     "report": "docs/handoffs/claude-local-execution-2026-11-24/48_FINAL_INTEGRATED_RECEIPT_AND_R09_LOCAL_DISPATCH.md",
     "acceptance": "VERIFIED_BOUNDED_REMOTE_PREPARATION_ONLY",
     "owner_launch_required": true
-  }
+  },
+  "production_blocker_plan": "docs/handoffs/claude-local-execution-2026-11-24/53_WINDOWS_ONLY_PRODUCTION_GATE_RESOLUTION.md"
 }

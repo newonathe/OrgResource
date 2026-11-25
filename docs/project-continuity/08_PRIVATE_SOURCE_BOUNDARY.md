@@ -16,3 +16,6 @@ FULL, RELEVANT_RANGES, PATCH, METADATA, REPORTED_ONLY, UNREAD, INACCESSIBLE; dis
 
 ## Failure and retention contract
 If a chat cannot write GitHub, provide a public-safe copy-ready event with exact pending updates, and report it was not uploaded. If sensitive context cannot be published, preserve it in the authorized Project/local private source with a safe minimal locator only. No secret ever in public ledger. Do not create copies of restricted data to satisfy "lossless". Protect historical refs from rewriting, but any necessary security/rights remediation must be separately authorized and recorded; historical retention is not a justification for leaving exposed secrets accessible.
+
+
+Report53: historical IR2 evidence-directory clue recovered privately; IR4 exact file unverified. Bounded owner-local project-only metadata discovery; no broad search or public private locator. WSL transfer is same-device but separate filesystem and requires explicit owner authorization; off-host separate.
