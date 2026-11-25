@@ -871,12 +871,12 @@
   },
   "latest_scoped_observation": {
     "date": "2026-11-25 PHT",
-    "handoff_parent": "f1130f7e17d3c29a9f7d21819228f06dbf4a8b7b",
+    "handoff_parent": "e01f71e6d4083bcce07cfa826965720953527a03",
     "pr53": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
     "pr54": "9646ff743c6678af90aa357ee761ac11ed366dff",
     "pr55": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
     "pr56": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
-    "coverage": "Windows actual 17/17; full/dedicated pending; R09 reopened",
+    "coverage": "Report52 exact corrected source R09 reapproved all five actual jobs",
     "candidate_runs": [],
     "actual_runs": [
       [
@@ -925,51 +925,35 @@
     "job_receipts": [
       {
         "status": "VERIFIED_BOUNDED",
-        "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
-        "run": 45494597313,
-        "job": 138801600507,
-        "oracle": "integrated dedicated isolation, reversed order, measurements",
-        "actual": "six selected cases (1+1+2+1+1+1), zero failures/errors/skips, six cleanups, 450 measured+75 warmups, exact checkout and final markers"
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768924,
+        "job": 138992173040,
+        "oracle": "exact corrected source full Extended Linux regression, attempt2",
+        "actual": "93 registered routes once; 103 Maven/78 identity and corrected 8 import guard cases, zero failures/errors/skips; 60 Newman requests/110 assertions, 19 Playwright; actual deadlock rollback/retry/replay; distinct JVM response-loss and reminder restart, independent C5 1039696 bytes exact non-session rows and empty sessions; 15 archive refusals, 10 local prechecks, public original-only metadata/API/browser/grants and SQL aggregate/projection controls, all cleanup; 450+75 packaged serial HTTP, JAR 72486427 bytes SHA256 76e5977499edb6a01a0c6de95ce166c2975d08f70bcdbd57680049d1af32c10a"
       },
       {
         "status": "VERIFIED_BOUNDED",
-        "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
-        "run": 45494597345,
-        "job": 138801601440,
-        "oracle": "frozen Java8 actual regression",
-        "actual": "61 Maven, 100 Newman requests/151 assertions, one packaged Playwright, zero failures/errors/skips"
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768785,
+        "job": 138991124364,
+        "oracle": "exact corrected source dedicated fresh-schema tests",
+        "actual": "six groups, seven method executions, zero failures/errors/skips, six cleanups, 450 measured+75 warmups, 3 fresh schema/JVM invocations, final R0708_PREPARATION_OK"
       },
       {
         "status": "VERIFIED_BOUNDED",
-        "sha": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
-        "run": 45493345999,
-        "job": 138797218433,
-        "oracle": "actual full PR55 recovery, reminder restart, dedicated evidence and packaged HTTP",
-        "actual": "103 Maven/78 identity/19 Playwright, 60 Newman requests/110 assertions, zero failures/errors/skips, 3/3 jobs success; actual InnoDB deadlock and rollback/retry, response-loss upstream201/downstreamEOF and same-actor temporary receipt/ETag replay across distinct JVM exact domain equality; real C5 independent restore non-session exact and empty sessions, durable replay, role/tenant refusals; reminder stale CLAIMED/DISPATCHING -> UNKNOWN, fresh preserved, exact other rows no transport; cleanup; 450 measured+75 warmups packaged same JVM; public original-only preparation, private positive NOT_RUN"
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768924,
+        "job": 138992175595,
+        "oracle": "exact frozen Java8 regression",
+        "actual": "61 Maven, 100 Newman requests/151 assertions, one packaged Playwright; zero failures/errors/skips"
       },
       {
         "status": "VERIFIED_BOUNDED",
-        "sha": "9d0902b4e8ea2045a30a4ff4a524e213a3b6a7b3",
-        "run": 45493392042,
-        "job": 138797385434,
-        "oracle": "first complete corrected combined full regression",
-        "actual": "103 Maven/78 identity/19 Playwright, 60 Newman requests/110 assertions, all three jobs success, zero failures/errors/skips; real deadlock/rollback/retry, distinct JVM response-loss replay and reminder recovery, C5 exact independent restore, public SQL aggregate/projection, locking denial/positive, seven domain DML denials, real original-only metadata/browser/API/session/logout, exact source/domain row equality, all cleanup; private positive NOT_RUN"
-      },
-      {
-        "status": "VERIFIED_BOUNDED",
-        "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
-        "run": 45494597345,
-        "job": 138801601172,
-        "oracle": "final exact integrated full Extended regression",
-        "actual": "actual checkout, 93 registered policy routes each once, 103 Maven/78 identity zero failures/errors/skips; 60 Newman requests/110 assertions and 19 Playwright zero failures; real deadlock rollback/retry, lost HTTP response and same actor replay across distinct JVM, stale reminder claims recover UNKNOWN and fresh preserved, exact domain rows/no transport; actual independent C5 restore 1039696 bytes, sessions empty, durable replay and role denials, invalid mixed metadata fail closed; public R06B3b SQL aggregate/projection, lock and seven DML denials, metadata200 original-only API/browser and persisted session/logout, exact non-session/source equality, 15 archive refusals, 10 local prechecks, all cleanup, 450+75 packaged HTTP"
-      },
-      {
-        "status": "VERIFIED_BOUNDED",
-        "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
-        "run": 45494597345,
-        "job": 138801600647,
-        "oracle": "React final actual",
-        "actual": "3 files/15 tests, typecheck/lint/build complete"
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768924,
+        "job": 138992174413,
+        "oracle": "exact React regression",
+        "actual": "3 test files/15 tests, typecheck/lint/build success"
       },
       {
         "status": "VERIFIED_BOUNDED",
@@ -980,6 +964,6 @@
         "actual": "WINDOWS_GUARD_SOURCE exact SHA; Temurin 21.0.13; C8HostedDemoImportCommandTest 8, C8HostedDemoPostflightTest 3, C8HostedDemoPreflightTest 3, C8HostedOriginalBaselineTest 3; total 17, failures/errors/skips 0, BUILD SUCCESS, job success"
       }
     ],
-    "next_action": "ChatGPT inspect actual exact-head full/dedicated jobs; if all pass verify exact tree/protected paths, update graph/lock/source pins/current 09/11/entry/issue50 and set R09 ready. Claude passively polls current gate; after reapproval perform large batches, no auto owner confirmation or bypass."
+    "next_action": "Owner has initiated the eligible local queue; Claude may resume now from fresh detached exact approved source, recheck L00/L00B, run L03 once and verify actual nested L01/L02, then L04/L05 as eligible; L06 direct owner-terminal consent separately mandatory, L07 operator separate, L08 sanitized handback. Prior failed package must not be reused. No new remote work absent actual failure/source drift or separate authorization."
   }
 }
