@@ -871,12 +871,12 @@
   },
   "latest_scoped_observation": {
     "date": "2026-11-25 PHT",
-    "handoff_parent": "0607b6e5179fdd48fe53be57cf9730a88995a33c",
+    "handoff_parent": "f1130f7e17d3c29a9f7d21819228f06dbf4a8b7b",
     "pr53": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
     "pr54": "9646ff743c6678af90aa357ee761ac11ed366dff",
     "pr55": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
     "pr56": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
-    "coverage": "Report50: R09 reopened after reported Windows L03 failure; candidate CI pending",
+    "coverage": "Windows actual 17/17; full/dedicated pending; R09 reopened",
     "candidate_runs": [],
     "actual_runs": [
       [
@@ -970,8 +970,16 @@
         "job": 138801600647,
         "oracle": "React final actual",
         "actual": "3 files/15 tests, typecheck/lint/build complete"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768892,
+        "job": 138991124431,
+        "oracle": "exact corrected source Windows Java21 DB-free guard suite",
+        "actual": "WINDOWS_GUARD_SOURCE exact SHA; Temurin 21.0.13; C8HostedDemoImportCommandTest 8, C8HostedDemoPostflightTest 3, C8HostedDemoPreflightTest 3, C8HostedOriginalBaselineTest 3; total 17, failures/errors/skips 0, BUILD SUCCESS, job success"
       }
     ],
-    "next_action": "Inspect candidate exact-head Windows guard job and full/dedicated actual logs. If successful, reconcile protected trees, pin final source and reissue R09. Then owner authorizes fresh detached checkout and L03 once; do not reuse failed package or bypass test, L04/L06 remain blocked until verified JAR. Preserve old evidence privately; L05 only if supplied."
+    "next_action": "ChatGPT inspect actual exact-head full/dedicated jobs; if all pass verify exact tree/protected paths, update graph/lock/source pins/current 09/11/entry/issue50 and set R09 ready. Claude passively polls current gate; after reapproval perform large batches, no auto owner confirmation or bypass."
   }
 }

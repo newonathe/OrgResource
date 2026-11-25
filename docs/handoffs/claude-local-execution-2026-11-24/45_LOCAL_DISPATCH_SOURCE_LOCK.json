@@ -379,5 +379,16 @@
     "private_positive": "NOT_RUN",
     "independent": "OPEN"
   },
-  "historical_approved_source_sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024"
+  "historical_approved_source_sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+  "candidate_receipts": [
+    {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+      "run": 45550768892,
+      "job": 138991124431,
+      "oracle": "exact corrected source Windows Java21 DB-free guard suite",
+      "actual": "WINDOWS_GUARD_SOURCE exact SHA; Temurin 21.0.13; C8HostedDemoImportCommandTest 8, C8HostedDemoPostflightTest 3, C8HostedDemoPreflightTest 3, C8HostedOriginalBaselineTest 3; total 17, failures/errors/skips 0, BUILD SUCCESS, job success"
+    }
+  ],
+  "large_batch_contract": "docs/handoffs/claude-local-execution-2026-11-24/51_LARGE_BATCH_LOCAL_EXECUTION_AND_RESUME_CONTRACT.md"
 }

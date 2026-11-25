@@ -1043,7 +1043,7 @@
     "event_ledger": "15_CONTINUATION_LEDGER.jsonl",
     "state_authority": "12_EXECUTION_GRAPH.json",
     "instruction": "New project chat continue => live refs/receipts and resume remote queue until R09; no implicit Claude launch or host",
-    "next_action": "Inspect candidate exact-head Windows guard job and full/dedicated actual logs. If successful, reconcile protected trees, pin final source and reissue R09. Then owner authorizes fresh detached checkout and L03 once; do not reuse failed package or bypass test, L04/L06 remain blocked until verified JAR. Preserve old evidence privately; L05 only if supplied."
+    "next_action": "ChatGPT inspect actual exact-head full/dedicated jobs; if all pass verify exact tree/protected paths, update graph/lock/source pins/current 09/11/entry/issue50 and set R09 ready. Claude passively polls current gate; after reapproval perform large batches, no auto owner confirmation or bypass."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -4665,5 +4665,14 @@
     "verified_jar": false,
     "receipt_depth": "REPORTED_ONLY",
     "report": "docs/handoffs/claude-local-execution-2026-11-24/50_L03_WINDOWS_REPORTED_FAILURE_AND_PORTABLE_TEST_FIX.md"
-  }
+  },
+  "windows_guard_actual": {
+    "status": "VERIFIED_BOUNDED",
+    "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "run": 45550768892,
+    "job": 138991124431,
+    "oracle": "exact corrected source Windows Java21 DB-free guard suite",
+    "actual": "WINDOWS_GUARD_SOURCE exact SHA; Temurin 21.0.13; C8HostedDemoImportCommandTest 8, C8HostedDemoPostflightTest 3, C8HostedDemoPreflightTest 3, C8HostedOriginalBaselineTest 3; total 17, failures/errors/skips 0, BUILD SUCCESS, job success"
+  },
+  "large_batch_contract": "docs/handoffs/claude-local-execution-2026-11-24/51_LARGE_BATCH_LOCAL_EXECUTION_AND_RESUME_CONTRACT.md"
 }
