@@ -1,4 +1,6 @@
 # Report53 — Windows-only path to production, blocker-resolution plan
+
+> HISTORICAL EVIDENCE ONLY — prior R09 technical readiness, resume, WSL or early native adapter plan does not authorize execution now. Report56 and current graph12/lock45/context04 HOLD, no-WSL constraint and H01–H06 acceptance govern. No automatic Claude resume. Prior receipts and original content retained. See Report70.
 Date 2026-11-25 PHT. Source fbfe961f861478c1727efa1ebf5df209f81f2c5d; handoff parent c3cc936691a430064aba3704c01ea567ee034cfc. R09 ready; Report52 actual receipts and 42 pins govern. User requests full E2E toward production. No new local package success, off-host recovery, independent signoff, live target confirmation or Canvas proof supplied. This plan supplements 51/52; it does not re-open R09 or waive gates.
 
 ## Lane 1 — immediately executable in current Windows environment

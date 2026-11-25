@@ -1,5 +1,7 @@
 # Report49 — final adversarial handoff audit
 
+> HISTORICAL EVIDENCE ONLY — prior R09 technical readiness, resume, WSL or early native adapter plan does not authorize execution now. Report56 and current graph12/lock45/context04 HOLD, no-WSL constraint and H01–H06 acceptance govern. No automatic Claude resume. Prior receipts and original content retained. See Report70.
+
 Scope: exact unchanged PR56 2c626cb251fc3e0a5e3304f9ea5b03f89f55e024, tree d55cecc7afd240da455014e2d9f1b61bb0e74f40; handoff parent cef3b1d566d5d480156e114a1947089518022f0f; inline source review/deterministic checks, no independent review, no production or test source changes.
 
 **New actual receipt:** React CI45494597345/job138801600647 exact checkout, three test files/15 tests passed, typecheck/lint/build completed, Vite own reported 162ms, job success. All 4 final CI jobs now have actual log inspection across Reports44/48/49; no repeat CI necessary for unchanged implementation. Actual Linux and public bounded evidence only.

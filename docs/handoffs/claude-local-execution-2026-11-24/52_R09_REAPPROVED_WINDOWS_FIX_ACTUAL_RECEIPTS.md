@@ -1,5 +1,7 @@
 # Report52 — corrected source R09 reapproved after actual Windows and Linux receipts
 
+> HISTORICAL EVIDENCE ONLY — prior R09 technical readiness, resume, WSL or early native adapter plan does not authorize execution now. Report56 and current graph12/lock45/context04 HOLD, no-WSL constraint and H01–H06 acceptance govern. No automatic Claude resume. Prior receipts and original content retained. See Report70.
+
 R09 REAPPROVED VERIFIED_BOUNDED on fbfe961f861478c1727efa1ebf5df209f81f2c5d tree 180f9708b78a9479d50531edbd04e0dee48a57e7. Actual exact-head Windows guard 17/17, full retry Extended 103/103 Maven (78 identity), Java8 61/61, React 15/15, dedicated 7 selected method executions, all five final jobs successful; all actual logs inspected. Original Maven distribution fetch failure before tests preserved. Source delta exactly test fixture and focused Windows workflow; production unchanged, protected A105/105, V1–V7 7/7, 42 exact unique pins (40 prior +2 changed paths). Actual native L03 prior reported failure preserved; new native run NOT_RUN, no verified local JAR yet. Owner authorized routine eligible continuation; direct L06 confirmation remains mandatory.
 
 ## Actual receipts

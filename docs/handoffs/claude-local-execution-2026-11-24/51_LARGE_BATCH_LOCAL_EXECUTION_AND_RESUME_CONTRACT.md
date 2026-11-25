@@ -1,5 +1,7 @@
 # Report51 — Large-batch local execution and resume contract
 
+> HISTORICAL EVIDENCE ONLY — prior R09 technical readiness, resume, WSL or early native adapter plan does not authorize execution now. Report56 and current graph12/lock45/context04 HOLD, no-WSL constraint and H01–H06 acceptance govern. No automatic Claude resume. Prior receipts and original content retained. See Report70.
+
 Scope: user-authorized existing local test queue, no new phases. Current corrected reviewed source fbfe961f861478c1727efa1ebf5df209f81f2c5d, original failed source 2c626cb251fc3e0a5e3304f9ea5b03f89f55e024. Actual focused Windows [run45550768892/job138991124431](https://github.com/newonathe/OrgResource/actions/runs/45550768892/job/138991124431) passed 17/17 at exact SHA, zero failures/errors/skips. Full and dedicated Linux subsequently passed at the exact same corrected SHA; see Report52 and live graph/lock. R09 reapproved; previous waiting instructions apply only if gate false. This file supplements, never overrides, live R09/45 and current 09/11/02/27/07/08.
 
 ## Batch A — dispatch gate and preflight (L00/L00B)
