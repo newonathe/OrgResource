@@ -402,7 +402,41 @@
         }
       ],
       "authority": "DEC-D01 proposed only; existing role/data contracts govern until approved.",
-      "next": "Keep Claude paused. Finish Report56 A04-A07 harness review and minimal L07 export/custody design; postmerge A02/A03 privacy review of 86 integration paths, especially historical 4174-line master; check exact-main CI separately. Prepare G01 and C9 residuals. Decide product scope after P0 #26, preserve V1-V7 and frozen A; DEC-D01, full modern API and other optional gaps need explicit approval. Academic parallel."
+      "next": "Read current root, Report60 F, Report62 H01–H06 and 63 route impact index; resolve transitive closure and safe fixture/correction acceptance before L06; preserve HOLD, independent/operator gates, owner decisions, and no product scope expansion. Complete 86-path privacy review.",
+      "latest_sources": [
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "fca3f21a3fe13556eb6c5d7115d16dfda43c2ddd",
+          "ref": "db3a65c529e1cc0ac6c9259f00686183be2bf423",
+          "review": "SOURCE_ONLY; design/impact/review evidence, no new native acceptance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/60_CRITICAL_PATH_AND_PRODUCT_CONTRACTS.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "a2bdff4bef56f75f397bddcee47a655f418506ba",
+          "ref": "97831276d73fdd563d7eb6a7196264258c301021",
+          "review": "SOURCE_ONLY; design/impact/review evidence, no new native acceptance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "b1806974229bc7cfe901b61a33c418be90a364d6",
+          "ref": "049640b45781b50e0402e46bdb11d4b45cd9cb32",
+          "review": "SOURCE_ONLY; design/impact/review evidence, no new native acceptance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/63_CPX_EXISTING_ROUTE_IMPACT_INDEX.csv",
+          "kind": "file",
+          "count": 1,
+          "blob": "b077a14356d76f705fc63957d6a40ab1220c9dae",
+          "ref": "329e418e5008a106869e3c721d2f7f44edd051ec",
+          "review": "SOURCE_ONLY; design/impact/review evidence, no new native acceptance"
+        }
+      ]
     },
     {
       "id": "T15_C9_RELIABILITY_AND_RECOVERY",
@@ -423,7 +457,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "Keep Claude paused. Finish Report56 A04-A07 harness review and minimal L07 export/custody design; postmerge A02/A03 privacy review of 86 integration paths, especially historical 4174-line master; check exact-main CI separately. Prepare G01 and C9 residuals. Decide product scope after P0 #26, preserve V1-V7 and frozen A; DEC-D01, full modern API and other optional gaps need explicit approval. Academic parallel.",
+      "next": "Read current root, Report60 F, Report62 H01–H06 and 63 route impact index; resolve transitive closure and safe fixture/correction acceptance before L06; preserve HOLD, independent/operator gates, owner decisions, and no product scope expansion. Complete 86-path privacy review.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -436,6 +470,38 @@
           "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
           "blob": "44cd39ca2b0707d2804431aed937305c2450f5b7",
           "review": "VERIFIED_BOUNDED actual CI 45434204255, job 138587448867"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "fca3f21a3fe13556eb6c5d7115d16dfda43c2ddd",
+          "ref": "db3a65c529e1cc0ac6c9259f00686183be2bf423",
+          "review": "SOURCE_ONLY; design/impact/review evidence, no new native acceptance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/60_CRITICAL_PATH_AND_PRODUCT_CONTRACTS.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "a2bdff4bef56f75f397bddcee47a655f418506ba",
+          "ref": "97831276d73fdd563d7eb6a7196264258c301021",
+          "review": "SOURCE_ONLY; design/impact/review evidence, no new native acceptance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "b1806974229bc7cfe901b61a33c418be90a364d6",
+          "ref": "049640b45781b50e0402e46bdb11d4b45cd9cb32",
+          "review": "SOURCE_ONLY; design/impact/review evidence, no new native acceptance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/63_CPX_EXISTING_ROUTE_IMPACT_INDEX.csv",
+          "kind": "file",
+          "count": 1,
+          "blob": "b077a14356d76f705fc63957d6a40ab1220c9dae",
+          "ref": "329e418e5008a106869e3c721d2f7f44edd051ec",
+          "review": "SOURCE_ONLY; design/impact/review evidence, no new native acceptance"
         }
       ]
     },
@@ -459,7 +525,41 @@
         }
       ],
       "authority": "Latest live PR47 supersedes snapshot; 12 graph, 14 queue, 15 events, 04 index and 10 external research.",
-      "next": "Keep Claude paused. Finish Report56 A04-A07 harness review and minimal L07 export/custody design; postmerge A02/A03 privacy review of 86 integration paths, especially historical 4174-line master; check exact-main CI separately. Prepare G01 and C9 residuals. Decide product scope after P0 #26, preserve V1-V7 and frozen A; DEC-D01, full modern API and other optional gaps need explicit approval. Academic parallel."
+      "next": "Read current root, Report60 F, Report62 H01–H06 and 63 route impact index; resolve transitive closure and safe fixture/correction acceptance before L06; preserve HOLD, independent/operator gates, owner decisions, and no product scope expansion. Complete 86-path privacy review.",
+      "latest_sources": [
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "fca3f21a3fe13556eb6c5d7115d16dfda43c2ddd",
+          "ref": "db3a65c529e1cc0ac6c9259f00686183be2bf423",
+          "review": "SOURCE_ONLY; design/impact/review evidence, no new native acceptance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/60_CRITICAL_PATH_AND_PRODUCT_CONTRACTS.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "a2bdff4bef56f75f397bddcee47a655f418506ba",
+          "ref": "97831276d73fdd563d7eb6a7196264258c301021",
+          "review": "SOURCE_ONLY; design/impact/review evidence, no new native acceptance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "b1806974229bc7cfe901b61a33c418be90a364d6",
+          "ref": "049640b45781b50e0402e46bdb11d4b45cd9cb32",
+          "review": "SOURCE_ONLY; design/impact/review evidence, no new native acceptance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/63_CPX_EXISTING_ROUTE_IMPACT_INDEX.csv",
+          "kind": "file",
+          "count": 1,
+          "blob": "b077a14356d76f705fc63957d6a40ab1220c9dae",
+          "ref": "329e418e5008a106869e3c721d2f7f44edd051ec",
+          "review": "SOURCE_ONLY; design/impact/review evidence, no new native acceptance"
+        }
+      ]
     },
     {
       "id": "T17_UI_DESIGN_AND_USER_EXPERIENCE",
@@ -480,7 +580,41 @@
         }
       ],
       "authority": "Actual code plus Academic Glass Commons and UI amendments; visual review not inferred.",
-      "next": "Keep Claude paused. Finish Report56 A04-A07 harness review and minimal L07 export/custody design; postmerge A02/A03 privacy review of 86 integration paths, especially historical 4174-line master; check exact-main CI separately. Prepare G01 and C9 residuals. Decide product scope after P0 #26, preserve V1-V7 and frozen A; DEC-D01, full modern API and other optional gaps need explicit approval. Academic parallel."
+      "next": "Read current root, Report60 F, Report62 H01–H06 and 63 route impact index; resolve transitive closure and safe fixture/correction acceptance before L06; preserve HOLD, independent/operator gates, owner decisions, and no product scope expansion. Complete 86-path privacy review.",
+      "latest_sources": [
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "fca3f21a3fe13556eb6c5d7115d16dfda43c2ddd",
+          "ref": "db3a65c529e1cc0ac6c9259f00686183be2bf423",
+          "review": "SOURCE_ONLY; design/impact/review evidence, no new native acceptance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/60_CRITICAL_PATH_AND_PRODUCT_CONTRACTS.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "a2bdff4bef56f75f397bddcee47a655f418506ba",
+          "ref": "97831276d73fdd563d7eb6a7196264258c301021",
+          "review": "SOURCE_ONLY; design/impact/review evidence, no new native acceptance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "b1806974229bc7cfe901b61a33c418be90a364d6",
+          "ref": "049640b45781b50e0402e46bdb11d4b45cd9cb32",
+          "review": "SOURCE_ONLY; design/impact/review evidence, no new native acceptance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/63_CPX_EXISTING_ROUTE_IMPACT_INDEX.csv",
+          "kind": "file",
+          "count": 1,
+          "blob": "b077a14356d76f705fc63957d6a40ab1220c9dae",
+          "ref": "329e418e5008a106869e3c721d2f7f44edd051ec",
+          "review": "SOURCE_ONLY; design/impact/review evidence, no new native acceptance"
+        }
+      ]
     },
     {
       "id": "T18_QUALITY_AND_GOVERNANCE",
