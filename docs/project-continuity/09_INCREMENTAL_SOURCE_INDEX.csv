@@ -315,3 +315,7 @@
 "docs/handoffs/claude-local-execution-2026-11-24/82_R031_CAPTURE_LIFECYCLE.mjs","b61d3564fb540570fcd9dbbb83dfbb2da34c1a4c","12013","100644","afdb05ad8e160324af1999326c46736e721a52e9","FULL synthetic lifecycle and bound adapter source; runtime NOT_RUN"
 "docs/handoffs/claude-local-execution-2026-11-24/83_R031_CAPTURE_LIFECYCLE_RECEIPT.md","8a2f4a4007f53bd1c979b971986f1f053850e8ae","6999","100644","7b27166470ac8bb530312d8e52e7b5ea8a772543","FULL actual PR58 receipt plus synthetic R031 lifecycle"
 "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv","5a6926dd673036e4798d7f4dd3c4d81d78a9be79","107157","100644","7b27166470ac8bb530312d8e52e7b5ea8a772543","RELEVANT_RANGES R031 R082 R089 R091 addenda"
+"docs/handoffs/claude-local-execution-2026-11-24/84_R031_REAL_CHILD_FIXTURE.mjs","dbc8602525eeed42cf384405b32f2507ac3df48e","4576","100644","e40504eb64ad929b03d5bd0b30890a9672bd3978","FULL actual fictional Node fixture"
+".github/workflows/r031-fictional-capture.yml","bce713f512ec6cf4fae86c344bc6b5bf71e16231","950","100644","e40504eb64ad929b03d5bd0b30890a9672bd3978","FULL focused fixture-only workflow"
+"docs/handoffs/claude-local-execution-2026-11-24/85_R031_REAL_CHILD_RECEIPT.md","692b73ccb0f2fda3f734820210d2f2bb97fefd13","5420","100644","5a3a5572fe53c8c1e5c7a4e99e24c126f2f52e4b","FULL actual bounded receipt"
+"docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv","0dca8da0b48991d8ea25d3c8a38640b1eb488a15","107361","100644","5a3a5572fe53c8c1e5c7a4e99e24c126f2f52e4b","RELEVANT_RANGES R031 addendum"

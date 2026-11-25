@@ -243,3 +243,7 @@ Design recommendation, not owner approval: use separate guarded fictional runtim
 ### PR58 bounded suite and R031 capture lifecycle — Report83 (2026-11-26 PHT)
 
 Actual PR58 suite count and exact two-method-only patch support bounded 101-row pagination evidence; no per-method named log or independent acceptance. R031 capture lifecycle and scanner integration are synthetic only, not a runtime log-redaction receipt. Guard owned DB before initialization, actual stream/sink inventory and process controls remain mandatory. No change to L06 HOLD or owner gates. Exact report 7b27166470ac8bb530312d8e52e7b5ea8a772543:docs/handoffs/claude-local-execution-2026-11-24/83_R031_CAPTURE_LIFECYCLE_RECEIPT.md.
+
+### R031 actual fictional child controls — Report85 (2026-11-26 PHT)
+
+Actual Node Linux14/14, not app logging or Windows proof. Fixed synthetic-only workflow, no inherited child environment/private inputs/raw output. Preserve runtime guard, logger sink inventory and independent acceptance gates; L06 HOLD unchanged. Exact report 5a3a5572fe53c8c1e5c7a4e99e24c126f2f52e4b:docs/handoffs/claude-local-execution-2026-11-24/85_R031_REAL_CHILD_RECEIPT.md.

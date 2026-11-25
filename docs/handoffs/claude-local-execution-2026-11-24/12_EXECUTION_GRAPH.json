@@ -366,7 +366,7 @@
         "L05"
       ],
       "receipt": "93 route acceptance and separate reviewer actual evidence; C8 #34",
-      "notes": "No fabricated signature or blanket equivalence Report74: R035/R038 actual public recovered-control job138726559312 markers rechecked at exact 8c6000a4; remaining normal-writable/approved private positive/transient DB and independent IR4 acceptance open. No new runtime. Report76 R031 source/#67 no-store and hash-only/refusal scope rechecked; dedicated log-redaction NOT_RUN, independent IR4 open. Report78 scoped 86-file privacy review complete; 13 remediation flags open. G01 residual runtime/IR4 independent review unchanged. Report79 PR58 #79/#80 test-only 101-row candidates at 9208f29a7877ea7e5d51a5cc0ed72d67dafe0624 CI45702182390 in progress; no new actual acceptance. R031 protected-output design NOT_RUN. Report81: pure R031 scanner 24/24 synthetic; actual protected driver/runtime NOT_RUN. PR58 backend step success metadata, later checks running, logs 404; no independent acceptance. Report83 PR58 actual 105 Maven/80 identity and 19 Playwright, bounded #79/#80 R082/R089/R091; independent acceptance remains BLOCKED. R031 scanner/lifecycle 65/65 synthetic, actual driver/runtime NOT_RUN."
+      "notes": "No fabricated signature or blanket equivalence Report74: R035/R038 actual public recovered-control job138726559312 markers rechecked at exact 8c6000a4; remaining normal-writable/approved private positive/transient DB and independent IR4 acceptance open. No new runtime. Report76 R031 source/#67 no-store and hash-only/refusal scope rechecked; dedicated log-redaction NOT_RUN, independent IR4 open. Report78 scoped 86-file privacy review complete; 13 remediation flags open. G01 residual runtime/IR4 independent review unchanged. Report79 PR58 #79/#80 test-only 101-row candidates at 9208f29a7877ea7e5d51a5cc0ed72d67dafe0624 CI45702182390 in progress; no new actual acceptance. R031 protected-output design NOT_RUN. Report81: pure R031 scanner 24/24 synthetic; actual protected driver/runtime NOT_RUN. PR58 backend step success metadata, later checks running, logs 404; no independent acceptance. Report83 PR58 actual 105 Maven/80 identity and 19 Playwright, bounded #79/#80 R082/R089/R091; independent acceptance remains BLOCKED. R031 scanner/lifecycle 65/65 synthetic, actual driver/runtime NOT_RUN. Report85 real Linux Node fictional subprocess14/14 actual receipt; app log capture NOT_RUN, independent acceptance BLOCKED."
     },
     {
       "id": "G02",
@@ -2550,6 +2550,12 @@
     "bound_adapter_cases": 12,
     "total_synthetic_cases": 65,
     "total_synthetic_passed": 65,
-    "latest_report": "7b27166470ac8bb530312d8e52e7b5ea8a772543"
+    "latest_report": "5a3a5572fe53c8c1e5c7a4e99e24c126f2f52e4b",
+    "real_child_sha": "e40504eb64ad929b03d5bd0b30890a9672bd3978",
+    "real_child_run": 45706444928,
+    "real_child_job": 139529545479,
+    "real_child_cases": 14,
+    "real_child_passed": 14,
+    "real_child_status": "VERIFIED_BOUNDED"
   }
 }
