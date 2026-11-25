@@ -1,0 +1,31 @@
+name: R031 owned disposable MySQL controls
+on:
+  push:
+    branches: [docs/claude-local-execution-handoff-2026-11-24]
+    paths:
+      - 'docs/handoffs/claude-local-execution-2026-11-24/86_R031_OWNED_MYSQL_GUARD.mjs'
+      - '.github/workflows/r031-owned-mysql.yml'
+permissions:
+  contents: read
+jobs:
+  owned-mysql:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Refuse inherited external DB configuration before launch
+        shell: bash
+        run: |
+          if EXT_DB_URL=jdbc:mysql://invalid.example/never node docs/handoffs/claude-local-execution-2026-11-24/86_R031_OWNED_MYSQL_GUARD.mjs; then
+            echo R031_EXTERNAL_ENV_UNEXPECTEDLY_ACCEPTED
+            exit 1
+          fi
+          echo R031_EXTERNAL_ENV_REFUSED
+      - name: Execute owned disposable MySQL guard
+        run: node docs/handoffs/claude-local-execution-2026-11-24/86_R031_OWNED_MYSQL_GUARD.mjs
