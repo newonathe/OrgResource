@@ -486,7 +486,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "ChatGPT first finish all25 harness files and material dependencies adversarial audit, resolve L07 retention/key custody and evidence portability contract as minimal verification-only successor (propose before implementation); inspect PR57 86 integration paths incl public privacy/rights, actual Extended logs and exact head; coordinate no overlapping writer. Prepare independent G01 93-route review, close targeted residual G03 evidence (no full repeats), L07 isolated second machine/operator and C10/C11 entry criteria. Claude remains paused until consolidated approved execution batch. Owner L06 only after corrected accepted harness, explicit retention/transfer authority and direct challenge. G02 incident/rotation and target proof, G07 academic parallel."
+    "next_action": "Keep Claude paused. Finish Report56 A04-A07 harness review and minimal L07 export/custody design; postmerge A02/A03 privacy review of 86 integration paths, especially historical 4174-line master; check exact-main CI separately. Prepare G01 and C9 residuals. Decide product scope after P0 #26, preserve V1-V7 and frozen A; DEC-D01, full modern API and other optional gaps need explicit approval. Academic parallel."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -2312,5 +2312,14 @@
     "harness": "72de0c106621dabc26a63390003f46c86d63b066",
     "reason": "Successful cleanup deletes mixed archive/dump; key and generated owner login material ephemeral; readiness packet assumes retained L06 archive.",
     "report": "docs/handoffs/claude-local-execution-2026-11-24/56_POST_LOCAL_PRODUCTION_PLAN_AND_L07_CUSTODY_BLOCKER.md"
+  },
+  "feature_scope_reconciliation": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/57_FEATURE_SCOPE_RECONCILIATION_AND_PR57_MERGED.md",
+    "source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr57_merged": true,
+    "main_ci": "UNVERIFIED",
+    "scope": "SOURCE_ONLY_SELECTED_RANGES",
+    "optional_product": "PROPOSED_ONLY"
   }
 }

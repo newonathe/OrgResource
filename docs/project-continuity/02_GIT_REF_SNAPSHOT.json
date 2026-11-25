@@ -876,7 +876,7 @@
     "pr54": "9646ff743c6678af90aa357ee761ac11ed366dff",
     "pr55": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
     "pr56": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
-    "coverage": "Report55: local return reported only; harness delta and PR57 integration scope verified by tree; actual CI pending",
+    "coverage": "Report57 exact main/PR tree equality, PR CI actual all3, main separate CI unverified",
     "candidate_runs": [],
     "actual_runs": [
       [
@@ -964,9 +964,10 @@
         "actual": "WINDOWS_GUARD_SOURCE exact SHA; Temurin 21.0.13; C8HostedDemoImportCommandTest 8, C8HostedDemoPostflightTest 3, C8HostedDemoPreflightTest 3, C8HostedOriginalBaselineTest 3; total 17, failures/errors/skips 0, BUILD SUCCESS, job success"
       }
     ],
-    "next_action": "Obtain sanitized L08 receipt and actual harness fixture/negative evidence (owner-local). Check PR57 exact-head CI actual logs, review full 86 integration-only changes incl historical docs and added source-export checks for public rights/privacy, ensure explicit owner merge approval and no new drift. Review all25 harness files and nine residual controls independently; owner-only L06 on detached72de0c10 not integrated main. Concurrent G01 reviewer assignment, L07 separate machine, Course A student deadline; Northflank incident and credential rotation before host access. L07/G01/G02/G03–05 remain open. No repeat of reported local successes absent evidence gap.",
+    "next_action": "Keep Claude paused. Finish Report56 A04-A07 harness review and minimal L07 export/custody design; postmerge A02/A03 privacy review of 86 integration paths, especially historical 4174-line master; check exact-main CI separately. Prepare G01 and C9 residuals. Decide product scope after P0 #26, preserve V1-V7 and frozen A; DEC-D01, full modern API and other optional gaps need explicit approval. Academic parallel.",
     "pr57": "c7ed762f1cfb1f5603d9e34028653f072c877773",
-    "main": "16e781c837dd7e1f0481fb7a01e49c27d80a91e8",
-    "native_harness": "72de0c106621dabc26a63390003f46c86d63b066"
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "native_harness": "72de0c106621dabc26a63390003f46c86d63b066",
+    "merged": true
   }
 }

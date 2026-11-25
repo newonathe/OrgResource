@@ -182,3 +182,13 @@ ChatGPT first finish all25 harness files and material dependencies adversarial a
 
 Plan: `docs/handoffs/claude-local-execution-2026-11-24/56_POST_LOCAL_PRODUCTION_PLAN_AND_L07_CUSTODY_BLOCKER.md`.
 
+
+
+## Feature scope and merged PR57 — Report57
+
+AGENTS.md, GOAT, Superpowers plan/review/verify and quality gate read and applied inline. PR57 merged 2026-11-25 16:29 PHT, main 96741bbd295a2d1e7b4bbf6a75cb558a793b09bd; all3 actual tested PR CI45574646363 logs inspected. Deterministic nontruncated path/blob/mode comparison 960/960 main=PR57, 275/275 backend/frontend/extended unchanged vs R09. No merge/deploy by ChatGPT. Historical CP35/CP49/C6a scope reconciled with 93-route inventory and selected actual code. C8 delivered assigned LEAD, linked borrower/self-service and modern Requirement operations; historical missing-feature entries superseded. Confirmed gaps: DEC-D01 department affiliation/steward/catalog/dashboard, incomplete modern UUID CRUD coverage despite functional legacy flows, archive/unarchive and unit label, governance revocation UI/list/search, wider exports and operational monitoring/retention. Optional research designs not approved mandatory defects. Owner reports HOLD added to local OWNER_RUN, agrees L07 archive/key retention gap. Recommendations pending owner: retain merge, targeted semantic public privacy review/remediation; design L07 secure retention before L06; leave proposal branches separate. No WSL, no new product code or permission inferred.
+
+Keep Claude paused. Finish Report56 A04-A07 harness review and minimal L07 export/custody design; postmerge A02/A03 privacy review of 86 integration paths, especially historical 4174-line master; check exact-main CI separately. Prepare G01 and C9 residuals. Decide product scope after P0 #26, preserve V1-V7 and frozen A; DEC-D01, full modern API and other optional gaps need explicit approval. Academic parallel.
+
+Report: `docs/handoffs/claude-local-execution-2026-11-24/57_FEATURE_SCOPE_RECONCILIATION_AND_PR57_MERGED.md`.
+
