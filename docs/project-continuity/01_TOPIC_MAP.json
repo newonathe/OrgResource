@@ -384,7 +384,7 @@
         }
       ],
       "authority": "Parallel PR24 source inventory and publication vetoes; metadata != content inspection.",
-      "next": "Six non-full privacy reviews (4 ranges/2 metadata): historical appended master, context index, route map R031–R093 evidence fields, historical graph, two ledgers. Consolidated 13-path remediation proposal needs owner authorization and rights assessment; no current/history edits. G01 residual assertions and independent IR4 open. H01–H06 accepted native successor critical; L06 HOLD/no WSL.",
+      "next": "Five non-full privacy reviews (all ranges): appended master, context index, historical graph, two ledgers. Continue chunked semantic review; proposed 13-path remediation and payload rights remain owner-gated. G01 R031 runtime log-redaction and independent IR4 open; H01–H06 accepted native successor critical; L06 HOLD/no WSL.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
@@ -598,7 +598,7 @@
         }
       ],
       "authority": "93 route candidate mapping, independent issue34 blocked; current code and actual test evidence.",
-      "next": "G01 remains blocked pending independent IR4/reviewer. R035/R038 actual public recovered receipt rechecked in Report74; normal-writable side-effect residual, approved private full-positive and transient DB cases remain open. Do not rerun all 93 or claim full acceptance.",
+      "next": "G01 remains blocked pending independent IR4/reviewer. R035/R038 actual public recovered receipt rechecked in Report74; normal-writable side-effect residual, approved private full-positive and transient DB cases remain open. Do not rerun all 93 or claim full acceptance. Report76 R031 exact-main source and #67 oracle rechecked; dedicated actual log-redaction remains open.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/74_STRUCTURED_PRIVACY_AND_RECOVERED_ROUTE_RECEIPTS.md",
@@ -899,7 +899,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "Six non-full privacy reviews (4 ranges/2 metadata): historical appended master, context index, route map R031–R093 evidence fields, historical graph, two ledgers. Consolidated 13-path remediation proposal needs owner authorization and rights assessment; no current/history edits. G01 residual assertions and independent IR4 open. H01–H06 accepted native successor critical; L06 HOLD/no WSL.",
+      "next": "Five non-full privacy reviews (all ranges): appended master, context index, historical graph, two ledgers. Continue chunked semantic review; proposed 13-path remediation and payload rights remain owner-gated. G01 R031 runtime log-redaction and independent IR4 open; H01–H06 accepted native successor critical; L06 HOLD/no WSL.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
