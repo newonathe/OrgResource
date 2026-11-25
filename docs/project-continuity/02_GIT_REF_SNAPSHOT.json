@@ -994,11 +994,12 @@
     "next_action": "Complete remaining H01–H06 transitive method-body/SQL/runtime review and prepare authorized harness-only successor and fictional native tests; obtain explicit retention/transfer and independent/owner acceptance before L06. Complete remaining semantic privacy/rights review of integration paths, prepare G01 route-factor review, decide CPX only after P0/approval. Keep Claude paused and L06 HOLD. Exact-main CI evidence now bounded verified."
   },
   "current_postlocal_checkpoint": {
-    "handoff_ref": "fb45da23dfa4b4407ee5a19fe2795e12969bf0a5",
+    "handoff_ref": "0f116e2a5be8f04dad66ac7f1b28efe6aad31419",
     "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
     "main_ci": 45576702774,
     "dispatch_hold": true,
     "scope": "66 full/12 ranges/8 metadata/0 unread; 13 flagged paths; 91 prior events schema-valid",
-    "next": "20 non-full privacy reviews (12 ranges/8 metadata); prioritize flagged incomplete paths, G01 residual assertions and independent review; H01 consent/H02–H06 accepted native successor; L06 HOLD/no WSL."
+    "next": "20 non-full privacy reviews (12 ranges/8 metadata); prioritize flagged incomplete paths, G01 residual assertions and independent review; H01 consent/H02–H06 accepted native successor; L06 HOLD/no WSL.",
+    "tree": "192e38f2e8b6b08806974507e324e390062dab43"
   }
 }

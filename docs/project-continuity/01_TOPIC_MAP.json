@@ -519,6 +519,18 @@
           "blob": "440623cf491ae206eebb22bbbaf1ec015f028eb2",
           "ref": "034db623411a2f6af40e4ac8c2489b5cd07ee4d7",
           "review": "SOURCE_ONLY privacy proposal and historical actual receipt recheck"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/65_PR57_PRIVACY_REVIEW_INDEX.csv",
+          "blob": "f547c1302a5f488ffa5eae27b74685261c8665e3",
+          "ref": "0f116e2a5be8f04dad66ac7f1b28efe6aad31419",
+          "review": "SOURCE_ONLY structured intake and continuity validation"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
+          "blob": "39a23dd5220c189ebdeb451401a8217041c992de",
+          "ref": "0f116e2a5be8f04dad66ac7f1b28efe6aad31419",
+          "review": "SOURCE_ONLY structured intake and continuity validation"
         }
       ]
     },
@@ -1022,6 +1034,18 @@
           "blob": "978d943f5fae77fc47e79d82d8e0cc93f7ac85b9",
           "ref": "034db623411a2f6af40e4ac8c2489b5cd07ee4d7",
           "review": "SOURCE_ONLY privacy proposal and historical actual receipt recheck"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
+          "blob": "39a23dd5220c189ebdeb451401a8217041c992de",
+          "ref": "0f116e2a5be8f04dad66ac7f1b28efe6aad31419",
+          "review": "SOURCE_ONLY structured intake and continuity validation"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/12_EXECUTION_GRAPH.json",
+          "blob": "fd9b42280ad97e36656e770a8ab92c4210355309",
+          "ref": "0f116e2a5be8f04dad66ac7f1b28efe6aad31419",
+          "review": "SOURCE_ONLY structured intake and continuity validation"
         }
       ]
     },
@@ -1168,7 +1192,21 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "Every chat, audit and update durable context."
+      "next": "Every chat, audit and update durable context.",
+      "latest_sources": [
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
+          "blob": "39a23dd5220c189ebdeb451401a8217041c992de",
+          "ref": "0f116e2a5be8f04dad66ac7f1b28efe6aad31419",
+          "review": "SOURCE_ONLY structured intake and continuity validation"
+        },
+        {
+          "path": "docs/project-continuity/06_CONTEXT_EVENTS.jsonl",
+          "blob": "dba49da2debbd4ef2b53a9cb26e0bc810a285efb",
+          "ref": "0f116e2a5be8f04dad66ac7f1b28efe6aad31419",
+          "review": "SOURCE_ONLY structured intake and continuity validation"
+        }
+      ]
     }
   ],
   "coverage": "18 topic families mapped to actual exact file or directory at inspected tree. Directory count is metadata not proof of reading. Reopen relevant files and ranges; append discovered source/decision rather than claim complete.",
