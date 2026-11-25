@@ -5145,5 +5145,25 @@
     "scoped_tables": 12,
     "independent_open": 93,
     "next": "Review 12 unread paths and six partial/three metadata paths in bounded semantic chunks; obtain owner decision on ten-path sanitization and rights packet; reconcile G01 remaining route factors. H01 consent and H02–H06 accepted Windows successor critical; L06 HOLD/no WSL."
+  },
+  "structured_intake_checkpoint": {
+    "ref": "c09bab4c0836fc537250a52e6ef6dd44c94bdcf7",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
+    "privacy": {
+      "full": 66,
+      "relevant_ranges": 12,
+      "metadata": 8,
+      "unread": 0,
+      "redaction_recommended": 13
+    },
+    "event_validation": {
+      "prior_count": 91,
+      "invalid": 0,
+      "duplicate_ids": 0,
+      "topic_ids": 18,
+      "inventory_blob_match": true
+    },
+    "independent_open": 93,
+    "next": "Finish 20 non-full privacy reviews (12 ranges/8 metadata), prioritizing flagged incomplete paths; prepare G01 residual assertions and authorized reviewer dispatch. H01 owner consent/H02–H06 accepted native successor critical; L06 HOLD/no WSL; no CPX implementation or Claude launch."
   }
 }
