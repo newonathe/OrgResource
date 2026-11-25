@@ -1,0 +1,5037 @@
+{
+  "schema": "orgresource.claude.local.handoff.v1",
+  "date": "2026-11-24 Asia/Manila",
+  "repository": "newonathe/OrgResource",
+  "source_ref": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+  "source_tree": "180f9708b78a9479d50531edbd04e0dee48a57e7",
+  "source_pr": 56,
+  "source_ci": 45550768924,
+  "last_verified": {
+    "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "tree": "d55cecc7afd240da455014e2d9f1b61bb0e74f40",
+    "pr": 56,
+    "ci": 45494597345,
+    "extended_job": 138801601172,
+    "evidence": "Report48 actual final logs and dedicated receipt",
+    "previous": {
+      "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+      "tree": "432383c58f60d26ab2f05e08ce31bd6996b7d56b",
+      "pr": 51,
+      "ci": 45434204255,
+      "extended_job": 138587448867,
+      "previous_r06b1": {
+        "sha": "406ce2af1c4905bf7b845bcc072f71903327e0a1",
+        "tree": "81d9f55696cb001065524641abe864a77f79b16d",
+        "pr": 49,
+        "ci": 45430758956,
+        "extended_job": 138575101070,
+        "previous_r06a": {
+          "sha": "c91333766f3082b88a8c0414450dcaf6fc934ca2",
+          "tree": "f275de92f518971a7529c8cc2f1ea378260017e9",
+          "pr": 48,
+          "ci": 45427270775,
+          "extended_job": 138562564604,
+          "previous_stage1d": {
+            "sha": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
+            "pr": 46,
+            "ci": 45425950575,
+            "extended_job": 138557865307
+          },
+          "previous_stage1c": {
+            "sha": "09e3e5a0b2a1e87132c8f7ba9fb44ab1c50de2c0",
+            "ci": 45414895612
+          },
+          "evidence": "actual exact-head logs inspected; 14 and 15"
+        },
+        "evidence": "actual exact-head logs inspected; 14/15"
+      },
+      "evidence": "actual exact-head logs inspected; handoff14/15 and global06"
+    }
+  },
+  "frozen_course_a": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+  "protected_migrations": "V1–V7",
+  "policy_reference": "d794e8d2a9db1167729a54dcab844f03642d2c36",
+  "source_audit_reference": "727c270f0a5f2d34bb3b049124d2d5cfca218f35",
+  "classifications": {
+    "active_tree": "METADATA_ONLY for every blob unless separately cited in existing evidence; no semantic whole-tree review claimed",
+    "policy_tree": "metadata locator; source review partial/full as noted in audit",
+    "c6_tree": "historical audit metadata locator; not re-reviewed"
+  },
+  "context": [
+    {
+      "stage": "CURRENT corrected dispatch exact source — task-relevant only",
+      "ref": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "blob": "b9a8dd40cc8b8f7591a8d058622a23fa31177d7f",
+          "bytes": 7990,
+          "mode": "100644"
+        },
+        {
+          "path": "docs/QUALITY_EVIDENCE_CONTINUOUS_GATE.md",
+          "blob": "494d9df515dbfcc2e7586c87a1b1fa859aa71564",
+          "bytes": 15033,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/package-extended-c.ps1",
+          "blob": "402594b78473a5c70ad2a78a408ed15d23057847",
+          "bytes": 8009,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/verify-extended-c1.ps1",
+          "blob": "d4a168dbea08460a8ac38efd6df10d2f8dd21221",
+          "bytes": 41074,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/verify-extended-c-recovery.ps1",
+          "blob": "76c8bd4e173f2edd165840a9d3455808fc2ceea0",
+          "bytes": 14360,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/verify-extended-c6a-operator.ps1",
+          "blob": "4015ba4117c720f06b97671c0448b92976d172ed",
+          "bytes": 20793,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/verify-c8-demo-import.ps1",
+          "blob": "b76cc7f0ecca1c690727dba2f77c489e43c821f7",
+          "bytes": 15851,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/extended-c-backup.ps1",
+          "blob": "a909fc2a4b3818f8dec318ab9d12ac49d0bd5fb8",
+          "bytes": 30968,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/verify-c9-local-mixed-preparation.sh",
+          "blob": "f4f5a563817ee5edc8b44d6241a40316b6c01ff7",
+          "bytes": 36683,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/c9-private-mixed-recovered-control.sh",
+          "blob": "7272e978a6e3961a617d6d2ebc0313e7b32d9ecd",
+          "bytes": 14324,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/c9-local-operator-gate.sh",
+          "blob": "98977d6f4a45ee610d926b569bb90deb6dcf3d23",
+          "bytes": 1164,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/verify-c9-private-mixed-api.py",
+          "blob": "a2e35c315d8de63155b3d5047102f76b7a71f0ec",
+          "bytes": 8519,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/verify-c9-private-mixed-browser.mjs",
+          "blob": "96beb793e70322325b2b55c59ce72dab9ba7de98",
+          "bytes": 10647,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/build-c9-private-mixed-expectations.py",
+          "blob": "e8e8d046ba740fb6ee7af327c6c4fd16c278ccde",
+          "bytes": 6578,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/c9-private-mixed-expectations.sql",
+          "blob": "d1db889aab9b11d4284f9f8f3232bda2e7c1fd3d",
+          "bytes": 2461,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/stop-c9-private-mixed-process.py",
+          "blob": "0197217580f8be98a7324f17b1fa66b342739b69",
+          "bytes": 4079,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/src/main/resources/db/migration/V1__extended_c1_baseline.sql",
+          "blob": "22b1e0f589ab05d2b0721e5de39bb29b371a2382",
+          "bytes": 10645,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/src/main/resources/db/migration/V2__spring_session_jdbc_mysql.sql",
+          "blob": "4dd537e2bcfb22898fb144860cb5881afe904790",
+          "bytes": 1162,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/src/main/resources/db/migration/V3__atomic_inventory_ledger.sql",
+          "blob": "37ce7fffc3a2a5aae6556aec22f5c8f7755b363c",
+          "bytes": 5479,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/src/main/resources/db/migration/V4__c3_contact_images_and_reminders.sql",
+          "blob": "56d09c0c7f46a23d0d29f8fd5eb236548e86f29d",
+          "bytes": 2158,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/src/main/resources/db/migration/V5__c4_reminder_dispatch_boundary.sql",
+          "blob": "ff9f7330de52b7f6aba6f4f21c29382896eeb5a5",
+          "bytes": 311,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/src/main/resources/db/migration/V6__c8_project_leads_and_linked_borrowers.sql",
+          "blob": "187e5aeff4481d250db9e45f6f7d7cb685e683d4",
+          "bytes": 1594,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/src/main/resources/db/migration/V7__c8_local_demo_provenance.sql",
+          "blob": "7072ea7d77a7d8d4f03b790e5516e4f7fd470cb0",
+          "bytes": 816,
+          "mode": "100644"
+        },
+        {
+          "path": ".agents/skills/orgresource-goat/SKILL.md",
+          "blob": "07cba61eb26958cdd4499eaf557d8cf1fbb4fc7b",
+          "bytes": 3380,
+          "mode": "100644"
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-debug/SKILL.md",
+          "blob": "5801f65147642269ef5cefa074dd99b6d524a643",
+          "bytes": 1191,
+          "mode": "100644"
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-implement/SKILL.md",
+          "blob": "97e095e16ae1ca2af2a8bf4a6f1c63607621f351",
+          "bytes": 1823,
+          "mode": "100644"
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-plan/SKILL.md",
+          "blob": "ccc899b93586e39b919559e691b41dc3ca175c8d",
+          "bytes": 1255,
+          "mode": "100644"
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-review/SKILL.md",
+          "blob": "c7f37536f75f146c01283d159fc38eca1bac8060",
+          "bytes": 1435,
+          "mode": "100644"
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-verify/SKILL.md",
+          "blob": "716e3858f19fd4d90120c48fc020f051f930326a",
+          "bytes": 1377,
+          "mode": "100644"
+        },
+        {
+          "path": "backend/.mvn/wrapper/maven-wrapper.properties",
+          "blob": "c4735cf60ead50bd69158b91464f360b30986564",
+          "bytes": 259,
+          "mode": "100644"
+        },
+        {
+          "path": "backend/mvnw",
+          "blob": "bd8896bf2217b46faa0291585e01ac1a3441a958",
+          "bytes": 11790,
+          "mode": "100644"
+        },
+        {
+          "path": "backend/mvnw.cmd",
+          "blob": "5761d948924c19571d27b465c519b2e2f9e30351",
+          "bytes": 8481,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/pom.xml",
+          "blob": "2eb4209e67e974fdc99a3c65d8683c9758b4e294",
+          "bytes": 5313,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/frontend/package-lock.json",
+          "blob": "aca7c7a1d094535ceabb9ee01f3536b839d93efe",
+          "bytes": 138807,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/frontend/package.json",
+          "blob": "98bbadf846495f05b284cac211487336ff059d92",
+          "bytes": 1034,
+          "mode": "100644"
+        },
+        {
+          "path": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "blob": "e6c61a10adbfa54a140c493d97b48b36b6c56e39",
+          "bytes": 21044,
+          "mode": "100644"
+        },
+        {
+          "path": "postman/OrgResource-Extended-C3-Local.postman_environment.json",
+          "blob": "2a8de54592d85869400b4ec98ca4e0e668dc5839",
+          "bytes": 535,
+          "mode": "100644"
+        },
+        {
+          "path": "postman/OrgResource-Extended-C6a-Reporting.postman_collection.json",
+          "blob": "0c21fd2a53f1b6a25517a492708bbd0850440b84",
+          "bytes": 10604,
+          "mode": "100644"
+        },
+        {
+          "path": "postman/fixtures/academic-demo-image.png",
+          "blob": "97dcd7f9bac25be1962d53636bc4d81340c34cec",
+          "bytes": 137,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/run-extended-c3-newman.ps1",
+          "blob": "9f719cba01bd57142d0f6438618e5543c7a7831a",
+          "bytes": 3130,
+          "mode": "100644"
+        },
+        {
+          "path": ".github/workflows/windows-demo-guards.yml",
+          "blob": "9daa53fe60fbe9dab2361af9891c81d99800a00e",
+          "bytes": 1555,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/src/test/java/edu/orgresource/extended/demo/C8HostedDemoImportCommandTest.java",
+          "blob": "f6971c0f7d5467bbef9ecd0efc1d1d7b0f5630fb",
+          "bytes": 5793,
+          "mode": "100644"
+        }
+      ]
+    },
+    {
+      "stage": "CURRENT local dispatch exact source — read task-relevant only; older groups historical",
+      "ref": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "blob": "b9a8dd40cc8b8f7591a8d058622a23fa31177d7f",
+          "bytes": 7990,
+          "mode": "100644"
+        },
+        {
+          "path": "docs/QUALITY_EVIDENCE_CONTINUOUS_GATE.md",
+          "blob": "494d9df515dbfcc2e7586c87a1b1fa859aa71564",
+          "bytes": 15033,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/package-extended-c.ps1",
+          "blob": "402594b78473a5c70ad2a78a408ed15d23057847",
+          "bytes": 8009,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/verify-extended-c1.ps1",
+          "blob": "d4a168dbea08460a8ac38efd6df10d2f8dd21221",
+          "bytes": 41074,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/verify-extended-c-recovery.ps1",
+          "blob": "76c8bd4e173f2edd165840a9d3455808fc2ceea0",
+          "bytes": 14360,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/verify-extended-c6a-operator.ps1",
+          "blob": "4015ba4117c720f06b97671c0448b92976d172ed",
+          "bytes": 20793,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/verify-c8-demo-import.ps1",
+          "blob": "b76cc7f0ecca1c690727dba2f77c489e43c821f7",
+          "bytes": 15851,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/extended-c-backup.ps1",
+          "blob": "a909fc2a4b3818f8dec318ab9d12ac49d0bd5fb8",
+          "bytes": 30968,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/verify-c9-local-mixed-preparation.sh",
+          "blob": "f4f5a563817ee5edc8b44d6241a40316b6c01ff7",
+          "bytes": 36683,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/c9-private-mixed-recovered-control.sh",
+          "blob": "7272e978a6e3961a617d6d2ebc0313e7b32d9ecd",
+          "bytes": 14324,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/c9-local-operator-gate.sh",
+          "blob": "98977d6f4a45ee610d926b569bb90deb6dcf3d23",
+          "bytes": 1164,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/verify-c9-private-mixed-api.py",
+          "blob": "a2e35c315d8de63155b3d5047102f76b7a71f0ec",
+          "bytes": 8519,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/verify-c9-private-mixed-browser.mjs",
+          "blob": "96beb793e70322325b2b55c59ce72dab9ba7de98",
+          "bytes": 10647,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/build-c9-private-mixed-expectations.py",
+          "blob": "e8e8d046ba740fb6ee7af327c6c4fd16c278ccde",
+          "bytes": 6578,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/c9-private-mixed-expectations.sql",
+          "blob": "d1db889aab9b11d4284f9f8f3232bda2e7c1fd3d",
+          "bytes": 2461,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/stop-c9-private-mixed-process.py",
+          "blob": "0197217580f8be98a7324f17b1fa66b342739b69",
+          "bytes": 4079,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/src/main/resources/db/migration/V1__extended_c1_baseline.sql",
+          "blob": "22b1e0f589ab05d2b0721e5de39bb29b371a2382",
+          "bytes": 10645,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/src/main/resources/db/migration/V2__spring_session_jdbc_mysql.sql",
+          "blob": "4dd537e2bcfb22898fb144860cb5881afe904790",
+          "bytes": 1162,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/src/main/resources/db/migration/V3__atomic_inventory_ledger.sql",
+          "blob": "37ce7fffc3a2a5aae6556aec22f5c8f7755b363c",
+          "bytes": 5479,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/src/main/resources/db/migration/V4__c3_contact_images_and_reminders.sql",
+          "blob": "56d09c0c7f46a23d0d29f8fd5eb236548e86f29d",
+          "bytes": 2158,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/src/main/resources/db/migration/V5__c4_reminder_dispatch_boundary.sql",
+          "blob": "ff9f7330de52b7f6aba6f4f21c29382896eeb5a5",
+          "bytes": 311,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/src/main/resources/db/migration/V6__c8_project_leads_and_linked_borrowers.sql",
+          "blob": "187e5aeff4481d250db9e45f6f7d7cb685e683d4",
+          "bytes": 1594,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/src/main/resources/db/migration/V7__c8_local_demo_provenance.sql",
+          "blob": "7072ea7d77a7d8d4f03b790e5516e4f7fd470cb0",
+          "bytes": 816,
+          "mode": "100644"
+        },
+        {
+          "path": ".agents/skills/orgresource-goat/SKILL.md",
+          "blob": "07cba61eb26958cdd4499eaf557d8cf1fbb4fc7b",
+          "bytes": 3380,
+          "mode": "100644"
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-debug/SKILL.md",
+          "blob": "5801f65147642269ef5cefa074dd99b6d524a643",
+          "bytes": 1191,
+          "mode": "100644"
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-implement/SKILL.md",
+          "blob": "97e095e16ae1ca2af2a8bf4a6f1c63607621f351",
+          "bytes": 1823,
+          "mode": "100644"
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-plan/SKILL.md",
+          "blob": "ccc899b93586e39b919559e691b41dc3ca175c8d",
+          "bytes": 1255,
+          "mode": "100644"
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-review/SKILL.md",
+          "blob": "c7f37536f75f146c01283d159fc38eca1bac8060",
+          "bytes": 1435,
+          "mode": "100644"
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-verify/SKILL.md",
+          "blob": "716e3858f19fd4d90120c48fc020f051f930326a",
+          "bytes": 1377,
+          "mode": "100644"
+        },
+        {
+          "path": "backend/.mvn/wrapper/maven-wrapper.properties",
+          "blob": "c4735cf60ead50bd69158b91464f360b30986564",
+          "bytes": 259,
+          "mode": "100644"
+        },
+        {
+          "path": "backend/mvnw",
+          "blob": "bd8896bf2217b46faa0291585e01ac1a3441a958",
+          "bytes": 11790,
+          "mode": "100644"
+        },
+        {
+          "path": "backend/mvnw.cmd",
+          "blob": "5761d948924c19571d27b465c519b2e2f9e30351",
+          "bytes": 8481,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/pom.xml",
+          "blob": "2eb4209e67e974fdc99a3c65d8683c9758b4e294",
+          "bytes": 5313,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/frontend/package-lock.json",
+          "blob": "aca7c7a1d094535ceabb9ee01f3536b839d93efe",
+          "bytes": 138807,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/frontend/package.json",
+          "blob": "98bbadf846495f05b284cac211487336ff059d92",
+          "bytes": 1034,
+          "mode": "100644"
+        },
+        {
+          "path": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "blob": "e6c61a10adbfa54a140c493d97b48b36b6c56e39",
+          "bytes": 21044,
+          "mode": "100644"
+        },
+        {
+          "path": "postman/OrgResource-Extended-C3-Local.postman_environment.json",
+          "blob": "2a8de54592d85869400b4ec98ca4e0e668dc5839",
+          "bytes": 535,
+          "mode": "100644"
+        },
+        {
+          "path": "postman/OrgResource-Extended-C6a-Reporting.postman_collection.json",
+          "blob": "0c21fd2a53f1b6a25517a492708bbd0850440b84",
+          "bytes": 10604,
+          "mode": "100644"
+        },
+        {
+          "path": "postman/fixtures/academic-demo-image.png",
+          "blob": "97dcd7f9bac25be1962d53636bc4d81340c34cec",
+          "bytes": 137,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/run-extended-c3-newman.ps1",
+          "blob": "9f719cba01bd57142d0f6438618e5543c7a7831a",
+          "bytes": 3130,
+          "mode": "100644"
+        }
+      ]
+    },
+    {
+      "stage": "mandatory root",
+      "ref": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "blob": "b9a8dd40cc8b8f7591a8d058622a23fa31177d7f",
+          "bytes": 7990
+        },
+        {
+          "path": "docs/QUALITY_EVIDENCE_CONTINUOUS_GATE.md",
+          "blob": "494d9df515dbfcc2e7586c87a1b1fa859aa71564",
+          "bytes": 15033
+        },
+        {
+          "path": "NEXT_CHAT_START_HERE.md",
+          "blob": "b4d8ee643978287d2f392129b50dbaa90d786d3a",
+          "bytes": 52820
+        },
+        {
+          "path": "CURRENT_STATUS_AND_NEXT_ACTIONS.md",
+          "blob": "8694ff3fbf151dbbe6f7cb72fd640e2d157ae772",
+          "bytes": 21311
+        },
+        {
+          "path": ".agents/skills/orgresource-goat/SKILL.md",
+          "blob": "07cba61eb26958cdd4499eaf557d8cf1fbb4fc7b",
+          "bytes": 3380
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-plan/SKILL.md",
+          "blob": "ccc899b93586e39b919559e691b41dc3ca175c8d",
+          "bytes": 1255
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-implement/SKILL.md",
+          "blob": "97e095e16ae1ca2af2a8bf4a6f1c63607621f351",
+          "bytes": 1823
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-debug/SKILL.md",
+          "blob": "5801f65147642269ef5cefa074dd99b6d524a643",
+          "bytes": 1191
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-review/SKILL.md",
+          "blob": "c7f37536f75f146c01283d159fc38eca1bac8060",
+          "bytes": 1435
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-verify/SKILL.md",
+          "blob": "716e3858f19fd4d90120c48fc020f051f930326a",
+          "bytes": 1377
+        }
+      ]
+    },
+    {
+      "stage": "mandatory routing source",
+      "ref": "d794e8d2a9db1167729a54dcab844f03642d2c36",
+      "files": [
+        {
+          "path": "docs/execution/01_EFFICIENCY_ENGINEERING_STANDARD.md",
+          "blob": "de8d6d93d8c174125cee1eb6d0d826b285b2cf66",
+          "bytes": 14307
+        },
+        {
+          "path": "docs/execution/12_TOKEN_BUDGETED_SUBAGENT_ROUTING.md",
+          "blob": "5ad52da158b879c6f551178e36b6ab89f147851d",
+          "bytes": 20140
+        },
+        {
+          "path": "docs/execution/13_PHASE_SPECIFIC_SUBAGENT_PROMPTS.md",
+          "blob": "f569b5c9d7ce045b891715e21293a22ea5bd5038",
+          "bytes": 26736
+        },
+        {
+          "path": "docs/execution/14_SUPERPOWERS_SOURCE_AUDIT_AND_CONFLICTS.md",
+          "blob": "910a4badc57eec6805b43b06b03a8767d234ff84",
+          "bytes": 17160
+        },
+        {
+          "path": "docs/execution/15_GOAT_MODEL_EFFORT_ROUTING_AND_COST_VALIDATION.md",
+          "blob": "9bf148f2730901aa48f2cba137d20b2b6da7a180",
+          "bytes": 14680
+        },
+        {
+          "path": "docs/execution/16_SUPERPOWERS_ADAPTED_ROOT_CODEX_HANDOFF.md",
+          "blob": "d4cc6021fb2b2958546c74119a92befac24eee40",
+          "bytes": 19679
+        },
+        {
+          "path": "data/config/orgresource-evidence-router-policy-2026.json",
+          "blob": "f2fd5bf7cc64706c847580538b59536606550ca4",
+          "bytes": 7841
+        }
+      ]
+    },
+    {
+      "stage": "C8 local source",
+      "ref": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306",
+      "files": [
+        {
+          "path": "evidence/C8/BOUNDED_AUTHORIZATION_CONTRACT_V1.md",
+          "blob": "22d50562d1d6d97abd2d59c64c66ba6e9b69c63b",
+          "bytes": 2797
+        },
+        {
+          "path": "evidence/C8/IR4_TECHNICAL_STATUS.md",
+          "blob": "8d8f643ca6625951f6570da8ee6bd7107ae9172f",
+          "bytes": 1531
+        },
+        {
+          "path": "evidence/C8/C8_93_ROUTE_EVIDENCE_CANDIDATE_INDEX_2026-11-24.json",
+          "blob": "8905f46440152f69e9e4633e281b9c37404a12af",
+          "bytes": 317394
+        },
+        {
+          "path": "evidence/C8/C8_PROJECTWORK_REPORTING_ASSERTION_RECONCILIATION_2026-11-24.md",
+          "blob": "75a0fc20e4d7b32e4746f9191063bc9808dadb70",
+          "bytes": 5995
+        },
+        {
+          "path": "evidence/C8/C8_INVENTORY33_ASSERTION_RECONCILIATION_2026-11-24.md",
+          "blob": "971cae54a77dfac0e471c4d7b46a4bb9c38fb504",
+          "bytes": 16205
+        },
+        {
+          "path": "evidence/C8/C8_IDENTITY20_ASSERTION_RECONCILIATION_2026-11-24.md",
+          "blob": "7e296f65e7a5ba1dfe42bc4e04612fe54a926edd",
+          "bytes": 13441
+        },
+        {
+          "path": "evidence/C8/C8_LEGACY29_ASSERTION_RECONCILIATION_2026-11-24.md",
+          "blob": "bec9e05c1dfc49595dc786182da66c1fe7bdd9c7",
+          "bytes": 16977
+        },
+        {
+          "path": "docs/deployment/C8_PRIVATE_DATASET_MANIFEST_2026-11-23.md",
+          "blob": "d5cec72739cc25e15ecc851aba36e3da33e123b3",
+          "bytes": 5019
+        },
+        {
+          "path": "scripts/verify-c8-demo-import.ps1",
+          "blob": "b76cc7f0ecca1c690727dba2f77c489e43c821f7",
+          "bytes": 15851
+        },
+        {
+          "path": "scripts/verify-c8-additive-isolated.sh",
+          "blob": "eec4c685f7ab3327cf2771d4a1da8e9f8bf96f3d",
+          "bytes": 39026
+        },
+        {
+          "path": "scripts/preflight-c8-demo-plan.py",
+          "blob": "58f2235914571ba94ae3dd38006c1e4dcfeb3c93",
+          "bytes": 5666
+        }
+      ]
+    },
+    {
+      "stage": "local recovery/release",
+      "ref": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306",
+      "files": [
+        {
+          "path": "docs/EXTENDED_C_RELEASE.md",
+          "blob": "73411cf0dc861f19d320dd0aef1b439c636fdb93",
+          "bytes": 9094
+        },
+        {
+          "path": "scripts/verify-extended-c1.ps1",
+          "blob": "d4a168dbea08460a8ac38efd6df10d2f8dd21221",
+          "bytes": 41074
+        },
+        {
+          "path": "scripts/verify-extended-c-recovery.ps1",
+          "blob": "76c8bd4e173f2edd165840a9d3455808fc2ceea0",
+          "bytes": 14360
+        },
+        {
+          "path": "scripts/verify-extended-c6a-operator.ps1",
+          "blob": "4015ba4117c720f06b97671c0448b92976d172ed",
+          "bytes": 20793
+        },
+        {
+          "path": "scripts/extended-c-backup.ps1",
+          "blob": "ef33b722c7e12cb7a4ba81d1108d35493f4974a4",
+          "bytes": 17502
+        },
+        {
+          "path": "scripts/package-extended-c.ps1",
+          "blob": "402594b78473a5c70ad2a78a408ed15d23057847",
+          "bytes": 8009
+        },
+        {
+          "path": ".github/workflows/verify.yml",
+          "blob": "8be24e64dd760fa10e650223f5a114972948d9c5",
+          "bytes": 13225
+        },
+        {
+          "path": "evidence/C9/C9_STAGE1C_ENCRYPTED_C5_ARCHIVE_2026-11-24.md",
+          "blob": "9a742cf7a45e0c7d3271f4e44b76bb949cd9278e",
+          "bytes": 9540
+        },
+        {
+          "path": "evidence/C9/C9_STAGE1D_RECOVERED_APPLICATION_2026-11-24.md",
+          "blob": "7ff01dcb6aa445b8dc2da2da602e6d9e787c3cc2",
+          "bytes": 4991
+        }
+      ]
+    },
+    {
+      "stage": "academic read only",
+      "ref": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306",
+      "files": [
+        {
+          "path": "docs/academic-final/COURSE_FINAL_A_AS_BUILT.md",
+          "blob": "9b40d9bcdecd06db9ce77a2d008d9693876e4f12",
+          "bytes": 32194
+        },
+        {
+          "path": "docs/compliance/FINAL_COURSE_COMPLIANCE_MATRIX.md",
+          "blob": "7d9d9ece7fde68f49b79c95cd9bb03f045cd7b79",
+          "bytes": 11742
+        },
+        {
+          "path": "docs/compliance/TWILIO_COURSE_DECISION.md",
+          "blob": "ab49567ff3c6bcd2e7d8a76b3c41656064015f1b",
+          "bytes": 3460
+        },
+        {
+          "path": "docs/COURSE_A_FINAL_DEMO_GUIDE.md",
+          "blob": "48bdbd6038400c24c68a59ec533cc51e403d26f6",
+          "bytes": 8092
+        }
+      ]
+    },
+    {
+      "stage": "historical future gates reference only",
+      "ref": "d794e8d2a9db1167729a54dcab844f03642d2c36",
+      "files": [
+        {
+          "path": "docs/execution/00_START_HERE.md",
+          "blob": "ffb04fd1d7d0f41483c95e6e7bf26f2354c9d86b",
+          "bytes": 15419
+        },
+        {
+          "path": "docs/execution/02_SUBAGENT_ORCHESTRATION.md",
+          "blob": "73da32d6792e83b667d69408cee97ec3f297f143",
+          "bytes": 14834
+        },
+        {
+          "path": "docs/execution/03_PASS_DEPENDENCIES_AND_ACCEPTANCE.md",
+          "blob": "716e869cb5c8efa742bea25c936251781e9e8b8e",
+          "bytes": 24534
+        },
+        {
+          "path": "docs/execution/04_CODEX_PROMPTS_C6_C8.md",
+          "blob": "4351e3f943a48fbd57f47f1707da1c9c1465c530",
+          "bytes": 24201
+        },
+        {
+          "path": "docs/execution/05_CODEX_PROMPTS_C9_C11.md",
+          "blob": "8787ce60610b933339e0ff3d3f10aa0cd629b648",
+          "bytes": 26685
+        },
+        {
+          "path": "docs/execution/06_COVERAGE_AND_DECISION_REGISTER.md",
+          "blob": "9da9538327688b08bdb8ada4005369d489cda513",
+          "bytes": 14091
+        },
+        {
+          "path": "docs/execution/08_ATENEO_HOSTED_DEMO_REQUIREMENTS.md",
+          "blob": "49c27282a41b4a9da2a2a113007f61e4fd1f5821",
+          "bytes": 22467
+        },
+        {
+          "path": "docs/execution/09_DEMO_SEED_ALGORITHM_AND_ACCEPTANCE.md",
+          "blob": "7abedf1dc61569247f11f8cf5e5d9e38fcc309ff",
+          "bytes": 25906
+        },
+        {
+          "path": "docs/execution/10_CODEX_DEMO_DATA_IMPLEMENTATION_PROMPT.md",
+          "blob": "ef7e1ce0a23ee65db5672ac8a606b63b3d49b9f6",
+          "bytes": 31435
+        },
+        {
+          "path": "docs/execution/11_EXPANDED_CAMPUS_ROSTER_AND_HIGH_VOLUME_PLAN.md",
+          "blob": "d03d9be9fca91c6929e6a443a3741ccbaa099307",
+          "bytes": 21264
+        },
+        {
+          "path": "docs/execution/17_GOAT_VIDEO_EVIDENCE_REGISTER_PENDING.md",
+          "blob": "0cf3731f20d93dadf675b80b207a2200a2f30b3a",
+          "bytes": 8608
+        },
+        {
+          "path": "docs/execution/18_INDEPENDENT_AGENT_COST_RESEARCH_AND_EVAL.md",
+          "blob": "892cde378058cc6c2ed3eb7658a5e00a72db172e",
+          "bytes": 8496
+        },
+        {
+          "path": "docs/execution/19_FINAL_SOURCE_AUDIT_AND_C6_ENTRY_GATE.md",
+          "blob": "ed1e7b1d796a4e44d7f4a7930b2954dafd4352fd",
+          "bytes": 21161
+        }
+      ]
+    },
+    {
+      "stage": "private/host planning only",
+      "ref": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306",
+      "files": [
+        {
+          "path": "docs/deployment/P0_NORTHFLANK_MANUAL_JOB_COMMAND_2026-11-23.md",
+          "blob": "dafdc6c0e445c60c6143aa0ebff3c8ee378e9d55",
+          "bytes": 28229
+        },
+        {
+          "path": "docs/deployment/P0_NORTHFLANK_DEMO_POPULATION_2026-11-23.md",
+          "blob": "bcf715d1ddb66c35c19aeb165340cfa25a9ed5ee",
+          "bytes": 12595
+        },
+        {
+          "path": "docs/decisions/DEC_D01_DEPARTMENT_VISIBILITY_AND_REQUESTS_2026-11-23.md",
+          "blob": "d991f5d65700e75b7c308ff83ed55d0e73c83a8b",
+          "bytes": 15610
+        }
+      ]
+    },
+    {
+      "stage": "current Stage1D candidate delta (read only if task requires)",
+      "ref": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
+      "files": [
+        {
+          "path": "CURRENT_STATUS_AND_NEXT_ACTIONS.md",
+          "blob": "bd1606711033e706e74edc7f38e12a9cf9ec8893",
+          "bytes": 21935
+        },
+        {
+          "path": "NEXT_CHAT_START_HERE.md",
+          "blob": "96fb2e633993c4d688bdb7cf1b3cd2aa441ac910",
+          "bytes": 53444
+        },
+        {
+          "path": "evidence/C9/C9_STAGE1D_RECOVERED_APPLICATION_2026-11-24.md",
+          "blob": "7d71f7f2a2d2c6b5ab679cc8481fbce0889bfb4e",
+          "bytes": 6937
+        },
+        {
+          "path": "scripts/stop-c9-isolated-process.py",
+          "blob": "1fd74f1cf47b71758fbee661b930bf80f46390ed",
+          "bytes": 3482
+        },
+        {
+          "path": "scripts/verify-c9-recovered-api.py",
+          "blob": "57313fb10be14232e306dfc1263f32d125bd4e77",
+          "bytes": 9981
+        },
+        {
+          "path": "scripts/verify-c9-recovered-application.sh",
+          "blob": "9d2ec6edf719f0bd8e3633fd61dc2714e571644c",
+          "bytes": 17778
+        }
+      ]
+    },
+    {
+      "stage": "R06 compatibility and R01/R029 review; ChatGPT only until local script pinned",
+      "ref": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306",
+      "files": [
+        {
+          "path": "extended/backend/src/main/java/edu/orgresource/extended/demo/C8HostedOriginalBaseline.java",
+          "blob": "085041e018011facd19e18e7dd8e62437db18d10",
+          "bytes": 12840
+        },
+        {
+          "path": "extended/backend/src/main/java/edu/orgresource/extended/demo/C8HostedDemoPreflight.java",
+          "blob": "15905e34c3d4fb611550e379e76efa9a66077b5e",
+          "bytes": 10453
+        },
+        {
+          "path": "extended/backend/src/main/java/edu/orgresource/extended/demo/C8HostedDemoImportCommand.java",
+          "blob": "d88da763dccdef22e1d913b1204ab6bc58a67827",
+          "bytes": 8033
+        },
+        {
+          "path": "extended/backend/src/main/java/edu/orgresource/extended/demo/C8HostedDemoPostflight.java",
+          "blob": "00735310115c6b12f9af78c4e4b810e9e9e2134d",
+          "bytes": 31976
+        },
+        {
+          "path": "extended/backend/src/main/java/edu/orgresource/extended/demo/C8FlywayHistory.java",
+          "blob": "d4d97fc84b78947fa13d0f3d664d258e3148a8f3",
+          "bytes": 3285
+        },
+        {
+          "path": "extended/backend/src/main/java/edu/orgresource/extended/service/DemoProvenance.java",
+          "blob": "a1c81da8d7931c12e07dacac1339b8151e63b3bc",
+          "bytes": 4908
+        },
+        {
+          "path": "extended/backend/src/main/java/edu/orgresource/extended/service/C8DemoImporter.java",
+          "blob": "df5dc43d43d222393d862da928c22544877243e9",
+          "bytes": 27148
+        },
+        {
+          "path": "scripts/extended-c-backup.ps1",
+          "blob": "ef33b722c7e12cb7a4ba81d1108d35493f4974a4",
+          "bytes": 17502
+        },
+        {
+          "path": "scripts/verify-extended-c6a-operator.ps1",
+          "blob": "4015ba4117c720f06b97671c0448b92976d172ed",
+          "bytes": 20793
+        },
+        {
+          "path": "scripts/verify-c8-additive-isolated.sh",
+          "blob": "eec4c685f7ab3327cf2771d4a1da8e9f8bf96f3d",
+          "bytes": 39026
+        },
+        {
+          "path": "scripts/verify-c9-recovered-application.sh",
+          "blob": "28a5a57422e5440c993612df402afb5292d68054",
+          "bytes": 17227
+        },
+        {
+          "path": "scripts/verify-c9-recovered-api.py",
+          "blob": "ee2e889b916b2fe1f7f5d92553a54964b79b71e4",
+          "bytes": 9027
+        },
+        {
+          "path": "extended/frontend/e2e/c9-recovered-browser.mjs",
+          "blob": "0f144543ade5eefd6027f5e8597de1c57bdf6fb0",
+          "bytes": 1677
+        },
+        {
+          "path": "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java",
+          "blob": "3c990fab2ed6cbe1d10cbdd3feacf71cd48746cc",
+          "bytes": 358848
+        }
+      ]
+    },
+    {
+      "stage": "R06A original-only transport candidate (ChatGPT review; not local runner)",
+      "ref": "c91333766f3082b88a8c0414450dcaf6fc934ca2",
+      "files": [
+        {
+          "path": "evidence/C9/R06A_LOCAL_ORIGINAL_TRANSPORT_2026-11-24.md",
+          "blob": "5d44961dbfcdc903be66d4e99076040d1133dc12",
+          "bytes": 3800
+        },
+        {
+          "path": "scripts/extended-c-backup.ps1",
+          "blob": "aa42e075d32d94a9b0e355bed86e2c31a52004e7",
+          "bytes": 25659
+        },
+        {
+          "path": "scripts/verify-c8-additive-isolated.sh",
+          "blob": "fa37f1dc2d509e52a53058b02e1da6ea47944ab5",
+          "bytes": 39223
+        },
+        {
+          "path": "scripts/verify-c9-local-original-transport.sh",
+          "blob": "6ff616bae32eaab0294ecd09e8d57664c4e3d63f",
+          "bytes": 12403
+        }
+      ]
+    },
+    {
+      "stage": "R06B1 candidate delta; ChatGPT review only",
+      "ref": "406ce2af1c4905bf7b845bcc072f71903327e0a1",
+      "files": [
+        {
+          "path": ".github/workflows/verify.yml",
+          "blob": "07211e17037233db806488b3542162ac53846737",
+          "bytes": 13392
+        },
+        {
+          "path": "CURRENT_STATUS_AND_NEXT_ACTIONS.md",
+          "blob": "35316160a22210e677e6d2f22b8dbcc0df36da1b",
+          "bytes": 22850
+        },
+        {
+          "path": "NEXT_CHAT_START_HERE.md",
+          "blob": "d898eed312dbf5f44422d1815a8d3a3169c87c5b",
+          "bytes": 54359
+        },
+        {
+          "path": "evidence/C9/R06B1_LOCAL_MIXED_PREPARATION_2026-11-24.md",
+          "blob": "f8f9b9b59ac242d0dafce9ab6cdbee3cf13a9aaf",
+          "bytes": 5708
+        },
+        {
+          "path": "scripts/test-c9-local-mixed-preparation.sh",
+          "blob": "b3e2fd42524a9f1c2897477ec0c36641052ce8c6",
+          "bytes": 2936
+        },
+        {
+          "path": "scripts/verify-c9-local-mixed-preparation.sh",
+          "blob": "77ead5b0c21ebeec2d8ffa1525bdb5bdaf19ed3d",
+          "bytes": 19442
+        }
+      ]
+    },
+    {
+      "stage": "R06B2 candidate delta; ChatGPT review only",
+      "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+      "files": [
+        {
+          "path": "CURRENT_STATUS_AND_NEXT_ACTIONS.md",
+          "blob": "a7028425657bac2a71d7f54960e92a8106176902",
+          "bytes": 23756
+        },
+        {
+          "path": "NEXT_CHAT_START_HERE.md",
+          "blob": "fc2e5e65e834c2678cb024c6b431cde16fe8af71",
+          "bytes": 55265
+        },
+        {
+          "path": "evidence/C9/R06B2_OPERATOR_GATED_IMPORT_2026-11-25.md",
+          "blob": "44cd39ca2b0707d2804431aed937305c2450f5b7",
+          "bytes": 5165
+        },
+        {
+          "path": "scripts/c9-local-operator-gate.sh",
+          "blob": "98977d6f4a45ee610d926b569bb90deb6dcf3d23",
+          "bytes": 1164
+        },
+        {
+          "path": "scripts/test-c9-local-mixed-preparation.sh",
+          "blob": "58feb7d173643662498655f0afe86e0c0fb72525",
+          "bytes": 3894
+        },
+        {
+          "path": "scripts/verify-c9-local-mixed-preparation.sh",
+          "blob": "2e98d4dcd150b63c56bb719e8779b123051190f5",
+          "bytes": 29656
+        }
+      ]
+    },
+    {
+      "stage": "R06B3a candidate delta; ChatGPT review only",
+      "ref": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+      "files": [
+        {
+          "path": "CURRENT_STATUS_AND_NEXT_ACTIONS.md",
+          "blob": "67aff9d598106037bd3c75cee23ec7fc6746a5b5",
+          "bytes": 24663
+        },
+        {
+          "path": "NEXT_CHAT_START_HERE.md",
+          "blob": "ccd7ad97e9725abbee7735d8e9096cf159939b5a",
+          "bytes": 56172
+        },
+        {
+          "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
+          "blob": "49133fd1eb193cdd6d4a9cfc529804dc0b884b99",
+          "bytes": 4799
+        },
+        {
+          "path": "scripts/extended-c-backup.ps1",
+          "blob": "a909fc2a4b3818f8dec318ab9d12ac49d0bd5fb8",
+          "bytes": 30968
+        },
+        {
+          "path": "scripts/test-c9-local-mixed-preparation.sh",
+          "blob": "a2e9d31ea6a58e5c78e03f821edc20194f058224",
+          "bytes": 4467
+        },
+        {
+          "path": "scripts/verify-c9-local-mixed-preparation.sh",
+          "blob": "d75846e4ab4f93b8ae8a4a4eb5c6c44fe326acd3",
+          "bytes": 35907
+        }
+      ]
+    }
+  ],
+  "private_input": {
+    "name": "fictional-events-v1.local.json",
+    "bytes": 19265850,
+    "sha256": "3b0f54da85cadb77cd7d8ab2d50c1fdb4b4ee36710b803cf904227e13f08927c",
+    "source_sha256": "57f1f0c680041c39dcf7644a1acca5fcc75dc7d525262547842389da7540b9a2",
+    "counts": {
+      "organizations": 96,
+      "departments": 248,
+      "projects": 713,
+      "resources": 1312,
+      "requirements": 2139,
+      "personas": 462,
+      "allocations": 21060,
+      "events": 67370
+    },
+    "scope": "LOCAL_ONLY_DRY_RUN",
+    "status": "manifest previously verified; bytes not accessed during this audit; never public"
+  },
+  "independent_acceptance": "OPEN",
+  "hosted_issue26": "LIVE_IMPORT_NOT_RUN",
+  "C8_issue34": "BLOCKED",
+  "DEC_D01_issue27": "PROPOSED_ONLY",
+  "local_execution_order": [
+    "L00 after explicit owner launch",
+    "L03 (includes L01/L02 only with actual nested receipts)",
+    "L04 exact private plan",
+    "L05 independent restricted IR4",
+    "L06 gated private POSIX owner-terminal import",
+    "L07 separate OPERATOR_ONLY",
+    "L08 sanitized handback"
+  ],
+  "research": {
+    "date": "2026-11-24",
+    "decision": "native package-first; no third-party install; on-demand context",
+    "references": [
+      "10_CLAUDE_RESEARCH_AND_ADOPTION.md",
+      "11_NATIVE_EXECUTION_RECIPE.md"
+    ],
+    "native_source": {
+      "path": "scripts/package-extended-c.ps1",
+      "lines": "73–96",
+      "ref": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306"
+    }
+  },
+  "latest_verified_documentation": {
+    "sha": "6ff1f2cebc69d3c490f6f469c6d3b119e04d6758",
+    "run": 45434476827,
+    "workflow_conclusion": "success",
+    "actual_logs_inspected": false
+  },
+  "current_candidate": {
+    "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "tree": "180f9708b78a9479d50531edbd04e0dee48a57e7",
+    "pr": 56,
+    "parent": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "status": "completed",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/50_L03_WINDOWS_REPORTED_FAILURE_AND_PORTABLE_TEST_FIX.md",
+    "changed_paths": [
+      "extended/backend/src/test/java/edu/orgresource/extended/demo/C8HostedDemoImportCommandTest.java",
+      ".github/workflows/windows-demo-guards.yml"
+    ],
+    "full_attempt1": {
+      "status": "FAILED",
+      "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+      "run": 45550768924,
+      "job": 138991125280,
+      "oracle": "full Extended exact-head Linux regression",
+      "actual": "Actual log: wget failed to fetch pinned Maven 3.10.0 distribution at clean verify start; exit1 before Java test execution. Java8/React jobs success metadata; no source/test failure observed from Extended job. Rerun failed workflow jobs only accepted by GitHub API; next attempt actual logs pending."
+    },
+    "retry_requested": true,
+    "conclusion": "success",
+    "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS",
+    "run": 45550768924,
+    "actual_receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768924,
+        "job": 138992173040,
+        "oracle": "exact corrected source full Extended Linux regression, attempt2",
+        "actual": "93 registered routes once; 103 Maven/78 identity and corrected 8 import guard cases, zero failures/errors/skips; 60 Newman requests/110 assertions, 19 Playwright; actual deadlock rollback/retry/replay; distinct JVM response-loss and reminder restart, independent C5 1039696 bytes exact non-session rows and empty sessions; 15 archive refusals, 10 local prechecks, public original-only metadata/API/browser/grants and SQL aggregate/projection controls, all cleanup; 450+75 packaged serial HTTP, JAR 72486427 bytes SHA256 76e5977499edb6a01a0c6de95ce166c2975d08f70bcdbd57680049d1af32c10a"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768785,
+        "job": 138991124364,
+        "oracle": "exact corrected source dedicated fresh-schema tests",
+        "actual": "six groups, seven method executions, zero failures/errors/skips, six cleanups, 450 measured+75 warmups, 3 fresh schema/JVM invocations, final R0708_PREPARATION_OK"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768924,
+        "job": 138992175595,
+        "oracle": "exact frozen Java8 regression",
+        "actual": "61 Maven, 100 Newman requests/151 assertions, one packaged Playwright; zero failures/errors/skips"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768924,
+        "job": 138992174413,
+        "oracle": "exact React regression",
+        "actual": "3 test files/15 tests, typecheck/lint/build success"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768892,
+        "job": 138991124431,
+        "oracle": "exact corrected source Windows Java21 DB-free guard suite",
+        "actual": "WINDOWS_GUARD_SOURCE exact SHA; Temurin 21.0.13; C8HostedDemoImportCommandTest 8, C8HostedDemoPostflightTest 3, C8HostedDemoPreflightTest 3, C8HostedOriginalBaselineTest 3; total 17, failures/errors/skips 0, BUILD SUCCESS, job success"
+      }
+    ]
+  },
+  "launch_gate": {
+    "ready": true,
+    "source_of_truth": "12_EXECUTION_GRAPH.json",
+    "compatibility_gate": "13_MIXED_REHEARSAL_COMPATIBILITY_GATE.md",
+    "verified_base_only": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "candidate_lock": "45_LOCAL_DISPATCH_SOURCE_LOCK.json",
+    "approved_source_sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "owner_launch_required": true,
+    "scope": "BOUNDED_REMOTE_PREPARATION_ONLY"
+  },
+  "r06a_candidate": {
+    "sha": "c91333766f3082b88a8c0414450dcaf6fc934ca2",
+    "tree": "f275de92f518971a7529c8cc2f1ea378260017e9",
+    "pr": 48,
+    "ci": 45427270775,
+    "status": "completed",
+    "conclusion": "success",
+    "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS",
+    "base": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
+    "changed_paths": [
+      {
+        "path": "evidence/C9/R06A_LOCAL_ORIGINAL_TRANSPORT_2026-11-24.md",
+        "blob": "5d44961dbfcdc903be66d4e99076040d1133dc12",
+        "bytes": 3800
+      },
+      {
+        "path": "scripts/extended-c-backup.ps1",
+        "blob": "aa42e075d32d94a9b0e355bed86e2c31a52004e7",
+        "bytes": 25659
+      },
+      {
+        "path": "scripts/verify-c8-additive-isolated.sh",
+        "blob": "fa37f1dc2d509e52a53058b02e1da6ea47944ab5",
+        "bytes": 39223
+      },
+      {
+        "path": "scripts/verify-c9-local-original-transport.sh",
+        "blob": "6ff616bae32eaab0294ecd09e8d57664c4e3d63f",
+        "bytes": 12403
+      }
+    ]
+  },
+  "r06b1_candidate": {
+    "sha": "406ce2af1c4905bf7b845bcc072f71903327e0a1",
+    "tree": "81d9f55696cb001065524641abe864a77f79b16d",
+    "pr": 49,
+    "ci": 45430758956,
+    "status": "completed",
+    "conclusion": "success",
+    "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS",
+    "base": "c91333766f3082b88a8c0414450dcaf6fc934ca2",
+    "changed_paths": [
+      {
+        "path": ".github/workflows/verify.yml",
+        "blob": "07211e17037233db806488b3542162ac53846737",
+        "bytes": 13392,
+        "mode": "100644"
+      },
+      {
+        "path": "CURRENT_STATUS_AND_NEXT_ACTIONS.md",
+        "blob": "35316160a22210e677e6d2f22b8dbcc0df36da1b",
+        "bytes": 22850,
+        "mode": "100644"
+      },
+      {
+        "path": "NEXT_CHAT_START_HERE.md",
+        "blob": "d898eed312dbf5f44422d1815a8d3a3169c87c5b",
+        "bytes": 54359,
+        "mode": "100644"
+      },
+      {
+        "path": "evidence/C9/R06B1_LOCAL_MIXED_PREPARATION_2026-11-24.md",
+        "blob": "f8f9b9b59ac242d0dafce9ab6cdbee3cf13a9aaf",
+        "bytes": 5708,
+        "mode": "100644"
+      },
+      {
+        "path": "scripts/test-c9-local-mixed-preparation.sh",
+        "blob": "b3e2fd42524a9f1c2897477ec0c36641052ce8c6",
+        "bytes": 2936,
+        "mode": "100644"
+      },
+      {
+        "path": "scripts/verify-c9-local-mixed-preparation.sh",
+        "blob": "77ead5b0c21ebeec2d8ffa1525bdb5bdaf19ed3d",
+        "bytes": 19442,
+        "mode": "100644"
+      }
+    ]
+  },
+  "continuation": {
+    "locator_issue": 50,
+    "entry": "14_CONTINUE_PRE_CLAUDE.md",
+    "event_ledger": "15_CONTINUATION_LEDGER.jsonl",
+    "state_authority": "12_EXECUTION_GRAPH.json",
+    "instruction": "New project chat continue => live refs/receipts and resume remote queue until R09; no implicit Claude launch or host",
+    "next_action": "Continue existing Windows L03/L04/L05 and Course A technical lanes. Propose/implement separately scoped no-WSL L06 verification adapter only after scope confirmed; synthetic actual Windows proof before private use; do not alter existing Linux runner or locked source; owner challenge, off-host and production gates unchanged."
+  },
+  "r06b2_candidate": {
+    "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+    "tree": "432383c58f60d26ab2f05e08ce31bd6996b7d56b",
+    "pr": 51,
+    "ci": 45434204255,
+    "status": "completed",
+    "conclusion": "success",
+    "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS",
+    "base": "406ce2af1c4905bf7b845bcc072f71903327e0a1",
+    "changed_paths": [
+      {
+        "path": "CURRENT_STATUS_AND_NEXT_ACTIONS.md",
+        "blob": "a7028425657bac2a71d7f54960e92a8106176902",
+        "bytes": 23756,
+        "mode": "100644"
+      },
+      {
+        "path": "NEXT_CHAT_START_HERE.md",
+        "blob": "fc2e5e65e834c2678cb024c6b431cde16fe8af71",
+        "bytes": 55265,
+        "mode": "100644"
+      },
+      {
+        "path": "evidence/C9/R06B2_OPERATOR_GATED_IMPORT_2026-11-25.md",
+        "blob": "44cd39ca2b0707d2804431aed937305c2450f5b7",
+        "bytes": 5165,
+        "mode": "100644"
+      },
+      {
+        "path": "scripts/c9-local-operator-gate.sh",
+        "blob": "98977d6f4a45ee610d926b569bb90deb6dcf3d23",
+        "bytes": 1164,
+        "mode": "100644"
+      },
+      {
+        "path": "scripts/test-c9-local-mixed-preparation.sh",
+        "blob": "58feb7d173643662498655f0afe86e0c0fb72525",
+        "bytes": 3894,
+        "mode": "100644"
+      },
+      {
+        "path": "scripts/verify-c9-local-mixed-preparation.sh",
+        "blob": "2e98d4dcd150b63c56bb719e8779b123051190f5",
+        "bytes": 29656,
+        "mode": "100644"
+      }
+    ]
+  },
+  "project_wide_continuity": {
+    "root": "PROJECT_CONTEXT_START_HERE.md",
+    "directory": "docs/project-continuity",
+    "locator_issue": 50,
+    "topic_map": "01_TOPIC_MAP.json",
+    "ref_snapshot": "02_GIT_REF_SNAPSHOT.json",
+    "file_index": "03_DOCUMENT_VERSION_INDEX.csv",
+    "decision_register": "04_DECISIONS_AND_CONFLICTS.md",
+    "event_schema": "05_CONTEXT_EVENT_SCHEMA.json",
+    "event_ledger": "06_CONTEXT_EVENTS.jsonl",
+    "project_instructions_appendix": "07_PROJECT_INSTRUCTIONS_APPENDIX.md",
+    "private_source_boundary": "08_PRIVATE_SOURCE_BOUNDARY.md",
+    "index_ref": "eb3a90fdc4e9c0fd7502bba753c5d64774885bcc",
+    "topics": 18,
+    "prs": 46,
+    "branches": 49,
+    "non_pr_issues": 5,
+    "tree_snapshots": 11,
+    "unique_file_versions": 953,
+    "scope": "All OrgResource chats and task topics; exact refs and retrieval not omniscient transcript recall. Actual Project settings not changed."
+  },
+  "r06b3a_candidate": {
+    "sha": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+    "tree": "19f17466cf32e5f5bea1568de7ef3aac47b27150",
+    "pr": 52,
+    "ci": 45437263264,
+    "status": "completed",
+    "conclusion": "success",
+    "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS",
+    "base": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+    "changed_paths": [
+      {
+        "path": "CURRENT_STATUS_AND_NEXT_ACTIONS.md",
+        "blob": "67aff9d598106037bd3c75cee23ec7fc6746a5b5",
+        "bytes": 24663,
+        "mode": "100644"
+      },
+      {
+        "path": "NEXT_CHAT_START_HERE.md",
+        "blob": "ccd7ad97e9725abbee7735d8e9096cf159939b5a",
+        "bytes": 56172,
+        "mode": "100644"
+      },
+      {
+        "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
+        "blob": "49133fd1eb193cdd6d4a9cfc529804dc0b884b99",
+        "bytes": 4799,
+        "mode": "100644"
+      },
+      {
+        "path": "scripts/extended-c-backup.ps1",
+        "blob": "a909fc2a4b3818f8dec318ab9d12ac49d0bd5fb8",
+        "bytes": 30968,
+        "mode": "100644"
+      },
+      {
+        "path": "scripts/test-c9-local-mixed-preparation.sh",
+        "blob": "a2e9d31ea6a58e5c78e03f821edc20194f058224",
+        "bytes": 4467,
+        "mode": "100644"
+      },
+      {
+        "path": "scripts/verify-c9-local-mixed-preparation.sh",
+        "blob": "d75846e4ab4f93b8ae8a4a4eb5c6c44fe326acd3",
+        "bytes": 35907,
+        "mode": "100644"
+      }
+    ],
+    "extended_job": 138598356841
+  },
+  "r04_partial_reconciliation": {
+    "ref": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+    "frozen": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+    "run": 45437263264,
+    "job": 138598356335,
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/16_R04_COURSE_A_PACKAGING_RECONCILIATION.md",
+    "source_refs": [
+      {
+        "ref": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+        "path": "scripts/package-release.ps1",
+        "blob": "317d19ab31d243e85e737887e297cd1b6d8fa8be"
+      },
+      {
+        "ref": "727c270f0a5f2d34bb3b049124d2d5cfca218f35",
+        "path": "evidence/C6/SAFE_CI_AND_PUBLIC_MIRROR_DECISION.md",
+        "blob": "6180cc38655c1571876a5f197a7846bf2e77de0e"
+      }
+    ],
+    "acceptance": "R04_IN_PROGRESS",
+    "remaining": "safe allowlist and actual package checks"
+  },
+  "r04_source_export_candidate": {
+    "frozen": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+    "base": "7c156ff3a0ca267bf85eaa80288559335963df4a",
+    "manifest": "docs/handoffs/claude-local-execution-2026-11-24/17_COURSE_A_SOURCE_ALLOWLIST.json",
+    "checker": "docs/handoffs/claude-local-execution-2026-11-24/verify_course_a_source_export.py",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/18_R04_SOURCE_EXPORT_CANDIDATE.md",
+    "files": 120,
+    "bytes": 793613,
+    "acceptance": "VERIFIED_BOUNDED_SOURCE_ARCHIVE_ONLY",
+    "verified_sha": "3428c087faa2a09115388918af15538f1eccb4d6",
+    "run": 45439669603,
+    "job": 138606956479,
+    "archive_bytes": 220753
+  },
+  "r06b3b_contract": {
+    "ref": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/19_R06B3A_RECEIPT_AND_R06B3B_EXECUTION_CONTRACT.md",
+    "state": "SOURCE_CONTRACT_READY_IMPLEMENTATION_OPEN"
+  },
+  "r06b3b_candidate": {
+    "sha": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
+    "base": "8c6000a481172e2e31a479065abc6e0d296e8c4c",
+    "pr": 53,
+    "intermediate": "bec8b69c5aedd2cf23b379f2509b871ee3ade84d",
+    "runs": [
+      [
+        45475369786,
+        "in_progress",
+        null
+      ]
+    ],
+    "intermediate_run": 45475142332,
+    "aggregate_run": 45473244425,
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/26_R06B3B_TRANSITIVE_REVIEW_AND_REAP_ORDERING.md",
+    "acceptance": "VERIFIED_BOUNDED",
+    "private_positive": "NOT_RUN",
+    "local_test": {
+      "exit": 0,
+      "reconstructed_old_exit": 1,
+      "test_blob": "c6b2ee266def6069e6f3c1b4e066b5fe6105430c",
+      "cases": 7,
+      "scope": "extracted helper, actual short-lived owned children, guard double; no private JVM"
+    },
+    "aggregate_receipt": {
+      "sha": "8c6000a481172e2e31a479065abc6e0d296e8c4c",
+      "run": 45473244425,
+      "job": 138726559312,
+      "maven": 91,
+      "playwright": 19,
+      "failures": 0,
+      "all_jobs_success": true,
+      "public_sql_aggregates": "VERIFIED_BOUNDED",
+      "private_positive": "NOT_RUN"
+    },
+    "latest_job": 138734044884,
+    "latest_run": 45475369786,
+    "latest_status": "completed",
+    "command_contract": "docs/handoffs/claude-local-execution-2026-11-24/27_R06B3B_AGGREGATE_RECEIPT_AND_L06_COMMAND_CONTRACT.md",
+    "intermediate_receipt": {
+      "sha": "bec8b69c5aedd2cf23b379f2509b871ee3ade84d",
+      "pr": 53,
+      "run": 45475142332,
+      "job": 138733247385,
+      "maven": 91,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "failures": 0,
+      "verdict": "VERIFIED_BOUNDED",
+      "private_positive": "NOT_RUN"
+    },
+    "final_receipt": {
+      "sha": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
+      "pr": 53,
+      "run": 45475369786,
+      "job": 138734044884,
+      "maven": 91,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "failures": 0,
+      "verdict": "VERIFIED_BOUNDED",
+      "private_positive": "NOT_RUN",
+      "scope": "remote engineering/public synthetic controls only"
+    }
+  },
+  "r04_standalone_candidate": {
+    "base": "076c9a5e7c7a1e66b894362864d93b76409196bd",
+    "script": "docs/handoffs/claude-local-execution-2026-11-24/verify_course_a_standalone_candidate.py",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/20_R04_STANDALONE_RELEASE_CANDIDATE.md",
+    "payloads": 18,
+    "java_files": 75,
+    "full_source_files": 120,
+    "acceptance": "VERIFIED_BOUNDED",
+    "sha": "9ecabdbc51b280ff1dbb2673f72766cfca2ab9a8",
+    "run": 45443590053,
+    "jobs": [
+      [
+        138621165337,
+        "Extended C Java 21",
+        "completed",
+        "success"
+      ],
+      [
+        138621165947,
+        "React",
+        "completed",
+        "success"
+      ],
+      [
+        138621166005,
+        "Java 8",
+        "completed",
+        "success"
+      ]
+    ],
+    "job": 138621166005,
+    "newman_assertions": 9,
+    "failures": 0
+  },
+  "r03_candidate": {
+    "sha": "9646ff743c6678af90aa357ee761ac11ed366dff",
+    "base": "3a1e46cddf0cf1bd519b6c493205727b9310a97a",
+    "pr": 54,
+    "runs": [
+      [
+        45491538911,
+        "Verify",
+        "in_progress",
+        null
+      ]
+    ],
+    "report": "evidence/C8/R03_WORKSPACE_RESIDUAL_ORACLE_CANDIDATE_2026-11-25.md",
+    "acceptance": "CI_PENDING",
+    "routes": [
+      "R032",
+      "R085",
+      "R086",
+      "R087",
+      "R088",
+      "R089",
+      "R090",
+      "R091",
+      "R092",
+      "R093"
+    ],
+    "tests": [
+      6,
+      61
+    ],
+    "observed_red": "NOT_RUN"
+  },
+  "proposed_project_instructions": {
+    "path": "docs/project-continuity/10_PROPOSED_PROJECT_INSTRUCTIONS_UNDER_8000.md",
+    "characters": 7974,
+    "status": "PROPOSED_NOT_APPLIED",
+    "limit": 8000
+  },
+  "r03_prior_verified": {
+    "sha": "4272bd0e0fbbb9e31354f387de39d5a86131bf1b",
+    "base": "cfb6e83bdf20e7ebe51315d7229c43babf9d9923",
+    "pr": 54,
+    "run": 45472112699,
+    "job": 138722524067,
+    "maven": 101,
+    "identity": 76,
+    "playwright": 19,
+    "failures": 0,
+    "all_jobs_success": true,
+    "routes": [
+      "R083",
+      "R084"
+    ],
+    "tests": [
+      76
+    ],
+    "acceptance": "VERIFIED_BOUNDED",
+    "report": "evidence/C8/R03_DIRECTED_R083_R084_TERMINAL_CANDIDATE_2026-11-25.md"
+  },
+  "r04_remote_scope": {
+    "state": "VERIFIED_BOUNDED",
+    "source_commit": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+    "candidate": "9ecabdbc51b280ff1dbb2673f72766cfca2ab9a8",
+    "run": 45443590053,
+    "job": 138621166005,
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/24_R04_REMOTE_SCOPE_AND_R06B3B_LOCKING_READ.md",
+    "local_gates": "G07 NOT_RUN/NOT_VERIFIED; no distribution"
+  },
+  "r03_previous_candidate": {
+    "sha": "74b2450ddd508d5e07a387fa7c1212b42d52779a",
+    "base": "a1ba49aecce96ea24e82b0e2de4e1f210221aaa7",
+    "pr": 54,
+    "runs": [
+      [
+        45483605533,
+        "in_progress",
+        null
+      ]
+    ],
+    "report": "evidence/C8/R03_BORROWER_DIRECTORY_CONSENT_CURSOR_CANDIDATE_2026-11-25.md",
+    "acceptance": "CI_PENDING",
+    "routes": [
+      "R051",
+      "R053",
+      "R054",
+      "R055",
+      "R056",
+      "R058"
+    ],
+    "tests": [
+      54
+    ],
+    "observed_red": "NOT_RUN"
+  },
+  "r06b3b_public_verified": {
+    "sha": "e1d648d5a4c64b69e495cabca7bbd1b4eea0f2f2",
+    "base": "68b694adadcca5d7c8a5698d01e86c7e47227800",
+    "pr": 53,
+    "run": 45459113536,
+    "acceptance": "VERIFIED_BOUNDED",
+    "test_first": "30c68c97211bfe339b01b22c676ed9ea2934f3e5",
+    "protected": {
+      "course": 105,
+      "extended": 170,
+      "migrations": 7
+    },
+    "report": "evidence/C9/R06B3B_LOCKING_READ_CORRECTION_2026-11-25.md",
+    "prior_failed_sha": "321205f235efe36d615e68998f3ffbd75baf4051",
+    "prior_run": 45441418164,
+    "prior_job": 138613273769,
+    "runs": [
+      [
+        45459113536,
+        "in_progress",
+        null
+      ]
+    ],
+    "prior_retry_sha": "b2609e36c090363dc32cb9f6b5c65107e93a262b",
+    "prior_retry_run": 45444843268,
+    "prior_retry_job": 138625635986,
+    "prior_api_failed_sha": "f1bcf7e129f7a9b037478aae570610ccf84fa4c4",
+    "prior_api_failed_run": 45448775860,
+    "prior_api_failed_job": 138639769266,
+    "failed_attempt_job": 138656862810,
+    "failed_attempt_reason": "Maven wrapper distribution download failed before tests",
+    "retry_job": 138669505383,
+    "prior_failed_run": 45453565679,
+    "prior_failed_job": 138669505383,
+    "prior_failed_phase": "RESOURCE_DETAIL",
+    "expected_http": 200,
+    "actual_http": 500,
+    "latest_job_metadata": [
+      {
+        "id": 138676495058,
+        "name": "Java 8 and isolated MySQL tests",
+        "status": "completed",
+        "conclusion": "success",
+        "steps": []
+      },
+      {
+        "id": 138676495401,
+        "name": "React typecheck, tests, lint, and build",
+        "status": "completed",
+        "conclusion": "success",
+        "steps": []
+      },
+      {
+        "id": 138676495489,
+        "name": "Extended C Java 21, isolated MySQL, Newman and Playwright",
+        "status": "in_progress",
+        "conclusion": null,
+        "steps": [
+          [
+            "Verify Extended C Java 21 backend against isolated MySQL",
+            "completed",
+            "success"
+          ],
+          [
+            "Prove local mixed rehearsal preparation with public fictional originals",
+            "completed",
+            "success"
+          ],
+          [
+            "Run authenticated Newman and browser acceptance against packaged JAR",
+            "in_progress",
+            null
+          ]
+        ]
+      }
+    ],
+    "job": 138676495489,
+    "maven": 91,
+    "playwright": 19,
+    "scheduler_denial_log_matches": 1
+  },
+  "r06b3b_previous_candidate": {
+    "sha": "8c6000a481172e2e31a479065abc6e0d296e8c4c",
+    "base": "d941d916c98b69bc19a36f762ad1b8e8e1e8e3ab",
+    "pr": 53,
+    "runs": [
+      [
+        45473244425,
+        "in_progress",
+        null
+      ]
+    ],
+    "report": "evidence/C9/R06B3B_NONZERO_PUBLIC_SQL_AGGREGATES_CANDIDATE_2026-11-25.md",
+    "acceptance": "PUBLIC_NONZERO_AGGREGATES_CI_PENDING",
+    "private_positive": "NOT_RUN"
+  },
+  "r06b3b_public_regression": {
+    "sha": "a6d3682a8fea6901efb89db9e7e62509a690b0e6",
+    "run": 45462162577,
+    "job": 138687407235,
+    "acceptance": "VERIFIED_BOUNDED_PUBLIC_ONLY",
+    "maven": 91,
+    "playwright": 19,
+    "private_positive": "NOT_RUN"
+  },
+  "r06b3b_sql_candidate_status": {
+    "sha": "e1067c8be387c38993b8d361b7c6059c70b7eeaa",
+    "run": 45463840859,
+    "jobs": [
+      [
+        138693330411,
+        "React typecheck, tests, lint, and build",
+        "completed",
+        "success"
+      ],
+      [
+        138693330632,
+        "Extended C Java 21, isolated MySQL, Newman and Playwright",
+        "completed",
+        "success"
+      ],
+      [
+        138693330652,
+        "Java 8 and isolated MySQL tests",
+        "completed",
+        "success"
+      ]
+    ]
+  },
+  "r06b3b_latest_public_receipts": [
+    {
+      "sha": "e1067c8be387c38993b8d361b7c6059c70b7eeaa",
+      "run": 45463840859,
+      "job": 138693330632,
+      "maven": 91,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "public_control": "VERIFIED_BOUNDED",
+      "private_positive": "NOT_RUN",
+      "static_refusals": "NOT_RUN"
+    },
+    {
+      "sha": "1e9d47392e8bc2849c037d0562a464070a474d60",
+      "run": 45464990215,
+      "job": 138697393923,
+      "maven": 91,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "public_control": "VERIFIED_BOUNDED",
+      "private_positive": "NOT_RUN",
+      "static_refusals": "NOT_RUN"
+    },
+    {
+      "sha": "3299e97674c5815f8705e5464e1e4d2f462c2830",
+      "run": 45466376744,
+      "job": 138702268631,
+      "maven": 91,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "public_control": "VERIFIED_BOUNDED",
+      "private_positive": "NOT_RUN",
+      "static_refusals": "VERIFIED_BOUNDED"
+    },
+    {
+      "sha": "dfcde24882a843524c42e951f6214d12443ac050",
+      "run": 45469139504,
+      "job": 138711997732,
+      "maven": 91,
+      "identity": 66,
+      "playwright": 19,
+      "failures": 0,
+      "all_jobs_success": true,
+      "public_control": "VERIFIED_BOUNDED",
+      "static_refusals": "VERIFIED_BOUNDED",
+      "private_positive": "NOT_RUN"
+    },
+    {
+      "sha": "d941d916c98b69bc19a36f762ad1b8e8e1e8e3ab",
+      "run": 45469976846,
+      "job": 138714985375,
+      "maven": 91,
+      "identity": 66,
+      "playwright": 19,
+      "failures": 0,
+      "all_jobs_success": true,
+      "public_control": "VERIFIED_BOUNDED",
+      "static_refusals": "VERIFIED_BOUNDED",
+      "public_sql_projection": "VERIFIED_BOUNDED",
+      "private_positive": "NOT_RUN"
+    },
+    {
+      "sha": "8c6000a481172e2e31a479065abc6e0d296e8c4c",
+      "run": 45473244425,
+      "job": 138726559312,
+      "maven": 91,
+      "playwright": 19,
+      "failures": 0,
+      "all_jobs_success": true,
+      "public_sql_aggregates": "VERIFIED_BOUNDED",
+      "private_positive": "NOT_RUN"
+    },
+    {
+      "sha": "bec8b69c5aedd2cf23b379f2509b871ee3ade84d",
+      "pr": 53,
+      "run": 45475142332,
+      "job": 138733247385,
+      "maven": 91,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "failures": 0,
+      "verdict": "VERIFIED_BOUNDED",
+      "private_positive": "NOT_RUN"
+    },
+    {
+      "sha": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
+      "pr": 53,
+      "run": 45475369786,
+      "job": 138734044884,
+      "maven": 91,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "failures": 0,
+      "verdict": "VERIFIED_BOUNDED",
+      "private_positive": "NOT_RUN",
+      "scope": "remote engineering/public synthetic controls only"
+    }
+  ],
+  "l06_command_contract": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/27_R06B3B_AGGREGATE_RECEIPT_AND_L06_COMMAND_CONTRACT.md",
+    "source_candidate": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
+    "final_sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "state": "BLOCKED",
+    "private_positive": "NOT_RUN",
+    "remote_gate": "VERIFIED_BOUNDED",
+    "owner_terminal_required": true,
+    "report49": "docs/handoffs/claude-local-execution-2026-11-24/49_FINAL_ADVERSARIAL_HANDOFF_AUDIT.md"
+  },
+  "r03_pending_candidates": [],
+  "r07_preparation": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/29_R07_TEST_ISOLATION_AND_STATE_REFUSAL_BATCH.md",
+    "state": "SOURCE_ONLY",
+    "depends_on": [
+      "R01",
+      "R03"
+    ],
+    "isolated_tests": [
+      "C2_CONCURRENCY01_twoApprovalsAndTwoIssuesCannotDoubleCommitStock",
+      "C2_IDEMP02_failureBetweenQuantityAndMovementRollsBackEverything"
+    ],
+    "fresh_schema_required": true,
+    "actual_runs": "NOT_RUN"
+  },
+  "r03_actual_receipts": [
+    {
+      "sha": "30ecc88fe662dc331d405a560d109450bfc16282",
+      "run": 45477193785,
+      "job": 138740427695,
+      "test": 77,
+      "scope": "R030 password denials and row/session invariants",
+      "pr": 54,
+      "maven": 102,
+      "identity": 77,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "failures": 0,
+      "verdict": "VERIFIED_BOUNDED"
+    },
+    {
+      "sha": "2f61a900e3a4f83cea283809efd15cd637076d0d",
+      "run": 45477804709,
+      "job": 138742565670,
+      "test": 33,
+      "scope": "42 legacy refusal snapshots and 3 foreign filters",
+      "pr": 54,
+      "maven": 102,
+      "identity": 77,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "failures": 0,
+      "verdict": "VERIFIED_BOUNDED"
+    },
+    {
+      "sha": "cf7324af9a664788e7367dbd9854531e33a38d7a",
+      "run": 45478317640,
+      "job": 138744361938,
+      "pr": 54,
+      "test": 64,
+      "scope": "22 ProjectWork per-denial exact eight-table comparisons and grouped read equality",
+      "maven": 102,
+      "identity": 77,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "failures": 0,
+      "verdict": "VERIFIED_BOUNDED"
+    },
+    {
+      "sha": "7116ab8c350c9c7728a7ef0963cf320e7d296afb",
+      "run": 45479172555,
+      "job": 138747356841,
+      "pr": 54,
+      "tests": [
+        24,
+        29
+      ],
+      "scope": "seven state refusals, exact injected MySQL rollback, same operation retry/replay",
+      "maven": 102,
+      "identity": 77,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "failures": 0,
+      "verdict": "VERIFIED_BOUNDED"
+    },
+    {
+      "sha": "590275cf195d44eee05d8ad4902b8ff9482c1941",
+      "run": 45480855446,
+      "job": 138753279268,
+      "pr": 54,
+      "tests": [
+        78
+      ],
+      "scope": "25 stock role/foreign resource/cursor refusal comparisons and exact detail field set",
+      "maven": 103,
+      "identity": 78,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "failures": 0,
+      "verdict": "VERIFIED_BOUNDED"
+    },
+    {
+      "sha": "a1ba49aecce96ea24e82b0e2de4e1f210221aaa7",
+      "run": 45481804571,
+      "job": 138756620003,
+      "pr": 54,
+      "tests": [
+        78
+      ],
+      "scope": "45 allocation refusals with scoped row equality and approve/cancel hold release",
+      "maven": 103,
+      "identity": 78,
+      "playwright": 19,
+      "all_jobs_success": true,
+      "failures": 0,
+      "verdict": "VERIFIED_BOUNDED"
+    },
+    {
+      "sha": "74b2450ddd508d5e07a387fa7c1212b42d52779a",
+      "pr": 54,
+      "run": 45483605533,
+      "job": 138762991854,
+      "tests": [
+        54
+      ],
+      "routes": [
+        "R051",
+        "R053",
+        "R054",
+        "R055",
+        "R056",
+        "R058"
+      ],
+      "maven": 103,
+      "identity": 78,
+      "playwright": 19,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "all_jobs_success": true,
+      "verdict": "VERIFIED_BOUNDED"
+    },
+    {
+      "sha": "9f374d77addd36b9c5985f25d2e874116970aa2d",
+      "pr": 54,
+      "run": 45484467643,
+      "job": 138766024990,
+      "tests": [
+        60,
+        76
+      ],
+      "maven": 103,
+      "identity": 78,
+      "playwright": 19,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "all_jobs_success": true,
+      "verdict": "VERIFIED_BOUNDED"
+    },
+    {
+      "sha": "b3eb16e5ddf757e67cfa8296eb56f9f340ef632c",
+      "pr": 54,
+      "run": 45485647999,
+      "job": 138770176863,
+      "tests": [
+        45,
+        46,
+        47
+      ],
+      "routes": [
+        "R042",
+        "R052",
+        "R057"
+      ],
+      "maven": 103,
+      "identity": 78,
+      "playwright": 19,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "all_jobs_success": true,
+      "verdict": "VERIFIED_BOUNDED"
+    },
+    {
+      "sha": "7ff4f8d7bbeb1e83068f380ebfcaa3216a4f727b",
+      "pr": 54,
+      "run": 45486716110,
+      "job": 138773948560,
+      "tests": [
+        61,
+        62
+      ],
+      "routes": [
+        "R088",
+        "R089",
+        "R090",
+        "R091",
+        "R092",
+        "R093"
+      ],
+      "maven": 103,
+      "identity": 78,
+      "playwright": 19,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "all_jobs_success": true,
+      "verdict": "VERIFIED_BOUNDED"
+    },
+    {
+      "sha": "afdfefca995949ba917bb4ab3f99dfd14cbebd1b",
+      "pr": 54,
+      "run": 45487476059,
+      "job": 138776580407,
+      "tests": [
+        6
+      ],
+      "routes": [
+        "R032",
+        "R085",
+        "R086",
+        "R087"
+      ],
+      "maven": 103,
+      "identity": 78,
+      "playwright": 19,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "all_jobs_success": true,
+      "verdict": "VERIFIED_BOUNDED"
+    },
+    {
+      "sha": "852f2f29f58065e9cf581cb70d58f642da343c1f",
+      "pr": 54,
+      "run": 45488537632,
+      "job": 138780332013,
+      "tests": [
+        55,
+        61,
+        65,
+        75
+      ],
+      "routes": [
+        "R039",
+        "R059",
+        "R061",
+        "R062",
+        "R064",
+        "R072"
+      ],
+      "maven": 103,
+      "identity": 78,
+      "playwright": 19,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "all_jobs_success": true,
+      "verdict": "VERIFIED_BOUNDED"
+    },
+    {
+      "sha": "3a1e46cddf0cf1bd519b6c493205727b9310a97a",
+      "pr": 54,
+      "run": 45490152665,
+      "job": 138785983133,
+      "tests": [
+        5,
+        7,
+        8,
+        36
+      ],
+      "routes": [
+        "R033",
+        "R034",
+        "R036",
+        "R037"
+      ],
+      "maven": 103,
+      "identity": 78,
+      "playwright": 19,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "all_jobs_success": true,
+      "verdict": "VERIFIED_BOUNDED"
+    }
+  ],
+  "r07_r08_preparation": {
+    "pr": 55,
+    "sha": "30f8d06aa60a65377bad2e8df4443ca860be4e80",
+    "base": "a1ba49aecce96ea24e82b0e2de4e1f210221aaa7",
+    "branch": "test/c9-r07-r08-preparation-2026-11-25",
+    "runs": [
+      [
+        45482691119,
+        "R07-R08 isolated preparation",
+        "in_progress",
+        null
+      ],
+      [
+        45482690895,
+        "Verify",
+        "in_progress",
+        null
+      ]
+    ],
+    "report": "evidence/C9/R07_R08_ISOLATION_HTTP_PREPARATION_CANDIDATE_2026-11-25.md",
+    "state": "VERIFIED_BOUNDED",
+    "r07": [
+      "individual concurrency",
+      "individual rollback",
+      "reverse rollback then concurrency"
+    ],
+    "r08": {
+      "workloads": 5,
+      "warmups_each": 5,
+      "samples_each": 30,
+      "fixture": {
+        "resources": 1001,
+        "allocations": 1002,
+        "requirements": 101
+      },
+      "scope": "synthetic test-context HTTP"
+    },
+    "actual": {
+      "sha": "30f8d06aa60a65377bad2e8df4443ca860be4e80",
+      "pr": 55,
+      "run": 45482691119,
+      "job": 138759730608,
+      "verdict": "VERIFIED_BOUNDED",
+      "selected": [
+        [
+          "concurrency",
+          1,
+          27
+        ],
+        [
+          "rollback",
+          1,
+          13
+        ],
+        [
+          "reversed",
+          2,
+          14
+        ],
+        [
+          "measurement",
+          1,
+          22
+        ]
+      ],
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "cleanup_all": true,
+      "metric_columns": [
+        "workload",
+        "min_ms",
+        "p50_ms",
+        "p95_ms",
+        "max_ms",
+        "body_bytes_min_equals_max"
+      ],
+      "metrics": [
+        [
+          "resource_page",
+          13.086,
+          15.964,
+          21.212,
+          22.539,
+          15124
+        ],
+        [
+          "allocation_page",
+          16.714,
+          20.438,
+          25.676,
+          36.447,
+          70925
+        ],
+        [
+          "requirement_page",
+          10.401,
+          12.442,
+          15.891,
+          20.786,
+          13864
+        ],
+        [
+          "project_page",
+          7.185,
+          8.463,
+          9.776,
+          11.289,
+          242
+        ],
+        [
+          "overview",
+          16.685,
+          17.948,
+          21.885,
+          25.258,
+          2022
+        ]
+      ],
+      "warmups_each": 5,
+      "samples_each": 30,
+      "fixture": {
+        "resources": 1001,
+        "allocations": 1002,
+        "requirements": 101
+      },
+      "heap_before": 288394104,
+      "heap_after": 117553080,
+      "innodb_data_estimate": 294912,
+      "innodb_index_estimate": 950272,
+      "jar_bytes": 72486427,
+      "bundle_file_bytes": 463308,
+      "npm_ci_s": 4,
+      "npm_build_s": 3,
+      "java": "21.0.13",
+      "node": "24.22.3",
+      "maven": "3.10.0",
+      "scope": "serial synthetic test-context HTTP, no SLA/hosted/private/peak heap claim"
+    },
+    "formal_dependencies_preserved": true,
+    "full_verify": {
+      "sha": "30f8d06aa60a65377bad2e8df4443ca860be4e80",
+      "pr": 55,
+      "run": 45482690895,
+      "job": 138759730694,
+      "maven": 103,
+      "identity": 78,
+      "playwright": 19,
+      "failures": 0,
+      "all_jobs_success": true,
+      "verdict": "VERIFIED_BOUNDED"
+    }
+  },
+  "r08_repeat_candidate": {
+    "pr": 55,
+    "sha": "c11f47a23a82b0dac4afa8d5d4234280eb16f67e",
+    "base": "30f8d06aa60a65377bad2e8df4443ca860be4e80",
+    "runs": [
+      [
+        45484557507,
+        "R07-R08 isolated preparation",
+        "completed",
+        "success"
+      ],
+      [
+        45484557514,
+        "Verify",
+        "completed",
+        "failure"
+      ]
+    ],
+    "report": "evidence/C9/R07_R08_ISOLATION_HTTP_PREPARATION_CANDIDATE_2026-11-25.md",
+    "state": "VERIFIED_BOUNDED_PREPARATORY",
+    "fresh_schemas": 3,
+    "measurement_requests": 450,
+    "warmups": 75,
+    "actual": {
+      "sha": "c11f47a23a82b0dac4afa8d5d4234280eb16f67e",
+      "pr": 55,
+      "run": 45484557507,
+      "job": 138766342054,
+      "verdict": "VERIFIED_BOUNDED",
+      "selected": [
+        [
+          "concurrency",
+          1,
+          27
+        ],
+        [
+          "rollback",
+          1,
+          17
+        ],
+        [
+          "reversed",
+          2,
+          19
+        ],
+        [
+          "measurement",
+          1,
+          28
+        ],
+        [
+          "measurement_repeat2",
+          1,
+          28
+        ],
+        [
+          "measurement_repeat3",
+          1,
+          27
+        ]
+      ],
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "cleanup_all": true,
+      "workloads": [
+        "resource_page",
+        "allocation_page",
+        "requirement_page",
+        "project_page",
+        "overview"
+      ],
+      "metric_columns": [
+        "min_ms",
+        "p50_ms",
+        "p95_ms",
+        "max_ms",
+        "first_warmup_ms"
+      ],
+      "measurements": [
+        [
+          "measurement",
+          [
+            [
+              19.537,
+              23.984,
+              32.696,
+              41.516,
+              26.262
+            ],
+            [
+              26.385,
+              30.598,
+              36.984,
+              37.273,
+              39.241
+            ],
+            [
+              18.289,
+              20.929,
+              27.29,
+              28.414,
+              22.288
+            ],
+            [
+              12.541,
+              13.734,
+              17.211,
+              28.223,
+              14.353
+            ],
+            [
+              26.146,
+              28.492,
+              38.267,
+              71.678,
+              27.376
+            ]
+          ],
+          [
+            185073560,
+            106545552
+          ]
+        ],
+        [
+          "measurement_repeat2",
+          [
+            [
+              19.721,
+              26.576,
+              28.996,
+              29.141,
+              34.45
+            ],
+            [
+              27.475,
+              31.001,
+              43.816,
+              53.125,
+              36.809
+            ],
+            [
+              17.544,
+              20.354,
+              24.398,
+              25.419,
+              29.545
+            ],
+            [
+              11.201,
+              13.187,
+              17.705,
+              20.642,
+              13.081
+            ],
+            [
+              25.322,
+              27.877,
+              49.389,
+              58.333,
+              29.114
+            ]
+          ],
+          [
+            168728968,
+            116565576
+          ]
+        ],
+        [
+          "measurement_repeat3",
+          [
+            [
+              21.664,
+              25.616,
+              30.174,
+              31.316,
+              26.028
+            ],
+            [
+              28.626,
+              32.757,
+              52.009,
+              66.497,
+              40.43
+            ],
+            [
+              18.229,
+              20.335,
+              24.475,
+              24.792,
+              26.647
+            ],
+            [
+              12.163,
+              14.445,
+              21.835,
+              23.528,
+              18.786
+            ],
+            [
+              26.059,
+              30.87,
+              62.926,
+              75.911,
+              29.412
+            ]
+          ],
+          [
+            339054768,
+            122459320
+          ]
+        ]
+      ],
+      "body_bytes": [
+        15124,
+        70925,
+        13864,
+        242,
+        2022
+      ],
+      "measured_requests": 450,
+      "warmups": 75,
+      "fixture": {
+        "resources": 1001,
+        "allocations": 1002,
+        "requirements": 101
+      },
+      "innodb_data_estimate": 294912,
+      "innodb_index_estimate": 950272,
+      "jar_bytes": 72486427,
+      "bundle_file_bytes": 463308,
+      "npm_ci_s": 3,
+      "npm_build_s": 5,
+      "scope": "serial synthetic test-context HTTP; three fresh schemas and JVMs on same CI server; no packaged/cold-start/SLA/peak heap/hosted/private inference"
+    },
+    "cold_start": false,
+    "full_verify_failure": {
+      "sha": "c11f47a23a82b0dac4afa8d5d4234280eb16f67e",
+      "pr": 55,
+      "run": 45484557514,
+      "job": 138766342243,
+      "maven": 103,
+      "identity": 78,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "playwright": "NOT_RUN",
+      "verdict": "TEST_FAILED",
+      "phase": "Stage1B cross-server recovery startup",
+      "actual": "ERROR 2002 socket missing then C9_CROSS_SERVER_WRONG_MYSQL_VERSION",
+      "cause": "startup temporary socket race hypothesis; failed restorer logs unavailable"
+    }
+  },
+  "r07_startup_correction": {
+    "sha": "76a8e687581bd1b70582822a38b657744e22d387",
+    "pr": 55,
+    "base": "c11f47a23a82b0dac4afa8d5d4234280eb16f67e",
+    "runs": [
+      [
+        45486540380,
+        "Verify",
+        "in_progress",
+        null
+      ],
+      [
+        45486540376,
+        "R07-R08 isolated preparation",
+        "in_progress",
+        null
+      ]
+    ],
+    "report": "evidence/C9/R07_CROSS_SERVER_STARTUP_RACE_CANDIDATE_2026-11-25.md",
+    "acceptance": "VERIFIED_BOUNDED",
+    "observed_red": "actual original failure; targeted reproduction NOT_RUN",
+    "dedicated_actual": {
+      "sha": "76a8e687581bd1b70582822a38b657744e22d387",
+      "pr": 55,
+      "run": 45486540376,
+      "job": 138773351759,
+      "verdict": "VERIFIED_BOUNDED",
+      "selected": [
+        [
+          "concurrency",
+          1,
+          20
+        ],
+        [
+          "rollback",
+          1,
+          12
+        ],
+        [
+          "reversed",
+          2,
+          12
+        ],
+        [
+          "measurement",
+          1,
+          19
+        ],
+        [
+          "measurement_repeat2",
+          1,
+          18
+        ],
+        [
+          "measurement_repeat3",
+          1,
+          18
+        ]
+      ],
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "cleanup_all": true,
+      "measured": 450,
+      "warmups": 75,
+      "fixture": {
+        "resources": 1001,
+        "allocations": 1002,
+        "requirements": 101
+      },
+      "workloads": [
+        "resource_page",
+        "allocation_page",
+        "requirement_page",
+        "project_page",
+        "overview"
+      ],
+      "columns": [
+        "min_ms",
+        "p50_ms",
+        "p95_ms",
+        "max_ms",
+        "first_warmup_ms"
+      ],
+      "measurements": [
+        [
+          [
+            11.032,
+            14.984,
+            19.183,
+            20.888,
+            15.725
+          ],
+          [
+            15.05,
+            19.332,
+            28.421,
+            37.24,
+            20.945
+          ],
+          [
+            9.916,
+            12.168,
+            16.668,
+            18.277,
+            15.821
+          ],
+          [
+            6.756,
+            9.365,
+            11.89,
+            35.09,
+            9.3
+          ],
+          [
+            14.609,
+            17.632,
+            20,
+            22.272,
+            43.124
+          ]
+        ],
+        [
+          [
+            10.899,
+            13.88,
+            20.776,
+            21.16,
+            19.249
+          ],
+          [
+            15.106,
+            18.949,
+            23.778,
+            30.22,
+            22.911
+          ],
+          [
+            9.179,
+            11.128,
+            15.946,
+            20.898,
+            23.166
+          ],
+          [
+            7.047,
+            7.951,
+            9.589,
+            11.625,
+            7.982
+          ],
+          [
+            13.312,
+            15.286,
+            22.324,
+            30.891,
+            16.739
+          ]
+        ],
+        [
+          [
+            10.554,
+            13.727,
+            18.09,
+            18.9,
+            21.158
+          ],
+          [
+            14.786,
+            17.367,
+            22.375,
+            24.268,
+            21.211
+          ],
+          [
+            9.451,
+            10.925,
+            14.237,
+            14.591,
+            14.939
+          ],
+          [
+            6.115,
+            7.181,
+            9.721,
+            10.67,
+            9.705
+          ],
+          [
+            13.764,
+            15.836,
+            18.651,
+            20.618,
+            16.547
+          ]
+        ]
+      ],
+      "heap_samples": [
+        [
+          255479528,
+          122351984
+        ],
+        [
+          101798992,
+          166299232
+        ],
+        [
+          212256640,
+          259257440
+        ]
+      ],
+      "innodb_estimate": [
+        294912,
+        950272
+      ],
+      "body_bytes": [
+        15124,
+        70925,
+        13864,
+        242,
+        2022
+      ],
+      "scope": "test-context serial HTTP, no packaged or cold-start/SLA claim; not proof of Stage1B correction"
+    },
+    "full_actual": {
+      "sha": "76a8e687581bd1b70582822a38b657744e22d387",
+      "pr": 55,
+      "run": 45486540380,
+      "job": 138773351738,
+      "maven": 103,
+      "identity": 78,
+      "playwright": 19,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "all_jobs_success": true,
+      "verdict": "VERIFIED_BOUNDED",
+      "stage1b": {
+        "mysql": "8.0.46",
+        "orgs": 8,
+        "allocations": 960,
+        "sql_bytes": 1034301,
+        "backup_ms": 143,
+        "restore_ms": 396,
+        "network_none": true,
+        "independent_uuid": true,
+        "exact_rows": true,
+        "original_unchanged": true,
+        "tamper_refused": true,
+        "nonempty_refused": true
+      },
+      "stage1c": {
+        "archive_bytes": 1034355,
+        "backup_ms": 424,
+        "restore_ms": 871,
+        "negative_cases": 15,
+        "empty_sessions": true,
+        "exact_rows": true,
+        "cleanup": true
+      },
+      "stage1d": {
+        "archive_bytes": 1039695,
+        "exact_non_session_rows": true,
+        "cleanup": true
+      },
+      "cause": "prior transient initialization socket race hypothesis, not conclusively reproduced"
+    }
+  },
+  "r09_integration_preflight": {
+    "base52": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+    "pr53": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
+    "pr54_at_preflight": "7ff4f8d7bbeb1e83068f380ebfcaa3216a4f727b",
+    "pr55": "76a8e687581bd1b70582822a38b657744e22d387",
+    "pr55_branchpoint": "a1ba49aecce96ea24e82b0e2de4e1f210221aaa7",
+    "delta_counts": [
+      27,
+      17,
+      7
+    ],
+    "shared_path": "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java",
+    "test_blobs": [
+      "d96a5d1cf7891009ffce7378fc23d3cf51170aad",
+      "f737106571242c67e651b777f150e4f67be190c7",
+      "6a64b6fd36c0f43506ffbb53697ba1f0d3db36bc"
+    ],
+    "hunks": 4,
+    "exact_base_reproduction": true,
+    "unique_anchor_counts": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "ordered_tests_before_after": [
+      78,
+      78
+    ],
+    "state": "SOURCE_ONLY_DRY_RUN",
+    "notes": "No combined source written or run; refresh final heads; PR53 27 changed paths disjoint, PR55 7 paths relative to branchpoint (6 disjoint); use exact patches/expected SHA; do not merge main."
+  },
+  "r07_lifecycle_candidate": {
+    "sha": "a034fb1c81ff1521c9bc9c0c32561c9c2cde515c",
+    "base": "76a8e687581bd1b70582822a38b657744e22d387",
+    "pr": 55,
+    "runs": [
+      [
+        45488706073,
+        "Verify",
+        "queued",
+        null
+      ],
+      [
+        45488706396,
+        "R07-R08 isolated preparation",
+        "queued",
+        null
+      ]
+    ],
+    "report": "evidence/C9/R07_RETURN_EXPIRY_AND_STALE_CLAIM_CANDIDATE_2026-11-25.md",
+    "acceptance": "FAILED",
+    "tests": [
+      32
+    ],
+    "observed_red": "NOT_RUN",
+    "scope": "same-process persisted CLAIMED/DISPATCHING stale recovery; gated concurrent return and expiry, same key replay; NOT actual restart/forced overlap/deadlock/lost network response",
+    "actual_failure": {
+      "sha": "a034fb1c81ff1521c9bc9c0c32561c9c2cde515c",
+      "run": 45488706073,
+      "job": 138780912749,
+      "dedicated_run": 45488706396,
+      "dedicated_job": 138780913243,
+      "verdict": "FAILED",
+      "actual": "Full Verify test compilation cannot find governanceDenialRows(long,long) lines2080/2082; dedicated case failed before selected receipt; no lifecycle execution."
+    }
+  },
+  "r07_lifecycle_correction": {
+    "sha": "b48b289f4ddc3dd1fb0ac786487d188921c6909c",
+    "base": "a034fb1c81ff1521c9bc9c0c32561c9c2cde515c",
+    "runs": [
+      [
+        45489076064,
+        "Verify",
+        "in_progress",
+        null
+      ],
+      [
+        45489075914,
+        "R07-R08 isolated preparation",
+        "completed",
+        "success"
+      ]
+    ],
+    "report": "evidence/C9/R07_LIFECYCLE_BRANCH_HELPER_CORRECTION_2026-11-25.md",
+    "acceptance": "VERIFIED_BOUNDED",
+    "dedicated_actual": {
+      "sha": "b48b289f4ddc3dd1fb0ac786487d188921c6909c",
+      "pr": 55,
+      "run": 45489075914,
+      "job": 138782206434,
+      "verdict": "VERIFIED_BOUNDED",
+      "selected": [
+        [
+          "concurrency",
+          1
+        ],
+        [
+          "rollback",
+          1
+        ],
+        [
+          "reversed",
+          2
+        ],
+        [
+          "measurement",
+          1
+        ],
+        [
+          "measurement_repeat2",
+          1
+        ],
+        [
+          "measurement_repeat3",
+          1
+        ]
+      ],
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "cleanup_all": true,
+      "measured": 450,
+      "warmups": 75,
+      "jar_bytes": 72486427,
+      "bundle_bytes": 463308,
+      "workloads": [
+        "resource_page",
+        "allocation_page",
+        "requirement_page",
+        "project_page",
+        "overview"
+      ],
+      "columns": [
+        "min_ms",
+        "p50_ms",
+        "p95_ms",
+        "max_ms"
+      ],
+      "measurements": [
+        [
+          [
+            13.242,
+            16.552,
+            32.953,
+            35.311
+          ],
+          [
+            19.204,
+            21.305,
+            44.503,
+            177.888
+          ],
+          [
+            12.43,
+            13.953,
+            22.368,
+            25.348
+          ],
+          [
+            8.454,
+            9.289,
+            27.542,
+            153.985
+          ],
+          [
+            17.456,
+            19.63,
+            77.541,
+            167.158
+          ]
+        ],
+        [
+          [
+            14.565,
+            17.27,
+            22.268,
+            23.376
+          ],
+          [
+            19.363,
+            21.757,
+            35.621,
+            41.305
+          ],
+          [
+            12.329,
+            14.671,
+            35.204,
+            38.138
+          ],
+          [
+            7.762,
+            9.377,
+            53.584,
+            67
+          ],
+          [
+            17.452,
+            19.858,
+            57.475,
+            130.955
+          ]
+        ],
+        [
+          [
+            13.639,
+            17.111,
+            22.966,
+            31.09
+          ],
+          [
+            19.197,
+            22.575,
+            27.089,
+            27.913
+          ],
+          [
+            12.692,
+            14.9,
+            18.688,
+            25.728
+          ],
+          [
+            8.209,
+            9.194,
+            12.144,
+            12.195
+          ],
+          [
+            17.587,
+            20.164,
+            34.377,
+            38.831
+          ]
+        ]
+      ],
+      "body_bytes": [
+        15124,
+        70925,
+        13864,
+        242,
+        2022
+      ],
+      "scope": "same isolated test-context workloads; does not execute #32"
+    },
+    "full_actual": {
+      "sha": "b48b289f4ddc3dd1fb0ac786487d188921c6909c",
+      "run": 45489076064,
+      "job": 138782207514,
+      "maven": 103,
+      "identity": 78,
+      "playwright": 19,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "all_jobs_success": true,
+      "verdict": "VERIFIED_BOUNDED",
+      "scope": "#32 actual same-process persisted claim state recovery and gated return/expiry, not process restart"
+    }
+  },
+  "r08_packaged_candidate": {
+    "sha": "18f47cc762f5bcf0ed857350b177c4ccdf035ff1",
+    "base": "b48b289f4ddc3dd1fb0ac786487d188921c6909c",
+    "pr": 55,
+    "runs": [
+      [
+        45490328267,
+        "R07-R08 isolated preparation",
+        "in_progress",
+        null
+      ],
+      [
+        45490328103,
+        "Verify",
+        "in_progress",
+        null
+      ]
+    ],
+    "report": "evidence/C9/R08_PACKAGED_HTTP_CANDIDATE_2026-11-25.md",
+    "acceptance": "VERIFIED_BOUNDED",
+    "scope": "same-JVM warm repeat in existing networkless Stage1D restored public 8-org fixture, selected tagged org SQL counts; exact domain equality after measurement, 450 measured/75 warmups proposed, not executed yet",
+    "dedicated_actual": {
+      "sha": "18f47cc762f5bcf0ed857350b177c4ccdf035ff1",
+      "pr": 55,
+      "run": 45490328267,
+      "job": 138786607431,
+      "verdict": "VERIFIED_BOUNDED",
+      "selected": [
+        [
+          "concurrency",
+          1
+        ],
+        [
+          "rollback",
+          1
+        ],
+        [
+          "reversed",
+          2
+        ],
+        [
+          "measurement",
+          1
+        ],
+        [
+          "measurement_repeat2",
+          1
+        ],
+        [
+          "measurement_repeat3",
+          1
+        ]
+      ],
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "cleanup_all": true,
+      "measured": 450,
+      "warmups": 75,
+      "jar_bytes": 72486427,
+      "bundle_bytes": 463308,
+      "workloads": [
+        "resource_page",
+        "allocation_page",
+        "requirement_page",
+        "project_page",
+        "overview"
+      ],
+      "columns": [
+        "min_ms",
+        "p50_ms",
+        "p95_ms",
+        "max_ms"
+      ],
+      "measurements": [
+        [
+          [
+            17.926,
+            20.339,
+            26.777,
+            52.047
+          ],
+          [
+            20.585,
+            24.213,
+            30.277,
+            30.324
+          ],
+          [
+            12.936,
+            15.929,
+            29.22,
+            58.593
+          ],
+          [
+            8.346,
+            10.454,
+            20.165,
+            113.409
+          ],
+          [
+            18.606,
+            20.448,
+            153.055,
+            346.932
+          ]
+        ],
+        [
+          [
+            15.085,
+            19.796,
+            59.086,
+            71.779
+          ],
+          [
+            22.758,
+            28.171,
+            53.629,
+            103.183
+          ],
+          [
+            14.521,
+            17.894,
+            44.676,
+            69.546
+          ],
+          [
+            15.637,
+            17.58,
+            36.742,
+            53.19
+          ],
+          [
+            21.18,
+            35.163,
+            55.307,
+            123.562
+          ]
+        ],
+        [
+          [
+            16.625,
+            20.05,
+            26.183,
+            190.481
+          ],
+          [
+            18.698,
+            23.85,
+            47.434,
+            50.183
+          ],
+          [
+            13.382,
+            15.55,
+            25.354,
+            50.486
+          ],
+          [
+            8.551,
+            10.278,
+            12.557,
+            14.275
+          ],
+          [
+            17.294,
+            20.739,
+            26.587,
+            50.978
+          ]
+        ]
+      ],
+      "body_bytes": [
+        15124,
+        70925,
+        13864,
+        242,
+        2022
+      ],
+      "scope": "test-context HTTP; not packaged probe"
+    },
+    "full_actual": {
+      "sha": "18f47cc762f5bcf0ed857350b177c4ccdf035ff1",
+      "run": 45490328103,
+      "job": 138786607428,
+      "maven": 103,
+      "identity": 78,
+      "playwright": 19,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "all_jobs_success": true,
+      "verdict": "VERIFIED_BOUNDED",
+      "scope": "actual packaged recovered JVM, serial HTTP including JSON decoding; same-JVM three repeats; not cold start, not hosted",
+      "fixture": {
+        "allocation": 120,
+        "department": 2,
+        "project": 6,
+        "resource": 20,
+        "resource_requirement": 18,
+        "PENDING": 0,
+        "ISSUED": 6,
+        "CONSUMED": 32
+      },
+      "jar_bytes": 72486427,
+      "jar_sha256": "76e5977499edb6a01a0c6de95ce166c2975d08f70bcdbd57680049d1af32c10a",
+      "measured": 450,
+      "warmups": 75,
+      "workloads": [
+        "resource_page",
+        "allocation_page",
+        "requirement_page",
+        "project_page",
+        "overview"
+      ],
+      "columns": [
+        "min_ms",
+        "p50_ms",
+        "p95_ms",
+        "max_ms",
+        "first_warmup_ms",
+        "body_min",
+        "body_max"
+      ],
+      "measurements": [
+        [
+          [
+            14.307,
+            17.333,
+            216.93,
+            239.523,
+            51.793,
+            3125,
+            3125
+          ],
+          [
+            22.71,
+            29.93,
+            58.133,
+            58.724,
+            88.075,
+            75742,
+            75742
+          ],
+          [
+            10.303,
+            11.846,
+            19.808,
+            21.821,
+            16.138,
+            5167,
+            5167
+          ],
+          [
+            9.33,
+            10.758,
+            20.184,
+            43.637,
+            60.119,
+            1050,
+            1050
+          ],
+          [
+            13.866,
+            17.915,
+            278.85,
+            367.342,
+            68.158,
+            1865,
+            1868
+          ]
+        ],
+        [
+          [
+            8.092,
+            10.503,
+            261.872,
+            342.266,
+            59.932,
+            3125,
+            3125
+          ],
+          [
+            16.252,
+            18.032,
+            77.608,
+            346.354,
+            17.59,
+            75742,
+            75742
+          ],
+          [
+            7.696,
+            9.128,
+            61.361,
+            133.894,
+            20.018,
+            5167,
+            5167
+          ],
+          [
+            6.679,
+            8.336,
+            101.745,
+            126.218,
+            7.383,
+            1050,
+            1050
+          ],
+          [
+            11.817,
+            13.367,
+            23.05,
+            38.051,
+            15.598,
+            1868,
+            1868
+          ]
+        ],
+        [
+          [
+            6.382,
+            11.598,
+            71.404,
+            98.18,
+            12.416,
+            3125,
+            3125
+          ],
+          [
+            13.295,
+            16.998,
+            37.204,
+            75.91,
+            20.5,
+            75742,
+            75742
+          ],
+          [
+            5.794,
+            7.986,
+            12.995,
+            13.08,
+            7.539,
+            5167,
+            5167
+          ],
+          [
+            5.272,
+            6.105,
+            8.416,
+            67.512,
+            6.115,
+            1050,
+            1050
+          ],
+          [
+            11.512,
+            13.207,
+            19.637,
+            19.961,
+            17.786,
+            1868,
+            1868
+          ]
+        ]
+      ]
+    }
+  },
+  "r09_integration_preflight_latest": {
+    "pr53": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
+    "pr54": "9646ff743c6678af90aa357ee761ac11ed366dff",
+    "pr55": "ef634ce7469f0b94b09ddcef097ad14a8c6e0206",
+    "base55": "a1ba49aecce96ea24e82b0e2de4e1f210221aaa7",
+    "deltaCounts": [
+      27,
+      21,
+      15
+    ],
+    "shared": "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java",
+    "testBlobs": [
+      "d96a5d1cf7891009ffce7378fc23d3cf51170aad",
+      "39ccc6e9852c41f54367b569761898a255dbb70b",
+      "f21cd6b6b0646322eefafd95dcd71b2798e3011c"
+    ],
+    "hunks": 7,
+    "exact_base_reproduction": true,
+    "unique_anchors": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "tests_before_after": [
+      78,
+      78
+    ],
+    "state": "SOURCE_ONLY_DRY_RUN"
+  },
+  "r07_deadlock_lost_response_candidate": {
+    "sha": "849a1284ef0b5ff641f1a933d2aedb60627ddf7a",
+    "base": "18f47cc762f5bcf0ed857350b177c4ccdf035ff1",
+    "pr": 55,
+    "runs": [
+      [
+        45491262809,
+        "Verify",
+        "in_progress",
+        null
+      ],
+      [
+        45491263013,
+        "R07-R08 isolated preparation",
+        "completed",
+        "failure"
+      ]
+    ],
+    "report": "evidence/C9/R07_ACTUAL_DEADLOCK_AND_LOST_RESPONSE_RESTART_CANDIDATE_2026-11-25.md",
+    "acceptance": "FAILED",
+    "scope": "actual reverse-order SQL lock blocker, intended observed deadlock HTTP503 exact rollback and retry; loopback upstream201/downstream EOF, stop/start same schema, same actor replay and exact domain dump. Not actual reminder claim restart.",
+    "actual_failure": {
+      "run": 45491263013,
+      "job": 138789899851,
+      "case": "rollback",
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "detail": "Dedicated runner filtered diagnostic to summary; exact assertion not yet known. Full job138789912276 pending. Concurrency case1 passed and cleanup confirmed. Remaining cases did not execute."
+    },
+    "actual_full_failure": {
+      "sha": "849a1284ef0b5ff641f1a933d2aedb60627ddf7a",
+      "run": 45491262809,
+      "job": 138789912276,
+      "dedicated_run": 45491263013,
+      "dedicated_job": 138789899851,
+      "verdict": "FAILED",
+      "actual": "78 identity/103 Maven tests, 1 failure, zero errors/skips. #24 line1501 rs.next false on SHOW GLOBAL STATUS LIKE 'Innodb_deadlocks', before blocker/HTTP lock cycle; lost-response/restart and packaged stages not reached."
+    }
+  },
+  "r07_deadlock_counter_correction": {
+    "sha": "ef634ce7469f0b94b09ddcef097ad14a8c6e0206",
+    "base": "849a1284ef0b5ff641f1a933d2aedb60627ddf7a",
+    "runs": [
+      [
+        45491974364,
+        "Verify",
+        "queued",
+        null
+      ],
+      [
+        45491974383,
+        "R07-R08 isolated preparation",
+        "queued",
+        null
+      ]
+    ],
+    "report": "evidence/C9/R07_DEADLOCK_COUNTER_CORRECTION_2026-11-25.md",
+    "acceptance": "VERIFIED_BOUNDED",
+    "source_authority": [
+      "https://dev.mysql.com/doc/refman/8.0/en/innodb-information-schema-metrics-table.html",
+      "https://dev.mysql.com/doc/refman/8.0/en/information-schema-innodb-metrics-table.html"
+    ],
+    "actual": {
+      "sha": "ef634ce7469f0b94b09ddcef097ad14a8c6e0206",
+      "dedicated_run": 45491974383,
+      "dedicated_job": 138792386449,
+      "selected": [
+        [
+          "concurrency",
+          1
+        ],
+        [
+          "rollback",
+          1
+        ],
+        [
+          "reversed",
+          2
+        ],
+        [
+          "measurement",
+          1
+        ],
+        [
+          "measurement_repeat2",
+          1
+        ],
+        [
+          "measurement_repeat3",
+          1
+        ]
+      ],
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "cleanup_all": true,
+      "measured": 450,
+      "warmups": 75,
+      "workloads": [
+        "resource_page",
+        "allocation_page",
+        "requirement_page",
+        "project_page",
+        "overview"
+      ],
+      "columns": [
+        "min_ms",
+        "p50_ms",
+        "p95_ms",
+        "max_ms"
+      ],
+      "measurements": [
+        [
+          [
+            16.21,
+            18.84,
+            50.289,
+            52.883
+          ],
+          [
+            20.501,
+            26.356,
+            33.532,
+            59.849
+          ],
+          [
+            13.686,
+            15.622,
+            69.765,
+            136.115
+          ],
+          [
+            8.075,
+            10.176,
+            14.065,
+            61.781
+          ],
+          [
+            18.673,
+            21.297,
+            39.251,
+            47.853
+          ]
+        ],
+        [
+          [
+            15.063,
+            19.272,
+            29.742,
+            34.174
+          ],
+          [
+            21.958,
+            25.931,
+            78.434,
+            178.223
+          ],
+          [
+            14.21,
+            16.051,
+            67.553,
+            75.218
+          ],
+          [
+            9.05,
+            10.951,
+            99.203,
+            125.324
+          ],
+          [
+            18.81,
+            21.975,
+            52.173,
+            78.878
+          ]
+        ],
+        [
+          [
+            14.51,
+            20.5,
+            67.654,
+            73.541
+          ],
+          [
+            18.799,
+            22.24,
+            329.784,
+            358.303
+          ],
+          [
+            14.378,
+            16.464,
+            74.45,
+            192.585
+          ],
+          [
+            9.182,
+            11.012,
+            212.882,
+            214.954
+          ],
+          [
+            20.318,
+            23.368,
+            197.825,
+            206.936
+          ]
+        ]
+      ],
+      "full_run": 45491974364,
+      "full_job": 138792387677,
+      "full_maven": 103,
+      "full_identity": 78,
+      "full_maven_failures": 0,
+      "actual_marker": "R07_ACTUAL_DEADLOCK_OK:observed_lock_wait=true mysql_counter_increased=true http503=true exact_rollback=true same_key_retry=true replay_preserved=true",
+      "verdict": "VERIFIED_BOUNDED",
+      "full_verdict": "FAILED_LATER_STAGE1D",
+      "lost_response_marker": "C9_RUNTIME_ASSERTION_OK:lost-response-upstream-201-downstream-eof",
+      "restart_ready": "C9_RUNTIME_JAR_READY:source-restarted",
+      "failure": "C9_RUNTIME_FAILURE:KeyError after new JVM readiness, exact line suppressed; replay equality/remaining restore and browser NOT_RUN"
+    }
+  },
+  "r07_reminder_restart_candidate": {
+    "sha": "87a9aae65b8406cc716b473dbbf57283a98da302",
+    "base": "ef634ce7469f0b94b09ddcef097ad14a8c6e0206",
+    "report": "evidence/C9/R07_REMINDER_JVM_RESTART_CANDIDATE_2026-11-25.md",
+    "runs": [
+      [
+        45492673291,
+        "Verify",
+        "in_progress",
+        null
+      ],
+      [
+        45492673308,
+        "R07-R08 isolated preparation",
+        "completed",
+        "success"
+      ]
+    ],
+    "scope": "post-archive-proof target clone only, three real issued encrypted-consent allocations, SQL stages two stale and one fresh states while stopped, distinct restart scheduler, exact unchanged fields/rows and versions, disabled transport; not actual transport crash",
+    "acceptance": "CI_PENDING",
+    "correction": {
+      "sha": "de6d2ed2787b2c3baf5a480dbc2756eeefa3a1cb",
+      "report": "evidence/C9/R07_REMINDER_SHELL_QUOTING_CORRECTION_2026-11-25.md",
+      "reason": "Source-only self-review: literal backticks inside shell SQL; CHAR(96), no oracle relaxation",
+      "runs": [
+        [
+          45492735209,
+          "Verify",
+          "in_progress",
+          null
+        ],
+        [
+          45492735233,
+          "R07-R08 isolated preparation",
+          "in_progress",
+          null
+        ]
+      ]
+    }
+  },
+  "r07_restart_receipt_correction": {
+    "sha": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
+    "base": "de6d2ed2787b2c3baf5a480dbc2756eeefa3a1cb",
+    "report": "evidence/C9/R07_RESTART_RECEIPT_DTO_CORRECTION_2026-11-25.md",
+    "runs": [
+      [
+        45493345999,
+        "Verify",
+        "queued",
+        null
+      ],
+      [
+        45493345989,
+        "R07-R08 isolated preparation",
+        "in_progress",
+        null
+      ]
+    ],
+    "reason": "Source identifies OperationView.action vs MovementReceipt.kind, exact failed line not logged; new private original data and ETag equality, safe exception class/line; post-prune oracle unchanged",
+    "acceptance": "CI_PENDING"
+  },
+  "r09_integrated_candidate": {
+    "pr": 56,
+    "branch": "test/r09-integrated-evidence-candidate-2026-11-25",
+    "base54": "9646ff743c6678af90aa357ee761ac11ed366dff",
+    "pr53": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
+    "pr55": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
+    "initial_sha": "c68252db41f562d0230269844794048471dac0cf",
+    "sha": "9d0902b4e8ea2045a30a4ff4a524e213a3b6a7b3",
+    "initial_tree": "80a03ebfdceb5389f16c97d8ecbe7c9b505c0fd3",
+    "initial_delta": 46,
+    "initial_blobs": 44,
+    "shared_java_blob": "d4153e2f428c5f97dc0f4b1862826155e82f8820",
+    "hunks": 7,
+    "ordered_tests": 78,
+    "initial_runs": [
+      [
+        45493192571,
+        "Verify",
+        "in_progress",
+        null
+      ],
+      [
+        45493192652,
+        "R07-R08 isolated preparation",
+        "completed",
+        "skipped"
+      ]
+    ],
+    "correction_blobs": [
+      "c0371dfe7f7190ffd34da3800cf7f05ab5dd4b81",
+      "3f8f3d70b635d2abf1001a8b9e45d00be8a68a7c"
+    ],
+    "report": "evidence/C9/R09_INTEGRATED_EVIDENCE_CANDIDATE_2026-11-25.md",
+    "correction_report": "evidence/C9/R09_INTEGRATED_RESTART_RECEIPT_CORRECTION_2026-11-25.md",
+    "acceptance": "CI_PENDING",
+    "dedicated_note": "workflow exact head_ref guard skips PR56; source PR55 dedicated evidence retained, final integrated dedicated scope decision open; full Verify runs on draft"
+  },
+  "r09_dedicated_integrated_candidate": {
+    "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "pr": 56,
+    "base": "9d0902b4e8ea2045a30a4ff4a524e213a3b6a7b3",
+    "runs": [
+      [
+        45494597313,
+        "R07-R08 isolated preparation",
+        "in_progress",
+        null
+      ],
+      [
+        45494597345,
+        "Verify",
+        "in_progress",
+        null
+      ]
+    ],
+    "receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "9646ff743c6678af90aa357ee761ac11ed366dff",
+        "run": 45491538911,
+        "job": 138790893717,
+        "oracle": "#6/#61 workspace residual",
+        "actual": "103 Maven/78 identity/19 Playwright, zero failures/errors/skips; all three jobs pass, recovery and cleanup markers observed"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
+        "run": 45493345989,
+        "job": 138797218318,
+        "oracle": "six fresh/reverse selected cases",
+        "actual": "1+1+2+1+1+1 tests; 450 measured/75 warmups; all six cleanups; not full restart proof"
+      },
+      {
+        "status": "FAILED",
+        "sha": "c68252db41f562d0230269844794048471dac0cf",
+        "run": 45493192571,
+        "job": 138796666634,
+        "oracle": "combined Stage1D",
+        "actual": "103 Maven/78 identity and real deadlock pass; upstream201/downstreamEOF and restarted JAR ready then KeyError; remaining restore/browser NOT_RUN"
+      },
+      {
+        "status": "FAILED",
+        "sha": "c68252db41f562d0230269844794048471dac0cf",
+        "run": 45493192571,
+        "job": 138796667488,
+        "oracle": "Java8 Maven verification",
+        "actual": "Maven distribution wget failed before Maven tests; not product failure"
+      }
+    ],
+    "metrics": {
+      "scope": "PR55 dedicated test-context serial HTTP; not packaged or cold",
+      "workloads": [
+        "resource_page",
+        "allocation_page",
+        "requirement_page",
+        "project_page",
+        "overview"
+      ],
+      "columns": [
+        "min_ms",
+        "p50_ms",
+        "p95_ms",
+        "max_ms"
+      ],
+      "values": [
+        [
+          [
+            11.125,
+            15.414,
+            20.471,
+            27.153
+          ],
+          [
+            17.313,
+            20.024,
+            30.795,
+            34.968
+          ],
+          [
+            10.451,
+            12.255,
+            25.706,
+            30.58
+          ],
+          [
+            6.594,
+            9.307,
+            21.479,
+            23.377
+          ],
+          [
+            13.91,
+            15.775,
+            23.968,
+            28.482
+          ]
+        ],
+        [
+          [
+            12.385,
+            15.034,
+            19.538,
+            20.337
+          ],
+          [
+            17.466,
+            21.393,
+            28.883,
+            30.266
+          ],
+          [
+            10.055,
+            12.748,
+            16.996,
+            18.759
+          ],
+          [
+            6.583,
+            8.792,
+            12.067,
+            25.093
+          ],
+          [
+            13.943,
+            17.4,
+            24.057,
+            27.457
+          ]
+        ],
+        [
+          [
+            12.038,
+            15.286,
+            19.588,
+            19.962
+          ],
+          [
+            15.905,
+            19.363,
+            24.518,
+            24.53
+          ],
+          [
+            9.723,
+            11.9,
+            16.087,
+            16.121
+          ],
+          [
+            7.371,
+            8.234,
+            11.429,
+            12.541
+          ],
+          [
+            17.594,
+            19.473,
+            30.355,
+            31.651
+          ]
+        ]
+      ],
+      "measured": 450,
+      "warmups": 75,
+      "fixture": [
+        1001,
+        1002,
+        101
+      ],
+      "jar_bytes": 72486427,
+      "bundle_bytes": 463308
+    },
+    "paths": [
+      {
+        "path": ".github/workflows/r07-r08-preparation.yml",
+        "blob": "1cc798fbc66e0b11b1598bcc409fdc8d4b421f17"
+      },
+      {
+        "path": "scripts/verify-r0708-isolated.sh",
+        "blob": "b6e15a6d9598050793c66ab8eb54f435ecb4f3a6"
+      },
+      {
+        "path": "evidence/C9/R09_DEDICATED_INTEGRATED_GUARD_CANDIDATE_2026-11-25.md",
+        "blob": "f44c08bfe76c717e2b4bb9f5ba27ffb2e4cf0a0e"
+      }
+    ],
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/43_WORKSPACE_RESIDUAL_ACTUAL_AND_INTEGRATED_DEDICATED_GATE.md",
+    "acceptance": "CI_PENDING"
+  },
+  "r09_integrated_actual_preflight": {
+    "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/44_INTEGRATED_DEDICATED_ACTUAL_AND_LOCAL_DISPATCH_PREFLIGHT.md",
+    "lock": "docs/handoffs/claude-local-execution-2026-11-24/45_LOCAL_DISPATCH_SOURCE_LOCK.json",
+    "receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+        "run": 45494597313,
+        "job": 138801600507,
+        "oracle": "integrated dedicated isolation, reversed order, measurements",
+        "actual": "six selected cases (1+1+2+1+1+1), zero failures/errors/skips, six cleanups, 450 measured+75 warmups, exact checkout and final markers"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+        "run": 45494597345,
+        "job": 138801601440,
+        "oracle": "frozen Java8 actual regression",
+        "actual": "61 Maven, 100 Newman requests/151 assertions, one packaged Playwright, zero failures/errors/skips"
+      }
+    ],
+    "metrics": {
+      "scope": "integrated dedicated test-context serial HTTP, not packaged/cold/hosted/private",
+      "columns": [
+        "min_ms",
+        "p50_ms",
+        "p95_ms",
+        "max_ms"
+      ],
+      "workloads": [
+        "resource_page",
+        "allocation_page",
+        "requirement_page",
+        "project_page",
+        "overview"
+      ],
+      "values": [
+        [
+          [
+            14.476,
+            16.958,
+            23.192,
+            23.907
+          ],
+          [
+            21.728,
+            25.9,
+            42.231,
+            54.547
+          ],
+          [
+            13.759,
+            17.153,
+            32.418,
+            46.448
+          ],
+          [
+            10.557,
+            11.666,
+            13.879,
+            15.16
+          ],
+          [
+            19.953,
+            22.021,
+            28.249,
+            29.351
+          ]
+        ],
+        [
+          [
+            14.129,
+            17.225,
+            22.313,
+            22.325
+          ],
+          [
+            17.915,
+            20.492,
+            30.311,
+            41.727
+          ],
+          [
+            13.623,
+            17.605,
+            27.869,
+            38.446
+          ],
+          [
+            9.541,
+            11.336,
+            13.521,
+            16.617
+          ],
+          [
+            18.348,
+            20.597,
+            29.006,
+            36.809
+          ]
+        ],
+        [
+          [
+            13.818,
+            16.599,
+            19.541,
+            20.064
+          ],
+          [
+            20.114,
+            22.271,
+            27.128,
+            28.51
+          ],
+          [
+            13.365,
+            15.351,
+            20.716,
+            21.83
+          ],
+          [
+            8.833,
+            10.653,
+            25.642,
+            27.035
+          ],
+          [
+            16.18,
+            19.504,
+            26.24,
+            26.433
+          ]
+        ]
+      ],
+      "measured": 450,
+      "warmups": 75,
+      "fixture": [
+        1001,
+        1002,
+        101
+      ],
+      "jar_bytes": 72486427,
+      "bundle_bytes": 463308
+    },
+    "protection": {
+      "course_a": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+      "course_a_blob_mode_count": 105,
+      "extended_comparison_base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+      "extended_unchanged_excluding_test": 169,
+      "designated_test": "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java",
+      "migration_count": 7
+    },
+    "full_pending": [
+      {
+        "run": 45494597345,
+        "job": 138801601172
+      },
+      {
+        "run": 45493345999,
+        "job": 138797218433
+      },
+      {
+        "run": 45493392042,
+        "job": 138797385434
+      }
+    ],
+    "acceptance": "CI_PENDING"
+  },
+  "r07_corrected_full_actual": {
+    "receipt": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
+      "run": 45493345999,
+      "job": 138797218433,
+      "oracle": "actual full PR55 recovery, reminder restart, dedicated evidence and packaged HTTP",
+      "actual": "103 Maven/78 identity/19 Playwright, 60 Newman requests/110 assertions, zero failures/errors/skips, 3/3 jobs success; actual InnoDB deadlock and rollback/retry, response-loss upstream201/downstreamEOF and same-actor temporary receipt/ETag replay across distinct JVM exact domain equality; real C5 independent restore non-session exact and empty sessions, durable replay, role/tenant refusals; reminder stale CLAIMED/DISPATCHING -> UNKNOWN, fresh preserved, exact other rows no transport; cleanup; 450 measured+75 warmups packaged same JVM; public original-only preparation, private positive NOT_RUN"
+    },
+    "markers": [
+      "R07_ACTUAL_DEADLOCK_OK:observed_lock_wait=true mysql_counter_increased=true http503=true exact_rollback=true same_key_retry=true replay_preserved=true",
+      "R07_LOST_RESPONSE_RESTART_OK:distinct_process=true same_schema=true same_actor=true exact_domain_equal=true",
+      "R07_REMINDER_RESTART_OK:distinct_jvm=true stale_claimed_unknown=true stale_dispatching_unknown=true fresh_claim_preserved=true exact_other_rows=true no_transport=true",
+      "C9_RUNTIME_C5_RESTORE_OK: archive_bytes=1039696 independent_server=true non_session_rows_equal=true sessions_empty=true",
+      "C9_RUNTIME_BROWSER_FAIL_CLOSED_OK: actual_metadata_503=22 protected_api_requests=0",
+      "C9_RUNTIME_CLEANUP_OK",
+      "R08_PACKAGED_HTTP_OK:repeats=3 measured=450 warmups=75 same_jvm=true public_fixture=true"
+    ],
+    "metrics": {
+      "scope": "PR55 actual packaged recovered serial HTTP; same-JVM repeat, public fixture",
+      "fixture": {
+        "allocation": 120,
+        "department": 2,
+        "project": 6,
+        "resource": 20,
+        "resource_requirement": 18,
+        "PENDING": 0,
+        "ISSUED": 6,
+        "CONSUMED": 32
+      },
+      "columns": [
+        "min_ms",
+        "p50_ms",
+        "p95_ms",
+        "max_ms",
+        "first_warmup_ms",
+        "body_min",
+        "body_max"
+      ],
+      "workloads": [
+        "resource_page",
+        "allocation_page",
+        "requirement_page",
+        "project_page",
+        "overview"
+      ],
+      "values": [
+        [
+          [
+            14.407,
+            22.672,
+            27.822,
+            36.902,
+            45.016,
+            3125,
+            3125
+          ],
+          [
+            28.647,
+            34.09,
+            43.668,
+            58.424,
+            109.282,
+            75742,
+            75742
+          ],
+          [
+            13.209,
+            16.306,
+            23.128,
+            25.74,
+            21.631,
+            5167,
+            5167
+          ],
+          [
+            10.499,
+            13.808,
+            24.634,
+            27.287,
+            38.185,
+            1050,
+            1050
+          ],
+          [
+            16.837,
+            21.743,
+            28.795,
+            33.392,
+            66.9,
+            1865,
+            1868
+          ]
+        ],
+        [
+          [
+            11.055,
+            13.462,
+            16.024,
+            19.595,
+            16.39,
+            3125,
+            3125
+          ],
+          [
+            21.376,
+            23.846,
+            27.949,
+            40.678,
+            24.362,
+            75742,
+            75742
+          ],
+          [
+            8.892,
+            10.548,
+            12.511,
+            12.615,
+            11.606,
+            5167,
+            5167
+          ],
+          [
+            7.535,
+            8.996,
+            10.873,
+            11.335,
+            9.255,
+            1050,
+            1050
+          ],
+          [
+            13.319,
+            15.074,
+            19.55,
+            21.358,
+            15.566,
+            1868,
+            1868
+          ]
+        ],
+        [
+          [
+            9.2,
+            10.995,
+            17.596,
+            22.412,
+            15.462,
+            3125,
+            3125
+          ],
+          [
+            16.939,
+            20.111,
+            28.354,
+            31.963,
+            20.396,
+            75742,
+            75742
+          ],
+          [
+            7.917,
+            9.983,
+            14.489,
+            19.363,
+            8.962,
+            5167,
+            5167
+          ],
+          [
+            7.111,
+            8.542,
+            14.733,
+            14.854,
+            7.895,
+            1050,
+            1050
+          ],
+          [
+            13.027,
+            16.092,
+            19.828,
+            22.764,
+            18.068,
+            1868,
+            1868
+          ]
+        ]
+      ],
+      "measured": 450,
+      "warmups": 75,
+      "jar_bytes": 72486427,
+      "jar_sha256": "76e5977499edb6a01a0c6de95ce166c2975d08f70bcdbd57680049d1af32c10a"
+    },
+    "full_pending": [
+      {
+        "run": 45493392042,
+        "job": 138797385434
+      },
+      {
+        "run": 45494597345,
+        "job": 138801601172
+      }
+    ],
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/46_R07_RESTART_ACTUAL_AND_C9_SCOPE_RECONCILIATION.md",
+    "acceptance": "VERIFIED_BOUNDED_PR55_ONLY"
+  },
+  "r09_prior_integrated_full_actual": {
+    "receipt": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "9d0902b4e8ea2045a30a4ff4a524e213a3b6a7b3",
+      "run": 45493392042,
+      "job": 138797385434,
+      "oracle": "first complete corrected combined full regression",
+      "actual": "103 Maven/78 identity/19 Playwright, 60 Newman requests/110 assertions, all three jobs success, zero failures/errors/skips; real deadlock/rollback/retry, distinct JVM response-loss replay and reminder recovery, C5 exact independent restore, public SQL aggregate/projection, locking denial/positive, seven domain DML denials, real original-only metadata/browser/API/session/logout, exact source/domain row equality, all cleanup; private positive NOT_RUN"
+    },
+    "timings": [
+      {
+        "sha": "18f47cc762f5bcf0ed857350b177c4ccdf035ff1",
+        "run": 45490328103,
+        "job": 138786607428,
+        "npm_install_reported_s": 3,
+        "vite_reported_ms": 142,
+        "maven_reported_s": 130,
+        "playwright_reported": "1.7m"
+      },
+      {
+        "sha": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
+        "run": 45493345999,
+        "job": 138797218433,
+        "npm_install_reported_s": 4,
+        "vite_reported_ms": 191,
+        "maven_reported_s": 119,
+        "playwright_reported": "1.7m"
+      },
+      {
+        "sha": "9d0902b4e8ea2045a30a4ff4a524e213a3b6a7b3",
+        "run": 45493392042,
+        "job": 138797385434,
+        "npm_install_reported_s": 4,
+        "vite_reported_ms": 220,
+        "maven_reported_s": 130,
+        "playwright_reported": "1.7m"
+      }
+    ],
+    "metrics": {
+      "scope": "prior integrated actual packaged same-JVM serial HTTP, public fixture",
+      "columns": [
+        "min_ms",
+        "p50_ms",
+        "p95_ms",
+        "max_ms",
+        "first_warmup_ms",
+        "body_min",
+        "body_max"
+      ],
+      "workloads": [
+        "resource_page",
+        "allocation_page",
+        "requirement_page",
+        "project_page",
+        "overview"
+      ],
+      "values": [
+        [
+          [
+            18.173,
+            25.594,
+            31.033,
+            34.163,
+            59.953,
+            3125,
+            3125
+          ],
+          [
+            27.941,
+            38.669,
+            51.525,
+            51.98,
+            114.168,
+            75742,
+            75742
+          ],
+          [
+            13.294,
+            16.143,
+            23.98,
+            34.962,
+            21.763,
+            5167,
+            5167
+          ],
+          [
+            11.709,
+            13.366,
+            16.02,
+            19.325,
+            24.379,
+            1050,
+            1050
+          ],
+          [
+            18.154,
+            21.034,
+            26.288,
+            26.309,
+            55.733,
+            1868,
+            1868
+          ]
+        ],
+        [
+          [
+            12.688,
+            14.041,
+            16.323,
+            18.109,
+            15.442,
+            3125,
+            3125
+          ],
+          [
+            21.244,
+            26.878,
+            38.213,
+            38.97,
+            26.329,
+            75742,
+            75742
+          ],
+          [
+            9.759,
+            11.514,
+            13.912,
+            17.364,
+            11.146,
+            5167,
+            5167
+          ],
+          [
+            7.944,
+            10.203,
+            13.475,
+            13.641,
+            10.134,
+            1050,
+            1050
+          ],
+          [
+            15.232,
+            16.671,
+            20.859,
+            22.123,
+            14.743,
+            1868,
+            1868
+          ]
+        ],
+        [
+          [
+            10.038,
+            13.022,
+            15.677,
+            16.047,
+            13.434,
+            3125,
+            3125
+          ],
+          [
+            19.622,
+            21.127,
+            27.513,
+            49.309,
+            25.718,
+            75742,
+            75742
+          ],
+          [
+            8.763,
+            9.787,
+            12.802,
+            14.631,
+            10.022,
+            5167,
+            5167
+          ],
+          [
+            7.906,
+            9.416,
+            14.231,
+            14.737,
+            9.16,
+            1050,
+            1050
+          ],
+          [
+            14.088,
+            16.434,
+            19.6,
+            21.141,
+            19.95,
+            1868,
+            1868
+          ]
+        ]
+      ],
+      "measured": 450,
+      "warmups": 75,
+      "jar_bytes": 72486427,
+      "jar_sha256": "76e5977499edb6a01a0c6de95ce166c2975d08f70bcdbd57680049d1af32c10a",
+      "fixture": {
+        "allocation": 120,
+        "department": 2,
+        "project": 6,
+        "resource": 20,
+        "resource_requirement": 18,
+        "PENDING": 0,
+        "ISSUED": 6,
+        "CONSUMED": 32
+      }
+    },
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/47_PRIOR_INTEGRATED_ACTUAL_AND_BUILD_TIMING_REUSE.md",
+    "final_pending": {
+      "run": 45494597345,
+      "job": 138801601172
+    },
+    "acceptance": "VERIFIED_BOUNDED_PRIOR_INTEGRATED"
+  },
+  "historical_source_ref": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306",
+  "historical_source_tree": "735742407327d8ad26e4b2e6ba2c60b446688bb8",
+  "historical_source_pr": 46,
+  "historical_source_ci": {
+    "id": 45419347291,
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "r09_final_actual": {
+    "receipt": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+      "run": 45550768924,
+      "job": 138992173040,
+      "oracle": "exact corrected source full Extended Linux regression, attempt2",
+      "actual": "93 registered routes once; 103 Maven/78 identity and corrected 8 import guard cases, zero failures/errors/skips; 60 Newman requests/110 assertions, 19 Playwright; actual deadlock rollback/retry/replay; distinct JVM response-loss and reminder restart, independent C5 1039696 bytes exact non-session rows and empty sessions; 15 archive refusals, 10 local prechecks, public original-only metadata/API/browser/grants and SQL aggregate/projection controls, all cleanup; 450+75 packaged serial HTTP, JAR 72486427 bytes SHA256 76e5977499edb6a01a0c6de95ce166c2975d08f70bcdbd57680049d1af32c10a"
+    },
+    "source_tree": "180f9708b78a9479d50531edbd04e0dee48a57e7",
+    "full_jobs": [
+      {
+        "id": 138992173040,
+        "status": "success",
+        "review": "ACTUAL_LOGS"
+      },
+      {
+        "id": 138992174413,
+        "status": "success",
+        "review": "ACTUAL_LOGS"
+      },
+      {
+        "id": 138992175595,
+        "status": "success",
+        "review": "ACTUAL_LOGS"
+      }
+    ],
+    "dedicated": {
+      "run": 45550768785,
+      "job": 138991124364,
+      "status": "success",
+      "actual_logs_inspected": true
+    },
+    "windows": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+      "run": 45550768892,
+      "job": 138991124431,
+      "oracle": "exact corrected source Windows Java21 DB-free guard suite",
+      "actual": "WINDOWS_GUARD_SOURCE exact SHA; Temurin 21.0.13; C8HostedDemoImportCommandTest 8, C8HostedDemoPostflightTest 3, C8HostedDemoPreflightTest 3, C8HostedOriginalBaselineTest 3; total 17, failures/errors/skips 0, BUILD SUCCESS, job success"
+    },
+    "protected": {
+      "course_a": 105,
+      "migrations": 7,
+      "dispatch_pins": 42,
+      "all_same": true,
+      "production_delta": 0
+    },
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/52_R09_REAPPROVED_WINDOWS_FIX_ACTUAL_RECEIPTS.md",
+    "acceptance": "VERIFIED_BOUNDED_REMOTE_PREPARATION_ONLY",
+    "owner_launch_required": true
+  },
+  "historical_current_candidate": {
+    "sha": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
+    "tree": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
+    "pr": 46,
+    "ci": 45425950575,
+    "status": "completed",
+    "conclusion": "success",
+    "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS",
+    "changed_paths": [
+      {
+        "path": "CURRENT_STATUS_AND_NEXT_ACTIONS.md",
+        "blob": "bd1606711033e706e74edc7f38e12a9cf9ec8893",
+        "bytes": 21935
+      },
+      {
+        "path": "NEXT_CHAT_START_HERE.md",
+        "blob": "96fb2e633993c4d688bdb7cf1b3cd2aa441ac910",
+        "bytes": 53444
+      },
+      {
+        "path": "evidence/C9/C9_STAGE1D_RECOVERED_APPLICATION_2026-11-24.md",
+        "blob": "7d71f7f2a2d2c6b5ab679cc8481fbce0889bfb4e",
+        "bytes": 6937
+      },
+      {
+        "path": "scripts/stop-c9-isolated-process.py",
+        "blob": "1fd74f1cf47b71758fbee661b930bf80f46390ed",
+        "bytes": 3482
+      },
+      {
+        "path": "scripts/verify-c9-recovered-api.py",
+        "blob": "57313fb10be14232e306dfc1263f32d125bd4e77",
+        "bytes": 9981
+      },
+      {
+        "path": "scripts/verify-c9-recovered-application.sh",
+        "blob": "9d2ec6edf719f0bd8e3633fd61dc2714e571644c",
+        "bytes": 17778
+      }
+    ]
+  },
+  "final_dispatch_audit": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/49_FINAL_ADVERSARIAL_HANDOFF_AUDIT.md",
+    "source": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "tree": "d55cecc7afd240da455014e2d9f1b61bb0e74f40",
+    "prior_handoff": "cef3b1d566d5d480156e114a1947089518022f0f",
+    "react_actual": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+      "run": 45494597345,
+      "job": 138801600647,
+      "oracle": "actual exact final React typecheck, tests, lint and build",
+      "actual": "checkout exact; 3 test files/15 tests passed; typecheck, lint, build completed; Vite reported 162ms; job success"
+    },
+    "checks": {
+      "source_pins": 16,
+      "migration_pins": 7,
+      "support_pins": 17,
+      "total_unique_pins": 40,
+      "graph_tasks": 33,
+      "unknown_dependencies": 0,
+      "cycles": 0,
+      "actual_final_ci_jobs": 4
+    },
+    "native_execution": "NOT_RUN",
+    "local_owner_launch_required": true,
+    "private_positive": "NOT_RUN",
+    "independent": "OPEN"
+  },
+  "native_l03_reported": {
+    "source": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "status": "TEST_FAILED",
+    "exit_code": 1,
+    "tests": 103,
+    "failures": 1,
+    "cleanup": "REPORTED_CLEAN",
+    "verified_jar": false,
+    "receipt_depth": "REPORTED_ONLY",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/50_L03_WINDOWS_REPORTED_FAILURE_AND_PORTABLE_TEST_FIX.md"
+  },
+  "windows_guard_actual": {
+    "status": "VERIFIED_BOUNDED",
+    "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "run": 45550768892,
+    "job": 138991124431,
+    "oracle": "exact corrected source Windows Java21 DB-free guard suite",
+    "actual": "WINDOWS_GUARD_SOURCE exact SHA; Temurin 21.0.13; C8HostedDemoImportCommandTest 8, C8HostedDemoPostflightTest 3, C8HostedDemoPreflightTest 3, C8HostedOriginalBaselineTest 3; total 17, failures/errors/skips 0, BUILD SUCCESS, job success"
+  },
+  "large_batch_contract": "docs/handoffs/claude-local-execution-2026-11-24/51_LARGE_BATCH_LOCAL_EXECUTION_AND_RESUME_CONTRACT.md",
+  "historical_r09_final_actual": {
+    "receipt": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+      "run": 45494597345,
+      "job": 138801601172,
+      "oracle": "final exact integrated full Extended regression",
+      "actual": "actual checkout, 93 registered policy routes each once, 103 Maven/78 identity zero failures/errors/skips; 60 Newman requests/110 assertions and 19 Playwright zero failures; real deadlock rollback/retry, lost HTTP response and same actor replay across distinct JVM, stale reminder claims recover UNKNOWN and fresh preserved, exact domain rows/no transport; actual independent C5 restore 1039696 bytes, sessions empty, durable replay and role denials, invalid mixed metadata fail closed; public R06B3b SQL aggregate/projection, lock and seven DML denials, metadata200 original-only API/browser and persisted session/logout, exact non-session/source equality, 15 archive refusals, 10 local prechecks, all cleanup, 450+75 packaged HTTP"
+    },
+    "source_tree": "d55cecc7afd240da455014e2d9f1b61bb0e74f40",
+    "full_jobs": [
+      {
+        "id": 138801600647,
+        "status": "success",
+        "review": "ACTUAL_LOGS"
+      },
+      {
+        "id": 138801601172,
+        "status": "success",
+        "review": "ACTUAL_LOGS"
+      },
+      {
+        "id": 138801601440,
+        "status": "success",
+        "review": "ACTUAL_LOGS"
+      }
+    ],
+    "dedicated": {
+      "run": 45494597313,
+      "job": 138801600507,
+      "status": "success",
+      "actual_logs_inspected": true
+    },
+    "metrics": {
+      "scope": "actual final packaged recovered public serial HTTP, three repeats same JVM",
+      "columns": [
+        "min_ms",
+        "p50_ms",
+        "p95_ms",
+        "max_ms",
+        "first_warmup_ms",
+        "body_min",
+        "body_max"
+      ],
+      "workloads": [
+        "resource_page",
+        "allocation_page",
+        "requirement_page",
+        "project_page",
+        "overview"
+      ],
+      "values": [
+        [
+          [
+            18.503,
+            22.917,
+            25.436,
+            25.773,
+            49.641,
+            3125,
+            3125
+          ],
+          [
+            29.869,
+            33.928,
+            45.513,
+            51.061,
+            114.526,
+            75742,
+            75742
+          ],
+          [
+            11,
+            13.75,
+            17.356,
+            20.24,
+            18.607,
+            5167,
+            5167
+          ],
+          [
+            10.081,
+            12.411,
+            19.344,
+            22.709,
+            17.669,
+            1050,
+            1050
+          ],
+          [
+            15.607,
+            19.243,
+            25.361,
+            26.473,
+            46.555,
+            1868,
+            1868
+          ]
+        ],
+        [
+          [
+            11.452,
+            14.299,
+            17.386,
+            20.154,
+            12.459,
+            3125,
+            3125
+          ],
+          [
+            20.292,
+            23.94,
+            31.934,
+            35.773,
+            22.798,
+            75742,
+            75742
+          ],
+          [
+            8.645,
+            10.473,
+            13.029,
+            15.822,
+            11.631,
+            5167,
+            5167
+          ],
+          [
+            7.745,
+            10.11,
+            30.757,
+            30.823,
+            9.004,
+            1050,
+            1050
+          ],
+          [
+            13.482,
+            15.063,
+            18.375,
+            19.041,
+            15.825,
+            1868,
+            1868
+          ]
+        ],
+        [
+          [
+            8.962,
+            13.254,
+            15.681,
+            15.977,
+            12.59,
+            3125,
+            3125
+          ],
+          [
+            17.392,
+            19.32,
+            23.875,
+            31.552,
+            19.398,
+            75742,
+            75742
+          ],
+          [
+            8.093,
+            10.236,
+            12.624,
+            13.824,
+            10.765,
+            5167,
+            5167
+          ],
+          [
+            6.556,
+            8.759,
+            13.83,
+            15.057,
+            6.535,
+            1050,
+            1050
+          ],
+          [
+            11.689,
+            14.005,
+            17.797,
+            20.136,
+            19.155,
+            1868,
+            1868
+          ]
+        ]
+      ],
+      "measured": 450,
+      "warmups": 75,
+      "fixture": {
+        "allocation": 120,
+        "department": 2,
+        "project": 6,
+        "resource": 20,
+        "resource_requirement": 18,
+        "PENDING": 0,
+        "ISSUED": 6,
+        "CONSUMED": 32
+      },
+      "jar_bytes": 72486427,
+      "jar_sha256": "76e5977499edb6a01a0c6de95ce166c2975d08f70bcdbd57680049d1af32c10a"
+    },
+    "protected": {
+      "course_a": 105,
+      "migrations": 7,
+      "dispatch_pins": 23,
+      "all_same": true
+    },
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/48_FINAL_INTEGRATED_RECEIPT_AND_R09_LOCAL_DISPATCH.md",
+    "acceptance": "VERIFIED_BOUNDED_REMOTE_PREPARATION_ONLY",
+    "owner_launch_required": true
+  },
+  "production_blocker_plan": "docs/handoffs/claude-local-execution-2026-11-24/53_WINDOWS_ONLY_PRODUCTION_GATE_RESOLUTION.md",
+  "no_wsl_alternative": "docs/handoffs/claude-local-execution-2026-11-24/54_L06_NO_WSL_ALTERNATIVE.md"
+}

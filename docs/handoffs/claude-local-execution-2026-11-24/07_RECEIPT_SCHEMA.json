@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "required": [
+    "task_id",
+    "source_sha",
+    "status",
+    "command",
+    "exit_code",
+    "elapsed_seconds",
+    "environment",
+    "observed",
+    "blockers",
+    "private_receipt_location",
+    "review_status"
+  ],
+  "allowed_status": [
+    "VERIFIED_BOUNDED",
+    "TEST_FAILED",
+    "BLOCKED",
+    "NOT_RUN",
+    "SOURCE_ONLY",
+    "CONDITIONAL",
+    "COVERED_BY_L03"
+  ],
+  "example": {
+    "task_id": "L01",
+    "source_sha": "<actual 40hex>",
+    "status": "NOT_RUN",
+    "command": "<actual command, redact private path and secrets>",
+    "exit_code": null,
+    "elapsed_seconds": null,
+    "environment": {
+      "os": "NOT_AVAILABLE",
+      "java": "NOT_AVAILABLE",
+      "mysql": "NOT_AVAILABLE",
+      "node": "NOT_AVAILABLE",
+      "powershell": "NOT_AVAILABLE"
+    },
+    "observed": [],
+    "blockers": [],
+    "private_receipt_location": "OWNER_LOCAL_ONLY",
+    "review_status": "SELF_REVIEW_ONLY",
+    "metrics": {
+      "tokens": "NOT_AVAILABLE",
+      "model": "NOT_AVAILABLE",
+      "effort": "NOT_AVAILABLE",
+      "sessions": 1,
+      "retries": 0,
+      "cache_read_tokens": "NOT_AVAILABLE",
+      "cache_write_tokens": "NOT_AVAILABLE",
+      "input_tokens": "NOT_AVAILABLE",
+      "output_tokens": "NOT_AVAILABLE",
+      "subscription_usage_delta": "NOT_AVAILABLE",
+      "duplicate_native_runs_avoided": 0
+    },
+    "protected_checks": {
+      "course_a": "NOT_RUN",
+      "flyway": "NOT_RUN",
+      "stage1c": "NOT_RUN"
+    },
+    "privacy": "No raw JSON, secrets, database dumps, cookies, contacts, credentials, archive/key or restricted case IDs in public output"
+  },
+  "nested_receipt_rule": "COVERED_BY_L03 only for L01/L02 when actual nested commands and passing markers inspected on same source SHA; record parent command, actual nested receipt and private locator; no fabricated standalone exit."
+}

@@ -1,0 +1,551 @@
+{
+  "schema": "orgresource.project_context.topic_map.v1",
+  "date": "2026-11-25 PHT",
+  "source_snapshots": "02_GIT_REF_SNAPSHOT.json",
+  "file_index": "03_DOCUMENT_VERSION_INDEX.csv",
+  "task_graph": "../handoffs/claude-local-execution-2026-11-24/12_EXECUTION_GRAPH.json",
+  "private_source_boundary": "08_PRIVATE_SOURCE_BOUNDARY.md",
+  "topics": [
+    {
+      "id": "T01_ORIGINAL_ASSIGNMENT_AND_PLANNING",
+      "sources": [
+        {
+          "path": "01-SOURCE-AND-REQUIREMENTS.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "ff406060e93addaf6e4ae5608c453f7aa5a2a8bf",
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "02-COMPLETE-PROJECT-SPECIFICATION.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "97a65eb55a9f97be0b3d42f82fc858158d2016fe",
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "09-FORMAL-PROPOSAL-DRAFT.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "ff2435f1279583ea6722d7f79ea5572076d8da88",
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "docs/complete-handoff",
+          "kind": "directory",
+          "count": 37,
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        }
+      ],
+      "authority": "Original course attachments and current Canvas govern; old plan historical.",
+      "next": "Use original Project attachments/ZIP when needed; do not infer visual content."
+    },
+    {
+      "id": "T02_EARLY_CHAT_HISTORY",
+      "sources": [
+        {
+          "path": "docs/conversation-handoff-2026-11-14",
+          "kind": "directory",
+          "count": 14,
+          "ref": "b95a669209a6c027ba568ebf46084d5dc902ecc3",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        }
+      ],
+      "authority": "Historical decisions, O1/O3 snapshot, early risks; not present on active lineage.",
+      "next": "Read master continuity and decision checklist, supersede stale counts/state with actual source."
+    },
+    {
+      "id": "T03_RESEARCH_AND_PRODUCT_EVOLUTION",
+      "sources": [
+        {
+          "path": "docs/research-2.0",
+          "kind": "directory",
+          "count": 91,
+          "ref": "dfda6434450c3e57a621bf23373ce6f4f68aa148",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "docs/academic-final/00_READ_FIRST_AND_DECISION_BOUNDARIES.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "27b59e308b6a1199d540efe247a8de461056ca54",
+          "ref": "dfda6434450c3e57a621bf23373ce6f4f68aa148",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        }
+      ],
+      "authority": "Historical research CP0–CP45, decisions, sources, risks, two-edition pivot; primary current evidence supersedes.",
+      "next": "Read specific CP/topic; research external claims again when time-sensitive."
+    },
+    {
+      "id": "T04_ACADEMIC_CANONICAL_REQUIREMENTS",
+      "sources": [
+        {
+          "path": "docs/academic-final",
+          "kind": "directory",
+          "count": 7,
+          "ref": "b0b648874608634ed8e113b0bc10ccc9a8be7284",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "docs/research-2.0",
+          "kind": "directory",
+          "count": 82,
+          "ref": "b0b648874608634ed8e113b0bc10ccc9a8be7284",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        }
+      ],
+      "authority": "Parallel PR9 requirements research; course PDFs still primary.",
+      "next": "R04 remote source/CI packaging mapping bounded; actual Canvas, author/peer/video/instructor and private packaging gates G07 separate."
+    },
+    {
+      "id": "T05_ACADEMIC_EXECUTION_AND_AGENT_PLAN",
+      "sources": [
+        {
+          "path": "docs/academic-final",
+          "kind": "directory",
+          "count": 15,
+          "ref": "4a137b8acb4d1dda486bf03a4151835613240fd5",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        }
+      ],
+      "authority": "Parallel PR10 exact execution specs; not active source or completed tests.",
+      "next": "Read targeted file; compare frozen A."
+    },
+    {
+      "id": "T06_FROZEN_COURSE_FINAL_A",
+      "sources": [
+        {
+          "path": "docs/academic-final/COURSE_FINAL_A_AS_BUILT.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "9b40d9bcdecd06db9ce77a2d008d9693876e4f12",
+          "ref": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "docs/compliance",
+          "kind": "directory",
+          "count": 3,
+          "ref": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "evidence/COURSE-A",
+          "kind": "directory",
+          "count": 3,
+          "ref": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "backend",
+          "kind": "directory",
+          "count": 75,
+          "ref": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "frontend",
+          "kind": "directory",
+          "count": 30,
+          "ref": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        }
+      ],
+      "authority": "Immutable A 7f8c0746; actual course code and evidence separate from Extended.",
+      "next": "Claude resumes actual L03/L04 on verified SHA, audits local project evidence directory for IR4, prepares Course A independently in frozen worktree without interfering with DB tests, checks existing WSL prerequisites read-only and obtains explicit owner environment/transfer consent if needed; L06 owner types actual challenge, L07 separate machine/operator; maintain L08 and #34/#26/#27 decisions; no new remote work without actual failure or separate phase authorization."
+    },
+    {
+      "id": "T07_EARLY_DEMO",
+      "sources": [
+        {
+          "path": "evidence/O1",
+          "kind": "directory",
+          "count": 10,
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "docs/DEMO_SCRIPT_O14.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "4078221cb89f710e9418efbaf1eede5e3fe7f421",
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        }
+      ],
+      "authority": "Historical local demo/phase evidence; recording/submission not inferred.",
+      "next": "Use actual student proof for submission."
+    },
+    {
+      "id": "T08_EXTENDED_C0_C7",
+      "sources": [
+        {
+          "path": "extended",
+          "kind": "directory",
+          "count": 170,
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "evidence/C0",
+          "kind": "directory",
+          "count": 2,
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "evidence/C1",
+          "kind": "directory",
+          "count": 1,
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "evidence/C2",
+          "kind": "directory",
+          "count": 1,
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "evidence/C3",
+          "kind": "directory",
+          "count": 1,
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "evidence/C4",
+          "kind": "directory",
+          "count": 4,
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "evidence/C5",
+          "kind": "directory",
+          "count": 1,
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "evidence/C6a",
+          "kind": "directory",
+          "count": 7,
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "evidence/C7",
+          "kind": "directory",
+          "count": 1,
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "docs/EXTENDED_C_RELEASE.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "73411cf0dc861f19d320dd0aef1b439c636fdb93",
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "docs/EXTENDED_C_REPORTING.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "e0c971192a8008cbd64e93bab02d8fa0aa1ac2aa",
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        }
+      ],
+      "authority": "Actual active candidate source plus phase evidence; runtime receipts exact-head only.",
+      "next": "R03/R04/R07/R08 targeted work; no broad product redesign."
+    },
+    {
+      "id": "T09_ROUTING_AND_EFFICIENCY_RESEARCH",
+      "sources": [
+        {
+          "path": "docs/execution",
+          "kind": "directory",
+          "count": 20,
+          "ref": "d794e8d2a9db1167729a54dcab844f03642d2c36",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": ".codex",
+          "kind": "directory",
+          "count": 10,
+          "ref": "d794e8d2a9db1167729a54dcab844f03642d2c36",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "data/config/orgresource-evidence-router-policy-2026.json",
+          "kind": "file",
+          "count": 1,
+          "blob": "f2fd5bf7cc64706c847580538b59536606550ca4",
+          "ref": "d794e8d2a9db1167729a54dcab844f03642d2c36",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        }
+      ],
+      "authority": "Parallel PR23 exact GOAT/Superpowers/C6–C11 research; active root AGENTS controls current execution.",
+      "next": "Deterministic tools and inline; do not invent models, install plugins or bypass review."
+    },
+    {
+      "id": "T10_ORIGINAL_SOURCE_AND_PUBLICATION_AUDIT",
+      "sources": [
+        {
+          "path": "evidence/C6",
+          "kind": "directory",
+          "count": 24,
+          "ref": "727c270f0a5f2d34bb3b049124d2d5cfca218f35",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "docs/execution",
+          "kind": "directory",
+          "count": 20,
+          "ref": "727c270f0a5f2d34bb3b049124d2d5cfca218f35",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        }
+      ],
+      "authority": "Parallel PR24 source inventory and publication vetoes; metadata != content inspection.",
+      "next": "Retain source audit, review rights/privacy before any new publication."
+    },
+    {
+      "id": "T11_C8_DOMAIN_AUTH_AND_ROUTE_EVIDENCE",
+      "sources": [
+        {
+          "path": "evidence/C8",
+          "kind": "directory",
+          "count": 30,
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "docs/CODEX_NEXT_C8_CLOSEOUT.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "6d730f0be5cd42969e599f51eaafd0baef78bef0",
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "docs/CODEX_NEXT_C8_OBJECT_SCOPE.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "3c09d11eec51c7ed79b7c244e9b8816df0031519",
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        }
+      ],
+      "authority": "93 route candidate mapping, independent issue34 blocked; current code and actual test evidence.",
+      "next": "Claude resumes actual L03/L04 on verified SHA, audits local project evidence directory for IR4, prepares Course A independently in frozen worktree without interfering with DB tests, checks existing WSL prerequisites read-only and obtains explicit owner environment/transfer consent if needed; L06 owner types actual challenge, L07 separate machine/operator; maintain L08 and #34/#26/#27 decisions; no new remote work without actual failure or separate phase authorization."
+    },
+    {
+      "id": "T12_HOSTING_AND_SYNTHETIC_DATA",
+      "sources": [
+        {
+          "path": "docs/deployment",
+          "kind": "directory",
+          "count": 7,
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        }
+      ],
+      "authority": "P0 issue26 live import not run; exact private plan/IR4 owner-local; historical provider claims need current verification.",
+      "next": "Claude resumes actual L03/L04 on verified SHA, audits local project evidence directory for IR4, prepares Course A independently in frozen worktree without interfering with DB tests, checks existing WSL prerequisites read-only and obtains explicit owner environment/transfer consent if needed; L06 owner types actual challenge, L07 separate machine/operator; maintain L08 and #34/#26/#27 decisions; no new remote work without actual failure or separate phase authorization."
+    },
+    {
+      "id": "T13_STAGING_BRANCH",
+      "sources": [
+        {
+          "path": "docs/deployment",
+          "kind": "directory",
+          "count": 4,
+          "ref": "32a4687bd745bfd37b547867e5a72ae1ea623794",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        }
+      ],
+      "authority": "Exact staging Git ref, not proof of actual deployed version or runtime.",
+      "next": "Separate operator verification after authorization; no access to host now."
+    },
+    {
+      "id": "T14_PRODUCT_DECISIONS",
+      "sources": [
+        {
+          "path": "docs/decisions",
+          "kind": "directory",
+          "count": 1,
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "evidence/C8/BORROWER_LEAD_POLICY_DECISIONS.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "4e7821c12237c3fb0c71c37eefce50b3a7feb75a",
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "evidence/C8/OPEN_RISKS_AND_OWNER_DECISIONS.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "d609e72fe2856d334cde36939d27e0ee0a22caa4",
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        }
+      ],
+      "authority": "DEC-D01 proposed only; existing role/data contracts govern until approved.",
+      "next": "Claude resumes actual L03/L04 on verified SHA, audits local project evidence directory for IR4, prepares Course A independently in frozen worktree without interfering with DB tests, checks existing WSL prerequisites read-only and obtains explicit owner environment/transfer consent if needed; L06 owner types actual challenge, L07 separate machine/operator; maintain L08 and #34/#26/#27 decisions; no new remote work without actual failure or separate phase authorization."
+    },
+    {
+      "id": "T15_C9_RELIABILITY_AND_RECOVERY",
+      "sources": [
+        {
+          "path": "evidence/C9",
+          "kind": "directory",
+          "count": 8,
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "scripts",
+          "kind": "directory",
+          "count": 33,
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        }
+      ],
+      "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
+      "next": "Continue existing Windows L03/L04/L05 and Course A technical lanes. Propose/implement separately scoped no-WSL L06 verification adapter only after scope confirmed; synthetic actual Windows proof before private use; do not alter existing Linux runner or locked source; owner challenge, off-host and production gates unchanged.",
+      "latest_sources": [
+        {
+          "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
+          "ref": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+          "blob": "49133fd1eb193cdd6d4a9cfc529804dc0b884b99",
+          "review": "SOURCE_ONLY_CANDIDATE"
+        },
+        {
+          "path": "evidence/C9/R06B2_OPERATOR_GATED_IMPORT_2026-11-25.md",
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "blob": "44cd39ca2b0707d2804431aed937305c2450f5b7",
+          "review": "VERIFIED_BOUNDED actual CI 45434204255, job 138587448867"
+        }
+      ]
+    },
+    {
+      "id": "T16_CLAUDE_RESEARCH_AND_HANDOFF",
+      "sources": [
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24",
+          "kind": "directory",
+          "count": 16,
+          "ref": "6ff1f2cebc69d3c490f6f469c6d3b119e04d6758",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "CLAUDE.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "5b5f31223be24d2428b09100eb649ed30c08b559",
+          "ref": "6ff1f2cebc69d3c490f6f469c6d3b119e04d6758",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        }
+      ],
+      "authority": "Latest live PR47 supersedes snapshot; 12 graph, 14 queue, 15 events, 04 index and 10 external research.",
+      "next": "Continue existing Windows L03/L04/L05 and Course A technical lanes. Propose/implement separately scoped no-WSL L06 verification adapter only after scope confirmed; synthetic actual Windows proof before private use; do not alter existing Linux runner or locked source; owner challenge, off-host and production gates unchanged."
+    },
+    {
+      "id": "T17_UI_DESIGN_AND_USER_EXPERIENCE",
+      "sources": [
+        {
+          "path": "docs/design",
+          "kind": "directory",
+          "count": 2,
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "extended/frontend",
+          "kind": "directory",
+          "count": 38,
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        }
+      ],
+      "authority": "Actual code plus Academic Glass Commons and UI amendments; visual review not inferred.",
+      "next": "R07/R08 directed acceptance; preserve academic separate UI."
+    },
+    {
+      "id": "T18_QUALITY_AND_GOVERNANCE",
+      "sources": [
+        {
+          "path": "AGENTS.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "b9a8dd40cc8b8f7591a8d058622a23fa31177d7f",
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "docs/QUALITY_EVIDENCE_CONTINUOUS_GATE.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "494d9df515dbfcc2e7586c87a1b1fa859aa71564",
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": ".agents",
+          "kind": "directory",
+          "count": 6,
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "CURRENT_STATUS_AND_NEXT_ACTIONS.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "a7028425657bac2a71d7f54960e92a8106176902",
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "NEXT_CHAT_START_HERE.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "fc2e5e65e834c2678cb024c6b431cde16fe8af71",
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        },
+        {
+          "path": "DO_NOW_MUST_DO_STOP_AND_CAPABILITIES.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "f71d46b31f46cf548d6df8bf9ca8a1758acdcbe3",
+          "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+          "review": "METADATA_LOCATOR; see original evidence and reopen content"
+        }
+      ],
+      "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
+      "next": "Every chat, audit and update durable context."
+    }
+  ],
+  "coverage": "18 topic families mapped to actual exact file or directory at inspected tree. Directory count is metadata not proof of reading. Reopen relevant files and ranges; append discovered source/decision rather than claim complete.",
+  "current_implementation": {
+    "candidate": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+    "pr": 52,
+    "verified_base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+    "verified_pr": 52,
+    "run": 45437263264,
+    "status": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS",
+    "source_index_delta": "09_INCREMENTAL_SOURCE_INDEX.csv",
+    "handoff_graph": "../handoffs/claude-local-execution-2026-11-24/12_EXECUTION_GRAPH.json"
+  }
+}
