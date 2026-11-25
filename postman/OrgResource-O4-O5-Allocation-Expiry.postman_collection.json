@@ -1,0 +1,731 @@
+{
+  "info": {
+    "_postman_id": "31ae0128-d803-4a83-a454-7236ddf839a0",
+    "name": "OrgResource O4-O5 Allocation Lifecycle and Expiry",
+    "description": "Dynamic-ID HTTP checks for O4 allocation transitions, consent revocation, and guarded history. It creates uniquely named fictional records. Approved, returned, and consumed history is intentionally protected by A08 and remains in the isolated development database. Run only against the OrgResource local development database.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if(!pm.collectionVariables.get(\"runTag\")){pm.collectionVariables.set(\"runTag\",Date.now().toString()+Math.floor(Math.random()*10000));}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "01 Create Department fixture",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/departments",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"O4 Demo Department {{runTag}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Department created\",function(){pm.response.to.have.status(201);});var x=pm.response.json();pm.collectionVariables.set(\"departmentId\",x.id);"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "02 Create active reusable Project",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/projects",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"departmentId\":{{departmentId}},\"name\":\"O4 Reusable Project {{runTag}}\",\"startAt\":\"{{activeStart}}\",\"endAt\":\"{{activeEnd}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "var m=8*60*60*1000;pm.collectionVariables.set(\"activeStart\",new Date(Date.now()+m+3500).toISOString().slice(0,19));pm.collectionVariables.set(\"activeEnd\",new Date(Date.now()+m+86400000).toISOString().slice(0,19));"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Project created\",function(){pm.response.to.have.status(201);});var x=pm.response.json();pm.collectionVariables.set(\"reusableProjectId\",x.id);"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "03 Create reusable Resource",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/resources",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"O4 Demo Reusable {{runTag}}\",\"type\":\"REUSABLE\",\"totalQuantity\":10}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Resource created\",function(){pm.response.to.have.status(201);});var x=pm.response.json();pm.collectionVariables.set(\"reusableResourceId\",x.id);"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "04 Create reusable Requirement",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/requirements",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"projectId\":{{reusableProjectId}},\"resourceId\":{{reusableResourceId}},\"quantity\":6}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Requirement created\",function(){pm.response.to.have.status(201);});var x=pm.response.json();pm.collectionVariables.set(\"reusableRequirementId\",x.id);"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "05 Create consented fictional Allocation",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/allocations",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"requirementId\":{{reusableRequirementId}},\"quantity\":4,\"borrowerName\":\"O4 Fictional Representative\",\"phoneNumber\":\"+12025550100\",\"smsConsent\":true}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Allocation created pending\",function(){pm.response.to.have.status(201);});var x=pm.response.json();pm.expect(x.status).to.eql(\"PENDING\");pm.collectionVariables.set(\"reusableAllocationId\",x.id);"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "06 Approve reusable Allocation",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/allocations/{{reusableAllocationId}}/approve"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Approved\",function(){pm.response.to.have.status(200);pm.expect(pm.response.json().status).to.eql(\"APPROVED\");});"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "07 Issue reusable Allocation at active start",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/allocations/{{reusableAllocationId}}/issue"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Issued\",function(){pm.response.to.have.status(200);pm.expect(pm.response.json().status).to.eql(\"ISSUED\");});"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "08 Return reusable Allocation",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/allocations/{{reusableAllocationId}}/return"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Returned\",function(){pm.response.to.have.status(200);pm.expect(pm.response.json().status).to.eql(\"RETURNED\");});"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "09 Repeat return is refused",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/allocations/{{reusableAllocationId}}/return"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Repeated return is refused\",function(){pm.response.to.have.status(409);pm.expect(pm.response.json().code).to.eql(\"INVALID_ALLOCATION_STATE\");});"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "10 Revoke SMS consent",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/allocations/{{reusableAllocationId}}/revoke-sms-consent"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Consent revoked and contact redacted\",function(){pm.response.to.have.status(200);var x=pm.response.json();pm.expect(x.status).to.eql(\"RETURNED\");pm.expect(x.contactPresent).to.eql(false);pm.expect(x.smsConsent).to.eql(false);pm.expect(x.phoneNumber).to.eql(undefined);});"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "11 Repeat consent revocation is idempotent",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/allocations/{{reusableAllocationId}}/revoke-sms-consent"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Repeated revocation succeeds\",function(){pm.response.to.have.status(200);pm.expect(pm.response.json().contactPresent).to.eql(false);});"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "12 GET Allocation remains redacted",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/allocations?requirementId={{reusableRequirementId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Contact number never serialized\",function(){pm.response.to.have.status(200);var xs=pm.response.json();var x=xs.find(function(a){return a.id===Number(pm.collectionVariables.get(\"reusableAllocationId\"));});pm.expect(x).to.be.an(\"object\");pm.expect(x.contactPresent).to.eql(false);pm.expect(x.phoneNumber).to.eql(undefined);});"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "13 Reusable stock is available after return",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/resources/{{reusableResourceId}}/availability"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Returned units are available\",function(){pm.response.to.have.status(200);pm.expect(pm.response.json().availableQuantity).to.eql(10);});"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "14 Create consumable Resource",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/resources",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"O4 Demo Consumable {{runTag}}\",\"type\":\"CONSUMABLE\",\"totalQuantity\":12}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Consumable created\",function(){pm.response.to.have.status(201);});var x=pm.response.json();pm.collectionVariables.set(\"consumableResourceId\",x.id);"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "15 Create active consumable Project",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/projects",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"departmentId\":{{departmentId}},\"name\":\"O4 Consumable Project {{runTag}}\",\"startAt\":\"{{consumeStart}}\",\"endAt\":\"{{consumeEnd}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "var m=8*60*60*1000;pm.collectionVariables.set(\"consumeStart\",new Date(Date.now()+m+3500).toISOString().slice(0,19));pm.collectionVariables.set(\"consumeEnd\",new Date(Date.now()+m+86400000).toISOString().slice(0,19));"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Project created\",function(){pm.response.to.have.status(201);});var x=pm.response.json();pm.collectionVariables.set(\"consumableProjectId\",x.id);"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "16 Create consumable Requirement",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/requirements",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"projectId\":{{consumableProjectId}},\"resourceId\":{{consumableResourceId}},\"quantity\":8}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Requirement created\",function(){pm.response.to.have.status(201);});var x=pm.response.json();pm.collectionVariables.set(\"consumableRequirementId\",x.id);"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "17 Create consumable Allocation",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/allocations",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"requirementId\":{{consumableRequirementId}},\"quantity\":4,\"borrowerName\":\"O4 Fictional Consumable User\",\"smsConsent\":false}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Allocation created pending\",function(){pm.response.to.have.status(201);});var x=pm.response.json();pm.collectionVariables.set(\"consumableAllocationId\",x.id);"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "18 Approve consumable Allocation",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/allocations/{{consumableAllocationId}}/approve"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Approved\",function(){pm.response.to.have.status(200);pm.expect(pm.response.json().status).to.eql(\"APPROVED\");});"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "19 Issuing consumable stock is refused",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/allocations/{{consumableAllocationId}}/issue"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Type mismatch\",function(){pm.response.to.have.status(409);pm.expect(pm.response.json().code).to.eql(\"RESOURCE_TYPE_MISMATCH\");});"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "20 Consume consumable Allocation",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/allocations/{{consumableAllocationId}}/consume"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Consumed exactly once\",function(){pm.response.to.have.status(200);pm.expect(pm.response.json().status).to.eql(\"CONSUMED\");});"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "21 Repeat consume is refused",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/allocations/{{consumableAllocationId}}/consume"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Double consume refused\",function(){pm.response.to.have.status(409);pm.expect(pm.response.json().code).to.eql(\"INVALID_ALLOCATION_STATE\");});"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "22 Verify consumable quantity and availability",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/resources?type=CONSUMABLE"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Server reports one physical deduction\",function(){pm.response.to.have.status(200);var xs=pm.response.json();var x=xs.find(function(r){return r.id===Number(pm.collectionVariables.get(\"consumableResourceId\"));});pm.expect(x.totalQuantity).to.eql(8);pm.expect(x.availableQuantity).to.eql(8);});"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "23 Create never-approved pending Allocation",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/allocations",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"requirementId\":{{reusableRequirementId}},\"quantity\":1,\"borrowerName\":\"O4 Fictional Pending User\",\"smsConsent\":false}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Pending created\",function(){pm.response.to.have.status(201);});var x=pm.response.json();pm.collectionVariables.set(\"pendingAllocationId\",x.id);"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "24 Cancel pending Allocation",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/allocations/{{pendingAllocationId}}/cancel"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Cancelled as user request\",function(){pm.response.to.have.status(200);var x=pm.response.json();pm.expect(x.status).to.eql(\"CANCELLED\");pm.expect(x.cancellationReason).to.eql(\"USER_REQUEST\");pm.expect(x.approvedAt).to.eql(null);});"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "25 Delete never-approved cancelled Allocation",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/allocations/{{pendingAllocationId}}/delete"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Allowed physical deletion\",function(){pm.response.to.have.status(200);pm.expect(pm.response.json().message).to.eql(\"Record deleted.\");});"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "26 Delete returned history is protected",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/allocations/{{reusableAllocationId}}/delete"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Historical approval protected\",function(){pm.response.to.have.status(409);pm.expect(pm.response.json().code).to.eql(\"HISTORY_PROTECTED\");});"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "27 Delete consumed history is protected",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/allocations/{{consumableAllocationId}}/delete"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Consumed history protected\",function(){pm.response.to.have.status(409);pm.expect(pm.response.json().code).to.eql(\"HISTORY_PROTECTED\");});"
+            ]
+          }
+        }
+      ],
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8080/api",
+      "type": "string"
+    },
+    {
+      "key": "runTag",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

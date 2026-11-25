@@ -27,6 +27,34 @@ public class ApiExceptionMapperTest {
     }
 
     @Test
+    public void mapsResourceNameUniqueConstraintToConflict() {
+        org.hibernate.exception.ConstraintViolationException duplicate =
+                new org.hibernate.exception.ConstraintViolationException(
+                        "duplicate Resource name", new SQLException("duplicate"), "uk_resource_name_key");
+
+        Response response = mapper.toResponse(new RuntimeException("save failed", duplicate));
+
+        assertEquals(409, response.getStatus());
+        assertEquals("DUPLICATE_NAME", ((ErrorView) response.getEntity()).code);
+    }
+
+    @Test
+    public void mapsRequirementUniquenessAndKnownForeignKeysToConflicts() {
+        String[] constraints = { "uk_requirement_project_resource", "fk_project_department",
+                "fk_requirement_project", "fk_requirement_resource", "fk_allocation_requirement" };
+        for (String constraint : constraints) {
+            org.hibernate.exception.ConstraintViolationException violation =
+                    new org.hibernate.exception.ConstraintViolationException(
+                            "constraint conflict", new SQLException("constraint conflict"), constraint);
+            Response response = mapper.toResponse(new RuntimeException("save failed", violation));
+            assertEquals(409, response.getStatus());
+            ErrorView body = (ErrorView) response.getEntity();
+            assertEquals(constraint.startsWith("uk_") ? "DUPLICATE_REQUIREMENT" : "DEPENDENCY_EXISTS",
+                    body.code);
+        }
+    }
+
+    @Test
     public void mapsJerseyNotFoundToJsonNotFound() {
         Response response = mapper.toResponse(new javax.ws.rs.NotFoundException());
 
@@ -46,6 +74,18 @@ public class ApiExceptionMapperTest {
         assertEquals(400, response.getStatus());
         ErrorView body = (ErrorView) response.getEntity();
         assertEquals("VALIDATION_FAILED", body.code);
+    }
+
+    @Test
+    public void mapsRecognizedMySqlDeadlockToSafeRetryResponse() {
+        SQLException deadlock = new SQLException("private database detail", "40001", 1213);
+
+        Response response = mapper.toResponse(new RuntimeException(deadlock));
+
+        assertEquals(503, response.getStatus());
+        ErrorView body = (ErrorView) response.getEntity();
+        assertEquals("RETRY_REQUIRED", body.code);
+        org.junit.Assert.assertFalse(body.message.contains("private database detail"));
     }
 
 }

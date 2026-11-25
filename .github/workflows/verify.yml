@@ -1,0 +1,297 @@
+name: Verify
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Java 8 and isolated MySQL tests
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0.46
+        env:
+          MYSQL_DATABASE: orgresource_test
+          MYSQL_USER: orgresource_test
+          MYSQL_PASSWORD: orgresource_test_only
+          MYSQL_ROOT_PASSWORD: root_test_only
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot_test_only"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      # This CI-only test database uses MySQL 8 caching_sha2_password on loopback.
+      ORG_TEST_DB_URL: jdbc:mysql://127.0.0.1:3306/orgresource_test?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      ORG_TEST_DB_USER: orgresource_test
+      ORG_TEST_DB_PASSWORD: orgresource_test_only
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      # An Adoptium release redirect intermittently returned non-gzip HTML in CI.
+      # Keep Java 8 mandatory: only fall back to a second verified JDK vendor.
+      - name: Set up Temurin Java 8
+        id: setup_java8_temurin
+        uses: actions/setup-java@v6
+        continue-on-error: true
+        with:
+          distribution: temurin
+          java-version: '8'
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+      - name: Fallback to Zulu Java 8 when Temurin download fails
+        if: steps.setup_java8_temurin.outcome == 'failure'
+        uses: actions/setup-java@v6
+        with:
+          distribution: zulu
+          java-version: '8'
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+      - name: Require a real Java 8 compiler
+        run: |
+          set -euo pipefail
+          javac -version
+          javac -version 2>&1 | grep -Eq '^javac 1[.]8[.]'
+          java -version
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Build React application
+        run: |
+          npm --prefix ../frontend ci
+          npm --prefix ../frontend run typecheck
+          npm --prefix ../frontend test
+          npm --prefix ../frontend run lint
+          npm --prefix ../frontend run build
+      - name: Verify backend and bundle React application against isolated MySQL
+        run: bash mvnw -B -Pbundle-react-ui clean verify
+      - name: Verify exact Course A source candidate and clean extracted build (no archive upload)
+        working-directory: .
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin 7f8c0746da18fd54b47f430ac1435ac36e605d67
+          python3 docs/handoffs/claude-local-execution-2026-11-24/verify_course_a_source_export.py --build
+      - name: Install Chromium for frozen Course A acceptance
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+      - name: Verify the frozen Course A packaged JAR and established acceptance collections
+        run: |
+          set -euo pipefail
+          java -jar target/orgresource-0.1.0-SNAPSHOT.jar --spring.profiles.active=test > /tmp/orgresource-jar.log 2>&1 &
+          app_pid=$!
+          trap 'kill "$app_pid" 2>/dev/null || true; wait "$app_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 60); do
+            if curl --silent --fail http://127.0.0.1:8080/ > /tmp/orgresource-index.html; then break; fi
+            sleep 2
+          done
+          grep -Eq 'assets/index-[^" ]+\.js' /tmp/orgresource-index.html
+          asset_path=$(grep -oE 'assets/index-[^" ]+\.js' /tmp/orgresource-index.html | head -n 1)
+          curl --silent --fail "http://127.0.0.1:8080/$asset_path" > /dev/null
+          for route in departments projects resources requirements allocations; do
+            curl --silent --fail "http://127.0.0.1:8080/api/$route" > /dev/null
+          done
+          cd ..
+          pwsh -NoProfile -File scripts/run-api-acceptance.ps1
+          python3 docs/handoffs/claude-local-execution-2026-11-24/verify_course_a_standalone_candidate.py --jar backend/target/orgresource-0.1.0-SNAPSHOT.jar
+          npm --prefix frontend run e2e -- --grep 'the packaged Java application serves'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: orgresource-executable-java8
+          path: backend/target/orgresource-0.1.0-SNAPSHOT.jar
+          if-no-files-found: error
+
+  frontend:
+    name: React typecheck, tests, lint, and build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run lint
+      - run: npm run build
+
+  extended-c3:
+    name: Extended C Java 21, isolated MySQL, Newman and Playwright
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      mysql:
+        image: mysql:8.0.46
+        env:
+          MYSQL_DATABASE: orgresource_c1_ci
+          MYSQL_USER: orgresource_c1_ci
+          MYSQL_PASSWORD: c1_ci_only
+          MYSQL_ROOT_PASSWORD: root_ci_only
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot_ci_only"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+    env:
+      EXT_DB_URL: jdbc:mysql://127.0.0.1:3306/orgresource_c1_ci?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      EXT_DB_USER: orgresource_c1_ci
+      EXT_DB_PASSWORD: c1_ci_only
+      EXT_DB_MIGRATION_URL: jdbc:mysql://127.0.0.1:3306/orgresource_c1_ci?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      EXT_DB_MIGRATION_USER: root
+      EXT_DB_MIGRATION_PASSWORD: root_ci_only
+      EXT_BOOTSTRAP_SLUG: c1-seed-workspace
+      EXT_BOOTSTRAP_ORG_NAME: Fictional C1 Workspace
+      EXT_BOOTSTRAP_USERNAME: c1-owner
+      EXT_BOOTSTRAP_DISPLAY_NAME: C1 Owner
+      EXT_BOOTSTRAP_PASSWORD: c1-ci-bootstrap-only-7f43d8d1
+      EXT_SMS_ENABLED: 'false'
+      EXT_REMINDER_MODE: DISABLED
+      EXT_SCHEDULER_DELAY_MS: '60000'
+      EXT_SERVER_PORT: '8080'
+      SPRING_PROFILES_ACTIVE: c1-test
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: |
+            backend/pom.xml
+            extended/backend/pom.xml
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: extended/frontend/package-lock.json
+      - name: Check tracked 93-route C8 source inventory and final 29 policy mappings
+        run: |
+          node scripts/verify-c8-routes.mjs
+          node scripts/verify-c8-oracle-coverage.mjs
+      - name: Generate ephemeral contact-encryption test key
+        shell: bash
+        run: |
+          key="$(openssl rand -base64 32 | tr -d '\n')"
+          echo "::add-mask::$key"
+          printf 'EXT_CONTACT_ENCRYPTION_KEY=%s\n' "$key" >> "$GITHUB_ENV"
+      - name: Build React assets for packaged Extended runtime
+        run: |
+          npm --prefix extended/frontend ci
+          npm --prefix extended/frontend run typecheck
+          npm --prefix extended/frontend test
+          npm --prefix extended/frontend run lint
+          npm --prefix extended/frontend run build
+      - name: Install Chromium for packaged browser acceptance
+        working-directory: extended/frontend
+        run: npx playwright install --with-deps chromium
+      - name: Verify Extended C Java 21 backend against isolated MySQL
+        run: bash ./backend/mvnw -B -f extended/backend/pom.xml clean verify
+      - name: Replay and reconcile the fictional C8 small profile
+        env:
+          MYSQL_CONTAINER: ${{ job.services.mysql.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          schema=orgresource_c8_demo_ci_fixture
+          runtime_password="$(openssl rand -hex 24)"
+          migration_password="$(openssl rand -hex 24)"
+          owner_password="$(openssl rand -hex 24)"
+          for password in "$runtime_password" "$migration_password" "$owner_password"; do echo "::add-mask::$password"; done
+          mysql_ci() { docker exec -i --env MYSQL_PWD="$EXT_DB_MIGRATION_PASSWORD" "$MYSQL_CONTAINER" mysql -uroot "$@"; }
+          mysql_ci <<SQL
+          CREATE DATABASE $schema CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+          CREATE USER 'c8_ci_runtime'@'%' IDENTIFIED BY '$runtime_password';
+          CREATE USER 'c8_ci_migrator'@'%' IDENTIFIED BY '$migration_password';
+          GRANT SELECT,INSERT,UPDATE,DELETE ON $schema.* TO 'c8_ci_runtime'@'%';
+          GRANT ALL PRIVILEGES ON $schema.* TO 'c8_ci_migrator'@'%';
+          SQL
+          plan="$RUNNER_TEMP/c8-fictional-plan.json"
+          python3 scripts/generate-c8-demo.py --profile small --seed c8-fixture-proof-v1 --output "$plan"
+          digest="$(sha256sum "$plan" | cut -d' ' -f1)"
+          python3 scripts/preflight-c8-demo-plan.py --plan "$plan" --sha256 "$digest" --profile small
+          if python3 scripts/preflight-c8-demo-plan.py --plan "$plan" --sha256 "$(printf '%064d' 0)" --profile small; then
+            echo "Incorrect fixture hash unexpectedly passed C8 preflight" >&2
+            exit 1
+          fi
+          EXT_C8_DEMO_TARGET="$schema" EXT_C8_DEMO_CONFIRM_TARGET="IMPORT $schema" EXT_C8_DEMO_PORT=3306 \
+            EXT_C8_DEMO_PLAN="$plan" EXT_C8_DEMO_PLAN_SHA256="$digest" EXT_C8_DEMO_OWNER_PASSWORD="$owner_password" \
+            EXT_DB_USER=c8_ci_runtime EXT_DB_PASSWORD="$runtime_password" \
+            EXT_DB_MIGRATION_USER=c8_ci_migrator EXT_DB_MIGRATION_PASSWORD="$migration_password" \
+            java -jar extended/backend/target/extended-backend-0.1.0-SNAPSHOT.jar --c8-local-demo-import
+          counts="$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT (SELECT COUNT(*) FROM organization),(SELECT COUNT(*) FROM allocation),(SELECT COUNT(*) FROM stock_movement),(SELECT COUNT(*) FROM local_credential);')"
+          [ "$counts" = $'3\t36\t40\t1' ]
+      - name: Prove isolated additive replay preserves existing owner and refuses repeat
+        env:
+          MYSQL_CONTAINER: ${{ job.services.mysql.id }}
+        shell: bash
+        run: |
+          bash -n scripts/verify-c8-additive-isolated.sh
+          bash scripts/verify-c8-additive-isolated.sh small
+          bash scripts/verify-c8-additive-isolated.sh intermediate
+          bash scripts/verify-c8-additive-isolated.sh small-partial
+      - name: Prove local mixed rehearsal preparation with public fictional originals
+        shell: bash
+        run: bash scripts/test-c9-local-mixed-preparation.sh
+      - name: Run authenticated Newman and browser acceptance against packaged JAR
+        env:
+          MYSQL_CONTAINER: ${{ job.services.mysql.id }}
+          ORGRESOURCE_E2E_SCREENSHOT_DIR: ${{ runner.temp }}/orgresource-c4-screenshots
+        shell: bash
+        run: |
+          set -euo pipefail
+          java -Duser.timezone=Asia/Manila -jar extended/backend/target/extended-backend-0.1.0-SNAPSHOT.jar > /tmp/orgresource-extended-c3.log 2>&1 &
+          app_pid=$!
+          trap 'kill "$app_pid" 2>/dev/null || true; wait "$app_pid" 2>/dev/null || true' EXIT
+          ready=false
+          for attempt in $(seq 1 60); do
+            if curl --silent --fail http://127.0.0.1:8080/ > /tmp/orgresource-extended-c3-index.html; then ready=true; break; fi
+            sleep 2
+          done
+          if [ "$ready" != true ]; then cat /tmp/orgresource-extended-c3.log; exit 1; fi
+          grep -Eq 'assets/index-[^" ]+\.js' /tmp/orgresource-extended-c3-index.html
+          npx --yes newman@6.2.3 run postman/OrgResource-Extended-C3-28-Operations.postman_collection.json \
+            --reporters cli --bail --delay-request 1000 \
+            --env-var baseUrl=http://127.0.0.1:8080 \
+            --env-var username="$EXT_BOOTSTRAP_USERNAME" \
+            --env-var password="$EXT_BOOTSTRAP_PASSWORD" \
+            --env-var imagePath="$GITHUB_WORKSPACE/postman/fixtures/academic-demo-image.png"
+          npx --yes newman@6.2.3 run postman/OrgResource-Extended-C6a-Reporting.postman_collection.json \
+            --reporters cli --bail \
+            --env-var baseUrl=http://127.0.0.1:8080 \
+            --env-var username="$EXT_BOOTSTRAP_USERNAME" \
+            --env-var password="$EXT_BOOTSTRAP_PASSWORD"
+          docker exec -i --env MYSQL_PWD=root_ci_only "$MYSQL_CONTAINER" mysql -uroot orgresource_c1_ci <<'SQL'
+          INSERT INTO organization(public_id,slug,display_name,status,created_at,updated_at)
+          VALUES(UUID_TO_BIN(UUID(),0),'c4-e2e-secondary','C4 Tenant Isolation','ACTIVE',UTC_TIMESTAMP(6),UTC_TIMESTAMP(6));
+          SET @c4_e2e_org_id=LAST_INSERT_ID();
+          INSERT INTO membership(public_id,org_id,user_id,role,status,created_at,updated_at)
+          SELECT UUID_TO_BIN(UUID(),0),@c4_e2e_org_id,id,'OWNER','ACTIVE',UTC_TIMESTAMP(6),UTC_TIMESTAMP(6)
+          FROM user_account WHERE username_key='c1-owner';
+          SQL
+          EXT_E2E_BASE_URL=http://127.0.0.1:8080 \
+            EXT_E2E_USERNAME="$EXT_BOOTSTRAP_USERNAME" \
+            EXT_E2E_PASSWORD="$EXT_BOOTSTRAP_PASSWORD" \
+            npm --prefix extended/frontend run e2e

@@ -1,0 +1,23 @@
+# R06B3b — targeted transitive review and cleanup-ordering candidate
+
+2026-11-25 PHT. Goal: verify actual frontend/API contracts, repair early cleanup race, preserve protected source and local/private gates. Executor current ChatGPT session inline with deterministic connector reads and local Bash harness. Prior 8c6000a481172e2e31a479065abc6e0d296e8c4c; PR53 intermediate bec8b69c5aedd2cf23b379f2509b871ee3ade84d, final d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12. No independent reviewer claimed.
+
+## Source review
+Exact prior head 8c6000a481172e2e31a479065abc6e0d296e8c4c, relevant ranges:
+- extended/frontend/src/App.tsx: workspace routes and DemoDisclosure gate; metadata before AuthProvider, keyed organization workspace. Full file read.
+- extended/frontend/src/auth/AuthScreens.tsx: 127–157 picker search only above 8 orgs, matching slug/display name, h2 and Open workspace. Login form labels checked.
+- extended/frontend/src/shell/AcademicShell.tsx: 9–65 navigation, header select and options; sign-out class in toolbar. Relevant ranges.
+- extended/frontend/src/auth/AuthContext.tsx: 75–127 sign in, list orgs, explicit select, CSRF refresh, tenant abort, logout. Relevant ranges.
+- extended/frontend/src/pages/ResourcesPage.tsx: 26–69 page state/request, 286–343 heading/table/record ID and pagination, relevant lines.
+- extended/frontend/src/api/client.ts: 183–215 empty filter omission, cursor query, workspace page response. URL with trailing ? has empty search. Relevant ranges.
+- extended/backend/src/main/java/edu/orgresource/extended/rest/WorkspacePageResource.java: default limit 50; C1Component delegate 25–27; C1Service 498–516 uses scoped page window, reconciled balances; ResourceRepository ordered numeric id; WorkspacePageWindow limit 1–100 and query-scope cursor. Relevant ranges except full resource/window/repository files.
+- InventoryService 411–469 and 1068–1077: modern page UUID cursor resolved within tenant, numeric ID ORDER BY, limit +1, stock aggregates scoped, hold time predicate, ledger conservation; C1Service 229–251 matches stable-detail zero APPROVED assumption. No assertion all private records have this property; independent projection selects candidate.
+- scripts/verify-c9-private-mixed-api.py and scripts/verify-c9-private-mixed-browser.mjs full reads; scripts/verify-c9-recovered-api.py client lines 15–78 checked. Private actual browser/API NOT_RUN; first browser page 50, full API up to 100, no inference full browser pagination or larger dataset support.
+
+## Correction
+scripts/c9-private-mixed-recovered-control.sh: original stop branch returned failure if PID record appeared during wait, or if exact command guard refused transient pre-exec shell. New mixed_runtime_reap invokes unchanged strict PIDFD guard, waits existing bounded timeout supervisor when absent/refused, then rechecks any record incl empty/dangling link. Never sends numeric PID signals, never broadens identity verification. Persistent refusal retains work and containers; namespace/daemon stalls outside timeout and actual local JVM cleanup remain unverified. Parent cleanup reviewed at verify-c9-local-mixed-preparation.sh 74–105. Existing strict stop script unchanged.
+
+## Executed local receipt
+Python-backed local non-root environment, Bash 5.2.37. Container tool returned ClientError; Python tool executed subprocess instead. Temporary directory with extracted helper and test script (Git blob c6b2ee266def6069e6f3c1b4e066b5fe6105430c confirmed remote). Command bash scripts/test-c9-private-reap-ordering.sh with synthetic CI flags; seven cases no record, deterministic late record via FIFO, transient refusal, persistent refusal, immediate guard pass, empty record, dangling symlink. Actual exit0, two recheck markers and R06B3B_PRIVATE_REAP_ORDERING_OK. Reconstructed old branch with helper signature using same harness exit1 (not an exact old-head integration red). Actual owned short-lived subprocesses; guard test double, no arbitrary signals. No real local private PIDFD stop or JVM positive. First candidate sleep-based ordering refined to deterministic FIFO, strict immediate assertion, extra empty-record negative.
+
+CI: aggregate 45473244425 Extended 138726559312 in progress last observation; Java8/React successful metadata. Intermediate cleanup CI45475142332 in progress; final [[45475369786,"in_progress",null]]. No exact new CI receipt yet. Prior d941d916 bounded public proof retained. No product or migration change, no private input, host, or Claude. Inspect actual aggregate CI45473244425 and latest cleanup-candidate CI, diagnose failure without weakening oracles; reconcile remote R06B vs L06 and exact final local command/preconditions, then remaining R03/R07/R08. R09=false.

@@ -41,6 +41,12 @@ public final class ApiDtos {
         @NotNull public LocalDateTime endAt;
     }
 
+    public static class UpdateProject {
+        @NotNull public String name;
+        @NotNull public LocalDateTime startAt;
+        @NotNull public LocalDateTime endAt;
+    }
+
     public static class ProjectView {
         public Long id;
         public Long departmentId;
@@ -63,6 +69,12 @@ public final class ApiDtos {
         @NotNull @Min(0) @Max(1000000) public Integer totalQuantity;
     }
 
+    public static class UpdateResource {
+        @NotNull public String name;
+        @NotNull @Min(0) @Max(1000000) public Integer totalQuantity;
+        @NotNull @Min(0) @Max(1000000) public Integer expectedTotalQuantity;
+    }
+
     public static class ResourceView {
         public Long id;
         public String name;
@@ -71,11 +83,28 @@ public final class ApiDtos {
         public Integer availableQuantity;
         public ResourceView() { }
         public ResourceView(Resource resource, int availableQuantity) {
-            this.id = resource.id;
-            this.name = resource.name;
-            this.type = resource.type;
-            this.totalQuantity = resource.totalQuantity;
+            this(resource.id, resource.name, resource.type, resource.totalQuantity, availableQuantity);
+        }
+        public ResourceView(Long id, String name, ResourceType type, Integer totalQuantity, int availableQuantity) {
+            this.id = id;
+            this.name = name;
+            this.type = type;
+            this.totalQuantity = totalQuantity;
             this.availableQuantity = availableQuantity;
+        }
+    }
+
+    public static class ResourceImageUploadView {
+        public Long resourceId;
+        public String contentType;
+        public Integer sizeBytes;
+        public String sha256;
+        public ResourceImageUploadView() { }
+        public ResourceImageUploadView(Long resourceId, String contentType, int sizeBytes, String sha256) {
+            this.resourceId = resourceId;
+            this.contentType = contentType;
+            this.sizeBytes = sizeBytes;
+            this.sha256 = sha256;
         }
     }
 
@@ -95,6 +124,10 @@ public final class ApiDtos {
         @NotNull @Min(1) @Max(1000000) public Integer quantity;
     }
 
+    public static class UpdateRequirement {
+        @NotNull @Min(1) @Max(1000000) public Integer quantity;
+    }
+
     public static class RequirementView {
         public Long id;
         public Long projectId;
@@ -107,9 +140,9 @@ public final class ApiDtos {
             this.id = requirement.id;
             this.projectId = requirement.project.getId();
             this.resourceId = requirement.resource.getId();
-            this.quantity = requirement.quantity;
+            this.quantity = requirement.getQuantity();
             this.allocatedQuantity = allocatedQuantity;
-            this.shortageQuantity = Math.max(0, requirement.quantity - allocatedQuantity);
+            this.shortageQuantity = Math.max(0, requirement.getQuantity() - allocatedQuantity);
         }
     }
 

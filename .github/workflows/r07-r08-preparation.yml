@@ -1,0 +1,70 @@
+name: R07-R08 isolated preparation
+on:
+  pull_request:
+    branches: [test/c8-directed-identity-route-evidence-2026-11-25]
+permissions:
+  contents: read
+jobs:
+  isolated-preparation:
+    if: github.event.pull_request.head.repo.full_name == github.repository && (github.head_ref == 'test/c9-r07-r08-preparation-2026-11-25' || github.head_ref == 'test/r09-integrated-evidence-candidate-2026-11-25')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      mysql:
+        image: mysql:8.0.46
+        env:
+          MYSQL_DATABASE: orgresource_c1_r0708_seed
+          MYSQL_ROOT_PASSWORD: root_r0708_ci_only
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot_r0708_ci_only"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+    env:
+      ORGRESOURCE_R0708_JOB: dedicated
+      EXT_DB_MIGRATION_USER: root
+      EXT_DB_MIGRATION_PASSWORD: root_r0708_ci_only
+      EXT_BOOTSTRAP_SLUG: c1-seed-workspace
+      EXT_BOOTSTRAP_ORG_NAME: Fictional C1 Workspace
+      EXT_BOOTSTRAP_USERNAME: c1-owner
+      EXT_BOOTSTRAP_DISPLAY_NAME: C1 Owner
+      EXT_SMS_ENABLED: 'false'
+      EXT_REMINDER_MODE: DISABLED
+      EXT_SCHEDULER_DELAY_MS: '60000'
+      SPRING_PROFILES_ACTIVE: c1-test
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: extended/backend/pom.xml
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: extended/frontend/package-lock.json
+      - name: Build existing React assets and record tool versions
+        run: |
+          java -version
+          node --version
+          npm --version
+          bash ./backend/mvnw -version
+          t=$SECONDS
+          npm --prefix extended/frontend ci
+          echo "R08_BUILD:npm_ci elapsed_s=$((SECONDS-t))"
+          t=$SECONDS
+          npm --prefix extended/frontend run build
+          echo "R08_BUILD:npm_build elapsed_s=$((SECONDS-t))"
+      - name: Execute independent fresh-schema, reverse-order and HTTP probes
+        env:
+          MYSQL_CONTAINER: ${{ job.services.mysql.id }}
+        run: |
+          bash -n scripts/verify-r0708-isolated.sh
+          python3 -m py_compile scripts/verify-r0708-receipt.py
+          bash scripts/verify-r0708-isolated.sh

@@ -1,60 +1,67 @@
-# OrgResource Java skeleton (O1)
+# OrgResource Java backend
 
-This backend is the first, deliberately bounded implementation slice for the CSCI 180.05 OrgResource project. It uses the supplied course-era stack: Java 8, Spring Boot 2.1.0, Jersey/JAX-RS `javax`, Spring Data JPA, Javax Validation, and MySQL. The Eclipse metadata supports Java 8 and m2e; day-to-day editing can remain in VS Code.
+This is the current five-entity service, not the earlier O1 skeleton. It uses Java 8-compatible bytecode, Spring Boot 2.1, Jersey/JAX-RS `javax`, Spring Data JPA/Hibernate, Javax Validation, MySQL/InnoDB, Retrofit/Gson, and Spring scheduling. Jersey controllers are Spring components; each forwards through `@Autowired` to a Spring component. The bundled React application is served by the same executable JAR.
 
-## Implemented and verified in O1 and O3
+## Current API
 
-- Exactly five JPA entity types: `Department`, `Project`, `Resource`, `ResourceRequirement`, and `Allocation`.
-- Five Spring Data repositories, five Spring components, and five Jersey controller families.
-- JSON create and list endpoints for all five entities, Department rename, Resource availability, and guarded Department delete.
-- Generated positive IDs, explicit table/column names, InnoDB foreign keys, unique normalized Department/Resource names, and the unique Project/Resource Requirement pair.
-- DTOs separate the public API from the persistence graph. Allocation responses never contain `phoneNumber`.
-- Javax Validator checks JSON request DTOs. Project date-times are local Philippine wall times in `YYYY-MM-DDTHH:mm:ss` format.
-- The local MySQL connection is environment-configured. No password is stored in source or this project folder.
+The API has the 25 operations from the current concise proposal, the separately documented A09 consent-revocation addition, and Course A's two Resource image operations. The importable [28-operation Postman reference](../postman/OrgResource-Course-A-28-Routes.postman_collection.json) is the current route inventory. See [`../docs/complete-handoff/05_API_26_ROUTES_AND_RESPONSES.md`](../docs/complete-handoff/05_API_26_ROUTES_AND_RESPONSES.md) for the original 26-operation request/response and invariant contract.
 
-Implemented routes:
+| Controller | Component | Scope |
+|---|---|---|
+| `DepartmentController` | `DepartmentComponent` | Department create/list/update/delete |
+| `ProjectController` | `ProjectComponent` | Project create/list/update/delete |
+| `ResourceController` | `ResourceComponent` | Resource create/list/update/delete and availability; multipart image upload and raw image retrieval |
+| `RequirementController` | `RequirementComponent` | Requirement create/list/update/delete and derived coverage |
+| `AllocationController` | `AllocationComponent` | Allocation create/list, lifecycle transitions, protected deletion, A09 consent revocation |
 
-| Method | Route | Current behavior |
-| --- | --- | --- |
-| POST / GET | `/api/departments` | Create and list |
-| POST | `/api/departments/{id}/update` | Rename; normalized duplicate conflicts return JSON 409 |
-| POST / GET | `/api/projects` | Create; list optionally filtered by `departmentId` |
-| POST / GET | `/api/resources` | Create; list optionally filtered by `type` |
-| GET | `/api/resources/{id}/availability` | Original two-field availability response |
-| POST / GET | `/api/requirements` | Create; list optionally filtered by `projectId`; computed coverage query |
-| POST / GET | `/api/allocations` | Create; redacted list optionally filtered by `requirementId` and `status` |
-| POST | `/api/departments/{id}/delete` | Safe example: refuses deletion while Projects reference the Department |
+Create operations return 201. Reads, updates, lifecycle operations, and successful deletes return 200. Errors use a JSON body with `code` and `message`; validation is 400, missing records 404, and known state/dependency conflicts 409. Allocation DTOs never expose `phoneNumber`. Resource availability, Requirement coverage, and shortage are derived from persisted state rather than stored as duplicate totals.
 
-Create responses use HTTP 201; list and delete successes use HTTP 200. Invalid request fields return a JSON 400; duplicate normalized names and known dependency conflicts return JSON 409.
+### Resource images
 
-The Department rename route is covered by unit tests and `../postman/OrgResource-O3-Department-Update.postman_collection.json`. The O1 routes are covered by `../postman/OrgResource-O1-Skeleton.postman_collection.json`.
+- `POST /api/resources/{id}/image` accepts one multipart field named `file`; PNG/JPEG bytes are verified against the declared media type and decoded within a 16,777,216-pixel safety bound. Upload size is at most 2,097,152 bytes.
+- `GET /api/resources/{id}/image` returns stored bytes with their validated `image/png` or `image/jpeg` media type, `no-store` caching, and `nosniff`. Missing Resource/image is 404; invalid content is 400; oversize is 413.
+- Image bytes and media type use nullable columns on the existing `resource` table; there is no sixth JPA entity or image table. The list uses a targeted scalar projection, and Hibernate 5.3 build-time enhancement makes the BLOB field genuinely lazy for ordinary entity reads and locked inventory updates. The MySQL test verifies it remains unloaded through a pessimistic read and refresh, then loads only when the image accessor is called.
+- The course demo binds to loopback and uses only the tracked synthetic fixture. This is not a public upload service or private-image access-control implementation.
 
-## Not part of this skeleton
+## Build and tests
 
-The remaining original Project, Resource, Requirement and Allocation update/delete/state-transition routes, complete allocation stock lifecycle, concurrency controls, scheduler work, Retrofit/Gson provider integration, React UI, image upload/serve behavior, production migrations, and hosted deployment are not implemented here. See `../evidence/O3/ROUTE_PARITY.md` for the complete route map. Do not treat this skeleton as the finished project.
-
-The syllabus maps the final project to CLO9 (receiving and serving images over HTTP), while the concise proposal's 25-route API does not specify image endpoints. The instructor/Canvas requirement remains unresolved. The image feature is therefore not silently added to this O1 skeleton; resolve the scope before final-project acceptance.
-
-`spring.jpa.hibernate.ddl-auto=update` is used only to generate this local skeleton schema. Replace it with reviewed migrations before broader development/release.
-
-## Local build and run
-
-Use a JDK 8 installation. Maven 3.9+ runs on Java 8. The project build targets Java 8 bytecode and the executable JAR uses the supplied database environment variables.
+Use JDK 8 for the course toolchain. The project Maven Wrapper is included.
 
 ```powershell
-$env:JAVA_HOME = 'C:\path\to\jdk8'
-$env:Path = "$env:JAVA_HOME\bin;$env:Path"
-$env:ORG_DB_URL = 'jdbc:mysql://127.0.0.1:3308/orgresource?useSSL=false&serverTimezone=UTC'
-$env:ORG_DB_USER = 'orgresource_dev'
-$env:ORG_DB_PASSWORD = '<set locally; never commit it>'
-.\mvnw.cmd clean package
-java -jar target\orgresource-0.1.0-SNAPSHOT.jar
-# Run the Java unit tests
-.\mvnw.cmd test
+.\mvnw.cmd -B -Pbundle-react-ui clean verify
 ```
 
-The HTTP server binds to `127.0.0.1:8080`. For this workstation, the database and password are provisioned separately under `%LOCALAPPDATA%\OrgResourceDev`; its DPAPI-protected credential file is not portable and is intentionally excluded from source archives. The O1 report records the actual schema, HTTP responses, build result, and restart check.
+The integration suite requires `ORG_TEST_DB_URL`, `ORG_TEST_DB_USER`, and `ORG_TEST_DB_PASSWORD` for a disposable, fictional-data database named `orgresource_test`. The test-profile guard refuses any other schema. The local developer machine may load those values from `%LOCALAPPDATA%\OrgResourceDev\Set-OrgResourceTestEnvironment.ps1`; the helper is private and is not included in source exports. Never substitute `ORG_DB_*` or the regular development database for tests. Tests do not reset the schema and remove only their own uniquely named fixtures.
 
-## Source constraints
+Build the React client first when using the bundle profile:
 
-The course assignment and syllabus outrank proposal and planning documents. The O1 implementation preserves the five proposed entity types and the original proposal's route shapes where implemented. The broader handoff is a reviewed design plan, not proof that those future features already exist.
+```powershell
+Push-Location ..\frontend
+npm ci
+npm run typecheck
+npm test
+npm run lint
+npm run build
+Pop-Location
+```
+
+Then run Maven from this folder. The Course A release procedure and its exact commands are in [`../docs/RELEASE_AND_DEMO.md`](../docs/RELEASE_AND_DEMO.md). `scripts/package-release.ps1` runs the frontend and backend gates, creates the executable JAR and both source archives, includes the current as-built proposal/demo/Postman materials, and hashes the payload after the source commit is clean.
+
+## MySQL and runtime configuration
+
+The ordinary application reads `ORG_DB_URL`, `ORG_DB_USER`, and `ORG_DB_PASSWORD`. Keep these values outside Git and do not print them into logs or reports. It binds to `127.0.0.1:8080`; `/` serves the bundled React app and `/api/` serves JSON. Use the [portable first-run guide](../docs/PORTABLE_FIRST_RUN.md) to create a new, non-destructive local schema/account and start a release without the developer workstation credential script.
+
+The test profile reads only `ORG_TEST_DB_*` and includes a guard that requires the `orgresource_test` schema. Do not rename or remove that guard to make local setup appear portable.
+
+## Reminder behavior
+
+`orgresource.reminders.mode` defaults to `DISABLED`. `FAKE_TWILIO` uses Retrofit/Gson with a loopback-only fictional simulator and dummy authorization. The separate `TWILIO_VIRTUAL` transport implements the Twilio Messages API form and Basic-auth protocol. It requires `ORGRESOURCE_TWILIO_BASE_URL`, `ORGRESOURCE_TWILIO_ACCOUNT_SID`, `ORGRESOURCE_TWILIO_AUTH_TOKEN`, and `ORGRESOURCE_TWILIO_FROM_NUMBER` from process environment; it is not enabled or exercised against a provider by the acceptance suite. Local tests use only a loopback protocol server and synthetic values. Reminder claims persist before network I/O, redirects and automatic request retries are disabled, uncertain outcomes are not replayed, and `PROVIDER_ACCEPTED` is not carrier delivery.
+
+## Current boundaries
+
+- Course A has five JPA entities: `Department`, `Project`, `Resource`, `ResourceRequirement`, and `Allocation`, with 28 operations (the 25 proposal routes, A09, and two image routes). The assignment says **at least five**, not at most five; this course edition's count is not a cap on a later separately reviewed product.
+- A09 is an additional operation, not an additional entity.
+- No production authentication, campus integration, real SMS delivery, migration framework, or cloud deployment is claimed.
+- CLO9 image receive/serve is implemented and has local Java 8/MySQL/HTTP byte-verification evidence; whether the feature is required within OrgResource and instructor acceptance remain **NOT VERIFIED**. See [`../docs/compliance/CLO9_IMAGE_DECISION.md`](../docs/compliance/CLO9_IMAGE_DECISION.md) and the A3 technical gate.
+- The root `OrgResource-Formal-Proposal.docx` and `OrgResource-Specification-Package.zip` are historical planning artifacts. Their nine-entity/68-operation material is **HISTORICAL, NOT CURRENT IMPLEMENTATION**.
+- This Java 8/Spring Boot 2.1 academic runtime is not a supported public production service. It lacks authentication, tenant isolation, account recovery, a stock-movement audit ledger, production migrations, backup/restore operations, and an approved public demo/runtime. Do not expose it publicly. Production development is deferred until a separate reviewed prompt; research documents are proposals, not implementation authorization.

@@ -1,5 +1,7 @@
 # 03 — Authority, source map, scope, architecture and compatibility
 
+**Track boundary:** this chapter defines the current academic baseline, not the ultimate production product. The assignment requires at least five justified entities, not a maximum. Statements below such as “no authentication,” “no event ledger,” and the legacy Java stack describe this baseline; they must not be read as production sign-off or as a permanent restriction on a later justified, separately reviewed product extension. O14 preserves this course implementation and does not begin that extension.
+
 ## Primary evidence
 
 COURSE REQUIREMENT: 09_ESP_PROJECT_ASSIGNMENT.pdf governs course project requirements and printed due dates. SYLLABUS FACT: 08_CSCI180_SYLLABUS.pdf governs course context, CL learning outcomes, rubric, Canvas and Certificate of Authorship. Current Canvas announcements might change dates/policies and have not been verified. USER DECISION: VS Code, Codex/Claude, GitHub newonathe, real React UI, local source-export compatibility.

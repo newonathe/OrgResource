@@ -1,6 +1,8 @@
 # 04 — Exhaustive domain and relational data contract
 
-## Schema: exactly five JPA entities
+## Current academic baseline schema: five JPA entities
+
+This section specifies the present academic baseline. The assignment requires at least five justified entity types; it does not set a maximum. The current five-entity model is not a permanent cap on a later, separately reviewed production product. O14 keeps this baseline intact and does not start that production expansion.
 
 Department (1) -> many Project.
 Project (1) -> many ResourceRequirement.

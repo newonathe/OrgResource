@@ -1,47 +1,60 @@
-# Template Pack Applicability Assessment
+# OrgResource
 
-The reference pack contributed engineering and documentation practices. Its commercial ERP domain and platform were deliberately excluded. OrgResource remains a one-organization student resource-planning service using the professor's stack. Detailed inspection coverage and source limitations appear in01.
+> **ACTIONABLE FIRST READ (2026-11-23):** [DO_NOW_MUST_DO_STOP_AND_CAPABILITIES.md](DO_NOW_MUST_DO_STOP_AND_CAPABILITIES.md) — fresh priority reset, exact actions ChatGPT can execute today, host-only blockers, academic obligations and explicit STOP list. The older detailed material below is reference, not a command to restart planning. **`LIVE_IMPORT_NOT_RUN`.**
 
-# OrgResource Specification Package
+> **Authoritative current status and Codex continuation:** [CURRENT_STATUS_AND_NEXT_ACTIONS.md](CURRENT_STATUS_AND_NEXT_ACTIONS.md). The application runtime release candidate passed [all three CI jobs on SHA `9df70991`](https://github.com/newonathe/OrgResource/actions/runs/45155946849); the exact approved private dataset was validated, but the **96-org Northflank import has NOT run** and PR #25 remains draft/unmerged. The current branch may have documentation-only newer commits, so always recheck its exact HEAD and CI.
 
-Version 1.0 was prepared 3 November 2026 as the complete specification and proposal handoff. A Java 8 / Spring Boot / Jersey O1 backend skeleton has since been implemented under `backend/`. Its build, local MySQL schema, HTTP checks and restart persistence are recorded in `evidence/O1/PHASE_REPORT.md`. The skeleton is not the complete application.
+> **Current multi-organization staging / C8 development (November 23, 2026):** [NEXT_CHAT_START_HERE.md](NEXT_CHAT_START_HERE.md). This README chiefly documents frozen Course Final A. Extended C is separately implemented under extended/, has a working Northflank staging deployment and remains **C8 technically blocked** pending the bounded authorization acceptance and independent review. Successful login and green CI do not mean production approval.
 
-Start with OrgResource-Formal-Proposal.docx for a self-contained Word proposal and technical appendices. Replace the group-member/date placeholders and review the flagged course confirmations before submission. OrgResource-Specification-Package.zip is the transferable source package. The Markdown files remain easier to search and update than the long Word compilation.
+OrgResource is a local academic application for planning one student organization’s projects, resource requirements, inventory commitments, and allocation history. It is a CSCI 180.05 course project, not an Ateneo-endorsed or production campus service.
 
-Current separate Part I file: OrgResource-Concise-Submission-Proposal.docx is now an independent, simplified proposal with five entities and 25 operations. It contains readable JSON, all required operation descriptions, component jobs and method steps, and entity/repository details. The sole group member is Ethan Owen Taruc, 236196. It describes proposed work only. This smaller design keeps whole-batch resource allocation, availability, project shortages, reusable returns, consumable use, and basic SMS reminders. It does not depend on implementation or tests already existing.
+## Current implementation
 
-The full 156-page proposal and its nine-entity, 68-operation contracts remain unchanged as the earlier comprehensive specification. They are a different scope from the current concise proposal. The existing ZIP is the earlier package and has not been regenerated for this revision. Use the current standalone concise Word document for this Part I version. Historical checks and generators for the original nine-entity concise draft do not validate or rebuild the new five-entity document.
+- **Five JPA entities:** Department, Project, Resource, ResourceRequirement, and Allocation.
+- **28 current API operations:** the original 25 proposal operations, the separately documented A09 SMS-consent revocation amendment, and two Resource image HTTP operations for Course A.
+- **Eight React screens:** Overview, Allocations, Resource Library, Projects, Requirements, Departments, Reminder Activity, and About.
+- **Stack:** Java 8-compatible Spring Boot 2.1, Jersey/JAX-RS `javax`, Spring Data JPA/Hibernate, Javax Validation, MySQL/InnoDB, and React/TypeScript/Vite.
+- **Inventory:** the server computes availability and requirement coverage from current persisted commitments. Pending allocations do not reserve stock. Reusable and consumable stock follow different lifecycle rules.
+- **Reminders:** disabled by default. FakeTwilio remains a loopback simulator. A separate official Twilio Messages protocol adapter is covered by a fictional loopback server test; no provider account or SMS was used. `SIMULATED` and `PROVIDER_ACCEPTED` do not mean a phone received a message.
+- **Images:** POST multipart upload and raw-byte GET under /api/resources/{id}/image; PNG/JPEG only, maximum 2 MiB, content and dimensions validated, bytes stored on the existing Resource row. Current A3 MySQL/HTTP evidence is in the technical gate.
 
-## Ten deliverables
+The assignment requires **at least five justified entity types**. Course Final A retains the five-entity baseline, the proposal’s 25 operations, A09 as a separately recorded addition, and the two authorized image operations. Later production work is separate and is not part of this academic release.
 
-1. 01-SOURCE-AND-REQUIREMENTS.md: authority, public rationale, evidence limits, full course compliance checklist, assumptions and confirmations.
-2. 02-COMPLETE-PROJECT-SPECIFICATION.md: purpose, vocabulary, roles, workflows, state transitions, exact inventory/availability/shortage formulas, scope and optional UI.
-3. 03-TECHNICAL-ARCHITECTURE.md: compatible stack, packages, transaction/lock protocol, identity boundary,12 decisions with alternatives,9 Mermaid diagrams.
-4. 04-DATABASE-SPECIFICATION.md: all9 entities, fields/types/nullability/constraints, mappings, relationships, indexes, deletion rules and20 custom repository methods.
-5. 05-REST-API-CATALOGUE.md: all68 operations with DTOs, input/output/errors, controller/component/repository forwarding and transaction behavior.
-6. 06-COMPONENT-SPECIFICATION.md: every controller-invoked method plus internal calculations, notification methods, permissions, seed and scheduled methods.
-7. 07-INTEGRATION-AND-SCHEDULING.md: Retrofit interpretation, Twilio/FakeTwilio contracts, consent, reminders, outbox, retries, caps and unknown-outcome recovery.
-8. 08-POSTMAN-TESTING-AND-DEMONSTRATION.md: import/run instructions,99-request ordered fictional demonstration,8-request negative collection,52 acceptance scenarios, skeleton/final evidence plans.
-9. 09-FORMAL-PROPOSAL-DRAFT.md and the Word document: group placeholders, application prose and all required technical information incorporated as appendices.
-10. 10-IMPLEMENTATION-HANDOFF.md: dependency order, minimum scope, milestones, risks, confirmation register and a copy-paste coding-agent handoff.
+The original project-design contract is [the 26-operation API specification](docs/complete-handoff/05_API_26_ROUTES_AND_RESPONSES.md); Course A adds the two specified image operations. The current [Postman reference contains all 28 operations](postman/OrgResource-Course-A-28-Routes.postman_collection.json). See the [as-built proposal](docs/academic-final/COURSE_FINAL_A_AS_BUILT.md), [technical gate](evidence/COURSE-A/A3_TECHNICAL_GATE.md), and [student demo guide](docs/COURSE_A_FINAL_DEMO_GUIDE.md) for current state and proof boundaries. The A1+A2 report is historical implementation-stage evidence.
 
-## Machine readable contracts
+## Run the packaged application
 
-contracts/domain-model.json and contracts/operations.json are the structured sources for the generated entity/API/component catalogues. contracts/response-examples.json contains complete response shapes. The Postman directory contains the complete API reference, ordered demonstration, expected failures and local environment. tools/build_contracts.py and tools/build_demo.py author documentation/contracts; they are not Java application code. Keep canonical contract changes and prose aligned. tools/check_specification.py validates coverage and independent arithmetic fixtures, not the eventual backend.
+The executable JAR is delivered separately from the source archives. For a developer-machine demo, the existing `scripts/start-release-demo.ps1` uses the protected local `orgresource_test` credentials. For another computer, follow the non-destructive [portable first-run guide](docs/PORTABLE_FIRST_RUN.md) and use `scripts/start-portable-demo.ps1`; it prompts for a local database password without saving it.
 
-## Important review points
+The web interface is served at <http://127.0.0.1:8080/> and the JSON API is under `/api/`. Stop the Java process with **Ctrl+C** in the PowerShell window that started it. MySQL remains available.
 
-The assignment literally prints RetroJit, while the syllabus and examples use Retrofit/GSON. That interpretation is explicit. Confirm the actual working course BOM/JDK/MySQL environment, final FakeTwilio/live expectation, image expectation under all-tools wording, and acceptance of safe deletion refusal for posted history. No destructive history erasure is hidden behind a successful delete response.
+## Build from source
 
-All quantities/users/projects in examples are fictional. Public reports support a bounded coordination rationale, not proven adoption, campus-wide failure or measured savings. The reference pack was inspected by structure and relevant sections; unrelated commercial details and course recordings were not exhaustively reviewed. The source register is candid about that boundary.
+Requirements: JDK 8 for the course-compatible Java build, MySQL 8 with InnoDB, and Node.js 20.19+ for the React build. From the repository root in PowerShell:
 
-The DEMO identity header is impersonable and permitted only on a local isolated demonstration. Authentication for shared live use is an explicit fail-closed boundary, not a completed feature. SMS is disabled by default; no real message was sent. Provider acceptance is distinct from delivered status and observed handset delivery.
+```powershell
+Push-Location frontend
+npm ci
+npm run typecheck
+npm test
+npm run lint
+npm run build
+Pop-Location
+Push-Location backend
+.\mvnw.cmd -B -Pbundle-react-ui clean verify
+Pop-Location
+```
 
-The proposal's written deadline has passed. Only the student/instructor/current Canvas can resolve submission timing. No submission, email, peer-review rating or authorship certification was performed on the student's behalf.
+The Maven integration tests require protected `ORG_TEST_DB_*` values for the isolated `orgresource_test` schema. Do not point them at the regular development schema. Portable database setup and the JAR runtime command are documented in the [first-run guide](docs/PORTABLE_FIRST_RUN.md). The release script `scripts/package-release.ps1` requires a clean, committed HEAD, a stopped OrgResource process, and an as-built proposal DOCX generated from that exact HEAD. It runs the verified build and writes release artifacts outside Git.
 
-## Validation status
+## Acceptance and course status
 
-See qa/consistency-check.json for the documentation/fixture check count and qa/QUALITY-REVIEW.md for substantive self-review. The Word document and diagrams were checked separately. The O1 skeleton has also been built with Java 8, run against its isolated local MySQL database, checked through Postman/Newman, and restarted to verify persistence; see `evidence/O1/PHASE_REPORT.md`. Unit tests, full allocation lifecycle, MySQL concurrency, live Twilio, a real Eclipse import, instructor acceptance and real-world adoption remain unverified or unimplemented. Do not treat the O1 evidence as final-project acceptance.
+See the [course compliance matrix](docs/compliance/FINAL_COURSE_COMPLIANCE_MATRIX.md), the [CLO9 implementation record](docs/compliance/CLO9_IMAGE_DECISION.md), and the [A3 technical gate](evidence/COURSE-A/A3_TECHNICAL_GATE.md). Local tests establish software behavior only. They do not establish Canvas submission, instructor approval, group or peer requirements, a real recording, or academic authorship certification.
 
-Rebuild the current separate Part I proposal with tools/build_beginner_part1.py followed by tools/build_concise_word.py. Check it with tools/check_readable_part1.py. tools/build_part1.py and tools/build_concise.py are earlier draft generators; tools/check_part1.py checks that earlier draft. The current proposal coverage report is qa/readable-part1-check.json.
+## Historical material — not the current implementation
 
+The older [formal proposal](OrgResource-Formal-Proposal.docx), [specification package](OrgResource-Specification-Package.zip), and earlier handoff chapters are retained for provenance. Some describe a nine-entity, 68-operation concept. Those counts and requirements are **HISTORICAL, NOT CURRENT IMPLEMENTATION**. Course A has five JPA entities and 28 HTTP operations; the current concise proposal remains the source for the original 25 design operations. The proposal is retained at `ChatGPT-Project-Pack/UPLOAD/10_ORGRESOURCE_CONCISE_PROPOSAL.docx`; its existence does not establish that it was submitted or approved.
+
+## Production track — deferred
+
+This branch is an academic baseline, not the finished multi-organization product or a production-ready service. It has no real authentication, account recovery, tenant isolation, organization-specific roles/membership, stock-movement audit ledger, reviewed migration/backup/restore system, supported public runtime, public synthetic-data demo, or validated $0 operating plan. It must not be exposed publicly. Production implementation is deferred until the user supplies the next separately reviewed master prompt; `docs/research-2.0/` and its separate PR are proposals and are not automatically approved requirements.

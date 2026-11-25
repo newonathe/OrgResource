@@ -1,0 +1,295 @@
+package edu.orgresource.extended.api;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+import edu.orgresource.extended.domain.Allocation;
+import edu.orgresource.extended.domain.AllocationStatus;
+import edu.orgresource.extended.domain.Department;
+import edu.orgresource.extended.domain.Project;
+import edu.orgresource.extended.domain.Resource;
+import edu.orgresource.extended.domain.ResourceRequirement;
+import edu.orgresource.extended.domain.ResourceType;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
+
+public final class ApiDtos {
+    private static final DateTimeFormatter LOCAL_DATE_TIME = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+    private ApiDtos() { }
+
+    public record WorkspacePage<T>(java.util.List<T> items, String nextCursor) { }
+
+    public record OverviewProject(ProjectView project, String departmentName, boolean active) { }
+
+    public record OverviewRecentAllocation(Long id, String borrowerName, int quantity, String status, String resourceName,
+            String createdAt) {
+        public OverviewRecentAllocation(Long id, String borrowerName, int quantity, AllocationStatus status, String resourceName,
+                LocalDateTime createdAt) {
+            this(id, borrowerName, quantity, status.name(), resourceName, createdAt.format(LOCAL_DATE_TIME));
+        }
+    }
+
+    public record OverviewAllocations(long pending, long issued, long overdue, long consumed,
+            java.util.List<OverviewRecentAllocation> recent) { }
+
+    public record WorkspaceOverview(String sampledAt, long departmentCount, long projectActiveCount,
+            long resourceTypeCount, long requirementShortageCount, java.util.List<ResourceView> resourcePreview,
+            java.util.List<OverviewProject> calendarPreview, OverviewAllocations allocations) { }
+
+    public static class CreateDepartment {
+        @NotBlank @Size(max = 100) public String name;
+        public CreateDepartment() { }
+        public CreateDepartment(String name) { this.name = name; }
+    }
+
+    public static class DepartmentUpdate {
+        @NotBlank @Size(max = 100) public String name;
+    }
+
+    public static class DepartmentView {
+        public Long id;
+        public String name;
+        public DepartmentView() { }
+        public DepartmentView(Department department) {
+            this.id = department.id;
+            this.name = department.name;
+        }
+    }
+
+    public static class CreateProject {
+        @NotNull @Positive public Long departmentId;
+        @NotBlank @Size(max = 100) public String name;
+        @NotBlank public String startAt;
+        @NotBlank public String endAt;
+    }
+
+    public static class ProjectUpdate {
+        @NotBlank @Size(max = 100) public String name;
+        @NotBlank public String startAt;
+        @NotBlank public String endAt;
+    }
+
+    public static class ProjectView {
+        public Long id;
+        public Long departmentId;
+        public String name;
+        public String startAt;
+        public String endAt;
+        public ProjectView() { }
+        public ProjectView(Project project) {
+            this.id = project.id;
+            this.departmentId = project.department.id;
+            this.name = project.name;
+            this.startAt = project.startAt.format(LOCAL_DATE_TIME);
+            this.endAt = project.endAt.format(LOCAL_DATE_TIME);
+        }
+    }
+
+    public static class CreateResource {
+        @NotBlank @Size(max = 100) public String name;
+        @NotNull public ResourceType type;
+        @NotNull @Min(0) @Max(1000000) public Integer totalQuantity;
+    }
+
+    public static class ResourceUpdate {
+        @NotBlank @Size(max = 100) public String name;
+        @NotNull @Min(0) @Max(1000000) public Integer totalQuantity;
+        @NotNull @Min(0) @Max(1000000) public Integer expectedTotalQuantity;
+    }
+
+    public static class ResourceView {
+        public Long id;
+        /** Stable cross-version identifier used to call the tenant-scoped inventory API. */
+        public java.util.UUID publicId;
+        public String name;
+        public ResourceType type;
+        public Integer totalQuantity;
+        public Integer availableQuantity;
+        public ResourceView() { }
+        public ResourceView(Resource resource, int availableQuantity) {
+            this(resource.id, resource.publicId, resource.name, resource.type, resource.totalQuantity, availableQuantity);
+        }
+        public ResourceView(Long id, java.util.UUID publicId, String name, ResourceType type, int totalQuantity, int availableQuantity) {
+            this.id = id;
+            this.publicId = publicId;
+            this.name = name;
+            this.type = type;
+            this.totalQuantity = totalQuantity;
+            this.availableQuantity = availableQuantity;
+        }
+    }
+
+    public static class ResourceAvailabilityView {
+        public Long resourceId;
+        public Integer availableQuantity;
+        public ResourceAvailabilityView() { }
+        public ResourceAvailabilityView(Long resourceId, Integer availableQuantity) {
+            this.resourceId = resourceId;
+            this.availableQuantity = availableQuantity;
+        }
+    }
+
+    public static class ResourceImageUploadView {
+        public Long resourceId;
+        public String contentType;
+        public Integer sizeBytes;
+        public String sha256;
+        public ResourceImageUploadView() { }
+        public ResourceImageUploadView(Long resourceId, String contentType, int sizeBytes, String sha256) {
+            this.resourceId = resourceId;
+            this.contentType = contentType;
+            this.sizeBytes = sizeBytes;
+            this.sha256 = sha256;
+        }
+    }
+
+    public static class CreateRequirement {
+        @NotNull @Positive public Long projectId;
+        @NotNull @Positive public Long resourceId;
+        @NotNull @Min(1) @Max(1000000) public Integer quantity;
+    }
+
+    public static class RequirementUpdate {
+        @NotNull @Min(1) @Max(1000000) public Integer quantity;
+    }
+
+    public static final class WorkspaceProjectView extends ProjectView {
+        public final String departmentName;
+
+        public WorkspaceProjectView(Project project) {
+            super(project);
+            this.departmentName = project.department.name;
+        }
+    }
+
+    public static class RequirementView {
+        public Long id;
+        public Long projectId;
+        public Long resourceId;
+        public Integer quantity;
+        public Integer allocatedQuantity;
+        public Integer shortageQuantity;
+        public RequirementView() { }
+        public RequirementView(ResourceRequirement requirement, int allocatedQuantity) {
+            this(requirement.id, requirement.project.id, requirement.resource.id, requirement.quantity, allocatedQuantity);
+        }
+        protected RequirementView(Long id, Long projectId, Long resourceId, int quantity, int allocatedQuantity) {
+            this.id = id;
+            this.projectId = projectId;
+            this.resourceId = resourceId;
+            this.quantity = quantity;
+            this.allocatedQuantity = allocatedQuantity;
+            this.shortageQuantity = Math.max(0, quantity - allocatedQuantity);
+        }
+    }
+
+    public static class CreateAllocation {
+        @NotNull @Positive public Long requirementId;
+        @NotNull @Min(1) @Max(1000000) public Integer quantity;
+        @NotBlank @Size(max = 100) public String borrowerName;
+        @Pattern(regexp = "^\\+[1-9][0-9]{7,14}$") public String phoneNumber;
+        public Boolean smsConsent;
+    }
+
+    public static final class WorkspaceRequirementView extends RequirementView {
+        public final String projectName;
+        public final String resourceName;
+        public final ResourceType resourceType;
+        public final String projectStartAt;
+        public final String projectEndAt;
+
+        public WorkspaceRequirementView(Long id, Long projectId, Long resourceId, int quantity, int covered,
+                String projectName, String resourceName, ResourceType resourceType, LocalDateTime projectStartAt, LocalDateTime projectEndAt) {
+            super(id, projectId, resourceId, quantity, covered);
+            this.projectName = projectName;
+            this.resourceName = resourceName;
+            this.resourceType = resourceType;
+            this.projectStartAt = projectStartAt.format(LOCAL_DATE_TIME);
+            this.projectEndAt = projectEndAt.format(LOCAL_DATE_TIME);
+        }
+    }
+
+    public static final class WorkspaceAllocationView extends AllocationView {
+        public final WorkspaceRequirementView requirement;
+
+        public WorkspaceAllocationView(Allocation allocation, WorkspaceRequirementView requirement, LocalDateTime sampledNow) {
+            super(allocation, allocation.requirement.project.endAt, sampledNow);
+            this.requirement = requirement;
+        }
+    }
+
+    public static class AllocationView {
+        public Long id;
+        /** Stable cross-version identifier used for versioned lifecycle actions. */
+        public java.util.UUID publicId;
+        public Long requirementId;
+        public Integer quantity;
+        public String borrowerName;
+        public Boolean contactPresent;
+        public Boolean smsConsent;
+        public String status;
+        public String createdAt;
+        public String approvedAt;
+        public String issuedAt;
+        public String returnedAt;
+        public String consumedAt;
+        public String cancelledAt;
+        public String cancellationReason;
+        public boolean expiredPendingCleanup;
+        public boolean reminderAttempted;
+        public String reminderOutcome;
+        public AllocationView() { }
+        public AllocationView(Allocation allocation, LocalDateTime projectEnd, LocalDateTime sampledNow) {
+            this.id = allocation.id;
+            this.publicId = allocation.publicId;
+            this.requirementId = allocation.requirement.id;
+            this.quantity = allocation.quantity;
+            this.borrowerName = allocation.borrowerName;
+            this.contactPresent = allocation.phoneCiphertext != null;
+            this.smsConsent = allocation.smsConsent;
+            this.status = allocation.status.name();
+            this.createdAt = format(allocation.createdAt);
+            this.approvedAt = format(allocation.approvedAt);
+            this.issuedAt = format(allocation.issuedAt);
+            this.returnedAt = format(allocation.returnedAt);
+            this.consumedAt = format(allocation.consumedAt);
+            this.cancelledAt = format(allocation.cancelledAt);
+            this.cancellationReason = allocation.cancellationReason;
+            this.expiredPendingCleanup = (allocation.status == AllocationStatus.PENDING
+                    || allocation.status == AllocationStatus.APPROVED) && !projectEnd.isAfter(sampledNow);
+            this.reminderAttempted = allocation.reminderClaimedAt != null;
+            this.reminderOutcome = allocation.reminderOutcome.name();
+        }
+    }
+
+    private static String format(LocalDateTime value) {
+        return value == null ? null : value.format(LOCAL_DATE_TIME);
+    }
+
+    public static class MessageView {
+        public String message;
+        public MessageView() { }
+        public MessageView(String message) { this.message = message; }
+    }
+
+    public static class ErrorView {
+        public String code;
+        public String message;
+        public ErrorView() { }
+        public ErrorView(String code, String message) {
+            this.code = code;
+            this.message = message;
+        }
+    }
+
+    public static class CsrfView {
+        public String token;
+        public CsrfView() { }
+        public CsrfView(String token) { this.token = token; }
+    }
+}

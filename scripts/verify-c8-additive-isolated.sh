@@ -1,0 +1,622 @@
+#!/usr/bin/env bash
+# Isolated Java/MySQL proof ONLY. Hard stop for any non-disposable remote target.
+set -euo pipefail
+mode="${1:-small}"
+inject_failure=0
+case "$mode" in
+  small) profile=small; expected_workspaces=3; expected_allocations=36 ;;
+  intermediate) profile=intermediate; expected_workspaces=8; expected_allocations=960 ;;
+  small-partial) profile=small; expected_workspaces=3; expected_allocations=36; inject_failure=1 ;;
+  *) echo "Only disposable small, intermediate, or small-partial profiles are accepted" >&2; exit 1 ;;
+esac
+suffix="${mode//-/_}"
+schema="orgresource_c8_additive_ci_fixture_$suffix"
+runtime_user="c8_add_run_$suffix"
+migrator_user="c8_add_mig_$suffix"
+verifier_user="c8_add_ro_$suffix"
+verifier_password="$(openssl rand -hex 24)"
+runtime_password="$(openssl rand -hex 24)"
+migration_password="$(openssl rand -hex 24)"
+owner_password="$(openssl rand -hex 24)"
+for secret in "$runtime_password" "$migration_password" "$owner_password" "$verifier_password"; do
+  echo "::add-mask::$secret"
+done
+: "${MYSQL_CONTAINER:?A disposable GitHub Actions MySQL container is required}"
+: "${EXT_DB_MIGRATION_PASSWORD:?The disposable CI root credential is required}"
+mysql_ci() {
+  docker exec -i --env MYSQL_PWD="$EXT_DB_MIGRATION_PASSWORD" "$MYSQL_CONTAINER" mysql -uroot "$@"
+}
+mysql_ci <<SQL
+CREATE DATABASE $schema CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+CREATE USER '$runtime_user'@'%' IDENTIFIED BY '$runtime_password';
+CREATE USER '$migrator_user'@'%' IDENTIFIED BY '$migration_password';
+CREATE USER '$verifier_user'@'%' IDENTIFIED BY '$verifier_password';
+GRANT SELECT,INSERT,UPDATE,DELETE ON $schema.* TO '$runtime_user'@'%';
+GRANT ALL PRIVILEGES ON $schema.* TO '$migrator_user'@'%';
+GRANT SELECT ON $schema.* TO '$verifier_user'@'%';
+SQL
+url="jdbc:mysql://127.0.0.1:3306/$schema?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+EXT_DB_URL="$url" EXT_DB_USER="$runtime_user" EXT_DB_PASSWORD="$runtime_password" \
+  EXT_DB_MIGRATION_URL="$url" EXT_DB_MIGRATION_USER="$migrator_user" \
+  EXT_DB_MIGRATION_PASSWORD="$migration_password" \
+  EXT_BOOTSTRAP_SLUG=isolated-original-workspace \
+  EXT_BOOTSTRAP_ORG_NAME='Isolated Original Workspace' \
+  EXT_BOOTSTRAP_USERNAME=additive-original-owner \
+  EXT_BOOTSTRAP_DISPLAY_NAME='Fictional Original Owner' \
+  EXT_BOOTSTRAP_PASSWORD="$owner_password" \
+  java -jar extended/backend/target/extended-backend-0.1.0-SNAPSHOT.jar --bootstrap \
+  > "$RUNNER_TEMP/c8-additive-bootstrap-private.log" 2>&1
+original_org="$(mysql_ci --batch --skip-column-names "$schema" \
+  -e "SELECT BIN_TO_UUID(public_id,0) FROM organization WHERE slug='isolated-original-workspace';")"
+owner_id="$(mysql_ci --batch --skip-column-names "$schema" \
+  -e "SELECT BIN_TO_UUID(public_id,0) FROM user_account WHERE username_key='additive-original-owner';")"
+[ -n "$original_org" ] && [ -n "$owner_id" ]
+# Seed existing fictional domain rows so preservation is meaningful beyond account identity.
+mysql_ci "$schema" <<'SQL'
+INSERT INTO department (organization_id,name,name_key,version)
+SELECT id,'Existing fictional operations','existing fictional operations',0
+FROM organization WHERE slug='isolated-original-workspace';
+INSERT INTO resource (public_id,organization_id,name,name_key,type,total_quantity,version)
+SELECT UUID_TO_BIN(UUID(),0),id,'Existing fictional projector','existing fictional projector','REUSABLE',0,0
+FROM organization WHERE slug='isolated-original-workspace';
+SQL
+original_domain_snapshot() {
+  mysql_ci --batch --skip-column-names "$schema" -e "
+  SELECT HEX(o.public_id),d.name,d.name_key,d.version,HEX(r.public_id),r.name,r.name_key,r.type,r.total_quantity,r.version
+  FROM organization o JOIN department d ON d.organization_id=o.id
+  JOIN resource r ON r.organization_id=o.id WHERE o.slug='isolated-original-workspace';"     | sha256sum | cut -d' ' -f1
+}
+original_domain_sha_before="$(original_domain_snapshot)"
+# Add a second original organization/account BEFORE the HMAC baseline, ensuring
+# the safeguard also covers originals outside the nominated owner/org.
+mysql_ci "$schema" <<'SQL'
+INSERT INTO organization(public_id,slug,display_name,status,version,created_at,updated_at)
+VALUES(UUID_TO_BIN(UUID(),0),'isolated-other-original','Other Original Org','ACTIVE',0,UTC_TIMESTAMP(6),UTC_TIMESTAMP(6));
+INSERT INTO user_account(public_id,username_key,display_name,status,credential_version,version,created_at,updated_at)
+VALUES(UUID_TO_BIN(UUID(),0),'other-original-user','Other Original User','ACTIVE',0,0,UTC_TIMESTAMP(6),UTC_TIMESTAMP(6));
+INSERT INTO membership(public_id,org_id,user_id,role,status,version,created_at,updated_at)
+SELECT UUID_TO_BIN(UUID(),0),o.id,u.id,'MEMBER','ACTIVE',0,UTC_TIMESTAMP(6),UTC_TIMESTAMP(6)
+FROM organization o CROSS JOIN user_account u WHERE o.slug='isolated-other-original'
+AND u.username_key='other-original-user';
+INSERT INTO department(organization_id,name,name_key,version)
+SELECT id,'Other original department','other original department',0
+FROM organization WHERE slug='isolated-other-original';
+SQL
+# Independent 15-table original-data HMAC manifest. Remains in RUNNER_TEMP, never
+# uploaded or written to the application schema. Verification cannot rewrite it.
+baseline_file="$RUNNER_TEMP/c8-private-original-$suffix.properties"
+baseline_key="$(openssl rand -hex 32)"
+echo "::add-mask::$baseline_key"
+original_baseline() {
+  local mode="$1"
+  local fp
+  fp="$(printf '%s\0%s' "$schema" "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT @@server_uuid;')" | sha256sum | cut -d' ' -f1)"
+  EXT_C8_BASELINE_MODE="$mode" EXT_C8_BASELINE_FILE="$baseline_file" \
+    EXT_C8_BASELINE_HMAC_HEX="$baseline_key" \
+    EXT_C8_HOSTED_EXPECTED_SCHEMA="$schema" EXT_C8_HOSTED_EXPECTED_FINGERPRINT="$fp" \
+    EXT_C8_HOSTED_ORIGINAL_ORG_PUBLIC_ID="$original_org" EXT_C8_HOSTED_OWNER_PUBLIC_ID="$owner_id" \
+    EXT_DB_URL="jdbc:mysql://127.0.0.1:3306/$schema?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC" \
+    EXT_DB_USER="$runtime_user" EXT_DB_PASSWORD="$runtime_password" \
+    java -jar extended/backend/target/extended-backend-0.1.0-SNAPSHOT.jar \
+    --c8-hosted-original-baseline
+}
+original_baseline CAPTURE
+if [ "$mode" = small ]; then
+  C9_ORIGINAL_TEST_SCHEMA="$schema" C9_ORIGINAL_TEST_ORG="$original_org" C9_ORIGINAL_TEST_OWNER="$owner_id" \
+    bash scripts/verify-c9-local-original-transport.sh
+fi
+# Hash the *full original owner/org/credential/membership row values*, not just counts.
+# Never emit the credential material or the hash to public CI logs.
+original_snapshot_sql="SELECT HEX(o.public_id),o.slug,o.display_name,o.status,o.version,o.created_at,o.updated_at,\
+HEX(u.public_id),u.username_key,u.display_name,u.status,u.credential_version,u.version,u.created_at,u.updated_at,\
+HEX(m.public_id),m.role,m.status,m.version,m.created_at,m.updated_at,c.password_hash,c.changed_at \
+FROM organization o JOIN membership m ON m.org_id=o.id \
+JOIN user_account u ON u.id=m.user_id JOIN local_credential c ON c.user_id=u.id \
+WHERE o.slug='isolated-original-workspace' AND u.username_key='additive-original-owner';"
+snapshot_original() {
+  mysql_ci --batch --skip-column-names "$schema" -e "$original_snapshot_sql" | sha256sum | cut -d' ' -f1
+}
+original_sha_before="$(snapshot_original)"
+plan="$RUNNER_TEMP/c8-additive-$suffix-private.json"
+python3 scripts/generate-c8-demo.py --profile "$profile" --seed c8-fixture-proof-v1 --output "$plan"
+digest="$(sha256sum "$plan" | cut -d' ' -f1)"
+check_postflight() {
+  EXT_C8_PROOF_SCHEMA="$schema" EXT_C8_PROOF_CONFIRM="TEST ADDITIVE $schema" \
+    EXT_C8_PROOF_PORT=3306 EXT_C8_DEMO_PLAN="$plan" EXT_C8_DEMO_PLAN_SHA256="$digest" \
+    EXT_C8_PROOF_ORIGINAL_ORG_ID="$original_org" EXT_C8_PROOF_OWNER_ACCOUNT_ID="$owner_id" \
+    EXT_DB_USER="$verifier_user" EXT_DB_PASSWORD="$verifier_password" \
+    java -Xmx768m -jar extended/backend/target/extended-backend-0.1.0-SNAPSHOT.jar \
+    --c8-additive-demo-isolated-postflight
+}
+if [ "$inject_failure" -eq 1 ]; then
+  # Prove a pre-import backup can be restored independently into a NEW database.
+  # Only the disposable CI/MySQL container is used, never a live Northflank DB.
+  backup_file="$RUNNER_TEMP/c8-original-disposable-before-partial.sql"
+  docker exec -i --env MYSQL_PWD="$EXT_DB_MIGRATION_PASSWORD" "$MYSQL_CONTAINER" \
+    mysqldump -uroot --single-transaction --skip-lock-tables --hex-blob \
+    --set-gtid-purged=OFF "$schema" > "$backup_file"
+  [ -s "$backup_file" ]
+  backup_digest="$(sha256sum "$backup_file" | cut -d' ' -f1)"
+  # This branch is an intentionally aborted 3-org CI fixture in its own disposable DB.
+  failed_log="$RUNNER_TEMP/c8-additive-partial-injected-private.log"
+  if EXT_C8_PROOF_SCHEMA="$schema" EXT_C8_PROOF_CONFIRM="TEST ADDITIVE $schema" \
+    EXT_C8_PROOF_PORT=3306 EXT_C8_DEMO_PLAN="$plan" EXT_C8_DEMO_PLAN_SHA256="$digest" \
+    EXT_C8_PROOF_ORIGINAL_ORG_ID="$original_org" EXT_C8_PROOF_OWNER_ACCOUNT_ID="$owner_id" \
+    EXT_C8_PROOF_FAIL_AFTER=1 EXT_DB_USER="$runtime_user" EXT_DB_PASSWORD="$runtime_password" \
+    java -Xmx768m -jar extended/backend/target/extended-backend-0.1.0-SNAPSHOT.jar \
+    --c8-additive-demo-isolated-proof > "$failed_log" 2>&1; then
+    echo "An intentionally interrupted fixture unexpectedly completed." >&2
+    exit 1
+  fi
+  grep -q 'INJECTED_ISOLATED_PARTIAL_FAILURE_AFTER_1_COMMITTED_WORKSPACES' "$failed_log"
+  [ "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT COUNT(*) FROM organization WHERE demo_dataset_id IS NOT NULL;')" = "1" ]
+  [ "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT COUNT(*) FROM allocation;')" = "12" ]
+  if check_postflight > "$RUNNER_TEMP/c8-additive-partial-postflight-refusal.log" 2>&1; then
+    echo "Independent postflight unexpectedly accepted the incomplete demo." >&2
+    exit 1
+  fi
+  [ "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT COUNT(*) FROM user_account WHERE username_key="c8-demo-historical-actor";')" = "1" ]
+  [ "$(snapshot_original)" = "$original_sha_before" ]
+  [ "$(original_domain_snapshot)" = "$original_domain_sha_before" ]
+  original_baseline VERIFY
+  # The next attempt must refuse the partial database and leave every row intact.
+  before="$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT (SELECT COUNT(*) FROM organization),(SELECT COUNT(*) FROM allocation),(SELECT COUNT(*) FROM stock_movement);')"
+  if EXT_C8_PROOF_SCHEMA="$schema" EXT_C8_PROOF_CONFIRM="TEST ADDITIVE $schema" \
+    EXT_C8_PROOF_PORT=3306 EXT_C8_DEMO_PLAN="$plan" EXT_C8_DEMO_PLAN_SHA256="$digest" \
+    EXT_C8_PROOF_ORIGINAL_ORG_ID="$original_org" EXT_C8_PROOF_OWNER_ACCOUNT_ID="$owner_id" \
+    EXT_DB_USER="$runtime_user" EXT_DB_PASSWORD="$runtime_password" \
+    java -Xmx768m -jar extended/backend/target/extended-backend-0.1.0-SNAPSHOT.jar \
+    --c8-additive-demo-isolated-proof > "$RUNNER_TEMP/c8-additive-partial-repeat-private.log" 2>&1; then
+    echo "Retry against a partial database unexpectedly succeeded." >&2
+    exit 1
+  fi
+  after="$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT (SELECT COUNT(*) FROM organization),(SELECT COUNT(*) FROM allocation),(SELECT COUNT(*) FROM stock_movement);')"
+  [ "$before" = "$after" ]
+  [ "$(snapshot_original)" = "$original_sha_before" ]
+  [ "$(original_domain_snapshot)" = "$original_domain_sha_before" ]
+  # The backup must be restored to an isolated target without overwriting
+  # or deleting the partially imported original; then replay must succeed there.
+  recovered_schema=orgresource_c8_additive_ci_fixture_recovered
+  mysql_ci <<SQL
+CREATE DATABASE $recovered_schema CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+GRANT SELECT,INSERT,UPDATE,DELETE ON $recovered_schema.* TO '$runtime_user'@'%';
+SQL
+  [ "$(sha256sum "$backup_file" | cut -d' ' -f1)" = "$backup_digest" ]
+  mysql_ci "$recovered_schema" < "$backup_file"
+  source_schema="$schema"
+  schema="$recovered_schema"
+  [ "$(snapshot_original)" = "$original_sha_before" ]
+  [ "$(original_domain_snapshot)" = "$original_domain_sha_before" ]
+  [ "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT COUNT(*) FROM organization WHERE demo_dataset_id IS NOT NULL;')" = "0" ]
+  EXT_C8_PROOF_SCHEMA="$schema" EXT_C8_PROOF_CONFIRM="TEST ADDITIVE $schema" \
+    EXT_C8_PROOF_PORT=3306 EXT_C8_DEMO_PLAN="$plan" EXT_C8_DEMO_PLAN_SHA256="$digest" \
+    EXT_C8_PROOF_ORIGINAL_ORG_ID="$original_org" EXT_C8_PROOF_OWNER_ACCOUNT_ID="$owner_id" \
+    EXT_DB_USER="$runtime_user" EXT_DB_PASSWORD="$runtime_password" \
+    java -Xmx768m -jar extended/backend/target/extended-backend-0.1.0-SNAPSHOT.jar \
+    --c8-additive-demo-isolated-proof
+  [ "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT COUNT(*) FROM organization WHERE demo_dataset_id IS NOT NULL;')" = "3" ]
+  [ "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT COUNT(*) FROM allocation;')" = "36" ]
+  [ "$(snapshot_original)" = "$original_sha_before" ]
+  [ "$(original_domain_snapshot)" = "$original_domain_sha_before" ]
+  schema="$source_schema"
+  original_baseline VERIFY
+  [ "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT COUNT(*) FROM organization WHERE demo_dataset_id IS NOT NULL;')" = "1" ]
+  [ "$(snapshot_original)" = "$original_sha_before" ]
+  [ "$(original_domain_snapshot)" = "$original_domain_sha_before" ]
+  echo "ISOLATED_PARTIAL_RESTORE_PROOF_PASSED: original preserved, retry refused; independent restored copy imported 3 fictional workspaces, partial source left untouched."
+  exit 0
+fi
+EXT_C8_PROOF_SCHEMA="$schema" EXT_C8_PROOF_CONFIRM="TEST ADDITIVE $schema" \
+  EXT_C8_PROOF_PORT=3306 EXT_C8_DEMO_PLAN="$plan" EXT_C8_DEMO_PLAN_SHA256="$digest" \
+  EXT_C8_PROOF_ORIGINAL_ORG_ID="$original_org" EXT_C8_PROOF_OWNER_ACCOUNT_ID="$owner_id" \
+  EXT_DB_USER="$runtime_user" EXT_DB_PASSWORD="$runtime_password" \
+  java -Xmx768m -jar extended/backend/target/extended-backend-0.1.0-SNAPSHOT.jar \
+  --c8-additive-demo-isolated-proof
+counts="$(mysql_ci --batch --skip-column-names "$schema" -e \
+  'SELECT (SELECT COUNT(*) FROM organization),(SELECT COUNT(*) FROM organization WHERE demo_plan_sha IS NOT NULL),(SELECT COUNT(*) FROM allocation),(SELECT COUNT(*) FROM stock_movement),(SELECT COUNT(*) FROM local_credential);')"
+expected_movement_count="$(python3 - "$plan" <<'PY'
+import json, sys
+plan = json.load(open(sys.argv[1], encoding='utf-8'))
+statuses = plan['final_states']
+print(plan['counts']['resources'] + statuses['CONSUMED'] + statuses['ISSUED'] + 2 * statuses['RETURNED'])
+PY
+)"
+expected="$(printf '%s\t%s\t%s\t%s\t1' "$((expected_workspaces+2))" "$expected_workspaces" "$expected_allocations" "$expected_movement_count")"
+[ "$counts" = "$expected" ]
+owner_count="$(mysql_ci --batch --skip-column-names "$schema" -e \
+  "SELECT COUNT(*) FROM membership m JOIN user_account u ON u.id=m.user_id JOIN organization o ON o.id=m.org_id WHERE u.username_key='additive-original-owner' AND m.role='OWNER' AND o.demo_plan_sha IS NOT NULL;")"
+[ "$owner_count" = "$expected_workspaces" ]
+# The independent reader must reject tampering and accept the repaired disposable fixture.
+if [ "$profile" = small ]; then
+  mysql_ci "$schema" -e "UPDATE organization SET display_name='Tampered Fictional Label' WHERE demo_reference_key='fictional-small-01';"
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-invalid-label.log" 2>&1; then
+    echo "Independent postflight accepted the wrong directory label" >&2
+    exit 1
+  fi
+  mysql_ci "$schema" -e "UPDATE organization SET display_name='Fictional Workspace 01' WHERE demo_reference_key='fictional-small-01';"
+  audit_id="$(mysql_ci --batch --skip-column-names "$schema" -e "
+    SELECT MIN(a.id) FROM audit_event a JOIN organization o ON o.id=a.org_id
+    WHERE o.demo_plan_sha IS NOT NULL AND a.action='C8_DEMO_REQUEST';")"
+  [ -n "$audit_id" ] && [ "$audit_id" != NULL ]
+  mysql_ci "$schema" -e "UPDATE audit_event SET action='C8_DEMO_TAMPER' WHERE id=$audit_id;"
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-invalid-audit.log" 2>&1; then
+    echo "Independent postflight accepted a tampered simulated audit action" >&2
+    exit 1
+  fi
+  mysql_ci "$schema" -e "UPDATE audit_event SET action='C8_DEMO_REQUEST' WHERE id=$audit_id;"
+  # Alter a timestamp without changing its month or action count. Only the
+  # exact plan-based audit comparator should detect this.
+  mysql_ci "$schema" -e "UPDATE audit_event SET created_at=DATE_ADD(created_at, INTERVAL 1 SECOND) WHERE id=$audit_id;"
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-invalid-timestamp.log" 2>&1; then
+    echo "Independent postflight accepted a tampered in-month historical timestamp" >&2
+    exit 1
+  fi
+  mysql_ci "$schema" -e "UPDATE audit_event SET created_at=DATE_SUB(created_at, INTERVAL 1 SECOND) WHERE id=$audit_id;"
+  allocation_id="$(mysql_ci --batch --skip-column-names "$schema" -e "
+    SELECT MIN(a.id) FROM allocation a JOIN organization o ON o.id=a.organization_id
+    WHERE o.demo_plan_sha IS NOT NULL;")"
+  [ -n "$allocation_id" ] && [ "$allocation_id" != NULL ]
+  mysql_ci "$schema" -e "UPDATE allocation SET quantity=quantity+1 WHERE id=$allocation_id;"
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-invalid-allocation.log" 2>&1; then
+    echo "Independent postflight accepted a tampered Allocation quantity" >&2
+    exit 1
+  fi
+  mysql_ci "$schema" -e "UPDATE allocation SET quantity=quantity-1 WHERE id=$allocation_id;"
+  original_baseline VERIFY
+  # Even when demo records are valid, changing the *original* organization
+  # must cause the separate private before/after HMAC manifest to refuse.
+  mysql_ci "$schema" -e "UPDATE organization SET display_name='Tampered Original Workspace' WHERE slug='isolated-original-workspace';"
+  if original_baseline VERIFY > "$RUNNER_TEMP/c8-baseline-original-tamper-refusal.log" 2>&1; then
+    echo "Original-data baseline accepted an altered original organization" >&2
+    exit 1
+  fi
+  grep -q 'C8_ORIGINAL_BASELINE_MISMATCH' "$RUNNER_TEMP/c8-baseline-original-tamper-refusal.log"
+  mysql_ci "$schema" -e "UPDATE organization SET display_name='Isolated Original Workspace' WHERE slug='isolated-original-workspace';"
+  original_baseline VERIFY
+  # A modified original password hash must be rejected independently of
+  # synthetic Project/Allocation consistency; restore exact bytes afterward.
+  mysql_ci "$schema" -e "UPDATE local_credential SET password_hash=CONCAT(password_hash,'x')
+    WHERE user_id=(SELECT id FROM user_account WHERE username_key='additive-original-owner');"
+  if original_baseline VERIFY > "$RUNNER_TEMP/c8-baseline-credential-tamper-refusal.log" 2>&1; then
+    echo "Original-data baseline accepted a changed original credential hash" >&2
+    exit 1
+  fi
+  grep -q 'C8_ORIGINAL_BASELINE_MISMATCH' "$RUNNER_TEMP/c8-baseline-credential-tamper-refusal.log"
+  mysql_ci "$schema" -e "UPDATE local_credential SET password_hash=LEFT(password_hash,CHAR_LENGTH(password_hash)-1)
+    WHERE user_id=(SELECT id FROM user_account WHERE username_key='additive-original-owner');"
+  original_baseline VERIFY
+  mysql_ci "$schema" -e "UPDATE organization SET display_name='Tampered Other Original' WHERE slug='isolated-other-original';"
+  if original_baseline VERIFY > "$RUNNER_TEMP/c8-other-org-tamper.log" 2>&1; then
+    echo "Original-data verifier accepted another original organization mutation" >&2
+    exit 1
+  fi
+  grep -q 'C8_ORIGINAL_BASELINE_MISMATCH' "$RUNNER_TEMP/c8-other-org-tamper.log"
+  mysql_ci "$schema" -e "UPDATE organization SET display_name='Other Original Org' WHERE slug='isolated-other-original';"
+  mysql_ci "$schema" -e "UPDATE user_account SET display_name='Tampered Other User' WHERE username_key='other-original-user';"
+  if original_baseline VERIFY > "$RUNNER_TEMP/c8-other-account-tamper.log" 2>&1; then
+    echo "Original-data verifier accepted another original account mutation" >&2
+    exit 1
+  fi
+  grep -q 'C8_ORIGINAL_BASELINE_MISMATCH' "$RUNNER_TEMP/c8-other-account-tamper.log"
+  mysql_ci "$schema" -e "UPDATE user_account SET display_name='Other Original User' WHERE username_key='other-original-user';"
+  original_baseline VERIFY
+  check_postflight
+
+  # C8 bounded negative reproductions: disposable small fixture only.
+  # Deliberately expect the verifier to reject a dirty migration-history row
+  # even when MAX(successful version) remains 7. Do not run Spring/Flyway while
+  # the deliberately failed metadata row exists.
+  c8_negative_gaps=0
+  mysql_ci "$schema" <<'SQL'
+INSERT INTO flyway_schema_history
+    (installed_rank,version,description,type,script,checksum,installed_by,execution_time,success)
+VALUES
+    (1000,'8','C8 isolated negative fixture','SQL','V8__c8_isolated_negative.sql',
+     NULL,'c8-ci-fixture',0,0);
+SQL
+  [ "$(mysql_ci --batch --skip-column-names "$schema" -e \
+    'SELECT MAX(CAST(version AS UNSIGNED)) FROM flyway_schema_history WHERE success=1;')" = "7" ]
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-dirty-migration-refusal.log" 2>&1; then
+    echo "C8_REPRO_FLYWAY_DIRTY_ACCEPTED: a failed Flyway row was ignored while MAX(success)=7." >&2
+    c8_negative_gaps=$((c8_negative_gaps+1))
+  elif ! grep -q 'C8_FLYWAY_HISTORY_INVALID' "$RUNNER_TEMP/c8-postflight-dirty-migration-refusal.log"; then
+    echo "C8_REPRO_FLYWAY_UNEXPECTED_REFUSAL: inspect the private CI diagnostic." >&2
+    exit 1
+  fi
+  mysql_ci "$schema" -e "DELETE FROM flyway_schema_history WHERE installed_rank=1000 AND script='V8__c8_isolated_negative.sql' AND success=0;"
+  check_postflight
+
+  # A recorded V7 must not mask a missing V6. Store the exact row inside this
+  # disposable schema only and restore it after the expected postflight denial.
+  mysql_ci "$schema" <<'SQL'
+CREATE TABLE c8_negative_flyway_row LIKE flyway_schema_history;
+INSERT INTO c8_negative_flyway_row SELECT * FROM flyway_schema_history WHERE version='6';
+DELETE FROM flyway_schema_history WHERE version='6';
+SQL
+  [ "$(mysql_ci --batch --skip-column-names "$schema" -e     'SELECT COUNT(*) FROM c8_negative_flyway_row;')" = "1" ]
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-missing-v6-refusal.log" 2>&1; then
+    echo "C8_REPRO_MISSING_V6_ACCEPTED: recorded V7 hid a missing V6 migration." >&2
+    c8_negative_gaps=$((c8_negative_gaps+1))
+  elif ! grep -q 'C8_FLYWAY_HISTORY_INVALID' "$RUNNER_TEMP/c8-postflight-missing-v6-refusal.log"; then
+    echo "C8_REPRO_MISSING_V6_UNEXPECTED_REFUSAL: inspect private CI diagnostic." >&2
+    exit 1
+  fi
+  mysql_ci "$schema" <<'SQL'
+INSERT INTO flyway_schema_history SELECT * FROM c8_negative_flyway_row;
+DROP TABLE c8_negative_flyway_row;
+SQL
+  check_postflight
+
+  # An intact version/script inventory with an altered CRC32 must also fail.
+  flyway_v6_checksum="$(mysql_ci --batch --skip-column-names "$schema" -e     "SELECT checksum FROM flyway_schema_history WHERE version='6' AND success=1;")"
+  [[ "$flyway_v6_checksum" =~ ^-?[0-9]+$ ]]
+  mysql_ci "$schema" -e "UPDATE flyway_schema_history SET checksum=CASE WHEN checksum=0 THEN 1 ELSE 0 END WHERE version='6';"
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-v6-checksum-refusal.log" 2>&1; then
+    echo "C8_REPRO_CHECKSUM_ACCEPTED: mismatched V6 checksum escaped postflight." >&2
+    c8_negative_gaps=$((c8_negative_gaps+1))
+  elif ! grep -q 'C8_FLYWAY_HISTORY_INVALID' "$RUNNER_TEMP/c8-postflight-v6-checksum-refusal.log"; then
+    echo "C8_REPRO_CHECKSUM_UNEXPECTED_REFUSAL: inspect private CI diagnostic." >&2
+    exit 1
+  fi
+  mysql_ci "$schema" -e "UPDATE flyway_schema_history SET checksum=$flyway_v6_checksum WHERE version='6';"
+  check_postflight
+
+  # Two schema-valid ADJUST movements for one fictional Resource, +1 then -1.
+  # All resource, hold and issued sums remain unchanged; no historical audit
+  # is added. This tests whether exact synthetic stock history is reconciled.
+  mysql_ci "$schema" <<'SQL'
+INSERT INTO stock_movement
+  (public_id,organization_id,resource_id,allocation_id,actor_membership_id,
+   operation_public_id,request_fingerprint,kind,quantity,delta_total,delta_issued,occurred_at)
+SELECT UUID_TO_BIN('00000000-0000-4000-8000-00000000c811',0),
+       r.organization_id,r.id,NULL,m.id,
+       UUID_TO_BIN('00000000-0000-4000-8000-00000000c821',0),
+       UNHEX(SHA2('c8-fixture-adjust-positive',256)),'ADJUST',1,1,0,'2026-11-19 00:00:01'
+FROM resource r JOIN organization o ON o.id=r.organization_id
+JOIN membership m ON m.org_id=o.id
+WHERE o.demo_reference_key='fictional-small-01' AND m.role='OWNER'
+ORDER BY r.id,m.id LIMIT 1;
+INSERT INTO stock_movement
+  (public_id,organization_id,resource_id,allocation_id,actor_membership_id,
+   operation_public_id,request_fingerprint,kind,quantity,delta_total,delta_issued,occurred_at)
+SELECT UUID_TO_BIN('00000000-0000-4000-8000-00000000c812',0),
+       r.organization_id,r.id,NULL,m.id,
+       UUID_TO_BIN('00000000-0000-4000-8000-00000000c822',0),
+       UNHEX(SHA2('c8-fixture-adjust-negative',256)),'ADJUST',1,-1,0,'2026-11-19 00:00:02'
+FROM resource r JOIN organization o ON o.id=r.organization_id
+JOIN membership m ON m.org_id=o.id
+WHERE o.demo_reference_key='fictional-small-01' AND m.role='OWNER'
+ORDER BY r.id,m.id LIMIT 1;
+SQL
+  [ "$(mysql_ci --batch --skip-column-names "$schema" -e \
+    "SELECT COUNT(*) FROM stock_movement WHERE operation_public_id IN
+      (UUID_TO_BIN('00000000-0000-4000-8000-00000000c821',0),
+       UUID_TO_BIN('00000000-0000-4000-8000-00000000c822',0));")" = "2" ]
+  [ "$(mysql_ci --batch --skip-column-names "$schema" -e \
+    "SELECT COALESCE(SUM(delta_total),99) FROM stock_movement WHERE operation_public_id IN
+      (UUID_TO_BIN('00000000-0000-4000-8000-00000000c821',0),
+       UUID_TO_BIN('00000000-0000-4000-8000-00000000c822',0));")" = "0" ]
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-compensating-stock-refusal.log" 2>&1; then
+    echo "C8_REPRO_EXTRA_STOCK_MOVEMENTS_ACCEPTED: two compensating, schema-valid ADJUST rows escaped postflight." >&2
+    c8_negative_gaps=$((c8_negative_gaps+1))
+  elif ! grep -q 'C8_STOCK_MOVEMENT_HISTORY_MISMATCH' "$RUNNER_TEMP/c8-postflight-compensating-stock-refusal.log"; then
+    echo "C8_REPRO_STOCK_UNEXPECTED_REFUSAL: inspect the private CI diagnostic." >&2
+    exit 1
+  fi
+  mysql_ci "$schema" -e "DELETE FROM stock_movement WHERE kind='ADJUST' AND operation_public_id IN
+      (UUID_TO_BIN('00000000-0000-4000-8000-00000000c821',0),
+       UUID_TO_BIN('00000000-0000-4000-8000-00000000c822',0));"
+  original_baseline VERIFY
+  check_postflight
+
+  # C8 historical row-identity probes. The original verifier already checks
+  # movement counts by kind and net conservation; each change below preserves
+  # both while intentionally corrupting exactly one persisted synthetic row.
+  # The privileged fixture connection is disposable; the reader remains SELECT-only.
+  initial_id="$(mysql_ci --batch --skip-column-names "$schema" -e "
+    SELECT MIN(m.id) FROM stock_movement m JOIN organization o ON o.id=m.organization_id
+    WHERE o.demo_reference_key='fictional-small-01' AND m.kind='INITIAL';")"
+  [ -n "$initial_id" ] && [ "$initial_id" != "NULL" ]
+  initial_operation="$(mysql_ci --batch --skip-column-names "$schema" \
+    -e "SELECT HEX(operation_public_id) FROM stock_movement WHERE id=$initial_id;")"
+  [[ "$initial_operation" =~ ^[0-9A-F]{32}$ ]]
+  mysql_ci "$schema" -e "
+    UPDATE stock_movement SET operation_public_id=UUID_TO_BIN('00000000-0000-4000-8000-00000000c831',0)
+    WHERE id=$initial_id;"
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-movement-operation-refusal.log" 2>&1; then
+    echo "C8_REPRO_MOVEMENT_OPERATION_ACCEPTED: stock movement UUID differs from approved replay." >&2
+    c8_negative_gaps=$((c8_negative_gaps+1))
+  elif ! grep -q 'C8_STOCK_MOVEMENT_HISTORY_MISMATCH' "$RUNNER_TEMP/c8-postflight-movement-operation-refusal.log"; then
+    echo "C8_REPRO_MOVEMENT_OPERATION_UNEXPECTED_REFUSAL: inspect private CI diagnostic." >&2
+    exit 1
+  fi
+  mysql_ci "$schema" -e "UPDATE stock_movement SET operation_public_id=UNHEX('$initial_operation') WHERE id=$initial_id;"
+  check_postflight
+
+  mysql_ci "$schema" -e "UPDATE stock_movement SET occurred_at=DATE_ADD(occurred_at,INTERVAL 1 SECOND) WHERE id=$initial_id;"
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-movement-time-refusal.log" 2>&1; then
+    echo "C8_REPRO_MOVEMENT_TIME_ACCEPTED: stock movement UTC timestamp differs from approved replay." >&2
+    c8_negative_gaps=$((c8_negative_gaps+1))
+  elif ! grep -q 'C8_STOCK_MOVEMENT_HISTORY_MISMATCH' "$RUNNER_TEMP/c8-postflight-movement-time-refusal.log"; then
+    echo "C8_REPRO_MOVEMENT_TIME_UNEXPECTED_REFUSAL: inspect private CI diagnostic." >&2
+    exit 1
+  fi
+  mysql_ci "$schema" -e "UPDATE stock_movement SET occurred_at=DATE_SUB(occurred_at,INTERVAL 1 SECOND) WHERE id=$initial_id;"
+  check_postflight
+
+  original_actor="$(mysql_ci --batch --skip-column-names "$schema" \
+    -e "SELECT actor_membership_id FROM stock_movement WHERE id=$initial_id;")"
+  alternate_actor="$(mysql_ci --batch --skip-column-names "$schema" -e "
+    SELECT MIN(mm.id) FROM membership mm JOIN stock_movement sm ON sm.organization_id=mm.org_id
+    WHERE sm.id=$initial_id AND mm.id<>$original_actor;")"
+  [ -n "$alternate_actor" ] && [ "$alternate_actor" != "NULL" ]
+  mysql_ci "$schema" -e "UPDATE stock_movement SET actor_membership_id=$alternate_actor WHERE id=$initial_id;"
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-movement-actor-refusal.log" 2>&1; then
+    echo "C8_REPRO_MOVEMENT_ACTOR_ACCEPTED: actor changed to another valid same-org membership." >&2
+    c8_negative_gaps=$((c8_negative_gaps+1))
+  elif ! grep -q 'C8_STOCK_MOVEMENT_HISTORY_MISMATCH' "$RUNNER_TEMP/c8-postflight-movement-actor-refusal.log"; then
+    echo "C8_REPRO_MOVEMENT_ACTOR_UNEXPECTED_REFUSAL: inspect private CI diagnostic." >&2
+    exit 1
+  fi
+  mysql_ci "$schema" -e "UPDATE stock_movement SET actor_membership_id=$original_actor WHERE id=$initial_id;"
+  check_postflight
+
+  original_fingerprint="$(mysql_ci --batch --skip-column-names "$schema" \
+    -e "SELECT HEX(request_fingerprint) FROM stock_movement WHERE id=$initial_id;")"
+  [[ "$original_fingerprint" =~ ^[0-9A-F]{64}$ ]]
+  mysql_ci "$schema" -e "UPDATE stock_movement SET request_fingerprint=UNHEX(SHA2('c8-negative-movement-fingerprint',256)) WHERE id=$initial_id;"
+  if check_postflight > "$RUNNER_TEMP/c8-postflight-movement-fingerprint-refusal.log" 2>&1; then
+    echo "C8_REPRO_MOVEMENT_FINGERPRINT_ACCEPTED: recorded request fingerprint differs from replay." >&2
+    c8_negative_gaps=$((c8_negative_gaps+1))
+  elif ! grep -q 'C8_STOCK_MOVEMENT_HISTORY_MISMATCH' "$RUNNER_TEMP/c8-postflight-movement-fingerprint-refusal.log"; then
+    echo "C8_REPRO_MOVEMENT_FINGERPRINT_UNEXPECTED_REFUSAL: inspect private CI diagnostic." >&2
+    exit 1
+  fi
+  mysql_ci "$schema" -e "UPDATE stock_movement SET request_fingerprint=UNHEX('$original_fingerprint') WHERE id=$initial_id;"
+  original_baseline VERIFY
+  check_postflight
+
+  if [ "$c8_negative_gaps" -ne 0 ]; then
+    echo "C8_POSTFLIGHT_NEGATIVE_REPRODUCTIONS_FAILED: $c8_negative_gaps expected verifier refusals were absent; no production or shared database was involved." >&2
+    exit 1
+  fi
+fi
+# Full source-derived SQL conservation checks across every imported tenant.
+expected_events="$(python3 - "$plan" <<'PY'
+import json,sys
+with open(sys.argv[1],encoding='utf-8') as stream: print(json.load(stream)['counts']['events'])
+PY
+)"
+actual_events="$(mysql_ci --batch --skip-column-names "$schema" -e "
+SELECT COUNT(*) FROM audit_event a JOIN organization o ON o.id=a.org_id
+WHERE o.demo_plan_sha IS NOT NULL AND a.action LIKE 'C8_DEMO_%';")"
+[ "$actual_events" = "$expected_events" ]
+for state in PENDING APPROVED ISSUED RETURNED CONSUMED CANCELLED; do
+  state_expected="$(python3 - "$plan" "$state" <<'PY'
+import json,sys
+with open(sys.argv[1],encoding='utf-8') as stream: print(json.load(stream)['final_states'][sys.argv[2]])
+PY
+)"
+  state_actual="$(mysql_ci --batch --skip-column-names "$schema" -e "
+SELECT COUNT(*) FROM allocation a JOIN organization o ON o.id=a.organization_id
+WHERE o.demo_plan_sha IS NOT NULL AND a.status='$state';")"
+  [ "$state_actual" = "$state_expected" ]
+done
+sms_count="$(mysql_ci --batch --skip-column-names "$schema" -e "
+SELECT COUNT(*) FROM allocation a JOIN organization o ON o.id=a.organization_id
+WHERE o.demo_plan_sha IS NOT NULL AND (a.sms_consent OR a.phone_ciphertext IS NOT NULL);")"
+[ "$sms_count" = "0" ]
+invalid_stock="$(mysql_ci --batch --skip-column-names "$schema" <<'SQL'
+SELECT COUNT(*) FROM resource r
+JOIN organization o ON o.id=r.organization_id AND o.demo_plan_sha IS NOT NULL
+LEFT JOIN (SELECT organization_id,resource_id,SUM(delta_total) total,SUM(delta_issued) issued
+  FROM stock_movement GROUP BY organization_id,resource_id) m
+  ON m.organization_id=r.organization_id AND m.resource_id=r.id
+LEFT JOIN (SELECT a.organization_id,a.resource_id,
+    SUM(CASE WHEN a.status='ISSUED' THEN a.quantity ELSE 0 END) issued,
+    SUM(CASE WHEN a.status='APPROVED' AND p.end_at>'2026-11-19 00:00:00'
+      THEN a.quantity ELSE 0 END) holds
+  FROM allocation a JOIN resource_requirement q ON q.id=a.requirement_id AND q.organization_id=a.organization_id
+  JOIN project p ON p.id=q.project_id AND p.organization_id=a.organization_id
+  GROUP BY a.organization_id,a.resource_id) a
+  ON a.organization_id=r.organization_id AND a.resource_id=r.id
+WHERE r.total_quantity<>COALESCE(m.total,0) OR COALESCE(m.issued,0)<>COALESCE(a.issued,0)
+  OR COALESCE(a.issued,0)+COALESCE(a.holds,0)>r.total_quantity;
+SQL
+)"
+[ "$invalid_stock" = "0" ]
+invalid_requirement="$(mysql_ci --batch --skip-column-names "$schema" <<'SQL'
+SELECT COUNT(*) FROM resource_requirement q
+JOIN organization o ON o.id=q.organization_id AND o.demo_plan_sha IS NOT NULL
+JOIN (SELECT a.organization_id,a.requirement_id,SUM(a.quantity) covered
+    FROM allocation a
+    JOIN resource_requirement rr ON rr.id=a.requirement_id AND rr.organization_id=a.organization_id
+    JOIN project p ON p.id=rr.project_id AND p.organization_id=a.organization_id
+    WHERE a.status IN ('ISSUED','RETURNED','CONSUMED')
+      OR (a.status='APPROVED' AND p.end_at>'2026-11-19 00:00:00')
+    GROUP BY a.organization_id,a.requirement_id) c
+  ON c.organization_id=q.organization_id AND c.requirement_id=q.id
+WHERE c.covered>q.quantity;
+SQL
+)"
+[ "$invalid_requirement" = "0" ]
+[ "$(original_domain_snapshot)" = "$original_domain_sha_before" ]
+# Fictional historical events must never be attributed to the real current owner.
+simulated_history="$(mysql_ci --batch --skip-column-names "$schema" -e "SELECT COUNT(*) FROM audit_event a JOIN user_account u ON u.id=a.actor_user_id WHERE u.username_key='c8-demo-historical-actor' AND a.action='C8_DEMO_REQUEST';")"
+[ "$simulated_history" = "$expected_allocations" ]
+real_owner_history="$(mysql_ci --batch --skip-column-names "$schema" -e "SELECT COUNT(*) FROM audit_event a JOIN user_account u ON u.id=a.actor_user_id WHERE u.username_key='additive-original-owner' AND a.action LIKE 'C8_DEMO_%';")"
+[ "$real_owner_history" = "0" ]
+[ "$(snapshot_original)" = "$original_sha_before" ]
+if EXT_C8_PROOF_SCHEMA="$schema" EXT_C8_PROOF_CONFIRM="TEST ADDITIVE $schema" \
+  EXT_C8_PROOF_PORT=3306 EXT_C8_DEMO_PLAN="$plan" EXT_C8_DEMO_PLAN_SHA256="$digest" \
+  EXT_C8_PROOF_ORIGINAL_ORG_ID="$original_org" EXT_C8_PROOF_OWNER_ACCOUNT_ID="$owner_id" \
+  EXT_DB_USER="$runtime_user" EXT_DB_PASSWORD="$runtime_password" \
+  java -Xmx768m -jar extended/backend/target/extended-backend-0.1.0-SNAPSHOT.jar \
+  --c8-additive-demo-isolated-proof > "$RUNNER_TEMP/c8-additive-repeat-refusal.log" 2>&1; then
+  echo "Repeated additive demo import unexpectedly succeeded" >&2
+  exit 1
+fi
+[ "$(mysql_ci --batch --skip-column-names "$schema" -e 'SELECT COUNT(*) FROM allocation;')" = "$expected_allocations" ]
+[ "$(snapshot_original)" = "$original_sha_before" ]
+[ "$(original_domain_snapshot)" = "$original_domain_sha_before" ]
+# C9 PREPARATION ONLY: measure on the independently postflight-reconciled
+# disposable intermediate fixture. No new schema or speculative index.
+# Never equate this small intermediate result with accepted full-96 metrics.
+if [ "$profile" = intermediate ]; then
+  if C9_DB_SCHEMA="$schema"_unsafe C9_READONLY_USER="$verifier_user" \
+      C9_READONLY_PASSWORD="$verifier_password" \
+      python3 scripts/measure-c9-isolated-queries.py \
+        > "$RUNNER_TEMP/c9-schema-negative.log" 2>&1; then
+    echo "C9 measurement unexpectedly allowed a non-fixture schema" >&2
+    exit 1
+  fi
+  grep -q 'C9_DISPOSABLE_SCHEMA_REQUIRED' "$RUNNER_TEMP/c9-schema-negative.log"
+  if C9_DB_SCHEMA="$schema" C9_READONLY_USER="$runtime_user" \
+      C9_READONLY_PASSWORD="$runtime_password" \
+      python3 scripts/measure-c9-isolated-queries.py \
+        > "$RUNNER_TEMP/c9-writer-negative.log" 2>&1; then
+    echo "C9 measurement unexpectedly allowed a write-capable identity" >&2
+    exit 1
+  fi
+  grep -q 'C9_READ_ONLY_ROLE_REQUIRED' "$RUNNER_TEMP/c9-writer-negative.log"
+  C9_DB_SCHEMA="$schema" C9_READONLY_USER="$verifier_user" \
+    C9_READONLY_PASSWORD="$verifier_password" \
+    python3 scripts/measure-c9-isolated-queries.py
+  # C9 SQL-backup capacity and separate-schema recovery on this same synthetic
+  # 8-org fixture. The privileged dump/restore can touch ONLY a new fixed CI
+  # schema; the restored source is cross-checked using SELECT-only C8 postflight.
+  bash -n scripts/verify-c9-isolated-backup-capacity.sh
+  if C9_DB_SCHEMA="$schema"_wrong \
+      bash scripts/verify-c9-isolated-backup-capacity.sh \
+        > "$RUNNER_TEMP/c9-backup-wrong-schema-refusal.log" 2>&1; then
+    echo "C9 backup probe unexpectedly accepted a non-fixture schema" >&2
+    exit 1
+  fi
+  grep -q C9_BACKUP_DISPOSABLE_SCHEMA_REQUIRED "$RUNNER_TEMP/c9-backup-wrong-schema-refusal.log"
+  C9_DB_SCHEMA="$schema" C9_PLAN_PATH="$plan" C9_PLAN_SHA="$digest" \
+    C9_ORIGINAL_ORG_ID="$original_org" C9_OWNER_ID="$owner_id" \
+    C9_READONLY_USER="$verifier_user" C9_READONLY_PASSWORD="$verifier_password" \
+    bash scripts/verify-c9-isolated-backup-capacity.sh
+  # C9 Stage1B: separate fresh MySQL 8 process/data directory in Docker's
+  # none network with no published ports; restores fiction into NEW instance.
+  bash -n scripts/verify-c9-cross-server-restore.sh
+  if C9_DB_SCHEMA="$schema"_wrong bash scripts/verify-c9-cross-server-restore.sh \
+       > "$RUNNER_TEMP/c9-cross-server-wrong-schema-refusal.log" 2>&1; then
+    echo "C9 independent-server recovery accepted non-fixture source" >&2
+    exit 1
+  fi
+  grep -q C9_CROSS_SERVER_DISPOSABLE_SCHEMA_REQUIRED \
+    "$RUNNER_TEMP/c9-cross-server-wrong-schema-refusal.log"
+  C9_DB_SCHEMA="$schema" C9_PLAN_PATH="$plan" C9_PLAN_SHA="$digest" \
+    bash scripts/verify-c9-cross-server-restore.sh
+  original_baseline VERIFY
+  check_postflight
+  # Stage 1D runs on independent disposable clones after Stage 1C is cleaned up.
+  bash -n scripts/verify-c9-recovered-application.sh
+  C9_DB_SCHEMA="$schema" C9_PLAN_PATH="$plan" C9_PLAN_SHA="$digest" \
+    C9_RUNTIME_ORG="$original_org" C9_RUNTIME_OWNER_PASSWORD="$owner_password" \
+    bash scripts/verify-c9-recovered-application.sh
+  original_baseline VERIFY
+  check_postflight
+fi
+echo "ISOLATED_ADDITIVE_PROOF_PASSED: original owner/domain unchanged; $expected_workspaces workspaces, $expected_allocations allocations, $expected_events synthetic events; stock/requirements/states clean, repeat refused; no hosted DB used."

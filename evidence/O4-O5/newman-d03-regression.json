@@ -1,0 +1,3128 @@
+{
+  "collection": {
+    "_": {
+      "postman_id": "b78f22d8-a993-4dbe-bcbe-cbfc391bbcf4"
+    },
+    "item": [
+      {
+        "id": "3b529ec5-6d2e-4347-810e-eca291243b35",
+        "name": "1. Create Department update fixture",
+        "request": {
+          "url": {
+            "path": [
+              "departments"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"O3 Source Department {{runTag}}\"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "prerequest",
+            "script": {
+              "id": "c7a1f718-3100-436a-8bab-b103fe1c7b5e",
+              "type": "text/javascript",
+              "exec": [
+                "pm.collectionVariables.set('runTag', Date.now().toString());"
+              ],
+              "_lastExecutionId": "37460488-171e-47bf-a896-30abd5d5b78f"
+            }
+          },
+          {
+            "listen": "test",
+            "script": {
+              "id": "49d264a4-6e33-4bdb-a29e-3b8cc5831d1b",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Create fixture returns 201', function () { pm.response.to.have.status(201); });",
+                "var body = pm.response.json();",
+                "pm.test('Fixture has a generated positive ID', function () { pm.expect(body.id).to.be.above(0); });",
+                "pm.collectionVariables.set('o3DepartmentId', body.id);"
+              ],
+              "_lastExecutionId": "5fc848c2-9958-4c15-ac9f-c9392d21ade5"
+            }
+          }
+        ]
+      },
+      {
+        "id": "0b92b4a0-fe6e-497e-b7ec-9f1f57fd4e3c",
+        "name": "2. Create duplicate-name fixture",
+        "request": {
+          "url": {
+            "path": [
+              "departments"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"O3 Duplicate Department {{runTag}}\"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "c5965a70-adc8-4263-a05e-fdf9958bc99c",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Create duplicate fixture returns 201', function () { pm.response.to.have.status(201); });",
+                "var body = pm.response.json();",
+                "pm.collectionVariables.set('o3DuplicateDepartmentId', body.id);"
+              ],
+              "_lastExecutionId": "521d613d-26bf-4ef9-9067-61e46abd4ce3"
+            }
+          }
+        ]
+      },
+      {
+        "id": "74dbd19a-fd21-4d12-8edd-7d262e5e436e",
+        "name": "3. Rename and normalize display name",
+        "request": {
+          "url": {
+            "path": [
+              "departments",
+              "{{o3DepartmentId}}",
+              "update"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"  O3   Updated Department {{runTag}}  \"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "25c4c0eb-d6b0-47e7-964b-195ad55ac1ef",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Rename returns 200', function () { pm.response.to.have.status(200); });",
+                "var body = pm.response.json();",
+                "pm.test('Rename preserves ID and normalizes whitespace', function () { pm.expect(body.id).to.eql(Number(pm.collectionVariables.get('o3DepartmentId'))); pm.expect(body.name).to.eql('O3 Updated Department ' + pm.collectionVariables.get('runTag')); });"
+              ],
+              "_lastExecutionId": "c8184c8b-a4ff-4c17-a675-f4b5bbdca436"
+            }
+          }
+        ]
+      },
+      {
+        "id": "274ed37e-d0c1-407a-a02b-1e8f26fa9507",
+        "name": "4. Allow case-only rename of the same normalized name",
+        "request": {
+          "url": {
+            "path": [
+              "departments",
+              "{{o3DepartmentId}}",
+              "update"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"o3 updated department {{runTag}}\"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "91ca02f9-8dea-4354-ad4c-c282c393e7c6",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Case-only rename returns 200', function () { pm.response.to.have.status(200); });",
+                "var body = pm.response.json();",
+                "pm.test('Case-only rename keeps the same department', function () { pm.expect(body.id).to.eql(Number(pm.collectionVariables.get('o3DepartmentId'))); pm.expect(body.name).to.eql(('O3 Updated Department ' + pm.collectionVariables.get('runTag')).toLowerCase()); });"
+              ],
+              "_lastExecutionId": "4b9e138f-2c68-4182-9891-d7a4f62e7836"
+            }
+          }
+        ]
+      },
+      {
+        "id": "c79c193a-bf86-437d-9658-e64562f6bc21",
+        "name": "5. Reject normalized duplicate name",
+        "request": {
+          "url": {
+            "path": [
+              "departments",
+              "{{o3DepartmentId}}",
+              "update"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"  O3   Duplicate Department {{runTag}}  \"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "a54d4ec9-5b27-4728-a174-d883e64cfc9a",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Duplicate rename returns 409', function () { pm.response.to.have.status(409); });",
+                "pm.test('Duplicate error has the documented code', function () { pm.expect(pm.response.json().code).to.eql('DUPLICATE_NAME'); });"
+              ],
+              "_lastExecutionId": "852dc3c4-4f62-4ecb-b67f-430ad3e34bbc"
+            }
+          }
+        ]
+      },
+      {
+        "id": "b1c6fe98-8cb0-4ead-be84-b3f7e2896d30",
+        "name": "6. Reject unknown Department ID",
+        "request": {
+          "url": {
+            "path": [
+              "departments",
+              "9223372036854775807",
+              "update"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"No Such Department\"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "6d8429b4-1b35-477f-9dfe-64ec271c195f",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Missing target returns 404', function () { pm.response.to.have.status(404); });",
+                "pm.test('Missing target has NOT_FOUND code', function () { pm.expect(pm.response.json().code).to.eql('NOT_FOUND'); });"
+              ],
+              "_lastExecutionId": "f7a1db5b-64a2-4de3-91d4-8843844d2082"
+            }
+          }
+        ]
+      },
+      {
+        "id": "f7ef7c6e-4d57-4e40-993e-8be5683f4c86",
+        "name": "7. Reject blank Department name",
+        "request": {
+          "url": {
+            "path": [
+              "departments",
+              "{{o3DepartmentId}}",
+              "update"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"   \"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "2e00dc0a-ad1d-4b50-ad48-9f9028102e0d",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Blank name returns JSON 400', function () { pm.response.to.have.status(400); });",
+                "pm.test('Blank name has VALIDATION_FAILED code', function () { pm.expect(pm.response.json().code).to.eql('VALIDATION_FAILED'); });"
+              ],
+              "_lastExecutionId": "92eb98a1-8d32-4eda-8cd9-6b97a57f3468"
+            }
+          }
+        ]
+      },
+      {
+        "id": "66c3bbfb-9921-4a61-a69a-cc063f50bb3b",
+        "name": "8. Reject nonpositive Department ID",
+        "request": {
+          "url": {
+            "path": [
+              "departments",
+              "0",
+              "update"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"No Such Department\"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "33fe5d9d-1dd0-4ac2-8248-70e7ee657ca6",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Nonpositive ID returns JSON 400', function () { pm.response.to.have.status(400); });",
+                "pm.test('Nonpositive ID has VALIDATION_FAILED code', function () { pm.expect(pm.response.json().code).to.eql('VALIDATION_FAILED'); });"
+              ],
+              "_lastExecutionId": "f89dcac0-b133-48d1-83c1-30e9324300db"
+            }
+          }
+        ]
+      },
+      {
+        "id": "c7541b48-1bd1-4b58-a321-b028c48a3bc9",
+        "name": "9. Delete rename fixture",
+        "request": {
+          "url": {
+            "path": [
+              "departments",
+              "{{o3DepartmentId}}",
+              "delete"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "POST"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "8d617488-bab2-41bd-8d68-65dde1aa5913",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Updated fixture deletes successfully', function () { pm.response.to.have.status(200); });"
+              ],
+              "_lastExecutionId": "2d76c619-923f-484f-8e52-64439a473ace"
+            }
+          }
+        ]
+      },
+      {
+        "id": "9fc21e5a-e71f-4134-b5a7-f6f71fd6faca",
+        "name": "10. Delete duplicate fixture",
+        "request": {
+          "url": {
+            "path": [
+              "departments",
+              "{{o3DuplicateDepartmentId}}",
+              "delete"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "POST"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "accc5e4b-a50f-4ae8-a0d7-209d84fe74f7",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Duplicate fixture deletes successfully', function () { pm.response.to.have.status(200); });"
+              ],
+              "_lastExecutionId": "90bf7158-31cc-462e-aabe-bffea738e21d"
+            }
+          }
+        ]
+      },
+      {
+        "id": "96b68d74-778f-405d-b6f1-abcbb3409164",
+        "name": "11. Reject malformed Department ID",
+        "request": {
+          "url": {
+            "path": [
+              "departments",
+              "not-a-number",
+              "update"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"No Such Department\"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "496f6805-d13f-43d1-bc32-8596e44b0c1c",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Malformed ID returns JSON 400', function () { pm.response.to.have.status(400); });",
+                "pm.test('Malformed ID has VALIDATION_FAILED code', function () { pm.expect(pm.response.json().code).to.eql('VALIDATION_FAILED'); });"
+              ],
+              "_lastExecutionId": "2dea04fa-471b-442f-9403-7d134fca679d"
+            }
+          }
+        ]
+      }
+    ],
+    "event": [],
+    "variable": [],
+    "info": {
+      "_postman_id": "b78f22d8-a993-4dbe-bcbe-cbfc391bbcf4",
+      "name": "OrgResource D03 Department Update",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+      "description": {
+        "content": "Focused runtime verification for POST /api/departments/{id}/update. Uses fictional, uniquely tagged records and removes them at the end.",
+        "type": "text/plain"
+      }
+    }
+  },
+  "environment": {
+    "id": "6fc56b59-3950-47a6-9a8f-2ee05a20b68e",
+    "values": [
+      {
+        "type": "any",
+        "value": "http://127.0.0.1:8080/api",
+        "key": "baseUrl"
+      }
+    ]
+  },
+  "globals": {
+    "id": "446d4855-9fa2-47df-9977-2b259f46ab9a",
+    "values": []
+  },
+  "run": {
+    "stats": {
+      "iterations": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "items": {
+        "total": 11,
+        "pending": 0,
+        "failed": 0
+      },
+      "scripts": {
+        "total": 12,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequests": {
+        "total": 11,
+        "pending": 0,
+        "failed": 0
+      },
+      "requests": {
+        "total": 11,
+        "pending": 0,
+        "failed": 0
+      },
+      "tests": {
+        "total": 11,
+        "pending": 0,
+        "failed": 0
+      },
+      "assertions": {
+        "total": 19,
+        "pending": 0,
+        "failed": 0
+      },
+      "testScripts": {
+        "total": 11,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequestScripts": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      }
+    },
+    "timings": {
+      "responseAverage": 14.727272727272727,
+      "responseMin": 6,
+      "responseMax": 52,
+      "responseSd": 12.373659039125368,
+      "dnsAverage": 0,
+      "dnsMin": 0,
+      "dnsMax": 0,
+      "dnsSd": 0,
+      "firstByteAverage": 0,
+      "firstByteMin": 0,
+      "firstByteMax": 0,
+      "firstByteSd": 0,
+      "started": 1794679393181,
+      "completed": 1794679394283
+    },
+    "executions": [
+      {
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 11,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "eafdc500-81bf-4735-9445-07c90ba131bf",
+          "httpRequestId": "e73bdc3a-04c2-4ed0-a392-42666a38cef0"
+        },
+        "item": {
+          "id": "3b529ec5-6d2e-4347-810e-eca291243b35",
+          "name": "1. Create Department update fixture",
+          "request": {
+            "url": {
+              "path": [
+                "departments"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"O3 Source Department {{runTag}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "c7a1f718-3100-436a-8bab-b103fe1c7b5e",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('runTag', Date.now().toString());"
+                ],
+                "_lastExecutionId": "37460488-171e-47bf-a896-30abd5d5b78f"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "id": "49d264a4-6e33-4bdb-a29e-3b8cc5831d1b",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Create fixture returns 201', function () { pm.response.to.have.status(201); });",
+                  "var body = pm.response.json();",
+                  "pm.test('Fixture has a generated positive ID', function () { pm.expect(body.id).to.be.above(0); });",
+                  "pm.collectionVariables.set('o3DepartmentId', body.id);"
+                ],
+                "_lastExecutionId": "5fc848c2-9958-4c15-ac9f-c9392d21ade5"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "departments"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "1737ce6f-9d19-4af0-a10c-30b567f621dc",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "50",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"O3 Source Department 1794679393202\"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "65fa2792-403c-4c34-9765-bb4d8a27ca0c",
+          "status": "Created",
+          "code": 201,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "54"
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 14 Nov 2026 18:03:13 GMT"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              49,
+              52,
+              55,
+              44,
+              34,
+              110,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              79,
+              51,
+              32,
+              83,
+              111,
+              117,
+              114,
+              99,
+              101,
+              32,
+              68,
+              101,
+              112,
+              97,
+              114,
+              116,
+              109,
+              101,
+              110,
+              116,
+              32,
+              49,
+              55,
+              57,
+              52,
+              54,
+              55,
+              57,
+              51,
+              57,
+              51,
+              50,
+              48,
+              50,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 52,
+          "responseSize": 54
+        },
+        "id": "3b529ec5-6d2e-4347-810e-eca291243b35",
+        "assertions": [
+          {
+            "assertion": "Create fixture returns 201",
+            "skipped": false
+          },
+          {
+            "assertion": "Fixture has a generated positive ID",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "cfb71d19-a66f-4a3b-9a8a-48bb6eac2dbd",
+          "length": 11,
+          "cycles": 1,
+          "position": 1,
+          "iteration": 0,
+          "httpRequestId": "e2e872dd-e2e2-4b20-9cde-478641d1c3ad"
+        },
+        "item": {
+          "id": "0b92b4a0-fe6e-497e-b7ec-9f1f57fd4e3c",
+          "name": "2. Create duplicate-name fixture",
+          "request": {
+            "url": {
+              "path": [
+                "departments"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"O3 Duplicate Department {{runTag}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "c5965a70-adc8-4263-a05e-fdf9958bc99c",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Create duplicate fixture returns 201', function () { pm.response.to.have.status(201); });",
+                  "var body = pm.response.json();",
+                  "pm.collectionVariables.set('o3DuplicateDepartmentId', body.id);"
+                ],
+                "_lastExecutionId": "521d613d-26bf-4ef9-9067-61e46abd4ce3"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "departments"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "ba000c09-a63f-49c8-b559-71cbed867b93",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "53",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"O3 Duplicate Department 1794679393202\"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "ac42c44f-6c47-44d6-9992-e430b094dc46",
+          "status": "Created",
+          "code": 201,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "57"
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 14 Nov 2026 18:03:13 GMT"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              49,
+              52,
+              56,
+              44,
+              34,
+              110,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              79,
+              51,
+              32,
+              68,
+              117,
+              112,
+              108,
+              105,
+              99,
+              97,
+              116,
+              101,
+              32,
+              68,
+              101,
+              112,
+              97,
+              114,
+              116,
+              109,
+              101,
+              110,
+              116,
+              32,
+              49,
+              55,
+              57,
+              52,
+              54,
+              55,
+              57,
+              51,
+              57,
+              51,
+              50,
+              48,
+              50,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 15,
+          "responseSize": 57
+        },
+        "id": "0b92b4a0-fe6e-497e-b7ec-9f1f57fd4e3c",
+        "assertions": [
+          {
+            "assertion": "Create duplicate fixture returns 201",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "370cbe64-9f64-4fcd-96e6-acff135a00f4",
+          "length": 11,
+          "cycles": 1,
+          "position": 2,
+          "iteration": 0,
+          "httpRequestId": "3b1c5c0e-44e3-4cd2-b3dc-b16f9d7e5718"
+        },
+        "item": {
+          "id": "74dbd19a-fd21-4d12-8edd-7d262e5e436e",
+          "name": "3. Rename and normalize display name",
+          "request": {
+            "url": {
+              "path": [
+                "departments",
+                "{{o3DepartmentId}}",
+                "update"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"  O3   Updated Department {{runTag}}  \"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "25c4c0eb-d6b0-47e7-964b-195ad55ac1ef",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Rename returns 200', function () { pm.response.to.have.status(200); });",
+                  "var body = pm.response.json();",
+                  "pm.test('Rename preserves ID and normalizes whitespace', function () { pm.expect(body.id).to.eql(Number(pm.collectionVariables.get('o3DepartmentId'))); pm.expect(body.name).to.eql('O3 Updated Department ' + pm.collectionVariables.get('runTag')); });"
+                ],
+                "_lastExecutionId": "c8184c8b-a4ff-4c17-a675-f4b5bbdca436"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "departments",
+              "147",
+              "update"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "05b6050a-f6e0-4146-9ed3-e59bda16ac75",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "57",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"  O3   Updated Department 1794679393202  \"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "8fd6e2ad-9030-4f87-b99e-7e9ebb647bd4",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "55"
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 14 Nov 2026 18:03:13 GMT"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              49,
+              52,
+              55,
+              44,
+              34,
+              110,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              79,
+              51,
+              32,
+              85,
+              112,
+              100,
+              97,
+              116,
+              101,
+              100,
+              32,
+              68,
+              101,
+              112,
+              97,
+              114,
+              116,
+              109,
+              101,
+              110,
+              116,
+              32,
+              49,
+              55,
+              57,
+              52,
+              54,
+              55,
+              57,
+              51,
+              57,
+              51,
+              50,
+              48,
+              50,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 18,
+          "responseSize": 55
+        },
+        "id": "74dbd19a-fd21-4d12-8edd-7d262e5e436e",
+        "assertions": [
+          {
+            "assertion": "Rename returns 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Rename preserves ID and normalizes whitespace",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "c6ee3403-dd3c-47ce-9258-b5db0dba9d15",
+          "length": 11,
+          "cycles": 1,
+          "position": 3,
+          "iteration": 0,
+          "httpRequestId": "44c0aa59-f709-4a01-a41b-d89351f9c9d1"
+        },
+        "item": {
+          "id": "274ed37e-d0c1-407a-a02b-1e8f26fa9507",
+          "name": "4. Allow case-only rename of the same normalized name",
+          "request": {
+            "url": {
+              "path": [
+                "departments",
+                "{{o3DepartmentId}}",
+                "update"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"o3 updated department {{runTag}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "91ca02f9-8dea-4354-ad4c-c282c393e7c6",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Case-only rename returns 200', function () { pm.response.to.have.status(200); });",
+                  "var body = pm.response.json();",
+                  "pm.test('Case-only rename keeps the same department', function () { pm.expect(body.id).to.eql(Number(pm.collectionVariables.get('o3DepartmentId'))); pm.expect(body.name).to.eql(('O3 Updated Department ' + pm.collectionVariables.get('runTag')).toLowerCase()); });"
+                ],
+                "_lastExecutionId": "4b9e138f-2c68-4182-9891-d7a4f62e7836"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "departments",
+              "147",
+              "update"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "1454c0a8-7e11-4ed4-b7b5-a43d9c710066",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "51",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"o3 updated department 1794679393202\"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "802c874b-b065-4280-a74d-6275048ef012",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "55"
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 14 Nov 2026 18:03:13 GMT"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              49,
+              52,
+              55,
+              44,
+              34,
+              110,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              111,
+              51,
+              32,
+              117,
+              112,
+              100,
+              97,
+              116,
+              101,
+              100,
+              32,
+              100,
+              101,
+              112,
+              97,
+              114,
+              116,
+              109,
+              101,
+              110,
+              116,
+              32,
+              49,
+              55,
+              57,
+              52,
+              54,
+              55,
+              57,
+              51,
+              57,
+              51,
+              50,
+              48,
+              50,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 11,
+          "responseSize": 55
+        },
+        "id": "274ed37e-d0c1-407a-a02b-1e8f26fa9507",
+        "assertions": [
+          {
+            "assertion": "Case-only rename returns 200",
+            "skipped": false
+          },
+          {
+            "assertion": "Case-only rename keeps the same department",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "26ce24de-9269-4d8c-8ce8-c48251d99660",
+          "length": 11,
+          "cycles": 1,
+          "position": 4,
+          "iteration": 0,
+          "httpRequestId": "e6a19d19-5209-43d6-9e04-33c56e1af959"
+        },
+        "item": {
+          "id": "c79c193a-bf86-437d-9658-e64562f6bc21",
+          "name": "5. Reject normalized duplicate name",
+          "request": {
+            "url": {
+              "path": [
+                "departments",
+                "{{o3DepartmentId}}",
+                "update"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"  O3   Duplicate Department {{runTag}}  \"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "a54d4ec9-5b27-4728-a174-d883e64cfc9a",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Duplicate rename returns 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('Duplicate error has the documented code', function () { pm.expect(pm.response.json().code).to.eql('DUPLICATE_NAME'); });"
+                ],
+                "_lastExecutionId": "852dc3c4-4f62-4ecb-b67f-430ad3e34bbc"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "departments",
+              "147",
+              "update"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "e8fbd16f-2320-46b2-b589-1d58bd762962",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "59",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"  O3   Duplicate Department 1794679393202  \"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "7fc8e819-61c8-4e03-afbc-c715b32ed177",
+          "status": "Conflict",
+          "code": 409,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "81"
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 14 Nov 2026 18:03:13 GMT"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              99,
+              111,
+              100,
+              101,
+              34,
+              58,
+              34,
+              68,
+              85,
+              80,
+              76,
+              73,
+              67,
+              65,
+              84,
+              69,
+              95,
+              78,
+              65,
+              77,
+              69,
+              34,
+              44,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              65,
+              32,
+              100,
+              101,
+              112,
+              97,
+              114,
+              116,
+              109,
+              101,
+              110,
+              116,
+              32,
+              119,
+              105,
+              116,
+              104,
+              32,
+              116,
+              104,
+              105,
+              115,
+              32,
+              110,
+              97,
+              109,
+              101,
+              32,
+              97,
+              108,
+              114,
+              101,
+              97,
+              100,
+              121,
+              32,
+              101,
+              120,
+              105,
+              115,
+              116,
+              115,
+              46,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 9,
+          "responseSize": 81
+        },
+        "id": "c79c193a-bf86-437d-9658-e64562f6bc21",
+        "assertions": [
+          {
+            "assertion": "Duplicate rename returns 409",
+            "skipped": false
+          },
+          {
+            "assertion": "Duplicate error has the documented code",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "086f3bdc-ff72-494b-93f6-c5265d91a53d",
+          "length": 11,
+          "cycles": 1,
+          "position": 5,
+          "iteration": 0,
+          "httpRequestId": "dc29a25e-530b-4e5e-9f55-fb4d501fdbbf"
+        },
+        "item": {
+          "id": "b1c6fe98-8cb0-4ead-be84-b3f7e2896d30",
+          "name": "6. Reject unknown Department ID",
+          "request": {
+            "url": {
+              "path": [
+                "departments",
+                "9223372036854775807",
+                "update"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"No Such Department\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "6d8429b4-1b35-477f-9dfe-64ec271c195f",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Missing target returns 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test('Missing target has NOT_FOUND code', function () { pm.expect(pm.response.json().code).to.eql('NOT_FOUND'); });"
+                ],
+                "_lastExecutionId": "f7a1db5b-64a2-4de3-91d4-8843844d2082"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "departments",
+              "9223372036854775807",
+              "update"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "62ecdb4c-f9ee-4cc5-ac0e-a9a6ced70503",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "34",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"No Such Department\"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "71e33b08-9b12-469b-a56d-f97e657948d4",
+          "status": "Not Found",
+          "code": 404,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "54"
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 14 Nov 2026 18:03:13 GMT"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              99,
+              111,
+              100,
+              101,
+              34,
+              58,
+              34,
+              78,
+              79,
+              84,
+              95,
+              70,
+              79,
+              85,
+              78,
+              68,
+              34,
+              44,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              68,
+              101,
+              112,
+              97,
+              114,
+              116,
+              109,
+              101,
+              110,
+              116,
+              32,
+              110,
+              111,
+              116,
+              32,
+              102,
+              111,
+              117,
+              110,
+              100,
+              46,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 7,
+          "responseSize": 54
+        },
+        "id": "b1c6fe98-8cb0-4ead-be84-b3f7e2896d30",
+        "assertions": [
+          {
+            "assertion": "Missing target returns 404",
+            "skipped": false
+          },
+          {
+            "assertion": "Missing target has NOT_FOUND code",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "a9618418-7836-47f0-8a57-60a41584de62",
+          "length": 11,
+          "cycles": 1,
+          "position": 6,
+          "iteration": 0,
+          "httpRequestId": "d04298e2-fc23-43db-9114-3104e9467da6"
+        },
+        "item": {
+          "id": "f7ef7c6e-4d57-4e40-993e-8be5683f4c86",
+          "name": "7. Reject blank Department name",
+          "request": {
+            "url": {
+              "path": [
+                "departments",
+                "{{o3DepartmentId}}",
+                "update"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"   \"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "2e00dc0a-ad1d-4b50-ad48-9f9028102e0d",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Blank name returns JSON 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Blank name has VALIDATION_FAILED code', function () { pm.expect(pm.response.json().code).to.eql('VALIDATION_FAILED'); });"
+                ],
+                "_lastExecutionId": "92eb98a1-8d32-4eda-8cd9-6b97a57f3468"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "departments",
+              "147",
+              "update"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "e4b83d4e-b32e-41cd-b70c-472439490562",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "19",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"   \"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "00a02c29-f97f-4626-85a9-dcf7d75627e2",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "80"
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 14 Nov 2026 18:03:13 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "close"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              99,
+              111,
+              100,
+              101,
+              34,
+              58,
+              34,
+              86,
+              65,
+              76,
+              73,
+              68,
+              65,
+              84,
+              73,
+              79,
+              78,
+              95,
+              70,
+              65,
+              73,
+              76,
+              69,
+              68,
+              34,
+              44,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              79,
+              110,
+              101,
+              32,
+              111,
+              114,
+              32,
+              109,
+              111,
+              114,
+              101,
+              32,
+              114,
+              101,
+              113,
+              117,
+              101,
+              115,
+              116,
+              32,
+              102,
+              105,
+              101,
+              108,
+              100,
+              115,
+              32,
+              97,
+              114,
+              101,
+              32,
+              105,
+              110,
+              118,
+              97,
+              108,
+              105,
+              100,
+              46,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 6,
+          "responseSize": 80
+        },
+        "id": "f7ef7c6e-4d57-4e40-993e-8be5683f4c86",
+        "assertions": [
+          {
+            "assertion": "Blank name returns JSON 400",
+            "skipped": false
+          },
+          {
+            "assertion": "Blank name has VALIDATION_FAILED code",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "1f6f829a-8d42-4f5f-9c83-af2c7929a3ca",
+          "length": 11,
+          "cycles": 1,
+          "position": 7,
+          "iteration": 0,
+          "httpRequestId": "3641e06c-af2e-4d8e-b694-97bd21cd34ac"
+        },
+        "item": {
+          "id": "66c3bbfb-9921-4a61-a69a-cc063f50bb3b",
+          "name": "8. Reject nonpositive Department ID",
+          "request": {
+            "url": {
+              "path": [
+                "departments",
+                "0",
+                "update"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"No Such Department\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "33fe5d9d-1dd0-4ac2-8248-70e7ee657ca6",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Nonpositive ID returns JSON 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Nonpositive ID has VALIDATION_FAILED code', function () { pm.expect(pm.response.json().code).to.eql('VALIDATION_FAILED'); });"
+                ],
+                "_lastExecutionId": "f89dcac0-b133-48d1-83c1-30e9324300db"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "departments",
+              "0",
+              "update"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "50240b70-ff63-4842-a97a-4d8852dc9729",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "34",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"No Such Department\"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "14d02753-a3b6-4eaf-b9b4-7389bf06ee76",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "72"
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 14 Nov 2026 18:03:13 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "close"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              99,
+              111,
+              100,
+              101,
+              34,
+              58,
+              34,
+              86,
+              65,
+              76,
+              73,
+              68,
+              65,
+              84,
+              73,
+              79,
+              78,
+              95,
+              70,
+              65,
+              73,
+              76,
+              69,
+              68,
+              34,
+              44,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              68,
+              101,
+              112,
+              97,
+              114,
+              116,
+              109,
+              101,
+              110,
+              116,
+              32,
+              105,
+              100,
+              32,
+              109,
+              117,
+              115,
+              116,
+              32,
+              98,
+              101,
+              32,
+              112,
+              111,
+              115,
+              105,
+              116,
+              105,
+              118,
+              101,
+              46,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 10,
+          "responseSize": 72
+        },
+        "id": "66c3bbfb-9921-4a61-a69a-cc063f50bb3b",
+        "assertions": [
+          {
+            "assertion": "Nonpositive ID returns JSON 400",
+            "skipped": false
+          },
+          {
+            "assertion": "Nonpositive ID has VALIDATION_FAILED code",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "8d408376-5eb7-43c7-9623-ad4c45bc4e15",
+          "length": 11,
+          "cycles": 1,
+          "position": 8,
+          "iteration": 0,
+          "httpRequestId": "f0e69d54-ac5c-40bf-bf50-8760a55e5ccd"
+        },
+        "item": {
+          "id": "c7541b48-1bd1-4b58-a321-b028c48a3bc9",
+          "name": "9. Delete rename fixture",
+          "request": {
+            "url": {
+              "path": [
+                "departments",
+                "{{o3DepartmentId}}",
+                "delete"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "POST"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "8d617488-bab2-41bd-8d68-65dde1aa5913",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Updated fixture deletes successfully', function () { pm.response.to.have.status(200); });"
+                ],
+                "_lastExecutionId": "2d76c619-923f-484f-8e52-64439a473ace"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "departments",
+              "147",
+              "delete"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "967afc17-debb-459e-9c98-3803726755fe",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "0",
+              "system": true
+            }
+          ],
+          "method": "POST"
+        },
+        "response": {
+          "id": "7d9c7b32-c2e6-41fd-b4b1-d473f0bed504",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "29"
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 14 Nov 2026 18:03:13 GMT"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              82,
+              101,
+              99,
+              111,
+              114,
+              100,
+              32,
+              100,
+              101,
+              108,
+              101,
+              116,
+              101,
+              100,
+              46,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 13,
+          "responseSize": 29
+        },
+        "id": "c7541b48-1bd1-4b58-a321-b028c48a3bc9",
+        "assertions": [
+          {
+            "assertion": "Updated fixture deletes successfully",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "865d7dcc-8d3f-412a-be60-bce9cfef27f5",
+          "length": 11,
+          "cycles": 1,
+          "position": 9,
+          "iteration": 0,
+          "httpRequestId": "72725e68-6359-4caf-a6ce-8f71693b7cd0"
+        },
+        "item": {
+          "id": "9fc21e5a-e71f-4134-b5a7-f6f71fd6faca",
+          "name": "10. Delete duplicate fixture",
+          "request": {
+            "url": {
+              "path": [
+                "departments",
+                "{{o3DuplicateDepartmentId}}",
+                "delete"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "POST"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "accc5e4b-a50f-4ae8-a0d7-209d84fe74f7",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Duplicate fixture deletes successfully', function () { pm.response.to.have.status(200); });"
+                ],
+                "_lastExecutionId": "90bf7158-31cc-462e-aabe-bffea738e21d"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "departments",
+              "148",
+              "delete"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "f5baa52a-5cff-45fa-a3a9-07469f3fa9a6",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "0",
+              "system": true
+            }
+          ],
+          "method": "POST"
+        },
+        "response": {
+          "id": "ecc7d641-41a9-4676-902b-127b7db3a8f4",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "29"
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 14 Nov 2026 18:03:13 GMT"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              82,
+              101,
+              99,
+              111,
+              114,
+              100,
+              32,
+              100,
+              101,
+              108,
+              101,
+              116,
+              101,
+              100,
+              46,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 15,
+          "responseSize": 29
+        },
+        "id": "9fc21e5a-e71f-4134-b5a7-f6f71fd6faca",
+        "assertions": [
+          {
+            "assertion": "Duplicate fixture deletes successfully",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "45bd0009-98a4-4e34-954f-4c0385a5bae8",
+          "length": 11,
+          "cycles": 1,
+          "position": 10,
+          "iteration": 0,
+          "httpRequestId": "c49e2210-efb1-4f4a-8045-7100a912e008"
+        },
+        "item": {
+          "id": "96b68d74-778f-405d-b6f1-abcbb3409164",
+          "name": "11. Reject malformed Department ID",
+          "request": {
+            "url": {
+              "path": [
+                "departments",
+                "not-a-number",
+                "update"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"No Such Department\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "496f6805-d13f-43d1-bc32-8596e44b0c1c",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Malformed ID returns JSON 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Malformed ID has VALIDATION_FAILED code', function () { pm.expect(pm.response.json().code).to.eql('VALIDATION_FAILED'); });"
+                ],
+                "_lastExecutionId": "2dea04fa-471b-442f-9403-7d134fca679d"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "8080",
+            "path": [
+              "api",
+              "departments",
+              "not-a-number",
+              "update"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "a2ddf489-b2fa-4611-add4-fab083de8dd1",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:8080",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "34",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"name\": \"No Such Department\"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "4b5779e8-8d65-4b6b-bce4-28b282f739ba",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "80"
+            },
+            {
+              "key": "Date",
+              "value": "Sat, 14 Nov 2026 18:03:13 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "close"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              99,
+              111,
+              100,
+              101,
+              34,
+              58,
+              34,
+              86,
+              65,
+              76,
+              73,
+              68,
+              65,
+              84,
+              73,
+              79,
+              78,
+              95,
+              70,
+              65,
+              73,
+              76,
+              69,
+              68,
+              34,
+              44,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              79,
+              110,
+              101,
+              32,
+              111,
+              114,
+              32,
+              109,
+              111,
+              114,
+              101,
+              32,
+              85,
+              82,
+              76,
+              32,
+              112,
+              97,
+              114,
+              97,
+              109,
+              101,
+              116,
+              101,
+              114,
+              115,
+              32,
+              97,
+              114,
+              101,
+              32,
+              105,
+              110,
+              118,
+              97,
+              108,
+              105,
+              100,
+              46,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 6,
+          "responseSize": 80
+        },
+        "id": "96b68d74-778f-405d-b6f1-abcbb3409164",
+        "assertions": [
+          {
+            "assertion": "Malformed ID returns JSON 400",
+            "skipped": false
+          },
+          {
+            "assertion": "Malformed ID has VALIDATION_FAILED code",
+            "skipped": false
+          }
+        ]
+      }
+    ],
+    "transfers": {
+      "responseTotal": 646
+    },
+    "failures": [],
+    "error": null
+  }
+}

@@ -1,0 +1,911 @@
+{
+  "info": {
+    "name": "OrgResource Course A Current API Reference — 28 Routes",
+    "description": "Canonical current route reference for the five core entities, 25 original operations, A09 consent revocation and the two Course A Resource image operations. Postman v2.1 importable. This is not an ordered runner; use isolated fictional fixtures and separate state-dependent requests. Run scripts/run-api-acceptance.ps1 for executable fictional-data coverage.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Departments",
+      "item": [
+        {
+          "name": "D01 POST /api/departments",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/departments",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Fictional Logistics {{runTag}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"D01 expected status 201\", function() { pm.response.to.have.status(201); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });",
+                  "if (pm.response.code===201) {const b=pm.response.json();if(Number.isInteger(b.id)&&b.id>0)pm.environment.set(\"departmentId\",String(b.id));}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "D02 GET /api/departments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/departments"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"D02 expected status 200\", function() { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "D03 POST /api/departments/{{departmentId}}/update",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/departments/{{departmentId}}/update",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Fictional Operations {{runTag}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"D03 expected status 200\", function() { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "D04 POST /api/departments/{{departmentId}}/delete",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/departments/{{departmentId}}/delete"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"D04 expected status 200\", function() { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Projects",
+      "item": [
+        {
+          "name": "P01 POST /api/projects",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/projects",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"departmentId\": {{departmentId}},\n  \"name\": \"Fictional Workshop {{runTag}}\",\n  \"startAt\": \"{{projectStartAt}}\",\n  \"endAt\": \"{{projectEndAt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"P01 expected status 201\", function() { pm.response.to.have.status(201); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });",
+                  "if (pm.response.code===201) {const b=pm.response.json();if(Number.isInteger(b.id)&&b.id>0)pm.environment.set(\"projectId\",String(b.id));}"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "function pht(d){return new Intl.DateTimeFormat(\"sv-SE\",{timeZone:\"Asia/Manila\",year:\"numeric\",month:\"2-digit\",day:\"2-digit\",hour:\"2-digit\",minute:\"2-digit\",second:\"2-digit\",hour12:false}).format(d).replace(\" \",\"T\");}",
+                  "pm.environment.set(\"projectStartAt\",pht(new Date(Date.now()+3*60000)));",
+                  "pm.environment.set(\"projectEndAt\",pht(new Date(Date.now()+4*60*60000)));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P02 GET /api/projects?departmentId={{departmentId}}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/projects?departmentId={{departmentId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"P02 expected status 200\", function() { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P03 POST /api/projects/{{projectId}}/update",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/projects/{{projectId}}/update",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Workshop Updated {{runTag}}\",\n  \"startAt\": \"{{projectStartAt}}\",\n  \"endAt\": \"{{projectEndAt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"P03 expected status 200\", function() { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P04 POST /api/projects/{{projectId}}/delete",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/projects/{{projectId}}/delete"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"P04 expected status 200\", function() { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Resources",
+      "item": [
+        {
+          "name": "R01 POST /api/resources",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/resources",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Extension cords {{runTag}}\",\n  \"type\": \"REUSABLE\",\n  \"totalQuantity\": 10\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"R01 expected status 201\", function() { pm.response.to.have.status(201); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });",
+                  "if (pm.response.code===201) {const b=pm.response.json();if(Number.isInteger(b.id)&&b.id>0)pm.environment.set(\"resourceId\",String(b.id));}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "R02 GET /api/resources?type=REUSABLE",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/resources?type=REUSABLE"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"R02 expected status 200\", function() { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "R03 POST /api/resources/{{resourceId}}/update",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/resources/{{resourceId}}/update",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Extension cords {{runTag}}\",\n  \"totalQuantity\": 10,\n  \"expectedTotalQuantity\": 10\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"R03 expected status 200\", function() { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "R04 POST /api/resources/{{resourceId}}/delete",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/resources/{{resourceId}}/delete"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"R04 expected status 200\", function() { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "R05 GET /api/resources/{{resourceId}}/availability",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/resources/{{resourceId}}/availability"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"R05 expected status 200\", function() { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "IMAGE-01 POST /api/resources/{{resourceId}}/image",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/resources/{{resourceId}}/image",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "{{imageFile}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('IMAGE-01 expected status 200', function() { pm.response.to.have.status(200); });",
+                  "if (pm.response.code===200) { const b=pm.response.json(); pm.test('PNG upload metadata and SHA-256 are valid', function() { pm.expect(b.resourceId).to.eql(Number(pm.environment.get('resourceId'))); pm.expect(b.contentType).to.eql('image/png'); pm.expect(b.sizeBytes).to.be.above(0); pm.expect(b.sha256).to.match(/^[a-f0-9]{64}$/); }); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "IMAGE-02 GET /api/resources/{{resourceId}}/image",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "image/png"
+              }
+            ],
+            "url": "{{baseUrl}}/api/resources/{{resourceId}}/image"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('IMAGE-02 expected status 200 and non-empty PNG bytes', function() { pm.response.to.have.status(200); pm.expect(pm.response.headers.get('Content-Type')).to.include('image/png'); const length = Number(pm.response.headers.get('Content-Length')); pm.expect(length).to.be.above(0); });",
+                  "pm.test('IMAGE-02 response is private-cache-safe', function() { pm.expect(pm.response.headers.get('Cache-Control')).to.include('no-store'); pm.expect(pm.response.headers.get('X-Content-Type-Options')).to.eql('nosniff'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Requirements",
+      "item": [
+        {
+          "name": "Q01 POST /api/requirements",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/requirements",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"projectId\": {{projectId}},\n  \"resourceId\": {{resourceId}},\n  \"quantity\": 6\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Q01 expected status 201\", function() { pm.response.to.have.status(201); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });",
+                  "if (pm.response.code===201) {const b=pm.response.json();if(Number.isInteger(b.id)&&b.id>0)pm.environment.set(\"requirementId\",String(b.id));}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Q02 GET /api/requirements?projectId={{projectId}}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/requirements?projectId={{projectId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Q02 expected status 200\", function() { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Q03 POST /api/requirements/{{requirementId}}/update",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/requirements/{{requirementId}}/update",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 8\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Q03 expected status 200\", function() { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Q04 POST /api/requirements/{{requirementId}}/delete",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/requirements/{{requirementId}}/delete"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Q04 expected status 200\", function() { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Allocations",
+      "item": [
+        {
+          "name": "A01 POST /api/allocations",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/allocations",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requirementId\": {{requirementId}},\n  \"quantity\": 4,\n  \"borrowerName\": \"Fictional Representative\",\n  \"smsConsent\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"A01 expected status 201\", function() { pm.response.to.have.status(201); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });",
+                  "if (pm.response.code===201) {const b=pm.response.json();if(Number.isInteger(b.id)&&b.id>0)pm.environment.set(\"allocationId\",String(b.id));}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "A02 GET /api/allocations?requirementId={{requirementId}}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/allocations?requirementId={{requirementId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"A02 expected status 200\", function() { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "A03 POST /api/allocations/{{allocationId}}/approve",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/allocations/{{allocationId}}/approve"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"A03 expected status 200\", function() { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "A04 POST /api/allocations/{{allocationId}}/issue",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/allocations/{{allocationId}}/issue"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"A04 expected status 200\", function() { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "A05 POST /api/allocations/{{allocationId}}/return",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/allocations/{{allocationId}}/return"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"A05 expected status 200\", function() { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "A06 POST /api/allocations/{{allocationId}}/consume",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/allocations/{{allocationId}}/consume"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"A06 expected status 200\", function() { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "A07 POST /api/allocations/{{allocationId}}/cancel",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/allocations/{{allocationId}}/cancel"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"A07 expected status 200\", function() { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "A08 POST /api/allocations/{{allocationId}}/delete",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/allocations/{{allocationId}}/delete"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"A08 expected status 200\", function() { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "A09 POST /api/allocations/{{allocationId}}/revoke-sms-consent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/allocations/{{allocationId}}/revoke-sms-consent"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"A09 expected status 200\", function() { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\",function(){ pm.expect(()=>pm.response.json()).not.to.throw(); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8080"
+    },
+    {
+      "key": "imageFile",
+      "value": "postman/fixtures/academic-demo-image.png"
+    },
+    {
+      "key": "runTag",
+      "value": ""
+    },
+    {
+      "key": "projectStartAt",
+      "value": ""
+    },
+    {
+      "key": "projectEndAt",
+      "value": ""
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (!pm.collectionVariables.get('runTag')) { pm.collectionVariables.set('runTag', 'CourseA-' + Date.now().toString(36)); }",
+          "if (!pm.collectionVariables.get('projectStartAt') || !pm.collectionVariables.get('projectEndAt')) { const start = new Date(Date.now() + 48 * 60 * 60 * 1000); const end = new Date(start.getTime() + 3 * 60 * 60 * 1000); const local = d => [d.getFullYear(), String(d.getMonth()+1).padStart(2,'0'), String(d.getDate()).padStart(2,'0')].join('-') + 'T' + [String(d.getHours()).padStart(2,'0'), String(d.getMinutes()).padStart(2,'0'), String(d.getSeconds()).padStart(2,'0')].join(':'); pm.collectionVariables.set('projectStartAt', local(start)); pm.collectionVariables.set('projectEndAt', local(end)); }"
+        ]
+      }
+    }
+  ]
+}

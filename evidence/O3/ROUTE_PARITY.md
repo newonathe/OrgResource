@@ -1,12 +1,12 @@
 # OrgResource route parity audit
 
-Audit date: 2026-11-14 (Asia/Manila)
+Audit date: 2026-11-15 (Asia/Manila)
 
 ## Authority and findings
 
 The course assignment requires Jersey REST/JSON, Spring-managed components injected with `@Autowired`, JPA/Spring Data repositories, Javax Validation, GET retrieval, POST submissions, runtime create/read coverage for every entity, and runtime row creation/deletion. The syllabus maps Jersey, Postman, persistence, JPQL, validation, Retrofit/Gson, and image handling to CLO3–CLO9. The concise proposal defines 25 operations for the five-entity model. The reviewed handoff adds A09 consent withdrawal as an optional privacy route; that addition is not in the original 25-route proposal.
 
-The starter backend originally implemented 12 of 25 proposal routes. This slice adds D03, bringing the backend to 13 of 25 original routes. The optional A09 is still absent, so 13 of the handoff's 26 listed routes remain open. The syllabus CLO9 image requirement remains unresolved against the proposal; this audit adds no image route or entity.
+The O1 backend implemented 12 of the 25 proposal routes. D03 raised that count to 13; the O3 CRUD slice below adds P03/P04, R03/R04 and Q03/Q04, bringing the current backend to 19 of 25 original routes. The six unimplemented original routes are A03–A08. Optional handoff-only A09 remains separately unimplemented, so seven of the handoff's 26 listed routes remain open. The syllabus CLO9 image requirement remains unresolved against the proposal; this audit adds no image route or entity.
 
 Course source alignment for this slice: the searchable course corpus and timestamped video transcripts demonstrate Jersey `@Path`/`@POST`, Spring `@Component`/`@Autowired`, Spring Data repository use, and Javax Validation. The transcripts capture spoken audio, not on-screen code. The implementation follows those teaching patterns; it does not reprocess the videos.
 
@@ -22,17 +22,17 @@ Course source alignment for this slice: the searchable course corpus and timesta
 | D04 | `POST /api/departments/{id}/delete` | Implemented |
 | P01 | `POST /api/projects` | Implemented |
 | P02 | `GET /api/projects?departmentId={id}` | Implemented |
-| P03 | `POST /api/projects/{id}/update` | Not implemented |
-| P04 | `POST /api/projects/{id}/delete` | Not implemented |
+| P03 | `POST /api/projects/{id}/update` | Implemented in O3 CRUD; verified |
+| P04 | `POST /api/projects/{id}/delete` | Implemented in O3 CRUD; verified |
 | R01 | `POST /api/resources` | Implemented |
 | R02 | `GET /api/resources?type={type}` | Implemented |
-| R03 | `POST /api/resources/{id}/update` | Not implemented |
-| R04 | `POST /api/resources/{id}/delete` | Not implemented |
+| R03 | `POST /api/resources/{id}/update` | Implemented in O3 CRUD; verified |
+| R04 | `POST /api/resources/{id}/delete` | Implemented in O3 CRUD; verified |
 | R05 | `GET /api/resources/{id}/availability` | Implemented |
 | Q01 | `POST /api/requirements` | Implemented |
 | Q02 | `GET /api/requirements?projectId={id}` | Implemented |
-| Q03 | `POST /api/requirements/{id}/update` | Not implemented |
-| Q04 | `POST /api/requirements/{id}/delete` | Not implemented |
+| Q03 | `POST /api/requirements/{id}/update` | Implemented in O3 CRUD; verified |
+| Q04 | `POST /api/requirements/{id}/delete` | Implemented in O3 CRUD; verified |
 | A01 | `POST /api/allocations` | Implemented |
 | A02 | `GET /api/allocations?requirementId={id}&status={status}` | Implemented |
 | A03 | `POST /api/allocations/{id}/approve` | Not implemented |
@@ -49,8 +49,7 @@ D03 is the next smallest useful route slice: it completes Department's four-oper
 
 ## Next dependency-aware work
 
-1. Finish Project update/delete (date-history constraints and dependent Requirements).
-2. Finish Resource update/delete (expected-quantity guard, allocation commitments, nonempty and dependency checks).
-3. Finish Requirement update/delete (coverage and allocation-history constraints).
-4. Implement and transactionally verify the Allocation lifecycle in the specified order: approval, issue, return, consume, cancel, guarded delete. Treat A09 consent withdrawal separately as optional.
-5. Continue with the assignment-required Retrofit/Twilio adapter, scheduling, real responsive UI, migrations, release checks, and final source export according to the complete handoff.
+1. O3 gates passed. Implement A03–A08 as the next dependency-ordered slice: approval, issue, return, consume, cancel and guarded delete, using Project → Resource → Requirement → Allocation locks and rollback-safe transactions.
+2. Keep optional A09 consent withdrawal separately tracked from the original 25-route contract.
+3. Continue with scheduling, Retrofit/Gson SMS, the React UI, release acceptance and packaging according to their focused handoff sections.
+4. Resolve the CLO9 image discrepancy only from an authoritative instructor/Canvas/source decision; do not infer it from this route audit.

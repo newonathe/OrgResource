@@ -1,5 +1,7 @@
 # OrgResource — COMPLETE handoff archive
 
+> **HISTORICAL PLANNING MATERIAL — NOT CURRENT IMPLEMENTATION.** This chapter records the original O0/O1 startup plan. For the current implementation and acceptance status, use the [current README](../../README.md), [26-operation API contract](05_API_26_ROUTES_AND_RESPONSES.md), and [O14 report](../../evidence/O14/FINAL_ACCEPTANCE_REPORT.md). Any nine-entity/68-operation material in this archive is **HISTORICAL, NOT CURRENT IMPLEMENTATION**.
+
 Version: PLAN-2026-11-13. This is a planning and implementation-instruction ZIP, not the completed Java app or submitted academic work.
 
 USER DECISIONS: Develop in VS Code (not Eclipse). Have Codex and Claude Code implement and independently review. Store reviewed implementation under GitHub account newonathe. Build a genuine responsive React/TypeScript UI. Deliver a Java source archive importable to an Eclipse-based course environment.

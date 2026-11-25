@@ -1,6 +1,16 @@
 # Java/Maven build output and local tools
 **/target/
 **/node_modules/
+**/dist/
+**/coverage/
+**/playwright-report/
+**/test-results/
+# Full-resolution Playwright captures are local intermediates; compressed review sheets are tracked.
+/evidence/O8-O10/screenshots/raw/
+/evidence/C4/screenshots/*.png
+!/evidence/C4/screenshots/overview-desktop-dark.png
+!/evidence/C4/screenshots/resources-mobile-light.png
+!/evidence/C4/screenshots/allocations-tablet-light.png
 **/.idea/
 *.log
 
@@ -27,3 +37,12 @@ Thumbs.db
 # Local IDE workspace settings and an extracted prior handoff archive
 /.vscode/
 /deliverables/OrgResource-Java-Skeleton-2026-11-13/
+/deliverables/O11-O13/
+/deliverables/O14/
+
+# Approved C8 96-org dataset is LOCAL_ONLY_DRY_RUN and private.
+# NEVER commit raw 19,265,850-byte JSON to this PUBLIC repository.
+# Use a separate PRIVATE GitHub repository or encrypted operator-only staging.
+**/fictional-events-v1.local.json
+**/orgresource-c8-plan-v1*.json
+**/orgresource-private-demo*.json

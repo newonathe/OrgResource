@@ -2,7 +2,7 @@
   "info": {
     "name": "OrgResource Complete API Contracts",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "All specified routes. Documentation examples only; backend not implemented. Set ids and actor per permission. Use separate ordered demonstration collection first."
+    "description": "HISTORICAL: original nine-entity, 68-operation planning contract. It is not the current five-entity, 26-route API. See the current reference in OrgResource-Current-26-Routes.postman_collection.json and the current route contract in docs/complete-handoff/05_API_26_ROUTES_AND_RESPONSES.md."
   },
   "item": [
     {
