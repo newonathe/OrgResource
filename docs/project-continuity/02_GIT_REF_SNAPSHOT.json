@@ -964,11 +964,12 @@
         "actual": "WINDOWS_GUARD_SOURCE exact SHA; Temurin 21.0.13; C8HostedDemoImportCommandTest 8, C8HostedDemoPostflightTest 3, C8HostedDemoPreflightTest 3, C8HostedOriginalBaselineTest 3; total 17, failures/errors/skips 0, BUILD SUCCESS, job success"
       }
     ],
-    "next_action": "12 unread plus 6 partial and 3 metadata; bounded semantic chunks, owner sanitization/rights decision, remaining G01 factors; H01 consent/H02–H06 accepted Windows successor; L06 HOLD/no WSL.",
+    "next_action": "20 non-full privacy reviews (12 ranges/8 metadata); prioritize flagged incomplete paths, G01 residual assertions and independent review; H01 consent/H02–H06 accepted native successor; L06 HOLD/no WSL.",
     "pr57": "c7ed762f1cfb1f5603d9e34028653f072c877773",
     "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
     "native_harness": "72de0c106621dabc26a63390003f46c86d63b066",
-    "merged": true
+    "merged": true,
+    "historical_scope": "Prior Report52 corrected R09 receipts; not current dispatch authority"
   },
   "exact_main_postmerge_receipt": {
     "sha": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
@@ -993,12 +994,11 @@
     "next_action": "Complete remaining H01–H06 transitive method-body/SQL/runtime review and prepare authorized harness-only successor and fictional native tests; obtain explicit retention/transfer and independent/owner acceptance before L06. Complete remaining semantic privacy/rights review of integration paths, prepare G01 route-factor review, decide CPX only after P0/approval. Keep Claude paused and L06 HOLD. Exact-main CI evidence now bounded verified."
   },
   "current_postlocal_checkpoint": {
-    "handoff_ref": "034db623411a2f6af40e4ac8c2489b5cd07ee4d7",
-    "tree": "40b58fe8b656aa1c3de39d8accdc285b8dd4a52f",
+    "handoff_ref": "fb45da23dfa4b4407ee5a19fe2795e12969bf0a5",
     "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
     "main_ci": 45576702774,
     "dispatch_hold": true,
-    "scope": "65 full/6 ranges/3 metadata/12 unread; 10 flagged paths; actual historical standalone receipt and 12-table scoped refusal",
-    "next": "12 unread plus 6 partial and 3 metadata; bounded semantic chunks, owner sanitization/rights decision, remaining G01 factors; H01 consent/H02–H06 accepted Windows successor; L06 HOLD/no WSL."
+    "scope": "66 full/12 ranges/8 metadata/0 unread; 13 flagged paths; 91 prior events schema-valid",
+    "next": "20 non-full privacy reviews (12 ranges/8 metadata); prioritize flagged incomplete paths, G01 residual assertions and independent review; H01 consent/H02–H06 accepted native successor; L06 HOLD/no WSL."
   }
 }
