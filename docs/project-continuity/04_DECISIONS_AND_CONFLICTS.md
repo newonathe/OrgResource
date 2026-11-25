@@ -239,3 +239,7 @@ PR58 test-only candidate 9208f29a7877ea7e5d51a5cc0ed72d67dafe0624 on exact main 
 ### R031 protected output boundary — Report81 (2026-11-26 PHT)
 
 Design recommendation, not owner approval: use separate guarded fictional runtime capture; existing native runner retains logs and CI Maven stdout is public. Scanner synthetic 24/24 is not actual redaction proof. Keep independent acceptance and L06 HOLD unchanged. Exact report 50c1cfc749339165af27a6586d47093626200788:docs/handoffs/claude-local-execution-2026-11-24/81_R031_SCANNER_AND_CAPTURE_BOUNDARY.md.
+
+### PR58 bounded suite and R031 capture lifecycle — Report83 (2026-11-26 PHT)
+
+Actual PR58 suite count and exact two-method-only patch support bounded 101-row pagination evidence; no per-method named log or independent acceptance. R031 capture lifecycle and scanner integration are synthetic only, not a runtime log-redaction receipt. Guard owned DB before initialization, actual stream/sink inventory and process controls remain mandatory. No change to L06 HOLD or owner gates. Exact report 7b27166470ac8bb530312d8e52e7b5ea8a772543:docs/handoffs/claude-local-execution-2026-11-24/83_R031_CAPTURE_LIFECYCLE_RECEIPT.md.

@@ -366,7 +366,7 @@
         "L05"
       ],
       "receipt": "93 route acceptance and separate reviewer actual evidence; C8 #34",
-      "notes": "No fabricated signature or blanket equivalence Report74: R035/R038 actual public recovered-control job138726559312 markers rechecked at exact 8c6000a4; remaining normal-writable/approved private positive/transient DB and independent IR4 acceptance open. No new runtime. Report76 R031 source/#67 no-store and hash-only/refusal scope rechecked; dedicated log-redaction NOT_RUN, independent IR4 open. Report78 scoped 86-file privacy review complete; 13 remediation flags open. G01 residual runtime/IR4 independent review unchanged. Report79 PR58 #79/#80 test-only 101-row candidates at 9208f29a7877ea7e5d51a5cc0ed72d67dafe0624 CI45702182390 in progress; no new actual acceptance. R031 protected-output design NOT_RUN. Report81: pure R031 scanner 24/24 synthetic; actual protected driver/runtime NOT_RUN. PR58 backend step success metadata, later checks running, logs 404; no independent acceptance."
+      "notes": "No fabricated signature or blanket equivalence Report74: R035/R038 actual public recovered-control job138726559312 markers rechecked at exact 8c6000a4; remaining normal-writable/approved private positive/transient DB and independent IR4 acceptance open. No new runtime. Report76 R031 source/#67 no-store and hash-only/refusal scope rechecked; dedicated log-redaction NOT_RUN, independent IR4 open. Report78 scoped 86-file privacy review complete; 13 remediation flags open. G01 residual runtime/IR4 independent review unchanged. Report79 PR58 #79/#80 test-only 101-row candidates at 9208f29a7877ea7e5d51a5cc0ed72d67dafe0624 CI45702182390 in progress; no new actual acceptance. R031 protected-output design NOT_RUN. Report81: pure R031 scanner 24/24 synthetic; actual protected driver/runtime NOT_RUN. PR58 backend step success metadata, later checks running, logs 404; no independent acceptance. Report83 PR58 actual 105 Maven/80 identity and 19 Playwright, bounded #79/#80 R082/R089/R091; independent acceptance remains BLOCKED. R031 scanner/lifecycle 65/65 synthetic, actual driver/runtime NOT_RUN."
     },
     {
       "id": "G02",
@@ -2521,14 +2521,19 @@
     "candidate": "9208f29a7877ea7e5d51a5cc0ed72d67dafe0624",
     "pr": 58,
     "run": 45702182390,
-    "status": "NOT_RUN",
-    "source": "test-only staged; workflow in progress at observation",
+    "status": "VERIFIED_BOUNDED",
+    "source": "exact-head actual logs, class count and test-only +2 methods; no separate named method log",
     "routes": [
       "R082",
       "R089",
       "R091"
     ],
-    "next": "Inspect actual PR58 exact-head CI45702182390 job logs and the two new methods #79/#80; repair only observed failures without weakening oracles. Separately design/stage a protected-output R031 runtime log-capture check (NOT_RUN). G01 independent IR4 remains blocked; 13 privacy remediation flags owner-gated, H01–H06 native successor and L06 HOLD/no WSL unchanged."
+    "next": "PR58 exact-head CI verified bounded for #79/#80 pagination; no repeat absent drift/failure. R031 scanner/lifecycle/bound adapter 65/65 synthetic; actual real Node child controls, guarded HTTP/DB/process driver, pre-start owned disposable DB, sink inventory, actual canaries and cleanup/refusal NOT_RUN. Continue those focused controls without public raw output. Independent IR4/G01 blocked; 13 owner-gated privacy flags, H01–H06 native successor, L06 HOLD/no WSL unchanged.",
+    "actual_job": 139514851978,
+    "identity_tests": 80,
+    "maven_tests": 105,
+    "playwright_tests": 19,
+    "receipt": "7b27166470ac8bb530312d8e52e7b5ea8a772543"
   },
   "g01_r031_scanner_candidate": {
     "sha": "23afd24d49182285888bb6ebdc39550d3322c9be",
@@ -2538,6 +2543,13 @@
     "synthetic_passed": 24,
     "runtime": "NOT_RUN",
     "driver": "NOT_RUN",
-    "pr58_run": 45702182390
+    "pr58_run": 45702182390,
+    "lifecycle_sha": "afdb05ad8e160324af1999326c46736e721a52e9",
+    "lifecycle_blob": "b61d3564fb540570fcd9dbbb83dfbb2da34c1a4c",
+    "lifecycle_cases": 29,
+    "bound_adapter_cases": 12,
+    "total_synthetic_cases": 65,
+    "total_synthetic_passed": 65,
+    "latest_report": "7b27166470ac8bb530312d8e52e7b5ea8a772543"
   }
 }

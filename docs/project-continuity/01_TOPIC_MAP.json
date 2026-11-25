@@ -634,7 +634,7 @@
         }
       ],
       "authority": "93 route candidate mapping, independent issue34 blocked; current code and actual test evidence.",
-      "next": "Inspect actual PR58 exact-head CI45702182390 job logs and #79/#80 discovery/counts; repair observed failures only. R031 scanner synthetic 24/24, actual protected capture driver and Java21/MySQL log oracle NOT_RUN; build minimal guarded driver per Report81, no public raw output. Independent IR4/G01 blocked, 13 owner-gated privacy flags, H01–H06 native successor and L06 HOLD/no WSL unchanged.",
+      "next": "PR58 exact-head CI verified bounded for #79/#80 pagination; no repeat absent drift/failure. R031 scanner/lifecycle/bound adapter 65/65 synthetic; actual real Node child controls, guarded HTTP/DB/process driver, pre-start owned disposable DB, sink inventory, actual canaries and cleanup/refusal NOT_RUN. Continue those focused controls without public raw output. Independent IR4/G01 blocked; 13 owner-gated privacy flags, H01–H06 native successor, L06 HOLD/no WSL unchanged.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/74_STRUCTURED_PRIVACY_AND_RECOVERED_ROUTE_RECEIPTS.md",
@@ -677,6 +677,24 @@
           "blob": "ff70767b232c8ea15df093032b82cdbb62353063",
           "ref": "50c1cfc749339165af27a6586d47093626200788",
           "review": "FULL report; bounded source and metadata only"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/82_R031_CAPTURE_LIFECYCLE.mjs",
+          "blob": "b61d3564fb540570fcd9dbbb83dfbb2da34c1a4c",
+          "ref": "afdb05ad8e160324af1999326c46736e721a52e9",
+          "review": "FULL synthetic lifecycle29+adapter12; runtime NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/83_R031_CAPTURE_LIFECYCLE_RECEIPT.md",
+          "blob": "8a2f4a4007f53bd1c979b971986f1f053850e8ae",
+          "ref": "7b27166470ac8bb530312d8e52e7b5ea8a772543",
+          "review": "FULL actual bounded PR58 and synthetic R031 receipt"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
+          "blob": "5a6926dd673036e4798d7f4dd3c4d81d78a9be79",
+          "ref": "7b27166470ac8bb530312d8e52e7b5ea8a772543",
+          "review": "RELEVANT_RANGES four directed route addenda"
         }
       ]
     },
@@ -965,7 +983,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "Inspect actual PR58 exact-head CI45702182390 job logs and #79/#80 discovery/counts; repair observed failures only. R031 scanner synthetic 24/24, actual protected capture driver and Java21/MySQL log oracle NOT_RUN; build minimal guarded driver per Report81, no public raw output. Independent IR4/G01 blocked, 13 owner-gated privacy flags, H01–H06 native successor and L06 HOLD/no WSL unchanged.",
+      "next": "PR58 exact-head CI verified bounded for #79/#80 pagination; no repeat absent drift/failure. R031 scanner/lifecycle/bound adapter 65/65 synthetic; actual real Node child controls, guarded HTTP/DB/process driver, pre-start owned disposable DB, sink inventory, actual canaries and cleanup/refusal NOT_RUN. Continue those focused controls without public raw output. Independent IR4/G01 blocked; 13 owner-gated privacy flags, H01–H06 native successor, L06 HOLD/no WSL unchanged.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -1252,6 +1270,24 @@
           "blob": "ff70767b232c8ea15df093032b82cdbb62353063",
           "ref": "50c1cfc749339165af27a6586d47093626200788",
           "review": "FULL report; bounded source and metadata only"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/82_R031_CAPTURE_LIFECYCLE.mjs",
+          "blob": "b61d3564fb540570fcd9dbbb83dfbb2da34c1a4c",
+          "ref": "afdb05ad8e160324af1999326c46736e721a52e9",
+          "review": "FULL synthetic lifecycle29+adapter12; runtime NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/83_R031_CAPTURE_LIFECYCLE_RECEIPT.md",
+          "blob": "8a2f4a4007f53bd1c979b971986f1f053850e8ae",
+          "ref": "7b27166470ac8bb530312d8e52e7b5ea8a772543",
+          "review": "FULL actual bounded PR58 and synthetic R031 receipt"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
+          "blob": "5a6926dd673036e4798d7f4dd3c4d81d78a9be79",
+          "ref": "7b27166470ac8bb530312d8e52e7b5ea8a772543",
+          "review": "RELEVANT_RANGES four directed route addenda"
         }
       ]
     },
@@ -1398,7 +1434,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "Inspect actual PR58 exact-head CI45702182390 job logs and #79/#80 discovery/counts; repair observed failures only. R031 scanner synthetic 24/24, actual protected capture driver and Java21/MySQL log oracle NOT_RUN; build minimal guarded driver per Report81, no public raw output. Independent IR4/G01 blocked, 13 owner-gated privacy flags, H01–H06 native successor and L06 HOLD/no WSL unchanged.",
+      "next": "PR58 exact-head CI verified bounded for #79/#80 pagination; no repeat absent drift/failure. R031 scanner/lifecycle/bound adapter 65/65 synthetic; actual real Node child controls, guarded HTTP/DB/process driver, pre-start owned disposable DB, sink inventory, actual canaries and cleanup/refusal NOT_RUN. Continue those focused controls without public raw output. Independent IR4/G01 blocked; 13 owner-gated privacy flags, H01–H06 native successor, L06 HOLD/no WSL unchanged.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -1441,6 +1477,24 @@
           "blob": "ff70767b232c8ea15df093032b82cdbb62353063",
           "ref": "50c1cfc749339165af27a6586d47093626200788",
           "review": "FULL report; bounded source and metadata only"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/82_R031_CAPTURE_LIFECYCLE.mjs",
+          "blob": "b61d3564fb540570fcd9dbbb83dfbb2da34c1a4c",
+          "ref": "afdb05ad8e160324af1999326c46736e721a52e9",
+          "review": "FULL synthetic lifecycle29+adapter12; runtime NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/83_R031_CAPTURE_LIFECYCLE_RECEIPT.md",
+          "blob": "8a2f4a4007f53bd1c979b971986f1f053850e8ae",
+          "ref": "7b27166470ac8bb530312d8e52e7b5ea8a772543",
+          "review": "FULL actual bounded PR58 and synthetic R031 receipt"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
+          "blob": "5a6926dd673036e4798d7f4dd3c4d81d78a9be79",
+          "ref": "7b27166470ac8bb530312d8e52e7b5ea8a772543",
+          "review": "RELEVANT_RANGES four directed route addenda"
         }
       ]
     }
