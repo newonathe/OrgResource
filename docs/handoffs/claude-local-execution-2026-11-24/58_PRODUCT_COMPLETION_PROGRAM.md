@@ -32,9 +32,13 @@ flowchart TD
  D5 --> D6[CPX06 date reservation decision]
  D3 --> D7[CPX07 reporting and handover]
  D4 --> D7
- D7 --> E[Integrated product acceptance on new exact head]
+ D7 --> D8[CPX08 API and UX closure]
+ D8 --> D9[CPX09 operational qualification]
+ D9 --> E[Integrated product acceptance on new exact head]
  D6 --> E
  G05 --> E
+ D1 --> D10[CPX10 optional QR if approved]
+ D10 -. if selected .-> E
  A --> P
  G07[Student academic gate independently]
 ```
