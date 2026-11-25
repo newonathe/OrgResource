@@ -191,11 +191,11 @@
   ],
   "checkpoint": {
     "report": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
-    "ref": "ee2e9f53251242da8a0ee42635583734bd67db2d",
+    "ref": "79ad73db128f6b86a34be37ab9d2917d47d2e377",
     "main_ci": 45576702774,
     "main_ci_status": "VERIFIED_BOUNDED",
     "harness_derivation": "SOURCE_ONLY 11 files 20 replacements",
-    "next": "Use Report62 and matrix66 for H02/H03/H05/H06 correction scope and actual native tests after required authorization; H04 staged 31-case driver remains NOT_RUN; H01 retention/transfer mechanism and owner decision still open. Advance independent privacy semantic review, especially old master remainder and unread integration paths, and product contract closure while blocked. Preserve L06 HOLD, P0 and all independent gates.",
+    "next": "Advance CPX05/06 explicit settlement/reservation policy and CPX07 reporting contracts, then CPX08/09 scope; complete unread semantic privacy/rights review. H01 retention decision, H02–H06 authorized successor, native actual tests and independent acceptance remain open. Keep L06 HOLD and all P0/phase/owner gates.",
     "h04": {
       "test": "docs/handoffs/claude-local-execution-2026-11-24/64_H04_PROBE_SHAPE_REGRESSION.ps1",
       "cases": 31,
@@ -206,6 +206,12 @@
       "path": "docs/handoffs/claude-local-execution-2026-11-24/66_HARNESS_SUCCESSOR_ACCEPTANCE_MATRIX.csv",
       "cases": 32,
       "state": "NOT_RUN"
-    }
+    },
+    "product_contracts": {
+      "path": "docs/handoffs/claude-local-execution-2026-11-24/60_CRITICAL_PATH_AND_PRODUCT_CONTRACTS.md",
+      "section": "G",
+      "status": "PROPOSED_ONLY"
+    },
+    "launch_authority": "HOLD supersession in CLAUDE.md and 00/03/09/13"
   }
 }
