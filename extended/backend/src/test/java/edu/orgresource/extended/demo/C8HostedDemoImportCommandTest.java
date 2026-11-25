@@ -2,9 +2,11 @@ package edu.orgresource.extended.demo;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class C8HostedDemoImportCommandTest {
     @Test void refusesAbsentApprovalBeforeAnyMySqlConnection() {
@@ -92,10 +94,10 @@ class C8HostedDemoImportCommandTest {
         org.junit.jupiter.api.Assertions.assertTrue(failure.getMessage().contains("absolute path"));
     }
 
-    @Test void refusesInvalidOriginalEvidenceHmacKeyBeforeMySqlConnection() {
+    @Test void refusesInvalidOriginalEvidenceHmacKeyBeforeMySqlConnection(@TempDir Path tempDir) {
         Map<String,String> settings = authorizedPreflightSettings();
         settings.put("EXT_C8_BASELINE_MODE", "VERIFY");
-        settings.put("EXT_C8_BASELINE_FILE", "/tmp/private-baseline.properties");
+        settings.put("EXT_C8_BASELINE_FILE", tempDir.toAbsolutePath().resolve("private-baseline.properties").toString());
         settings.put("EXT_C8_BASELINE_HMAC_HEX", "invalid");
         var failure = assertThrows(IllegalArgumentException.class,
                 () -> C8HostedDemoImportCommand.run(null,

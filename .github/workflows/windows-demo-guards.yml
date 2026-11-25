@@ -1,0 +1,36 @@
+name: Windows demo guard fixture verification
+on:
+  pull_request:
+    branches: [test/c8-directed-identity-route-evidence-2026-11-25]
+permissions:
+  contents: read
+jobs:
+  windows-demo-guards:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'test/r09-integrated-evidence-candidate-2026-11-25'
+    runs-on: windows-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: extended/backend/pom.xml
+      - name: Verify exact checkout and run database-free demo guard tests
+        shell: pwsh
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+          EXT_SMS_ENABLED: 'false'
+          EXT_REMINDER_MODE: DISABLED
+        run: |
+          $actual = git rev-parse HEAD
+          if ($LASTEXITCODE -ne 0 -or $actual -cne $env:EXPECTED_SHA) { throw 'Exact checkout mismatch' }
+          Write-Output "WINDOWS_GUARD_SOURCE=$actual"
+          java -version
+          if ($LASTEXITCODE -ne 0) { throw 'Java unavailable' }
+          & .\backend\mvnw.cmd -B -f extended/backend/pom.xml "-Dtest=C8HostedDemoImportCommandTest,C8HostedDemoPreflightTest,C8HostedDemoPostflightTest,C8HostedOriginalBaselineTest" test
+          if ($LASTEXITCODE -ne 0) { throw 'Windows demo guard tests failed' }

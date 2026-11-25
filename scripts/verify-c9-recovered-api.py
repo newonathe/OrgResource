@@ -3,6 +3,10 @@
 Private JSON state bridges source and restored processes. Never log bodies/cookies.
 """
 import http.cookiejar
+import http.client
+import http.server
+import threading
+import traceback
 import json
 import os
 import pathlib
@@ -87,6 +91,60 @@ def invite(owner, org, role, username):
         "displayName": username, "password": password})
     return password, redeemed["membershipId"]
 
+def drop_committed_response(client, path, body, etag, key):
+    """One-shot loopback fault proxy. Upstream completes; downstream gets EOF."""
+    payload = json.dumps(body).encode()
+    headers = {"Content-Type": "application/json", "Origin": BASE,
+               "X-CSRF-TOKEN": client.csrf, "Cookie": "ORGSESSION=" + client.cookie(),
+               "If-Match": etag, "Idempotency-Key": key}
+    observed = []
+    upstream_receipt = []
+    class DropHandler(http.server.BaseHTTPRequestHandler):
+        def log_message(self, *args):
+            pass
+        def do_POST(self):
+            self.close_connection = True
+            upstream = None
+            try:
+                check(self.path == path and int(self.headers["Content-Length"]) == len(payload), "DROP_REQUEST_SHAPE")
+                check(self.rfile.read(len(payload)) == payload, "DROP_REQUEST_BODY")
+                check(all(self.headers.get(k) == v for k, v in headers.items()), "DROP_REQUEST_HEADERS")
+                upstream = http.client.HTTPConnection("127.0.0.1", 8085, timeout=15)
+                upstream.request("POST", path, body=payload, headers=headers)
+                with upstream.getresponse() as response:
+                    data = json.loads(response.read())["data"]
+                    check(response.status == 201 and data["operationId"] == body["operationId"]
+                          and data["action"] == "RECEIPT" and data["totalQuantity"] == 1
+                          and response.headers.get("ETag"), "DROP_UPSTREAM_COMMIT")
+                    upstream_receipt.append((data, response.headers["ETag"]))
+                observed.append(True)
+                # Intentionally never send a status line or body downstream.
+            except Exception:
+                observed.append(False)
+            finally:
+                if upstream is not None:
+                    upstream.close()
+    with http.server.HTTPServer(("127.0.0.1", 0), DropHandler) as server:
+        server.timeout = 20
+        worker = threading.Thread(target=server.handle_request, daemon=True)
+        worker.start()
+        downstream = http.client.HTTPConnection("127.0.0.1", server.server_port, timeout=20)
+        lost = False
+        try:
+            downstream.request("POST", path, body=payload, headers=headers)
+            try:
+                with downstream.getresponse() as response:
+                    response.read()
+            except http.client.RemoteDisconnected:
+                lost = True
+        finally:
+            downstream.close()
+            worker.join(20)
+        check(not worker.is_alive() and lost and observed == [True], "DROP_RESPONSE_NOT_OBSERVED")
+    check(len(upstream_receipt) == 1, "DROP_UPSTREAM_RECEIPT")
+    ok("lost-response-upstream-201-downstream-eof")
+    return upstream_receipt[0]
+
 def seed():
     owner = Client().login(OWNER, os.environ["C9_RUNTIME_OWNER_PASSWORD"])
     org_id = os.environ["C9_RUNTIME_ORG"]
@@ -114,24 +172,59 @@ def seed():
     op = str(uuid.uuid4())
     body = {"operationId": op, "quantity": 1}
     key = secrets.token_hex(32)
-    cust.request("POST", path + "/receive", 201, body, {"If-Match": etag, "Idempotency-Key": key})
-    members, _ = owner.request("GET", org + "/members", 200)
-    for member_id, suffix, payload in [
-        (cust_id, "/role", {"role": "MEMBER"}), (suspended_id, "/suspend", {})]:
-        member = next(m for m in members["items"] if m["id"] == member_id)
-        owner.request("POST", org + "/members/" + member_id + suffix, 200, payload,
-                      {"If-Match": '"v' + str(member["version"]) + '"'})
-    cust.request("GET", org + "/operations/" + op, 403)
+    original_data, original_etag = drop_committed_response(cust, path + "/receive", body, etag, key)
     receipt, _ = owner.request("GET", org + "/operations/" + op, 200)
     check(receipt["kind"] == "RECEIPT" and receipt["operationId"] == op, "SOURCE_RECEIPT")
     owner.request("GET", "/api/v2/session", 200)
     owner.request("GET", "/api/v2/demo/metadata", 503)
     state = {"org": org_id, "foreign": foreign, "resource": resource, "operation": op,
              "etag": etag, "key": key, "oldSession": owner.cookie(),
-             "custPassword": cust_password, "suspendedPassword": suspended_password}
+             "custPassword": cust_password, "suspendedPassword": suspended_password,
+             "custMembership": cust_id, "suspendedMembership": suspended_id,
+             "originalData": original_data, "originalEtag": original_etag}
     with os.fdopen(os.open(STATE, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), "w") as f:
         json.dump(state, f)
     ok("source-real-authenticated-session-and-committed-receipt")
+
+def source_replay():
+    s = json.loads(STATE.read_text())
+    org = "/api/v2/orgs/" + s["org"]
+    path = org + "/resources/" + s["resource"]
+    # Same server/schema and persisted session, but a newly launched JVM.
+    Client().request("GET", "/api/v2/session", 200,
+                     headers={"Cookie": "ORGSESSION=" + s["oldSession"]})
+    cust = Client().login("c9-runtime-custodian", s["custPassword"])
+    cust.select(s["org"])
+    before, etag = cust.request("GET", path, 200)
+    check(before["totalQuantity"] == 1 and before["availableQuantity"] == 1 and etag, "RESTART_COMMITTED_STOCK")
+    replay, replay_etag = cust.request("POST", path + "/receive", 201,
+                             {"operationId": s["operation"], "quantity": 1},
+                             {"If-Match": s["etag"], "Idempotency-Key": s["key"]})
+    check(replay["action"] == "RECEIPT" and replay["operationId"] == s["operation"], "RESTART_REPLAY_IDENTITY")
+    check(replay == s["originalData"] and replay_etag == s["originalEtag"] == etag,
+          "RESTART_TEMPORARY_RECEIPT_CHANGED")
+    after, after_etag = cust.request("GET", path, 200)
+    moves, _ = cust.request("GET", path + "/movements?limit=10", 200)
+    check(after == before and after_etag == etag and len(moves["items"]) == 1
+          and moves["items"][0]["operationId"] == s["operation"], "RESTART_REPLAY_CHANGED_STOCK")
+    ok("same-actor-replay-after-actual-jvm-restart")
+
+def source_demote():
+    s = json.loads(STATE.read_text())
+    owner = Client().login(OWNER, os.environ["C9_RUNTIME_OWNER_PASSWORD"])
+    owner.select(s["org"])
+    org = "/api/v2/orgs/" + s["org"]
+    members, _ = owner.request("GET", org + "/members", 200)
+    for member_id, suffix, payload in [
+        (s["custMembership"], "/role", {"role": "MEMBER"}), (s["suspendedMembership"], "/suspend", {})]:
+        member = next(m for m in members["items"] if m["id"] == member_id)
+        owner.request("POST", org + "/members/" + member_id + suffix, 200, payload,
+                      {"If-Match": '"v' + str(member["version"]) + '"'})
+    cust = Client().login("c9-runtime-custodian", s["custPassword"])
+    cust.select(s["org"])
+    cust.request("GET", org + "/operations/" + s["operation"], 403)
+    owner.request("GET", org + "/operations/" + s["operation"], 200)
+    ok("source-demotion-and-suspension-after-restart")
 
 def recovered():
     s = json.loads(STATE.read_text())
@@ -191,12 +284,14 @@ def recovered():
 if __name__ == "__main__":
     try:
         check(os.environ.get("C9_RUNTIME_ISOLATED") == "true", "CI_RUNTIME_GUARD")
-        check(sys.argv[1:] in [["seed"], ["recovered"]], "MODE")
-        (seed if sys.argv[1] == "seed" else recovered)()
+        modes = {"seed": seed, "source-replay": source_replay, "source-demote": source_demote, "recovered": recovered}
+        check(len(sys.argv) == 2 and sys.argv[1] in modes, "MODE")
+        modes[sys.argv[1]]()
     except Exception as exc:
         # A missing response field or setup error is a failure, not a negative pass.
         if isinstance(exc, RuntimeError):
             print("C9_RUNTIME_FAILURE:" + str(exc), file=sys.stderr)
         else:
-            print("C9_RUNTIME_FAILURE:" + type(exc).__name__, file=sys.stderr)
+            frame = traceback.extract_tb(exc.__traceback__)[-1]
+            print("C9_RUNTIME_FAILURE:" + type(exc).__name__ + " line=" + str(frame.lineno), file=sys.stderr)
         sys.exit(1)
