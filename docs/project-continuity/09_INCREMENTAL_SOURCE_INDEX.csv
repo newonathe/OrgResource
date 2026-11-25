@@ -309,3 +309,4 @@
 "docs/project-continuity/02_GIT_REF_SNAPSHOT.json","67381873898ba667a61922e86c48c112b7dde6df","39577","100644","2aa3745ae4a626c869a46ae816d10c31dd3a93f6","SOURCE_ONLY G01 candidate checkpoint; test actual execution pending"
 "docs/project-continuity/04_DECISIONS_AND_CONFLICTS.md","9a20b75c0ffab85be0bf20d36f3f51b97a9d513f","54541","100644","2aa3745ae4a626c869a46ae816d10c31dd3a93f6","SOURCE_ONLY G01 candidate checkpoint; test actual execution pending"
 "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","1f8ce7bd6a3902045c2517ffeb867f2870cc872d","489872","100644","9208f29a7877ea7e5d51a5cc0ed72d67dafe0624","SOURCE_ONLY G01 candidate checkpoint; test actual execution pending"
+"docs/handoffs/claude-local-execution-2026-11-24/79_G01_PAGINATION_RESIDUAL_CANDIDATE.md","aa23a3e9e1b401444e8e06de90fb7ee6848ceecc","9581","100644","6ce2d22df83bf6fca7e3ee53a711778904cb7e91","SOURCE_ONLY R031 exact profile/guard and CI metadata addendum"
