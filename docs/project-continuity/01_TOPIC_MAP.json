@@ -543,6 +543,18 @@
           "blob": "285b2e653c795f4e6df392f386b1d315c94d546f",
           "ref": "38d93c5062e98b632d92d09e4f58133b2b10e079",
           "review": "SOURCE_ONLY seven full historical privacy reviews; rights and remediation open"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/65_PR57_PRIVACY_REVIEW_INDEX.csv",
+          "blob": "7ec15941199504c1282aade09fa3cae8b887e371",
+          "ref": "e4a0d41caf48f763fcc5f41686acd8c05a3607a9",
+          "review": "SOURCE_ONLY structured privacy; actual historical recovered-control log recheck; no new runtime"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/74_STRUCTURED_PRIVACY_AND_RECOVERED_ROUTE_RECEIPTS.md",
+          "blob": "a927edbf7e6a1d96bf3059dfe3268d377db841ec",
+          "ref": "e4a0d41caf48f763fcc5f41686acd8c05a3607a9",
+          "review": "SOURCE_ONLY structured privacy; actual historical recovered-control log recheck; no new runtime"
         }
       ]
     },
@@ -574,7 +586,21 @@
         }
       ],
       "authority": "93 route candidate mapping, independent issue34 blocked; current code and actual test evidence.",
-      "next": "G01 remains blocked pending independent IR4/reviewer. R035/R038 actual public recovered receipt rechecked in Report74; normal-writable side-effect residual, approved private full-positive and transient DB cases remain open. Do not rerun all 93 or claim full acceptance."
+      "next": "G01 remains blocked pending independent IR4/reviewer. R035/R038 actual public recovered receipt rechecked in Report74; normal-writable side-effect residual, approved private full-positive and transient DB cases remain open. Do not rerun all 93 or claim full acceptance.",
+      "latest_sources": [
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/74_STRUCTURED_PRIVACY_AND_RECOVERED_ROUTE_RECEIPTS.md",
+          "blob": "a927edbf7e6a1d96bf3059dfe3268d377db841ec",
+          "ref": "e4a0d41caf48f763fcc5f41686acd8c05a3607a9",
+          "review": "SOURCE_ONLY structured privacy; actual historical recovered-control log recheck; no new runtime"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/12_EXECUTION_GRAPH.json",
+          "blob": "e21121e1418c214c08378824062d603a3d0d65b6",
+          "ref": "e4a0d41caf48f763fcc5f41686acd8c05a3607a9",
+          "review": "SOURCE_ONLY structured privacy; actual historical recovered-control log recheck; no new runtime"
+        }
+      ]
     },
     {
       "id": "T12_HOSTING_AND_SYNTHETIC_DATA",
@@ -1070,6 +1096,18 @@
           "blob": "285b2e653c795f4e6df392f386b1d315c94d546f",
           "ref": "38d93c5062e98b632d92d09e4f58133b2b10e079",
           "review": "SOURCE_ONLY seven full historical privacy reviews; rights and remediation open"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/65_PR57_PRIVACY_REVIEW_INDEX.csv",
+          "blob": "7ec15941199504c1282aade09fa3cae8b887e371",
+          "ref": "e4a0d41caf48f763fcc5f41686acd8c05a3607a9",
+          "review": "SOURCE_ONLY structured privacy; actual historical recovered-control log recheck; no new runtime"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/74_STRUCTURED_PRIVACY_AND_RECOVERED_ROUTE_RECEIPTS.md",
+          "blob": "a927edbf7e6a1d96bf3059dfe3268d377db841ec",
+          "ref": "e4a0d41caf48f763fcc5f41686acd8c05a3607a9",
+          "review": "SOURCE_ONLY structured privacy; actual historical recovered-control log recheck; no new runtime"
         }
       ]
     },
