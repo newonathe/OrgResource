@@ -1,3 +1,4 @@
+import {scanR031} from "./80_R031_CAPTURE_SCANNER.mjs";
 // Verification-only in-memory stdout/stderr capture lifecycle. No launch or DB authority.
 // Runtime sink inventory, actual logger canaries, process/DB ownership and cleanup remain external gates.
 export function makeR031Capture(config) {
@@ -66,7 +67,7 @@ export function makeR031Capture(config) {
       }
       // No caller-supplied capture/sink override; return only strict scanner receipt.
       const r=scan({oldCodes:secrets.oldCodes,newCodes:secrets.newCodes,validPassword:secrets.validPassword,invalidPassword:secrets.invalidPassword,expectedSinks:ids.slice(),captures});
-      if(r?.status==="NO_MATCH"&&r.sinksChecked===2&&r.matches===0)return fixed("NO_MATCH").status==="NO_MATCH"?{status:"NO_MATCH",sinksChecked:2,matches:0}:fixed("REFUSED");
+      if(r?.status==="NO_MATCH"&&r.sinksChecked===2&&r.matches===0)return {status:"NO_MATCH",sinksChecked:2,matches:0};
       if(r?.status==="MATCH"&&r.sinksChecked===2&&Number.isInteger(r.matches)&&r.matches>=1&&r.matches<=24)return {status:"MATCH",sinksChecked:2,matches:r.matches};
       return fixed("REFUSED");
     }catch{return fixed("REFUSED");}finally{wipe();for(const b of buffers)b.fill(0);state="FINISHED";}
@@ -95,7 +96,7 @@ export function bindR031Child(child,config){
       s.on("data",chunk=>cap.data(id,chunk));
     }
   }catch{cap.abort();}
-  return {finish:cap.finish,abort:cap.abort};
+  return {finish:secrets=>cap.finish(scanR031,secrets),abort:cap.abort};
 }
 
 export function testR031Capture(make){
@@ -140,6 +141,54 @@ export function testR031Capture(make){
   for(const [name,events,expected,scanner=spy,modify] of cases){
     const x=config(),v=modify?.(x),c=make(v===null?null:x);
     events(c);const r=c.finish(scanner,secrets);
+    if(r.status!==expected||Object.keys(r).sort().join(",")!=="matches,sinksChecked,status")failures.push(name);
+  }
+  return {total:cases.length,passed:cases.length-failures.length,failures};
+}
+
+
+export function testR031BoundAdapter(bind) {
+  const bytes=s=>Uint8Array.from(s,c=>c.charCodeAt(0));
+  const m=i=>"R031-CAPTURE-"+String(i).repeat(32);
+  const config=()=>({expectedSinks:["stdout","stderr"],canaries:{stdout:{start:m(1),end:m(2)},stderr:{start:m(3),end:m(4)}}});
+  const secrets={oldCodes:"ABCDE".split("").map(c=>c.repeat(43)),newCodes:"FGHIJ".split("").map(c=>c.repeat(43)),validPassword:"Fictional-valid-password",invalidPassword:"Fictional-invalid-password"};
+  function emitter(){
+    const handlers=new Map();
+    return {
+      on(name,fn){const arr=handlers.get(name)||[];arr.push({fn,once:false});handlers.set(name,arr);return this;},
+      once(name,fn){const arr=handlers.get(name)||[];arr.push({fn,once:true});handlers.set(name,arr);return this;},
+      emit(name,...args){const arr=handlers.get(name)||[];handlers.set(name,arr.filter(x=>!x.once));for(const x of arr)x.fn(...args);},
+      listenerCount(name){return (handlers.get(name)||[]).length;}
+    };
+  }
+  const stream=()=>Object.assign(emitter(),{readableEnded:false,destroyed:false,readableFlowing:null,readableEncoding:null});
+  const child=()=>Object.assign(emitter(),{stdout:stream(),stderr:stream(),exitCode:null,signalCode:null});
+  function events(c,leak="",options={}){
+    c.stdout.emit("data",bytes(m(1)+leak+m(2)));
+    c.stderr.emit("data",bytes(m(3)+m(4)));
+    c.exitCode=options.nonzero?1:0;
+    c.emit("exit",c.exitCode,null);
+    c.stdout.readableEnded=true;c.stdout.emit("end");c.stdout.emit("close");
+    if(!options.missingEnd){c.stderr.readableEnded=true;c.stderr.emit("end");}
+    c.stderr.emit("close");c.emit("close",c.exitCode,null);
+  }
+  const cases=[
+    ["bound-real-scanner-clean",null,c=>events(c),"NO_MATCH"],
+    ["bound-real-scanner-leak",null,c=>events(c,secrets.newCodes[0]),"MATCH"],
+    ["bound-real-scanner-invalid-secret-shape",null,c=>events(c),"REFUSED",{}],
+    ["incomplete-stream",null,c=>events(c,"",{missingEnd:true}),"REFUSED"],
+    ["nonzero-exit",null,c=>events(c,"",{nonzero:true}),"REFUSED"],
+    ["already-ended",c=>c.stdout.readableEnded=true,c=>events(c),"REFUSED"],
+    ["already-consumed",c=>c.stdout.on("data",()=>{}),c=>events(c),"REFUSED"],
+    ["already-encoded",c=>c.stdout.readableEncoding="utf8",c=>events(c),"REFUSED"],
+    ["already-exited",c=>c.exitCode=0,c=>events(c),"REFUSED"],
+    ["stream-error",null,c=>{c.stderr.emit("error");events(c);},"REFUSED"],
+    ["early-finish",null,()=>{},"REFUSED"],
+    ["explicit-abort",null,(c,b)=>{b.abort();events(c);},"REFUSED"]
+  ];
+  const failures=[];
+  for(const [name,setup,run,expected,fixture=secrets] of cases){
+    const c=child();setup?.(c);const b=bind(c,config());run(c,b);const r=b.finish(fixture);
     if(r.status!==expected||Object.keys(r).sort().join(",")!=="matches,sinksChecked,status")failures.push(name);
   }
   return {total:cases.length,passed:cases.length-failures.length,failures};
