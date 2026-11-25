@@ -1348,7 +1348,7 @@
     "event_ledger": "15_CONTINUATION_LEDGER.jsonl",
     "state_authority": "12_EXECUTION_GRAPH.json",
     "instruction": "New project chat continue => live refs/receipts and resume remote queue until R09; no implicit Claude launch or host",
-    "next_action": "Continue existing Windows L03/L04/L05 and Course A technical lanes. Propose/implement separately scoped no-WSL L06 verification adapter only after scope confirmed; synthetic actual Windows proof before private use; do not alter existing Linux runner or locked source; owner challenge, off-host and production gates unchanged."
+    "next_action": "Obtain sanitized L08 receipt and actual harness fixture/negative evidence (owner-local). Check PR57 exact-head CI actual logs, review full 86 integration-only changes incl historical docs and added source-export checks for public rights/privacy, ensure explicit owner merge approval and no new drift. Review all25 harness files and nine residual controls independently; owner-only L06 on detached72de0c10 not integrated main. Concurrent G01 reviewer assignment, L07 separate machine, Course A student deadline; Northflank incident and credential rotation before host access. L07/G01/G02/G03–05 remain open. No repeat of reported local successes absent evidence gap."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -5033,5 +5033,13 @@
     "owner_launch_required": true
   },
   "production_blocker_plan": "docs/handoffs/claude-local-execution-2026-11-24/53_WINDOWS_ONLY_PRODUCTION_GATE_RESOLUTION.md",
-  "no_wsl_alternative": "docs/handoffs/claude-local-execution-2026-11-24/54_L06_NO_WSL_ALTERNATIVE.md"
+  "no_wsl_alternative": "docs/handoffs/claude-local-execution-2026-11-24/54_L06_NO_WSL_ALTERNATIVE.md",
+  "local_return_reported": {
+    "depth": "REPORTED_ONLY",
+    "source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "harness": "72de0c106621dabc26a63390003f46c86d63b066",
+    "integration_pr": 57,
+    "integration_head": "c7ed762f1cfb1f5603d9e34028653f072c877773",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/55_LOCAL_RETURN_AND_INTEGRATION_GATE_RECONCILIATION.md"
+  }
 }
