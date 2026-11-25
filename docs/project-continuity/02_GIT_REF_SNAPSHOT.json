@@ -871,12 +871,12 @@
   },
   "latest_scoped_observation": {
     "date": "2026-11-25 PHT",
-    "handoff_parent": "3a2f8e047c5c8ff4607e1304586180c2e603667a",
+    "handoff_parent": "0607b6e5179fdd48fe53be57cf9730a88995a33c",
     "pr53": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
     "pr54": "9646ff743c6678af90aa357ee761ac11ed366dff",
     "pr55": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
-    "pr56": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
-    "coverage": "Report49 final adversarial dispatch audit; all four actual final jobs inspected; 40 exact pins; 33-node DAG checked; owner initiation required",
+    "pr56": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "coverage": "Report50: R09 reopened after reported Windows L03 failure; candidate CI pending",
     "candidate_runs": [],
     "actual_runs": [
       [
@@ -972,6 +972,6 @@
         "actual": "3 files/15 tests, typecheck/lint/build complete"
       }
     ],
-    "next_action": "Owner explicitly initiates L00 then L03 with actual nested L01/L02 receipts, L04/L05 as eligible, L06 separate owner-terminal POSIX proof, L07 separately authorized, L08 sanitized results. If no local receipt or new material evidence, do not restart remote engineering or trigger unchanged-source CI."
+    "next_action": "Inspect candidate exact-head Windows guard job and full/dedicated actual logs. If successful, reconcile protected trees, pin final source and reissue R09. Then owner authorizes fresh detached checkout and L03 once; do not reuse failed package or bypass test, L04/L06 remain blocked until verified JAR. Preserve old evidence privately; L05 only if supplied."
   }
 }

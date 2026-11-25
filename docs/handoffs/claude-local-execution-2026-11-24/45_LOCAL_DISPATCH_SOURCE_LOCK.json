@@ -1,12 +1,12 @@
 {
   "schema": "orgresource-local-dispatch-source-lock-v1",
   "date": "2026-11-25 PHT",
-  "ready_to_launch": true,
-  "approved_source_sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
-  "candidate_source_sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+  "ready_to_launch": false,
+  "approved_source_sha": null,
+  "candidate_source_sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
   "repository": "newonathe/OrgResource",
   "graph": "12_EXECUTION_GRAPH.json",
-  "status": "VERIFIED_BOUNDED_REMOTE_PREPARATION_ONLY",
+  "status": "CANDIDATE_CI_PENDING_AFTER_NATIVE_FAILURE",
   "source_files": [
     {
       "path": "AGENTS.md",
@@ -191,7 +191,20 @@
       "actual": "checkout exact; 3 test files/15 tests passed; typecheck, lint, build completed; Vite reported 162ms; job success"
     }
   ],
-  "full_pending": [],
+  "full_pending": [
+    {
+      "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+      "tree": "180f9708b78a9479d50531edbd04e0dee48a57e7",
+      "pr": 56,
+      "parent": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+      "status": "CI_PENDING",
+      "report": "docs/handoffs/claude-local-execution-2026-11-24/50_L03_WINDOWS_REPORTED_FAILURE_AND_PORTABLE_TEST_FIX.md",
+      "changed_paths": [
+        "extended/backend/src/test/java/edu/orgresource/extended/demo/C8HostedDemoImportCommandTest.java",
+        ".github/workflows/windows-demo-guards.yml"
+      ]
+    }
+  ],
   "local_queue": [
     "L00",
     "L03",
@@ -211,7 +224,8 @@
     "L04 Windows verifier authenticates encrypted C5 archive and compares four-table count/sum/XOR CRC32 fingerprints and allocation count; not exact all-row equality. Retained stopped disposable datadirs require owner-private custody. Native Windows scripts reserve then release loopback ports before launch and poll ping, so require owner-approved exclusive disposable Windows environment without other MySQL servers/listeners or competing launches; no permission broadening or shared database shutdown. If ownership cannot be established, BLOCKED, do not run. Source-only review; actual native behavior NOT_RUN.",
     "L06 report27 is authoritative; actual exact private plan/owner confirmation and POSIX capability required. No interim preparation or duplicate import.",
     "Report48: approved_source_sha denotes ChatGPT-reviewed source identity, not owner consent. All 23 pins matched exact tree. Owner explicitly initiates local queue; L06 separate real terminal confirmation. No native PS execution observed.",
-    "Report49: 17 support pins plus original 23 = 40 exact unique pins; final exact source tree; current 09/11 only. Owner initiation and direct terminal consent distinct. Native execution NOT_RUN."
+    "Report49: 17 support pins plus original 23 = 40 exact unique pins; final exact source tree; current 09/11 only. Owner initiation and direct terminal consent distinct. Native execution NOT_RUN.",
+    "Report50: prior actual Linux receipts historical. Reopen R09 after reported native failure; candidate never executable authority."
   ],
   "prior_bounded_receipts": [
     {
@@ -364,5 +378,6 @@
     "local_owner_launch_required": true,
     "private_positive": "NOT_RUN",
     "independent": "OPEN"
-  }
+  },
+  "historical_approved_source_sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024"
 }

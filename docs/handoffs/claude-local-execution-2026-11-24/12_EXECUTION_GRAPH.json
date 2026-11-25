@@ -1,8 +1,8 @@
 {
   "schema": "orgresource.pre_handoff.execution_graph.v2",
   "date": "2026-11-24 PHT",
-  "ready_to_launch": true,
-  "decision": "Remote technical preparation complete within bounded R09 local-execution scope; owner explicitly initiates local queue. Formal C8/C9/host/release/independent gates separate; no automatic launch or operator approval.",
+  "ready_to_launch": false,
+  "decision": "R09 reopened after reported native L03 failure and source correction; no local dispatch until exact candidate CI verified.",
   "verified_source": {
     "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
     "tree": "d55cecc7afd240da455014e2d9f1b61bb0e74f40",
@@ -20,11 +20,16 @@
     "actual_logs_inspected": false
   },
   "candidate": {
-    "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
-    "run": 45494597345,
-    "status": "completed",
-    "conclusion": "success",
-    "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS"
+    "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "tree": "180f9708b78a9479d50531edbd04e0dee48a57e7",
+    "pr": 56,
+    "parent": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "status": "CI_PENDING",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/50_L03_WINDOWS_REPORTED_FAILURE_AND_PORTABLE_TEST_FIX.md",
+    "changed_paths": [
+      "extended/backend/src/test/java/edu/orgresource/extended/demo/C8HostedDemoImportCommandTest.java",
+      ".github/workflows/windows-demo-guards.yml"
+    ]
   },
   "tasks": [
     {
@@ -181,7 +186,7 @@
     {
       "id": "R09",
       "executor": "CHAT",
-      "state": "VERIFIED_BOUNDED",
+      "state": "OPEN",
       "depends_on": [
         "R01",
         "R03",
@@ -190,7 +195,7 @@
         "R07",
         "R08"
       ],
-      "receipt": "Final exact PR56 full and dedicated CI actual receipts, 23/23 dispatch pins, protected A105/migrations7, corrected launch contract Report48. ready=true technical only; explicit owner launch required; no local execution or release. Report49: remaining React actual 15/15; 40/40 unique pins and DAG checks, current command packet de-duplicated; native NOT_RUN.",
+      "receipt": "Owner-supplied Claude L08 excerpt reports exact old source 2c626cb251fc3e0a5e3304f9ea5b03f89f55e024, Windows 11 physical laptop, L00 source checks and private plan hash passed (REPORTED_ONLY, raw receipt not inspected), L03 exit1, 1 failure/103 Maven, cleanup clean reported, no verified JAR. L04/L06 blocked; no source edits/retries by Claude. Source inspection identifies C8HostedDemoImportCommandTest.refusesInvalidOriginalEvidenceHmacKeyBeforeMySqlConnection uses '/tmp/private-baseline.properties' before exact 32-byte refusal; production Path.isAbsolute guard precedes HMAC check. Correct test fixture via JUnit @TempDir Path native absolute path; no production or migration edits; existing relative-path and HMAC assertions unchanged. Candidate fbfe961f861478c1727efa1ebf5df209f81f2c5d tree 180f9708b78a9479d50531edbd04e0dee48a57e7 adds focused Windows hosted-runner DB-free guard suite on PR56, and reruns existing full/dedicated Linux CI. Actual new logs pending. R09 reopened; no local rerun against candidate until exact CI and updated lock. Prior Linux evidence retained historical; native Windows package remains failed. Raw failure line/class not included in excerpt, source causal diagnosis not independent reproduction.",
       "notes": "This is the pre-handoff release gate; no launch until ChatGPT declares local queue ready Exact four-hunk source dry-run report37; final heads and actual combined CI not run. Report39 renewed six-hunk exact dry-run on latest heads, source only. Report41 seven-hunk exact latest-head source-only dry-run passed; actual integrated CI not run. Report42 preliminary combined draft PR56 exact blob integration and corrected head, CI pending, dedicated skipped by branch guard. No closure. Report43: Dedicated same-repo and exact-checkout guard candidate 2c626cb251fc3e0a5e3304f9ea5b03f89f55e024; full/dedicated pending. Report44 exact integrated dedicated and Java8 actual passed, source lock candidate only; full Extended pending. Report46: Corrected source PR55 both restart markers actual; exact PR56 full pending; no closure. Report47: prior integrated full actual pass including both restart and public R06B3b; newest integrated full pending. Bounded timing reuse not cold/warm. Report48 supersedes pending status. Current lock and graph jointly pin exact reviewed source."
     },
     {
@@ -201,7 +206,7 @@
         "R09"
       ],
       "receipt": "Owner-approved private local path, exact source/worktree, toolchain + hash checks",
-      "notes": "No secrets/host variables, no scans of unrelated files Report44: require current graph and dispatch lock both ready with identical approved source SHA, owner permission; no stale checkout. R09 technical gate met; owner must explicitly initiate; actual prerequisites remain unverified."
+      "notes": "No secrets/host variables, no scans of unrelated files Report44: require current graph and dispatch lock both ready with identical approved source SHA, owner permission; no stale checkout. R09 technical gate met; owner must explicitly initiate; actual prerequisites remain unverified. Prior exact-source checks REPORTED_ONLY; recheck new head after R09."
     },
     {
       "id": "L00B",
@@ -216,11 +221,11 @@
     {
       "id": "L03",
       "executor": "CLAUDE_LOCAL",
-      "state": "NOT_RUN",
+      "state": "TEST_FAILED",
       "depends_on": [
         "L00"
       ],
-      "receipt": "Actual package script once, extraction, verified JAR SHA and migration bytes, private logs",
+      "receipt": "Reported exit1, 1/103 Maven failures; no verified JAR, no rerun. Raw log not inspected.",
       "notes": "Windows PS7.4+, Java21, MySQL8 native, Node24, Python pywinpty R09 technical gate met; owner must explicitly initiate; actual prerequisites remain unverified."
     },
     {
@@ -231,7 +236,7 @@
         "L03"
       ],
       "receipt": "Actual nested verify-extended-c1 -VerifyRecovery completion",
-      "notes": "Fallback only missing evidence; not separate automatic run"
+      "notes": "Fallback only missing evidence; not separate automatic run Prior L03 failed before full nested acceptance; no credit."
     },
     {
       "id": "L02",
@@ -241,18 +246,18 @@
         "L03"
       ],
       "receipt": "Actual nested C6a protected-login/outage/oversize completion",
-      "notes": "Fallback only missing evidence"
+      "notes": "Fallback only missing evidence Prior L03 failed before full nested acceptance; no credit."
     },
     {
       "id": "L04",
       "executor": "CLAUDE_LOCAL",
-      "state": "WAITING_FOR_PRIVATE_INPUT",
+      "state": "BLOCKED",
       "depends_on": [
         "L03",
         "L00B"
       ],
       "receipt": "Exact full standalone 96: state/count/ledger/actual encrypted restore, private measurements",
-      "notes": "Reuse exact verified JAR, no extra build; not mixed or host Report44: actual C5 and four-table fingerprint, not all-row proof; require exclusive disposable Windows environment, no unrelated DB/listeners, native proof NOT_RUN."
+      "notes": "Reuse exact verified JAR, no extra build; not mixed or host Report44: actual C5 and four-table fingerprint, not all-row proof; require exclusive disposable Windows environment, no unrelated DB/listeners, native proof NOT_RUN. No verified JAR; R09 reopened."
     },
     {
       "id": "L05",
@@ -274,7 +279,7 @@
         "R06B"
       ],
       "receipt": "Exact full mixed 96 plus 2 original fixture orgs, real C5 restore, actual preflight/V2 baseline/one import/SELECT-only postflight/valid browser",
-      "notes": "Integrated command source reviewed in report27; final SHA must be pinned at R09. Native Linux/approved WSL POSIX, exact private plan/JAR, explicit owner terminal consent, all private positive NOT_RUN. No host. R09 exact source pinned; private input, L03, POSIX environment and explicit owner direct terminal confirmation remain mandatory; BLOCKED until those actual receipts."
+      "notes": "Integrated command source reviewed in report27; final SHA must be pinned at R09. Native Linux/approved WSL POSIX, exact private plan/JAR, explicit owner terminal consent, all private positive NOT_RUN. No host. R09 exact source pinned; private input, L03, POSIX environment and explicit owner direct terminal confirmation remain mandatory; BLOCKED until those actual receipts. No verified JAR; R09 reopened."
     },
     {
       "id": "L07",
@@ -425,7 +430,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "R09 VERIFIED_BOUNDED, owner explicitly initiates local queue from live 09/11 at exact PR56 source; L00/03 NOT_RUN, L04/L05/L06 private or operator gates remain, L07 separate, L08 sanitized handback. No new remote work unless actual failure, source drift, independent review finding or separately authorized scope. Do not launch while owner unavailable."
+    "next_action": "Inspect candidate exact-head Windows guard job and full/dedicated actual logs. If successful, reconcile protected trees, pin final source and reissue R09. Then owner authorizes fresh detached checkout and L03 once; do not reuse failed package or bypass test, L04/L06 remain blocked until verified JAR. Preserve old evidence privately; L05 only if supplied."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -813,7 +818,7 @@
   "l06_command_contract": {
     "report": "docs/handoffs/claude-local-execution-2026-11-24/27_R06B3B_AGGREGATE_RECEIPT_AND_L06_COMMAND_CONTRACT.md",
     "source_candidate": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
-    "final_sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "final_sha": "PENDING_R09",
     "state": "BLOCKED",
     "private_positive": "NOT_RUN",
     "remote_gate": "VERIFIED_BOUNDED",
@@ -2159,5 +2164,16 @@
     "local_owner_launch_required": true,
     "private_positive": "NOT_RUN",
     "independent": "OPEN"
+  },
+  "native_l03_reported": {
+    "source": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "status": "TEST_FAILED",
+    "exit_code": 1,
+    "tests": 103,
+    "failures": 1,
+    "cleanup": "REPORTED_CLEAN",
+    "verified_jar": false,
+    "receipt_depth": "REPORTED_ONLY",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/50_L03_WINDOWS_REPORTED_FAILURE_AND_PORTABLE_TEST_FIX.md"
   }
 }

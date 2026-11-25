@@ -936,22 +936,24 @@
     "actual_logs_inspected": false
   },
   "current_candidate": {
-    "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
-    "tree": "d55cecc7afd240da455014e2d9f1b61bb0e74f40",
+    "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "tree": "180f9708b78a9479d50531edbd04e0dee48a57e7",
     "pr": 56,
-    "ci": 45494597345,
-    "dedicated_ci": 45494597313,
-    "status": "completed",
-    "conclusion": "success",
-    "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS"
+    "parent": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "status": "CI_PENDING",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/50_L03_WINDOWS_REPORTED_FAILURE_AND_PORTABLE_TEST_FIX.md",
+    "changed_paths": [
+      "extended/backend/src/test/java/edu/orgresource/extended/demo/C8HostedDemoImportCommandTest.java",
+      ".github/workflows/windows-demo-guards.yml"
+    ]
   },
   "launch_gate": {
-    "ready": true,
+    "ready": false,
     "source_of_truth": "12_EXECUTION_GRAPH.json",
     "compatibility_gate": "13_MIXED_REHEARSAL_COMPATIBILITY_GATE.md",
     "verified_base_only": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
     "candidate_lock": "45_LOCAL_DISPATCH_SOURCE_LOCK.json",
-    "approved_source_sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "approved_source_sha": null,
     "owner_launch_required": true,
     "scope": "BOUNDED_REMOTE_PREPARATION_ONLY"
   },
@@ -1041,7 +1043,7 @@
     "event_ledger": "15_CONTINUATION_LEDGER.jsonl",
     "state_authority": "12_EXECUTION_GRAPH.json",
     "instruction": "New project chat continue => live refs/receipts and resume remote queue until R09; no implicit Claude launch or host",
-    "next_action": "R09 VERIFIED_BOUNDED, owner explicitly initiates local queue from live 09/11 at exact PR56 source; L00/03 NOT_RUN, L04/L05/L06 private or operator gates remain, L07 separate, L08 sanitized handback. No new remote work unless actual failure, source drift, independent review finding or separately authorized scope. Do not launch while owner unavailable."
+    "next_action": "Inspect candidate exact-head Windows guard job and full/dedicated actual logs. If successful, reconcile protected trees, pin final source and reissue R09. Then owner authorizes fresh detached checkout and L03 once; do not reuse failed package or bypass test, L04/L06 remain blocked until verified JAR. Preserve old evidence privately; L05 only if supplied."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -1624,7 +1626,7 @@
   "l06_command_contract": {
     "report": "docs/handoffs/claude-local-execution-2026-11-24/27_R06B3B_AGGREGATE_RECEIPT_AND_L06_COMMAND_CONTRACT.md",
     "source_candidate": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
-    "final_sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "final_sha": "PENDING_R09",
     "state": "BLOCKED",
     "private_positive": "NOT_RUN",
     "remote_gate": "VERIFIED_BOUNDED",
@@ -4652,5 +4654,16 @@
     "local_owner_launch_required": true,
     "private_positive": "NOT_RUN",
     "independent": "OPEN"
+  },
+  "native_l03_reported": {
+    "source": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "status": "TEST_FAILED",
+    "exit_code": 1,
+    "tests": 103,
+    "failures": 1,
+    "cleanup": "REPORTED_CLEAN",
+    "verified_jar": false,
+    "receipt_depth": "REPORTED_ONLY",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/50_L03_WINDOWS_REPORTED_FAILURE_AND_PORTABLE_TEST_FIX.md"
   }
 }
