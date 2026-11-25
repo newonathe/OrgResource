@@ -591,6 +591,18 @@
           "blob": "660f1d7170b3deabdfb2f8c51a732eed4d1df34a",
           "ref": "5b995dce1dd8b8db755a10fa879800a2ab85cc9c",
           "review": "SOURCE_ONLY structured context/graph privacy and master slice; no new runtime or rights clearance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/65_PR57_PRIVACY_REVIEW_INDEX.csv",
+          "blob": "0e9cb1af2bb79cdd7c06a584c999c496fa2c34ec",
+          "ref": "4787bce217bdf37cf02c77a3927b68a6fb187f08",
+          "review": "FULL bounded file-level privacy review of 86 exact-main records; no runtime or publication clearance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/78_BOUNDED_PRIVACY_REVIEW_COMPLETION_AND_NEXT_GATES.md",
+          "blob": "35bbf207e7a433bf70b969d7787bb7f908643bf9",
+          "ref": "4787bce217bdf37cf02c77a3927b68a6fb187f08",
+          "review": "FULL bounded file-level privacy review of 86 exact-main records; no runtime or publication clearance"
         }
       ]
     },
@@ -1192,6 +1204,18 @@
           "blob": "660f1d7170b3deabdfb2f8c51a732eed4d1df34a",
           "ref": "5b995dce1dd8b8db755a10fa879800a2ab85cc9c",
           "review": "SOURCE_ONLY structured context/graph privacy and master slice; no new runtime or rights clearance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/65_PR57_PRIVACY_REVIEW_INDEX.csv",
+          "blob": "0e9cb1af2bb79cdd7c06a584c999c496fa2c34ec",
+          "ref": "4787bce217bdf37cf02c77a3927b68a6fb187f08",
+          "review": "FULL bounded file-level privacy review of 86 exact-main records; no runtime or publication clearance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/78_BOUNDED_PRIVACY_REVIEW_COMPLETION_AND_NEXT_GATES.md",
+          "blob": "35bbf207e7a433bf70b969d7787bb7f908643bf9",
+          "ref": "4787bce217bdf37cf02c77a3927b68a6fb187f08",
+          "review": "FULL bounded file-level privacy review of 86 exact-main records; no runtime or publication clearance"
         }
       ]
     },
@@ -1351,6 +1375,18 @@
           "blob": "dba49da2debbd4ef2b53a9cb26e0bc810a285efb",
           "ref": "0f116e2a5be8f04dad66ac7f1b28efe6aad31419",
           "review": "SOURCE_ONLY structured intake and continuity validation"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/65_PR57_PRIVACY_REVIEW_INDEX.csv",
+          "blob": "0e9cb1af2bb79cdd7c06a584c999c496fa2c34ec",
+          "ref": "4787bce217bdf37cf02c77a3927b68a6fb187f08",
+          "review": "FULL bounded file-level privacy review of 86 exact-main records; no runtime or publication clearance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/78_BOUNDED_PRIVACY_REVIEW_COMPLETION_AND_NEXT_GATES.md",
+          "blob": "35bbf207e7a433bf70b969d7787bb7f908643bf9",
+          "ref": "4787bce217bdf37cf02c77a3927b68a6fb187f08",
+          "review": "FULL bounded file-level privacy review of 86 exact-main records; no runtime or publication clearance"
         }
       ]
     }
