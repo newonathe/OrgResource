@@ -384,7 +384,7 @@
         }
       ],
       "authority": "Parallel PR24 source inventory and publication vetoes; metadata != content inspection.",
-      "next": "Advance CPX08/09 exact scope and CPX10 defer/approve decision; remaining semantic privacy/rights review (51 unread), H01 custody owner decision, H02–H06 authorized successor/native/independent acceptance. L06 HOLD, Claude paused; no product/migration/host action.",
+      "next": "Remaining privacy paths 43 unread; independent G01 factor/IR4 reconciliation; H01 consent and H02–H06 accepted native successor; L06 HOLD, no CPX implementation.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
@@ -477,6 +477,12 @@
           "blob": "2681139c07c9a32c7c1a4896cb56e29c11c91b11",
           "ref": "d4edaaf837b42fe1b53e60381d09afe19ca138a7",
           "review": "SOURCE_ONLY: proposed product contracts / privacy / current dispatch HOLD"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/65_PR57_PRIVACY_REVIEW_INDEX.csv",
+          "blob": "a785f3aaf7db4cb320b6c942384253717910ceb4",
+          "ref": "56e03c004d15ad89b708ec2e02348a74aa9c399f",
+          "review": "SOURCE_ONLY recovered design / privacy / decision and reviewer dispatch"
         }
       ]
     },
@@ -566,7 +572,7 @@
         }
       ],
       "authority": "DEC-D01 proposed only; existing role/data contracts govern until approved.",
-      "next": "Advance CPX08/09 exact scope and CPX10 defer/approve decision; remaining semantic privacy/rights review (51 unread), H01 custody owner decision, H02–H06 authorized successor/native/independent acceptance. L06 HOLD, Claude paused; no product/migration/host action.",
+      "next": "Remaining privacy paths 43 unread; independent G01 factor/IR4 reconciliation; H01 consent and H02–H06 accepted native successor; L06 HOLD, no CPX implementation.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -637,6 +643,18 @@
           "blob": "9542189b654cdab6c6a6c43046e2c0ce9a684ceb",
           "ref": "d4edaaf837b42fe1b53e60381d09afe19ca138a7",
           "review": "SOURCE_ONLY: proposed product contracts / privacy / current dispatch HOLD"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/67_CPX08_10_SELECTIVE_MODERNIZATION_AND_OPERATIONS.md",
+          "blob": "1920c144374346d6be41f522a39d0256db95781b",
+          "ref": "56e03c004d15ad89b708ec2e02348a74aa9c399f",
+          "review": "SOURCE_ONLY recovered design / privacy / decision and reviewer dispatch"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/68_OWNER_DECISIONS_AND_INDEPENDENT_REVIEW_DISPATCH.md",
+          "blob": "8bc66a708eb7a64ef422d63e9c01c0cf2f12bdc9",
+          "ref": "56e03c004d15ad89b708ec2e02348a74aa9c399f",
+          "review": "SOURCE_ONLY recovered design / privacy / decision and reviewer dispatch"
         }
       ]
     },
@@ -783,7 +801,7 @@
         }
       ],
       "authority": "Latest live PR47 supersedes snapshot; 12 graph, 14 queue, 15 events, 04 index and 10 external research.",
-      "next": "Advance CPX08/09 exact scope and CPX10 defer/approve decision; remaining semantic privacy/rights review (51 unread), H01 custody owner decision, H02–H06 authorized successor/native/independent acceptance. L06 HOLD, Claude paused; no product/migration/host action.",
+      "next": "Remaining privacy paths 43 unread; independent G01 factor/IR4 reconciliation; H01 consent and H02–H06 accepted native successor; L06 HOLD, no CPX implementation.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -920,6 +938,18 @@
           "blob": "e87fb47ce848c3360616d838e7590bb9b7c63de5",
           "ref": "d4edaaf837b42fe1b53e60381d09afe19ca138a7",
           "review": "SOURCE_ONLY: proposed product contracts / privacy / current dispatch HOLD"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/68_OWNER_DECISIONS_AND_INDEPENDENT_REVIEW_DISPATCH.md",
+          "blob": "8bc66a708eb7a64ef422d63e9c01c0cf2f12bdc9",
+          "ref": "56e03c004d15ad89b708ec2e02348a74aa9c399f",
+          "review": "SOURCE_ONLY recovered design / privacy / decision and reviewer dispatch"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/12_EXECUTION_GRAPH.json",
+          "blob": "2a4c4d8ac852102a659f57dd3628a6a2271c98dd",
+          "ref": "56e03c004d15ad89b708ec2e02348a74aa9c399f",
+          "review": "SOURCE_ONLY recovered design / privacy / decision and reviewer dispatch"
         }
       ]
     },
@@ -942,7 +972,7 @@
         }
       ],
       "authority": "Actual code plus Academic Glass Commons and UI amendments; visual review not inferred.",
-      "next": "Advance CPX08/09 exact scope and CPX10 defer/approve decision; remaining semantic privacy/rights review (51 unread), H01 custody owner decision, H02–H06 authorized successor/native/independent acceptance. L06 HOLD, Claude paused; no product/migration/host action.",
+      "next": "Remaining privacy paths 43 unread; independent G01 factor/IR4 reconciliation; H01 consent and H02–H06 accepted native successor; L06 HOLD, no CPX implementation.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -1005,6 +1035,12 @@
           "blob": "9542189b654cdab6c6a6c43046e2c0ce9a684ceb",
           "ref": "d4edaaf837b42fe1b53e60381d09afe19ca138a7",
           "review": "SOURCE_ONLY: proposed product contracts / privacy / current dispatch HOLD"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/67_CPX08_10_SELECTIVE_MODERNIZATION_AND_OPERATIONS.md",
+          "blob": "1920c144374346d6be41f522a39d0256db95781b",
+          "ref": "56e03c004d15ad89b708ec2e02348a74aa9c399f",
+          "review": "SOURCE_ONLY recovered design / privacy / decision and reviewer dispatch"
         }
       ]
     },
