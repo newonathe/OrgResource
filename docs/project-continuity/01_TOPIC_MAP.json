@@ -634,7 +634,7 @@
         }
       ],
       "authority": "93 route candidate mapping, independent issue34 blocked; current code and actual test evidence.",
-      "next": "R031 actual Linux Node fictional subprocess controls 14/14 verified bounded; prior synthetic65 retained, PR58 pagination verified bounded, no repeat absent drift/failure. Next implement protected actual Java/MySQL fixture fork and pre-start owned DB/process guard, actual logger inventory/canaries, denied/success DB oracles, drain/cleanup with no raw public output. Independent IR4/G01 blocked; 13 owner-gated privacy flags, H01–H06 native successor, L06 HOLD/no WSL unchanged.",
+      "next": "R031 actual hardened owned MySQL8.0.46 guard verified bounded, prior Node14 and synthetic65 retained, PR58 pagination verified bounded. Implement actual protected Java21/MySQL fork from exact main, before fixture narrow runtime grants, verify host JDBC UUID/Flyway and actual logger inventory/canaries, invoke bootstrap service in memory (never CLI --bootstrap), direct HTTP #67 denial/success and DB oracle, drain and scan; no public raw output. Inspect unexpected full Verify runs45706965492/45707278663 and reconcile actual failures if any; no redundant rerun. Independent IR4/G01 blocked; 13 owner-gated privacy flags, H01–H06 native successor, L06 HOLD/no WSL unchanged.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/74_STRUCTURED_PRIVACY_AND_RECOVERED_ROUTE_RECEIPTS.md",
@@ -718,6 +718,30 @@
           "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
           "blob": "0dca8da0b48991d8ea25d3c8a38640b1eb488a15",
           "ref": "5a3a5572fe53c8c1e5c7a4e99e24c126f2f52e4b",
+          "review": "RELEVANT_RANGES R031 addendum"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/86_R031_OWNED_MYSQL_GUARD.mjs",
+          "blob": "6b73672ff8abccc771a39b2a825e2d2f6af77463",
+          "ref": "0029f94ed743b336b60ab6ed4b26550b06fd10c8",
+          "review": "FULL hardened owned MySQL guard actual"
+        },
+        {
+          "path": ".github/workflows/r031-owned-mysql.yml",
+          "blob": "990f9381c46ae6881540cf267702041f0e6b59c3",
+          "ref": "5e1e24baf9f2f25c5e59fbe788cfef9838d556a7",
+          "review": "FULL isolated fixture workflow"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/87_R031_OWNED_MYSQL_RECEIPT.md",
+          "blob": "8c1b4320fbd7c5a720abb7dc22f06fd23bf77e61",
+          "ref": "8a6595abaa63d3bafaa66a09cd6f051ff21c5ec4",
+          "review": "FULL actual bounded guard receipt"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
+          "blob": "75311dc4628b6dbe91af86985770736e883428bd",
+          "ref": "8a6595abaa63d3bafaa66a09cd6f051ff21c5ec4",
           "review": "RELEVANT_RANGES R031 addendum"
         }
       ]
@@ -1007,7 +1031,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "R031 actual Linux Node fictional subprocess controls 14/14 verified bounded; prior synthetic65 retained, PR58 pagination verified bounded, no repeat absent drift/failure. Next implement protected actual Java/MySQL fixture fork and pre-start owned DB/process guard, actual logger inventory/canaries, denied/success DB oracles, drain/cleanup with no raw public output. Independent IR4/G01 blocked; 13 owner-gated privacy flags, H01–H06 native successor, L06 HOLD/no WSL unchanged.",
+      "next": "R031 actual hardened owned MySQL8.0.46 guard verified bounded, prior Node14 and synthetic65 retained, PR58 pagination verified bounded. Implement actual protected Java21/MySQL fork from exact main, before fixture narrow runtime grants, verify host JDBC UUID/Flyway and actual logger inventory/canaries, invoke bootstrap service in memory (never CLI --bootstrap), direct HTTP #67 denial/success and DB oracle, drain and scan; no public raw output. Inspect unexpected full Verify runs45706965492/45707278663 and reconcile actual failures if any; no redundant rerun. Independent IR4/G01 blocked; 13 owner-gated privacy flags, H01–H06 native successor, L06 HOLD/no WSL unchanged.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -1336,6 +1360,30 @@
           "blob": "0dca8da0b48991d8ea25d3c8a38640b1eb488a15",
           "ref": "5a3a5572fe53c8c1e5c7a4e99e24c126f2f52e4b",
           "review": "RELEVANT_RANGES R031 addendum"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/86_R031_OWNED_MYSQL_GUARD.mjs",
+          "blob": "6b73672ff8abccc771a39b2a825e2d2f6af77463",
+          "ref": "0029f94ed743b336b60ab6ed4b26550b06fd10c8",
+          "review": "FULL hardened owned MySQL guard actual"
+        },
+        {
+          "path": ".github/workflows/r031-owned-mysql.yml",
+          "blob": "990f9381c46ae6881540cf267702041f0e6b59c3",
+          "ref": "5e1e24baf9f2f25c5e59fbe788cfef9838d556a7",
+          "review": "FULL isolated fixture workflow"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/87_R031_OWNED_MYSQL_RECEIPT.md",
+          "blob": "8c1b4320fbd7c5a720abb7dc22f06fd23bf77e61",
+          "ref": "8a6595abaa63d3bafaa66a09cd6f051ff21c5ec4",
+          "review": "FULL actual bounded guard receipt"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
+          "blob": "75311dc4628b6dbe91af86985770736e883428bd",
+          "ref": "8a6595abaa63d3bafaa66a09cd6f051ff21c5ec4",
+          "review": "RELEVANT_RANGES R031 addendum"
         }
       ]
     },
@@ -1482,7 +1530,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "R031 actual Linux Node fictional subprocess controls 14/14 verified bounded; prior synthetic65 retained, PR58 pagination verified bounded, no repeat absent drift/failure. Next implement protected actual Java/MySQL fixture fork and pre-start owned DB/process guard, actual logger inventory/canaries, denied/success DB oracles, drain/cleanup with no raw public output. Independent IR4/G01 blocked; 13 owner-gated privacy flags, H01–H06 native successor, L06 HOLD/no WSL unchanged.",
+      "next": "R031 actual hardened owned MySQL8.0.46 guard verified bounded, prior Node14 and synthetic65 retained, PR58 pagination verified bounded. Implement actual protected Java21/MySQL fork from exact main, before fixture narrow runtime grants, verify host JDBC UUID/Flyway and actual logger inventory/canaries, invoke bootstrap service in memory (never CLI --bootstrap), direct HTTP #67 denial/success and DB oracle, drain and scan; no public raw output. Inspect unexpected full Verify runs45706965492/45707278663 and reconcile actual failures if any; no redundant rerun. Independent IR4/G01 blocked; 13 owner-gated privacy flags, H01–H06 native successor, L06 HOLD/no WSL unchanged.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -1566,6 +1614,30 @@
           "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
           "blob": "0dca8da0b48991d8ea25d3c8a38640b1eb488a15",
           "ref": "5a3a5572fe53c8c1e5c7a4e99e24c126f2f52e4b",
+          "review": "RELEVANT_RANGES R031 addendum"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/86_R031_OWNED_MYSQL_GUARD.mjs",
+          "blob": "6b73672ff8abccc771a39b2a825e2d2f6af77463",
+          "ref": "0029f94ed743b336b60ab6ed4b26550b06fd10c8",
+          "review": "FULL hardened owned MySQL guard actual"
+        },
+        {
+          "path": ".github/workflows/r031-owned-mysql.yml",
+          "blob": "990f9381c46ae6881540cf267702041f0e6b59c3",
+          "ref": "5e1e24baf9f2f25c5e59fbe788cfef9838d556a7",
+          "review": "FULL isolated fixture workflow"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/87_R031_OWNED_MYSQL_RECEIPT.md",
+          "blob": "8c1b4320fbd7c5a720abb7dc22f06fd23bf77e61",
+          "ref": "8a6595abaa63d3bafaa66a09cd6f051ff21c5ec4",
+          "review": "FULL actual bounded guard receipt"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
+          "blob": "75311dc4628b6dbe91af86985770736e883428bd",
+          "ref": "8a6595abaa63d3bafaa66a09cd6f051ff21c5ec4",
           "review": "RELEVANT_RANGES R031 addendum"
         }
       ]

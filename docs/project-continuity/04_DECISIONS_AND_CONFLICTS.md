@@ -247,3 +247,7 @@ Actual PR58 suite count and exact two-method-only patch support bounded 101-row 
 ### R031 actual fictional child controls — Report85 (2026-11-26 PHT)
 
 Actual Node Linux14/14, not app logging or Windows proof. Fixed synthetic-only workflow, no inherited child environment/private inputs/raw output. Preserve runtime guard, logger sink inventory and independent acceptance gates; L06 HOLD unchanged. Exact report 5a3a5572fe53c8c1e5c7a4e99e24c126f2f52e4b:docs/handoffs/claude-local-execution-2026-11-24/85_R031_REAL_CHILD_RECEIPT.md.
+
+### R031 actual owned MySQL guard — Report87 (2026-11-26 PHT)
+
+Initial and hardened actual MySQL8.0.46 guard success; SQL1142 and volume removal tightened after first pass. No application/JDBC or native proof. C1Application --bootstrap intentionally prints recovery codes: use C1BootstrapService in-memory from protected test-only fork instead. Preserve independent acceptance/L06 HOLD. Unexpected full PR Verify runs recorded; docs-only commits skip CI to avoid needless re-execution. Exact report 8a6595abaa63d3bafaa66a09cd6f051ff21c5ec4:docs/handoffs/claude-local-execution-2026-11-24/87_R031_OWNED_MYSQL_RECEIPT.md.
