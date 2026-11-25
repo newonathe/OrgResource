@@ -384,7 +384,7 @@
         }
       ],
       "authority": "Parallel PR24 source inventory and publication vetoes; metadata != content inspection.",
-      "next": "20 non-full privacy reviews (12 ranges/8 metadata); prioritize flagged incomplete paths, G01 residual assertions and independent review; H01 consent/H02–H06 accepted native successor; L06 HOLD/no WSL.",
+      "next": "13 non-full privacy reviews (8 ranges/5 metadata); prioritize flagged large duplicate master/context/source/graph, then structured ledgers and workflow; continue G01 residual assertions. H01 consent/H02–H06 accepted native successor critical; L06 HOLD/no WSL.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
@@ -849,7 +849,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "20 non-full privacy reviews (12 ranges/8 metadata); prioritize flagged incomplete paths, G01 residual assertions and independent review; H01 consent/H02–H06 accepted native successor; L06 HOLD/no WSL.",
+      "next": "13 non-full privacy reviews (8 ranges/5 metadata); prioritize flagged large duplicate master/context/source/graph, then structured ledgers and workflow; continue G01 residual assertions. H01 consent/H02–H06 accepted native successor critical; L06 HOLD/no WSL.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
