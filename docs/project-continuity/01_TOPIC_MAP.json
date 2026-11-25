@@ -531,6 +531,18 @@
           "blob": "39a23dd5220c189ebdeb451401a8217041c992de",
           "ref": "0f116e2a5be8f04dad66ac7f1b28efe6aad31419",
           "review": "SOURCE_ONLY structured intake and continuity validation"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/65_PR57_PRIVACY_REVIEW_INDEX.csv",
+          "blob": "c000b2c22e56d3b83dfd1ded43176e1f599cb66e",
+          "ref": "38d93c5062e98b632d92d09e4f58133b2b10e079",
+          "review": "SOURCE_ONLY seven full historical privacy reviews; rights and remediation open"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/73_HISTORICAL_CONVERSATION_PRIVACY_REVIEW.md",
+          "blob": "285b2e653c795f4e6df392f386b1d315c94d546f",
+          "ref": "38d93c5062e98b632d92d09e4f58133b2b10e079",
+          "review": "SOURCE_ONLY seven full historical privacy reviews; rights and remediation open"
         }
       ]
     },
@@ -1046,6 +1058,18 @@
           "blob": "fd9b42280ad97e36656e770a8ab92c4210355309",
           "ref": "0f116e2a5be8f04dad66ac7f1b28efe6aad31419",
           "review": "SOURCE_ONLY structured intake and continuity validation"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/65_PR57_PRIVACY_REVIEW_INDEX.csv",
+          "blob": "c000b2c22e56d3b83dfd1ded43176e1f599cb66e",
+          "ref": "38d93c5062e98b632d92d09e4f58133b2b10e079",
+          "review": "SOURCE_ONLY seven full historical privacy reviews; rights and remediation open"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/73_HISTORICAL_CONVERSATION_PRIVACY_REVIEW.md",
+          "blob": "285b2e653c795f4e6df392f386b1d315c94d546f",
+          "ref": "38d93c5062e98b632d92d09e4f58133b2b10e079",
+          "review": "SOURCE_ONLY seven full historical privacy reviews; rights and remediation open"
         }
       ]
     },
