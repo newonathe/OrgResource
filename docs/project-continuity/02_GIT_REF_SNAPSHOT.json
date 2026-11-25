@@ -1001,5 +1001,20 @@
     "scope": "66 full/12 ranges/8 metadata/0 unread; 13 flagged paths; 91 prior events schema-valid",
     "next": "20 non-full privacy reviews (12 ranges/8 metadata); prioritize flagged incomplete paths, G01 residual assertions and independent review; H01 consent/H02–H06 accepted native successor; L06 HOLD/no WSL.",
     "tree": "192e38f2e8b6b08806974507e324e390062dab43"
+  },
+  "g01_pagination_candidate": {
+    "observed_date": "2026-11-26 PHT",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "handoff_parent": "be54e415488d89ab204c8338ffd40fab458128ad",
+    "branch": "test/g01-pagination-residual-2026-11-26",
+    "head": "9208f29a7877ea7e5d51a5cc0ed72d67dafe0624",
+    "pr": 58,
+    "pr_state": "draft open",
+    "run": 45702182390,
+    "run_state": "in_progress at observation",
+    "changed_paths": [
+      "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java"
+    ],
+    "coverage": "scoped live refs, not full refreshed repository inventory"
   }
 }
