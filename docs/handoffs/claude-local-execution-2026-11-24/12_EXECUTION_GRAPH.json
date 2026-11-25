@@ -1,17 +1,19 @@
 {
   "schema": "orgresource.pre_handoff.execution_graph.v2",
   "date": "2026-11-24 PHT",
-  "ready_to_launch": false,
-  "decision": "R09 reopened after reported native L03 failure and source correction; no local dispatch until exact candidate CI verified.",
+  "ready_to_launch": true,
+  "decision": "R09 REAPPROVED VERIFIED_BOUNDED on fbfe961f861478c1727efa1ebf5df209f81f2c5d tree 180f9708b78a9479d50531edbd04e0dee48a57e7. Actual exact-head Windows guard 17/17, full retry Extended 103/103 Maven (78 identity), Java8 61/61, React 15/15, dedicated 7 selected method executions, all five final jobs successful; all actual logs inspected. Original Maven distribution fetch failure before tests preserved. Source delta exactly test fixture and focused Windows workflow; production unchanged, protected A105/105, V1–V7 7/7, 42 exact unique pins (40 prior +2 changed paths). Actual native L03 prior reported failure preserved; new native run NOT_RUN, no verified local JAR yet. Owner authorized routine eligible continuation; direct L06 confirmation remains mandatory.",
   "verified_source": {
-    "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
-    "tree": "d55cecc7afd240da455014e2d9f1b61bb0e74f40",
+    "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "tree": "180f9708b78a9479d50531edbd04e0dee48a57e7",
     "pr": 56,
-    "run": 45494597345,
-    "extended_job": 138801601172,
+    "run": 45550768924,
+    "extended_job": 138992173040,
     "actual_logs_inspected": true,
-    "dedicated_run": 45494597313,
-    "dedicated_job": 138801600507
+    "dedicated_run": 45550768785,
+    "dedicated_job": 138991124364,
+    "windows_run": 45550768892,
+    "windows_job": 138991124431
   },
   "verified_docs": {
     "sha": "6ff1f2cebc69d3c490f6f469c6d3b119e04d6758",
@@ -24,7 +26,7 @@
     "tree": "180f9708b78a9479d50531edbd04e0dee48a57e7",
     "pr": 56,
     "parent": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
-    "status": "CI_PENDING",
+    "status": "completed",
     "report": "docs/handoffs/claude-local-execution-2026-11-24/50_L03_WINDOWS_REPORTED_FAILURE_AND_PORTABLE_TEST_FIX.md",
     "changed_paths": [
       "extended/backend/src/test/java/edu/orgresource/extended/demo/C8HostedDemoImportCommandTest.java",
@@ -38,7 +40,52 @@
       "oracle": "full Extended exact-head Linux regression",
       "actual": "Actual log: wget failed to fetch pinned Maven 3.10.0 distribution at clean verify start; exit1 before Java test execution. Java8/React jobs success metadata; no source/test failure observed from Extended job. Rerun failed workflow jobs only accepted by GitHub API; next attempt actual logs pending."
     },
-    "retry_requested": true
+    "retry_requested": true,
+    "conclusion": "success",
+    "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS",
+    "run": 45550768924,
+    "actual_receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768924,
+        "job": 138992173040,
+        "oracle": "exact corrected source full Extended Linux regression, attempt2",
+        "actual": "93 registered routes once; 103 Maven/78 identity and corrected 8 import guard cases, zero failures/errors/skips; 60 Newman requests/110 assertions, 19 Playwright; actual deadlock rollback/retry/replay; distinct JVM response-loss and reminder restart, independent C5 1039696 bytes exact non-session rows and empty sessions; 15 archive refusals, 10 local prechecks, public original-only metadata/API/browser/grants and SQL aggregate/projection controls, all cleanup; 450+75 packaged serial HTTP, JAR 72486427 bytes SHA256 76e5977499edb6a01a0c6de95ce166c2975d08f70bcdbd57680049d1af32c10a"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768785,
+        "job": 138991124364,
+        "oracle": "exact corrected source dedicated fresh-schema tests",
+        "actual": "six groups, seven method executions, zero failures/errors/skips, six cleanups, 450 measured+75 warmups, 3 fresh schema/JVM invocations, final R0708_PREPARATION_OK"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768924,
+        "job": 138992175595,
+        "oracle": "exact frozen Java8 regression",
+        "actual": "61 Maven, 100 Newman requests/151 assertions, one packaged Playwright; zero failures/errors/skips"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768924,
+        "job": 138992174413,
+        "oracle": "exact React regression",
+        "actual": "3 test files/15 tests, typecheck/lint/build success"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768892,
+        "job": 138991124431,
+        "oracle": "exact corrected source Windows Java21 DB-free guard suite",
+        "actual": "WINDOWS_GUARD_SOURCE exact SHA; Temurin 21.0.13; C8HostedDemoImportCommandTest 8, C8HostedDemoPostflightTest 3, C8HostedDemoPreflightTest 3, C8HostedOriginalBaselineTest 3; total 17, failures/errors/skips 0, BUILD SUCCESS, job success"
+      }
+    ]
   },
   "tasks": [
     {
@@ -195,7 +242,7 @@
     {
       "id": "R09",
       "executor": "CHAT",
-      "state": "OPEN",
+      "state": "VERIFIED_BOUNDED",
       "depends_on": [
         "R01",
         "R03",
@@ -204,8 +251,8 @@
         "R07",
         "R08"
       ],
-      "receipt": "Owner-supplied Claude L08 excerpt reports exact old source 2c626cb251fc3e0a5e3304f9ea5b03f89f55e024, Windows 11 physical laptop, L00 source checks and private plan hash passed (REPORTED_ONLY, raw receipt not inspected), L03 exit1, 1 failure/103 Maven, cleanup clean reported, no verified JAR. L04/L06 blocked; no source edits/retries by Claude. Source inspection identifies C8HostedDemoImportCommandTest.refusesInvalidOriginalEvidenceHmacKeyBeforeMySqlConnection uses '/tmp/private-baseline.properties' before exact 32-byte refusal; production Path.isAbsolute guard precedes HMAC check. Correct test fixture via JUnit @TempDir Path native absolute path; no production or migration edits; existing relative-path and HMAC assertions unchanged. Candidate fbfe961f861478c1727efa1ebf5df209f81f2c5d tree 180f9708b78a9479d50531edbd04e0dee48a57e7 adds focused Windows hosted-runner DB-free guard suite on PR56, and reruns existing full/dedicated Linux CI. Actual new logs pending. R09 reopened; no local rerun against candidate until exact CI and updated lock. Prior Linux evidence retained historical; native Windows package remains failed. Raw failure line/class not included in excerpt, source causal diagnosis not independent reproduction.",
-      "notes": "This is the pre-handoff release gate; no launch until ChatGPT declares local queue ready Exact four-hunk source dry-run report37; final heads and actual combined CI not run. Report39 renewed six-hunk exact dry-run on latest heads, source only. Report41 seven-hunk exact latest-head source-only dry-run passed; actual integrated CI not run. Report42 preliminary combined draft PR56 exact blob integration and corrected head, CI pending, dedicated skipped by branch guard. No closure. Report43: Dedicated same-repo and exact-checkout guard candidate 2c626cb251fc3e0a5e3304f9ea5b03f89f55e024; full/dedicated pending. Report44 exact integrated dedicated and Java8 actual passed, source lock candidate only; full Extended pending. Report46: Corrected source PR55 both restart markers actual; exact PR56 full pending; no closure. Report47: prior integrated full actual pass including both restart and public R06B3b; newest integrated full pending. Bounded timing reuse not cold/warm. Report48 supersedes pending status. Current lock and graph jointly pin exact reviewed source."
+      "receipt": "R09 REAPPROVED VERIFIED_BOUNDED on fbfe961f861478c1727efa1ebf5df209f81f2c5d tree 180f9708b78a9479d50531edbd04e0dee48a57e7. Actual exact-head Windows guard 17/17, full retry Extended 103/103 Maven (78 identity), Java8 61/61, React 15/15, dedicated 7 selected method executions, all five final jobs successful; all actual logs inspected. Original Maven distribution fetch failure before tests preserved. Source delta exactly test fixture and focused Windows workflow; production unchanged, protected A105/105, V1–V7 7/7, 42 exact unique pins (40 prior +2 changed paths). Actual native L03 prior reported failure preserved; new native run NOT_RUN, no verified local JAR yet. Owner authorized routine eligible continuation; direct L06 confirmation remains mandatory.",
+      "notes": "Report52 current exact corrected source; native execution separate."
     },
     {
       "id": "L00",
@@ -215,7 +262,7 @@
         "R09"
       ],
       "receipt": "Owner-approved private local path, exact source/worktree, toolchain + hash checks",
-      "notes": "No secrets/host variables, no scans of unrelated files Report44: require current graph and dispatch lock both ready with identical approved source SHA, owner permission; no stale checkout. R09 technical gate met; owner must explicitly initiate; actual prerequisites remain unverified. Prior exact-source checks REPORTED_ONLY; recheck new head after R09."
+      "notes": "Revalidate new exact approved source, private custody, toolchain and exclusive isolation; prior L00 reported only."
     },
     {
       "id": "L00B",
@@ -230,11 +277,11 @@
     {
       "id": "L03",
       "executor": "CLAUDE_LOCAL",
-      "state": "TEST_FAILED",
+      "state": "NOT_RUN",
       "depends_on": [
         "L00"
       ],
-      "receipt": "Reported exit1, 1/103 Maven failures; no verified JAR, no rerun. Raw log not inspected.",
+      "receipt": "Old exact source reported TEST_FAILED exit1; new exact corrected source native package NOT_RUN. Fresh L03 once after L00.",
       "notes": "Windows PS7.4+, Java21, MySQL8 native, Node24, Python pywinpty R09 technical gate met; owner must explicitly initiate; actual prerequisites remain unverified."
     },
     {
@@ -266,7 +313,7 @@
         "L00B"
       ],
       "receipt": "Exact full standalone 96: state/count/ledger/actual encrypted restore, private measurements",
-      "notes": "Reuse exact verified JAR, no extra build; not mixed or host Report44: actual C5 and four-table fingerprint, not all-row proof; require exclusive disposable Windows environment, no unrelated DB/listeners, native proof NOT_RUN. No verified JAR; R09 reopened."
+      "notes": "Requires verified new L03 JAR and L00B exact plan; four-table fingerprints bounded, not exact all-row proof."
     },
     {
       "id": "L05",
@@ -288,7 +335,7 @@
         "R06B"
       ],
       "receipt": "Exact full mixed 96 plus 2 original fixture orgs, real C5 restore, actual preflight/V2 baseline/one import/SELECT-only postflight/valid browser",
-      "notes": "Integrated command source reviewed in report27; final SHA must be pinned at R09. Native Linux/approved WSL POSIX, exact private plan/JAR, explicit owner terminal consent, all private positive NOT_RUN. No host. R09 exact source pinned; private input, L03, POSIX environment and explicit owner direct terminal confirmation remain mandatory; BLOCKED until those actual receipts. No verified JAR; R09 reopened."
+      "notes": "R09 reapproved; L03 verified JAR, L00B exact plan, POSIX prerequisites and separate direct owner terminal confirmation required."
     },
     {
       "id": "L07",
@@ -439,7 +486,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "Inspect latest attempt of Verify45550768924 and dedicated45550768785; consume actual logs, keep R09 false until qualifying exact-head receipts. If retry fails stop and diagnose; no more blind retries."
+    "next_action": "Owner has initiated the eligible local queue; Claude may resume now from fresh detached exact approved source, recheck L00/L00B, run L03 once and verify actual nested L01/L02, then L04/L05 as eligible; L06 direct owner-terminal consent separately mandatory, L07 operator separate, L08 sanitized handback. Prior failed package must not be reused. No new remote work absent actual failure/source drift or separate authorization."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -827,7 +874,7 @@
   "l06_command_contract": {
     "report": "docs/handoffs/claude-local-execution-2026-11-24/27_R06B3B_AGGREGATE_RECEIPT_AND_L06_COMMAND_CONTRACT.md",
     "source_candidate": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
-    "final_sha": "PENDING_R09",
+    "final_sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
     "state": "BLOCKED",
     "private_positive": "NOT_RUN",
     "remote_gate": "VERIFIED_BOUNDED",
@@ -1929,6 +1976,107 @@
   "r09_final_actual": {
     "receipt": {
       "status": "VERIFIED_BOUNDED",
+      "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+      "run": 45550768924,
+      "job": 138992173040,
+      "oracle": "exact corrected source full Extended Linux regression, attempt2",
+      "actual": "93 registered routes once; 103 Maven/78 identity and corrected 8 import guard cases, zero failures/errors/skips; 60 Newman requests/110 assertions, 19 Playwright; actual deadlock rollback/retry/replay; distinct JVM response-loss and reminder restart, independent C5 1039696 bytes exact non-session rows and empty sessions; 15 archive refusals, 10 local prechecks, public original-only metadata/API/browser/grants and SQL aggregate/projection controls, all cleanup; 450+75 packaged serial HTTP, JAR 72486427 bytes SHA256 76e5977499edb6a01a0c6de95ce166c2975d08f70bcdbd57680049d1af32c10a"
+    },
+    "source_tree": "180f9708b78a9479d50531edbd04e0dee48a57e7",
+    "full_jobs": [
+      {
+        "id": 138992173040,
+        "status": "success",
+        "review": "ACTUAL_LOGS"
+      },
+      {
+        "id": 138992174413,
+        "status": "success",
+        "review": "ACTUAL_LOGS"
+      },
+      {
+        "id": 138992175595,
+        "status": "success",
+        "review": "ACTUAL_LOGS"
+      }
+    ],
+    "dedicated": {
+      "run": 45550768785,
+      "job": 138991124364,
+      "status": "success",
+      "actual_logs_inspected": true
+    },
+    "windows": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+      "run": 45550768892,
+      "job": 138991124431,
+      "oracle": "exact corrected source Windows Java21 DB-free guard suite",
+      "actual": "WINDOWS_GUARD_SOURCE exact SHA; Temurin 21.0.13; C8HostedDemoImportCommandTest 8, C8HostedDemoPostflightTest 3, C8HostedDemoPreflightTest 3, C8HostedOriginalBaselineTest 3; total 17, failures/errors/skips 0, BUILD SUCCESS, job success"
+    },
+    "protected": {
+      "course_a": 105,
+      "migrations": 7,
+      "dispatch_pins": 42,
+      "all_same": true,
+      "production_delta": 0
+    },
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/52_R09_REAPPROVED_WINDOWS_FIX_ACTUAL_RECEIPTS.md",
+    "acceptance": "VERIFIED_BOUNDED_REMOTE_PREPARATION_ONLY",
+    "owner_launch_required": true
+  },
+  "owner_launch_required": true,
+  "final_dispatch_audit": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/49_FINAL_ADVERSARIAL_HANDOFF_AUDIT.md",
+    "source": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "tree": "d55cecc7afd240da455014e2d9f1b61bb0e74f40",
+    "prior_handoff": "cef3b1d566d5d480156e114a1947089518022f0f",
+    "react_actual": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+      "run": 45494597345,
+      "job": 138801600647,
+      "oracle": "actual exact final React typecheck, tests, lint and build",
+      "actual": "checkout exact; 3 test files/15 tests passed; typecheck, lint, build completed; Vite reported 162ms; job success"
+    },
+    "checks": {
+      "source_pins": 16,
+      "migration_pins": 7,
+      "support_pins": 17,
+      "total_unique_pins": 40,
+      "graph_tasks": 33,
+      "unknown_dependencies": 0,
+      "cycles": 0,
+      "actual_final_ci_jobs": 4
+    },
+    "native_execution": "NOT_RUN",
+    "local_owner_launch_required": true,
+    "private_positive": "NOT_RUN",
+    "independent": "OPEN"
+  },
+  "native_l03_reported": {
+    "source": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "status": "TEST_FAILED",
+    "exit_code": 1,
+    "tests": 103,
+    "failures": 1,
+    "cleanup": "REPORTED_CLEAN",
+    "verified_jar": false,
+    "receipt_depth": "REPORTED_ONLY",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/50_L03_WINDOWS_REPORTED_FAILURE_AND_PORTABLE_TEST_FIX.md"
+  },
+  "windows_guard_actual": {
+    "status": "VERIFIED_BOUNDED",
+    "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "run": 45550768892,
+    "job": 138991124431,
+    "oracle": "exact corrected source Windows Java21 DB-free guard suite",
+    "actual": "WINDOWS_GUARD_SOURCE exact SHA; Temurin 21.0.13; C8HostedDemoImportCommandTest 8, C8HostedDemoPostflightTest 3, C8HostedDemoPreflightTest 3, C8HostedOriginalBaselineTest 3; total 17, failures/errors/skips 0, BUILD SUCCESS, job success"
+  },
+  "large_batch_contract": "docs/handoffs/claude-local-execution-2026-11-24/51_LARGE_BATCH_LOCAL_EXECUTION_AND_RESUME_CONTRACT.md",
+  "historical_r09_final_actual": {
+    "receipt": {
+      "status": "VERIFIED_BOUNDED",
       "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
       "run": 45494597345,
       "job": 138801601172,
@@ -2144,54 +2292,5 @@
     "report": "docs/handoffs/claude-local-execution-2026-11-24/48_FINAL_INTEGRATED_RECEIPT_AND_R09_LOCAL_DISPATCH.md",
     "acceptance": "VERIFIED_BOUNDED_REMOTE_PREPARATION_ONLY",
     "owner_launch_required": true
-  },
-  "owner_launch_required": true,
-  "final_dispatch_audit": {
-    "report": "docs/handoffs/claude-local-execution-2026-11-24/49_FINAL_ADVERSARIAL_HANDOFF_AUDIT.md",
-    "source": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
-    "tree": "d55cecc7afd240da455014e2d9f1b61bb0e74f40",
-    "prior_handoff": "cef3b1d566d5d480156e114a1947089518022f0f",
-    "react_actual": {
-      "status": "VERIFIED_BOUNDED",
-      "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
-      "run": 45494597345,
-      "job": 138801600647,
-      "oracle": "actual exact final React typecheck, tests, lint and build",
-      "actual": "checkout exact; 3 test files/15 tests passed; typecheck, lint, build completed; Vite reported 162ms; job success"
-    },
-    "checks": {
-      "source_pins": 16,
-      "migration_pins": 7,
-      "support_pins": 17,
-      "total_unique_pins": 40,
-      "graph_tasks": 33,
-      "unknown_dependencies": 0,
-      "cycles": 0,
-      "actual_final_ci_jobs": 4
-    },
-    "native_execution": "NOT_RUN",
-    "local_owner_launch_required": true,
-    "private_positive": "NOT_RUN",
-    "independent": "OPEN"
-  },
-  "native_l03_reported": {
-    "source": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
-    "status": "TEST_FAILED",
-    "exit_code": 1,
-    "tests": 103,
-    "failures": 1,
-    "cleanup": "REPORTED_CLEAN",
-    "verified_jar": false,
-    "receipt_depth": "REPORTED_ONLY",
-    "report": "docs/handoffs/claude-local-execution-2026-11-24/50_L03_WINDOWS_REPORTED_FAILURE_AND_PORTABLE_TEST_FIX.md"
-  },
-  "windows_guard_actual": {
-    "status": "VERIFIED_BOUNDED",
-    "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
-    "run": 45550768892,
-    "job": 138991124431,
-    "oracle": "exact corrected source Windows Java21 DB-free guard suite",
-    "actual": "WINDOWS_GUARD_SOURCE exact SHA; Temurin 21.0.13; C8HostedDemoImportCommandTest 8, C8HostedDemoPostflightTest 3, C8HostedDemoPreflightTest 3, C8HostedOriginalBaselineTest 3; total 17, failures/errors/skips 0, BUILD SUCCESS, job success"
-  },
-  "large_batch_contract": "docs/handoffs/claude-local-execution-2026-11-24/51_LARGE_BATCH_LOCAL_EXECUTION_AND_RESUME_CONTRACT.md"
+  }
 }

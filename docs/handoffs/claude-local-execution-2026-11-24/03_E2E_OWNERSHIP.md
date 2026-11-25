@@ -1,8 +1,12 @@
 # 03 — Current end-to-end ownership and dependencies
 
-**Current authority (Report49, 2026-11-25 PHT):** R09 technical gate VERIFIED_BOUNDED; exact reviewed source `2c626cb251fc3e0a5e3304f9ea5b03f89f55e024`, draft PR56, full CI45494597345 and dedicated CI45494597313. Owner explicitly initiates local execution. Private/independent/host/student gates remain open. Historical text is preserved in the previous handoff commit `cef3b1d566d5d480156e114a1947089518022f0f`; current 09/11/12/45 supersede it. No native execution claimed.
+**Current authority (Report52, 2026-11-25 PHT):** R09 REAPPROVED VERIFIED_BOUNDED on fbfe961f861478c1727efa1ebf5df209f81f2c5d tree 180f9708b78a9479d50531edbd04e0dee48a57e7. Actual exact-head Windows guard 17/17, full retry Extended 103/103 Maven (78 identity), Java8 61/61, React 15/15, dedicated 7 selected method executions, all five final jobs successful; all actual logs inspected. Original Maven distribution fetch failure before tests preserved. Source delta exactly test fixture and focused Windows workflow; production unchanged, protected A105/105, V1–V7 7/7, 42 exact unique pins (40 prior +2 changed paths). Actual native L03 prior reported failure preserved; new native run NOT_RUN, no verified local JAR yet. Owner authorized routine eligible continuation; direct L06 confirmation remains mandatory.
 
-Graph 12 is machine authority. The following table is generated from current task nodes; historical detailed ownership/oracles preserved at prior handoff commit and report48. Use report27/11 for L06 and 02/07/08 for native task acceptance. No formal waiver.
+Owner has initiated the eligible local queue; Claude may resume now from fresh detached exact approved source, recheck L00/L00B, run L03 once and verify actual nested L01/L02, then L04/L05 as eligible; L06 direct owner-terminal consent separately mandatory, L07 operator separate, L08 sanitized handback. Prior failed package must not be reused. No new remote work absent actual failure/source drift or separate authorization.
+
+Historical handoff at 09f8dd210d862d2c50e9e62fc4bb45c2d4f6496f; current 09/11/12/45/51/52 govern.
+
+Graph 12 is machine authority.
 
 | ID | Executor | State | Dependencies |
 |---|---|---|---|
@@ -27,7 +31,7 @@ Graph 12 is machine authority. The following table is generated from current tas
 | L03 | CLAUDE_LOCAL | NOT_RUN | L00 |
 | L01 | CLAUDE_LOCAL | NESTED_IN_L03 | L03 |
 | L02 | CLAUDE_LOCAL | NESTED_IN_L03 | L03 |
-| L04 | CLAUDE_LOCAL | WAITING_FOR_PRIVATE_INPUT | L03, L00B |
+| L04 | CLAUDE_LOCAL | BLOCKED | L03, L00B |
 | L05 | CLAUDE_LOCAL | PRIVATE_INPUT_REQUIRED | L00 |
 | L06 | CLAUDE_LOCAL | BLOCKED | L00B, L03, R06B |
 | L07 | OWNER_OPERATOR | NOT_RUN | L06 |
@@ -40,4 +44,4 @@ Graph 12 is machine authority. The following table is generated from current tas
 | G06 | OWNER | PROPOSED_ONLY | None |
 | G07 | STUDENT | NOT_VERIFIED | None |
 
-R02 source-only reconciliation suffices for bounded R03 remote scope, independent G01 remains open. G03 formal C9 requires G01, private full positive, required performance/independent proof. L01/L02 nested L03, L05 independent, L07 operator, L08 return blocked statuses. G02 #26 live import NOT_RUN, G06 #27 proposed only, G07 student only.
+G01 independent and IR4, G03 formal C9, G02 host, G07 student, future proposed phases remain separate; no waiver. L01/L02 nested L03, L05 independent, L08 return blocked statuses. See 02/07/08/11/27/51/52.

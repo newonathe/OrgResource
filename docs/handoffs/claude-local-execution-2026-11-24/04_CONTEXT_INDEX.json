@@ -2,17 +2,10 @@
   "schema": "orgresource.claude.local.handoff.v1",
   "date": "2026-11-24 Asia/Manila",
   "repository": "newonathe/OrgResource",
-  "source_ref": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
-  "source_tree": "d55cecc7afd240da455014e2d9f1b61bb0e74f40",
+  "source_ref": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+  "source_tree": "180f9708b78a9479d50531edbd04e0dee48a57e7",
   "source_pr": 56,
-  "source_ci": {
-    "id": 45494597345,
-    "status": "completed",
-    "conclusion": "success",
-    "extended_job": 138801601172,
-    "dedicated_run": 45494597313,
-    "dedicated_job": 138801600507
-  },
+  "source_ci": 45550768924,
   "last_verified": {
     "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
     "tree": "d55cecc7afd240da455014e2d9f1b61bb0e74f40",
@@ -65,6 +58,264 @@
     "c6_tree": "historical audit metadata locator; not re-reviewed"
   },
   "context": [
+    {
+      "stage": "CURRENT corrected dispatch exact source — task-relevant only",
+      "ref": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "blob": "b9a8dd40cc8b8f7591a8d058622a23fa31177d7f",
+          "bytes": 7990,
+          "mode": "100644"
+        },
+        {
+          "path": "docs/QUALITY_EVIDENCE_CONTINUOUS_GATE.md",
+          "blob": "494d9df515dbfcc2e7586c87a1b1fa859aa71564",
+          "bytes": 15033,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/package-extended-c.ps1",
+          "blob": "402594b78473a5c70ad2a78a408ed15d23057847",
+          "bytes": 8009,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/verify-extended-c1.ps1",
+          "blob": "d4a168dbea08460a8ac38efd6df10d2f8dd21221",
+          "bytes": 41074,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/verify-extended-c-recovery.ps1",
+          "blob": "76c8bd4e173f2edd165840a9d3455808fc2ceea0",
+          "bytes": 14360,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/verify-extended-c6a-operator.ps1",
+          "blob": "4015ba4117c720f06b97671c0448b92976d172ed",
+          "bytes": 20793,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/verify-c8-demo-import.ps1",
+          "blob": "b76cc7f0ecca1c690727dba2f77c489e43c821f7",
+          "bytes": 15851,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/extended-c-backup.ps1",
+          "blob": "a909fc2a4b3818f8dec318ab9d12ac49d0bd5fb8",
+          "bytes": 30968,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/verify-c9-local-mixed-preparation.sh",
+          "blob": "f4f5a563817ee5edc8b44d6241a40316b6c01ff7",
+          "bytes": 36683,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/c9-private-mixed-recovered-control.sh",
+          "blob": "7272e978a6e3961a617d6d2ebc0313e7b32d9ecd",
+          "bytes": 14324,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/c9-local-operator-gate.sh",
+          "blob": "98977d6f4a45ee610d926b569bb90deb6dcf3d23",
+          "bytes": 1164,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/verify-c9-private-mixed-api.py",
+          "blob": "a2e35c315d8de63155b3d5047102f76b7a71f0ec",
+          "bytes": 8519,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/verify-c9-private-mixed-browser.mjs",
+          "blob": "96beb793e70322325b2b55c59ce72dab9ba7de98",
+          "bytes": 10647,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/build-c9-private-mixed-expectations.py",
+          "blob": "e8e8d046ba740fb6ee7af327c6c4fd16c278ccde",
+          "bytes": 6578,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/c9-private-mixed-expectations.sql",
+          "blob": "d1db889aab9b11d4284f9f8f3232bda2e7c1fd3d",
+          "bytes": 2461,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/stop-c9-private-mixed-process.py",
+          "blob": "0197217580f8be98a7324f17b1fa66b342739b69",
+          "bytes": 4079,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/src/main/resources/db/migration/V1__extended_c1_baseline.sql",
+          "blob": "22b1e0f589ab05d2b0721e5de39bb29b371a2382",
+          "bytes": 10645,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/src/main/resources/db/migration/V2__spring_session_jdbc_mysql.sql",
+          "blob": "4dd537e2bcfb22898fb144860cb5881afe904790",
+          "bytes": 1162,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/src/main/resources/db/migration/V3__atomic_inventory_ledger.sql",
+          "blob": "37ce7fffc3a2a5aae6556aec22f5c8f7755b363c",
+          "bytes": 5479,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/src/main/resources/db/migration/V4__c3_contact_images_and_reminders.sql",
+          "blob": "56d09c0c7f46a23d0d29f8fd5eb236548e86f29d",
+          "bytes": 2158,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/src/main/resources/db/migration/V5__c4_reminder_dispatch_boundary.sql",
+          "blob": "ff9f7330de52b7f6aba6f4f21c29382896eeb5a5",
+          "bytes": 311,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/src/main/resources/db/migration/V6__c8_project_leads_and_linked_borrowers.sql",
+          "blob": "187e5aeff4481d250db9e45f6f7d7cb685e683d4",
+          "bytes": 1594,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/src/main/resources/db/migration/V7__c8_local_demo_provenance.sql",
+          "blob": "7072ea7d77a7d8d4f03b790e5516e4f7fd470cb0",
+          "bytes": 816,
+          "mode": "100644"
+        },
+        {
+          "path": ".agents/skills/orgresource-goat/SKILL.md",
+          "blob": "07cba61eb26958cdd4499eaf557d8cf1fbb4fc7b",
+          "bytes": 3380,
+          "mode": "100644"
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-debug/SKILL.md",
+          "blob": "5801f65147642269ef5cefa074dd99b6d524a643",
+          "bytes": 1191,
+          "mode": "100644"
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-implement/SKILL.md",
+          "blob": "97e095e16ae1ca2af2a8bf4a6f1c63607621f351",
+          "bytes": 1823,
+          "mode": "100644"
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-plan/SKILL.md",
+          "blob": "ccc899b93586e39b919559e691b41dc3ca175c8d",
+          "bytes": 1255,
+          "mode": "100644"
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-review/SKILL.md",
+          "blob": "c7f37536f75f146c01283d159fc38eca1bac8060",
+          "bytes": 1435,
+          "mode": "100644"
+        },
+        {
+          "path": ".agents/skills/orgresource-superpowers-verify/SKILL.md",
+          "blob": "716e3858f19fd4d90120c48fc020f051f930326a",
+          "bytes": 1377,
+          "mode": "100644"
+        },
+        {
+          "path": "backend/.mvn/wrapper/maven-wrapper.properties",
+          "blob": "c4735cf60ead50bd69158b91464f360b30986564",
+          "bytes": 259,
+          "mode": "100644"
+        },
+        {
+          "path": "backend/mvnw",
+          "blob": "bd8896bf2217b46faa0291585e01ac1a3441a958",
+          "bytes": 11790,
+          "mode": "100644"
+        },
+        {
+          "path": "backend/mvnw.cmd",
+          "blob": "5761d948924c19571d27b465c519b2e2f9e30351",
+          "bytes": 8481,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/pom.xml",
+          "blob": "2eb4209e67e974fdc99a3c65d8683c9758b4e294",
+          "bytes": 5313,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/frontend/package-lock.json",
+          "blob": "aca7c7a1d094535ceabb9ee01f3536b839d93efe",
+          "bytes": 138807,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/frontend/package.json",
+          "blob": "98bbadf846495f05b284cac211487336ff059d92",
+          "bytes": 1034,
+          "mode": "100644"
+        },
+        {
+          "path": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+          "blob": "e6c61a10adbfa54a140c493d97b48b36b6c56e39",
+          "bytes": 21044,
+          "mode": "100644"
+        },
+        {
+          "path": "postman/OrgResource-Extended-C3-Local.postman_environment.json",
+          "blob": "2a8de54592d85869400b4ec98ca4e0e668dc5839",
+          "bytes": 535,
+          "mode": "100644"
+        },
+        {
+          "path": "postman/OrgResource-Extended-C6a-Reporting.postman_collection.json",
+          "blob": "0c21fd2a53f1b6a25517a492708bbd0850440b84",
+          "bytes": 10604,
+          "mode": "100644"
+        },
+        {
+          "path": "postman/fixtures/academic-demo-image.png",
+          "blob": "97dcd7f9bac25be1962d53636bc4d81340c34cec",
+          "bytes": 137,
+          "mode": "100644"
+        },
+        {
+          "path": "scripts/run-extended-c3-newman.ps1",
+          "blob": "9f719cba01bd57142d0f6438618e5543c7a7831a",
+          "bytes": 3130,
+          "mode": "100644"
+        },
+        {
+          "path": ".github/workflows/windows-demo-guards.yml",
+          "blob": "9daa53fe60fbe9dab2361af9891c81d99800a00e",
+          "bytes": 1555,
+          "mode": "100644"
+        },
+        {
+          "path": "extended/backend/src/test/java/edu/orgresource/extended/demo/C8HostedDemoImportCommandTest.java",
+          "blob": "f6971c0f7d5467bbef9ecd0efc1d1d7b0f5630fb",
+          "bytes": 5793,
+          "mode": "100644"
+        }
+      ]
+    },
     {
       "stage": "CURRENT local dispatch exact source — read task-relevant only; older groups historical",
       "ref": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
@@ -940,7 +1191,7 @@
     "tree": "180f9708b78a9479d50531edbd04e0dee48a57e7",
     "pr": 56,
     "parent": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
-    "status": "CI_PENDING",
+    "status": "completed",
     "report": "docs/handoffs/claude-local-execution-2026-11-24/50_L03_WINDOWS_REPORTED_FAILURE_AND_PORTABLE_TEST_FIX.md",
     "changed_paths": [
       "extended/backend/src/test/java/edu/orgresource/extended/demo/C8HostedDemoImportCommandTest.java",
@@ -954,15 +1205,60 @@
       "oracle": "full Extended exact-head Linux regression",
       "actual": "Actual log: wget failed to fetch pinned Maven 3.10.0 distribution at clean verify start; exit1 before Java test execution. Java8/React jobs success metadata; no source/test failure observed from Extended job. Rerun failed workflow jobs only accepted by GitHub API; next attempt actual logs pending."
     },
-    "retry_requested": true
+    "retry_requested": true,
+    "conclusion": "success",
+    "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS",
+    "run": 45550768924,
+    "actual_receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768924,
+        "job": 138992173040,
+        "oracle": "exact corrected source full Extended Linux regression, attempt2",
+        "actual": "93 registered routes once; 103 Maven/78 identity and corrected 8 import guard cases, zero failures/errors/skips; 60 Newman requests/110 assertions, 19 Playwright; actual deadlock rollback/retry/replay; distinct JVM response-loss and reminder restart, independent C5 1039696 bytes exact non-session rows and empty sessions; 15 archive refusals, 10 local prechecks, public original-only metadata/API/browser/grants and SQL aggregate/projection controls, all cleanup; 450+75 packaged serial HTTP, JAR 72486427 bytes SHA256 76e5977499edb6a01a0c6de95ce166c2975d08f70bcdbd57680049d1af32c10a"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768785,
+        "job": 138991124364,
+        "oracle": "exact corrected source dedicated fresh-schema tests",
+        "actual": "six groups, seven method executions, zero failures/errors/skips, six cleanups, 450 measured+75 warmups, 3 fresh schema/JVM invocations, final R0708_PREPARATION_OK"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768924,
+        "job": 138992175595,
+        "oracle": "exact frozen Java8 regression",
+        "actual": "61 Maven, 100 Newman requests/151 assertions, one packaged Playwright; zero failures/errors/skips"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768924,
+        "job": 138992174413,
+        "oracle": "exact React regression",
+        "actual": "3 test files/15 tests, typecheck/lint/build success"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768892,
+        "job": 138991124431,
+        "oracle": "exact corrected source Windows Java21 DB-free guard suite",
+        "actual": "WINDOWS_GUARD_SOURCE exact SHA; Temurin 21.0.13; C8HostedDemoImportCommandTest 8, C8HostedDemoPostflightTest 3, C8HostedDemoPreflightTest 3, C8HostedOriginalBaselineTest 3; total 17, failures/errors/skips 0, BUILD SUCCESS, job success"
+      }
+    ]
   },
   "launch_gate": {
-    "ready": false,
+    "ready": true,
     "source_of_truth": "12_EXECUTION_GRAPH.json",
     "compatibility_gate": "13_MIXED_REHEARSAL_COMPATIBILITY_GATE.md",
-    "verified_base_only": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "verified_base_only": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
     "candidate_lock": "45_LOCAL_DISPATCH_SOURCE_LOCK.json",
-    "approved_source_sha": null,
+    "approved_source_sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
     "owner_launch_required": true,
     "scope": "BOUNDED_REMOTE_PREPARATION_ONLY"
   },
@@ -1052,7 +1348,7 @@
     "event_ledger": "15_CONTINUATION_LEDGER.jsonl",
     "state_authority": "12_EXECUTION_GRAPH.json",
     "instruction": "New project chat continue => live refs/receipts and resume remote queue until R09; no implicit Claude launch or host",
-    "next_action": "ChatGPT inspect actual exact-head full/dedicated jobs; if all pass verify exact tree/protected paths, update graph/lock/source pins/current 09/11/entry/issue50 and set R09 ready. Claude passively polls current gate; after reapproval perform large batches, no auto owner confirmation or bypass."
+    "next_action": "Owner has initiated the eligible local queue; Claude may resume now from fresh detached exact approved source, recheck L00/L00B, run L03 once and verify actual nested L01/L02, then L04/L05 as eligible; L06 direct owner-terminal consent separately mandatory, L07 operator separate, L08 sanitized handback. Prior failed package must not be reused. No new remote work absent actual failure/source drift or separate authorization."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -1635,7 +1931,7 @@
   "l06_command_contract": {
     "report": "docs/handoffs/claude-local-execution-2026-11-24/27_R06B3B_AGGREGATE_RECEIPT_AND_L06_COMMAND_CONTRACT.md",
     "source_candidate": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
-    "final_sha": "PENDING_R09",
+    "final_sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
     "state": "BLOCKED",
     "private_positive": "NOT_RUN",
     "remote_gate": "VERIFIED_BOUNDED",
@@ -4379,6 +4675,147 @@
   "r09_final_actual": {
     "receipt": {
       "status": "VERIFIED_BOUNDED",
+      "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+      "run": 45550768924,
+      "job": 138992173040,
+      "oracle": "exact corrected source full Extended Linux regression, attempt2",
+      "actual": "93 registered routes once; 103 Maven/78 identity and corrected 8 import guard cases, zero failures/errors/skips; 60 Newman requests/110 assertions, 19 Playwright; actual deadlock rollback/retry/replay; distinct JVM response-loss and reminder restart, independent C5 1039696 bytes exact non-session rows and empty sessions; 15 archive refusals, 10 local prechecks, public original-only metadata/API/browser/grants and SQL aggregate/projection controls, all cleanup; 450+75 packaged serial HTTP, JAR 72486427 bytes SHA256 76e5977499edb6a01a0c6de95ce166c2975d08f70bcdbd57680049d1af32c10a"
+    },
+    "source_tree": "180f9708b78a9479d50531edbd04e0dee48a57e7",
+    "full_jobs": [
+      {
+        "id": 138992173040,
+        "status": "success",
+        "review": "ACTUAL_LOGS"
+      },
+      {
+        "id": 138992174413,
+        "status": "success",
+        "review": "ACTUAL_LOGS"
+      },
+      {
+        "id": 138992175595,
+        "status": "success",
+        "review": "ACTUAL_LOGS"
+      }
+    ],
+    "dedicated": {
+      "run": 45550768785,
+      "job": 138991124364,
+      "status": "success",
+      "actual_logs_inspected": true
+    },
+    "windows": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+      "run": 45550768892,
+      "job": 138991124431,
+      "oracle": "exact corrected source Windows Java21 DB-free guard suite",
+      "actual": "WINDOWS_GUARD_SOURCE exact SHA; Temurin 21.0.13; C8HostedDemoImportCommandTest 8, C8HostedDemoPostflightTest 3, C8HostedDemoPreflightTest 3, C8HostedOriginalBaselineTest 3; total 17, failures/errors/skips 0, BUILD SUCCESS, job success"
+    },
+    "protected": {
+      "course_a": 105,
+      "migrations": 7,
+      "dispatch_pins": 42,
+      "all_same": true,
+      "production_delta": 0
+    },
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/52_R09_REAPPROVED_WINDOWS_FIX_ACTUAL_RECEIPTS.md",
+    "acceptance": "VERIFIED_BOUNDED_REMOTE_PREPARATION_ONLY",
+    "owner_launch_required": true
+  },
+  "historical_current_candidate": {
+    "sha": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
+    "tree": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
+    "pr": 46,
+    "ci": 45425950575,
+    "status": "completed",
+    "conclusion": "success",
+    "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS",
+    "changed_paths": [
+      {
+        "path": "CURRENT_STATUS_AND_NEXT_ACTIONS.md",
+        "blob": "bd1606711033e706e74edc7f38e12a9cf9ec8893",
+        "bytes": 21935
+      },
+      {
+        "path": "NEXT_CHAT_START_HERE.md",
+        "blob": "96fb2e633993c4d688bdb7cf1b3cd2aa441ac910",
+        "bytes": 53444
+      },
+      {
+        "path": "evidence/C9/C9_STAGE1D_RECOVERED_APPLICATION_2026-11-24.md",
+        "blob": "7d71f7f2a2d2c6b5ab679cc8481fbce0889bfb4e",
+        "bytes": 6937
+      },
+      {
+        "path": "scripts/stop-c9-isolated-process.py",
+        "blob": "1fd74f1cf47b71758fbee661b930bf80f46390ed",
+        "bytes": 3482
+      },
+      {
+        "path": "scripts/verify-c9-recovered-api.py",
+        "blob": "57313fb10be14232e306dfc1263f32d125bd4e77",
+        "bytes": 9981
+      },
+      {
+        "path": "scripts/verify-c9-recovered-application.sh",
+        "blob": "9d2ec6edf719f0bd8e3633fd61dc2714e571644c",
+        "bytes": 17778
+      }
+    ]
+  },
+  "final_dispatch_audit": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/49_FINAL_ADVERSARIAL_HANDOFF_AUDIT.md",
+    "source": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "tree": "d55cecc7afd240da455014e2d9f1b61bb0e74f40",
+    "prior_handoff": "cef3b1d566d5d480156e114a1947089518022f0f",
+    "react_actual": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+      "run": 45494597345,
+      "job": 138801600647,
+      "oracle": "actual exact final React typecheck, tests, lint and build",
+      "actual": "checkout exact; 3 test files/15 tests passed; typecheck, lint, build completed; Vite reported 162ms; job success"
+    },
+    "checks": {
+      "source_pins": 16,
+      "migration_pins": 7,
+      "support_pins": 17,
+      "total_unique_pins": 40,
+      "graph_tasks": 33,
+      "unknown_dependencies": 0,
+      "cycles": 0,
+      "actual_final_ci_jobs": 4
+    },
+    "native_execution": "NOT_RUN",
+    "local_owner_launch_required": true,
+    "private_positive": "NOT_RUN",
+    "independent": "OPEN"
+  },
+  "native_l03_reported": {
+    "source": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "status": "TEST_FAILED",
+    "exit_code": 1,
+    "tests": 103,
+    "failures": 1,
+    "cleanup": "REPORTED_CLEAN",
+    "verified_jar": false,
+    "receipt_depth": "REPORTED_ONLY",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/50_L03_WINDOWS_REPORTED_FAILURE_AND_PORTABLE_TEST_FIX.md"
+  },
+  "windows_guard_actual": {
+    "status": "VERIFIED_BOUNDED",
+    "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "run": 45550768892,
+    "job": 138991124431,
+    "oracle": "exact corrected source Windows Java21 DB-free guard suite",
+    "actual": "WINDOWS_GUARD_SOURCE exact SHA; Temurin 21.0.13; C8HostedDemoImportCommandTest 8, C8HostedDemoPostflightTest 3, C8HostedDemoPreflightTest 3, C8HostedOriginalBaselineTest 3; total 17, failures/errors/skips 0, BUILD SUCCESS, job success"
+  },
+  "large_batch_contract": "docs/handoffs/claude-local-execution-2026-11-24/51_LARGE_BATCH_LOCAL_EXECUTION_AND_RESUME_CONTRACT.md",
+  "historical_r09_final_actual": {
+    "receipt": {
+      "status": "VERIFIED_BOUNDED",
       "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
       "run": 45494597345,
       "job": 138801601172,
@@ -4594,94 +5031,5 @@
     "report": "docs/handoffs/claude-local-execution-2026-11-24/48_FINAL_INTEGRATED_RECEIPT_AND_R09_LOCAL_DISPATCH.md",
     "acceptance": "VERIFIED_BOUNDED_REMOTE_PREPARATION_ONLY",
     "owner_launch_required": true
-  },
-  "historical_current_candidate": {
-    "sha": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
-    "tree": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
-    "pr": 46,
-    "ci": 45425950575,
-    "status": "completed",
-    "conclusion": "success",
-    "acceptance": "VERIFIED_BOUNDED_ACTUAL_RECEIPTS",
-    "changed_paths": [
-      {
-        "path": "CURRENT_STATUS_AND_NEXT_ACTIONS.md",
-        "blob": "bd1606711033e706e74edc7f38e12a9cf9ec8893",
-        "bytes": 21935
-      },
-      {
-        "path": "NEXT_CHAT_START_HERE.md",
-        "blob": "96fb2e633993c4d688bdb7cf1b3cd2aa441ac910",
-        "bytes": 53444
-      },
-      {
-        "path": "evidence/C9/C9_STAGE1D_RECOVERED_APPLICATION_2026-11-24.md",
-        "blob": "7d71f7f2a2d2c6b5ab679cc8481fbce0889bfb4e",
-        "bytes": 6937
-      },
-      {
-        "path": "scripts/stop-c9-isolated-process.py",
-        "blob": "1fd74f1cf47b71758fbee661b930bf80f46390ed",
-        "bytes": 3482
-      },
-      {
-        "path": "scripts/verify-c9-recovered-api.py",
-        "blob": "57313fb10be14232e306dfc1263f32d125bd4e77",
-        "bytes": 9981
-      },
-      {
-        "path": "scripts/verify-c9-recovered-application.sh",
-        "blob": "9d2ec6edf719f0bd8e3633fd61dc2714e571644c",
-        "bytes": 17778
-      }
-    ]
-  },
-  "final_dispatch_audit": {
-    "report": "docs/handoffs/claude-local-execution-2026-11-24/49_FINAL_ADVERSARIAL_HANDOFF_AUDIT.md",
-    "source": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
-    "tree": "d55cecc7afd240da455014e2d9f1b61bb0e74f40",
-    "prior_handoff": "cef3b1d566d5d480156e114a1947089518022f0f",
-    "react_actual": {
-      "status": "VERIFIED_BOUNDED",
-      "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
-      "run": 45494597345,
-      "job": 138801600647,
-      "oracle": "actual exact final React typecheck, tests, lint and build",
-      "actual": "checkout exact; 3 test files/15 tests passed; typecheck, lint, build completed; Vite reported 162ms; job success"
-    },
-    "checks": {
-      "source_pins": 16,
-      "migration_pins": 7,
-      "support_pins": 17,
-      "total_unique_pins": 40,
-      "graph_tasks": 33,
-      "unknown_dependencies": 0,
-      "cycles": 0,
-      "actual_final_ci_jobs": 4
-    },
-    "native_execution": "NOT_RUN",
-    "local_owner_launch_required": true,
-    "private_positive": "NOT_RUN",
-    "independent": "OPEN"
-  },
-  "native_l03_reported": {
-    "source": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
-    "status": "TEST_FAILED",
-    "exit_code": 1,
-    "tests": 103,
-    "failures": 1,
-    "cleanup": "REPORTED_CLEAN",
-    "verified_jar": false,
-    "receipt_depth": "REPORTED_ONLY",
-    "report": "docs/handoffs/claude-local-execution-2026-11-24/50_L03_WINDOWS_REPORTED_FAILURE_AND_PORTABLE_TEST_FIX.md"
-  },
-  "windows_guard_actual": {
-    "status": "VERIFIED_BOUNDED",
-    "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
-    "run": 45550768892,
-    "job": 138991124431,
-    "oracle": "exact corrected source Windows Java21 DB-free guard suite",
-    "actual": "WINDOWS_GUARD_SOURCE exact SHA; Temurin 21.0.13; C8HostedDemoImportCommandTest 8, C8HostedDemoPostflightTest 3, C8HostedDemoPreflightTest 3, C8HostedOriginalBaselineTest 3; total 17, failures/errors/skips 0, BUILD SUCCESS, job success"
-  },
-  "large_batch_contract": "docs/handoffs/claude-local-execution-2026-11-24/51_LARGE_BATCH_LOCAL_EXECUTION_AND_RESUME_CONTRACT.md"
+  }
 }

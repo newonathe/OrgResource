@@ -1,10 +1,14 @@
 # 11 — Current native execution recipe (one authoritative sequence)
 
-**Current authority (Report49, 2026-11-25 PHT):** R09 technical gate VERIFIED_BOUNDED; exact reviewed source `2c626cb251fc3e0a5e3304f9ea5b03f89f55e024`, draft PR56, full CI45494597345 and dedicated CI45494597313. Owner explicitly initiates local execution. Private/independent/host/student gates remain open. Historical text is preserved in the previous handoff commit `cef3b1d566d5d480156e114a1947089518022f0f`; current 09/11/12/45 supersede it. No native execution claimed.
+**Current authority (Report52, 2026-11-25 PHT):** R09 REAPPROVED VERIFIED_BOUNDED on fbfe961f861478c1727efa1ebf5df209f81f2c5d tree 180f9708b78a9479d50531edbd04e0dee48a57e7. Actual exact-head Windows guard 17/17, full retry Extended 103/103 Maven (78 identity), Java8 61/61, React 15/15, dedicated 7 selected method executions, all five final jobs successful; all actual logs inspected. Original Maven distribution fetch failure before tests preserved. Source delta exactly test fixture and focused Windows workflow; production unchanged, protected A105/105, V1–V7 7/7, 42 exact unique pins (40 prior +2 changed paths). Actual native L03 prior reported failure preserved; new native run NOT_RUN, no verified local JAR yet. Owner authorized routine eligible continuation; direct L06 confirmation remains mandatory.
+
+Owner has initiated the eligible local queue; Claude may resume now from fresh detached exact approved source, recheck L00/L00B, run L03 once and verify actual nested L01/L02, then L04/L05 as eligible; L06 direct owner-terminal consent separately mandatory, L07 operator separate, L08 sanitized handback. Prior failed package must not be reused. No new remote work absent actual failure/source drift or separate authorization.
+
+Historical handoff at 09f8dd210d862d2c50e9e62fc4bb45c2d4f6496f; current 09/11/12/45/51/52 govern.
 
 ## L00: explicit owner launch and exact source checkout
 
-This is source-reviewed PowerShell, NOT_RUN on the owner machine. Run only from a trusted existing repo in an owner-approved exclusive disposable Windows environment (prefer an isolated VM; no unrelated MySQL services/listeners or competing launches). Verify actual local toolchain and private custody first; if isolation or process ownership cannot be established, BLOCKED. Do not change global Git/PowerShell/OS settings or stop unrelated services. Owner picks a fresh absolute worktree path outside private output, existing worktrees and cloud-sync/reparse-point trees. Verify live PR56 and exact actual successful [full CI](https://github.com/newonathe/OrgResource/actions/runs/45494597345) and [dedicated CI](https://github.com/newonathe/OrgResource/actions/runs/45494597313). Read live handoff by pinned commit, not by merging it. Do not print credential-bearing remote URLs or private path values to model context.
+This is source-reviewed PowerShell, NOT_RUN on the owner machine. Run only from a trusted existing repo in an owner-approved exclusive disposable Windows environment (prefer an isolated VM; no unrelated MySQL services/listeners or competing launches). Verify actual local toolchain and private custody first; if isolation or process ownership cannot be established, BLOCKED. Do not change global Git/PowerShell/OS settings or stop unrelated services. Owner picks a fresh absolute worktree path outside private output, existing worktrees and cloud-sync/reparse-point trees. Verify live PR56, [Windows guard CI](https://github.com/newonathe/OrgResource/actions/runs/45550768892) and exact actual successful [full CI](https://github.com/newonathe/OrgResource/actions/runs/45550768924) and [dedicated CI](https://github.com/newonathe/OrgResource/actions/runs/45550768785). Read live handoff by pinned commit, not by merging it. Do not print credential-bearing remote URLs or private path values to model context.
 
 ```powershell
 # Run only after owner explicitly initiates the local queue; from the trusted existing repo.
@@ -31,8 +35,10 @@ foreach ($entry in (@($Dispatch.source_files) + @($Dispatch.migrations) + @($Dis
     $expected = '{0} blob {1}' -f $entry.mode, $entry.blob
     $expected += "`t" + $entry.path
     if ($actual -cne $expected) { throw 'Pinned source blob/mode mismatch.' }
+    $actualBytes = (Invoke-CheckedGit cat-file -s $entry.blob) -join ''
+    if ([long]$actualBytes -ne [long]$entry.bytes) { throw 'Pinned blob size mismatch.' }
 }
-if ($Dispatch.source_files.Count -ne 16 -or $Dispatch.migrations.Count -ne 7 -or $Dispatch.support_files.Count -ne 17) { throw 'Source lock inventory mismatch.' }
+if ($Dispatch.source_files.Count -ne 16 -or $Dispatch.migrations.Count -ne 7 -or $Dispatch.support_files.Count -ne 19) { throw 'Source lock inventory mismatch.' }
 Invoke-CheckedGit diff --exit-code 7f8c0746da18fd54b47f430ac1435ac36e605d67 $FinalSourceSha -- backend frontend
 Invoke-CheckedGit diff --exit-code 45bcdfc7285598de3fe98684448aa65b5dd47e12 $FinalSourceSha -- extended/backend/src/main/resources/db/migration
 # Owner must already have verified current PR56 and both completed CI runs before proceeding.

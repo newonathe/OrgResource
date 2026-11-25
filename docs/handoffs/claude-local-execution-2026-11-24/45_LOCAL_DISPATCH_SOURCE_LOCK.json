@@ -1,12 +1,12 @@
 {
   "schema": "orgresource-local-dispatch-source-lock-v1",
   "date": "2026-11-25 PHT",
-  "ready_to_launch": false,
-  "approved_source_sha": null,
+  "ready_to_launch": true,
+  "approved_source_sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
   "candidate_source_sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
   "repository": "newonathe/OrgResource",
   "graph": "12_EXECUTION_GRAPH.json",
-  "status": "CANDIDATE_CI_PENDING_AFTER_NATIVE_FAILURE",
+  "status": "VERIFIED_BOUNDED_REMOTE_PREPARATION_ONLY",
   "source_files": [
     {
       "path": "AGENTS.md",
@@ -160,6 +160,88 @@
   "actual_receipts": [
     {
       "status": "VERIFIED_BOUNDED",
+      "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+      "run": 45550768924,
+      "job": 138992173040,
+      "oracle": "exact corrected source full Extended Linux regression, attempt2",
+      "actual": "93 registered routes once; 103 Maven/78 identity and corrected 8 import guard cases, zero failures/errors/skips; 60 Newman requests/110 assertions, 19 Playwright; actual deadlock rollback/retry/replay; distinct JVM response-loss and reminder restart, independent C5 1039696 bytes exact non-session rows and empty sessions; 15 archive refusals, 10 local prechecks, public original-only metadata/API/browser/grants and SQL aggregate/projection controls, all cleanup; 450+75 packaged serial HTTP, JAR 72486427 bytes SHA256 76e5977499edb6a01a0c6de95ce166c2975d08f70bcdbd57680049d1af32c10a"
+    },
+    {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+      "run": 45550768785,
+      "job": 138991124364,
+      "oracle": "exact corrected source dedicated fresh-schema tests",
+      "actual": "six groups, seven method executions, zero failures/errors/skips, six cleanups, 450 measured+75 warmups, 3 fresh schema/JVM invocations, final R0708_PREPARATION_OK"
+    },
+    {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+      "run": 45550768924,
+      "job": 138992175595,
+      "oracle": "exact frozen Java8 regression",
+      "actual": "61 Maven, 100 Newman requests/151 assertions, one packaged Playwright; zero failures/errors/skips"
+    },
+    {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+      "run": 45550768924,
+      "job": 138992174413,
+      "oracle": "exact React regression",
+      "actual": "3 test files/15 tests, typecheck/lint/build success"
+    },
+    {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+      "run": 45550768892,
+      "job": 138991124431,
+      "oracle": "exact corrected source Windows Java21 DB-free guard suite",
+      "actual": "WINDOWS_GUARD_SOURCE exact SHA; Temurin 21.0.13; C8HostedDemoImportCommandTest 8, C8HostedDemoPostflightTest 3, C8HostedDemoPreflightTest 3, C8HostedOriginalBaselineTest 3; total 17, failures/errors/skips 0, BUILD SUCCESS, job success"
+    }
+  ],
+  "full_pending": [],
+  "local_queue": [
+    "L00",
+    "L03",
+    "L01/L02 nested",
+    "L04",
+    "L05 independent",
+    "L06 owner-terminal",
+    "L08"
+  ],
+  "academic_separate": {
+    "source": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+    "temporary_packaging_tools_ref": "9ecabdbc51b280ff1dbb2673f72766cfca2ab9a8",
+    "scope": "R04 bounded temporary evidence only; G07 owner/student, no final assembler or release authorization"
+  },
+  "notes": [
+    "R09 final acceptance must update approved_source_sha and ready_to_launch together with graph, exact actual receipts and owner permission; candidate is never executable authority.",
+    "L04 Windows verifier authenticates encrypted C5 archive and compares four-table count/sum/XOR CRC32 fingerprints and allocation count; not exact all-row equality. Retained stopped disposable datadirs require owner-private custody. Native Windows scripts reserve then release loopback ports before launch and poll ping, so require owner-approved exclusive disposable Windows environment without other MySQL servers/listeners or competing launches; no permission broadening or shared database shutdown. If ownership cannot be established, BLOCKED, do not run. Source-only review; actual native behavior NOT_RUN.",
+    "L06 report27 is authoritative; actual exact private plan/owner confirmation and POSIX capability required. No interim preparation or duplicate import.",
+    "Report48: approved_source_sha denotes ChatGPT-reviewed source identity, not owner consent. All 23 pins matched exact tree. Owner explicitly initiates local queue; L06 separate real terminal confirmation. No native PS execution observed.",
+    "Report49: 17 support pins plus original 23 = 40 exact unique pins; final exact source tree; current 09/11 only. Owner initiation and direct terminal consent distinct. Native execution NOT_RUN.",
+    "Report50: prior actual Linux receipts historical. Reopen R09 after reported native failure; candidate never executable authority.",
+    "Report52: corrected exact source reapproved after actual Windows17/17 and Linux full/dedicated results. Prior native failure historical, current native package NOT_RUN. 42 pins. Owner routine continuation authorized; direct L06 confirmation separate."
+  ],
+  "prior_bounded_receipts": [
+    {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
+      "run": 45493345999,
+      "job": 138797218433,
+      "oracle": "actual full PR55 recovery, reminder restart, dedicated evidence and packaged HTTP",
+      "actual": "103 Maven/78 identity/19 Playwright, 60 Newman requests/110 assertions, zero failures/errors/skips, 3/3 jobs success; actual InnoDB deadlock and rollback/retry, response-loss upstream201/downstreamEOF and same-actor temporary receipt/ETag replay across distinct JVM exact domain equality; real C5 independent restore non-session exact and empty sessions, durable replay, role/tenant refusals; reminder stale CLAIMED/DISPATCHING -> UNKNOWN, fresh preserved, exact other rows no transport; cleanup; 450 measured+75 warmups packaged same JVM; public original-only preparation, private positive NOT_RUN"
+    },
+    {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "9d0902b4e8ea2045a30a4ff4a524e213a3b6a7b3",
+      "run": 45493392042,
+      "job": 138797385434,
+      "oracle": "first complete corrected combined full regression",
+      "actual": "103 Maven/78 identity/19 Playwright, 60 Newman requests/110 assertions, all three jobs success, zero failures/errors/skips; real deadlock/rollback/retry, distinct JVM response-loss replay and reminder recovery, C5 exact independent restore, public SQL aggregate/projection, locking denial/positive, seven domain DML denials, real original-only metadata/browser/API/session/logout, exact source/domain row equality, all cleanup; private positive NOT_RUN"
+    },
+    {
+      "status": "VERIFIED_BOUNDED",
       "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
       "run": 45494597313,
       "job": 138801600507,
@@ -191,62 +273,7 @@
       "actual": "checkout exact; 3 test files/15 tests passed; typecheck, lint, build completed; Vite reported 162ms; job success"
     }
   ],
-  "full_pending": [
-    {
-      "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
-      "tree": "180f9708b78a9479d50531edbd04e0dee48a57e7",
-      "pr": 56,
-      "parent": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
-      "status": "CI_PENDING",
-      "report": "docs/handoffs/claude-local-execution-2026-11-24/50_L03_WINDOWS_REPORTED_FAILURE_AND_PORTABLE_TEST_FIX.md",
-      "changed_paths": [
-        "extended/backend/src/test/java/edu/orgresource/extended/demo/C8HostedDemoImportCommandTest.java",
-        ".github/workflows/windows-demo-guards.yml"
-      ],
-      "retry_requested": true
-    }
-  ],
-  "local_queue": [
-    "L00",
-    "L03",
-    "L01/L02 nested",
-    "L04",
-    "L05 independent",
-    "L06 owner-terminal",
-    "L08"
-  ],
-  "academic_separate": {
-    "source": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
-    "temporary_packaging_tools_ref": "9ecabdbc51b280ff1dbb2673f72766cfca2ab9a8",
-    "scope": "R04 bounded temporary evidence only; G07 owner/student, no final assembler or release authorization"
-  },
-  "notes": [
-    "R09 final acceptance must update approved_source_sha and ready_to_launch together with graph, exact actual receipts and owner permission; candidate is never executable authority.",
-    "L04 Windows verifier authenticates encrypted C5 archive and compares four-table count/sum/XOR CRC32 fingerprints and allocation count; not exact all-row equality. Retained stopped disposable datadirs require owner-private custody. Native Windows scripts reserve then release loopback ports before launch and poll ping, so require owner-approved exclusive disposable Windows environment without other MySQL servers/listeners or competing launches; no permission broadening or shared database shutdown. If ownership cannot be established, BLOCKED, do not run. Source-only review; actual native behavior NOT_RUN.",
-    "L06 report27 is authoritative; actual exact private plan/owner confirmation and POSIX capability required. No interim preparation or duplicate import.",
-    "Report48: approved_source_sha denotes ChatGPT-reviewed source identity, not owner consent. All 23 pins matched exact tree. Owner explicitly initiates local queue; L06 separate real terminal confirmation. No native PS execution observed.",
-    "Report49: 17 support pins plus original 23 = 40 exact unique pins; final exact source tree; current 09/11 only. Owner initiation and direct terminal consent distinct. Native execution NOT_RUN.",
-    "Report50: prior actual Linux receipts historical. Reopen R09 after reported native failure; candidate never executable authority."
-  ],
-  "prior_bounded_receipts": [
-    {
-      "status": "VERIFIED_BOUNDED",
-      "sha": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
-      "run": 45493345999,
-      "job": 138797218433,
-      "oracle": "actual full PR55 recovery, reminder restart, dedicated evidence and packaged HTTP",
-      "actual": "103 Maven/78 identity/19 Playwright, 60 Newman requests/110 assertions, zero failures/errors/skips, 3/3 jobs success; actual InnoDB deadlock and rollback/retry, response-loss upstream201/downstreamEOF and same-actor temporary receipt/ETag replay across distinct JVM exact domain equality; real C5 independent restore non-session exact and empty sessions, durable replay, role/tenant refusals; reminder stale CLAIMED/DISPATCHING -> UNKNOWN, fresh preserved, exact other rows no transport; cleanup; 450 measured+75 warmups packaged same JVM; public original-only preparation, private positive NOT_RUN"
-    },
-    {
-      "status": "VERIFIED_BOUNDED",
-      "sha": "9d0902b4e8ea2045a30a4ff4a524e213a3b6a7b3",
-      "run": 45493392042,
-      "job": 138797385434,
-      "oracle": "first complete corrected combined full regression",
-      "actual": "103 Maven/78 identity/19 Playwright, 60 Newman requests/110 assertions, all three jobs success, zero failures/errors/skips; real deadlock/rollback/retry, distinct JVM response-loss replay and reminder recovery, C5 exact independent restore, public SQL aggregate/projection, locking denial/positive, seven domain DML denials, real original-only metadata/browser/API/session/logout, exact source/domain row equality, all cleanup; private positive NOT_RUN"
-    }
-  ],
-  "approved_source_tree": "d55cecc7afd240da455014e2d9f1b61bb0e74f40",
+  "approved_source_tree": "180f9708b78a9479d50531edbd04e0dee48a57e7",
   "owner_launch_required": true,
   "support_files": [
     {
@@ -349,6 +376,18 @@
       "path": "scripts/run-extended-c3-newman.ps1",
       "blob": "9f719cba01bd57142d0f6438618e5543c7a7831a",
       "bytes": 3130,
+      "mode": "100644"
+    },
+    {
+      "path": ".github/workflows/windows-demo-guards.yml",
+      "blob": "9daa53fe60fbe9dab2361af9891c81d99800a00e",
+      "bytes": 1555,
+      "mode": "100644"
+    },
+    {
+      "path": "extended/backend/src/test/java/edu/orgresource/extended/demo/C8HostedDemoImportCommandTest.java",
+      "blob": "f6971c0f7d5467bbef9ecd0efc1d1d7b0f5630fb",
+      "bytes": 5793,
       "mode": "100644"
     }
   ],
