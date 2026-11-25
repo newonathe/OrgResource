@@ -384,7 +384,7 @@
         }
       ],
       "authority": "Parallel PR24 source inventory and publication vetoes; metadata != content inspection.",
-      "next": "Remaining privacy paths 43 unread; independent G01 factor/IR4 reconciliation; H01 consent and H02–H06 accepted native successor; L06 HOLD, no CPX implementation.",
+      "next": "Remaining privacy 34 unread; exact high-risk G01 assertion and receipt reconciliation; H01 owner consent/H02–H06 accepted native successor; L06 HOLD/no WSL.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
@@ -483,6 +483,18 @@
           "blob": "a785f3aaf7db4cb320b6c942384253717910ceb4",
           "ref": "56e03c004d15ad89b708ec2e02348a74aa9c399f",
           "review": "SOURCE_ONLY recovered design / privacy / decision and reviewer dispatch"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/65_PR57_PRIVACY_REVIEW_INDEX.csv",
+          "blob": "9684785289e317c660d147e360dd5c7f828b728e",
+          "ref": "dc590a427f3948a8576bcff75678a1aebe8dbb62",
+          "review": "SOURCE_ONLY privacy and route-gap triage"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/69_PRIVACY_AND_ROUTE_RESIDUAL_TRIAGE.md",
+          "blob": "2beb5c66db7168b3e087fd4b602941c91061c93f",
+          "ref": "dc590a427f3948a8576bcff75678a1aebe8dbb62",
+          "review": "SOURCE_ONLY privacy and route-gap triage"
         }
       ]
     },
@@ -801,7 +813,7 @@
         }
       ],
       "authority": "Latest live PR47 supersedes snapshot; 12 graph, 14 queue, 15 events, 04 index and 10 external research.",
-      "next": "Remaining privacy paths 43 unread; independent G01 factor/IR4 reconciliation; H01 consent and H02–H06 accepted native successor; L06 HOLD, no CPX implementation.",
+      "next": "Remaining privacy 34 unread; exact high-risk G01 assertion and receipt reconciliation; H01 owner consent/H02–H06 accepted native successor; L06 HOLD/no WSL.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -950,6 +962,18 @@
           "blob": "2a4c4d8ac852102a659f57dd3628a6a2271c98dd",
           "ref": "56e03c004d15ad89b708ec2e02348a74aa9c399f",
           "review": "SOURCE_ONLY recovered design / privacy / decision and reviewer dispatch"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/69_PRIVACY_AND_ROUTE_RESIDUAL_TRIAGE.md",
+          "blob": "2beb5c66db7168b3e087fd4b602941c91061c93f",
+          "ref": "dc590a427f3948a8576bcff75678a1aebe8dbb62",
+          "review": "SOURCE_ONLY privacy and route-gap triage"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/12_EXECUTION_GRAPH.json",
+          "blob": "d689508e75eeafad27ebc590601f5f3772387b0b",
+          "ref": "dc590a427f3948a8576bcff75678a1aebe8dbb62",
+          "review": "SOURCE_ONLY privacy and route-gap triage"
         }
       ]
     },
