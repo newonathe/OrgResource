@@ -579,6 +579,18 @@
           "blob": "13bf1f4cf88bef8bbc3ba1dda67009a3c9077f1a",
           "ref": "89fe634dd6e99f7a23d6d16f67859d8c6addf907",
           "review": "SOURCE_ONLY route-map privacy and R031 residual source/test reconciliation; no new runtime"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/65_PR57_PRIVACY_REVIEW_INDEX.csv",
+          "blob": "ab45a51e6ad7779abe792110c6f7fd1883dc0859",
+          "ref": "5b995dce1dd8b8db755a10fa879800a2ab85cc9c",
+          "review": "SOURCE_ONLY structured context/graph privacy and master slice; no new runtime or rights clearance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/77_STRUCTURED_CONTEXT_GRAPH_PRIVACY_REVIEW.md",
+          "blob": "660f1d7170b3deabdfb2f8c51a732eed4d1df34a",
+          "ref": "5b995dce1dd8b8db755a10fa879800a2ab85cc9c",
+          "review": "SOURCE_ONLY structured context/graph privacy and master slice; no new runtime or rights clearance"
         }
       ]
     },
@@ -1168,6 +1180,18 @@
           "blob": "13bf1f4cf88bef8bbc3ba1dda67009a3c9077f1a",
           "ref": "89fe634dd6e99f7a23d6d16f67859d8c6addf907",
           "review": "SOURCE_ONLY route-map privacy and R031 residual source/test reconciliation; no new runtime"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/65_PR57_PRIVACY_REVIEW_INDEX.csv",
+          "blob": "ab45a51e6ad7779abe792110c6f7fd1883dc0859",
+          "ref": "5b995dce1dd8b8db755a10fa879800a2ab85cc9c",
+          "review": "SOURCE_ONLY structured context/graph privacy and master slice; no new runtime or rights clearance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/77_STRUCTURED_CONTEXT_GRAPH_PRIVACY_REVIEW.md",
+          "blob": "660f1d7170b3deabdfb2f8c51a732eed4d1df34a",
+          "ref": "5b995dce1dd8b8db755a10fa879800a2ab85cc9c",
+          "review": "SOURCE_ONLY structured context/graph privacy and master slice; no new runtime or rights clearance"
         }
       ]
     },
