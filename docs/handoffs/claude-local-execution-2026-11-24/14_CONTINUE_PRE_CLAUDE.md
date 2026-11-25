@@ -1,5 +1,7 @@
 # 14 — Current cross-chat continuation protocol
 
+**Current CI retry:** Report51 addendum: full Extended job138991125280 on candidate fbfe961f861478c1727efa1ebf5df209f81f2c5d failed before Java tests because wget could not fetch pinned Maven distribution. Actual log inspected; one targeted failed-job rerun API accepted, no source change or repeat of passing jobs. Windows guard 17/17 actual remains valid, full/dedicated latest results pending; R09 stays false. Passive gate polling should distinguish historical first failure from latest retry, stop on terminal retry failure/timeout.
+
 ## Current large-batch continuation — Windows guard actual PASS, R09 still reopened
 
 Report51: actual Windows CI45550768892 job138991124431 passed exact corrected candidate fbfe961f861478c1727efa1ebf5df209f81f2c5d, 17/17 guard tests incl 8 import guard tests, zero failures/errors/skips; Java21.0.13, BUILD SUCCESS. Native package still reported failed at previous source. Full Verify45550768924 and dedicated45550768785 pending. User requests large fully specified local execution batches and unattended progress until all eligible work completes. Existing owner authorization permits routine disposable local queue after R09 reapproval, no change to direct L06 consent or other operator/reviewer/student gates. Passive read-only remote gate checks only while R09=false; do not execute native acceptance. Detailed dependency/acceptance/failure/resume contract docs/handoffs/claude-local-execution-2026-11-24/51_LARGE_BATCH_LOCAL_EXECUTION_AND_RESUME_CONTRACT.md.
