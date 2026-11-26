@@ -1,0 +1,42 @@
+name: R038 owned MySQL lock refusal
+on:
+  push:
+    branches: [docs/claude-local-execution-handoff-2026-11-24]
+    paths:
+      - 'docs/handoffs/claude-local-execution-2026-11-24/94_R038OwnedLockFork.java'
+      - 'docs/handoffs/claude-local-execution-2026-11-24/95_R038_OWNED_LOCK_DRIVER.mjs'
+      - '.github/workflows/r038-owned-lock.yml'
+permissions:
+  contents: read
+jobs:
+  owned-lock:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: 96741bbd295a2d1e7b4bbf6a75cb558a793b09bd
+          path: r031-main
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Compile exact main and isolated verification classes
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash r031-main/backend/mvnw -B -f r031-main/extended/backend/pom.xml -DskipTests compile dependency:build-classpath -Dmdep.includeScope=runtime -Dmdep.outputFile="$PWD/r031-classpath.txt"
+          mkdir r031-classes
+          cp 'docs/handoffs/claude-local-execution-2026-11-24/88_R031ProtectedFork.java' "$RUNNER_TEMP/R031ProtectedFork.java"
+          cp 'docs/handoffs/claude-local-execution-2026-11-24/94_R038OwnedLockFork.java' "$RUNNER_TEMP/R038OwnedLockFork.java"
+          javac -cp "r031-main/extended/backend/target/classes:$(cat r031-classpath.txt)" -d r031-classes "$RUNNER_TEMP/R031ProtectedFork.java" "$RUNNER_TEMP/R038OwnedLockFork.java"
+      - name: Execute owned database lock and recovery (fixed receipts only)
+        run: node docs/handoffs/claude-local-execution-2026-11-24/95_R038_OWNED_LOCK_DRIVER.mjs
