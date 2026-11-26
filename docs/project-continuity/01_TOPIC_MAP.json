@@ -1087,7 +1087,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "H01-A strict data-only retention candidate 63fbbc14e6b42f1660d4655c08028b230f230996; 57 added harness-only paths vs R09. Eight fictional tests NOT_RUN (container ClientError); 42 additional portable methods NOT_RUN; historical H02 portable12 and H03 portable18 retained. Exact manifest/scope/hash/size/serializer and commit-candidate fields only; no actual archive authentication, staging, custody or cleanup proof. Next bind actual approved cohort counts, distinct owned source/third-restore identities, actual serializer/timezone, native protected exclusive stage copy/flush/readback, independently sealed manifest hash and actual vault receipt semantics. Final exclusive marker only after observed cleanup. Preserve previous accepted archive, no failed-stage disposal or automatic repeat import. H05 scoped equality independently eligible if dependencies permit. H03 boot/namespace/mapping/absence, held-lock cleanup and lock-first recovery remain unresolved; both entrypoints quarantined. H06 lifecycle, H02 provenance/native, H03-01–12, 64 PowerShell+spy and independent acceptance open. H01-B preparation only, actual vault/machine/operator/transfer pending. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
+      "next": "H01-A observation binding and fictional native stage candidates 93cb76846eaabd846dde44dff1a7030c44a0f3a5; 61 added harness-only paths vs R09. Nine additional portable methods and native fictional stage NOT_RUN (container and Python ClientError); 51 additional portable methods NOT_RUN, H02 portable12/H03 portable18 actual historical retained. Exact three-role UUID/schema/port, nine counts, 18-table inventory, archive/domain and original before/after equality, UTC chronology and independent expected manifest pins in data-only binder; native owner-only separate staging primitive with exact handle identity, exclusive copy/flush/reopen and no overwrite or commit, no actual custody. Both runner/recovery quarantined. Next H05 exact scoped equality source slice independently while native dependencies blocked; preserve H05-01–07 actual MySQL/refusal oracles. Then H01-A actual owned observations, measured helper provenance, source ACL transition, protected root, authenticated fictional C5 restore, independent manifest/evidence seal and actual vault/cleanup receipt semantics before exclusive commit. H03 boot/namespace/mapping/absence, held-lock cleanup and recovery, H02 provenance/native, H06 lifecycle, 64 PowerShell+spy, native H03-01–12 and independent acceptance remain open. H01-B preparation only; actual vault/machine/operator/transfer and failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and13 privacy flags open. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -1260,6 +1260,12 @@
           "blob": "7d6bda8dce23c1dcbe5cb2c2fa1d1019ed95a9a4",
           "ref": "56e61deac281913e7718bfd5bd2f85c9f8f66aea",
           "review": "FULL report; partial source-only retention contract; eight tests NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/114_H01_A_OBSERVATION_BINDING_AND_FICTIONAL_STAGING.md",
+          "blob": "7f770ddebf91ffec89f0505b7afbe610f96a5492",
+          "ref": "23ef65987744347e44c6d2142582133d6aa85c4a",
+          "review": "FULL report; source-only evidence and fictional stage; tests NOT_RUN"
         }
       ]
     },
@@ -1283,7 +1289,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "H01-A strict data-only retention candidate 63fbbc14e6b42f1660d4655c08028b230f230996; 57 added harness-only paths vs R09. Eight fictional tests NOT_RUN (container ClientError); 42 additional portable methods NOT_RUN; historical H02 portable12 and H03 portable18 retained. Exact manifest/scope/hash/size/serializer and commit-candidate fields only; no actual archive authentication, staging, custody or cleanup proof. Next bind actual approved cohort counts, distinct owned source/third-restore identities, actual serializer/timezone, native protected exclusive stage copy/flush/readback, independently sealed manifest hash and actual vault receipt semantics. Final exclusive marker only after observed cleanup. Preserve previous accepted archive, no failed-stage disposal or automatic repeat import. H05 scoped equality independently eligible if dependencies permit. H03 boot/namespace/mapping/absence, held-lock cleanup and lock-first recovery remain unresolved; both entrypoints quarantined. H06 lifecycle, H02 provenance/native, H03-01–12, 64 PowerShell+spy and independent acceptance open. H01-B preparation only, actual vault/machine/operator/transfer pending. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
+      "next": "H01-A observation binding and fictional native stage candidates 93cb76846eaabd846dde44dff1a7030c44a0f3a5; 61 added harness-only paths vs R09. Nine additional portable methods and native fictional stage NOT_RUN (container and Python ClientError); 51 additional portable methods NOT_RUN, H02 portable12/H03 portable18 actual historical retained. Exact three-role UUID/schema/port, nine counts, 18-table inventory, archive/domain and original before/after equality, UTC chronology and independent expected manifest pins in data-only binder; native owner-only separate staging primitive with exact handle identity, exclusive copy/flush/reopen and no overwrite or commit, no actual custody. Both runner/recovery quarantined. Next H05 exact scoped equality source slice independently while native dependencies blocked; preserve H05-01–07 actual MySQL/refusal oracles. Then H01-A actual owned observations, measured helper provenance, source ACL transition, protected root, authenticated fictional C5 restore, independent manifest/evidence seal and actual vault/cleanup receipt semantics before exclusive commit. H03 boot/namespace/mapping/absence, held-lock cleanup and recovery, H02 provenance/native, H06 lifecycle, 64 PowerShell+spy, native H03-01–12 and independent acceptance remain open. H01-B preparation only; actual vault/machine/operator/transfer and failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and13 privacy flags open. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -1888,6 +1894,12 @@
           "blob": "7d6bda8dce23c1dcbe5cb2c2fa1d1019ed95a9a4",
           "ref": "56e61deac281913e7718bfd5bd2f85c9f8f66aea",
           "review": "FULL report; partial source-only retention contract; eight tests NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/114_H01_A_OBSERVATION_BINDING_AND_FICTIONAL_STAGING.md",
+          "blob": "7f770ddebf91ffec89f0505b7afbe610f96a5492",
+          "ref": "23ef65987744347e44c6d2142582133d6aa85c4a",
+          "review": "FULL report; source-only evidence and fictional stage; tests NOT_RUN"
         }
       ]
     },
@@ -2034,7 +2046,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "H01-A strict data-only retention candidate 63fbbc14e6b42f1660d4655c08028b230f230996; 57 added harness-only paths vs R09. Eight fictional tests NOT_RUN (container ClientError); 42 additional portable methods NOT_RUN; historical H02 portable12 and H03 portable18 retained. Exact manifest/scope/hash/size/serializer and commit-candidate fields only; no actual archive authentication, staging, custody or cleanup proof. Next bind actual approved cohort counts, distinct owned source/third-restore identities, actual serializer/timezone, native protected exclusive stage copy/flush/readback, independently sealed manifest hash and actual vault receipt semantics. Final exclusive marker only after observed cleanup. Preserve previous accepted archive, no failed-stage disposal or automatic repeat import. H05 scoped equality independently eligible if dependencies permit. H03 boot/namespace/mapping/absence, held-lock cleanup and lock-first recovery remain unresolved; both entrypoints quarantined. H06 lifecycle, H02 provenance/native, H03-01–12, 64 PowerShell+spy and independent acceptance open. H01-B preparation only, actual vault/machine/operator/transfer pending. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
+      "next": "H01-A observation binding and fictional native stage candidates 93cb76846eaabd846dde44dff1a7030c44a0f3a5; 61 added harness-only paths vs R09. Nine additional portable methods and native fictional stage NOT_RUN (container and Python ClientError); 51 additional portable methods NOT_RUN, H02 portable12/H03 portable18 actual historical retained. Exact three-role UUID/schema/port, nine counts, 18-table inventory, archive/domain and original before/after equality, UTC chronology and independent expected manifest pins in data-only binder; native owner-only separate staging primitive with exact handle identity, exclusive copy/flush/reopen and no overwrite or commit, no actual custody. Both runner/recovery quarantined. Next H05 exact scoped equality source slice independently while native dependencies blocked; preserve H05-01–07 actual MySQL/refusal oracles. Then H01-A actual owned observations, measured helper provenance, source ACL transition, protected root, authenticated fictional C5 restore, independent manifest/evidence seal and actual vault/cleanup receipt semantics before exclusive commit. H03 boot/namespace/mapping/absence, held-lock cleanup and recovery, H02 provenance/native, H06 lifecycle, 64 PowerShell+spy, native H03-01–12 and independent acceptance remain open. H01-B preparation only; actual vault/machine/operator/transfer and failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and13 privacy flags open. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -2395,6 +2407,12 @@
           "blob": "7d6bda8dce23c1dcbe5cb2c2fa1d1019ed95a9a4",
           "ref": "56e61deac281913e7718bfd5bd2f85c9f8f66aea",
           "review": "FULL report; partial source-only retention contract; eight tests NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/114_H01_A_OBSERVATION_BINDING_AND_FICTIONAL_STAGING.md",
+          "blob": "7f770ddebf91ffec89f0505b7afbe610f96a5492",
+          "ref": "23ef65987744347e44c6d2142582133d6aa85c4a",
+          "review": "FULL report; source-only evidence and fictional stage; tests NOT_RUN"
         }
       ]
     }

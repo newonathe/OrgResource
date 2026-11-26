@@ -423,3 +423,8 @@
 "docs/handoffs/claude-local-execution-2026-11-24/113_H01_A_RETENTION_DATA_CONTRACT.md","7d6bda8dce23c1dcbe5cb2c2fa1d1019ed95a9a4","5678","100644","56e61deac281913e7718bfd5bd2f85c9f8f66aea","FULL Report113 source-only tests NOT_RUN"
 "scripts/windows-l06/retention_contract.py","c3e5e831c574f04bccb1d71360ec882fe38e25ee","6145","100644","63fbbc14e6b42f1660d4655c08028b230f230996","FULL Report113 source-only tests NOT_RUN"
 "scripts/windows-l06/test_retention_contract.py","c0afe16e05208f22a8c43861901726885556f414","4183","100644","63fbbc14e6b42f1660d4655c08028b230f230996","FULL Report113 source-only tests NOT_RUN"
+"docs/handoffs/claude-local-execution-2026-11-24/114_H01_A_OBSERVATION_BINDING_AND_FICTIONAL_STAGING.md","7f770ddebf91ffec89f0505b7afbe610f96a5492","10273","100644","23ef65987744347e44c6d2142582133d6aa85c4a","FULL Report114 source-only tests NOT_RUN"
+"scripts/windows-l06/retention_evidence.py","88f0923cea426c740bfb8c5f44263c838a2f57b1","7326","100644","93cb76846eaabd846dde44dff1a7030c44a0f3a5","FULL Report114 source-only tests NOT_RUN"
+"scripts/windows-l06/test_retention_evidence.py","52018cc2f9e729982052f8158afbd2d0751a7f82","6518","100644","93cb76846eaabd846dde44dff1a7030c44a0f3a5","FULL Report114 source-only tests NOT_RUN"
+"scripts/windows-l06/C9RetentionStage.cs","a94dffe4c79443fb5bc38874fd984f1b3d7478b6","9380","100644","93cb76846eaabd846dde44dff1a7030c44a0f3a5","FULL Report114 source-only tests NOT_RUN"
+"scripts/windows-l06/test-retention-stage.ps1","279a9ac0a930dafb381b55e0c519e09c624df693","5264","100644","93cb76846eaabd846dde44dff1a7030c44a0f3a5","FULL Report114 source-only tests NOT_RUN"

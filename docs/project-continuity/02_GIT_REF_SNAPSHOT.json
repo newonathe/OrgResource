@@ -1148,5 +1148,17 @@
     "report": "docs/handoffs/claude-local-execution-2026-11-24/113_H01_A_RETENTION_DATA_CONTRACT.md",
     "report_ref": "56e61deac281913e7718bfd5bd2f85c9f8f66aea",
     "coverage": "57 added harness-only paths; eight new portable methods NOT_RUN"
+  },
+  "h01_a_observation_and_fictional_stage_candidate": {
+    "observed_date": "2026-11-27 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "93cb76846eaabd846dde44dff1a7030c44a0f3a5",
+    "tree": "58e066a26d829d5b06084a6e6da945a197653104",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/114_H01_A_OBSERVATION_BINDING_AND_FICTIONAL_STAGING.md",
+    "report_ref": "23ef65987744347e44c6d2142582133d6aa85c4a",
+    "coverage": "61 added harness-only paths; nine new portable methods/native stage fixture NOT_RUN"
   }
 }
