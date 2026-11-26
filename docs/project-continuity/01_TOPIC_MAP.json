@@ -634,7 +634,7 @@
         }
       ],
       "authority": "93 route candidate mapping, independent issue34 blocked; current code and actual test evidence.",
-      "next": "Inspect corrected R038 CI45800817164 terminal actual logs; initial45800265532 failed BASELINE (source-proven inaccurate19 inventory), exact18 CI45800392654 failed DIRECT_TIMEOUT before HTTP with state unknown. New fixture verifies actual1205 with documented JDBC40001 or HY000; records exact state; 40001 requires503. If refused, inspect fixed diagnostic phase and repair actual cause without weakening. Corrected PR58 CI45798910597 Extended still at additive replay; inspect terminal actual #82/#83. Inspect automatic Verify45800274299/45800398744/45800824765 once terminal, avoid repeats. G01/IR4 independent93 open,13 owner-gated privacy flags,H01–H06 native successor,L06 HOLD/no WSL unchanged.",
+      "next": "R038 actual bounded success CI45800817164 job139843255724, real MySQL1205 JDBC40001 HTTP503/no-store, exact18-table equality and recovery/cleanup. Reconcile corrected PR58 CI45798910597 terminal #82/#83 actual logs and auto Verify45800274299/45800398744/45800824765. No redundant route testing absent material gap; generic disconnect/private full96/mixed positives not covered. Prioritize owner H01 custody consent, native H02–H06 successor, L06 HOLD/no WSL, L07 off-host, G01/IR4 independent93 open and 13 privacy flags.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/74_STRUCTURED_PRIVACY_AND_RECOVERED_ROUTE_RECEIPTS.md",
@@ -887,6 +887,18 @@
           "blob": "f617ca7c903579fc34a3e1686f2802272efa0388",
           "ref": "1269b59e239eb622a062dfce546791f6278fa758",
           "review": "RELEVANT_RANGES R038"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/98_R038_ACTUAL_OWNED_LOCK_RECEIPT.md",
+          "blob": "cd1ebda51df0a13b7932d099aeba453159c4a32d",
+          "ref": "784eca42e5f4a8200dbe76c5c8ddb3022a399e98",
+          "review": "FULL actual R038 receipt"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
+          "blob": "7713ea1ad28f67df3ee9e484f35ca5c9e97fac07",
+          "ref": "784eca42e5f4a8200dbe76c5c8ddb3022a399e98",
+          "review": "RELEVANT_RANGES R038 actual"
         }
       ]
     },
@@ -1175,7 +1187,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "Inspect corrected R038 CI45800817164 terminal actual logs; initial45800265532 failed BASELINE (source-proven inaccurate19 inventory), exact18 CI45800392654 failed DIRECT_TIMEOUT before HTTP with state unknown. New fixture verifies actual1205 with documented JDBC40001 or HY000; records exact state; 40001 requires503. If refused, inspect fixed diagnostic phase and repair actual cause without weakening. Corrected PR58 CI45798910597 Extended still at additive replay; inspect terminal actual #82/#83. Inspect automatic Verify45800274299/45800398744/45800824765 once terminal, avoid repeats. G01/IR4 independent93 open,13 owner-gated privacy flags,H01–H06 native successor,L06 HOLD/no WSL unchanged.",
+      "next": "R038 actual bounded success CI45800817164 job139843255724, real MySQL1205 JDBC40001 HTTP503/no-store, exact18-table equality and recovery/cleanup. Reconcile corrected PR58 CI45798910597 terminal #82/#83 actual logs and auto Verify45800274299/45800398744/45800824765. No redundant route testing absent material gap; generic disconnect/private full96/mixed positives not covered. Prioritize owner H01 custody consent, native H02–H06 successor, L06 HOLD/no WSL, L07 off-host, G01/IR4 independent93 open and 13 privacy flags.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -1672,6 +1684,18 @@
           "blob": "f617ca7c903579fc34a3e1686f2802272efa0388",
           "ref": "1269b59e239eb622a062dfce546791f6278fa758",
           "review": "RELEVANT_RANGES R038"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/98_R038_ACTUAL_OWNED_LOCK_RECEIPT.md",
+          "blob": "cd1ebda51df0a13b7932d099aeba453159c4a32d",
+          "ref": "784eca42e5f4a8200dbe76c5c8ddb3022a399e98",
+          "review": "FULL actual R038 receipt"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
+          "blob": "7713ea1ad28f67df3ee9e484f35ca5c9e97fac07",
+          "ref": "784eca42e5f4a8200dbe76c5c8ddb3022a399e98",
+          "review": "RELEVANT_RANGES R038 actual"
         }
       ]
     },
@@ -1818,7 +1842,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "Inspect corrected R038 CI45800817164 terminal actual logs; initial45800265532 failed BASELINE (source-proven inaccurate19 inventory), exact18 CI45800392654 failed DIRECT_TIMEOUT before HTTP with state unknown. New fixture verifies actual1205 with documented JDBC40001 or HY000; records exact state; 40001 requires503. If refused, inspect fixed diagnostic phase and repair actual cause without weakening. Corrected PR58 CI45798910597 Extended still at additive replay; inspect terminal actual #82/#83. Inspect automatic Verify45800274299/45800398744/45800824765 once terminal, avoid repeats. G01/IR4 independent93 open,13 owner-gated privacy flags,H01–H06 native successor,L06 HOLD/no WSL unchanged.",
+      "next": "R038 actual bounded success CI45800817164 job139843255724, real MySQL1205 JDBC40001 HTTP503/no-store, exact18-table equality and recovery/cleanup. Reconcile corrected PR58 CI45798910597 terminal #82/#83 actual logs and auto Verify45800274299/45800398744/45800824765. No redundant route testing absent material gap; generic disconnect/private full96/mixed positives not covered. Prioritize owner H01 custody consent, native H02–H06 successor, L06 HOLD/no WSL, L07 off-host, G01/IR4 independent93 open and 13 privacy flags.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -2071,6 +2095,18 @@
           "blob": "f617ca7c903579fc34a3e1686f2802272efa0388",
           "ref": "1269b59e239eb622a062dfce546791f6278fa758",
           "review": "RELEVANT_RANGES R038"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/98_R038_ACTUAL_OWNED_LOCK_RECEIPT.md",
+          "blob": "cd1ebda51df0a13b7932d099aeba453159c4a32d",
+          "ref": "784eca42e5f4a8200dbe76c5c8ddb3022a399e98",
+          "review": "FULL actual R038 receipt"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
+          "blob": "7713ea1ad28f67df3ee9e484f35ca5c9e97fac07",
+          "ref": "784eca42e5f4a8200dbe76c5c8ddb3022a399e98",
+          "review": "RELEVANT_RANGES R038 actual"
         }
       ]
     }

@@ -347,3 +347,5 @@
 "docs/handoffs/claude-local-execution-2026-11-24/95_R038_OWNED_LOCK_DRIVER.mjs","de84378b1554a2ff37a5f8e85c75b09eb7258fb5","3583","100644","9f40e895a20bd96d97e59fb95e499af6a2783e96","FULL corrected driver"
 "docs/handoffs/claude-local-execution-2026-11-24/97_R038_OBSERVED_FAILURES_AND_DRIVER_STATE_CORRECTION.md","fea666049daa87a5f9a5920fa88ca3ad63ed1619","3505","100644","1269b59e239eb622a062dfce546791f6278fa758","FULL observed failures and correction"
 "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv","f617ca7c903579fc34a3e1686f2802272efa0388","110667","100644","1269b59e239eb622a062dfce546791f6278fa758","RELEVANT_RANGES R038"
+"docs/handoffs/claude-local-execution-2026-11-24/98_R038_ACTUAL_OWNED_LOCK_RECEIPT.md","cd1ebda51df0a13b7932d099aeba453159c4a32d","3090","100644","784eca42e5f4a8200dbe76c5c8ddb3022a399e98","FULL actual R038 receipt"
+"docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv","7713ea1ad28f67df3ee9e484f35ca5c9e97fac07","111001","100644","784eca42e5f4a8200dbe76c5c8ddb3022a399e98","RELEVANT_RANGES R038 actual"

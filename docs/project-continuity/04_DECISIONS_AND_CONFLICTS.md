@@ -275,3 +275,7 @@ Use actual MySQL1205/HY000 and exact direct translator branch, HTTP503 or separa
 ### R038 observed failures and documented JDBC-state distinction — Report97 (2026-11-26 PHT)
 
 Actual BASELINE then DIRECT_TIMEOUT refusals; no observed driver state in prior log. Connector/J documents 1205 JDBC40001 distinct from native HY000. Require actual code1205 with documented state, actual HTTP503 for40001, no generic outage acceptance. Preserve both red receipts and explicit diagnostics. Exact report 1269b59e239eb622a062dfce546791f6278fa758:docs/handoffs/claude-local-execution-2026-11-24/97_R038_OBSERVED_FAILURES_AND_DRIVER_STATE_CORRECTION.md.
+
+### R038 actual bounded receipt — Report98 (2026-11-26 PHT)
+
+Actual MySQL1205/JDBC40001, HTTP503/no-store, exact18-table equality, post-unlock recovery and cleanup confirmed. Prior two failed attempts retained. No generic outage or approved private cohort equivalence, independent review open. Exact report 784eca42e5f4a8200dbe76c5c8ddb3022a399e98:docs/handoffs/claude-local-execution-2026-11-24/98_R038_ACTUAL_OWNED_LOCK_RECEIPT.md.
