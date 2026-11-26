@@ -6417,6 +6417,19 @@ class C1IdentityAcceptanceTest {
         Fixture home = newTenant("G01-recover-home", Membership.Role.OWNER);
         Fixture foreign = newTenant("G01-recover-other", Membership.Role.OWNER);
         Fixture disabled = fixtureInOrg(home.orgDbId, Membership.Role.MEMBER);
+        // fixtureInOrg intentionally creates no recovery codes; seed a real fictional batch
+        // using the same persistence path as createTenant, before disabling this account.
+        List<String> disabledCodes = C1Secrets.recoveryCodes(5);
+        tx.executeWithoutResult(status -> {
+            LocalDateTime issuedAt = now();
+            UUID batch = C1Secrets.uuid();
+            for (String code : disabledCodes)
+                recoveryCodes.save(new AccountRecoveryCode(disabled.userDbId, C1Secrets.sha256(code),
+                        batch, issuedAt, issuedAt.plusDays(365)));
+        });
+        assertEquals(5, disabledCodes.size());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM account_recovery_code WHERE user_id=? AND code_hash=? AND used_at IS NULL AND revoked_at IS NULL",
+                Integer.class, disabled.userDbId, C1Secrets.sha256(disabledCodes.get(0))));
         Session active = login(home.username, home.password);
         Session other = login(foreign.username, foreign.password);
         Session retired = login(disabled.username, disabled.password);
@@ -6430,7 +6443,7 @@ class C1IdentityAcceptanceTest {
         // Foreign real code cannot recover home; real disabled code cannot recover disabled.
         String[] names = {home.username, missing, disabled.username};
         String[] invalidCodes = {foreign.recoveryCodes.get(0), foreign.recoveryCodes.get(0),
-                disabled.recoveryCodes.get(0)};
+                disabledCodes.get(0)};
         var domain = governanceDenialRows(home.orgDbId, foreign.orgDbId);
         var beforeHome = identityAuthRows(home);
         var beforeForeign = identityAuthRows(foreign);
