@@ -110,7 +110,30 @@ export async function withR031Database(action){
   // Credentials only in process memory. Callback is trusted checked-in verification code, not user input.
   const verify=()=>{const x=inspect(id);verifyOwnership(x,id,name,nonce,imageId);check(x.State.Running&&boundPort(x)===port);
    check(sql(verifier,verifierPassword,"SELECT DATABASE(),@@server_uuid,CURRENT_USER();")===schema+"\t"+uuid+"\t"+verifier+"@%");};
-  await action({url,schema,uuid,port,runtime,runtimePassword,migrator,migratorPassword,verifier,verifierPassword,verify});
+  // Call only after the dedicated Flyway process has successfully migrated the owned schema.
+  let narrowed=false;
+  const narrowRuntime=()=>{
+   verify();check(!narrowed);
+   const rows=sql("root",root,"SELECT table_name FROM information_schema.tables WHERE table_schema='"+schema+"' AND engine='InnoDB' ORDER BY table_name;",{database:null,rootSocket:true}).split("\n");
+   check(rows.length>=10&&new Set(rows).size===rows.length&&rows.every(x=>/^[a-zA-Z0-9_]+$/.test(x))&&["stock_movement","audit_event","flyway_schema_history"].every(x=>rows.includes(x)));
+   check(sql(verifier,verifierPassword,"SELECT COUNT(*) FROM flyway_schema_history WHERE success=1 AND version IN ('1','2','3','4','5','6','7');")==="7");
+   check(sql(verifier,verifierPassword,"SELECT COUNT(*) FROM organization;")==="0"&&sql(verifier,verifierPassword,"SELECT COUNT(*) FROM user_account;")==="0");
+   const account="'"+runtime+"'@'%'";
+   const q=x=>String.fromCharCode(96)+x+String.fromCharCode(96);
+   sql("root",root,"REVOKE ALL PRIVILEGES, GRANT OPTION FROM "+account+";",{database:null,rootSocket:true});
+   for(const table of rows){
+    const grant=["stock_movement","audit_event"].includes(table)?"SELECT,INSERT":table==="flyway_schema_history"?"SELECT":"SELECT,INSERT,UPDATE,DELETE";
+    sql("root",root,"GRANT "+grant+" ON "+q(schema)+"."+q(table)+" TO "+account+";",{database:null,rootSocket:true});
+   }
+   for(const [table,col] of [["stock_movement","kind"],["audit_event","action"]]){
+    sql(runtime,runtimePassword,"UPDATE "+q(table)+" SET "+col+"="+col+" WHERE 1=0;",{expectedDenied:true});
+    sql(runtime,runtimePassword,"DELETE FROM "+q(table)+" WHERE 1=0;",{expectedDenied:true});
+   }
+   sql(runtime,runtimePassword,"DELETE FROM flyway_schema_history WHERE 1=0;",{expectedDenied:true});
+   check(sql(verifier,verifierPassword,"SELECT COUNT(*) FROM stock_movement;")==="0"&&sql(verifier,verifierPassword,"SELECT COUNT(*) FROM audit_event;")==="0");
+   narrowed=true;verify();
+  };
+  await action({url,schema,uuid,port,runtime,runtimePassword,migrator,migratorPassword,verifier,verifierPassword,verify,narrowRuntime});
   verify();completed=true;
  }finally{
   if(created&&id){

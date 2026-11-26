@@ -1,0 +1,41 @@
+name: R031 protected fictional rotation
+on:
+  push:
+    branches: [docs/claude-local-execution-handoff-2026-11-24]
+    paths:
+      - 'docs/handoffs/claude-local-execution-2026-11-24/88_R031ProtectedFork.java'
+      - 'docs/handoffs/claude-local-execution-2026-11-24/89_R031_PROTECTED_DRIVER.mjs'
+      - '.github/workflows/r031-protected-rotation.yml'
+permissions:
+  contents: read
+jobs:
+  protected-rotation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: 96741bbd295a2d1e7b4bbf6a75cb558a793b09bd
+          path: r031-main
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Compile exact Extended C source and separate fixture (no runtime secrets)
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash r031-main/backend/mvnw -B -f r031-main/extended/backend/pom.xml -DskipTests compile dependency:build-classpath -Dmdep.includeScope=runtime -Dmdep.outputFile="$PWD/r031-classpath.txt"
+          mkdir r031-classes
+          cp 'docs/handoffs/claude-local-execution-2026-11-24/88_R031ProtectedFork.java' "$RUNNER_TEMP/R031ProtectedFork.java"
+          javac -cp "r031-main/extended/backend/target/classes:$(cat r031-classpath.txt)" -d r031-classes "$RUNNER_TEMP/R031ProtectedFork.java"
+      - name: Run protected fixture (sanitized receipts only)
+        run: node docs/handoffs/claude-local-execution-2026-11-24/89_R031_PROTECTED_DRIVER.mjs
