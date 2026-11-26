@@ -486,7 +486,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "H03 partial native source candidate 7409ee9ab82a60c2f2133b7d7fd8af96d1cabade; 35 added harness-only paths vs R09. Legacy recovery quarantined with fixed refusal; read-only native directory identity staged, not compiled/executed. H03 portable18 and H02 portable12 prior receipts retained. Normal runner cleanup unsafe and unchanged: DO NOT run current successor. Next H03 owner-only control lock, exclusive creation, journal bridge/producer and cleanup, lock-first recovery adapter, real native primitive tests; H03-01–12 NOT_RUN. Then H01-A archive staging/commit, H05 scoped equality, H06 lifecycle, consolidated native/independent acceptance. H02 native/tool provenance, 64 staged PowerShell tests + spy open. H01-B preparation only; actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy."
+    "next_action": "H03 partial native control lock and strict journal bridge source candidate f16f5e30f3e45bf1e2893ac79c1f1c492eb2fd16; 39 added harness-only paths vs R09. Legacy recovery quarantined; C# exclusive owner-only sibling control lock and nine portable bridge tests staged NOT_RUN; no native compilation, both container and Python probes ClientError. Prior H03 portable18 and H02 portable12 actual receipts retained. Normal runner cleanup unsafe and unchanged: DO NOT run successor. Next native parent wrapper/private capture and exact tool binding, exclusive work creation after intent, profile/drive journal producer, cleanup under control lock, lock-first recovery adapter and native H03-01–12 tests. Then H01-A archive staging/commit, H05 scoped equality, H06 lifecycle, consolidated native/independent acceptance. H02 native/tool provenance and 64 staged PowerShell tests + spy open. H01-B preparation only, actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -2663,7 +2663,7 @@
     "branch": "verify/windows-l06-successor-20261126",
     "base": "72de0c106621dabc26a63390003f46c86d63b066",
     "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
-    "candidate": "7409ee9ab82a60c2f2133b7d7fd8af96d1cabade",
+    "candidate": "f16f5e30f3e45bf1e2893ac79c1f1c492eb2fd16",
     "state": "CANDIDATE",
     "H01_A": "AUTHORIZED_RESTRICTED",
     "H01_B": "PREPARATION_ONLY",
@@ -2671,18 +2671,20 @@
     "H04": "SOURCE_CANDIDATE_NOT_RUN",
     "pure_cases_staged": 64,
     "native_acceptance": "NOT_RUN",
-    "next": "H03 partial native source candidate 7409ee9ab82a60c2f2133b7d7fd8af96d1cabade; 35 added harness-only paths vs R09. Legacy recovery quarantined with fixed refusal; read-only native directory identity staged, not compiled/executed. H03 portable18 and H02 portable12 prior receipts retained. Normal runner cleanup unsafe and unchanged: DO NOT run current successor. Next H03 owner-only control lock, exclusive creation, journal bridge/producer and cleanup, lock-first recovery adapter, real native primitive tests; H03-01–12 NOT_RUN. Then H01-A archive staging/commit, H05 scoped equality, H06 lifecycle, consolidated native/independent acceptance. H02 native/tool provenance, 64 staged PowerShell tests + spy open. H01-B preparation only; actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
-    "previous_candidate": "88284bb3f1886d23b15a382d904d7b6244d2cd67",
+    "next": "H03 partial native control lock and strict journal bridge source candidate f16f5e30f3e45bf1e2893ac79c1f1c492eb2fd16; 39 added harness-only paths vs R09. Legacy recovery quarantined; C# exclusive owner-only sibling control lock and nine portable bridge tests staged NOT_RUN; no native compilation, both container and Python probes ClientError. Prior H03 portable18 and H02 portable12 actual receipts retained. Normal runner cleanup unsafe and unchanged: DO NOT run successor. Next native parent wrapper/private capture and exact tool binding, exclusive work creation after intent, profile/drive journal producer, cleanup under control lock, lock-first recovery adapter and native H03-01–12 tests. Then H01-A archive staging/commit, H05 scoped equality, H06 lifecycle, consolidated native/independent acceptance. H02 native/tool provenance and 64 staged PowerShell tests + spy open. H01-B preparation only, actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
+    "previous_candidate": "7409ee9ab82a60c2f2133b7d7fd8af96d1cabade",
     "H02": "SOURCE_CANDIDATE_PORTABLE_COPY_VERIFIED_BOUNDED_NATIVE_NOT_RUN",
     "h02_cases_staged": 24,
-    "report": "docs/handoffs/claude-local-execution-2026-11-24/106_H03_NATIVE_IDENTITY_AND_RECOVERY_QUARANTINE.md",
-    "report_ref": "405a5bbdf8b48272ce4e6c8e6f4c7ba3bf466170",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/107_H03_CONTROL_LOCK_AND_JOURNAL_BRIDGE.md",
+    "report_ref": "dd906ff0e0344fd64f8cb9ac59be899359683d87",
     "portable_copy_tests_passed": 12,
     "portable_copy_receipt": "Report104 exact blobs Linux Python3.13.5 exit0",
     "h02_native_spy": "NOT_RUN",
-    "H03": "PARTIAL_SOURCE_CANDIDATE_NATIVE_IDENTITY_STAGED_RECOVERY_QUARANTINED",
+    "H03": "PARTIAL_SOURCE_CANDIDATE_CONTROL_LOCK_AND_JOURNAL_BRIDGE_STAGED_NOT_RUN",
     "portable_journal_tests_passed": 18,
     "portable_journal_receipt": "Report105 exact blobs Linux Python3.13.5 exit0",
-    "h03_native": "NOT_RUN"
+    "h03_native": "NOT_RUN",
+    "h03_bridge_cases_staged": 9,
+    "h03_control_lock_candidate": "d6a08640827bae9b68a41366099ebc91f7d446f1"
   }
 }
