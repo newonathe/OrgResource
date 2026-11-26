@@ -6412,6 +6412,190 @@ class C1IdentityAcceptanceTest {
         // Legitimate last-access and expiry timestamp refreshes are excluded from peer comparisons.
     }
 
+    @Test @Order(82)
+    void G01R036RecoveryThrottleAndDisabledAccountHaveGenericBoundedOutcomes() throws Exception {
+        Fixture home = newTenant("G01-recover-home", Membership.Role.OWNER);
+        Fixture foreign = newTenant("G01-recover-other", Membership.Role.OWNER);
+        Fixture disabled = fixtureInOrg(home.orgDbId, Membership.Role.MEMBER);
+        Session active = login(home.username, home.password);
+        Session other = login(foreign.username, foreign.password);
+        Session retired = login(disabled.username, disabled.password);
+        assertEquals(204, post(retired, "/api/v2/account/disable",
+                GSON.toJson(new CurrentPasswordRequest(disabled.password))).statusCode());
+        assertEquals(UserAccount.Status.DISABLED, accounts.findById(disabled.userDbId).orElseThrow().status);
+        assertEquals(401, get(retired.client, "/api/v2/session").statusCode());
+        String endpoint = "/api/v2/auth/recover";
+        String missing = "missing-" + UUID.randomUUID();
+        String replacement = "Fictional-recovery-" + UUID.randomUUID();
+        // Foreign real code cannot recover home; real disabled code cannot recover disabled.
+        String[] names = {home.username, missing, disabled.username};
+        String[] invalidCodes = {foreign.recoveryCodes.get(0), foreign.recoveryCodes.get(0),
+                disabled.recoveryCodes.get(0)};
+        var domain = governanceDenialRows(home.orgDbId, foreign.orgDbId);
+        var beforeHome = identityAuthRows(home);
+        var beforeForeign = identityAuthRows(foreign);
+        var beforeDisabled = identityAuthRows(disabled);
+        assertEquals(5, jdbc.queryForObject("SELECT COUNT(*) FROM account_recovery_code WHERE user_id=? AND used_at IS NULL AND revoked_at IS NULL AND expires_at>UTC_TIMESTAMP(6)",
+                Integer.class, disabled.userDbId));
+        JsonObject generic = null;
+        for (int group = 0; group < names.length; group++) {
+            // Different clients with the same normalized username/loopback source share the bucket.
+            HttpClient first = newClient(), second = newClient();
+            String firstCsrf = json(get(first, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();
+            String secondCsrf = json(get(second, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();
+            String invalid = GSON.toJson(new RecoverRequest(names[group], invalidCodes[group], replacement));
+            assertEquals(403, post(first, endpoint, invalid, null, origin()).statusCode());
+            for (int attempt = 0; attempt < 6; attempt++) {
+                HttpClient client = attempt % 2 == 0 ? first : second;
+                String csrf = attempt % 2 == 0 ? firstCsrf : secondCsrf;
+                String normalizedVariant = attempt % 2 == 0 ? names[group] :
+                        " " + names[group].toUpperCase(java.util.Locale.ROOT) + " ";
+                String code = group == 0 && attempt == 5 ? home.recoveryCodes.get(0) : invalidCodes[group];
+                var response = post(client, endpoint,
+                        GSON.toJson(new RecoverRequest(normalizedVariant, code, replacement)), csrf, origin());
+                assertEquals(attempt < 5 ? 200 : 429, response.statusCode());
+                assertTrue(response.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
+                var body = json(response);
+                if (attempt < 5) {
+                    assertEquals(Set.of("data", "requestId"), body.keySet());
+                    var data = body.getAsJsonObject("data");
+                    assertEquals(Set.of("message"), data.keySet());
+                    assertEquals("If the account and recovery code are valid, password recovery has completed.",
+                            data.get("message").getAsString());
+                    if (generic == null) generic = data;
+                    assertTrue(generic.equals(data), "Recovery disclosure differed by account state.");
+                } else {
+                    assertEquals(Set.of("code", "message", "requestId"), body.keySet());
+                    assertEquals("RATE_LIMITED", body.get("code").getAsString());
+                    assertEquals("Too many attempts. Try again later.", body.get("message").getAsString());
+                }
+                assertTrue(!response.body().contains(code) && !response.body().contains(replacement));
+                assertTrue(beforeHome.equals(identityAuthRows(home)), "Recovery refusal changed home identity facts.");
+                assertTrue(beforeForeign.equals(identityAuthRows(foreign)), "Recovery refusal changed foreign identity facts.");
+                assertTrue(beforeDisabled.equals(identityAuthRows(disabled)), "Recovery refusal changed disabled identity facts.");
+                assertTrue(domain.equals(governanceDenialRows(home.orgDbId, foreign.orgDbId)));
+            }
+            assertEquals(401, get(first, "/api/v2/session").statusCode());
+            assertEquals(401, get(second, "/api/v2/session").statusCode());
+        }
+        assertEquals(200, get(active.client, "/api/v2/session").statusCode());
+        assertEquals(200, get(other.client, "/api/v2/session").statusCode());
+        assertEquals(401, get(retired.client, "/api/v2/session").statusCode());
+        // Login and recovery use separate action buckets. No timing-equivalence assertion.
+        assertEquals(200, loginStatus(home.username, home.password));
+        assertEquals(401, loginStatus(disabled.username, disabled.password));
+        assertTrue(passwordEncoder.matches(home.password, credentials.findByUserId(home.userDbId).orElseThrow().passwordHash));
+        assertTrue(beforeDisabled.equals(identityAuthRows(disabled)));
+        assertTrue(domain.equals(governanceDenialRows(home.orgDbId, foreign.orgDbId)));
+    }
+
+    @Test @Order(83)
+    void G01R041ExistingRedemptionBindsOnlyTokenTenantAndPreservesSelectedWorkspace() throws Exception {
+        Fixture home = newTenant("G01-invite-home", Membership.Role.OWNER);
+        Fixture foreign = newTenant("G01-invite-other", Membership.Role.OWNER);
+        Session inviter = login(home.username, home.password);
+        Session recipient = login(foreign.username, foreign.password);
+        String homeRoot = "/api/v2/orgs/" + home.orgPublicId;
+        String foreignRoot = "/api/v2/orgs/" + foreign.orgPublicId;
+        String endpoint = "/api/v2/invitations/redeem";
+        var issue = post(inviter, homeRoot + "/invitations", GSON.toJson(new RoleRequest("CUSTODIAN")));
+        var unrelated = post(recipient, foreignRoot + "/invitations", GSON.toJson(new RoleRequest("MEMBER")));
+        assertEquals(201, issue.statusCode()); assertEquals(201, unrelated.statusCode());
+        var issued = json(issue).getAsJsonObject("data");
+        String token = issued.get("bearerToken").getAsString();
+        String id = issued.get("id").getAsString();
+        String otherToken = json(unrelated).getAsJsonObject("data").get("bearerToken").getAsString();
+        Invitation target = invitations.findByTokenHash(C1Secrets.sha256(token)).orElseThrow();
+        Invitation otherInvite = invitations.findByTokenHash(C1Secrets.sha256(otherToken)).orElseThrow();
+        assertEquals(home.orgDbId, target.organizationId.longValue());
+        assertEquals(foreign.orgDbId, otherInvite.organizationId.longValue());
+        var before = governanceDenialRows(home.orgDbId, foreign.orgDbId);
+        var inviterIdentity = identityAuthRows(home);
+        var recipientIdentity = identityAuthRows(foreign);
+        long accountCount = accounts.count(), recoveryCount = recoveryCodes.count(), memberCount = memberships.count();
+        assertEquals(foreign.orgPublicId.toString(), recipient.activeOrgId);
+        assertTrue(memberships.findByOrganizationIdAndUserId(home.orgDbId, foreign.userDbId).isEmpty());
+
+        var wrongMode = post(recipient, endpoint, GSON.toJson(new RedeemRequest(token,
+                "fictional-forbidden", "Fictional-password-" + UUID.randomUUID(), "Forbidden")));
+        assertEquals(400, wrongMode.statusCode());
+        assertEquals("VALIDATION_FAILED", json(wrongMode).get("code").getAsString());
+        var duplicate = post(inviter, endpoint, GSON.toJson(new TokenRequest(token)));
+        assertEquals(409, duplicate.statusCode());
+        assertEquals("MEMBERSHIP_EXISTS", json(duplicate).get("code").getAsString());
+        assertTrue(before.equals(governanceDenialRows(home.orgDbId, foreign.orgDbId)));
+        assertTrue(inviterIdentity.equals(identityAuthRows(home)));
+        assertTrue(recipientIdentity.equals(identityAuthRows(foreign)));
+        assertEquals(accountCount, accounts.count()); assertEquals(recoveryCount, recoveryCodes.count());
+        assertEquals(memberCount, memberships.count());
+
+        var joined = post(recipient, endpoint, GSON.toJson(new TokenRequest(token)));
+        assertEquals(200, joined.statusCode());
+        assertTrue(joined.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
+        var envelope = json(joined);
+        assertEquals(Set.of("data", "requestId"), envelope.keySet());
+        var data = envelope.getAsJsonObject("data");
+        assertTrue(Set.of("organizationId", "membershipId", "role", "newAccount", "recoveryCodes", "session", "csrfToken").containsAll(data.keySet()));
+        assertEquals(home.orgPublicId.toString(), data.get("organizationId").getAsString());
+        assertEquals("CUSTODIAN", data.get("role").getAsString());
+        assertFalse(data.get("newAccount").getAsBoolean());
+        assertEquals(0, data.getAsJsonArray("recoveryCodes").size());
+        assertTrue(!data.has("session") || data.get("session").isJsonNull());
+        assertTrue(!data.has("csrfToken") || data.get("csrfToken").isJsonNull());
+        assertTrue(!joined.body().contains(token) && !joined.body().contains(otherToken));
+        var member = memberships.findByOrganizationIdAndUserId(home.orgDbId, foreign.userDbId).orElseThrow();
+        assertEquals(member.publicId.toString(), data.get("membershipId").getAsString());
+        assertEquals(Membership.Role.CUSTODIAN, member.role);
+        assertEquals(Membership.Status.ACTIVE, member.status);
+        assertEquals(0, member.version);
+        var accepted = invitations.findById(target.id).orElseThrow();
+        assertEquals(id, accepted.publicId.toString());
+        assertEquals(Invitation.Status.ACCEPTED, accepted.status);
+        assertEquals(foreign.userDbId, accepted.acceptedByUserId.longValue());
+        assertEquals(target.version + 1, accepted.version);
+        assertEquals(target.organizationId, accepted.organizationId);
+        assertEquals(target.role, accepted.role);
+        assertEquals(target.invitedByMembershipId, accepted.invitedByMembershipId);
+        assertTrue(java.security.MessageDigest.isEqual(target.tokenHash, accepted.tokenHash));
+        assertEquals(target.createdAt, accepted.createdAt); assertEquals(target.expiresAt, accepted.expiresAt);
+        assertEquals(Invitation.Status.INVITED, invitations.findById(otherInvite.id).orElseThrow().status);
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM audit_event WHERE org_id=? AND actor_user_id=? AND action='INVITATION_REDEEMED' AND target_type='membership' AND target_id=?",
+                Integer.class, home.orgDbId, foreign.userDbId, member.publicId.toString()));
+        var after = governanceDenialRows(home.orgDbId, foreign.orgDbId);
+        for (int i = 0; i < before.size(); i++) {
+            if (i == 7 || i == 8) {
+                assertEquals(before.get(i).size() + 1, after.get(i).size());
+                assertTrue(before.get(i).equals(after.get(i).subList(0, before.get(i).size())));
+            } else if (i == 9) {
+                // Both invitations were created in order: only the home token changes.
+                assertEquals(2, before.get(i).size()); assertEquals(2, after.get(i).size());
+                assertTrue(before.get(i).get(1).equals(after.get(i).get(1)));
+            } else assertTrue(before.get(i).equals(after.get(i)));
+        }
+        assertEquals(accountCount, accounts.count()); assertEquals(recoveryCount, recoveryCodes.count());
+        assertEquals(memberCount + 1, memberships.count());
+        assertTrue(inviterIdentity.equals(identityAuthRows(home)));
+        var recipientAfter = identityAuthRows(foreign);
+        for (int i : List.of(0, 1, 2, 4)) assertTrue(recipientIdentity.get(i).equals(recipientAfter.get(i)));
+        assertEquals(recipientIdentity.get(3).size() + 1, recipientAfter.get(3).size());
+        assertTrue(recipientIdentity.get(3).equals(recipientAfter.get(3).subList(0, recipientIdentity.get(3).size())));
+        assertTrue(recipient.sessionId.equals(cookie(recipient.client)));
+        var session = json(get(recipient.client, "/api/v2/session")).getAsJsonObject("data");
+        assertEquals(foreign.orgPublicId.toString(), session.get("activeOrgId").getAsString());
+        assertEquals(2, session.getAsJsonArray("memberships").size());
+        var replay = post(recipient, endpoint, GSON.toJson(new TokenRequest(token)));
+        assertEquals(404, replay.statusCode());
+        assertEquals("INVITE_INVALID", json(replay).get("code").getAsString());
+        assertTrue(after.equals(governanceDenialRows(home.orgDbId, foreign.orgDbId)));
+        assertTrue(recipientAfter.equals(identityAuthRows(foreign)));
+        assertTrue(inviterIdentity.equals(identityAuthRows(home)));
+        // Switching is an explicit subsequent action, not a consequence of redemption.
+        var selected = post(recipient, "/api/v2/session/active-org", GSON.toJson(new OrgRequest(home.orgPublicId)));
+        assertEquals(200, selected.statusCode());
+        assertEquals(home.orgPublicId.toString(), json(selected).getAsJsonObject("data").get("activeOrgId").getAsString());
+        assertTrue(after.equals(governanceDenialRows(home.orgDbId, foreign.orgDbId)));
+    }
+
     private record LoginRequest(String username, String password) { }
     private record NameRequest(String name) { }
     private record OrgRequest(UUID organizationId) { }
