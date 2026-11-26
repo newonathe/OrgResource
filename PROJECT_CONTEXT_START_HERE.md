@@ -1,5 +1,10 @@
 # OrgResource — read first in every project chat
 
+## Current — H02 receipt binding candidate (2026-11-26 PHT)
+
+H02 receipt-binding candidate 334e08a3849665a0b086dc928c721b18e6fb0a22; 29 added harness-only paths vs R09, 24 new pure tests staged NOT_RUN (+40 H04). H02-10 runtime provenance/copy manifest and H02-09 intake instrumentation still open; finish those, then H03 ownership/lock/recovery, H01-A archive staging/commit, H05 scoped equality, H06 process lifecycle, native and independent acceptance. H01-B preparation only, actual vault/machine/operator/transfer pending; failed-stage disposal separate. L06 HOLD/no WSL, L07 separately authorized off-host, 93 independent IR4 open, 13 privacy flags owner-gated. No private import/launch/merge/deploy. [Report103](https://github.com/newonathe/OrgResource/blob/ae910a70aead4ae9ecd2b6ca2bd07331bd80e22f/docs/handoffs/claude-local-execution-2026-11-24/103_H02_RECEIPT_BINDING_CANDIDATE.md).
+
+
 ## Current — H01 scoped owner approval and H04 candidate (2026-11-26 PHT)
 
 Owner H01-A retention and H01-C harness-only engineering/fictional tests explicitly approved; H01-B secure custody/transfer preparation only, actual vault/machine/operator selection pending. Failed-stage disposal separate. Windows successor branch verify/windows-l06-successor-20261126 exact55e0e5229eef15c4d71b105856d6cfcf27eb5fa1 H04 shape/parser candidate, 27 added harness-only paths vs R09, 31+9 pure tests staged NOT_RUN. Continue H02 receipt binding, H03 journal/cleanup, H01-A archive staging/commit, H05 exact scoped equality, H06 process/credential lifecycle; actual native tests and independent acceptance before L06 direct challenge. L06 HOLD/no WSL, L07 separate off-host approval, 93 independent IR4 open,13 privacy flags owner gated. No private import/launch/merge/deploy. [Report102](https://github.com/newonathe/OrgResource/blob/6827e63132a209d7ee449459adc238bf49888a64/docs/handoffs/claude-local-execution-2026-11-24/102_H01_OWNER_APPROVAL_AND_H04_CANDIDATE.md).

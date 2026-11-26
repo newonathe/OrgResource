@@ -335,7 +335,7 @@
         "R06B"
       ],
       "receipt": "Exact full mixed 96 plus 2 original fixture orgs, real C5 restore, actual preflight/V2 baseline/one import/SELECT-only postflight/valid browser",
-      "notes": "R09 reapproved; L03 verified JAR, L00B exact plan, POSIX prerequisites and separate direct owner terminal confirmation required. Windows-only owner may use WSL2, existing capabilities verified read-only; explicit setup/transfer approval and direct challenge still needed. Report54 prefers no WSL; Windows-native adapter PROPOSED_ONLY, existing POSIX command remains verified bounded, no equivalent native proof yet. Report55: Harness-only72de0c10 fictional proof reported, 25 added paths verified; integrated PR57 fails harness delta guard. BLOCKED until exact harness acceptance and actual owner run. Report56 BLOCKED: resolve L07 retention contract before actual run, full review and owner acceptance; exact harness-only successor, no WSL. Report62 continuation: C5 archive/serializer and off-host contract refined; H01–H06 remain open, exact-main CI bounded verified. No acceptance or state release. Report102 H01-A/C approved, B preparation only; H04 harness candidate unaccepted, L06 HOLD and no WSL."
+      "notes": "R09 reapproved; L03 verified JAR, L00B exact plan, POSIX prerequisites and separate direct owner terminal confirmation required. Windows-only owner may use WSL2, existing capabilities verified read-only; explicit setup/transfer approval and direct challenge still needed. Report54 prefers no WSL; Windows-native adapter PROPOSED_ONLY, existing POSIX command remains verified bounded, no equivalent native proof yet. Report55: Harness-only72de0c10 fictional proof reported, 25 added paths verified; integrated PR57 fails harness delta guard. BLOCKED until exact harness acceptance and actual owner run. Report56 BLOCKED: resolve L07 retention contract before actual run, full review and owner acceptance; exact harness-only successor, no WSL. Report62 continuation: C5 archive/serializer and off-host contract refined; H01–H06 remain open, exact-main CI bounded verified. No acceptance or state release. Report102 H01-A/C approved, B preparation only; H04 harness candidate unaccepted, L06 HOLD and no WSL. Report103: H02 receipt-binding candidate 334e08a3849665a0b086dc928c721b18e6fb0a22; 29 added harness-only paths vs R09, 24 new pure tests staged NOT_RUN (+40 H04). H02-10 runtime provenance/copy manifest and H02-09 intake instrumentation still open; finish those, then H03 ownership/lock/recovery, H01-A archive staging/commit, H05 scoped equality, H06 process lifecycle, native and independent acceptance. H01-B preparation only, actual vault/machine/operator/transfer pending; failed-stage disposal separate. L06 HOLD/no WSL, L07 separately authorized off-host, 93 independent IR4 open, 13 privacy flags owner-gated. No private import/launch/merge/deploy."
     },
     {
       "id": "L07",
@@ -486,7 +486,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "Owner H01-A retention and H01-C harness-only engineering/fictional tests explicitly approved; H01-B secure custody/transfer preparation only, actual vault/machine/operator selection pending. Failed-stage disposal separate. Windows successor branch verify/windows-l06-successor-20261126 exact55e0e5229eef15c4d71b105856d6cfcf27eb5fa1 H04 shape/parser candidate, 27 added harness-only paths vs R09, 31+9 pure tests staged NOT_RUN. Continue H02 receipt binding, H03 journal/cleanup, H01-A archive staging/commit, H05 exact scoped equality, H06 process/credential lifecycle; actual native tests and independent acceptance before L06 direct challenge. L06 HOLD/no WSL, L07 separate off-host approval, 93 independent IR4 open,13 privacy flags owner gated. No private import/launch/merge/deploy."
+    "next_action": "H02 receipt-binding candidate 334e08a3849665a0b086dc928c721b18e6fb0a22; 29 added harness-only paths vs R09, 24 new pure tests staged NOT_RUN (+40 H04). H02-10 runtime provenance/copy manifest and H02-09 intake instrumentation still open; finish those, then H03 ownership/lock/recovery, H01-A archive staging/commit, H05 scoped equality, H06 process lifecycle, native and independent acceptance. H01-B preparation only, actual vault/machine/operator/transfer pending; failed-stage disposal separate. L06 HOLD/no WSL, L07 separately authorized off-host, 93 independent IR4 open, 13 privacy flags owner-gated. No private import/launch/merge/deploy."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -2663,14 +2663,19 @@
     "branch": "verify/windows-l06-successor-20261126",
     "base": "72de0c106621dabc26a63390003f46c86d63b066",
     "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
-    "candidate": "55e0e5229eef15c4d71b105856d6cfcf27eb5fa1",
+    "candidate": "334e08a3849665a0b086dc928c721b18e6fb0a22",
     "state": "CANDIDATE",
     "H01_A": "AUTHORIZED_RESTRICTED",
     "H01_B": "PREPARATION_ONLY",
     "H01_C": "AUTHORIZED_HARNESS_ONLY",
     "H04": "SOURCE_CANDIDATE_NOT_RUN",
-    "pure_cases_staged": 40,
+    "pure_cases_staged": 64,
     "native_acceptance": "NOT_RUN",
-    "next": "Owner H01-A retention and H01-C harness-only engineering/fictional tests explicitly approved; H01-B secure custody/transfer preparation only, actual vault/machine/operator selection pending. Failed-stage disposal separate. Windows successor branch verify/windows-l06-successor-20261126 exact55e0e5229eef15c4d71b105856d6cfcf27eb5fa1 H04 shape/parser candidate, 27 added harness-only paths vs R09, 31+9 pure tests staged NOT_RUN. Continue H02 receipt binding, H03 journal/cleanup, H01-A archive staging/commit, H05 exact scoped equality, H06 process/credential lifecycle; actual native tests and independent acceptance before L06 direct challenge. L06 HOLD/no WSL, L07 separate off-host approval, 93 independent IR4 open,13 privacy flags owner gated. No private import/launch/merge/deploy."
+    "next": "H02 receipt-binding candidate 334e08a3849665a0b086dc928c721b18e6fb0a22; 29 added harness-only paths vs R09, 24 new pure tests staged NOT_RUN (+40 H04). H02-10 runtime provenance/copy manifest and H02-09 intake instrumentation still open; finish those, then H03 ownership/lock/recovery, H01-A archive staging/commit, H05 scoped equality, H06 process lifecycle, native and independent acceptance. H01-B preparation only, actual vault/machine/operator/transfer pending; failed-stage disposal separate. L06 HOLD/no WSL, L07 separately authorized off-host, 93 independent IR4 open, 13 privacy flags owner-gated. No private import/launch/merge/deploy.",
+    "previous_candidate": "55e0e5229eef15c4d71b105856d6cfcf27eb5fa1",
+    "H02": "PARTIAL_SOURCE_CANDIDATE_NOT_RUN",
+    "h02_cases_staged": 24,
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/103_H02_RECEIPT_BINDING_CANDIDATE.md",
+    "report_ref": "ae910a70aead4ae9ecd2b6ca2bd07331bd80e22f"
   }
 }
