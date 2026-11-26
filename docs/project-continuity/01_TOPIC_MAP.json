@@ -1087,7 +1087,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "H03 partial ownership journal candidate 88284bb3f1886d23b15a382d904d7b6244d2cd67; 34 added harness-only paths vs R09. 18/18 actual portable tests on exact blobs; H02 portable12 retained. Existing native recovery unsafe and unchanged: DO NOT run current successor for native acceptance. Next H03 native producer, real file IDs/owner-only control lock, journaled creation/cleanup, lock-first recovery adapter; H03-01–12 NOT_RUN. Then H01-A archive staging/commit, H05 scoped equality, H06 process lifecycle, consolidated native and independent acceptance. H02 native/tool provenance, 64 prior PowerShell tests and new native spy open. H01-B preparation only, actual vault/machine/operator/transfer pending; failed-stage disposal separate. L06 HOLD/no WSL, L07 separately authorized off-host, 93 independent IR4 open, 13 privacy flags owner-gated. No private import/launch/merge/deploy.",
+      "next": "H03 partial native source candidate 7409ee9ab82a60c2f2133b7d7fd8af96d1cabade; 35 added harness-only paths vs R09. Legacy recovery quarantined with fixed refusal; read-only native directory identity staged, not compiled/executed. H03 portable18 and H02 portable12 prior receipts retained. Normal runner cleanup unsafe and unchanged: DO NOT run current successor. Next H03 owner-only control lock, exclusive creation, journal bridge/producer and cleanup, lock-first recovery adapter, real native primitive tests; H03-01–12 NOT_RUN. Then H01-A archive staging/commit, H05 scoped equality, H06 lifecycle, consolidated native/independent acceptance. H02 native/tool provenance, 64 staged PowerShell tests + spy open. H01-B preparation only; actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -1212,6 +1212,12 @@
           "blob": "1e6c3854a3b204523880a1e09e3085db3de4f2d7",
           "ref": "553241a20f569bef5a76f8fd1c5f27476cf62908",
           "review": "FULL portable actual receipt; native integration NOT_IMPLEMENTED"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/106_H03_NATIVE_IDENTITY_AND_RECOVERY_QUARANTINE.md",
+          "blob": "ef714f249d2f6dd9774323ef543be78e1f83e32d",
+          "ref": "405a5bbdf8b48272ce4e6c8e6f4c7ba3bf466170",
+          "review": "FULL source candidate; native NOT_RUN"
         }
       ]
     },
@@ -1235,7 +1241,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "H03 partial ownership journal candidate 88284bb3f1886d23b15a382d904d7b6244d2cd67; 34 added harness-only paths vs R09. 18/18 actual portable tests on exact blobs; H02 portable12 retained. Existing native recovery unsafe and unchanged: DO NOT run current successor for native acceptance. Next H03 native producer, real file IDs/owner-only control lock, journaled creation/cleanup, lock-first recovery adapter; H03-01–12 NOT_RUN. Then H01-A archive staging/commit, H05 scoped equality, H06 process lifecycle, consolidated native and independent acceptance. H02 native/tool provenance, 64 prior PowerShell tests and new native spy open. H01-B preparation only, actual vault/machine/operator/transfer pending; failed-stage disposal separate. L06 HOLD/no WSL, L07 separately authorized off-host, 93 independent IR4 open, 13 privacy flags owner-gated. No private import/launch/merge/deploy.",
+      "next": "H03 partial native source candidate 7409ee9ab82a60c2f2133b7d7fd8af96d1cabade; 35 added harness-only paths vs R09. Legacy recovery quarantined with fixed refusal; read-only native directory identity staged, not compiled/executed. H03 portable18 and H02 portable12 prior receipts retained. Normal runner cleanup unsafe and unchanged: DO NOT run current successor. Next H03 owner-only control lock, exclusive creation, journal bridge/producer and cleanup, lock-first recovery adapter, real native primitive tests; H03-01–12 NOT_RUN. Then H01-A archive staging/commit, H05 scoped equality, H06 lifecycle, consolidated native/independent acceptance. H02 native/tool provenance, 64 staged PowerShell tests + spy open. H01-B preparation only; actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -1792,6 +1798,12 @@
           "blob": "1e6c3854a3b204523880a1e09e3085db3de4f2d7",
           "ref": "553241a20f569bef5a76f8fd1c5f27476cf62908",
           "review": "FULL portable actual receipt; native integration NOT_IMPLEMENTED"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/106_H03_NATIVE_IDENTITY_AND_RECOVERY_QUARANTINE.md",
+          "blob": "ef714f249d2f6dd9774323ef543be78e1f83e32d",
+          "ref": "405a5bbdf8b48272ce4e6c8e6f4c7ba3bf466170",
+          "review": "FULL source candidate; native NOT_RUN"
         }
       ]
     },
@@ -1938,7 +1950,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "H03 partial ownership journal candidate 88284bb3f1886d23b15a382d904d7b6244d2cd67; 34 added harness-only paths vs R09. 18/18 actual portable tests on exact blobs; H02 portable12 retained. Existing native recovery unsafe and unchanged: DO NOT run current successor for native acceptance. Next H03 native producer, real file IDs/owner-only control lock, journaled creation/cleanup, lock-first recovery adapter; H03-01–12 NOT_RUN. Then H01-A archive staging/commit, H05 scoped equality, H06 process lifecycle, consolidated native and independent acceptance. H02 native/tool provenance, 64 prior PowerShell tests and new native spy open. H01-B preparation only, actual vault/machine/operator/transfer pending; failed-stage disposal separate. L06 HOLD/no WSL, L07 separately authorized off-host, 93 independent IR4 open, 13 privacy flags owner-gated. No private import/launch/merge/deploy.",
+      "next": "H03 partial native source candidate 7409ee9ab82a60c2f2133b7d7fd8af96d1cabade; 35 added harness-only paths vs R09. Legacy recovery quarantined with fixed refusal; read-only native directory identity staged, not compiled/executed. H03 portable18 and H02 portable12 prior receipts retained. Normal runner cleanup unsafe and unchanged: DO NOT run current successor. Next H03 owner-only control lock, exclusive creation, journal bridge/producer and cleanup, lock-first recovery adapter, real native primitive tests; H03-01–12 NOT_RUN. Then H01-A archive staging/commit, H05 scoped equality, H06 lifecycle, consolidated native/independent acceptance. H02 native/tool provenance, 64 staged PowerShell tests + spy open. H01-B preparation only; actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -2251,6 +2263,12 @@
           "blob": "1e6c3854a3b204523880a1e09e3085db3de4f2d7",
           "ref": "553241a20f569bef5a76f8fd1c5f27476cf62908",
           "review": "FULL portable actual receipt; native integration NOT_IMPLEMENTED"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/106_H03_NATIVE_IDENTITY_AND_RECOVERY_QUARANTINE.md",
+          "blob": "ef714f249d2f6dd9774323ef543be78e1f83e32d",
+          "ref": "405a5bbdf8b48272ce4e6c8e6f4c7ba3bf466170",
+          "review": "FULL source candidate; native NOT_RUN"
         }
       ]
     }
