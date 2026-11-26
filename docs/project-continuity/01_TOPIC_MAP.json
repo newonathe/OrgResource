@@ -1087,7 +1087,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "H03 parent-only journal publication and runner quarantine source candidate 0501d5f596ed4e2dfce813126479a9eedf6a8e18; 43 added harness-only paths vs R09. Pure computation child cannot publish via CLI; lock-owning parent handles checked staging/flush/replace/readback; native parent orchestrator staged. Both runner and recovery explicitly refuse intermediate execution. Four new portable tests plus native parent fixture staged NOT_RUN; container ClientError; prior H03 portable18 and H02 portable12 actual retained, nine prior bridge tests NOT_RUN. Next intent-first exclusive work/profile/drive producer, journaled normal cleanup, lock-first recovery adapter, native H03-01–12 plus crash/ACL/ABI tests. Keep both entrypoints quarantined until coherent integration, preserve positive oracles. Then H01-A archive staging/commit, H05 scoped equality, H06 lifecycle, consolidated native/independent acceptance. H02 provenance/native and 64 staged PowerShell tests + spy open. H01-B preparation only; actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
+      "next": "H03 intent-first work/profile producer source candidate e052d7032841d39465813ecad334ba10abbaf887; 46 added harness-only paths vs R09. New journal-only producer, exclusive owner-only work creation and real handle ID, profile intent and returned SID confirmation before job initialization, failure poison/no inferred rollback, legacy constructor refused. Profile cleanup candidate records removed on successful API return; independent actual absence/identity proof and listener checks still open, do not dispatch integrated producer fixture or normal runner/recovery. Both entrypoints quarantined. Four changed blobs read back; new native fixture NOT_RUN; container probe ClientError; prior H03 portable18 and H02 portable12 actual retained; 9 bridge +4 transform portable NOT_RUN. Exact matrix66 H03-01–12 recovered and all NOT_RUN. Next profile actual absence/identity observer, drive namespace-safe journal producer (session/target binding, common lock, no foreign redefinition), normal cleanup held lock and exact work removal, lock-first recovery, adapt residue oracle to distinguish verified retained control evidence without weakening, native crash/ACL/ABI tests. Then H01-A archive staging/commit, H05 scoped equality, H06 lifecycle, consolidated native/independent acceptance. H02 provenance/native and 64 staged PowerShell tests + spy open. H01-B preparation only; actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -1230,6 +1230,12 @@
           "blob": "a2d1fc303ea0eba3715ec7576d2afd1e8828864d",
           "ref": "5fb381b517dad454b295e79d105b6327ce47271f",
           "review": "FULL source candidate; native and new portable tests NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/109_H03_INTENT_FIRST_WORK_AND_PROFILE_PRODUCER.md",
+          "blob": "c90b7f0cd55b66969507fb87efb85c8569c630b5",
+          "ref": "0b18c1fe46d66a879bb997ba0a570614c1e65cd2",
+          "review": "FULL source candidate; native acceptance NOT_RUN"
         }
       ]
     },
@@ -1253,7 +1259,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "H03 parent-only journal publication and runner quarantine source candidate 0501d5f596ed4e2dfce813126479a9eedf6a8e18; 43 added harness-only paths vs R09. Pure computation child cannot publish via CLI; lock-owning parent handles checked staging/flush/replace/readback; native parent orchestrator staged. Both runner and recovery explicitly refuse intermediate execution. Four new portable tests plus native parent fixture staged NOT_RUN; container ClientError; prior H03 portable18 and H02 portable12 actual retained, nine prior bridge tests NOT_RUN. Next intent-first exclusive work/profile/drive producer, journaled normal cleanup, lock-first recovery adapter, native H03-01–12 plus crash/ACL/ABI tests. Keep both entrypoints quarantined until coherent integration, preserve positive oracles. Then H01-A archive staging/commit, H05 scoped equality, H06 lifecycle, consolidated native/independent acceptance. H02 provenance/native and 64 staged PowerShell tests + spy open. H01-B preparation only; actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
+      "next": "H03 intent-first work/profile producer source candidate e052d7032841d39465813ecad334ba10abbaf887; 46 added harness-only paths vs R09. New journal-only producer, exclusive owner-only work creation and real handle ID, profile intent and returned SID confirmation before job initialization, failure poison/no inferred rollback, legacy constructor refused. Profile cleanup candidate records removed on successful API return; independent actual absence/identity proof and listener checks still open, do not dispatch integrated producer fixture or normal runner/recovery. Both entrypoints quarantined. Four changed blobs read back; new native fixture NOT_RUN; container probe ClientError; prior H03 portable18 and H02 portable12 actual retained; 9 bridge +4 transform portable NOT_RUN. Exact matrix66 H03-01–12 recovered and all NOT_RUN. Next profile actual absence/identity observer, drive namespace-safe journal producer (session/target binding, common lock, no foreign redefinition), normal cleanup held lock and exact work removal, lock-first recovery, adapt residue oracle to distinguish verified retained control evidence without weakening, native crash/ACL/ABI tests. Then H01-A archive staging/commit, H05 scoped equality, H06 lifecycle, consolidated native/independent acceptance. H02 provenance/native and 64 staged PowerShell tests + spy open. H01-B preparation only; actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -1828,6 +1834,12 @@
           "blob": "a2d1fc303ea0eba3715ec7576d2afd1e8828864d",
           "ref": "5fb381b517dad454b295e79d105b6327ce47271f",
           "review": "FULL source candidate; native and new portable tests NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/109_H03_INTENT_FIRST_WORK_AND_PROFILE_PRODUCER.md",
+          "blob": "c90b7f0cd55b66969507fb87efb85c8569c630b5",
+          "ref": "0b18c1fe46d66a879bb997ba0a570614c1e65cd2",
+          "review": "FULL source candidate; native acceptance NOT_RUN"
         }
       ]
     },
@@ -1974,7 +1986,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "H03 parent-only journal publication and runner quarantine source candidate 0501d5f596ed4e2dfce813126479a9eedf6a8e18; 43 added harness-only paths vs R09. Pure computation child cannot publish via CLI; lock-owning parent handles checked staging/flush/replace/readback; native parent orchestrator staged. Both runner and recovery explicitly refuse intermediate execution. Four new portable tests plus native parent fixture staged NOT_RUN; container ClientError; prior H03 portable18 and H02 portable12 actual retained, nine prior bridge tests NOT_RUN. Next intent-first exclusive work/profile/drive producer, journaled normal cleanup, lock-first recovery adapter, native H03-01–12 plus crash/ACL/ABI tests. Keep both entrypoints quarantined until coherent integration, preserve positive oracles. Then H01-A archive staging/commit, H05 scoped equality, H06 lifecycle, consolidated native/independent acceptance. H02 provenance/native and 64 staged PowerShell tests + spy open. H01-B preparation only; actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
+      "next": "H03 intent-first work/profile producer source candidate e052d7032841d39465813ecad334ba10abbaf887; 46 added harness-only paths vs R09. New journal-only producer, exclusive owner-only work creation and real handle ID, profile intent and returned SID confirmation before job initialization, failure poison/no inferred rollback, legacy constructor refused. Profile cleanup candidate records removed on successful API return; independent actual absence/identity proof and listener checks still open, do not dispatch integrated producer fixture or normal runner/recovery. Both entrypoints quarantined. Four changed blobs read back; new native fixture NOT_RUN; container probe ClientError; prior H03 portable18 and H02 portable12 actual retained; 9 bridge +4 transform portable NOT_RUN. Exact matrix66 H03-01–12 recovered and all NOT_RUN. Next profile actual absence/identity observer, drive namespace-safe journal producer (session/target binding, common lock, no foreign redefinition), normal cleanup held lock and exact work removal, lock-first recovery, adapt residue oracle to distinguish verified retained control evidence without weakening, native crash/ACL/ABI tests. Then H01-A archive staging/commit, H05 scoped equality, H06 lifecycle, consolidated native/independent acceptance. H02 provenance/native and 64 staged PowerShell tests + spy open. H01-B preparation only; actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -2305,6 +2317,12 @@
           "blob": "a2d1fc303ea0eba3715ec7576d2afd1e8828864d",
           "ref": "5fb381b517dad454b295e79d105b6327ce47271f",
           "review": "FULL source candidate; native and new portable tests NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/109_H03_INTENT_FIRST_WORK_AND_PROFILE_PRODUCER.md",
+          "blob": "c90b7f0cd55b66969507fb87efb85c8569c630b5",
+          "ref": "0b18c1fe46d66a879bb997ba0a570614c1e65cd2",
+          "review": "FULL source candidate; native acceptance NOT_RUN"
         }
       ]
     }
