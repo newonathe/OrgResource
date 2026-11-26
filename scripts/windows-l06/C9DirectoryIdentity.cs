@@ -13,10 +13,13 @@ using Microsoft.Win32.SafeHandles;
 public sealed class C9DirectoryIdentity : IDisposable {
     readonly List<SafeFileHandle> handles = new List<SafeFileHandle>();
     public string Id { get; private set; }
+    internal SafeFileHandle FinalHandle { get { return handles[handles.Count - 1]; } }
 
     C9DirectoryIdentity() {}
 
-    public static C9DirectoryIdentity Open(string path) {
+    public static C9DirectoryIdentity Open(string path) { return Open(path, false); }
+
+    internal static C9DirectoryIdentity Open(string path, bool readSecurity) {
         if (!OperatingSystem.IsWindows() || String.IsNullOrEmpty(path) ||
             path.Length < 4 || !System.Text.RegularExpressions.Regex.IsMatch(path, @"^[A-Za-z]:\\[^:*?""<>|\x00-\x1f]+$") ||
             !String.Equals(Path.GetFullPath(path), path, StringComparison.Ordinal))
@@ -32,9 +35,9 @@ public sealed class C9DirectoryIdentity : IDisposable {
         try {
             string current = path.Substring(0, 3);
             result.OpenComponent(current);
-            foreach (string part in parts) {
-                current = Path.Combine(current, part);
-                result.OpenComponent(current);
+            for (int i = 0; i < parts.Length; i++) {
+                current = Path.Combine(current, parts[i]);
+                result.OpenComponent(current, readSecurity && i == parts.Length - 1);
             }
             return result;
         } catch {
@@ -43,10 +46,10 @@ public sealed class C9DirectoryIdentity : IDisposable {
         }
     }
 
-    void OpenComponent(string path) {
+    void OpenComponent(string path, bool readSecurity = false) {
         // FILE_READ_ATTRIBUTES; share read/write only; OPEN_EXISTING;
         // BACKUP_SEMANTICS | OPEN_REPARSE_POINT; never follow a final reparse point.
-        var h = CreateFileW(path, 0x80, 3, IntPtr.Zero, 3, 0x02200000, IntPtr.Zero);
+        var h = CreateFileW(path, readSecurity ? 0x20080u : 0x80u, 3, IntPtr.Zero, 3, 0x02200000, IntPtr.Zero);
         if (h.IsInvalid) {
             int error = Marshal.GetLastWin32Error();
             h.Dispose();
