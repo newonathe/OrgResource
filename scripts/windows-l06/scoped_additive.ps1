@@ -39,18 +39,79 @@ function Get-C9AdditiveTables([string] $Schema,[string] $Uuid,[int] $Port) {
     if (($primary -join ',') -cne ($required -join ',')) { Fail 'R06B2_ADDITIVE_INVENTORY' }
     return $names
 }
+function Assert-C9AdditiveQuiescent {
+    # No importer/JVM or other contained client may survive between snapshot operations.
+    Assert-Role 'mixed'
+    if ($roles.mixed.Container.ActiveProcesses -ne 1) { Fail 'R06B2_ADDITIVE_NOT_QUIESCENT' }
+}
+function Get-C9AdditiveRowCounts([string] $Schema,[string] $Uuid,[int] $Port,[string[]] $Tables) {
+    Assert-C9AdditiveScope $Schema $Uuid $Port
+    Assert-C9AdditiveQuiescent
+    $actual = @(Get-C9AdditiveTables $Schema $Uuid $Port)
+    if (($Tables -join ',') -cne ($actual -join ',')) { Fail 'R06B2_ADDITIVE_INVENTORY' }
+    $counts = [ordered]@{}
+    foreach ($table in $actual) {
+        $n = Invoke-Root 'mixed' ('SELECT COUNT(*) FROM ' + [char]96 + $table + [char]96) $Schema
+        if ($n -cnotmatch '\A(?:0|[1-9][0-9]{0,9})\z') { Fail 'R06B2_ADDITIVE_INVENTORY' }
+        $counts[$table] = [long]$n
+    }
+    Assert-C9AdditiveQuiescent
+    return $counts
+}
+function Assert-C9AdditiveDumpRows([string] $File,[string[]] $Selected,[System.Collections.IDictionary] $Counts) {
+    # --skip-extended-insert yields exactly one INSERT per row; every selected
+    # table must match the independently observed count, even when the dump exits 0.
+    $seen = @{}
+    foreach ($name in $Selected) { $seen[$name] = [long]0 }
+    foreach ($line in [IO.File]::ReadLines($File)) {
+        if ($line.StartsWith('INSERT INTO ',[StringComparison]::Ordinal)) {
+            if ($line -cnotmatch '^INSERT INTO \x60([A-Za-z_]+)\x60 ' -or $Selected -cnotcontains $Matches[1]) {
+                Fail 'R06B1_DOMAIN_DUMP_SCOPE'
+            }
+            $seen[$Matches[1]]++
+        }
+    }
+    foreach ($name in $Selected) {
+        if ($seen[$name] -ne $Counts[$name]) { Fail 'R06B2_ADDITIVE_DUMP_ROW_COUNT' }
+    }
+}
+function Assert-C9AdditiveGrants([string] $Schema,[string] $Uuid,[int] $Port) {
+    Assert-C9AdditiveScope $Schema $Uuid $Port
+    $tables = @(Get-C9AdditiveTables $Schema $Uuid $Port)
+    # Explicit per-table SELECT, not a schema wildcard grant. SHOW GRANTS must
+    # enumerate exactly the intended effective grants; no role, grant option or extra scope.
+    foreach ($user in 'c9_add_importer','c9_add_ro') {
+        $q = [string][char]96
+        $account = $q + $user + $q + '@' + $q + '%' + $q
+        $expected = @("GRANT USAGE ON *.* TO $account")
+        foreach ($table in $tables) {
+            $rights = 'SELECT'
+            if ($user -ceq 'c9_add_importer') {
+                if ($table -cin @('organization','user_account','membership','department','project','resource','resource_requirement','allocation')) { $rights += ', INSERT, UPDATE' }
+                elseif ($table -cin @('stock_movement','audit_event')) { $rights += ', INSERT' }
+            }
+            $expected += "GRANT $rights ON $q$Schema$q.$q$table$q TO $account"
+        }
+        $actual = (Invoke-Root 'mixed' "SHOW GRANTS FOR '$user'@'%'") -split '\n'
+        if ($actual.Count -ne $expected.Count -or @(Compare-Object -ReferenceObject $expected -DifferenceObject $actual -CaseSensitive).Count) {
+            Fail 'R06B2_ADDITIVE_GRANTS'
+        }
+    }
+}
 function Save-C9AdditiveSnapshot([string] $Schema,[string] $Uuid,[int] $Port) {
     $tables = @(Get-C9AdditiveTables $Schema $Uuid $Port)
+    $countsBefore = Get-C9AdditiveRowCounts $Schema $Uuid $Port $tables
     $domain = @($tables | Where-Object { $_ -inotmatch '\Aspring_session(?:_attributes)?\z' })
     $sessions = @($tables | Where-Object { $_ -imatch '\Aspring_session(?:_attributes)?\z' })
     if ($domain.Count -ne 16 -or $sessions.Count -ne 2) { Fail 'R06B2_ADDITIVE_INVENTORY' }
     $base = @('--no-defaults','--protocol=tcp','--host=127.0.0.1',"--port=$Port",'--user=root',
         '--skip-comments','--skip-dump-date','--hex-blob','--skip-lock-tables','--skip-add-drop-table',
         '--no-tablespaces','--set-gtid-purged=OFF','--skip-column-statistics','--single-transaction','--quick',
-        '--no-create-info','--order-by-primary','--skip-add-locks','--skip-disable-keys','--skip-triggers')
+        '--no-create-info','--order-by-primary','--skip-add-locks','--skip-disable-keys','--skip-triggers','--skip-extended-insert')
     $paths = @{}
     foreach ($kind in 'domain','sessions') {
         Assert-C9AdditiveScope $Schema $Uuid $Port
+        Assert-C9AdditiveQuiescent
         if (-not (Test-PlainPath "$work\dumps" 'Container') -or -not (Test-OwnerOnly "$work\dumps")) { Fail 'R06B2_ADDITIVE_DUMP_CUSTODY' }
         $file = New-Scratch "additive-$kind.sql"
         $err = New-Scratch "additive-$kind.err"
@@ -67,19 +128,19 @@ function Save-C9AdditiveSnapshot([string] $Schema,[string] $Uuid,[int] $Port) {
         }
         if (-not (Test-PlainPath $file 'Leaf') -or -not (Test-OwnerOnly $file) -or
             (Get-Item -LiteralPath $file).Length -eq 0) { Fail 'R06B1_ROW_DUMP_FAILED' }
-        # The actual table list is explicit; also reject unexpected INSERT targets in the dump.
-        # No raw lines are emitted.
-        foreach ($match in @(Select-String -LiteralPath $file -CaseSensitive -Pattern '^INSERT INTO ')) {
-            if ($match.Line -cnotmatch '^INSERT INTO \x60([A-Za-z_]+)\x60 ' -or $selected -cnotcontains $Matches[1]) {
-                Fail 'R06B1_DOMAIN_DUMP_SCOPE'
-            }
-        }
+        Assert-C9AdditiveQuiescent
+        Assert-C9AdditiveDumpRows $file $selected $countsBefore
         $paths[$kind] = $file
     }
     if ((@(Get-C9AdditiveTables $Schema $Uuid $Port) -join ',') -cne ($tables -join ',')) { Fail 'R06B2_ADDITIVE_INVENTORY' }
-    $counts = Invoke-Root 'mixed' 'SELECT (SELECT COUNT(*) FROM SPRING_SESSION),(SELECT COUNT(*) FROM SPRING_SESSION_ATTRIBUTES)' $Schema
-    if ($counts -cne (@('0','0') -join [char]9)) { Fail 'R06B2_ADDITIVE_SESSIONS' }
-    return [pscustomobject]@{ Domain=$paths.domain; Sessions=$paths.sessions; SessionCounts=$counts }
+    $countsAfter = Get-C9AdditiveRowCounts $Schema $Uuid $Port $tables
+    foreach ($name in $tables) {
+        if ($countsBefore[$name] -ne $countsAfter[$name]) { Fail 'R06B2_ADDITIVE_NOT_QUIESCENT' }
+    }
+    foreach ($name in $sessions) {
+        if ($countsBefore[$name] -ne 0 -or $countsAfter[$name] -ne 0) { Fail 'R06B2_ADDITIVE_SESSIONS' }
+    }
+    return [pscustomobject]@{ Domain=$paths.domain; Sessions=$paths.sessions; SessionCounts='0,0' }
 }
 function Assert-C9AdditiveSnapshotEqual([string] $Code,$Before,$After) {
     if ($Before.SessionCounts -cne $After.SessionCounts) { Fail $Code }
