@@ -98,6 +98,25 @@ function Assert-C9AdditiveGrants([string] $Schema,[string] $Uuid,[int] $Port) {
         }
     }
 }
+function Assert-C9AdditiveGrantBoundary([string] $Schema,[string] $Uuid,[int] $Port,
+                                          [string] $ImporterPassword,[string] $ReadPassword) {
+    Assert-C9AdditiveGrants $Schema $Uuid $Port
+    # Probe the actual accounts without mutating a row even if a grant is unexpectedly broad.
+    foreach ($account in @(@{User='c9_add_importer';Password=$ImporterPassword},@{User='c9_add_ro';Password=$ReadPassword})) {
+        $positive = Invoke-Sql 'mixed' $account.User $account.Password 'SELECT COUNT(*) FROM organization' $Schema
+        if ($positive.Code -ne 0 -or $positive.Out -cnotmatch '\A[0-9]+\z') { Fail 'R06B2_ADDITIVE_GRANTS' }
+        $foreignSchema = "orgresource_c9_local_{0}_mixed" -f $token
+        if ($foreignSchema -cne $roles.mixed.Schema) { Fail 'R06B2_ADDITIVE_SCOPE' }
+        $denied = Invoke-Sql 'mixed' $account.User $account.Password "SELECT COUNT(*) FROM $foreignSchema.organization" $Schema
+        if ($denied.Code -eq 0 -or $denied.Code -eq 124 -or $denied.Err -cnotmatch 'ERROR 1142 .*command denied') { Fail 'R06B2_ADDITIVE_GRANTS' }
+    }
+    foreach ($table in 'stock_movement','audit_event') {
+        $denied = Invoke-Sql 'mixed' 'c9_add_importer' $ImporterPassword "UPDATE $table SET id=id WHERE 1=0" $Schema
+        if ($denied.Code -eq 0 -or $denied.Code -eq 124 -or $denied.Err -cnotmatch 'ERROR 1142 .*command denied') { Fail 'R06B2_ADDITIVE_GRANTS' }
+    }
+    $denied = Invoke-Sql 'mixed' 'c9_add_ro' $ReadPassword 'UPDATE organization SET display_name=display_name WHERE 1=0' $Schema
+    if ($denied.Code -eq 0 -or $denied.Code -eq 124 -or $denied.Err -cnotmatch 'ERROR 1142 .*command denied') { Fail 'R06B2_ADDITIVE_GRANTS' }
+}
 function Save-C9AdditiveSnapshot([string] $Schema,[string] $Uuid,[int] $Port) {
     $tables = @(Get-C9AdditiveTables $Schema $Uuid $Port)
     $countsBefore = Get-C9AdditiveRowCounts $Schema $Uuid $Port $tables

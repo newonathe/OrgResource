@@ -21,7 +21,7 @@ $null = Invoke-Root 'mixed' "CREATE USER 'c9_add_importer'@'%' IDENTIFIED BY '$a
 foreach ($table in $addTables) { $null = Invoke-Root 'mixed' "GRANT SELECT ON $add.$table TO 'c9_add_ro'@'%','c9_add_importer'@'%';" }
 foreach ($table in 'organization', 'user_account', 'membership', 'department', 'project', 'resource', 'resource_requirement', 'allocation') { $null = Invoke-Root 'mixed' "GRANT INSERT,UPDATE ON $add.$table TO 'c9_add_importer'@'%';" }
 foreach ($table in 'stock_movement', 'audit_event') { $null = Invoke-Root 'mixed' "GRANT INSERT ON $add.$table TO 'c9_add_importer'@'%';" }
-Assert-C9AdditiveGrants $add $addUuid $addPort
+Assert-C9AdditiveGrantBoundary $add $addUuid $addPort $addImporter $addRo
 [IO.File]::WriteAllBytes("$work\dumps\generate-c8-demo.py", [Text.Encoding]::UTF8.GetBytes(((& git -C $repo show "${SourceSha}:scripts/generate-c8-demo.py") -join "`n") + "`n"))
 & $Python -I "$work\dumps\generate-c8-demo.py" --profile intermediate --seed c8-fixture-proof-v1 --output "$work\mixed\fictional-plan.json" | Out-Null
 if ($LASTEXITCODE -ne 0) { Fail 'R06B2_ADDITIVE_FIXTURE' }
@@ -82,7 +82,7 @@ Assert-C9AdditiveSnapshotEqual 'R06B2_ADDITIVE_SENSITIVITY' $h05RepeatBefore (Sa
 $log = "$work\dumps\additive-final-baseline.log"
 if ((Invoke-Jar 'mixed' $addBase '--c8-hosted-original-baseline' $log) -ne 0 -or -not (Test-Log $log 'C8_ORIGINAL_BASELINE_READ_ONLY_OK')) { Fail 'R06B2_ADDITIVE_ORIGINALS' }
 Assert-C9AdditiveScope $add $addUuid $addPort
-Assert-C9AdditiveGrants $add $addUuid $addPort
+Assert-C9AdditiveGrantBoundary $add $addUuid $addPort $addImporter $addRo
 $null = Invoke-Root 'mixed' "DROP USER 'c9_add_importer'@'%','c9_add_ro'@'%'; DROP DATABASE $add;"
 Assert-C9AdditiveScope $add $addUuid $addPort
 if ((Invoke-Root 'mixed' "SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name='$add'") -cne '0' -or
