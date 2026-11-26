@@ -1087,7 +1087,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "H03 v2 parent-only publication and actual profile evidence integration source candidate 578855bfe04c8786088a1dfc76cf8cfa0626d9d0; 55 added harness-only paths vs R09. Separate strict v2 pure transport, actual LSA context and pinned v1/v2 modules in lock-owning parent, exact canonical readback, no legacy conversion, v2 producer persists actual storage and bounded removal evidence. Direct measured sibling source compile avoids unmeasured cached bytecode; v1 historical module/test and bridge unchanged, v1 parent only old fixture/advisory. V2 refuses mapping/work deletion/recovery, boot witness null, complete profile absence unproven. Eight additional portable tests and native parent fixture NOT_RUN; exact source readback; container ClientError; historical H03 portable18 and H02 portable12 retained, 9+4+13+8=34 additional portable NOT_RUN. Both entrypoints quarantined. Next independent eligible H01-A secure archive retention source slice (reopen exact Report102/contract; no actual restricted input/vault/transfer/disposal), then H05 scoped equality if eligible; do not spin on blocked mapping. H03 remaining safe boot/namespace/exclusive mapping and absence, held-lock work ACL/cleanup/removal, lock-first effect-free recovery and exact retained-control residue, native H03-01–12/crash/ACL/ABI and independent acceptance. H06 lifecycle, H02 provenance/native and 64 staged PowerShell + spy open. H01-B preparation only, actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
+      "next": "H01-A strict data-only retention candidate 63fbbc14e6b42f1660d4655c08028b230f230996; 57 added harness-only paths vs R09. Eight fictional tests NOT_RUN (container ClientError); 42 additional portable methods NOT_RUN; historical H02 portable12 and H03 portable18 retained. Exact manifest/scope/hash/size/serializer and commit-candidate fields only; no actual archive authentication, staging, custody or cleanup proof. Next bind actual approved cohort counts, distinct owned source/third-restore identities, actual serializer/timezone, native protected exclusive stage copy/flush/readback, independently sealed manifest hash and actual vault receipt semantics. Final exclusive marker only after observed cleanup. Preserve previous accepted archive, no failed-stage disposal or automatic repeat import. H05 scoped equality independently eligible if dependencies permit. H03 boot/namespace/mapping/absence, held-lock cleanup and lock-first recovery remain unresolved; both entrypoints quarantined. H06 lifecycle, H02 provenance/native, H03-01–12, 64 PowerShell+spy and independent acceptance open. H01-B preparation only, actual vault/machine/operator/transfer pending. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -1254,6 +1254,12 @@
           "blob": "d65f5028fbc02719adeb3e6f12ad70ebce03f48a",
           "ref": "2862f809fda036e7a23338450d54d60167316dd1",
           "review": "FULL report; source candidate, actual runtime NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/113_H01_A_RETENTION_DATA_CONTRACT.md",
+          "blob": "7d6bda8dce23c1dcbe5cb2c2fa1d1019ed95a9a4",
+          "ref": "56e61deac281913e7718bfd5bd2f85c9f8f66aea",
+          "review": "FULL report; partial source-only retention contract; eight tests NOT_RUN"
         }
       ]
     },
@@ -1277,7 +1283,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "H03 v2 parent-only publication and actual profile evidence integration source candidate 578855bfe04c8786088a1dfc76cf8cfa0626d9d0; 55 added harness-only paths vs R09. Separate strict v2 pure transport, actual LSA context and pinned v1/v2 modules in lock-owning parent, exact canonical readback, no legacy conversion, v2 producer persists actual storage and bounded removal evidence. Direct measured sibling source compile avoids unmeasured cached bytecode; v1 historical module/test and bridge unchanged, v1 parent only old fixture/advisory. V2 refuses mapping/work deletion/recovery, boot witness null, complete profile absence unproven. Eight additional portable tests and native parent fixture NOT_RUN; exact source readback; container ClientError; historical H03 portable18 and H02 portable12 retained, 9+4+13+8=34 additional portable NOT_RUN. Both entrypoints quarantined. Next independent eligible H01-A secure archive retention source slice (reopen exact Report102/contract; no actual restricted input/vault/transfer/disposal), then H05 scoped equality if eligible; do not spin on blocked mapping. H03 remaining safe boot/namespace/exclusive mapping and absence, held-lock work ACL/cleanup/removal, lock-first effect-free recovery and exact retained-control residue, native H03-01–12/crash/ACL/ABI and independent acceptance. H06 lifecycle, H02 provenance/native and 64 staged PowerShell + spy open. H01-B preparation only, actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
+      "next": "H01-A strict data-only retention candidate 63fbbc14e6b42f1660d4655c08028b230f230996; 57 added harness-only paths vs R09. Eight fictional tests NOT_RUN (container ClientError); 42 additional portable methods NOT_RUN; historical H02 portable12 and H03 portable18 retained. Exact manifest/scope/hash/size/serializer and commit-candidate fields only; no actual archive authentication, staging, custody or cleanup proof. Next bind actual approved cohort counts, distinct owned source/third-restore identities, actual serializer/timezone, native protected exclusive stage copy/flush/readback, independently sealed manifest hash and actual vault receipt semantics. Final exclusive marker only after observed cleanup. Preserve previous accepted archive, no failed-stage disposal or automatic repeat import. H05 scoped equality independently eligible if dependencies permit. H03 boot/namespace/mapping/absence, held-lock cleanup and lock-first recovery remain unresolved; both entrypoints quarantined. H06 lifecycle, H02 provenance/native, H03-01–12, 64 PowerShell+spy and independent acceptance open. H01-B preparation only, actual vault/machine/operator/transfer pending. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -1876,6 +1882,12 @@
           "blob": "d65f5028fbc02719adeb3e6f12ad70ebce03f48a",
           "ref": "2862f809fda036e7a23338450d54d60167316dd1",
           "review": "FULL report; source candidate, actual runtime NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/113_H01_A_RETENTION_DATA_CONTRACT.md",
+          "blob": "7d6bda8dce23c1dcbe5cb2c2fa1d1019ed95a9a4",
+          "ref": "56e61deac281913e7718bfd5bd2f85c9f8f66aea",
+          "review": "FULL report; partial source-only retention contract; eight tests NOT_RUN"
         }
       ]
     },
@@ -2022,7 +2034,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "H03 v2 parent-only publication and actual profile evidence integration source candidate 578855bfe04c8786088a1dfc76cf8cfa0626d9d0; 55 added harness-only paths vs R09. Separate strict v2 pure transport, actual LSA context and pinned v1/v2 modules in lock-owning parent, exact canonical readback, no legacy conversion, v2 producer persists actual storage and bounded removal evidence. Direct measured sibling source compile avoids unmeasured cached bytecode; v1 historical module/test and bridge unchanged, v1 parent only old fixture/advisory. V2 refuses mapping/work deletion/recovery, boot witness null, complete profile absence unproven. Eight additional portable tests and native parent fixture NOT_RUN; exact source readback; container ClientError; historical H03 portable18 and H02 portable12 retained, 9+4+13+8=34 additional portable NOT_RUN. Both entrypoints quarantined. Next independent eligible H01-A secure archive retention source slice (reopen exact Report102/contract; no actual restricted input/vault/transfer/disposal), then H05 scoped equality if eligible; do not spin on blocked mapping. H03 remaining safe boot/namespace/exclusive mapping and absence, held-lock work ACL/cleanup/removal, lock-first effect-free recovery and exact retained-control residue, native H03-01–12/crash/ACL/ABI and independent acceptance. H06 lifecycle, H02 provenance/native and 64 staged PowerShell + spy open. H01-B preparation only, actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
+      "next": "H01-A strict data-only retention candidate 63fbbc14e6b42f1660d4655c08028b230f230996; 57 added harness-only paths vs R09. Eight fictional tests NOT_RUN (container ClientError); 42 additional portable methods NOT_RUN; historical H02 portable12 and H03 portable18 retained. Exact manifest/scope/hash/size/serializer and commit-candidate fields only; no actual archive authentication, staging, custody or cleanup proof. Next bind actual approved cohort counts, distinct owned source/third-restore identities, actual serializer/timezone, native protected exclusive stage copy/flush/readback, independently sealed manifest hash and actual vault receipt semantics. Final exclusive marker only after observed cleanup. Preserve previous accepted archive, no failed-stage disposal or automatic repeat import. H05 scoped equality independently eligible if dependencies permit. H03 boot/namespace/mapping/absence, held-lock cleanup and lock-first recovery remain unresolved; both entrypoints quarantined. H06 lifecycle, H02 provenance/native, H03-01–12, 64 PowerShell+spy and independent acceptance open. H01-B preparation only, actual vault/machine/operator/transfer pending. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -2377,6 +2389,12 @@
           "blob": "d65f5028fbc02719adeb3e6f12ad70ebce03f48a",
           "ref": "2862f809fda036e7a23338450d54d60167316dd1",
           "review": "FULL report; source candidate, actual runtime NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/113_H01_A_RETENTION_DATA_CONTRACT.md",
+          "blob": "7d6bda8dce23c1dcbe5cb2c2fa1d1019ed95a9a4",
+          "ref": "56e61deac281913e7718bfd5bd2f85c9f8f66aea",
+          "review": "FULL report; partial source-only retention contract; eight tests NOT_RUN"
         }
       ]
     }

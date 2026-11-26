@@ -420,3 +420,6 @@
 "scripts/windows-l06/C9ProfileStorageObservation.cs","c29a49ef65abe02965ffa471ff16e2d2e6d600a4","6785","100644","578855bfe04c8786088a1dfc76cf8cfa0626d9d0","FULL Report112 source-only tests NOT_RUN"
 "scripts/windows-l06/C9Contain.cs","832d6694d267f7743fe97fff0574d2786e0f8636","17493","100644","578855bfe04c8786088a1dfc76cf8cfa0626d9d0","RELEVANT_RANGES Report112 source-only tests NOT_RUN"
 "scripts/windows-l06/test-ownership-producer.ps1","cde9fc2aa41d166ab7169fa79ca9dc97d093f4b3","6217","100644","578855bfe04c8786088a1dfc76cf8cfa0626d9d0","FULL Report112 source-only tests NOT_RUN"
+"docs/handoffs/claude-local-execution-2026-11-24/113_H01_A_RETENTION_DATA_CONTRACT.md","7d6bda8dce23c1dcbe5cb2c2fa1d1019ed95a9a4","5678","100644","56e61deac281913e7718bfd5bd2f85c9f8f66aea","FULL Report113 source-only tests NOT_RUN"
+"scripts/windows-l06/retention_contract.py","c3e5e831c574f04bccb1d71360ec882fe38e25ee","6145","100644","63fbbc14e6b42f1660d4655c08028b230f230996","FULL Report113 source-only tests NOT_RUN"
+"scripts/windows-l06/test_retention_contract.py","c0afe16e05208f22a8c43861901726885556f414","4183","100644","63fbbc14e6b42f1660d4655c08028b230f230996","FULL Report113 source-only tests NOT_RUN"

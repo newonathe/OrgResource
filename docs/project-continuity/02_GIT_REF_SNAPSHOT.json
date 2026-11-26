@@ -1136,5 +1136,17 @@
     "report": "docs/handoffs/claude-local-execution-2026-11-24/112_H03_V2_PARENT_AND_PROFILE_EVIDENCE_INTEGRATION.md",
     "report_ref": "2862f809fda036e7a23338450d54d60167316dd1",
     "coverage": "55 added harness-only paths; source-only, native and new portable NOT_RUN"
+  },
+  "h01_a_retention_data_contract_candidate": {
+    "observed_date": "2026-11-27 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "63fbbc14e6b42f1660d4655c08028b230f230996",
+    "tree": "0d28b1040ea89196c5695cb2cd7cfdcba038b152",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/113_H01_A_RETENTION_DATA_CONTRACT.md",
+    "report_ref": "56e61deac281913e7718bfd5bd2f85c9f8f66aea",
+    "coverage": "57 added harness-only paths; eight new portable methods NOT_RUN"
   }
 }
