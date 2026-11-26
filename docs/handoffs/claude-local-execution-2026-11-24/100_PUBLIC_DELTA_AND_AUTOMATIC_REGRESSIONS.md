@@ -1,0 +1,10 @@
+# 100 — Exact public test delta and automatic regression receipts
+
+2026-11-26 PHT. Report99 verified corrected PR58 actual success; current handoff parent 083e6fdf32bfab041a26fc23d9e4ec80b5a0f81b. Exact main96741bbd295a2d1e7b4bbf6a75cb558a793b09bd unchanged.
+
+- Exact main C1IdentityAcceptanceTest.java blob d4153e2f428c5f97dc0f4b1862826155e82f8820, 6224 lines, 78 @Test declarations. PR58 exact75bbc99ceb4d5be3b1c1def1e80abb3509a287fb blob281f6cb89cdfccaf24494afa538a6c4c1dfb590f, 6636 lines, 83 declarations. Deterministic line comparison: common prefix6191, common suffix25; every original middle line is preserved as an ordered subsequence, delta+412, GitHub PR metadata one file+412/-0. Initial single-insertion assumption refused (additions at more than one location), corrected exact comparison. Five new methods #79 R082, #80 R089/R091, #81 R035, #82 R036, #83 R041. Main product suite78, not older handoff suite66. Prior individual receipts, failures, and limits retained; no independent acceptance.
+- Auto Verify45800274299 exact97b4bc0d8b1d2e9c2cc1c442d3940f3e2dc7bf59 now terminal all3 success, actual Extended job139841389697 logs inspected: 66 identity/91 Maven zero failures/errors/skips, 38 React, 48/90 +12/20 Newman zero failures,19 browser. Course A/React actual receipts in Report99.
+- Auto Verify45800398744 exact b2347756e29362832f0f2506ef9793e3ba040ac0 now terminal all3 success, actual Extended139841812186 logs inspected: same 66/91 Maven,38 React,60/110 Newman,19 browser. Course A/React actual receipts Report99.
+- Auto Verify45800824765 exact9f40e895a20bd96d97e59fb95e499af6a2783e96 last observed Extended139843282856 at packaged Newman/browser, other two actual successful Report99. Terminal evidence still pending; no new CI or application changes. These are handoff regression runs, distinct from PR58 and the dedicated R038 actual receipt.
+
+Next inspect final automatic Extended terminal log, then H01-A/B/C owner decisions per Report68/99; no broad new retest, native or private launch without separate authorization. L06 HOLD/no WSL, 93 independent/IR4 open, 13 owner-gated privacy flags. No merge/deploy.
