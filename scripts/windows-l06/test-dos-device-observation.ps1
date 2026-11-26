@@ -4,7 +4,7 @@ param([switch] $ConfirmFictional)
 Set-StrictMode -Version 3
 $ErrorActionPreference = 'Stop'
 if (-not $IsWindows -or -not $ConfirmFictional) { throw 'C9W_TEST_FIXTURE_REQUIRED' }
-Add-Type -Path (Join-Path $PSScriptRoot 'C9DosDeviceObservation.cs')
+Add-Type -Path @('C9DosDeviceObservation.cs','C9LogonContext.cs' | ForEach-Object { Join-Path $PSScriptRoot $_ })
 function Require([bool] $Condition, [string] $Code) { if (-not $Condition) { throw $Code } }
 function Refuses([scriptblock] $Action, [string] $Expected) {
     $caught = $false
@@ -21,6 +21,24 @@ $b = [C9DosDeviceObservation]::Read($systemDrive)
 Require ($a.Status -ceq 'OBSERVED' -and $a.Targets.Count -ge 1 -and $a.NativeError -eq 0) 'C9W_DOS_SYSTEM_POSITIVE'
 Require ($a.AuthenticationId -cmatch '^[a-f0-9]{16}$' -and $a.UserSid -cmatch '^S-1-') 'C9W_DOS_CONTEXT_SHAPE'
 Require ($a.SameObservation($b)) 'C9W_DOS_OBSERVATION_CHANGED'
+$context = [C9LogonContext]::Read()
+Require ($context.SameContext([C9LogonContext]::Read())) 'C9W_LOGON_CONTEXT_CHANGED'
+Require ($context.UserSid -ceq $a.UserSid -and $context.AuthenticationId -ceq $a.AuthenticationId -and $context.SessionId -eq $a.SessionId -and $context.LogonTime -ceq $a.LogonTime) 'C9W_LOGON_CONTEXT_BINDING'
+Require ($context.SessionId -gt 0 -and $context.LogonTime -cmatch '^[1-9][0-9]{0,18}
+$clone[0] = 'fictional mutation'
+Require ($a.SameObservation($b)) 'C9W_DOS_TARGETS_MUTABLE'
+foreach ($drive in 'Q:', 'R:', 'U:', 'V:', 'W:') {
+    $seen = [C9DosDeviceObservation]::Read($drive)
+    Require ($seen.UserSid -ceq $a.UserSid -and $seen.AuthenticationId -ceq $a.AuthenticationId) 'C9W_DOS_CONTEXT_CHANGED'
+    Require ($seen.SessionId -eq $a.SessionId -and $seen.LogonTime -ceq $a.LogonTime -and $null -eq $seen.BootId) 'C9W_LOGON_CONTEXT_BINDING'
+    if ($seen.Status -ceq 'OBSERVED') {
+        Require ($seen.NativeError -eq 0 -and $seen.Targets.Count -ge 1) 'C9W_DOS_OBSERVED_SHAPE'
+    } elseif ($seen.Status -ceq 'UNRESOLVED') {
+        Require ($seen.NativeError -ne 0 -and $seen.Targets.Count -eq 0) 'C9W_DOS_UNKNOWN_SHAPE'
+    } else { throw 'C9W_DOS_UNKNOWN_STATUS' }
+}
+[Console]::WriteLine('C9W_DOS_OBSERVER_FIXTURE_OK:system_positive=true context_bound=true lsa_logon_time=true session_bound=true boot_witness_unavailable=true targets_immutable=true errors_not_absence=true read_only=true')
+ -and $null -eq $context.BootId -and $null -eq $a.BootId) 'C9W_LOGON_CONTEXT_SHAPE'
 $clone = $a.Targets
 $clone[0] = 'fictional mutation'
 Require ($a.SameObservation($b)) 'C9W_DOS_TARGETS_MUTABLE'

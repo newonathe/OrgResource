@@ -13,17 +13,21 @@ public sealed class C9DosDeviceObservation {
     public string Drive { get; private set; }
     public string UserSid { get; private set; }
     public string AuthenticationId { get; private set; }
+    public uint SessionId { get; private set; }
+    public string LogonTime { get; private set; }
+    public string BootId { get { return null; } }
     public string Status { get; private set; }
     public int NativeError { get; private set; }
     readonly string[] targets;
     public string[] Targets { get { return (string[])targets.Clone(); } }
 
-    C9DosDeviceObservation(string drive, string user, string auth, string status, int error, string[] targets) {
-        Drive = drive; UserSid = user; AuthenticationId = auth; Status = status;
+    C9DosDeviceObservation(string drive, C9LogonContext context, string status, int error, string[] targets) {
+        Drive = drive; UserSid = context.UserSid; AuthenticationId = context.AuthenticationId;
+        SessionId = context.SessionId; LogonTime = context.LogonTime; Status = status;
         NativeError = error; this.targets = targets;
     }
 
-    static (string user, string auth) Context() {
+    internal static (string user, string auth) Context() {
         if (!OperatingSystem.IsWindows()) throw new InvalidOperationException("C9W_DOS_CONTEXT");
         using var thread = WindowsIdentity.GetCurrent(true);
         using var me = WindowsIdentity.GetCurrent(false);
@@ -67,23 +71,23 @@ public sealed class C9DosDeviceObservation {
     public static C9DosDeviceObservation Read(string drive) {
         if (drive == null || !System.Text.RegularExpressions.Regex.IsMatch(drive, @"\A[A-Z]:\z"))
             throw new InvalidOperationException("C9W_DOS_DRIVE");
-        var before = Context();
+        var before = C9LogonContext.Read();
         const int capacity = 65536;
         IntPtr buffer = Marshal.AllocHGlobal(capacity * 2);
         try {
             uint count = QueryDosDeviceW(drive, buffer, capacity);
             int error = count == 0 ? Marshal.GetLastWin32Error() : 0;
-            var after = Context();
-            if (before != after) throw new InvalidOperationException("C9W_DOS_CONTEXT_CHANGED");
+            var after = C9LogonContext.Read();
+            if (!before.SameContext(after)) throw new InvalidOperationException("C9W_DOS_CONTEXT_CHANGED");
             if (count == 0) {
                 // No documented authoritative negative existence oracle here.
                 // Retain the numeric error; never treat any failure as permission to create.
-                return new C9DosDeviceObservation(drive, before.user, before.auth, "UNRESOLVED", error, Array.Empty<string>());
+                return new C9DosDeviceObservation(drive, before, "UNRESOLVED", error, Array.Empty<string>());
             }
             if (count > capacity) throw new InvalidOperationException("C9W_DOS_SHAPE");
             char[] raw = new char[(int)count];
             Marshal.Copy(buffer, raw, 0, (int)count);
-            return new C9DosDeviceObservation(drive, before.user, before.auth, "OBSERVED", 0,
+            return new C9DosDeviceObservation(drive, before, "OBSERVED", 0,
                 ParseTargets(raw, (int)count));
         } finally { Marshal.FreeHGlobal(buffer); }
     }
@@ -91,7 +95,8 @@ public sealed class C9DosDeviceObservation {
     // A comparison of observations only. Never authorization to mutate a mapping.
     public bool SameObservation(C9DosDeviceObservation other) {
         if (other == null || Drive != other.Drive || UserSid != other.UserSid ||
-            AuthenticationId != other.AuthenticationId || Status != other.Status ||
+            AuthenticationId != other.AuthenticationId || SessionId != other.SessionId ||
+            LogonTime != other.LogonTime || Status != other.Status ||
             NativeError != other.NativeError || targets.Length != other.targets.Length)
             return false;
         for (int i = 0; i < targets.Length; i++)
