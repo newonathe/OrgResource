@@ -138,10 +138,21 @@ public final class R038OwnedLockFork {
                     try{
                         phase("DIRECT_TIMEOUT");
                         boolean saw=false;
-                        try{ctx.getBean(DemoProvenance.class).publicMetadata();}
+                        try{ctx.getBean(DemoProvenance.class).publicMetadata();phase("DIRECT_RETURNED");}
                         catch(RuntimeException ex){
+                            phase("DIRECT_UNEXPECTED_EXCEPTION");
                             for(Throwable t=ex;t!=null;t=t.getCause()){
-                                if(t instanceof SQLException sql && sql.getErrorCode()==1205&&"HY000".equals(sql.getSQLState()))saw=true;
+                                if(t instanceof SQLException sql){
+                                    if(sql.getErrorCode()==1205){
+                                        // Connector/J maps server error 1205 to JDBC SQLState 40001.
+                                        // Distinguish the native server state HY000; retain exact diagnostics.
+                                        if("40001".equals(sql.getSQLState())){
+                                            phase("DIRECT_1205_40001");Files.writeString(Path.of("sqlstate"),"40001");saw=true;translated=true;
+                                        }else if("HY000".equals(sql.getSQLState())){
+                                            phase("DIRECT_1205_HY000");Files.writeString(Path.of("sqlstate"),"HY000");saw=true;
+                                        }else phase("DIRECT_1205_OTHER_STATE");
+                                    }else phase("DIRECT_OTHER_SQL");
+                                }
                                 if(t instanceof PessimisticLockingFailureException)translated=true;
                             }
                         }

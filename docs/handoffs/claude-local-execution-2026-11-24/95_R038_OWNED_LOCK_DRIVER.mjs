@@ -6,7 +6,7 @@ import {resolve,join} from "node:path";
 import {tmpdir} from "node:os";
 import {withR031Database} from "./86_R031_OWNED_MYSQL_GUARD.mjs";
 const check=x=>{if(!x)throw Error("R038_DRIVER_REFUSED");};
-const stages=new Set(["MIGRATE","MIGRATED","STARTUP","POOL","BASELINE","LOCK","DIRECT_TIMEOUT","HTTP_LOCK_503","HTTP_LOCK_500","RECOVERY","COMPLETE_503","COMPLETE_500"]);
+const stages=new Set(["MIGRATE","MIGRATED","STARTUP","POOL","BASELINE","LOCK","DIRECT_TIMEOUT","DIRECT_RETURNED","DIRECT_UNEXPECTED_EXCEPTION","DIRECT_1205_40001","DIRECT_1205_HY000","DIRECT_1205_OTHER_STATE","DIRECT_OTHER_SQL","HTTP_LOCK_503","HTTP_LOCK_500","RECOVERY","COMPLETE_503","COMPLETE_500"]);
 function phase(dir){try{const x=readFileSync(join(dir,"phase"),"utf8");return stages.has(x)?x:"UNKNOWN";}catch{return "UNKNOWN";}}
 async function run(){
  check(process.argv.length===2&&process.platform==="linux"&&process.versions.node.startsWith("24."));
@@ -17,7 +17,7 @@ async function run(){
  const cp=resolve("r031-classes")+":"+join(root,"extended/backend/target/classes")+":"+readFileSync(resolve("r031-classpath.txt"),"utf8").trim();
  const java=realpathSync(join(process.env.JAVA_HOME,"bin/java"));
  const dir=mkdtempSync(join(tmpdir(),"r038-owned-"));chmodSync(dir,0o700);
- let last="UNKNOWN";
+ let last="UNKNOWN",sqlstate="UNKNOWN";
  try{
   await withR031Database(async db=>{
    const env={PATH:"/usr/bin:/bin",HOME:dir,LANG:"C.UTF-8",EXT_DB_URL:db.url,EXT_DB_USER:db.runtime,EXT_DB_PASSWORD:db.runtimePassword,
@@ -33,10 +33,12 @@ async function run(){
    db.narrowRuntime();
    execute(["verification.R038OwnedLockFork"],180000);
    check(last==="COMPLETE_503"||last==="COMPLETE_500");
-   check(readdirSync(dir).every(x=>x==="phase"));db.verify();
+   sqlstate=readFileSync(join(dir,"sqlstate"),"utf8");check(sqlstate==="40001"||sqlstate==="HY000");
+   check(sqlstate!=="40001"||last==="COMPLETE_503");
+   check(readdirSync(dir).sort().join(",")==="phase,sqlstate");db.verify();
   });
  }catch{console.log("R038_OWNED_LOCK_REFUSED:phase="+last);process.exitCode=1;}
  finally{rmSync(dir,{recursive:true,force:true});check(!existsSync(dir));}
- if(!process.exitCode)console.log("R038_OWNED_LOCK_OK:mysql=8.0.46 jdbc_error=1205 sqlstate=HY000 status="+last.slice(-3)+" no_store=true exact_all_table_rows=true restored=true cleanup=true");
+ if(!process.exitCode)console.log("R038_OWNED_LOCK_OK:mysql=8.0.46 jdbc_error=1205 sqlstate="+sqlstate+" status="+last.slice(-3)+" no_store=true exact_all_table_rows=true restored=true cleanup=true");
 }
 run().catch(()=>{console.log("R038_DRIVER_REFUSED");process.exitCode=1;});
