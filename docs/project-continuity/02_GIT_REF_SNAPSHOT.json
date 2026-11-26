@@ -1124,5 +1124,17 @@
     "report": "docs/handoffs/claude-local-execution-2026-11-24/111_H03_DURABLE_OBSERVATION_BINDING_AND_FIXTURE_CORRECTION.md",
     "report_ref": "9e8402f3bd5bbe5632cf88861fe722b21ed7b3dc",
     "coverage": "52 added harness-only paths; source-only, native and new portable NOT_RUN"
+  },
+  "h03_v2_parent_profile_evidence_candidate": {
+    "observed_date": "2026-11-27 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "578855bfe04c8786088a1dfc76cf8cfa0626d9d0",
+    "tree": "403452f543e49489175e96b85f06f9bfffbb0a2c",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/112_H03_V2_PARENT_AND_PROFILE_EVIDENCE_INTEGRATION.md",
+    "report_ref": "2862f809fda036e7a23338450d54d60167316dd1",
+    "coverage": "55 added harness-only paths; source-only, native and new portable NOT_RUN"
   }
 }
