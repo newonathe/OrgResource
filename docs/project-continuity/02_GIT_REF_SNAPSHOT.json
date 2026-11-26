@@ -1028,5 +1028,17 @@
     "report": "docs/handoffs/claude-local-execution-2026-11-24/103_H02_RECEIPT_BINDING_CANDIDATE.md",
     "report_ref": "ae910a70aead4ae9ecd2b6ca2bd07331bd80e22f",
     "coverage": "Scoped live refs; 29 added harness-only paths, no native acceptance"
+  },
+  "h02_runtime_copy_candidate": {
+    "observed_date": "2026-11-26 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "e6eabe0e1682f6a2d8a64e6fd721d1b6b45e043f",
+    "tree": "67b7955767670e854a18dde0ff2e2a65ef01a87e",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/104_H02_RUNTIME_COPY_AND_INTAKE_CANDIDATE.md",
+    "report_ref": "483059014786219ab86d49cc09ce475c1b8be70a",
+    "coverage": "Scoped live refs; 32 added harness-only paths; portable tests actual, native acceptance open"
   }
 }

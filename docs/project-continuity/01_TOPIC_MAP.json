@@ -1087,7 +1087,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "H02 receipt-binding candidate 334e08a3849665a0b086dc928c721b18e6fb0a22; 29 added harness-only paths vs R09, 24 new pure tests staged NOT_RUN (+40 H04). H02-10 runtime provenance/copy manifest and H02-09 intake instrumentation still open; finish those, then H03 ownership/lock/recovery, H01-A archive staging/commit, H05 scoped equality, H06 process lifecycle, native and independent acceptance. H01-B preparation only, actual vault/machine/operator/transfer pending; failed-stage disposal separate. L06 HOLD/no WSL, L07 separately authorized off-host, 93 independent IR4 open, 13 privacy flags owner-gated. No private import/launch/merge/deploy.",
+      "next": "H02 scoped runtime-copy and intake candidate e6eabe0e1682f6a2d8a64e6fd721d1b6b45e043f; 32 added harness-only paths vs R09. Python copy helper 12/12 actual portable tests on exact blobs; H02-09/10 native integration and trusted tool provenance remain open, 64 prior pure PowerShell tests and new native spy NOT_RUN. Next H03 durable ownership/lock/recovery, H01-A archive staging/commit, H05 scoped equality, H06 process lifecycle, consolidated native and independent acceptance. H01-B preparation only, actual vault/machine/operator/transfer pending; failed-stage disposal separate. L06 HOLD/no WSL, L07 separately authorized off-host, 93 independent IR4 open, 13 privacy flags owner-gated. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -1200,6 +1200,12 @@
           "blob": "100f977f301f887dd8bea68d26ec3c555dce3baf",
           "ref": "ae910a70aead4ae9ecd2b6ca2bd07331bd80e22f",
           "review": "FULL source-only candidate; no native acceptance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/104_H02_RUNTIME_COPY_AND_INTAKE_CANDIDATE.md",
+          "blob": "839d1b8b475b8082badb764f69e3c2f61dc3f0ca",
+          "ref": "483059014786219ab86d49cc09ce475c1b8be70a",
+          "review": "FULL portable actual receipt; native integration NOT_RUN"
         }
       ]
     },
@@ -1223,7 +1229,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "H02 receipt-binding candidate 334e08a3849665a0b086dc928c721b18e6fb0a22; 29 added harness-only paths vs R09, 24 new pure tests staged NOT_RUN (+40 H04). H02-10 runtime provenance/copy manifest and H02-09 intake instrumentation still open; finish those, then H03 ownership/lock/recovery, H01-A archive staging/commit, H05 scoped equality, H06 process lifecycle, native and independent acceptance. H01-B preparation only, actual vault/machine/operator/transfer pending; failed-stage disposal separate. L06 HOLD/no WSL, L07 separately authorized off-host, 93 independent IR4 open, 13 privacy flags owner-gated. No private import/launch/merge/deploy.",
+      "next": "H02 scoped runtime-copy and intake candidate e6eabe0e1682f6a2d8a64e6fd721d1b6b45e043f; 32 added harness-only paths vs R09. Python copy helper 12/12 actual portable tests on exact blobs; H02-09/10 native integration and trusted tool provenance remain open, 64 prior pure PowerShell tests and new native spy NOT_RUN. Next H03 durable ownership/lock/recovery, H01-A archive staging/commit, H05 scoped equality, H06 process lifecycle, consolidated native and independent acceptance. H01-B preparation only, actual vault/machine/operator/transfer pending; failed-stage disposal separate. L06 HOLD/no WSL, L07 separately authorized off-host, 93 independent IR4 open, 13 privacy flags owner-gated. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -1768,6 +1774,12 @@
           "blob": "100f977f301f887dd8bea68d26ec3c555dce3baf",
           "ref": "ae910a70aead4ae9ecd2b6ca2bd07331bd80e22f",
           "review": "FULL source-only candidate; no native acceptance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/104_H02_RUNTIME_COPY_AND_INTAKE_CANDIDATE.md",
+          "blob": "839d1b8b475b8082badb764f69e3c2f61dc3f0ca",
+          "ref": "483059014786219ab86d49cc09ce475c1b8be70a",
+          "review": "FULL portable actual receipt; native integration NOT_RUN"
         }
       ]
     },
@@ -1914,7 +1926,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "H02 receipt-binding candidate 334e08a3849665a0b086dc928c721b18e6fb0a22; 29 added harness-only paths vs R09, 24 new pure tests staged NOT_RUN (+40 H04). H02-10 runtime provenance/copy manifest and H02-09 intake instrumentation still open; finish those, then H03 ownership/lock/recovery, H01-A archive staging/commit, H05 scoped equality, H06 process lifecycle, native and independent acceptance. H01-B preparation only, actual vault/machine/operator/transfer pending; failed-stage disposal separate. L06 HOLD/no WSL, L07 separately authorized off-host, 93 independent IR4 open, 13 privacy flags owner-gated. No private import/launch/merge/deploy.",
+      "next": "H02 scoped runtime-copy and intake candidate e6eabe0e1682f6a2d8a64e6fd721d1b6b45e043f; 32 added harness-only paths vs R09. Python copy helper 12/12 actual portable tests on exact blobs; H02-09/10 native integration and trusted tool provenance remain open, 64 prior pure PowerShell tests and new native spy NOT_RUN. Next H03 durable ownership/lock/recovery, H01-A archive staging/commit, H05 scoped equality, H06 process lifecycle, consolidated native and independent acceptance. H01-B preparation only, actual vault/machine/operator/transfer pending; failed-stage disposal separate. L06 HOLD/no WSL, L07 separately authorized off-host, 93 independent IR4 open, 13 privacy flags owner-gated. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -2215,6 +2227,12 @@
           "blob": "100f977f301f887dd8bea68d26ec3c555dce3baf",
           "ref": "ae910a70aead4ae9ecd2b6ca2bd07331bd80e22f",
           "review": "FULL source-only candidate; no native acceptance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/104_H02_RUNTIME_COPY_AND_INTAKE_CANDIDATE.md",
+          "blob": "839d1b8b475b8082badb764f69e3c2f61dc3f0ca",
+          "ref": "483059014786219ab86d49cc09ce475c1b8be70a",
+          "review": "FULL portable actual receipt; native integration NOT_RUN"
         }
       ]
     }
