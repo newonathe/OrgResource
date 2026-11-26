@@ -1,9 +1,10 @@
-"""H03 bounded journal bridge.
+"""H03 journal computation bridge.
 
-Only the verified native parent may invoke the Windows CLI while holding C9ControlLock.
-This process does NOT independently establish that lock or authorize resource effects.
-It never creates/deletes a work directory, profile, drive mapping or process.
+CLI computes from supplied bytes only; never reads or writes journal files.
+The native parent holds the lock and performs durable publication in-process.
+The file-transport function is retained only for portable fictional tests.
 """
+import base64
 import hashlib
 import importlib.util
 import json
@@ -131,21 +132,39 @@ def execute_request(req, path):
     return response
 
 
+MAX_ENVELOPE = 65536
+TRANSPORT = "orgresource.windows-l06-ownership-transform.v1"
+
+
+def transform(raw):
+    """Pure envelope: return proposed replacement bytes, never perform file I/O."""
+    _j.require(type(raw) is bytes and 0 < len(raw) <= MAX_ENVELOPE)
+    env = json.loads(raw.decode("utf-8", errors="strict"), object_pairs_hook=_j.strict_pairs)
+    _j.shape(env, ("schema", "request", "current"))
+    _j.require(env["schema"] == TRANSPORT)
+    req = validate_request(env["request"])
+    _j.require(len(json.dumps(req, ensure_ascii=True, separators=(",", ":")).encode("ascii")) <= MAX_REQUEST)
+    encoded = env["current"]
+    current = None
+    if encoded is not None:
+        _j.require(type(encoded) is str and 0 < len(encoded) <= ((_j.MAX_BYTES + 2) // 3) * 4)
+        current = base64.b64decode(encoded, validate=True)
+        _j.require(base64.b64encode(current).decode("ascii") == encoded)
+        _j.require(0 < len(current) <= _j.MAX_BYTES)
+    replacement, response = apply_request(req, current)
+    proposed = None if replacement is None else base64.b64encode(_j.encode(replacement)).decode("ascii")
+    result = {"replacement": proposed, "response": response}
+    output = json.dumps(result, ensure_ascii=True, separators=(",", ":")).encode("ascii")
+    _j.require(len(output) <= MAX_ENVELOPE)
+    return output
+
+
 def main():
     try:
-        _j.require(os.name == "nt")
-        req = parse_request(sys.stdin.buffer.read(MAX_REQUEST + 1))
-        root = Path(req["root"])
-        control = root / ("orgresource-c9w-control-" + req["token"])
-        _j.require(plain(root.lstat(), True) and plain(control.lstat(), True))
-        # Never create the parent or lock. The native parent must hold it;
-        # this metadata check is only an additional shape refusal.
-        lock_info = (control / "ownership.lock").lstat()
-        _j.require(stat.S_ISREG(lock_info.st_mode) and lock_info.st_nlink == 1
-                   and lock_info.st_size == 0 and not (getattr(lock_info, "st_file_attributes", 0) & 0x441400))
-        result = execute_request(req, control / "ownership.json")
-        # Parent captures privately. No exception text, paths or input echoes.
-        sys.stdout.write(json.dumps(result, ensure_ascii=True, separators=(",", ":")) + "\n")
+        # The CLI has no path arguments, file transport, or write authority.
+        _j.require(len(sys.argv) == 1)
+        result = transform(sys.stdin.buffer.read(MAX_ENVELOPE + 1))
+        sys.stdout.buffer.write(result + b"\n")
         return 0
     except Exception:
         sys.stderr.write("C9W_JOURNAL_BRIDGE_REFUSED\n")

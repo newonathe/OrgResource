@@ -10,7 +10,7 @@ using Microsoft.Win32.SafeHandles;
 // H03 source candidate. Creates only an exclusive per-token control directory and lock,
 // never a work directory, profile, mapping, database or recovery effect.
 // Control state is outside the work tree and intentionally retained after release.
-public sealed class C9ControlLock : IDisposable {
+public sealed partial class C9ControlLock : IDisposable {
     C9DirectoryIdentity rootHandle, controlHandle;
     SafeFileHandle lockHandle;
     public string Root { get; private set; }
