@@ -486,7 +486,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "H03 v2 durable observation binding, LSA context and fixture correction source candidate 1115c65faee9db6f85f399387086d515f8c1b9d3; 52 added harness-only paths vs R09. V2 strict data-only record binds owner/logon/session/time, actual profile storage and exact mapping target/work ID; bootId nullable and missing boot refuses comparison, supplied equality never authorizes effects. V1 journal/test and bridge exact blobs unchanged; v2 not yet integrated. Actual native boot provider, safe common/exclusive mapping mechanism and complete absence proof unresolved. Corrected malformed regex replacements in Report110 producer and intermediate DOS fixture; both final blobs exact readback, eight PowerShell test files targeted source scan only, all native NOT_RUN. Both container and Python probes ClientError; prior H03 portable18 and H02 portable12 actual retained, 9 bridge +4 transform +13 v2 portable NOT_RUN. Both runner/recovery quarantined. Next v2 pure transport and lock-owning parent integration, pin added module, exact schema/context and stale snapshot/readback, actual profile/LSA observation, no in-place v1 conversion. Keep boot/namespace/absence gate; advance independent authorized H01-A/H05 if mapping blocked. Held-lock cleanup and actual work absence, lock-first recovery and exact retained-control residue oracle, native H03-01–12/crash/ACL/ABI tests. Then H01-A archive staging/commit, H05 scoped equality, H06 lifecycle, consolidated native/independent acceptance. H02 provenance/native and 64 staged PowerShell tests + spy open. H01-B preparation only; actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy."
+    "next_action": "H03 v2 parent-only publication and actual profile evidence integration source candidate 578855bfe04c8786088a1dfc76cf8cfa0626d9d0; 55 added harness-only paths vs R09. Separate strict v2 pure transport, actual LSA context and pinned v1/v2 modules in lock-owning parent, exact canonical readback, no legacy conversion, v2 producer persists actual storage and bounded removal evidence. Direct measured sibling source compile avoids unmeasured cached bytecode; v1 historical module/test and bridge unchanged, v1 parent only old fixture/advisory. V2 refuses mapping/work deletion/recovery, boot witness null, complete profile absence unproven. Eight additional portable tests and native parent fixture NOT_RUN; exact source readback; container ClientError; historical H03 portable18 and H02 portable12 retained, 9+4+13+8=34 additional portable NOT_RUN. Both entrypoints quarantined. Next independent eligible H01-A secure archive retention source slice (reopen exact Report102/contract; no actual restricted input/vault/transfer/disposal), then H05 scoped equality if eligible; do not spin on blocked mapping. H03 remaining safe boot/namespace/exclusive mapping and absence, held-lock work ACL/cleanup/removal, lock-first effect-free recovery and exact retained-control residue, native H03-01–12/crash/ACL/ABI and independent acceptance. H06 lifecycle, H02 provenance/native and 64 staged PowerShell + spy open. H01-B preparation only, actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -2663,7 +2663,7 @@
     "branch": "verify/windows-l06-successor-20261126",
     "base": "72de0c106621dabc26a63390003f46c86d63b066",
     "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
-    "candidate": "1115c65faee9db6f85f399387086d515f8c1b9d3",
+    "candidate": "578855bfe04c8786088a1dfc76cf8cfa0626d9d0",
     "state": "CANDIDATE",
     "H01_A": "AUTHORIZED_RESTRICTED",
     "H01_B": "PREPARATION_ONLY",
@@ -2671,16 +2671,16 @@
     "H04": "SOURCE_CANDIDATE_NOT_RUN",
     "pure_cases_staged": 64,
     "native_acceptance": "NOT_RUN",
-    "next": "H03 v2 durable observation binding, LSA context and fixture correction source candidate 1115c65faee9db6f85f399387086d515f8c1b9d3; 52 added harness-only paths vs R09. V2 strict data-only record binds owner/logon/session/time, actual profile storage and exact mapping target/work ID; bootId nullable and missing boot refuses comparison, supplied equality never authorizes effects. V1 journal/test and bridge exact blobs unchanged; v2 not yet integrated. Actual native boot provider, safe common/exclusive mapping mechanism and complete absence proof unresolved. Corrected malformed regex replacements in Report110 producer and intermediate DOS fixture; both final blobs exact readback, eight PowerShell test files targeted source scan only, all native NOT_RUN. Both container and Python probes ClientError; prior H03 portable18 and H02 portable12 actual retained, 9 bridge +4 transform +13 v2 portable NOT_RUN. Both runner/recovery quarantined. Next v2 pure transport and lock-owning parent integration, pin added module, exact schema/context and stale snapshot/readback, actual profile/LSA observation, no in-place v1 conversion. Keep boot/namespace/absence gate; advance independent authorized H01-A/H05 if mapping blocked. Held-lock cleanup and actual work absence, lock-first recovery and exact retained-control residue oracle, native H03-01–12/crash/ACL/ABI tests. Then H01-A archive staging/commit, H05 scoped equality, H06 lifecycle, consolidated native/independent acceptance. H02 provenance/native and 64 staged PowerShell tests + spy open. H01-B preparation only; actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
-    "previous_candidate": "b0ccbc8572e670655e8bd3fb103ce67d633e6e61",
+    "next": "H03 v2 parent-only publication and actual profile evidence integration source candidate 578855bfe04c8786088a1dfc76cf8cfa0626d9d0; 55 added harness-only paths vs R09. Separate strict v2 pure transport, actual LSA context and pinned v1/v2 modules in lock-owning parent, exact canonical readback, no legacy conversion, v2 producer persists actual storage and bounded removal evidence. Direct measured sibling source compile avoids unmeasured cached bytecode; v1 historical module/test and bridge unchanged, v1 parent only old fixture/advisory. V2 refuses mapping/work deletion/recovery, boot witness null, complete profile absence unproven. Eight additional portable tests and native parent fixture NOT_RUN; exact source readback; container ClientError; historical H03 portable18 and H02 portable12 retained, 9+4+13+8=34 additional portable NOT_RUN. Both entrypoints quarantined. Next independent eligible H01-A secure archive retention source slice (reopen exact Report102/contract; no actual restricted input/vault/transfer/disposal), then H05 scoped equality if eligible; do not spin on blocked mapping. H03 remaining safe boot/namespace/exclusive mapping and absence, held-lock work ACL/cleanup/removal, lock-first effect-free recovery and exact retained-control residue, native H03-01–12/crash/ACL/ABI and independent acceptance. H06 lifecycle, H02 provenance/native and 64 staged PowerShell + spy open. H01-B preparation only, actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
+    "previous_candidate": "1115c65faee9db6f85f399387086d515f8c1b9d3",
     "H02": "SOURCE_CANDIDATE_PORTABLE_COPY_VERIFIED_BOUNDED_NATIVE_NOT_RUN",
     "h02_cases_staged": 24,
-    "report": "docs/handoffs/claude-local-execution-2026-11-24/111_H03_DURABLE_OBSERVATION_BINDING_AND_FIXTURE_CORRECTION.md",
-    "report_ref": "9e8402f3bd5bbe5632cf88861fe722b21ed7b3dc",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/112_H03_V2_PARENT_AND_PROFILE_EVIDENCE_INTEGRATION.md",
+    "report_ref": "2862f809fda036e7a23338450d54d60167316dd1",
     "portable_copy_tests_passed": 12,
     "portable_copy_receipt": "Report104 exact blobs Linux Python3.13.5 exit0",
     "h02_native_spy": "NOT_RUN",
-    "H03": "PARTIAL_SOURCE_CANDIDATE_V2_BINDING_LSA_CONTEXT_FIXTURE_CORRECTION_NOT_RUN",
+    "H03": "PARTIAL_SOURCE_CANDIDATE_V2_PARENT_AND_PROFILE_EVIDENCE_NOT_RUN",
     "portable_journal_tests_passed": 18,
     "portable_journal_receipt": "Report105 exact blobs Linux Python3.13.5 exit0",
     "h03_native": "NOT_RUN",
@@ -2695,6 +2695,9 @@
     "h03_v2_binding_candidate": "01951ab484673db6e37cbeb18cf3d823dd353d92",
     "h03_lsa_context_candidate": "edd19502b82d29eb4abadbe253f4b4f72f30bf03",
     "h03_fixture_correction_candidate": "1115c65faee9db6f85f399387086d515f8c1b9d3",
-    "h03_v2_portable": "13 methods NOT_RUN"
+    "h03_v2_portable": "13 model + 8 transport methods NOT_RUN",
+    "h03_v2_transport_candidate": "c1ed09435ad5344da86aef17c1d41fd530ee1d45",
+    "h03_v2_parent_candidate": "07bb498aeab7c2ffa8a2d08fd948338890500bee",
+    "h03_v2_producer_candidate": "578855bfe04c8786088a1dfc76cf8cfa0626d9d0"
   }
 }
