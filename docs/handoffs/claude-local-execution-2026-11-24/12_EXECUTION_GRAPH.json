@@ -486,7 +486,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "H03 intent-first work/profile producer source candidate e052d7032841d39465813ecad334ba10abbaf887; 46 added harness-only paths vs R09. New journal-only producer, exclusive owner-only work creation and real handle ID, profile intent and returned SID confirmation before job initialization, failure poison/no inferred rollback, legacy constructor refused. Profile cleanup candidate records removed on successful API return; independent actual absence/identity proof and listener checks still open, do not dispatch integrated producer fixture or normal runner/recovery. Both entrypoints quarantined. Four changed blobs read back; new native fixture NOT_RUN; container probe ClientError; prior H03 portable18 and H02 portable12 actual retained; 9 bridge +4 transform portable NOT_RUN. Exact matrix66 H03-01–12 recovered and all NOT_RUN. Next profile actual absence/identity observer, drive namespace-safe journal producer (session/target binding, common lock, no foreign redefinition), normal cleanup held lock and exact work removal, lock-first recovery, adapt residue oracle to distinguish verified retained control evidence without weakening, native crash/ACL/ABI tests. Then H01-A archive staging/commit, H05 scoped equality, H06 lifecycle, consolidated native/independent acceptance. H02 provenance/native and 64 staged PowerShell tests + spy open. H01-B preparation only; actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy."
+    "next_action": "H03 bounded profile storage and read-only DOS namespace observation source candidate b0ccbc8572e670655e8bd3fb103ce67d633e6e61; 49 added harness-only paths vs R09. Normal profile creation confirms returned/derived SID and real storage identity; removal requires same captured identity plus successful API and package directory absence. No complete registry/profile absence proof or crash-recovery authority; v1 lacks durable actual profile/storage and namespace identity. DOS observer uses exact target sequence and current-user/logon authentication LUID, unresolved is never permission to create; LUID boot-scoped, no mapping mutations. Six changed blobs read back; native fixtures NOT_RUN, container ClientError; prior H03 portable18 and H02 portable12 actual retained, 9 bridge +4 transform portable NOT_RUN. Both runner/recovery quarantined. Next versioned durable observation binding for boot/session, exact mapping and actual profile identities (preserve v1 evidence/refuse insufficient records); common namespace lock or safe exclusive creation mechanism, held-lock normal cleanup and exact work absence, lock-first recovery only with complete ownership evidence; adapt residue oracle without weakening, native H03-01–12/crash/ACL/ABI tests. Then H01-A archive staging/commit, H05 scoped equality, H06 lifecycle, consolidated native/independent acceptance. H02 provenance/native and 64 staged PowerShell tests + spy open. H01-B preparation only; actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -2663,7 +2663,7 @@
     "branch": "verify/windows-l06-successor-20261126",
     "base": "72de0c106621dabc26a63390003f46c86d63b066",
     "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
-    "candidate": "e052d7032841d39465813ecad334ba10abbaf887",
+    "candidate": "b0ccbc8572e670655e8bd3fb103ce67d633e6e61",
     "state": "CANDIDATE",
     "H01_A": "AUTHORIZED_RESTRICTED",
     "H01_B": "PREPARATION_ONLY",
@@ -2671,16 +2671,16 @@
     "H04": "SOURCE_CANDIDATE_NOT_RUN",
     "pure_cases_staged": 64,
     "native_acceptance": "NOT_RUN",
-    "next": "H03 intent-first work/profile producer source candidate e052d7032841d39465813ecad334ba10abbaf887; 46 added harness-only paths vs R09. New journal-only producer, exclusive owner-only work creation and real handle ID, profile intent and returned SID confirmation before job initialization, failure poison/no inferred rollback, legacy constructor refused. Profile cleanup candidate records removed on successful API return; independent actual absence/identity proof and listener checks still open, do not dispatch integrated producer fixture or normal runner/recovery. Both entrypoints quarantined. Four changed blobs read back; new native fixture NOT_RUN; container probe ClientError; prior H03 portable18 and H02 portable12 actual retained; 9 bridge +4 transform portable NOT_RUN. Exact matrix66 H03-01–12 recovered and all NOT_RUN. Next profile actual absence/identity observer, drive namespace-safe journal producer (session/target binding, common lock, no foreign redefinition), normal cleanup held lock and exact work removal, lock-first recovery, adapt residue oracle to distinguish verified retained control evidence without weakening, native crash/ACL/ABI tests. Then H01-A archive staging/commit, H05 scoped equality, H06 lifecycle, consolidated native/independent acceptance. H02 provenance/native and 64 staged PowerShell tests + spy open. H01-B preparation only; actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
-    "previous_candidate": "0501d5f596ed4e2dfce813126479a9eedf6a8e18",
+    "next": "H03 bounded profile storage and read-only DOS namespace observation source candidate b0ccbc8572e670655e8bd3fb103ce67d633e6e61; 49 added harness-only paths vs R09. Normal profile creation confirms returned/derived SID and real storage identity; removal requires same captured identity plus successful API and package directory absence. No complete registry/profile absence proof or crash-recovery authority; v1 lacks durable actual profile/storage and namespace identity. DOS observer uses exact target sequence and current-user/logon authentication LUID, unresolved is never permission to create; LUID boot-scoped, no mapping mutations. Six changed blobs read back; native fixtures NOT_RUN, container ClientError; prior H03 portable18 and H02 portable12 actual retained, 9 bridge +4 transform portable NOT_RUN. Both runner/recovery quarantined. Next versioned durable observation binding for boot/session, exact mapping and actual profile identities (preserve v1 evidence/refuse insufficient records); common namespace lock or safe exclusive creation mechanism, held-lock normal cleanup and exact work absence, lock-first recovery only with complete ownership evidence; adapt residue oracle without weakening, native H03-01–12/crash/ACL/ABI tests. Then H01-A archive staging/commit, H05 scoped equality, H06 lifecycle, consolidated native/independent acceptance. H02 provenance/native and 64 staged PowerShell tests + spy open. H01-B preparation only; actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
+    "previous_candidate": "e052d7032841d39465813ecad334ba10abbaf887",
     "H02": "SOURCE_CANDIDATE_PORTABLE_COPY_VERIFIED_BOUNDED_NATIVE_NOT_RUN",
     "h02_cases_staged": 24,
-    "report": "docs/handoffs/claude-local-execution-2026-11-24/109_H03_INTENT_FIRST_WORK_AND_PROFILE_PRODUCER.md",
-    "report_ref": "0b18c1fe46d66a879bb997ba0a570614c1e65cd2",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/110_H03_PROFILE_STORAGE_AND_DOS_NAMESPACE_OBSERVATION.md",
+    "report_ref": "b160e823de5e3a349e6aaee1c3f3f6f1b00b1fa2",
     "portable_copy_tests_passed": 12,
     "portable_copy_receipt": "Report104 exact blobs Linux Python3.13.5 exit0",
     "h02_native_spy": "NOT_RUN",
-    "H03": "PARTIAL_SOURCE_CANDIDATE_INTENT_FIRST_WORK_PROFILE_NOT_RUN",
+    "H03": "PARTIAL_SOURCE_CANDIDATE_PROFILE_STORAGE_DOS_OBSERVATION_NOT_RUN",
     "portable_journal_tests_passed": 18,
     "portable_journal_receipt": "Report105 exact blobs Linux Python3.13.5 exit0",
     "h03_native": "NOT_RUN",
@@ -2689,6 +2689,8 @@
     "h03_transform_cases_staged": 4,
     "h03_journal_parent_candidate": "137d733e49c208770d3a1a9dfe53b9acf6708d71",
     "h03_producer_candidate": "e052d7032841d39465813ecad334ba10abbaf887",
-    "h03_matrix": "H03-01–12 NOT_RUN"
+    "h03_matrix": "H03-01–12 NOT_RUN",
+    "h03_profile_storage_candidate": "df57ce4c400449755548c27298c207addd0e57f0",
+    "h03_dos_observation_candidate": "b0ccbc8572e670655e8bd3fb103ce67d633e6e61"
   }
 }
