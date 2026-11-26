@@ -1052,5 +1052,17 @@
     "report": "docs/handoffs/claude-local-execution-2026-11-24/105_H03_OWNERSHIP_JOURNAL_PORTABLE_RECEIPT.md",
     "report_ref": "553241a20f569bef5a76f8fd1c5f27476cf62908",
     "coverage": "Scoped live refs; 34 added harness-only paths; portable tests actual, native integration incomplete"
+  },
+  "h03_native_identity_candidate": {
+    "observed_date": "2026-11-26 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "7409ee9ab82a60c2f2133b7d7fd8af96d1cabade",
+    "tree": "8fb1637f5f24b1f984b7911651f5aa3adee7f746",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/106_H03_NATIVE_IDENTITY_AND_RECOVERY_QUARANTINE.md",
+    "report_ref": "405a5bbdf8b48272ce4e6c8e6f4c7ba3bf466170",
+    "coverage": "35 added harness-only paths; source-only; native NOT_RUN"
   }
 }
