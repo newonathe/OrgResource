@@ -374,3 +374,6 @@
 "docs/handoffs/claude-local-execution-2026-11-24/105_H03_OWNERSHIP_JOURNAL_PORTABLE_RECEIPT.md","1e6c3854a3b204523880a1e09e3085db3de4f2d7","6121","100644","553241a20f569bef5a76f8fd1c5f27476cf62908","FULL H03 Report105 portable actual/native incomplete"
 "scripts/windows-l06/ownership_journal.py","1b87dd5a04055f48935e197f720e4a5e067841f1","6924","100644","88284bb3f1886d23b15a382d904d7b6244d2cd67","FULL H03 Report105 portable actual/native incomplete"
 "scripts/windows-l06/test_ownership_journal.py","2fd4955c8fefc90c7b913e4a7b3636f69fe65c9f","5607","100644","88284bb3f1886d23b15a382d904d7b6244d2cd67","FULL H03 Report105 portable actual/native incomplete"
+"docs/handoffs/claude-local-execution-2026-11-24/106_H03_NATIVE_IDENTITY_AND_RECOVERY_QUARANTINE.md","ef714f249d2f6dd9774323ef543be78e1f83e32d","5755","100644","405a5bbdf8b48272ce4e6c8e6f4c7ba3bf466170","FULL Report106 source-only/native NOT_RUN"
+"scripts/windows-l06/recover-c9-windows.ps1","73cbc068800111876c5fc5aed2e45371060876ce","631","100644","7409ee9ab82a60c2f2133b7d7fd8af96d1cabade","FULL Report106 source-only/native NOT_RUN"
+"scripts/windows-l06/C9DirectoryIdentity.cs","0e1dd3543d2a4354aaa5baaaf372b9587b2f53fb","4619","100644","7409ee9ab82a60c2f2133b7d7fd8af96d1cabade","FULL Report106 source-only/native NOT_RUN"
