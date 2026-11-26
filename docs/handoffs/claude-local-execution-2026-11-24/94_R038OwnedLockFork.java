@@ -67,7 +67,7 @@ public final class R038OwnedLockFork {
             require(!order.isEmpty());
             out.put(table.toLowerCase(Locale.ROOT),rows(c,"SELECT * FROM "+quoted(table)+" ORDER BY "+String.join(",",order)));
         }
-        require(out.size()==19&&out.keySet().containsAll(Set.of("organization","membership","user_account","local_credential","account_recovery_code","audit_event","flyway_schema_history","spring_session","spring_session_attributes","stock_movement")));
+        require(out.keySet().equals(Set.of("organization","user_account","local_credential","account_recovery_code","membership","invitation","ownership_transfer","audit_event","department","project","resource","resource_requirement","allocation","spring_session","spring_session_attributes","stock_movement","idempotency_key","flyway_schema_history")));
         return out;
     }
     static HttpResponse<String> get(HttpClient http,int port)throws Exception{
