@@ -371,3 +371,6 @@
 "scripts/windows-l06/stage_prepare.ps1","4b697495f71332e50d4b3c52cce1c1e99691e0e2","9323","100644","e6eabe0e1682f6a2d8a64e6fd721d1b6b45e043f","RELEVANT_RANGES H02 Report104; portable actual/native NOT_RUN"
 "scripts/windows-l06/windows_common.ps1","39845e60135906e48c34971703c7b3b1e5b16e4b","37792","100644","e6eabe0e1682f6a2d8a64e6fd721d1b6b45e043f","RELEVANT_RANGES H02 Report104; portable actual/native NOT_RUN"
 "scripts/windows-l06/test-c9-local-mixed-windows.ps1","21e32e19776f60ab725cc3058ae073dd64173c60","16747","100644","e6eabe0e1682f6a2d8a64e6fd721d1b6b45e043f","RELEVANT_RANGES H02 Report104; portable actual/native NOT_RUN"
+"docs/handoffs/claude-local-execution-2026-11-24/105_H03_OWNERSHIP_JOURNAL_PORTABLE_RECEIPT.md","1e6c3854a3b204523880a1e09e3085db3de4f2d7","6121","100644","553241a20f569bef5a76f8fd1c5f27476cf62908","FULL H03 Report105 portable actual/native incomplete"
+"scripts/windows-l06/ownership_journal.py","1b87dd5a04055f48935e197f720e4a5e067841f1","6924","100644","88284bb3f1886d23b15a382d904d7b6244d2cd67","FULL H03 Report105 portable actual/native incomplete"
+"scripts/windows-l06/test_ownership_journal.py","2fd4955c8fefc90c7b913e4a7b3636f69fe65c9f","5607","100644","88284bb3f1886d23b15a382d904d7b6244d2cd67","FULL H03 Report105 portable actual/native incomplete"

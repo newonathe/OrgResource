@@ -1087,7 +1087,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "H02 scoped runtime-copy and intake candidate e6eabe0e1682f6a2d8a64e6fd721d1b6b45e043f; 32 added harness-only paths vs R09. Python copy helper 12/12 actual portable tests on exact blobs; H02-09/10 native integration and trusted tool provenance remain open, 64 prior pure PowerShell tests and new native spy NOT_RUN. Next H03 durable ownership/lock/recovery, H01-A archive staging/commit, H05 scoped equality, H06 process lifecycle, consolidated native and independent acceptance. H01-B preparation only, actual vault/machine/operator/transfer pending; failed-stage disposal separate. L06 HOLD/no WSL, L07 separately authorized off-host, 93 independent IR4 open, 13 privacy flags owner-gated. No private import/launch/merge/deploy.",
+      "next": "H03 partial ownership journal candidate 88284bb3f1886d23b15a382d904d7b6244d2cd67; 34 added harness-only paths vs R09. 18/18 actual portable tests on exact blobs; H02 portable12 retained. Existing native recovery unsafe and unchanged: DO NOT run current successor for native acceptance. Next H03 native producer, real file IDs/owner-only control lock, journaled creation/cleanup, lock-first recovery adapter; H03-01–12 NOT_RUN. Then H01-A archive staging/commit, H05 scoped equality, H06 process lifecycle, consolidated native and independent acceptance. H02 native/tool provenance, 64 prior PowerShell tests and new native spy open. H01-B preparation only, actual vault/machine/operator/transfer pending; failed-stage disposal separate. L06 HOLD/no WSL, L07 separately authorized off-host, 93 independent IR4 open, 13 privacy flags owner-gated. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -1206,6 +1206,12 @@
           "blob": "839d1b8b475b8082badb764f69e3c2f61dc3f0ca",
           "ref": "483059014786219ab86d49cc09ce475c1b8be70a",
           "review": "FULL portable actual receipt; native integration NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/105_H03_OWNERSHIP_JOURNAL_PORTABLE_RECEIPT.md",
+          "blob": "1e6c3854a3b204523880a1e09e3085db3de4f2d7",
+          "ref": "553241a20f569bef5a76f8fd1c5f27476cf62908",
+          "review": "FULL portable actual receipt; native integration NOT_IMPLEMENTED"
         }
       ]
     },
@@ -1229,7 +1235,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "H02 scoped runtime-copy and intake candidate e6eabe0e1682f6a2d8a64e6fd721d1b6b45e043f; 32 added harness-only paths vs R09. Python copy helper 12/12 actual portable tests on exact blobs; H02-09/10 native integration and trusted tool provenance remain open, 64 prior pure PowerShell tests and new native spy NOT_RUN. Next H03 durable ownership/lock/recovery, H01-A archive staging/commit, H05 scoped equality, H06 process lifecycle, consolidated native and independent acceptance. H01-B preparation only, actual vault/machine/operator/transfer pending; failed-stage disposal separate. L06 HOLD/no WSL, L07 separately authorized off-host, 93 independent IR4 open, 13 privacy flags owner-gated. No private import/launch/merge/deploy.",
+      "next": "H03 partial ownership journal candidate 88284bb3f1886d23b15a382d904d7b6244d2cd67; 34 added harness-only paths vs R09. 18/18 actual portable tests on exact blobs; H02 portable12 retained. Existing native recovery unsafe and unchanged: DO NOT run current successor for native acceptance. Next H03 native producer, real file IDs/owner-only control lock, journaled creation/cleanup, lock-first recovery adapter; H03-01–12 NOT_RUN. Then H01-A archive staging/commit, H05 scoped equality, H06 process lifecycle, consolidated native and independent acceptance. H02 native/tool provenance, 64 prior PowerShell tests and new native spy open. H01-B preparation only, actual vault/machine/operator/transfer pending; failed-stage disposal separate. L06 HOLD/no WSL, L07 separately authorized off-host, 93 independent IR4 open, 13 privacy flags owner-gated. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -1780,6 +1786,12 @@
           "blob": "839d1b8b475b8082badb764f69e3c2f61dc3f0ca",
           "ref": "483059014786219ab86d49cc09ce475c1b8be70a",
           "review": "FULL portable actual receipt; native integration NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/105_H03_OWNERSHIP_JOURNAL_PORTABLE_RECEIPT.md",
+          "blob": "1e6c3854a3b204523880a1e09e3085db3de4f2d7",
+          "ref": "553241a20f569bef5a76f8fd1c5f27476cf62908",
+          "review": "FULL portable actual receipt; native integration NOT_IMPLEMENTED"
         }
       ]
     },
@@ -1926,7 +1938,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "H02 scoped runtime-copy and intake candidate e6eabe0e1682f6a2d8a64e6fd721d1b6b45e043f; 32 added harness-only paths vs R09. Python copy helper 12/12 actual portable tests on exact blobs; H02-09/10 native integration and trusted tool provenance remain open, 64 prior pure PowerShell tests and new native spy NOT_RUN. Next H03 durable ownership/lock/recovery, H01-A archive staging/commit, H05 scoped equality, H06 process lifecycle, consolidated native and independent acceptance. H01-B preparation only, actual vault/machine/operator/transfer pending; failed-stage disposal separate. L06 HOLD/no WSL, L07 separately authorized off-host, 93 independent IR4 open, 13 privacy flags owner-gated. No private import/launch/merge/deploy.",
+      "next": "H03 partial ownership journal candidate 88284bb3f1886d23b15a382d904d7b6244d2cd67; 34 added harness-only paths vs R09. 18/18 actual portable tests on exact blobs; H02 portable12 retained. Existing native recovery unsafe and unchanged: DO NOT run current successor for native acceptance. Next H03 native producer, real file IDs/owner-only control lock, journaled creation/cleanup, lock-first recovery adapter; H03-01–12 NOT_RUN. Then H01-A archive staging/commit, H05 scoped equality, H06 process lifecycle, consolidated native and independent acceptance. H02 native/tool provenance, 64 prior PowerShell tests and new native spy open. H01-B preparation only, actual vault/machine/operator/transfer pending; failed-stage disposal separate. L06 HOLD/no WSL, L07 separately authorized off-host, 93 independent IR4 open, 13 privacy flags owner-gated. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -2233,6 +2245,12 @@
           "blob": "839d1b8b475b8082badb764f69e3c2f61dc3f0ca",
           "ref": "483059014786219ab86d49cc09ce475c1b8be70a",
           "review": "FULL portable actual receipt; native integration NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/105_H03_OWNERSHIP_JOURNAL_PORTABLE_RECEIPT.md",
+          "blob": "1e6c3854a3b204523880a1e09e3085db3de4f2d7",
+          "ref": "553241a20f569bef5a76f8fd1c5f27476cf62908",
+          "review": "FULL portable actual receipt; native integration NOT_IMPLEMENTED"
         }
       ]
     }
