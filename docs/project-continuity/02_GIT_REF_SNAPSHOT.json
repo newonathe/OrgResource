@@ -1064,5 +1064,17 @@
     "report": "docs/handoffs/claude-local-execution-2026-11-24/106_H03_NATIVE_IDENTITY_AND_RECOVERY_QUARANTINE.md",
     "report_ref": "405a5bbdf8b48272ce4e6c8e6f4c7ba3bf466170",
     "coverage": "35 added harness-only paths; source-only; native NOT_RUN"
+  },
+  "h03_control_lock_bridge_candidate": {
+    "observed_date": "2026-11-26 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "f16f5e30f3e45bf1e2893ac79c1f1c492eb2fd16",
+    "tree": "9893d71857bfb658fa07e06eb1a399de87171722",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/107_H03_CONTROL_LOCK_AND_JOURNAL_BRIDGE.md",
+    "report_ref": "dd906ff0e0344fd64f8cb9ac59be899359683d87",
+    "coverage": "39 added harness-only paths; source-only, native/portable new tests NOT_RUN"
   }
 }
