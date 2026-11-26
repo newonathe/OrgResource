@@ -63,7 +63,7 @@ class RetentionContract(unittest.TestCase):
         record=r.json.loads(r.commit_record(raw,"FICTIONAL_TEST",sha,"8"*64,"9"*64))
         self.assertEqual(record["manifestSha256"],sha)
         self.assertEqual(record["schema"],"orgresource.c9.retention.commit-candidate.v1")
-        for custody,cleanup in ((None,"9"*64),("8"*64",None),("8"*64,"8"*64),(sha,"9"*64)):
+        for custody,cleanup in ((None,"9"*64),("8"*64,None),("8"*64,"8"*64),(sha,"9"*64)):
             with self.assertRaises(ValueError):
                 r.commit_record(raw,"FICTIONAL_TEST",sha,custody,cleanup)
 if __name__ == "__main__":
