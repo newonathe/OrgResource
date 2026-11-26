@@ -9,7 +9,7 @@ param(
 Set-StrictMode -Version 3
 $ErrorActionPreference = 'Stop'
 if (-not $IsWindows -or -not $ConfirmFictional) { throw 'C9W_TEST_FIXTURE_REQUIRED' }
-Add-Type -Path @('C9DirectoryIdentity.cs','C9ControlLock.cs','C9JournalStorage.cs','C9JournalParent.cs','C9WorkCreation.cs','C9Contain.cs','C9OwnershipProducer.cs' | ForEach-Object { Join-Path $PSScriptRoot $_ })
+Add-Type -Path @('C9DirectoryIdentity.cs','C9ControlLock.cs','C9JournalStorage.cs','C9JournalParent.cs','C9WorkCreation.cs','C9ProfileStorageObservation.cs','C9Contain.cs','C9OwnershipProducer.cs' | ForEach-Object { Join-Path $PSScriptRoot $_ })
 function Require([bool] $Condition, [string] $Code) { if (-not $Condition) { throw $Code } }
 function Hash([string] $Path) { (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant() }
 function Refuses([scriptblock] $Action, [string] $Expected) {
@@ -59,7 +59,23 @@ try {
         $record = Read-Journal $held
         Require ($record.profiles.jobtest.state -ceq 'created' -and $record.profiles.jobtest.name -ceq $profile.Name -and $record.profiles.jobtest.sid -ceq $profile.SidString) 'C9W_TEST_PROFILE_ID'
         Require ($profile.ActiveProcesses -eq 0) 'C9W_TEST_PROFILE_NOT_EMPTY'
+        $profile.AssertProfileStoragePresent()
+        $packages = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::LocalApplicationData)) 'Packages'
+        $package = Join-Path $packages $profile.Name
+        $storage = [C9DirectoryIdentity]::Open($package)
+        try { Require ($storage.Id -cmatch '^[a-f0-9]{16}:[a-f0-9]{32}
+        Require ((Read-Journal $held).profiles.jobtest.state -ceq 'removed') 'C9W_TEST_PROFILE_REMOVED'
+        Refuses { $p.RemoveProfile('jobtest') } 'C9W_PROFILE_ROLE'
+    } finally { $p.Dispose() }
+    Require (Test-Path -LiteralPath $path -PathType Container) 'C9W_TEST_WORK_REMOVED'
+} finally { $held.Dispose() }
+[Console]::WriteLine('C9W_OWNERSHIP_PRODUCER_FIXTURE_OK:collision_preserved=true intent_before_create=true exact_identity=true profile_journal=true profile_storage_absence=true legacy_refused=true evidence_retained=true')
+) 'C9W_TEST_PROFILE_STORAGE_ID' } finally { $storage.Dispose() }
+        Refuses { $profile.AssertProfileStorageAbsent() } 'C9W_PROFILE_STORAGE_STATE'
         $p.RemoveProfile('jobtest')
+        $profile.AssertProfileStorageAbsent()
+        Require (-not (Test-Path -LiteralPath $package)) 'C9W_TEST_PROFILE_STORAGE_REMAINS'
+        Refuses { $profile.AssertProfileStoragePresent() } 'C9W_PROFILE_STORAGE_STATE'
         Require ((Read-Journal $held).profiles.jobtest.state -ceq 'removed') 'C9W_TEST_PROFILE_REMOVED'
         Refuses { $p.RemoveProfile('jobtest') } 'C9W_PROFILE_ROLE'
     } finally { $p.Dispose() }

@@ -81,8 +81,11 @@ public sealed class C9OwnershipProducer : IDisposable {
         try {
             if (!profile.KillAll()) throw new InvalidOperationException("C9W_JOB_KILL");
             profile.Dispose(); // closes only owned handles; retains OS profile
+            profile.AssertProfileStoragePresent();
             Transition(role, "removing", new {});
             profile.DeleteConfirmedProfile();
+            // S_OK alone is not sufficient: independently reobserve captured storage absence.
+            profile.AssertProfileStorageAbsent();
             Transition(role, "removed", new {});
             profiles.Remove(role);
         } catch { poisoned = true; throw; }

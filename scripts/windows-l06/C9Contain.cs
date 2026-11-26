@@ -20,19 +20,23 @@ public sealed class C9Process : IDisposable {
 }
 public sealed class C9Container : IDisposable {
     public readonly string Name, SidString; IntPtr sid, job; bool profile;
+    C9ProfileStorageObservation storage;
     // Legacy entrypoint is deliberately refused while journal integration is incomplete.
     public C9Container(string name) { throw new InvalidOperationException("C9W_PROFILE_JOURNAL_REQUIRED"); }
     internal C9Container(string name, Action<string> confirmCreated) {
         if (confirmCreated == null) throw new InvalidOperationException("C9W_PROFILE_JOURNAL_REQUIRED");
         if (!System.Text.RegularExpressions.Regex.IsMatch(name, "^orgresource\\.c9\\.[a-f0-9]{12}$")) throw new ArgumentException("C9W_CONTAINER_NAME");
         Name = name;
+        string user = C9ProfileStorageObservation.PrimaryUser();
         int hr = N.CreateAppContainerProfile(name, name, "OrgResource verification container", IntPtr.Zero, 0, out sid);
         if (hr != 0) throw new InvalidOperationException("C9W_PROFILE_CREATE 0x" + hr.ToString("X8"));
         profile = true;
         try {
         IntPtr s; if (!N.ConvertSidToStringSidW(sid, out s)) throw new Win32Exception();
         try { SidString = Marshal.PtrToStringUni(s); } finally { N.LocalFree(s); }
-        // Persist exact SID before job creation; failure leaves intent/created for reconciliation.
+        // Observe the new profile's actual filesystem identity before confirming creation.
+        // This is not proof of complete registry/profile absence after deletion.
+        storage = C9ProfileStorageObservation.Capture(name, SidString, user);
         confirmCreated(SidString);
         job = N.CreateJobObjectW(IntPtr.Zero, null); if (job == IntPtr.Zero) throw new Win32Exception();
         var i = new N.JOBOBJECT_EXTENDED_LIMIT_INFORMATION();
@@ -131,13 +135,24 @@ public sealed class C9Container : IDisposable {
         }
     }
     public void Dispose() { CloseOwnedHandles(); }
+    public void AssertProfileStoragePresent() {
+        if (!profile || storage == null) throw new InvalidOperationException("C9W_PROFILE_STORAGE_STATE");
+        storage.AssertPresent();
+    }
+    public void AssertProfileStorageAbsent() {
+        if (profile || storage == null) throw new InvalidOperationException("C9W_PROFILE_STORAGE_STATE");
+        storage.AssertAbsent();
+    }
     // Only the journal-owning producer may request deletion, after durable removing.
     internal void DeleteConfirmedProfile() {
         if (!profile || job != IntPtr.Zero || sid != IntPtr.Zero)
             throw new InvalidOperationException("C9W_PROFILE_DELETE_STATE");
+        // Revalidate immediately before the name-based API. It is not an atomic identity CAS.
+        AssertProfileStoragePresent();
         int hr = N.DeleteAppContainerProfile(Name);
         if (hr != 0) throw new InvalidOperationException("C9W_PROFILE_DELETE");
         profile = false;
+        AssertProfileStorageAbsent();
     }
 }
 static class N {
