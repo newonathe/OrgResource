@@ -343,3 +343,7 @@
 ".github/workflows/r038-owned-lock.yml","9a562046d5043139d67f7a1d4d58852a51afd41b","1895","100644","b2347756e29362832f0f2506ef9793e3ba040ac0","FULL dedicated workflow"
 "docs/handoffs/claude-local-execution-2026-11-24/96_G01_R038_OWNED_LOCK_CANDIDATE.md","4a4d81c0a5731f1d42da644b5be0c30261cc11ac","5563","100644","5f68bd2b8e39de6d196654bb4c4474b9579422cd","FULL R038 candidate"
 "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv","aa7f63f96cdaeb1607d2130b0607acb715e24eee","110218","100644","5f68bd2b8e39de6d196654bb4c4474b9579422cd","RELEVANT_RANGES R038"
+"docs/handoffs/claude-local-execution-2026-11-24/94_R038OwnedLockFork.java","945e4caf6084d65e009387a6acbb57bce8beb932","11723","100644","9f40e895a20bd96d97e59fb95e499af6a2783e96","FULL corrected JDBC state oracle"
+"docs/handoffs/claude-local-execution-2026-11-24/95_R038_OWNED_LOCK_DRIVER.mjs","de84378b1554a2ff37a5f8e85c75b09eb7258fb5","3583","100644","9f40e895a20bd96d97e59fb95e499af6a2783e96","FULL corrected driver"
+"docs/handoffs/claude-local-execution-2026-11-24/97_R038_OBSERVED_FAILURES_AND_DRIVER_STATE_CORRECTION.md","fea666049daa87a5f9a5920fa88ca3ad63ed1619","3505","100644","1269b59e239eb622a062dfce546791f6278fa758","FULL observed failures and correction"
+"docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv","f617ca7c903579fc34a3e1686f2802272efa0388","110667","100644","1269b59e239eb622a062dfce546791f6278fa758","RELEVANT_RANGES R038"

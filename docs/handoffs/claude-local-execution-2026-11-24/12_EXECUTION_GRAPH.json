@@ -366,7 +366,7 @@
         "L05"
       ],
       "receipt": "93 route acceptance and separate reviewer actual evidence; C8 #34",
-      "notes": "No fabricated signature or blanket equivalence Report74: R035/R038 actual public recovered-control job138726559312 markers rechecked at exact 8c6000a4; remaining normal-writable/approved private positive/transient DB and independent IR4 acceptance open. No new runtime. Report76 R031 source/#67 no-store and hash-only/refusal scope rechecked; dedicated log-redaction NOT_RUN, independent IR4 open. Report78 scoped 86-file privacy review complete; 13 remediation flags open. G01 residual runtime/IR4 independent review unchanged. Report79 PR58 #79/#80 test-only 101-row candidates at 9208f29a7877ea7e5d51a5cc0ed72d67dafe0624 CI45702182390 in progress; no new actual acceptance. R031 protected-output design NOT_RUN. Report81: pure R031 scanner 24/24 synthetic; actual protected driver/runtime NOT_RUN. PR58 backend step success metadata, later checks running, logs 404; no independent acceptance. Report83 PR58 actual 105 Maven/80 identity and 19 Playwright, bounded #79/#80 R082/R089/R091; independent acceptance remains BLOCKED. R031 scanner/lifecycle 65/65 synthetic, actual driver/runtime NOT_RUN. Report85 real Linux Node fictional subprocess14/14 actual receipt; app log capture NOT_RUN, independent acceptance BLOCKED. Report87 actual initial and hardened owned MySQL8.0.46 guard success; app/JDBC/log oracle NOT_RUN, independent acceptance BLOCKED. Report90 actual protected Java21/MySQL R031 rotation, two stdout/stderr sinks zero matches and cleanup verified bounded; independent IR4/alternate/off-path logs remain open, G01 blocked. Report91 all93 gap/disposition fields reconciled, #81 R035 writable logout candidate staged at PR58 exact13837dc, CI45767809301 pending; independent BLOCKED. Report92 actual #81 R035 CI45767809301 class81/Maven106 success; new #82/#83 R036/R041 at 6c982a5 CI45796775299 pending; independent BLOCKED. Report93 actual CI45796775299 #82 fixture error before recovery; corrected75bbc99 CI45798910597 pending; R038 source 503/500 distinction actual fault unrun. Remaining owner/native/reviewer gates unchanged. Report96 R038 owned-lock candidate b2347756 corrected exact18-table source inventory, CI45800392654 pending; initial45800265532 pending; PR58 corrected CI45798910597 Extended in progress after Maven step. Independent BLOCKED."
+      "notes": "No fabricated signature or blanket equivalence Report74: R035/R038 actual public recovered-control job138726559312 markers rechecked at exact 8c6000a4; remaining normal-writable/approved private positive/transient DB and independent IR4 acceptance open. No new runtime. Report76 R031 source/#67 no-store and hash-only/refusal scope rechecked; dedicated log-redaction NOT_RUN, independent IR4 open. Report78 scoped 86-file privacy review complete; 13 remediation flags open. G01 residual runtime/IR4 independent review unchanged. Report79 PR58 #79/#80 test-only 101-row candidates at 9208f29a7877ea7e5d51a5cc0ed72d67dafe0624 CI45702182390 in progress; no new actual acceptance. R031 protected-output design NOT_RUN. Report81: pure R031 scanner 24/24 synthetic; actual protected driver/runtime NOT_RUN. PR58 backend step success metadata, later checks running, logs 404; no independent acceptance. Report83 PR58 actual 105 Maven/80 identity and 19 Playwright, bounded #79/#80 R082/R089/R091; independent acceptance remains BLOCKED. R031 scanner/lifecycle 65/65 synthetic, actual driver/runtime NOT_RUN. Report85 real Linux Node fictional subprocess14/14 actual receipt; app log capture NOT_RUN, independent acceptance BLOCKED. Report87 actual initial and hardened owned MySQL8.0.46 guard success; app/JDBC/log oracle NOT_RUN, independent acceptance BLOCKED. Report90 actual protected Java21/MySQL R031 rotation, two stdout/stderr sinks zero matches and cleanup verified bounded; independent IR4/alternate/off-path logs remain open, G01 blocked. Report91 all93 gap/disposition fields reconciled, #81 R035 writable logout candidate staged at PR58 exact13837dc, CI45767809301 pending; independent BLOCKED. Report92 actual #81 R035 CI45767809301 class81/Maven106 success; new #82/#83 R036/R041 at 6c982a5 CI45796775299 pending; independent BLOCKED. Report93 actual CI45796775299 #82 fixture error before recovery; corrected75bbc99 CI45798910597 pending; R038 source 503/500 distinction actual fault unrun. Remaining owner/native/reviewer gates unchanged. Report96 R038 owned-lock candidate b2347756 corrected exact18-table source inventory, CI45800392654 pending; initial45800265532 pending; PR58 corrected CI45798910597 Extended in progress after Maven step. Independent BLOCKED. Report97 actual R038 initial BASELINE and exact18 DIRECT_TIMEOUT failures; state unknown; corrected9f40e895 CI45800817164 pending; no HTTP acceptance yet. Independent BLOCKED."
     },
     {
       "id": "G02",
@@ -2622,14 +2622,24 @@
     "next": "Inspect corrected PR58 CI45798910597 actual #82/#83; observed prior CI45796775299 #82 fixture index error (fixtureInOrg creates zero codes), corrected five fictional persisted codes, not application defect. R038 controlled owned-DB fault next: distinguish retryable 503 from generic 500; no private positive. Formal CHAT graph15 bounded/1 source reconciled review open; no unfinished CHAT-only prerequisite, additional risk-based G01 tests feasible. Critical H01 owner custody/authorization -> H02–H06 accepted native successor (32 matrix cases NOT_RUN plus separate H04) -> owner L06 -> off-host L07 -> authorized G02. All93 independent reviews open; 13 privacy flags owner-gated; G03–07 separate gates. L06 HOLD/no WSL."
   },
   "g01_r038_candidate": {
-    "sha": "b2347756e29362832f0f2506ef9793e3ba040ac0",
+    "sha": "9f40e895a20bd96d97e59fb95e499af6a2783e96",
     "base": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
     "initial_sha": "97b4bc0d8b1d2e9c2cc1c442d3940f3e2dc7bf59",
     "initial_run": 45800265532,
     "initial_job": 139841357777,
-    "run": 45800392654,
+    "run": 45800817164,
     "status": "NOT_RUN",
     "automatic_verify": 45800398744,
-    "report": "5f68bd2b8e39de6d196654bb4c4474b9579422cd"
+    "report": "1269b59e239eb622a062dfce546791f6278fa758",
+    "prior_sha": "b2347756e29362832f0f2506ef9793e3ba040ac0",
+    "initial_status": "FAILED",
+    "prior_run": 45800392654,
+    "prior_job": 139841791824,
+    "prior_status": "FAILED",
+    "automatic_verify_runs": [
+      45800274299,
+      45800398744,
+      45800824765
+    ]
   }
 }

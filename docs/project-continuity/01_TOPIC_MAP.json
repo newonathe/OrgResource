@@ -634,7 +634,7 @@
         }
       ],
       "authority": "93 route candidate mapping, independent issue34 blocked; current code and actual test evidence.",
-      "next": "Inspect corrected PR58 CI45798910597 terminal actual #82/#83 logs (Extended Maven passed step metadata only); inspect initial R038 CI45800265532 and corrected exact-head CI45800392654, actual owned MySQL1205/HY000 plus HTTP503 retryable or separate generic500, 18-table equality and recovery. Initial 19-table fixture expectation corrected to exact18 from V1–V7 inventory before terminal result. Inspect automatic Verify45800398744 and any initial-head Verify once terminal. R038 private positives and generic outage not covered; G01/IR4 independent93 open,13 owner-gated privacy flags,H01–H06 native successor,L06 HOLD/no WSL unchanged.",
+      "next": "Inspect corrected R038 CI45800817164 terminal actual logs; initial45800265532 failed BASELINE (source-proven inaccurate19 inventory), exact18 CI45800392654 failed DIRECT_TIMEOUT before HTTP with state unknown. New fixture verifies actual1205 with documented JDBC40001 or HY000; records exact state; 40001 requires503. If refused, inspect fixed diagnostic phase and repair actual cause without weakening. Corrected PR58 CI45798910597 Extended still at additive replay; inspect terminal actual #82/#83. Inspect automatic Verify45800274299/45800398744/45800824765 once terminal, avoid repeats. G01/IR4 independent93 open,13 owner-gated privacy flags,H01–H06 native successor,L06 HOLD/no WSL unchanged.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/74_STRUCTURED_PRIVACY_AND_RECOVERED_ROUTE_RECEIPTS.md",
@@ -862,6 +862,30 @@
           "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
           "blob": "aa7f63f96cdaeb1607d2130b0607acb715e24eee",
           "ref": "5f68bd2b8e39de6d196654bb4c4474b9579422cd",
+          "review": "RELEVANT_RANGES R038"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/94_R038OwnedLockFork.java",
+          "blob": "945e4caf6084d65e009387a6acbb57bce8beb932",
+          "ref": "9f40e895a20bd96d97e59fb95e499af6a2783e96",
+          "review": "FULL corrected actual JDBC state oracle"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/95_R038_OWNED_LOCK_DRIVER.mjs",
+          "blob": "de84378b1554a2ff37a5f8e85c75b09eb7258fb5",
+          "ref": "9f40e895a20bd96d97e59fb95e499af6a2783e96",
+          "review": "FULL corrected fixed diagnostic driver"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/97_R038_OBSERVED_FAILURES_AND_DRIVER_STATE_CORRECTION.md",
+          "blob": "fea666049daa87a5f9a5920fa88ca3ad63ed1619",
+          "ref": "1269b59e239eb622a062dfce546791f6278fa758",
+          "review": "FULL observed failures and correction"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
+          "blob": "f617ca7c903579fc34a3e1686f2802272efa0388",
+          "ref": "1269b59e239eb622a062dfce546791f6278fa758",
           "review": "RELEVANT_RANGES R038"
         }
       ]
@@ -1151,7 +1175,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "Inspect corrected PR58 CI45798910597 terminal actual #82/#83 logs (Extended Maven passed step metadata only); inspect initial R038 CI45800265532 and corrected exact-head CI45800392654, actual owned MySQL1205/HY000 plus HTTP503 retryable or separate generic500, 18-table equality and recovery. Initial 19-table fixture expectation corrected to exact18 from V1–V7 inventory before terminal result. Inspect automatic Verify45800398744 and any initial-head Verify once terminal. R038 private positives and generic outage not covered; G01/IR4 independent93 open,13 owner-gated privacy flags,H01–H06 native successor,L06 HOLD/no WSL unchanged.",
+      "next": "Inspect corrected R038 CI45800817164 terminal actual logs; initial45800265532 failed BASELINE (source-proven inaccurate19 inventory), exact18 CI45800392654 failed DIRECT_TIMEOUT before HTTP with state unknown. New fixture verifies actual1205 with documented JDBC40001 or HY000; records exact state; 40001 requires503. If refused, inspect fixed diagnostic phase and repair actual cause without weakening. Corrected PR58 CI45798910597 Extended still at additive replay; inspect terminal actual #82/#83. Inspect automatic Verify45800274299/45800398744/45800824765 once terminal, avoid repeats. G01/IR4 independent93 open,13 owner-gated privacy flags,H01–H06 native successor,L06 HOLD/no WSL unchanged.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -1624,6 +1648,30 @@
           "blob": "aa7f63f96cdaeb1607d2130b0607acb715e24eee",
           "ref": "5f68bd2b8e39de6d196654bb4c4474b9579422cd",
           "review": "RELEVANT_RANGES R038"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/94_R038OwnedLockFork.java",
+          "blob": "945e4caf6084d65e009387a6acbb57bce8beb932",
+          "ref": "9f40e895a20bd96d97e59fb95e499af6a2783e96",
+          "review": "FULL corrected actual JDBC state oracle"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/95_R038_OWNED_LOCK_DRIVER.mjs",
+          "blob": "de84378b1554a2ff37a5f8e85c75b09eb7258fb5",
+          "ref": "9f40e895a20bd96d97e59fb95e499af6a2783e96",
+          "review": "FULL corrected fixed diagnostic driver"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/97_R038_OBSERVED_FAILURES_AND_DRIVER_STATE_CORRECTION.md",
+          "blob": "fea666049daa87a5f9a5920fa88ca3ad63ed1619",
+          "ref": "1269b59e239eb622a062dfce546791f6278fa758",
+          "review": "FULL observed failures and correction"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
+          "blob": "f617ca7c903579fc34a3e1686f2802272efa0388",
+          "ref": "1269b59e239eb622a062dfce546791f6278fa758",
+          "review": "RELEVANT_RANGES R038"
         }
       ]
     },
@@ -1770,7 +1818,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "Inspect corrected PR58 CI45798910597 terminal actual #82/#83 logs (Extended Maven passed step metadata only); inspect initial R038 CI45800265532 and corrected exact-head CI45800392654, actual owned MySQL1205/HY000 plus HTTP503 retryable or separate generic500, 18-table equality and recovery. Initial 19-table fixture expectation corrected to exact18 from V1–V7 inventory before terminal result. Inspect automatic Verify45800398744 and any initial-head Verify once terminal. R038 private positives and generic outage not covered; G01/IR4 independent93 open,13 owner-gated privacy flags,H01–H06 native successor,L06 HOLD/no WSL unchanged.",
+      "next": "Inspect corrected R038 CI45800817164 terminal actual logs; initial45800265532 failed BASELINE (source-proven inaccurate19 inventory), exact18 CI45800392654 failed DIRECT_TIMEOUT before HTTP with state unknown. New fixture verifies actual1205 with documented JDBC40001 or HY000; records exact state; 40001 requires503. If refused, inspect fixed diagnostic phase and repair actual cause without weakening. Corrected PR58 CI45798910597 Extended still at additive replay; inspect terminal actual #82/#83. Inspect automatic Verify45800274299/45800398744/45800824765 once terminal, avoid repeats. G01/IR4 independent93 open,13 owner-gated privacy flags,H01–H06 native successor,L06 HOLD/no WSL unchanged.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -1998,6 +2046,30 @@
           "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
           "blob": "aa7f63f96cdaeb1607d2130b0607acb715e24eee",
           "ref": "5f68bd2b8e39de6d196654bb4c4474b9579422cd",
+          "review": "RELEVANT_RANGES R038"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/94_R038OwnedLockFork.java",
+          "blob": "945e4caf6084d65e009387a6acbb57bce8beb932",
+          "ref": "9f40e895a20bd96d97e59fb95e499af6a2783e96",
+          "review": "FULL corrected actual JDBC state oracle"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/95_R038_OWNED_LOCK_DRIVER.mjs",
+          "blob": "de84378b1554a2ff37a5f8e85c75b09eb7258fb5",
+          "ref": "9f40e895a20bd96d97e59fb95e499af6a2783e96",
+          "review": "FULL corrected fixed diagnostic driver"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/97_R038_OBSERVED_FAILURES_AND_DRIVER_STATE_CORRECTION.md",
+          "blob": "fea666049daa87a5f9a5920fa88ca3ad63ed1619",
+          "ref": "1269b59e239eb622a062dfce546791f6278fa758",
+          "review": "FULL observed failures and correction"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
+          "blob": "f617ca7c903579fc34a3e1686f2802272efa0388",
+          "ref": "1269b59e239eb622a062dfce546791f6278fa758",
           "review": "RELEVANT_RANGES R038"
         }
       ]

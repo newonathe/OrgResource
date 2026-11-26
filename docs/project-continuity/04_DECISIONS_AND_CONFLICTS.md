@@ -271,3 +271,7 @@ Correct real fictional recovery batch before disable; retain failed receipt and 
 ### R038 owned-lock candidate — Report96 (2026-11-26 PHT)
 
 Use actual MySQL1205/HY000 and exact direct translator branch, HTTP503 or separate generic500; do not assert universal 503 or private cohort proof. Strict18-table set derived from migrations, no product edits; initial count19 corrected before terminal receipt. Exact report 5f68bd2b8e39de6d196654bb4c4474b9579422cd:docs/handoffs/claude-local-execution-2026-11-24/96_G01_R038_OWNED_LOCK_CANDIDATE.md.
+
+### R038 observed failures and documented JDBC-state distinction — Report97 (2026-11-26 PHT)
+
+Actual BASELINE then DIRECT_TIMEOUT refusals; no observed driver state in prior log. Connector/J documents 1205 JDBC40001 distinct from native HY000. Require actual code1205 with documented state, actual HTTP503 for40001, no generic outage acceptance. Preserve both red receipts and explicit diagnostics. Exact report 1269b59e239eb622a062dfce546791f6278fa758:docs/handoffs/claude-local-execution-2026-11-24/97_R038_OBSERVED_FAILURES_AND_DRIVER_STATE_CORRECTION.md.
