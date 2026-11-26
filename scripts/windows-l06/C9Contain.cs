@@ -20,7 +20,10 @@ public sealed class C9Process : IDisposable {
 }
 public sealed class C9Container : IDisposable {
     public readonly string Name, SidString; IntPtr sid, job; bool profile;
-    public C9Container(string name) {
+    // Legacy entrypoint is deliberately refused while journal integration is incomplete.
+    public C9Container(string name) { throw new InvalidOperationException("C9W_PROFILE_JOURNAL_REQUIRED"); }
+    internal C9Container(string name, Action<string> confirmCreated) {
+        if (confirmCreated == null) throw new InvalidOperationException("C9W_PROFILE_JOURNAL_REQUIRED");
         if (!System.Text.RegularExpressions.Regex.IsMatch(name, "^orgresource\\.c9\\.[a-f0-9]{12}$")) throw new ArgumentException("C9W_CONTAINER_NAME");
         Name = name;
         int hr = N.CreateAppContainerProfile(name, name, "OrgResource verification container", IntPtr.Zero, 0, out sid);
@@ -28,14 +31,16 @@ public sealed class C9Container : IDisposable {
         profile = true;
         try {
         IntPtr s; if (!N.ConvertSidToStringSidW(sid, out s)) throw new Win32Exception();
-        SidString = Marshal.PtrToStringUni(s); N.LocalFree(s);
+        try { SidString = Marshal.PtrToStringUni(s); } finally { N.LocalFree(s); }
+        // Persist exact SID before job creation; failure leaves intent/created for reconciliation.
+        confirmCreated(SidString);
         job = N.CreateJobObjectW(IntPtr.Zero, null); if (job == IntPtr.Zero) throw new Win32Exception();
         var i = new N.JOBOBJECT_EXTENDED_LIMIT_INFORMATION();
         i.Basic.LimitFlags = 0x2000 | 0x400 | 0x8; // KILL_ON_JOB_CLOSE | DIE_ON_UNHANDLED_EXCEPTION | ACTIVE_PROCESS; no BREAKAWAY flags
         i.Basic.ActiveProcessLimit = 96;
         int n = Marshal.SizeOf(i); IntPtr p = Marshal.AllocHGlobal(n); Marshal.StructureToPtr(i, p, false);
         bool set = N.SetInformationJobObject(job, 9, p, n); Marshal.FreeHGlobal(p); if (!set) throw new Win32Exception();
-        } catch { Dispose(); throw; }
+        } catch { CloseOwnedHandles(); throw; }
     }
     public int ActiveProcesses { get {
         int n = Marshal.SizeOf(typeof(N.JOBOBJECT_BASIC_ACCOUNTING_INFORMATION)); IntPtr p = Marshal.AllocHGlobal(n);
@@ -114,10 +119,25 @@ public sealed class C9Container : IDisposable {
     static IntPtr Info(IntPtr t, int cls, int min) { int n; N.GetTokenInformation(t, cls, IntPtr.Zero, 0, out n); if (n < min) n = min; IntPtr b = Marshal.AllocHGlobal(n);
         if (!N.GetTokenInformation(t, cls, b, n, out n)) throw new Win32Exception(); return b; }
     public bool KillAll() { if (job == IntPtr.Zero) return true; N.TerminateJobObject(job, 139); for (int i=0;i<100 && ActiveProcesses>0;i++) Thread.Sleep(100); return ActiveProcesses==0; }
-    public void Dispose() {
-        if (job != IntPtr.Zero) { KillAll(); N.CloseHandle(job); job = IntPtr.Zero; }
-        if (sid != IntPtr.Zero) { N.FreeSid(sid); sid = IntPtr.Zero; }
-        if (profile) { int hr = N.DeleteAppContainerProfile(Name); if (hr != 0) throw new InvalidOperationException("C9W_PROFILE_DELETE"); profile = false; }
+    // Handle cleanup is not profile deletion. A failed creation must never roll back by name.
+    void CloseOwnedHandles() {
+        try {
+            if (job != IntPtr.Zero) {
+                try { if (!KillAll()) throw new InvalidOperationException("C9W_JOB_KILL"); }
+                finally { N.CloseHandle(job); job = IntPtr.Zero; }
+            }
+        } finally {
+            if (sid != IntPtr.Zero) { N.FreeSid(sid); sid = IntPtr.Zero; }
+        }
+    }
+    public void Dispose() { CloseOwnedHandles(); }
+    // Only the journal-owning producer may request deletion, after durable removing.
+    internal void DeleteConfirmedProfile() {
+        if (!profile || job != IntPtr.Zero || sid != IntPtr.Zero)
+            throw new InvalidOperationException("C9W_PROFILE_DELETE_STATE");
+        int hr = N.DeleteAppContainerProfile(Name);
+        if (hr != 0) throw new InvalidOperationException("C9W_PROFILE_DELETE");
+        profile = false;
     }
 }
 static class N {
