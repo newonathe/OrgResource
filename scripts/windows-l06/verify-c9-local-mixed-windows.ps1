@@ -16,6 +16,13 @@ param(
 )
 Set-StrictMode -Version 3
 $ErrorActionPreference = 'Stop'
+
+# H03 intermediate candidate: the producer/cleanup is not yet journal-controlled.
+# Refuse both modes before dot-sourcing, tool access, private input or any native effect.
+# Remove only in the coherent integration candidate after the acceptance oracles are staged.
+[Console]::Error.WriteLine('C9W_RUNNER_REFUSED_H03_INCOMPLETE')
+exit 1
+
 $PSNativeCommandUseErrorActionPreference = $false
 $approvedPlanSha = '3b0f54da85cadb77cd7d8ab2d50c1fdb4b4ee36710b803cf904227e13f08927c'
 $approvedSourceSha = '57f1f0c680041c39dcf7644a1acca5fcc75dc7d525262547842389da7540b9a2'
