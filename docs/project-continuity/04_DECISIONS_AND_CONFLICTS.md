@@ -283,3 +283,7 @@ Actual MySQL1205/JDBC40001, HTTP503/no-store, exact18-table equality, post-unloc
 ### Public targeted batch consolidated — Report99 (2026-11-26 PHT)
 
 Corrected R036/R041 actual bounded pass; no broad retest absent material gap. Next H01 explicit owner consent and custody before native successor. No L06 relaunch from continue alone. Three automatic Extended terminal logs remain pending. Exact report 9039beb4e4e84baf1e3011e07b868b2940c7a0e6:docs/handoffs/claude-local-execution-2026-11-24/99_PUBLIC_VERIFICATION_CONSOLIDATION_AND_OWNER_GATE.md.
+
+### Exact test delta and automatic regressions — Report100 (2026-11-26 PHT)
+
+PR58 preserves all original lines, five tests added; older handoff suite66 distinct from main78 and PR58 head83. Two automatic full runs verified, final pending. No additional broad retest or owner approval inferred. Exact report 711d46ace45836ebb5cb4705c183fca8cd2c3691:docs/handoffs/claude-local-execution-2026-11-24/100_PUBLIC_DELTA_AND_AUTOMATIC_REGRESSIONS.md.
