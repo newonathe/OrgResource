@@ -1016,5 +1016,17 @@
       "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java"
     ],
     "coverage": "scoped live refs, not full refreshed repository inventory"
+  },
+  "h02_receipt_candidate": {
+    "observed_date": "2026-11-26 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "334e08a3849665a0b086dc928c721b18e6fb0a22",
+    "tree": "8ff963228bd6455f8cff1be62c2380abbdd07a2f",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/103_H02_RECEIPT_BINDING_CANDIDATE.md",
+    "report_ref": "ae910a70aead4ae9ecd2b6ca2bd07331bd80e22f",
+    "coverage": "Scoped live refs; 29 added harness-only paths, no native acceptance"
   }
 }
