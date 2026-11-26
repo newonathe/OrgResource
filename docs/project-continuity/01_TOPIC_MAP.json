@@ -634,7 +634,7 @@
         }
       ],
       "authority": "93 route candidate mapping, independent issue34 blocked; current code and actual test evidence.",
-      "next": "Inspect corrected PR58 CI45798910597 actual #82/#83; observed prior CI45796775299 #82 fixture index error (fixtureInOrg creates zero codes), corrected five fictional persisted codes, not application defect. R038 controlled owned-DB fault next: distinguish retryable 503 from generic 500; no private positive. Formal CHAT graph15 bounded/1 source reconciled review open; no unfinished CHAT-only prerequisite, additional risk-based G01 tests feasible. Critical H01 owner custody/authorization -> H02–H06 accepted native successor (32 matrix cases NOT_RUN plus separate H04) -> owner L06 -> off-host L07 -> authorized G02. All93 independent reviews open; 13 privacy flags owner-gated; G03–07 separate gates. L06 HOLD/no WSL.",
+      "next": "Inspect corrected PR58 CI45798910597 terminal actual #82/#83 logs (Extended Maven passed step metadata only); inspect initial R038 CI45800265532 and corrected exact-head CI45800392654, actual owned MySQL1205/HY000 plus HTTP503 retryable or separate generic500, 18-table equality and recovery. Initial 19-table fixture expectation corrected to exact18 from V1–V7 inventory before terminal result. Inspect automatic Verify45800398744 and any initial-head Verify once terminal. R038 private positives and generic outage not covered; G01/IR4 independent93 open,13 owner-gated privacy flags,H01–H06 native successor,L06 HOLD/no WSL unchanged.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/74_STRUCTURED_PRIVACY_AND_RECOVERED_ROUTE_RECEIPTS.md",
@@ -833,6 +833,36 @@
           "blob": "c3a528ea0273d25b4004452b4156d16b1a6e9ba8",
           "ref": "643690c6248a09f413004715afb0042bb41c2166",
           "review": "RELEVANT_RANGES R036/R038/R041"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/94_R038OwnedLockFork.java",
+          "blob": "b6d36501ce36c6e0788c124cbc0631832d984d39",
+          "ref": "b2347756e29362832f0f2506ef9793e3ba040ac0",
+          "review": "FULL corrected exact18 snapshot candidate"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/95_R038_OWNED_LOCK_DRIVER.mjs",
+          "blob": "4a88a864e1963bbf5e3e929dff92baec9b2bb093",
+          "ref": "b2347756e29362832f0f2506ef9793e3ba040ac0",
+          "review": "FULL owned lock driver"
+        },
+        {
+          "path": ".github/workflows/r038-owned-lock.yml",
+          "blob": "9a562046d5043139d67f7a1d4d58852a51afd41b",
+          "ref": "b2347756e29362832f0f2506ef9793e3ba040ac0",
+          "review": "FULL dedicated workflow"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/96_G01_R038_OWNED_LOCK_CANDIDATE.md",
+          "blob": "4a4d81c0a5731f1d42da644b5be0c30261cc11ac",
+          "ref": "5f68bd2b8e39de6d196654bb4c4474b9579422cd",
+          "review": "FULL candidate and source correction"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
+          "blob": "aa7f63f96cdaeb1607d2130b0607acb715e24eee",
+          "ref": "5f68bd2b8e39de6d196654bb4c4474b9579422cd",
+          "review": "RELEVANT_RANGES R038"
         }
       ]
     },
@@ -1121,7 +1151,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "Inspect corrected PR58 CI45798910597 actual #82/#83; observed prior CI45796775299 #82 fixture index error (fixtureInOrg creates zero codes), corrected five fictional persisted codes, not application defect. R038 controlled owned-DB fault next: distinguish retryable 503 from generic 500; no private positive. Formal CHAT graph15 bounded/1 source reconciled review open; no unfinished CHAT-only prerequisite, additional risk-based G01 tests feasible. Critical H01 owner custody/authorization -> H02–H06 accepted native successor (32 matrix cases NOT_RUN plus separate H04) -> owner L06 -> off-host L07 -> authorized G02. All93 independent reviews open; 13 privacy flags owner-gated; G03–07 separate gates. L06 HOLD/no WSL.",
+      "next": "Inspect corrected PR58 CI45798910597 terminal actual #82/#83 logs (Extended Maven passed step metadata only); inspect initial R038 CI45800265532 and corrected exact-head CI45800392654, actual owned MySQL1205/HY000 plus HTTP503 retryable or separate generic500, 18-table equality and recovery. Initial 19-table fixture expectation corrected to exact18 from V1–V7 inventory before terminal result. Inspect automatic Verify45800398744 and any initial-head Verify once terminal. R038 private positives and generic outage not covered; G01/IR4 independent93 open,13 owner-gated privacy flags,H01–H06 native successor,L06 HOLD/no WSL unchanged.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -1564,6 +1594,36 @@
           "blob": "c3a528ea0273d25b4004452b4156d16b1a6e9ba8",
           "ref": "643690c6248a09f413004715afb0042bb41c2166",
           "review": "RELEVANT_RANGES R036/R038/R041"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/94_R038OwnedLockFork.java",
+          "blob": "b6d36501ce36c6e0788c124cbc0631832d984d39",
+          "ref": "b2347756e29362832f0f2506ef9793e3ba040ac0",
+          "review": "FULL corrected exact18 snapshot candidate"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/95_R038_OWNED_LOCK_DRIVER.mjs",
+          "blob": "4a88a864e1963bbf5e3e929dff92baec9b2bb093",
+          "ref": "b2347756e29362832f0f2506ef9793e3ba040ac0",
+          "review": "FULL owned lock driver"
+        },
+        {
+          "path": ".github/workflows/r038-owned-lock.yml",
+          "blob": "9a562046d5043139d67f7a1d4d58852a51afd41b",
+          "ref": "b2347756e29362832f0f2506ef9793e3ba040ac0",
+          "review": "FULL dedicated workflow"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/96_G01_R038_OWNED_LOCK_CANDIDATE.md",
+          "blob": "4a4d81c0a5731f1d42da644b5be0c30261cc11ac",
+          "ref": "5f68bd2b8e39de6d196654bb4c4474b9579422cd",
+          "review": "FULL candidate and source correction"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
+          "blob": "aa7f63f96cdaeb1607d2130b0607acb715e24eee",
+          "ref": "5f68bd2b8e39de6d196654bb4c4474b9579422cd",
+          "review": "RELEVANT_RANGES R038"
         }
       ]
     },
@@ -1710,7 +1770,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "Inspect corrected PR58 CI45798910597 actual #82/#83; observed prior CI45796775299 #82 fixture index error (fixtureInOrg creates zero codes), corrected five fictional persisted codes, not application defect. R038 controlled owned-DB fault next: distinguish retryable 503 from generic 500; no private positive. Formal CHAT graph15 bounded/1 source reconciled review open; no unfinished CHAT-only prerequisite, additional risk-based G01 tests feasible. Critical H01 owner custody/authorization -> H02–H06 accepted native successor (32 matrix cases NOT_RUN plus separate H04) -> owner L06 -> off-host L07 -> authorized G02. All93 independent reviews open; 13 privacy flags owner-gated; G03–07 separate gates. L06 HOLD/no WSL.",
+      "next": "Inspect corrected PR58 CI45798910597 terminal actual #82/#83 logs (Extended Maven passed step metadata only); inspect initial R038 CI45800265532 and corrected exact-head CI45800392654, actual owned MySQL1205/HY000 plus HTTP503 retryable or separate generic500, 18-table equality and recovery. Initial 19-table fixture expectation corrected to exact18 from V1–V7 inventory before terminal result. Inspect automatic Verify45800398744 and any initial-head Verify once terminal. R038 private positives and generic outage not covered; G01/IR4 independent93 open,13 owner-gated privacy flags,H01–H06 native successor,L06 HOLD/no WSL unchanged.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -1909,6 +1969,36 @@
           "blob": "c3a528ea0273d25b4004452b4156d16b1a6e9ba8",
           "ref": "643690c6248a09f413004715afb0042bb41c2166",
           "review": "RELEVANT_RANGES R036/R038/R041"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/94_R038OwnedLockFork.java",
+          "blob": "b6d36501ce36c6e0788c124cbc0631832d984d39",
+          "ref": "b2347756e29362832f0f2506ef9793e3ba040ac0",
+          "review": "FULL corrected exact18 snapshot candidate"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/95_R038_OWNED_LOCK_DRIVER.mjs",
+          "blob": "4a88a864e1963bbf5e3e929dff92baec9b2bb093",
+          "ref": "b2347756e29362832f0f2506ef9793e3ba040ac0",
+          "review": "FULL owned lock driver"
+        },
+        {
+          "path": ".github/workflows/r038-owned-lock.yml",
+          "blob": "9a562046d5043139d67f7a1d4d58852a51afd41b",
+          "ref": "b2347756e29362832f0f2506ef9793e3ba040ac0",
+          "review": "FULL dedicated workflow"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/96_G01_R038_OWNED_LOCK_CANDIDATE.md",
+          "blob": "4a4d81c0a5731f1d42da644b5be0c30261cc11ac",
+          "ref": "5f68bd2b8e39de6d196654bb4c4474b9579422cd",
+          "review": "FULL candidate and source correction"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
+          "blob": "aa7f63f96cdaeb1607d2130b0607acb715e24eee",
+          "ref": "5f68bd2b8e39de6d196654bb4c4474b9579422cd",
+          "review": "RELEVANT_RANGES R038"
         }
       ]
     }

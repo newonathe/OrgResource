@@ -338,3 +338,8 @@
 "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","281f6cb89cdfccaf24494afa538a6c4c1dfb590f","510827","100644","75bbc99ceb4d5be3b1c1def1e80abb3509a287fb","RELEVANT_RANGES corrected #82"
 "docs/handoffs/claude-local-execution-2026-11-24/93_G01_RECOVERY_FIXTURE_FAILURE_AND_REMAINING_WORK.md","ae59efbafde1c4c3833441ce969d44edd8af3b62","7711","100644","643690c6248a09f413004715afb0042bb41c2166","FULL failure and remaining gates"
 "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv","c3a528ea0273d25b4004452b4156d16b1a6e9ba8","109836","100644","643690c6248a09f413004715afb0042bb41c2166","RELEVANT_RANGES R036/R038/R041"
+"docs/handoffs/claude-local-execution-2026-11-24/94_R038OwnedLockFork.java","b6d36501ce36c6e0788c124cbc0631832d984d39","10804","100644","b2347756e29362832f0f2506ef9793e3ba040ac0","FULL corrected exact18 snapshot candidate"
+"docs/handoffs/claude-local-execution-2026-11-24/95_R038_OWNED_LOCK_DRIVER.mjs","4a88a864e1963bbf5e3e929dff92baec9b2bb093","3256","100644","b2347756e29362832f0f2506ef9793e3ba040ac0","FULL owned lock driver"
+".github/workflows/r038-owned-lock.yml","9a562046d5043139d67f7a1d4d58852a51afd41b","1895","100644","b2347756e29362832f0f2506ef9793e3ba040ac0","FULL dedicated workflow"
+"docs/handoffs/claude-local-execution-2026-11-24/96_G01_R038_OWNED_LOCK_CANDIDATE.md","4a4d81c0a5731f1d42da644b5be0c30261cc11ac","5563","100644","5f68bd2b8e39de6d196654bb4c4474b9579422cd","FULL R038 candidate"
+"docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv","aa7f63f96cdaeb1607d2130b0607acb715e24eee","110218","100644","5f68bd2b8e39de6d196654bb4c4474b9579422cd","RELEVANT_RANGES R038"

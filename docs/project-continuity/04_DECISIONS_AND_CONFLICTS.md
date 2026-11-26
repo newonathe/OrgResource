@@ -267,3 +267,7 @@ R035 actual bounded normal writable logout success. R036 generic HTTP/throttle o
 ### Observed #82 fixture error and remaining work — Report93 (2026-11-26 PHT)
 
 Correct real fictional recovery batch before disable; retain failed receipt and original security assertions. R038 classification 503 distinct from retryable DB 503 and generic 500; test actual precise fault and do not assume universal 503. Formal CHAT preparation bounded; additional directed gaps not substitute for independent/native/owner gates. Exact report 643690c6248a09f413004715afb0042bb41c2166:docs/handoffs/claude-local-execution-2026-11-24/93_G01_RECOVERY_FIXTURE_FAILURE_AND_REMAINING_WORK.md.
+
+### R038 owned-lock candidate — Report96 (2026-11-26 PHT)
+
+Use actual MySQL1205/HY000 and exact direct translator branch, HTTP503 or separate generic500; do not assert universal 503 or private cohort proof. Strict18-table set derived from migrations, no product edits; initial count19 corrected before terminal receipt. Exact report 5f68bd2b8e39de6d196654bb4c4474b9579422cd:docs/handoffs/claude-local-execution-2026-11-24/96_G01_R038_OWNED_LOCK_CANDIDATE.md.
