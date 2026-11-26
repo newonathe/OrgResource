@@ -353,3 +353,8 @@
 "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv","f0a8fba87ba07b655e35eb60d2004f0ed3f66af1","111635","100644","9039beb4e4e84baf1e3011e07b868b2940c7a0e6","RELEVANT_RANGES R036/R041 actual"
 "docs/handoffs/claude-local-execution-2026-11-24/100_PUBLIC_DELTA_AND_AUTOMATIC_REGRESSIONS.md","0cbdca944f55995e07987f6ad8fae863367ad805","2142","100644","711d46ace45836ebb5cb4705c183fca8cd2c3691","FULL exact line delta and regression receipts"
 "docs/handoffs/claude-local-execution-2026-11-24/101_FINAL_AUTOMATIC_REGRESSION_RECEIPT.md","9efe82465b1a9cdb2088f4a646c7e5782f5dfeed","3073","100644","eba7475b004c6e3a90802723b42cf52a280e4840","FULL actual terminal regression receipt"
+"docs/handoffs/claude-local-execution-2026-11-24/102_H01_OWNER_APPROVAL_AND_H04_CANDIDATE.md","7730d08cbeae4e0fe857a428774c81fc3a770b7f","4682","100644","6827e63132a209d7ee449459adc238bf49888a64","FULL owner approval and source candidate report"
+"scripts/windows-l06/windows_common.ps1","01502aef202cbdd49a70b8cfed9042d35b00e52e","37592","100644","55e0e5229eef15c4d71b105856d6cfcf27eb5fa1","RELEVANT_RANGES H04 candidate"
+"scripts/windows-l06/test-c9-local-mixed-windows.ps1","35776b152de9d98210c3dbe49d7344a0cc098e64","16166","100644","55e0e5229eef15c4d71b105856d6cfcf27eb5fa1","RELEVANT_RANGES H04 candidate"
+"scripts/windows-l06/test-probe-shape.ps1","61e6aadd6ab6d65a1cee571a8099730210c8e2b0","6116","100644","55e0e5229eef15c4d71b105856d6cfcf27eb5fa1","FULL staged H04 test NOT_RUN"
+"scripts/windows-l06/test-probe-json.ps1","e0b31cb40ae4cc3a4a081c41e9303617e4600bc1","1564","100644","55e0e5229eef15c4d71b105856d6cfcf27eb5fa1","FULL staged H04 test NOT_RUN"
