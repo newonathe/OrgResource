@@ -2663,7 +2663,7 @@
     "branch": "verify/windows-l06-successor-20261126",
     "base": "72de0c106621dabc26a63390003f46c86d63b066",
     "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
-    "candidate": "88284bb3f1886d23b15a382d904d7b6244d2cd67",
+    "candidate": "7409ee9ab82a60c2f2133b7d7fd8af96d1cabade",
     "state": "CANDIDATE",
     "H01_A": "AUTHORIZED_RESTRICTED",
     "H01_B": "PREPARATION_ONLY",
@@ -2672,7 +2672,7 @@
     "pure_cases_staged": 64,
     "native_acceptance": "NOT_RUN",
     "next": "H03 partial native source candidate 7409ee9ab82a60c2f2133b7d7fd8af96d1cabade; 35 added harness-only paths vs R09. Legacy recovery quarantined with fixed refusal; read-only native directory identity staged, not compiled/executed. H03 portable18 and H02 portable12 prior receipts retained. Normal runner cleanup unsafe and unchanged: DO NOT run current successor. Next H03 owner-only control lock, exclusive creation, journal bridge/producer and cleanup, lock-first recovery adapter, real native primitive tests; H03-01–12 NOT_RUN. Then H01-A archive staging/commit, H05 scoped equality, H06 lifecycle, consolidated native/independent acceptance. H02 native/tool provenance, 64 staged PowerShell tests + spy open. H01-B preparation only; actual vault/machine/operator/transfer pending, failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
-    "previous_candidate": "e6eabe0e1682f6a2d8a64e6fd721d1b6b45e043f",
+    "previous_candidate": "88284bb3f1886d23b15a382d904d7b6244d2cd67",
     "H02": "SOURCE_CANDIDATE_PORTABLE_COPY_VERIFIED_BOUNDED_NATIVE_NOT_RUN",
     "h02_cases_staged": 24,
     "report": "docs/handoffs/claude-local-execution-2026-11-24/106_H03_NATIVE_IDENTITY_AND_RECOVERY_QUARANTINE.md",
@@ -2683,7 +2683,6 @@
     "H03": "PARTIAL_SOURCE_CANDIDATE_NATIVE_IDENTITY_STAGED_RECOVERY_QUARANTINED",
     "portable_journal_tests_passed": 18,
     "portable_journal_receipt": "Report105 exact blobs Linux Python3.13.5 exit0",
-    "h03_native": "NOT_RUN",
-    "sha": "7409ee9ab82a60c2f2133b7d7fd8af96d1cabade"
+    "h03_native": "NOT_RUN"
   }
 }
