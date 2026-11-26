@@ -105,6 +105,15 @@ try {
     Assert-Code 'plan-absent' 'R06B1_PRIVATE_PLAN_REQUIRED' { Assert-ApprovedPlan "$good\none.json" $repo }
     [IO.File]::WriteAllText("$good\small.json", '{}'); Assert-Code 'plan-size' 'R06B1_APPROVED_PLAN_MISMATCH' { Assert-ApprovedPlan "$good\small.json" $repo }
     $fs = [IO.File]::Create("$good\same.json"); $fs.SetLength(19265850); $fs.Dispose()
+    # A fictional, correct-size file is metadata-checked without reading content.
+    # The child scope replaces only the hash helper; no runner/owner gate is bypassed.
+    & {
+        function Get-Sha([string] $Path) { throw 'C9W_HASH_SPY_CALLED' }
+        Assert-ApprovedPlanMetadata "$good\same.json" $repo
+        Assert-Code 'plan-metadata-does-not-hash' 'C9W_HASH_SPY_CALLED' { Assert-ApprovedPlan "$good\same.json" $repo }
+    }
+    'R06B1_PLAN_METADATA_NO_HASH_OK_WIN'
+
     Assert-Code 'plan-same-size-wrong-bytes' 'R06B1_APPROVED_PLAN_MISMATCH' { Assert-ApprovedPlan "$good\same.json" $repo }
     Assert-Code 'plan-inside-source' 'R06B1_PRIVATE_PLAN_REQUIRED' { Assert-ApprovedPlan "$good\same.json" $good }
     Assert-Code 'plan-through-reparse' 'R06B1_PRIVATE_PLAN_REQUIRED' { Assert-ApprovedPlan "$junction\same.json" $repo }
