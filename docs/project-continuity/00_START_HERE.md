@@ -1,5 +1,10 @@
 # OrgResource — universal project context entry point
 
+## Current — H02 runtime-copy and intake candidate (2026-11-26 PHT)
+
+H02 scoped runtime-copy and intake candidate e6eabe0e1682f6a2d8a64e6fd721d1b6b45e043f; 32 added harness-only paths vs R09. Python copy helper 12/12 actual portable tests on exact blobs; H02-09/10 native integration and trusted tool provenance remain open, 64 prior pure PowerShell tests and new native spy NOT_RUN. Next H03 durable ownership/lock/recovery, H01-A archive staging/commit, H05 scoped equality, H06 process lifecycle, consolidated native and independent acceptance. H01-B preparation only, actual vault/machine/operator/transfer pending; failed-stage disposal separate. L06 HOLD/no WSL, L07 separately authorized off-host, 93 independent IR4 open, 13 privacy flags owner-gated. No private import/launch/merge/deploy. [Report104](https://github.com/newonathe/OrgResource/blob/483059014786219ab86d49cc09ce475c1b8be70a/docs/handoffs/claude-local-execution-2026-11-24/104_H02_RUNTIME_COPY_AND_INTAKE_CANDIDATE.md).
+
+
 ## Current — H02 receipt binding candidate (2026-11-26 PHT)
 
 H02 receipt-binding candidate 334e08a3849665a0b086dc928c721b18e6fb0a22; 29 added harness-only paths vs R09, 24 new pure tests staged NOT_RUN (+40 H04). H02-10 runtime provenance/copy manifest and H02-09 intake instrumentation still open; finish those, then H03 ownership/lock/recovery, H01-A archive staging/commit, H05 scoped equality, H06 process lifecycle, native and independent acceptance. H01-B preparation only, actual vault/machine/operator/transfer pending; failed-stage disposal separate. L06 HOLD/no WSL, L07 separately authorized off-host, 93 independent IR4 open, 13 privacy flags owner-gated. No private import/launch/merge/deploy. [Report103](https://github.com/newonathe/OrgResource/blob/ae910a70aead4ae9ecd2b6ca2bd07331bd80e22f/docs/handoffs/claude-local-execution-2026-11-24/103_H02_RECEIPT_BINDING_CANDIDATE.md).
