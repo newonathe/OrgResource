@@ -23,13 +23,7 @@ if (-not $drive) { Fail 'R06B1_DRIVE' }
 & "$env:SystemRoot\System32\subst.exe" $drive $work
 if ($LASTEXITCODE -ne 0) { Fail 'R06B1_DRIVE' }
 Copy-Item -LiteralPath $Jar -Destination "$work\rt\verified.jar"
-if ((Get-Sha "$work\rt\verified.jar") -cne $JarSha256) { Fail 'R06B1_JAR_HASH_MISMATCH' }
-if ($Mode -ceq 'ApprovedImport') {
-    foreach ($role in 'restore', 'mixed') {
-        Copy-Item -LiteralPath $Plan -Destination "$work\$role\approved-plan.json"
-        Assert-ApprovedPlan "$work\$role\approved-plan.json" '' @($roles[$role].Sid)
-    }
-}
+if ((Get-Sha "$work\rt\verified.jar") -cne $JarSha256 -or (Get-Item -LiteralPath "$work\rt\verified.jar").Length -ne $jarLength) { Fail 'R06B1_JAR_HASH_MISMATCH' }
 New-Item -ItemType Directory -Path "$work\rt\win", "$work\rt\repo\scripts", "$work\rt\repo\extended\frontend\node_modules\@playwright", "$work\rt\python", "$work\dumps\jc" | Out-Null
 foreach ($f in 'containment_probe.cjs', 'breakaway_probe.ps1') { Copy-Item (Join-Path $PSScriptRoot $f) "$work\rt\win\$f" }
 $derived = & $Python -I (Join-Path $PSScriptRoot 'derive_oracles.py') $repo $SourceSha "$work\rt\repo\scripts"
@@ -96,3 +90,10 @@ Remove-Item -Recurse -LiteralPath "$work\restore\broad", "$work\restore\posix.tx
 Assert-Browser 'restore'
 Write-Marker 'R06B1_GUARD_AND_BROWSER_PREFLIGHT_OK_WIN:python_guard_positive_negative=true contained_renderer_page=true'
 Write-Marker 'R06B1_POSIX_OWNER_ONLY_OK_WIN:real_dacl=true broad_refused=true overwrite_refused=true wide_mode_refused=true'
+# Private copies only after non-private containment and runtime preflight.
+if ($Mode -ceq 'ApprovedImport') {
+    foreach ($role in 'restore', 'mixed') {
+        Copy-Item -LiteralPath $Plan -Destination "$work\$role\approved-plan.json"
+        Assert-ApprovedPlan "$work\$role\approved-plan.json" '' @($roles[$role].Sid)
+    }
+}
