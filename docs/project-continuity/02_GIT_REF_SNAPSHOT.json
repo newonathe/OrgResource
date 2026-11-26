@@ -1100,5 +1100,17 @@
     "report": "docs/handoffs/claude-local-execution-2026-11-24/109_H03_INTENT_FIRST_WORK_AND_PROFILE_PRODUCER.md",
     "report_ref": "0b18c1fe46d66a879bb997ba0a570614c1e65cd2",
     "coverage": "46 added harness-only paths; source-only, native tests NOT_RUN"
+  },
+  "h03_profile_storage_dos_observation_candidate": {
+    "observed_date": "2026-11-26 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "b0ccbc8572e670655e8bd3fb103ce67d633e6e61",
+    "tree": "3e7f6644d47a4afb9539e4c55406abfa9a5cb71d",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/110_H03_PROFILE_STORAGE_AND_DOS_NAMESPACE_OBSERVATION.md",
+    "report_ref": "b160e823de5e3a349e6aaee1c3f3f6f1b00b1fa2",
+    "coverage": "49 added harness-only paths; source-only, native NOT_RUN"
   }
 }
