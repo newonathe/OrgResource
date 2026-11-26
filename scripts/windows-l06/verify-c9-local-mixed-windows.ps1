@@ -32,6 +32,7 @@ $me = [Security.Principal.WindowsIdentity]::GetCurrent()
 . (Join-Path $PSScriptRoot 'operator_gate.ps1')
 . (Join-Path $PSScriptRoot 'windows_common.ps1')
 . (Join-Path $PSScriptRoot 'jar_receipt.ps1')
+. (Join-Path $PSScriptRoot 'runtime_identity.ps1')
 
 try {
     # ---- intake: every refusal precedes containers, servers and private bytes ----
@@ -52,6 +53,10 @@ try {
     if ($JarSha256 -cnotmatch '^[a-f0-9]{64}$' -or -not (Test-PlainPath $Jar 'Leaf')) { Fail 'R06B1_JAR_REQUIRED' }
     if ((Get-Sha $Jar) -cne $JarSha256) { Fail 'R06B1_JAR_HASH_MISMATCH' }
     $jarLength = (Get-Item -LiteralPath $Jar).Length
+    $pythonCmd = @(Get-Command $Python -CommandType Application -ErrorAction SilentlyContinue)
+    if ($pythonCmd.Count -ne 1 -or -not (Test-PlainPath $pythonCmd[0].Source 'Leaf')) { Fail 'R06B1_TOOL_MISSING' }
+    $Python = $pythonCmd[0].Source
+    $pythonDigest = Get-Sha $Python
     & $Python -I (Join-Path $PSScriptRoot 'check_jar.py') $repo $SourceSha $Jar
     if ($LASTEXITCODE -ne 0) { Fail 'R06B1_JAR_MIGRATION_OR_ASSET_MISMATCH' }
     if ($Mode -ceq 'ApprovedImport') {
@@ -65,6 +70,14 @@ try {
         "$env:ProgramFiles\nodejs\node.exe", "$env:ProgramFiles\PowerShell\7\pwsh.exe", "$env:SystemRoot\System32\curl.exe", "$NodeModules\playwright-core\package.json", "$NodeModules\@playwright\test\package.json") {
         if (-not (Test-Path -LiteralPath $tool -PathType Leaf)) { Fail 'R06B1_TOOL_MISSING' }
     }
+    $hostTools = [ordered]@{
+        python = $Python; java = $javaBin; javac = (Join-Path (Split-Path $javaBin) 'javac.exe'); jar = (Join-Path (Split-Path $javaBin) 'jar.exe')
+        mysqld = "$mysqlHome\bin\mysqld.exe"; mysql = "$mysqlHome\bin\mysql.exe"; mysqldump = "$mysqlHome\bin\mysqldump.exe"
+        mysqladmin = "$mysqlHome\bin\mysqladmin.exe"; mysql_config_editor = "$mysqlHome\bin\mysql_config_editor.exe"
+        node = "$env:ProgramFiles\nodejs\node.exe"; pwsh = "$env:ProgramFiles\PowerShell\7\pwsh.exe"; curl = "$env:SystemRoot\System32\curl.exe"
+    }
+    if ((Get-Sha $Python) -cne $pythonDigest) { Fail 'R06B1_RUNTIME_COPY' }
+    $hostToolDigest = Get-C9ToolIdentity $hostTools
     if (((& "$mysqlHome\bin\mysqld.exe" --no-defaults --version) -join '') -cnotmatch ' 8\.0\.46 ') { Fail 'R06B1_MYSQL_VERSION' }
     if (((& $javaBin -version 2>&1) -join "`n") -cnotmatch 'version "21[."]') { Fail 'R06B1_JAVA21_REQUIRED' }
     $chromiumExe = @(Get-ChildItem -LiteralPath $ChromiumDir -Recurse -Filter 'chrome-headless-shell.exe' -ErrorAction SilentlyContinue)
@@ -80,7 +93,7 @@ try {
     Write-Marker "R06B1_PREFLIGHT_OK_WIN:source_hash=true jar_hash=true seven_migration_bytes=true packaged_assets=true harness_head=$head delta_files=$($delta.Count)"
     Write-Marker "R06B1_TOOLS_WIN:chromium_sha256=$(Get-Sha $chromiumExe[0].FullName) playwright_core_sha256=$(Get-Sha (Join-Path $NodeModules 'playwright-core\package.json')) winpty=$(& $Python -I -c 'import importlib.metadata as m; print(m.version("pywinpty"))')"
 
-    if ($Mode -ceq 'ApprovedImport') { Assert-ApprovedPlan $Plan $repo }
+    if ($Mode -ceq 'ApprovedImport') { Assert-ApprovedPlanMetadata $Plan $repo }
     $script:phase = 'containment'
     . (Join-Path $PSScriptRoot 'stage_prepare.ps1')
     . (Join-Path $PSScriptRoot 'stage_original.ps1')

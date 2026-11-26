@@ -31,9 +31,13 @@ function Assert-HarnessAccepted([string] $RootPath, [string] $Commit) {
     $file = Join-Path $RootPath 'WINDOWS_HARNESS_ACCEPTED.txt'
     if (-not (Test-PlainPath $file 'Leaf') -or -not (Test-OwnerOnly $file) -or [IO.File]::ReadAllText($file).Trim() -cne "ACCEPTED $Commit") { Fail 'R06B2_HARNESS_NOT_ACCEPTED' }
 }
-function Assert-ApprovedPlan([string] $Path, [string] $Outside, [string[]] $Extra = @()) {
+function Assert-ApprovedPlanMetadata([string] $Path, [string] $Outside, [string[]] $Extra = @()) {
     if (-not $Path -or -not (Test-PlainPath $Path 'Leaf') -or -not (Test-OwnerOnly $Path $Extra) -or ($Outside -and $Path.StartsWith("$Outside\", [StringComparison]::OrdinalIgnoreCase))) { Fail 'R06B1_PRIVATE_PLAN_REQUIRED' }
-    if ((Get-Item -LiteralPath $Path).Length -ne 19265850 -or (Get-Sha $Path) -cne $approvedPlanSha) { Fail 'R06B1_APPROVED_PLAN_MISMATCH' }
+    if ((Get-Item -LiteralPath $Path).Length -ne 19265850) { Fail 'R06B1_APPROVED_PLAN_MISMATCH' }
+}
+function Assert-ApprovedPlan([string] $Path, [string] $Outside, [string[]] $Extra = @()) {
+    Assert-ApprovedPlanMetadata $Path $Outside $Extra
+    if ((Get-Sha $Path) -cne $approvedPlanSha) { Fail 'R06B1_APPROVED_PLAN_MISMATCH' }
 }
 function Set-PrivateAcl([string] $Path, [hashtable[]] $Grants) {
     $acl = [Security.AccessControl.DirectorySecurity]::new(); $acl.SetAccessRuleProtection($true, $false); $acl.SetOwner($me.User)

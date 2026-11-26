@@ -34,7 +34,7 @@ function Assert-Refused([string] $Label, [string] $Expected, [hashtable] $Overri
     $r = Invoke-Runner $Override $Environment
     if ($r.Code -eq 0) { throw "C9W_UNEXPECTED_SUCCESS:$Label" }
     if (($r.Text -split '\r?\n') -cnotcontains $Expected) { [Console]::Error.WriteLine($r.Text); throw "C9W_WRONG_REFUSAL:$Label" }
-    if ((Get-Residue) -cne $before -or $r.Text.Contains('R06B1_NETWORK_ISOLATION_OK')) { throw "C9W_REFUSAL_LEFT_STATE:$Label" }
+    if ((Get-Residue) -cne $before -or $r.Text.Contains('R06B1_NETWORK_ISOLATION_OK') -or $r.Text.Contains('R06B1_PLAN_READ_BEGIN_WIN') -or $r.Text.Contains('R06B1_PRIVATE_COPY_BEGIN_WIN')) { throw "C9W_REFUSAL_LEFT_STATE:$Label" }
     $script:passed++; "R06B1_PRECHECK_REFUSAL_OK_WIN:$Label"
 }
 New-Item -ItemType Directory -Path $TestRoot | Out-Null; Set-PrivateAcl $TestRoot @()

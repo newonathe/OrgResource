@@ -31,15 +31,16 @@ if ($LASTEXITCODE -ne 0) { Fail 'R06B1_ORACLE_DERIVATION' }
 Write-Marker "$derived"
 foreach ($f in 'c9_windows_guard.py', 'guard_probe.py', 'browser_preflight.cjs') { Copy-Item (Join-Path $PSScriptRoot $f) "$work\rt\repo\scripts\$f" }
 Copy-Item (Join-Path $repo 'extended\frontend\package.json') "$work\rt\repo\extended\frontend\package.json"
-foreach ($m in 'playwright', 'playwright-core') { Copy-Item -Recurse "$NodeModules\$m" "$work\rt\repo\extended\frontend\node_modules\$m" }
-Copy-Item -Recurse "$NodeModules\@playwright\test" "$work\rt\repo\extended\frontend\node_modules\@playwright\test"
-Copy-Item -Recurse (Split-Path $chromiumExe[0].FullName) "$work\rt\chromium"
+foreach ($m in 'playwright', 'playwright-core') { Copy-C9VerifiedTree $m 'all' "$NodeModules\$m" "$work\rt\repo\extended\frontend\node_modules\$m" }
+Copy-C9VerifiedTree 'playwright-test' 'all' "$NodeModules\@playwright\test" "$work\rt\repo\extended\frontend\node_modules\@playwright\test"
+Copy-C9VerifiedTree 'chromium' 'all' (Split-Path $chromiumExe[0].FullName) "$work\rt\chromium"
 $pyHome = (& $Python -I -c 'import sys; print(sys.base_prefix)').Trim()
-foreach ($f in Get-ChildItem -LiteralPath $pyHome -File | Where-Object Name -Match '\.(exe|dll)$') { Copy-Item $f.FullName "$work\rt\python\" }
-& robocopy "$pyHome\DLLs" "$work\rt\python\DLLs" /E /NFL /NDL /NJH /NJS /NP | Out-Null
-if ($LASTEXITCODE -ge 8) { Fail 'R06B1_RUNTIME_COPY' }
-& robocopy "$pyHome\Lib" "$work\rt\python\Lib" /E /XD site-packages test idlelib tkinter __pycache__ ensurepip /NFL /NDL /NJH /NJS /NP | Out-Null
-if ($LASTEXITCODE -ge 8) { Fail 'R06B1_RUNTIME_COPY' }
+if ($LASTEXITCODE -ne 0 -or -not (Test-PlainPath $pyHome 'Container')) { Fail 'R06B1_RUNTIME_COPY' }
+Copy-C9VerifiedTree 'python-bin' 'bin' $pyHome "$work\rt\python"
+Copy-C9VerifiedTree 'python-dlls' 'all' "$pyHome\DLLs" "$work\rt\python\DLLs"
+Copy-C9VerifiedTree 'python-lib' 'lib' "$pyHome\Lib" "$work\rt\python\Lib"
+if ((Get-C9ToolIdentity $hostTools) -cne $hostToolDigest) { Fail 'R06B1_RUNTIME_COPY' }
+Write-Marker "R06B1_HOST_TOOL_IDENTITY_OK_WIN:sha256=$hostToolDigest"
 & (Join-Path (Split-Path $javaBin) 'javac.exe') --release 21 -d "$work\dumps\jc" @(Get-ChildItem (Join-Path $PSScriptRoot 'java\c9win') -Filter *.java | ForEach-Object FullName)
 if ($LASTEXITCODE -ne 0) { Fail 'R06B1_POSIX_PROVIDER' }
 & (Join-Path (Split-Path $javaBin) 'jar.exe') --create --file "$work\dumps\posixfs.jar" -C "$work\dumps\jc" .
@@ -90,8 +91,12 @@ Remove-Item -Recurse -LiteralPath "$work\restore\broad", "$work\restore\posix.tx
 Assert-Browser 'restore'
 Write-Marker 'R06B1_GUARD_AND_BROWSER_PREFLIGHT_OK_WIN:python_guard_positive_negative=true contained_renderer_page=true'
 Write-Marker 'R06B1_POSIX_OWNER_ONLY_OK_WIN:real_dacl=true broad_refused=true overwrite_refused=true wide_mode_refused=true'
-# Private copies only after non-private containment and runtime preflight.
+# Private content access only after non-private containment and runtime preflight.
 if ($Mode -ceq 'ApprovedImport') {
+    if ((Get-C9ToolIdentity $hostTools) -cne $hostToolDigest) { Fail 'R06B1_RUNTIME_COPY' }
+    Write-Marker 'R06B1_PLAN_READ_BEGIN_WIN'
+    Assert-ApprovedPlan $Plan $repo
+    Write-Marker 'R06B1_PRIVATE_COPY_BEGIN_WIN'
     foreach ($role in 'restore', 'mixed') {
         Copy-Item -LiteralPath $Plan -Destination "$work\$role\approved-plan.json"
         Assert-ApprovedPlan "$work\$role\approved-plan.json" '' @($roles[$role].Sid)
