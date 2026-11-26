@@ -113,11 +113,13 @@ try {
     Remove-Item -LiteralPath "$good\small.json", "$good\same.json"
     # Network and loopback failure: the evaluator must refuse each altered result.
     $sound = @{ self = 'CONNECTED'; ownListener = 'CONNECTED'; external4 = 'EACCES'; external6 = 'ENETUNREACH'; hostLoopback = 'ETIMEDOUT'; lan = 'TIMEOUT'; 'role mixed' = 'ETIMEDOUT'; 'udp lan' = 'NO_REPLY'; dnsDirect = 'ECONNREFUSED'; dnsSystem = 'ENOTFOUND'; 'path x' = 'EPERM'; 'write x' = 'EPERM' }
-    Assert-ProbeResult $sound
+    $sound['udp loopback'] = 'NO_REPLY'
+    $probeSpec = @{ tcpTargets = @{ ownListener = @{}; hostLoopback = @{}; lan = @{}; 'role mixed' = @{} }; udpTargets = @(@{ name = 'lan' }, @{ name = 'loopback' }); paths = @('x'); writePaths = @('x') }
+    Assert-ProbeResult $sound $probeSpec
     foreach ($case in @(@('self', 'TIMEOUT', 'R06B1_LOOPBACK_UNAVAILABLE'), @('ownListener', 'ECONNREFUSED', 'R06B1_LOOPBACK_UNAVAILABLE'), @('external4', 'CONNECTED', 'R06B1_EXTERNAL_REACHABLE'), @('external4', 'TIMEOUT', 'R06B1_EXTERNAL_REACHABLE'),
             @('external6', 'CONNECTED', 'R06B1_EXTERNAL_REACHABLE'), @('hostLoopback', 'CONNECTED', 'R06B1_EXTERNAL_REACHABLE'), @('lan', 'CONNECTED', 'R06B1_EXTERNAL_REACHABLE'), @('role mixed', 'CONNECTED', 'R06B1_EXTERNAL_REACHABLE'),
             @('udp lan', 'REPLY', 'R06B1_EXTERNAL_REACHABLE'), @('dnsDirect', 'ENOTFOUND', 'R06B1_EXTERNAL_REACHABLE'), @('dnsSystem', 'RESOLVED', 'R06B1_EXTERNAL_REACHABLE'), @('path x', 'READ', 'R06B1_CROSS_ROLE_FILES'), @('write x', 'WRITTEN', 'R06B1_RUNTIME_WRITABLE'))) {
-        $bad = $sound.Clone(); $bad[$case[0]] = $case[1]; Assert-Code "probe-$($case[0])-$($case[1])" $case[2] { Assert-ProbeResult $bad }
+        $bad = $sound.Clone(); $bad[$case[0]] = $case[1]; Assert-Code "probe-$($case[0])-$($case[1])" $case[2] { Assert-ProbeResult $bad $probeSpec }
     }
     # A mode spelled in another case must not fall through to the import stage.
     foreach ($m in 'approvedimport', 'fixtureonly', 'Other') {

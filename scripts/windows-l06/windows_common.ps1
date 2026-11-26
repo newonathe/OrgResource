@@ -220,10 +220,44 @@ function Read-Datagrams($Client) { $n = 0; try { while ($true) { $ep = [Net.IPEn
 function Invoke-Probe([string] $Role, [hashtable] $Spec) {
     $arg = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes(($Spec | ConvertTo-Json -Compress -Depth 5))); $out = New-Scratch 'probe.txt'
     if ((Invoke-Contained $Role "$env:ProgramFiles\nodejs\node.exe" ((Get-NodeArgs "$drive\rt\win\containment_probe.cjs") + @('probe', $arg)) @{} '' $out '' 120) -ne 0) { Fail 'R06B1_NETWORK_PROBE' }
-    return ([IO.File]::ReadAllText($out) | ConvertFrom-Json -AsHashtable)
+    return (Convert-ProbeJson ([IO.File]::ReadAllText($out)))
+}
+# Reject duplicate properties before PowerShell dictionary conversion can discard them.
+function Convert-ProbeJson([string] $Json) {
+    $doc = $null
+    try {
+        $doc = [System.Text.Json.JsonDocument]::Parse($Json)
+        if ($doc.RootElement.ValueKind -ne [System.Text.Json.JsonValueKind]::Object) { Fail 'R06B1_NETWORK_PROBE_SHAPE' }
+        $keys = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+        $result = [hashtable]::new([StringComparer]::Ordinal)
+        foreach ($property in $doc.RootElement.EnumerateObject()) {
+            if (-not $keys.Add($property.Name) -or $property.Value.ValueKind -ne [System.Text.Json.JsonValueKind]::String) { Fail 'R06B1_NETWORK_PROBE_SHAPE' }
+            $result.Add($property.Name, $property.Value.GetString())
+        }
+        return $result
+    } catch { Fail 'R06B1_NETWORK_PROBE_SHAPE' }
+    finally { if ($null -ne $doc) { $doc.Dispose() } }
 }
 # Pure evaluation, unit-tested with altered results in the negative matrix.
-function Assert-ProbeResult([hashtable] $Seen) {
+function Assert-ProbeResult([hashtable] $Seen, [hashtable] $Spec) {
+    # Every requested target must produce exactly one correctly cased, recognized result.
+    $tcpErrors = @('CONNECTED','TIMEOUT','ETIMEDOUT','ECONNREFUSED','EACCES','EPERM','ENETUNREACH','EHOSTUNREACH','EADDRNOTAVAIL')
+    $udpErrors = @('REPLY','NO_REPLY','EACCES','EPERM','ENETUNREACH','EHOSTUNREACH','EADDRNOTAVAIL','ECONNREFUSED','ETIMEDOUT')
+    $dnsErrors = @('RESOLVED','ENOTFOUND','ENODATA','ESERVFAIL','EREFUSED','ECONNREFUSED','ETIMEOUT','ETIMEDOUT','TIMEOUT','EACCES','EPERM','ENETUNREACH','EHOSTUNREACH','EAI_AGAIN')
+    $expected = [hashtable]::new([StringComparer]::OrdinalIgnoreCase)
+    $expected.Add('self', $tcpErrors); $expected.Add('external4', $tcpErrors); $expected.Add('external6', $tcpErrors)
+    $expected.Add('dnsDirect', $dnsErrors); $expected.Add('dnsSystem', $dnsErrors)
+    try {
+        foreach ($k in $Spec.tcpTargets.Keys) { $expected.Add($k, $tcpErrors) }
+        foreach ($v in $Spec.udpTargets) { $expected.Add("udp $($v.name)", $udpErrors) }
+        foreach ($p in $Spec.paths) { $expected.Add("path $p", @('READ','EPERM','EACCES')) }
+        foreach ($p in $Spec.writePaths) { $expected.Add("write $p", @('WRITTEN','EPERM','EACCES')) }
+    } catch { Fail 'R06B1_NETWORK_PROBE_SHAPE' }
+    if ($Seen.Count -ne $expected.Count -or @($expected.Keys | Where-Object { @($Seen.Keys) -cnotcontains $_ }).Count) { Fail 'R06B1_NETWORK_PROBE_SHAPE' }
+    if (@($expected.Keys) -cnotcontains 'ownListener' -or @($expected.Keys) -cnotcontains 'hostLoopback' -or @($expected.Keys) -cnotcontains 'udp loopback') { Fail 'R06B1_NETWORK_PROBE_SHAPE' }
+    foreach ($k in $expected.Keys) {
+        if ($Seen[$k] -isnot [string] -or $Seen[$k] -cnotin $expected[$k]) { Fail 'R06B1_NETWORK_PROBE_SHAPE' }
+    }
     if ($Seen.self -cne 'CONNECTED' -or $Seen.ownListener -cne 'CONNECTED') { Fail 'R06B1_LOOPBACK_UNAVAILABLE' }
     if ($Seen.external4 -cne 'EACCES' -or $Seen.external6 -cnotin @('EACCES', 'ENETUNREACH', 'EADDRNOTAVAIL')) { Fail 'R06B1_EXTERNAL_REACHABLE' }
     foreach ($k in @($Seen.Keys | Where-Object { $_ -clike 'role *' -or $_ -cin @('hostLoopback', 'lan') })) { if ($Seen[$k] -ceq 'CONNECTED') { Fail 'R06B1_EXTERNAL_REACHABLE' } }
@@ -269,8 +303,9 @@ function Assert-Containment {
             if ($lan.Count) { $udp += @{ name = 'lan'; host = "$($lan[0])"; port = $udpPort } }
             if ($gateway.Count) { $udp += @{ name = 'gateway'; host = "$($gateway[0])"; port = 53 } }
             $paths = @($names | Where-Object { $_ -cne $role } | ForEach-Object { "$drive\$_" }) + @("$drive\dumps", $Root, $env:USERPROFILE)
-            $seen = Invoke-Probe $role @{ tcpTargets = $tcp; udpTargets = $udp; paths = $paths; writePaths = @("$drive\rt"); dnsServer = $(if ($gatewayControl) { "$($gateway[0])" } else { '' }) }
-            Assert-ProbeResult $seen
+            $spec = @{ tcpTargets = $tcp; udpTargets = $udp; paths = $paths; writePaths = @("$drive\rt"); dnsServer = $(if ($gatewayControl) { "$($gateway[0])" } else { '' }) }
+            $seen = Invoke-Probe $role $spec
+            Assert-ProbeResult $seen $spec
             $v6 += $seen.external6
             if ((Read-Datagrams $udpHost) -ne 0) { Fail 'R06B1_EXTERNAL_REACHABLE' }
         }
