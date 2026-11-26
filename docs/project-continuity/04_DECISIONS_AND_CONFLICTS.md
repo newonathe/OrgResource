@@ -279,3 +279,7 @@ Actual BASELINE then DIRECT_TIMEOUT refusals; no observed driver state in prior 
 ### R038 actual bounded receipt — Report98 (2026-11-26 PHT)
 
 Actual MySQL1205/JDBC40001, HTTP503/no-store, exact18-table equality, post-unlock recovery and cleanup confirmed. Prior two failed attempts retained. No generic outage or approved private cohort equivalence, independent review open. Exact report 784eca42e5f4a8200dbe76c5c8ddb3022a399e98:docs/handoffs/claude-local-execution-2026-11-24/98_R038_ACTUAL_OWNED_LOCK_RECEIPT.md.
+
+### Public targeted batch consolidated — Report99 (2026-11-26 PHT)
+
+Corrected R036/R041 actual bounded pass; no broad retest absent material gap. Next H01 explicit owner consent and custody before native successor. No L06 relaunch from continue alone. Three automatic Extended terminal logs remain pending. Exact report 9039beb4e4e84baf1e3011e07b868b2940c7a0e6:docs/handoffs/claude-local-execution-2026-11-24/99_PUBLIC_VERIFICATION_CONSOLIDATION_AND_OWNER_GATE.md.
