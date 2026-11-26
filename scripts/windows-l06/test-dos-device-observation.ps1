@@ -24,7 +24,8 @@ Require ($a.SameObservation($b)) 'C9W_DOS_OBSERVATION_CHANGED'
 $context = [C9LogonContext]::Read()
 Require ($context.SameContext([C9LogonContext]::Read())) 'C9W_LOGON_CONTEXT_CHANGED'
 Require ($context.UserSid -ceq $a.UserSid -and $context.AuthenticationId -ceq $a.AuthenticationId -and $context.SessionId -eq $a.SessionId -and $context.LogonTime -ceq $a.LogonTime) 'C9W_LOGON_CONTEXT_BINDING'
-Require ($context.SessionId -gt 0 -and $context.LogonTime -cmatch '^[1-9][0-9]{0,18}
+Require ($context.SessionId -gt 0 -and $context.LogonTime -cmatch '^[1-9][0-9]{0,18}$' -and $null -eq $context.BootId -and $null -eq $a.BootId) 'C9W_LOGON_CONTEXT_SHAPE'
+$clone = $a.Targets
 $clone[0] = 'fictional mutation'
 Require ($a.SameObservation($b)) 'C9W_DOS_TARGETS_MUTABLE'
 foreach ($drive in 'Q:', 'R:', 'U:', 'V:', 'W:') {
@@ -38,17 +39,3 @@ foreach ($drive in 'Q:', 'R:', 'U:', 'V:', 'W:') {
     } else { throw 'C9W_DOS_UNKNOWN_STATUS' }
 }
 [Console]::WriteLine('C9W_DOS_OBSERVER_FIXTURE_OK:system_positive=true context_bound=true lsa_logon_time=true session_bound=true boot_witness_unavailable=true targets_immutable=true errors_not_absence=true read_only=true')
- -and $null -eq $context.BootId -and $null -eq $a.BootId) 'C9W_LOGON_CONTEXT_SHAPE'
-$clone = $a.Targets
-$clone[0] = 'fictional mutation'
-Require ($a.SameObservation($b)) 'C9W_DOS_TARGETS_MUTABLE'
-foreach ($drive in 'Q:', 'R:', 'U:', 'V:', 'W:') {
-    $seen = [C9DosDeviceObservation]::Read($drive)
-    Require ($seen.UserSid -ceq $a.UserSid -and $seen.AuthenticationId -ceq $a.AuthenticationId) 'C9W_DOS_CONTEXT_CHANGED'
-    if ($seen.Status -ceq 'OBSERVED') {
-        Require ($seen.NativeError -eq 0 -and $seen.Targets.Count -ge 1) 'C9W_DOS_OBSERVED_SHAPE'
-    } elseif ($seen.Status -ceq 'UNRESOLVED') {
-        Require ($seen.NativeError -ne 0 -and $seen.Targets.Count -eq 0) 'C9W_DOS_UNKNOWN_SHAPE'
-    } else { throw 'C9W_DOS_UNKNOWN_STATUS' }
-}
-[Console]::WriteLine('C9W_DOS_OBSERVER_FIXTURE_OK:system_positive=true context_bound=true targets_immutable=true errors_not_absence=true read_only=true')

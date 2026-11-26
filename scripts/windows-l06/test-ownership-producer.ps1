@@ -63,14 +63,7 @@ try {
         $packages = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::LocalApplicationData)) 'Packages'
         $package = Join-Path $packages $profile.Name
         $storage = [C9DirectoryIdentity]::Open($package)
-        try { Require ($storage.Id -cmatch '^[a-f0-9]{16}:[a-f0-9]{32}
-        Require ((Read-Journal $held).profiles.jobtest.state -ceq 'removed') 'C9W_TEST_PROFILE_REMOVED'
-        Refuses { $p.RemoveProfile('jobtest') } 'C9W_PROFILE_ROLE'
-    } finally { $p.Dispose() }
-    Require (Test-Path -LiteralPath $path -PathType Container) 'C9W_TEST_WORK_REMOVED'
-} finally { $held.Dispose() }
-[Console]::WriteLine('C9W_OWNERSHIP_PRODUCER_FIXTURE_OK:collision_preserved=true intent_before_create=true exact_identity=true profile_journal=true profile_storage_absence=true legacy_refused=true evidence_retained=true')
-) 'C9W_TEST_PROFILE_STORAGE_ID' } finally { $storage.Dispose() }
+        try { Require ($storage.Id -cmatch '^[a-f0-9]{16}:[a-f0-9]{32}$') 'C9W_TEST_PROFILE_STORAGE_ID' } finally { $storage.Dispose() }
         Refuses { $profile.AssertProfileStorageAbsent() } 'C9W_PROFILE_STORAGE_STATE'
         $p.RemoveProfile('jobtest')
         $profile.AssertProfileStorageAbsent()
@@ -81,4 +74,4 @@ try {
     } finally { $p.Dispose() }
     Require (Test-Path -LiteralPath $path -PathType Container) 'C9W_TEST_WORK_REMOVED'
 } finally { $held.Dispose() }
-[Console]::WriteLine('C9W_OWNERSHIP_PRODUCER_FIXTURE_OK:collision_preserved=true intent_before_create=true exact_identity=true profile_journal=true legacy_refused=true evidence_retained=true')
+[Console]::WriteLine('C9W_OWNERSHIP_PRODUCER_FIXTURE_OK:collision_preserved=true intent_before_create=true exact_identity=true profile_journal=true profile_storage_absence=true legacy_refused=true evidence_retained=true')
