@@ -55,7 +55,7 @@ def inventory(tables):
 
 def original(value, expected):
     r.exact(value, ORIGINAL_FIELDS)
-    r.require(value["identity"] == expected)
+    r.require(r.canonical(value["identity"]) == r.canonical(expected))
     inventory(value["tables"])
     r.hex_value(value["domainSha256"], 64)
     r.require(type(value["sessionRows"]) is list and len(value["sessionRows"]) == 2
@@ -63,7 +63,7 @@ def original(value, expected):
 
 def phase(value, expected, scope, manifest):
     r.exact(value, OBS_FIELDS)
-    r.require(value["identity"] == expected)
+    r.require(r.canonical(value["identity"]) == r.canonical(expected))
     inventory(value["tables"])
     counts = value["counts"]
     r.exact(counts, set(COUNT_KEYS))
@@ -71,9 +71,11 @@ def phase(value, expected, scope, manifest):
                   for k,v in zip(COUNT_KEYS, COUNTS[scope])))
     r.hex_value(value["domainSha256"], 64)
     r.require(value["domainSha256"] == manifest["domainSha256"])
+    # The phase envelope binds later archive observations to the row snapshot;
+    # backupSource row capture precedes the archive creation, not the archive hash.
     r.require(value["archiveSha256"] == manifest["archiveSha256"])
     r.require(type(value["archiveBytes"]) is int and value["archiveBytes"] == manifest["archiveBytes"])
-    r.require(value["serializer"] == manifest["serializer"])
+    r.require(r.canonical(value["serializer"]) == r.canonical(manifest["serializer"]))
     # The owned mysqld is configured --default-time-zone=+00:00.
     # Session observation alone does not prove the dump process used the same timezone.
     r.require(value["sessionTimeZone"] == "+00:00")
@@ -89,7 +91,7 @@ def bind(manifest_bytes, evidence_bytes, expected):
     m = r.read_manifest(manifest_bytes, scope, expected["manifestSha256"])
     for k in ("runId", "sourceSha", "harnessSha", "jarSha256", "serializer",
               "archiveSha256", "archiveBytes", "postflightReceiptSha256"):
-        r.require(m[k] == expected[k])
+        r.require(r.canonical(m[k]) == r.canonical(expected[k]))
     r.require(m["serializer"]["clientVersion"] == "8.0.46")
     r.require(m["serializer"]["timeZone"] == "+00:00")
     ids = expected["identities"]
@@ -110,7 +112,7 @@ def bind(manifest_bytes, evidence_bytes, expected):
                   and e["finalPostflightReceiptSha256"] == m["postflightReceiptSha256"])
         original(e["originalBefore"], ids["source"])
         original(e["originalAfter"], ids["source"])
-        r.require(e["originalBefore"] == e["originalAfter"])
+        r.require(r.canonical(e["originalBefore"]) == r.canonical(e["originalAfter"]))
         phases = e["phases"]
         r.exact(phases, set(PHASES))
         stamps = [phase(phases[name], ids["restore" if name.startswith("backup") else "mixed"],

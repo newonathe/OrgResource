@@ -4,11 +4,11 @@ import json
 import unittest
 import retention_contract as r
 import retention_evidence as e
-from test_retention_contract import RetentionContract
+import test_retention_contract as fixtures
 
 class EvidenceTests(unittest.TestCase):
     def setUp(self):
-        fixture = RetentionContract()
+        fixture = fixtures.RetentionContract()
         fixture.setUp()
         self.m = copy.deepcopy(fixture.m)
         self.m["serializer"]["timeZone"] = "+00:00"
@@ -87,6 +87,16 @@ class EvidenceTests(unittest.TestCase):
         for bad in (b" "+raw,b'{"scope":"FICTIONAL_TEST",'+raw[1:],
                     b'{"Scope":"FICTIONAL_TEST",'+raw[1:],b"x"*32769):
             with self.assertRaises(ValueError): e.bind(self.raw,bad,self.expected)
+    def test_no_numeric_boolean_alias(self):
+        x=copy.deepcopy(self.ev); x["phases"]["restored"]["serializer"]["lowerCaseTableNames"]=True
+        with self.assertRaises(ValueError): self.bind(ev=x)
+        x=copy.deepcopy(self.expected); x["serializer"]["lowerCaseTableNames"]=True
+        with self.assertRaises(ValueError): self.bind(expected=x)
+        x=copy.deepcopy(self.expected); x["identities"]["mixed"]["port"]=1
+        ev=copy.deepcopy(self.ev)
+        for name in ("restored","restoredFinal"):
+            ev["phases"][name]["identity"]["port"]=True
+        with self.assertRaises(ValueError): self.bind(ev=ev,expected=x)
     def test_no_approved_scope_substitution(self):
         x=copy.deepcopy(self.expected); x["scope"]="APPROVED_IMPORT"
         with self.assertRaises(ValueError): self.bind(expected=x)
