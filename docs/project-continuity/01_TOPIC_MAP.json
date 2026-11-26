@@ -634,7 +634,7 @@
         }
       ],
       "authority": "93 route candidate mapping, independent issue34 blocked; current code and actual test evidence.",
-      "next": "Inspect actual PR58 CI45796775299 #82 R036 recovery throttle/disabled-account generic outcomes and #83 R041 token tenant binding, resolve observed failures without weakening oracle. R035 actual CI45767809301 class81/Maven106 bounded verified, prior automatic full Verify45767128292 all jobs terminal success; R031 and pagination receipts retained. Next material security/data-integrity residual, e.g. public R038 guarded transient DB failure separate from private positives. All93 independent reviews open; G01/IR4 BLOCKED,13 owner-gated privacy flags,H01–H06 native successor,L06 HOLD/no WSL unchanged.",
+      "next": "Inspect corrected PR58 CI45798910597 actual #82/#83; observed prior CI45796775299 #82 fixture index error (fixtureInOrg creates zero codes), corrected five fictional persisted codes, not application defect. R038 controlled owned-DB fault next: distinguish retryable 503 from generic 500; no private positive. Formal CHAT graph15 bounded/1 source reconciled review open; no unfinished CHAT-only prerequisite, additional risk-based G01 tests feasible. Critical H01 owner custody/authorization -> H02–H06 accepted native successor (32 matrix cases NOT_RUN plus separate H04) -> owner L06 -> off-host L07 -> authorized G02. All93 independent reviews open; 13 privacy flags owner-gated; G03–07 separate gates. L06 HOLD/no WSL.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/74_STRUCTURED_PRIVACY_AND_RECOVERED_ROUTE_RECEIPTS.md",
@@ -815,6 +815,24 @@
           "blob": "da329310ad5442292b556429ac665ac9d3090155",
           "ref": "493b7e53041058314c0efb988d147fa446799d1d",
           "review": "RELEVANT_RANGES R035/R036/R041"
+        },
+        {
+          "path": "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java",
+          "blob": "281f6cb89cdfccaf24494afa538a6c4c1dfb590f",
+          "ref": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+          "review": "RELEVANT_RANGES corrected #82"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/93_G01_RECOVERY_FIXTURE_FAILURE_AND_REMAINING_WORK.md",
+          "blob": "ae59efbafde1c4c3833441ce969d44edd8af3b62",
+          "ref": "643690c6248a09f413004715afb0042bb41c2166",
+          "review": "FULL failure and remaining gates"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
+          "blob": "c3a528ea0273d25b4004452b4156d16b1a6e9ba8",
+          "ref": "643690c6248a09f413004715afb0042bb41c2166",
+          "review": "RELEVANT_RANGES R036/R038/R041"
         }
       ]
     },
@@ -1103,7 +1121,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "Inspect actual PR58 CI45796775299 #82 R036 recovery throttle/disabled-account generic outcomes and #83 R041 token tenant binding, resolve observed failures without weakening oracle. R035 actual CI45767809301 class81/Maven106 bounded verified, prior automatic full Verify45767128292 all jobs terminal success; R031 and pagination receipts retained. Next material security/data-integrity residual, e.g. public R038 guarded transient DB failure separate from private positives. All93 independent reviews open; G01/IR4 BLOCKED,13 owner-gated privacy flags,H01–H06 native successor,L06 HOLD/no WSL unchanged.",
+      "next": "Inspect corrected PR58 CI45798910597 actual #82/#83; observed prior CI45796775299 #82 fixture index error (fixtureInOrg creates zero codes), corrected five fictional persisted codes, not application defect. R038 controlled owned-DB fault next: distinguish retryable 503 from generic 500; no private positive. Formal CHAT graph15 bounded/1 source reconciled review open; no unfinished CHAT-only prerequisite, additional risk-based G01 tests feasible. Critical H01 owner custody/authorization -> H02–H06 accepted native successor (32 matrix cases NOT_RUN plus separate H04) -> owner L06 -> off-host L07 -> authorized G02. All93 independent reviews open; 13 privacy flags owner-gated; G03–07 separate gates. L06 HOLD/no WSL.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -1528,6 +1546,24 @@
           "blob": "da329310ad5442292b556429ac665ac9d3090155",
           "ref": "493b7e53041058314c0efb988d147fa446799d1d",
           "review": "RELEVANT_RANGES R035/R036/R041"
+        },
+        {
+          "path": "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java",
+          "blob": "281f6cb89cdfccaf24494afa538a6c4c1dfb590f",
+          "ref": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+          "review": "RELEVANT_RANGES corrected #82"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/93_G01_RECOVERY_FIXTURE_FAILURE_AND_REMAINING_WORK.md",
+          "blob": "ae59efbafde1c4c3833441ce969d44edd8af3b62",
+          "ref": "643690c6248a09f413004715afb0042bb41c2166",
+          "review": "FULL failure and remaining gates"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
+          "blob": "c3a528ea0273d25b4004452b4156d16b1a6e9ba8",
+          "ref": "643690c6248a09f413004715afb0042bb41c2166",
+          "review": "RELEVANT_RANGES R036/R038/R041"
         }
       ]
     },
@@ -1674,7 +1710,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "Inspect actual PR58 CI45796775299 #82 R036 recovery throttle/disabled-account generic outcomes and #83 R041 token tenant binding, resolve observed failures without weakening oracle. R035 actual CI45767809301 class81/Maven106 bounded verified, prior automatic full Verify45767128292 all jobs terminal success; R031 and pagination receipts retained. Next material security/data-integrity residual, e.g. public R038 guarded transient DB failure separate from private positives. All93 independent reviews open; G01/IR4 BLOCKED,13 owner-gated privacy flags,H01–H06 native successor,L06 HOLD/no WSL unchanged.",
+      "next": "Inspect corrected PR58 CI45798910597 actual #82/#83; observed prior CI45796775299 #82 fixture index error (fixtureInOrg creates zero codes), corrected five fictional persisted codes, not application defect. R038 controlled owned-DB fault next: distinguish retryable 503 from generic 500; no private positive. Formal CHAT graph15 bounded/1 source reconciled review open; no unfinished CHAT-only prerequisite, additional risk-based G01 tests feasible. Critical H01 owner custody/authorization -> H02–H06 accepted native successor (32 matrix cases NOT_RUN plus separate H04) -> owner L06 -> off-host L07 -> authorized G02. All93 independent reviews open; 13 privacy flags owner-gated; G03–07 separate gates. L06 HOLD/no WSL.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -1855,6 +1891,24 @@
           "blob": "da329310ad5442292b556429ac665ac9d3090155",
           "ref": "493b7e53041058314c0efb988d147fa446799d1d",
           "review": "RELEVANT_RANGES R035/R036/R041"
+        },
+        {
+          "path": "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java",
+          "blob": "281f6cb89cdfccaf24494afa538a6c4c1dfb590f",
+          "ref": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+          "review": "RELEVANT_RANGES corrected #82"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/93_G01_RECOVERY_FIXTURE_FAILURE_AND_REMAINING_WORK.md",
+          "blob": "ae59efbafde1c4c3833441ce969d44edd8af3b62",
+          "ref": "643690c6248a09f413004715afb0042bb41c2166",
+          "review": "FULL failure and remaining gates"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
+          "blob": "c3a528ea0273d25b4004452b4156d16b1a6e9ba8",
+          "ref": "643690c6248a09f413004715afb0042bb41c2166",
+          "review": "RELEVANT_RANGES R036/R038/R041"
         }
       ]
     }

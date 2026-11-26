@@ -366,7 +366,7 @@
         "L05"
       ],
       "receipt": "93 route acceptance and separate reviewer actual evidence; C8 #34",
-      "notes": "No fabricated signature or blanket equivalence Report74: R035/R038 actual public recovered-control job138726559312 markers rechecked at exact 8c6000a4; remaining normal-writable/approved private positive/transient DB and independent IR4 acceptance open. No new runtime. Report76 R031 source/#67 no-store and hash-only/refusal scope rechecked; dedicated log-redaction NOT_RUN, independent IR4 open. Report78 scoped 86-file privacy review complete; 13 remediation flags open. G01 residual runtime/IR4 independent review unchanged. Report79 PR58 #79/#80 test-only 101-row candidates at 9208f29a7877ea7e5d51a5cc0ed72d67dafe0624 CI45702182390 in progress; no new actual acceptance. R031 protected-output design NOT_RUN. Report81: pure R031 scanner 24/24 synthetic; actual protected driver/runtime NOT_RUN. PR58 backend step success metadata, later checks running, logs 404; no independent acceptance. Report83 PR58 actual 105 Maven/80 identity and 19 Playwright, bounded #79/#80 R082/R089/R091; independent acceptance remains BLOCKED. R031 scanner/lifecycle 65/65 synthetic, actual driver/runtime NOT_RUN. Report85 real Linux Node fictional subprocess14/14 actual receipt; app log capture NOT_RUN, independent acceptance BLOCKED. Report87 actual initial and hardened owned MySQL8.0.46 guard success; app/JDBC/log oracle NOT_RUN, independent acceptance BLOCKED. Report90 actual protected Java21/MySQL R031 rotation, two stdout/stderr sinks zero matches and cleanup verified bounded; independent IR4/alternate/off-path logs remain open, G01 blocked. Report91 all93 gap/disposition fields reconciled, #81 R035 writable logout candidate staged at PR58 exact13837dc, CI45767809301 pending; independent BLOCKED. Report92 actual #81 R035 CI45767809301 class81/Maven106 success; new #82/#83 R036/R041 at 6c982a5 CI45796775299 pending; independent BLOCKED."
+      "notes": "No fabricated signature or blanket equivalence Report74: R035/R038 actual public recovered-control job138726559312 markers rechecked at exact 8c6000a4; remaining normal-writable/approved private positive/transient DB and independent IR4 acceptance open. No new runtime. Report76 R031 source/#67 no-store and hash-only/refusal scope rechecked; dedicated log-redaction NOT_RUN, independent IR4 open. Report78 scoped 86-file privacy review complete; 13 remediation flags open. G01 residual runtime/IR4 independent review unchanged. Report79 PR58 #79/#80 test-only 101-row candidates at 9208f29a7877ea7e5d51a5cc0ed72d67dafe0624 CI45702182390 in progress; no new actual acceptance. R031 protected-output design NOT_RUN. Report81: pure R031 scanner 24/24 synthetic; actual protected driver/runtime NOT_RUN. PR58 backend step success metadata, later checks running, logs 404; no independent acceptance. Report83 PR58 actual 105 Maven/80 identity and 19 Playwright, bounded #79/#80 R082/R089/R091; independent acceptance remains BLOCKED. R031 scanner/lifecycle 65/65 synthetic, actual driver/runtime NOT_RUN. Report85 real Linux Node fictional subprocess14/14 actual receipt; app log capture NOT_RUN, independent acceptance BLOCKED. Report87 actual initial and hardened owned MySQL8.0.46 guard success; app/JDBC/log oracle NOT_RUN, independent acceptance BLOCKED. Report90 actual protected Java21/MySQL R031 rotation, two stdout/stderr sinks zero matches and cleanup verified bounded; independent IR4/alternate/off-path logs remain open, G01 blocked. Report91 all93 gap/disposition fields reconciled, #81 R035 writable logout candidate staged at PR58 exact13837dc, CI45767809301 pending; independent BLOCKED. Report92 actual #81 R035 CI45767809301 class81/Maven106 success; new #82/#83 R036/R041 at 6c982a5 CI45796775299 pending; independent BLOCKED. Report93 actual CI45796775299 #82 fixture error before recovery; corrected75bbc99 CI45798910597 pending; R038 source 503/500 distinction actual fault unrun. Remaining owner/native/reviewer gates unchanged."
     },
     {
       "id": "G02",
@@ -2597,12 +2597,28 @@
     "latest_report": "493b7e53041058314c0efb988d147fa446799d1d"
   },
   "g01_r036_r041_candidate": {
-    "sha": "6c982a56196269cd30f81545d71c012307c80da6",
+    "sha": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
     "base": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
     "prior": "13837dc28181a0662407e105e089f8360dfcb217",
     "pr": 58,
-    "run": 45796775299,
+    "run": 45798910597,
     "status": "NOT_RUN",
-    "report": "493b7e53041058314c0efb988d147fa446799d1d"
+    "report": "643690c6248a09f413004715afb0042bb41c2166",
+    "failed_sha": "6c982a56196269cd30f81545d71c012307c80da6",
+    "failed_run": 45796775299,
+    "failed_job": 139829336138,
+    "failed_status": "FAILED",
+    "failure": "fixtureInOrg returns empty recovery codes; index error before HTTP recovery"
+  },
+  "remaining_work_checkpoint": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/93_G01_RECOVERY_FIXTURE_FAILURE_AND_REMAINING_WORK.md",
+    "ref": "643690c6248a09f413004715afb0042bb41c2166",
+    "chat_bounded": 15,
+    "chat_source_reconciled_review_open": 1,
+    "independent_routes_open": 93,
+    "native_matrix_not_run": 32,
+    "privacy_flags": 13,
+    "ready_to_launch": false,
+    "next": "Inspect corrected PR58 CI45798910597 actual #82/#83; observed prior CI45796775299 #82 fixture index error (fixtureInOrg creates zero codes), corrected five fictional persisted codes, not application defect. R038 controlled owned-DB fault next: distinguish retryable 503 from generic 500; no private positive. Formal CHAT graph15 bounded/1 source reconciled review open; no unfinished CHAT-only prerequisite, additional risk-based G01 tests feasible. Critical H01 owner custody/authorization -> H02–H06 accepted native successor (32 matrix cases NOT_RUN plus separate H04) -> owner L06 -> off-host L07 -> authorized G02. All93 independent reviews open; 13 privacy flags owner-gated; G03–07 separate gates. L06 HOLD/no WSL."
   }
 }

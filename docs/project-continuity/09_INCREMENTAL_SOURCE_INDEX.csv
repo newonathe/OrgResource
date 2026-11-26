@@ -335,3 +335,6 @@
 "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","eaaf1a8443f2a022d4c3dc70f1d3f74273453914","509925","100644","6c982a56196269cd30f81545d71c012307c80da6","RELEVANT_RANGES #82/#83 staged"
 "docs/handoffs/claude-local-execution-2026-11-24/92_G01_LOGOUT_RECEIPT_AND_RECOVERY_INVITATION_CANDIDATES.md","770b8d6c61b04ab9b82a4d79ecce916ea1d13568","6395","100644","493b7e53041058314c0efb988d147fa446799d1d","FULL actual R035 and candidate receipt"
 "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv","da329310ad5442292b556429ac665ac9d3090155","109117","100644","493b7e53041058314c0efb988d147fa446799d1d","RELEVANT_RANGES R035/R036/R041"
+"extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","281f6cb89cdfccaf24494afa538a6c4c1dfb590f","510827","100644","75bbc99ceb4d5be3b1c1def1e80abb3509a287fb","RELEVANT_RANGES corrected #82"
+"docs/handoffs/claude-local-execution-2026-11-24/93_G01_RECOVERY_FIXTURE_FAILURE_AND_REMAINING_WORK.md","ae59efbafde1c4c3833441ce969d44edd8af3b62","7711","100644","643690c6248a09f413004715afb0042bb41c2166","FULL failure and remaining gates"
+"docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv","c3a528ea0273d25b4004452b4156d16b1a6e9ba8","109836","100644","643690c6248a09f413004715afb0042bb41c2166","RELEVANT_RANGES R036/R038/R041"

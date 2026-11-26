@@ -263,3 +263,7 @@ Recovered-session-only receipt does not prove normal writable runtime. Draft PR5
 ### R035 actual and R036/R041 candidate — Report92 (2026-11-26 PHT)
 
 R035 actual bounded normal writable logout success. R036 generic HTTP/throttle outcomes are distinct from timing equivalence and log redaction. R041 token-bound tenant is authoritative; existing selected workspace does not change implicitly. New candidates unrun at receipt, independent review open. Exact report 493b7e53041058314c0efb988d147fa446799d1d:docs/handoffs/claude-local-execution-2026-11-24/92_G01_LOGOUT_RECEIPT_AND_RECOVERY_INVITATION_CANDIDATES.md.
+
+### Observed #82 fixture error and remaining work — Report93 (2026-11-26 PHT)
+
+Correct real fictional recovery batch before disable; retain failed receipt and original security assertions. R038 classification 503 distinct from retryable DB 503 and generic 500; test actual precise fault and do not assume universal 503. Formal CHAT preparation bounded; additional directed gaps not substitute for independent/native/owner gates. Exact report 643690c6248a09f413004715afb0042bb41c2166:docs/handoffs/claude-local-execution-2026-11-24/93_G01_RECOVERY_FIXTURE_FAILURE_AND_REMAINING_WORK.md.
