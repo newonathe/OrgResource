@@ -6331,6 +6331,87 @@ class C1IdentityAcceptanceTest {
             this.client = client; this.csrf = csrf; this.sessionId = sessionId; this.oldSessionId = oldSessionId; this.activeOrgId = activeOrgId;
         }
     }
+    @Test @Order(81)
+    void G01R035WritableLogoutDeletesOnlyCurrentSessionAndRejectsSavedCookie() throws Exception {
+        Fixture home = newTenant("G01-logout-home", Membership.Role.OWNER);
+        Fixture foreign = newTenant("G01-logout-foreign", Membership.Role.OWNER);
+        Session current = login(home.username, home.password);
+        Session peer = login(home.username, home.password);
+        Session outsider = login(foreign.username, foreign.password);
+        assertEquals(201, post(current, "/api/resources",
+                GSON.toJson(new ResourceRequest("Fictional logout home", "REUSABLE", 3))).statusCode());
+        assertEquals(201, post(outsider, "/api/resources",
+                GSON.toJson(new ResourceRequest("Fictional logout foreign", "CONSUMABLE", 4))).statusCode());
+        for (Session actor : List.of(current, peer, outsider))
+            assertEquals(200, get(actor.client, "/api/v2/session").statusCode());
+        String saved = cookie(current.client);
+        assertTrue(saved != null && saved.equals(current.sessionId));
+        assertTrue(Set.of(saved, peer.sessionId, outsider.sessionId).size() == 3);
+        String primary = jdbc.queryForObject("SELECT PRIMARY_ID FROM SPRING_SESSION WHERE SESSION_ID=? AND PRINCIPAL_NAME=?",
+                String.class, saved, home.username);
+        assertNotNull(primary);
+        String attrs = "SELECT SESSION_PRIMARY_ID,ATTRIBUTE_NAME,HEX(ATTRIBUTE_BYTES) AS bytes_hex "
+                + "FROM SPRING_SESSION_ATTRIBUTES WHERE SESSION_PRIMARY_ID IN "
+                + "(SELECT PRIMARY_ID FROM SPRING_SESSION WHERE PRINCIPAL_NAME IN (?,?)) "
+                + "ORDER BY SESSION_PRIMARY_ID,ATTRIBUTE_NAME";
+        String sessions = "SELECT PRIMARY_ID,SESSION_ID,PRINCIPAL_NAME,CREATION_TIME,MAX_INACTIVE_INTERVAL "
+                + "FROM SPRING_SESSION WHERE PRINCIPAL_NAME IN (?,?) ORDER BY PRIMARY_ID";
+        var allSessions = jdbc.queryForList(sessions, home.username, foreign.username);
+        assertEquals(3, allSessions.size());
+        var allAttrs = jdbc.queryForList(attrs, home.username, foreign.username);
+        assertTrue(allAttrs.stream().anyMatch(row -> primary.equals(row.get("SESSION_PRIMARY_ID"))));
+        var keepSessions = allSessions.stream().filter(row -> !primary.equals(row.get("PRIMARY_ID"))).toList();
+        var keepAttrs = allAttrs.stream().filter(row -> !primary.equals(row.get("SESSION_PRIMARY_ID"))).toList();
+        assertEquals(2, keepSessions.size());
+        assertTrue(keepAttrs.stream().map(row -> row.get("SESSION_PRIMARY_ID")).distinct().count() == 2);
+        var domain = governanceDenialRows(home.orgDbId, foreign.orgDbId);
+        var homeIdentity = identityAuthRows(home).subList(0, 4);
+        var foreignIdentity = identityAuthRows(foreign).subList(0, 4);
+
+        // A valid cookie with invalid CSRF may not terminate any authenticated session.
+        assertEquals(403, post(current, "/api/v2/auth/logout", "", "invalid-csrf", origin()).statusCode());
+        assertTrue(allSessions.equals(jdbc.queryForList(sessions, home.username, foreign.username)));
+        assertTrue(allAttrs.equals(jdbc.queryForList(attrs, home.username, foreign.username)));
+        assertTrue(saved.equals(cookie(current.client)));
+        assertEquals(200, get(current.client, "/api/v2/session").statusCode());
+        assertTrue(domain.equals(governanceDenialRows(home.orgDbId, foreign.orgDbId)));
+        assertTrue(homeIdentity.equals(identityAuthRows(home).subList(0, 4)));
+        assertTrue(foreignIdentity.equals(identityAuthRows(foreign).subList(0, 4)));
+
+        HttpResponse<String> logout = post(current, "/api/v2/auth/logout", "");
+        assertEquals(204, logout.statusCode());
+        assertTrue(logout.body().isEmpty());
+        assertNull(springSessions.findById(saved));
+        assertEquals(0, jdbc.queryForObject("SELECT COUNT(*) FROM SPRING_SESSION WHERE PRIMARY_ID=? OR SESSION_ID=?",
+                Integer.class, primary, saved));
+        assertEquals(0, jdbc.queryForObject("SELECT COUNT(*) FROM SPRING_SESSION_ATTRIBUTES WHERE SESSION_PRIMARY_ID=?",
+                Integer.class, primary));
+        assertTrue(keepSessions.equals(jdbc.queryForList(sessions, home.username, foreign.username)));
+        assertTrue(keepAttrs.equals(jdbc.queryForList(attrs, home.username, foreign.username)));
+
+        // No cookie jar or automatic replacement: replay the exact retired value.
+        HttpClient replay = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NEVER).build();
+        HttpResponse<String> stale = replay.send(HttpRequest.newBuilder(URI.create(base() + "/api/v2/session"))
+                .header("Cookie", COOKIE + "=" + saved).GET().build(), HttpResponse.BodyHandlers.ofString());
+        assertEquals(401, stale.statusCode());
+        assertEquals("AUTH_REQUIRED", json(stale).get("code").getAsString());
+        assertTrue(stale.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
+        assertEquals(401, get(current.client, "/api/v2/session").statusCode());
+        for (Session actor : List.of(peer, outsider)) {
+            var response = get(actor.client, "/api/v2/session");
+            assertEquals(200, response.statusCode());
+            assertEquals(actor.activeOrgId, json(response).getAsJsonObject("data").get("activeOrgId").getAsString());
+            assertTrue(actor.sessionId.equals(cookie(actor.client)));
+        }
+        assertTrue(keepSessions.equals(jdbc.queryForList(sessions, home.username, foreign.username)));
+        assertTrue(keepAttrs.equals(jdbc.queryForList(attrs, home.username, foreign.username)));
+        assertTrue(domain.equals(governanceDenialRows(home.orgDbId, foreign.orgDbId)));
+        assertTrue(homeIdentity.equals(identityAuthRows(home).subList(0, 4)));
+        assertTrue(foreignIdentity.equals(identityAuthRows(foreign).subList(0, 4)));
+        // Do not print raw credentials, session identifiers or serialized attributes.
+        // Legitimate last-access and expiry timestamp refreshes are excluded from peer comparisons.
+    }
+
     private record LoginRequest(String username, String password) { }
     private record NameRequest(String name) { }
     private record OrgRequest(UUID organizationId) { }
