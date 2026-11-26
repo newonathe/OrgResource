@@ -329,3 +329,6 @@
 ".github/workflows/r031-protected-rotation.yml","d1f37ec69342d50fb6274ab2350432bba8227235","1754","100644","eadd31eaa6affdc5b3d10940a89bbc1feaefb96a","FULL focused application workflow"
 "docs/handoffs/claude-local-execution-2026-11-24/90_R031_PROTECTED_ROTATION_RECEIPT.md","9dd5a11e15c837bbf44b0ef1a22bab1de569d0f2","8494","100644","a3f316c2dabd5963ceddc80063392e14e296e816","FULL actual bounded receipt"
 "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv","634abdbe9a7755a369d0c54d3313750378d3bff1","107984","100644","a3f316c2dabd5963ceddc80063392e14e296e816","RELEVANT_RANGES R031 addendum"
+"extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","b8251c993b4f970e1884269fcec6855dc05f5767","495945","100644","13837dc28181a0662407e105e089f8360dfcb217","RELEVANT_RANGES #81 staged and helper source"
+"docs/handoffs/claude-local-execution-2026-11-24/91_G01_ROUTE_RESIDUAL_RECONCILIATION.md","74b350bb684d2998c7dbe4a0c61452363f444ffc","5722","100644","3b58993d5c71b8b5b6ccad5913609d7b586ab11b","FULL route reconciliation"
+"docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv","150e03dd52e752b45f90823c0d397486c82d3e14","108292","100644","3b58993d5c71b8b5b6ccad5913609d7b586ab11b","RELEVANT_RANGES R035 addendum"

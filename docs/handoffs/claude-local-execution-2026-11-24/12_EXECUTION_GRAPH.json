@@ -366,7 +366,7 @@
         "L05"
       ],
       "receipt": "93 route acceptance and separate reviewer actual evidence; C8 #34",
-      "notes": "No fabricated signature or blanket equivalence Report74: R035/R038 actual public recovered-control job138726559312 markers rechecked at exact 8c6000a4; remaining normal-writable/approved private positive/transient DB and independent IR4 acceptance open. No new runtime. Report76 R031 source/#67 no-store and hash-only/refusal scope rechecked; dedicated log-redaction NOT_RUN, independent IR4 open. Report78 scoped 86-file privacy review complete; 13 remediation flags open. G01 residual runtime/IR4 independent review unchanged. Report79 PR58 #79/#80 test-only 101-row candidates at 9208f29a7877ea7e5d51a5cc0ed72d67dafe0624 CI45702182390 in progress; no new actual acceptance. R031 protected-output design NOT_RUN. Report81: pure R031 scanner 24/24 synthetic; actual protected driver/runtime NOT_RUN. PR58 backend step success metadata, later checks running, logs 404; no independent acceptance. Report83 PR58 actual 105 Maven/80 identity and 19 Playwright, bounded #79/#80 R082/R089/R091; independent acceptance remains BLOCKED. R031 scanner/lifecycle 65/65 synthetic, actual driver/runtime NOT_RUN. Report85 real Linux Node fictional subprocess14/14 actual receipt; app log capture NOT_RUN, independent acceptance BLOCKED. Report87 actual initial and hardened owned MySQL8.0.46 guard success; app/JDBC/log oracle NOT_RUN, independent acceptance BLOCKED. Report90 actual protected Java21/MySQL R031 rotation, two stdout/stderr sinks zero matches and cleanup verified bounded; independent IR4/alternate/off-path logs remain open, G01 blocked."
+      "notes": "No fabricated signature or blanket equivalence Report74: R035/R038 actual public recovered-control job138726559312 markers rechecked at exact 8c6000a4; remaining normal-writable/approved private positive/transient DB and independent IR4 acceptance open. No new runtime. Report76 R031 source/#67 no-store and hash-only/refusal scope rechecked; dedicated log-redaction NOT_RUN, independent IR4 open. Report78 scoped 86-file privacy review complete; 13 remediation flags open. G01 residual runtime/IR4 independent review unchanged. Report79 PR58 #79/#80 test-only 101-row candidates at 9208f29a7877ea7e5d51a5cc0ed72d67dafe0624 CI45702182390 in progress; no new actual acceptance. R031 protected-output design NOT_RUN. Report81: pure R031 scanner 24/24 synthetic; actual protected driver/runtime NOT_RUN. PR58 backend step success metadata, later checks running, logs 404; no independent acceptance. Report83 PR58 actual 105 Maven/80 identity and 19 Playwright, bounded #79/#80 R082/R089/R091; independent acceptance remains BLOCKED. R031 scanner/lifecycle 65/65 synthetic, actual driver/runtime NOT_RUN. Report85 real Linux Node fictional subprocess14/14 actual receipt; app log capture NOT_RUN, independent acceptance BLOCKED. Report87 actual initial and hardened owned MySQL8.0.46 guard success; app/JDBC/log oracle NOT_RUN, independent acceptance BLOCKED. Report90 actual protected Java21/MySQL R031 rotation, two stdout/stderr sinks zero matches and cleanup verified bounded; independent IR4/alternate/off-path logs remain open, G01 blocked. Report91 all93 gap/disposition fields reconciled, #81 R035 writable logout candidate staged at PR58 exact13837dc, CI45767809301 pending; independent BLOCKED."
     },
     {
       "id": "G02",
@@ -2575,5 +2575,20 @@
       45706965492,
       45707278663
     ]
+  },
+  "g01_r035_candidate": {
+    "sha": "13837dc28181a0662407e105e089f8360dfcb217",
+    "base": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "prior": "9208f29a7877ea7e5d51a5cc0ed72d67dafe0624",
+    "pr": 58,
+    "run": 45767809301,
+    "status": "NOT_RUN",
+    "report": "3b58993d5c71b8b5b6ccad5913609d7b586ab11b",
+    "route_dispositions": {
+      "bounded_public": 88,
+      "directed_bounded": 4,
+      "deterministic_candidate": 1,
+      "independent_open": 93
+    }
   }
 }

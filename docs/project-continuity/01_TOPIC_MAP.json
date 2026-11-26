@@ -634,7 +634,7 @@
         }
       ],
       "authority": "93 route candidate mapping, independent issue34 blocked; current code and actual test evidence.",
-      "next": "R031 actual protected Java21/MySQL8.0.46 rotation/log capture verified bounded (exact main96741bb, actual CI45767121972): JDBC/Flyway V1–V7/narrowed grants, HTTP denial/success, persisted hashes/audit/version/session/no-store, two actual stdout/stderr sinks zero matches, cleanup. Prior Node14/synthetic65 retained. Reconcile G01 route residuals against all actual bounded public receipts and choose next genuinely eligible unresolved test, no R031 rerun absent drift/failure. Full Verify45706965492/45707278663 actual success on older handoff suite; inspect pending45767128292 terminal logs. Independent IR4/G01 blocked, alternate/off-path log scope not established; 13 owner-gated privacy flags, H01–H06 native successor, L06 HOLD/no WSL unchanged.",
+      "next": "Inspect actual PR58 CI45767809301 for #81 R035 normal writable logout and saved-cookie replay, resolve observed failures without weakening oracle. Reconcile terminal automatic full Verify45767128292; then next targeted unresolved security/data-integrity factor. R031 actual bounded app receipt retained, R082/R089/R091 prior pagination actual bounded; 93 route map labels 88+4+1, all independent review open. G01/IR4 BLOCKED, 13 owner-gated privacy flags, H01–H06 native successor, L06 HOLD/no WSL unchanged.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/74_STRUCTURED_PRIVACY_AND_RECOVERED_ROUTE_RECEIPTS.md",
@@ -779,6 +779,24 @@
           "blob": "634abdbe9a7755a369d0c54d3313750378d3bff1",
           "ref": "a3f316c2dabd5963ceddc80063392e14e296e816",
           "review": "RELEVANT_RANGES R031 addendum"
+        },
+        {
+          "path": "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java",
+          "blob": "b8251c993b4f970e1884269fcec6855dc05f5767",
+          "ref": "13837dc28181a0662407e105e089f8360dfcb217",
+          "review": "RELEVANT_RANGES new #81 staged"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/91_G01_ROUTE_RESIDUAL_RECONCILIATION.md",
+          "blob": "74b350bb684d2998c7dbe4a0c61452363f444ffc",
+          "ref": "3b58993d5c71b8b5b6ccad5913609d7b586ab11b",
+          "review": "FULL route reconciliation"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
+          "blob": "150e03dd52e752b45f90823c0d397486c82d3e14",
+          "ref": "3b58993d5c71b8b5b6ccad5913609d7b586ab11b",
+          "review": "RELEVANT_RANGES R035 addendum"
         }
       ]
     },
@@ -1067,7 +1085,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "R031 actual protected Java21/MySQL8.0.46 rotation/log capture verified bounded (exact main96741bb, actual CI45767121972): JDBC/Flyway V1–V7/narrowed grants, HTTP denial/success, persisted hashes/audit/version/session/no-store, two actual stdout/stderr sinks zero matches, cleanup. Prior Node14/synthetic65 retained. Reconcile G01 route residuals against all actual bounded public receipts and choose next genuinely eligible unresolved test, no R031 rerun absent drift/failure. Full Verify45706965492/45707278663 actual success on older handoff suite; inspect pending45767128292 terminal logs. Independent IR4/G01 blocked, alternate/off-path log scope not established; 13 owner-gated privacy flags, H01–H06 native successor, L06 HOLD/no WSL unchanged.",
+      "next": "Inspect actual PR58 CI45767809301 for #81 R035 normal writable logout and saved-cookie replay, resolve observed failures without weakening oracle. Reconcile terminal automatic full Verify45767128292; then next targeted unresolved security/data-integrity factor. R031 actual bounded app receipt retained, R082/R089/R091 prior pagination actual bounded; 93 route map labels 88+4+1, all independent review open. G01/IR4 BLOCKED, 13 owner-gated privacy flags, H01–H06 native successor, L06 HOLD/no WSL unchanged.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -1456,6 +1474,24 @@
           "blob": "634abdbe9a7755a369d0c54d3313750378d3bff1",
           "ref": "a3f316c2dabd5963ceddc80063392e14e296e816",
           "review": "RELEVANT_RANGES R031 addendum"
+        },
+        {
+          "path": "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java",
+          "blob": "b8251c993b4f970e1884269fcec6855dc05f5767",
+          "ref": "13837dc28181a0662407e105e089f8360dfcb217",
+          "review": "RELEVANT_RANGES new #81 staged"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/91_G01_ROUTE_RESIDUAL_RECONCILIATION.md",
+          "blob": "74b350bb684d2998c7dbe4a0c61452363f444ffc",
+          "ref": "3b58993d5c71b8b5b6ccad5913609d7b586ab11b",
+          "review": "FULL route reconciliation"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
+          "blob": "150e03dd52e752b45f90823c0d397486c82d3e14",
+          "ref": "3b58993d5c71b8b5b6ccad5913609d7b586ab11b",
+          "review": "RELEVANT_RANGES R035 addendum"
         }
       ]
     },
@@ -1602,7 +1638,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "R031 actual protected Java21/MySQL8.0.46 rotation/log capture verified bounded (exact main96741bb, actual CI45767121972): JDBC/Flyway V1–V7/narrowed grants, HTTP denial/success, persisted hashes/audit/version/session/no-store, two actual stdout/stderr sinks zero matches, cleanup. Prior Node14/synthetic65 retained. Reconcile G01 route residuals against all actual bounded public receipts and choose next genuinely eligible unresolved test, no R031 rerun absent drift/failure. Full Verify45706965492/45707278663 actual success on older handoff suite; inspect pending45767128292 terminal logs. Independent IR4/G01 blocked, alternate/off-path log scope not established; 13 owner-gated privacy flags, H01–H06 native successor, L06 HOLD/no WSL unchanged.",
+      "next": "Inspect actual PR58 CI45767809301 for #81 R035 normal writable logout and saved-cookie replay, resolve observed failures without weakening oracle. Reconcile terminal automatic full Verify45767128292; then next targeted unresolved security/data-integrity factor. R031 actual bounded app receipt retained, R082/R089/R091 prior pagination actual bounded; 93 route map labels 88+4+1, all independent review open. G01/IR4 BLOCKED, 13 owner-gated privacy flags, H01–H06 native successor, L06 HOLD/no WSL unchanged.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -1747,6 +1783,24 @@
           "blob": "634abdbe9a7755a369d0c54d3313750378d3bff1",
           "ref": "a3f316c2dabd5963ceddc80063392e14e296e816",
           "review": "RELEVANT_RANGES R031 addendum"
+        },
+        {
+          "path": "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java",
+          "blob": "b8251c993b4f970e1884269fcec6855dc05f5767",
+          "ref": "13837dc28181a0662407e105e089f8360dfcb217",
+          "review": "RELEVANT_RANGES new #81 staged"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/91_G01_ROUTE_RESIDUAL_RECONCILIATION.md",
+          "blob": "74b350bb684d2998c7dbe4a0c61452363f444ffc",
+          "ref": "3b58993d5c71b8b5b6ccad5913609d7b586ab11b",
+          "review": "FULL route reconciliation"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
+          "blob": "150e03dd52e752b45f90823c0d397486c82d3e14",
+          "ref": "3b58993d5c71b8b5b6ccad5913609d7b586ab11b",
+          "review": "RELEVANT_RANGES R035 addendum"
         }
       ]
     }

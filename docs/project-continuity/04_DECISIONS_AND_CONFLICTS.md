@@ -255,3 +255,7 @@ Initial and hardened actual MySQL8.0.46 guard success; SQL1142 and volume remova
 ### R031 actual protected rotation — Report90 (2026-11-26 PHT)
 
 Actual bounded application receipt on exact main96741bb: JDBC/Flyway V1–V7/append-only grants, HTTP/DB oracle, two actual stdout/stderr sinks zero matches, cleanup. Not packaged/alternate configuration or independent review. Temp owner-only fictional transfer file, not raw public output. Final cleanup check succeeds after printed marker; use terminal job verdict. Preserve independent G01 and L06 HOLD. Exact report a3f316c2dabd5963ceddc80063392e14e296e816:docs/handoffs/claude-local-execution-2026-11-24/90_R031_PROTECTED_ROTATION_RECEIPT.md.
+
+### R035 normal writable logout residual — Report91 (2026-11-26 PHT)
+
+Recovered-session-only receipt does not prove normal writable runtime. Draft PR58 #81 additive candidate, actual CI pending. Compare current session/attributes deletion, peer/foreign preservation and scoped business/identity facts; exclude legitimate last-access/expiry refresh, never print raw credentials or session material. All independent route review remains open. Exact report 3b58993d5c71b8b5b6ccad5913609d7b586ab11b:docs/handoffs/claude-local-execution-2026-11-24/91_G01_ROUTE_RESIDUAL_RECONCILIATION.md.
