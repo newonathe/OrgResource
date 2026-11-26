@@ -251,3 +251,7 @@ Actual Node Linux14/14, not app logging or Windows proof. Fixed synthetic-only w
 ### R031 actual owned MySQL guard — Report87 (2026-11-26 PHT)
 
 Initial and hardened actual MySQL8.0.46 guard success; SQL1142 and volume removal tightened after first pass. No application/JDBC or native proof. C1Application --bootstrap intentionally prints recovery codes: use C1BootstrapService in-memory from protected test-only fork instead. Preserve independent acceptance/L06 HOLD. Unexpected full PR Verify runs recorded; docs-only commits skip CI to avoid needless re-execution. Exact report 8a6595abaa63d3bafaa66a09cd6f051ff21c5ec4:docs/handoffs/claude-local-execution-2026-11-24/87_R031_OWNED_MYSQL_RECEIPT.md.
+
+### R031 actual protected rotation — Report90 (2026-11-26 PHT)
+
+Actual bounded application receipt on exact main96741bb: JDBC/Flyway V1–V7/append-only grants, HTTP/DB oracle, two actual stdout/stderr sinks zero matches, cleanup. Not packaged/alternate configuration or independent review. Temp owner-only fictional transfer file, not raw public output. Final cleanup check succeeds after printed marker; use terminal job verdict. Preserve independent G01 and L06 HOLD. Exact report a3f316c2dabd5963ceddc80063392e14e296e816:docs/handoffs/claude-local-execution-2026-11-24/90_R031_PROTECTED_ROTATION_RECEIPT.md.

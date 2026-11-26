@@ -366,7 +366,7 @@
         "L05"
       ],
       "receipt": "93 route acceptance and separate reviewer actual evidence; C8 #34",
-      "notes": "No fabricated signature or blanket equivalence Report74: R035/R038 actual public recovered-control job138726559312 markers rechecked at exact 8c6000a4; remaining normal-writable/approved private positive/transient DB and independent IR4 acceptance open. No new runtime. Report76 R031 source/#67 no-store and hash-only/refusal scope rechecked; dedicated log-redaction NOT_RUN, independent IR4 open. Report78 scoped 86-file privacy review complete; 13 remediation flags open. G01 residual runtime/IR4 independent review unchanged. Report79 PR58 #79/#80 test-only 101-row candidates at 9208f29a7877ea7e5d51a5cc0ed72d67dafe0624 CI45702182390 in progress; no new actual acceptance. R031 protected-output design NOT_RUN. Report81: pure R031 scanner 24/24 synthetic; actual protected driver/runtime NOT_RUN. PR58 backend step success metadata, later checks running, logs 404; no independent acceptance. Report83 PR58 actual 105 Maven/80 identity and 19 Playwright, bounded #79/#80 R082/R089/R091; independent acceptance remains BLOCKED. R031 scanner/lifecycle 65/65 synthetic, actual driver/runtime NOT_RUN. Report85 real Linux Node fictional subprocess14/14 actual receipt; app log capture NOT_RUN, independent acceptance BLOCKED. Report87 actual initial and hardened owned MySQL8.0.46 guard success; app/JDBC/log oracle NOT_RUN, independent acceptance BLOCKED."
+      "notes": "No fabricated signature or blanket equivalence Report74: R035/R038 actual public recovered-control job138726559312 markers rechecked at exact 8c6000a4; remaining normal-writable/approved private positive/transient DB and independent IR4 acceptance open. No new runtime. Report76 R031 source/#67 no-store and hash-only/refusal scope rechecked; dedicated log-redaction NOT_RUN, independent IR4 open. Report78 scoped 86-file privacy review complete; 13 remediation flags open. G01 residual runtime/IR4 independent review unchanged. Report79 PR58 #79/#80 test-only 101-row candidates at 9208f29a7877ea7e5d51a5cc0ed72d67dafe0624 CI45702182390 in progress; no new actual acceptance. R031 protected-output design NOT_RUN. Report81: pure R031 scanner 24/24 synthetic; actual protected driver/runtime NOT_RUN. PR58 backend step success metadata, later checks running, logs 404; no independent acceptance. Report83 PR58 actual 105 Maven/80 identity and 19 Playwright, bounded #79/#80 R082/R089/R091; independent acceptance remains BLOCKED. R031 scanner/lifecycle 65/65 synthetic, actual driver/runtime NOT_RUN. Report85 real Linux Node fictional subprocess14/14 actual receipt; app log capture NOT_RUN, independent acceptance BLOCKED. Report87 actual initial and hardened owned MySQL8.0.46 guard success; app/JDBC/log oracle NOT_RUN, independent acceptance BLOCKED. Report90 actual protected Java21/MySQL R031 rotation, two stdout/stderr sinks zero matches and cleanup verified bounded; independent IR4/alternate/off-path logs remain open, G01 blocked."
     },
     {
       "id": "G02",
@@ -2541,8 +2541,8 @@
     "report": "50c1cfc749339165af27a6586d47093626200788",
     "synthetic_cases": 24,
     "synthetic_passed": 24,
-    "runtime": "NOT_RUN",
-    "driver": "NOT_RUN",
+    "runtime": "VERIFIED_BOUNDED",
+    "driver": "VERIFIED_BOUNDED",
     "pr58_run": 45702182390,
     "lifecycle_sha": "afdb05ad8e160324af1999326c46736e721a52e9",
     "lifecycle_blob": "b61d3564fb540570fcd9dbbb83dfbb2da34c1a4c",
@@ -2550,18 +2550,28 @@
     "bound_adapter_cases": 12,
     "total_synthetic_cases": 65,
     "total_synthetic_passed": 65,
-    "latest_report": "8a6595abaa63d3bafaa66a09cd6f051ff21c5ec4",
+    "latest_report": "a3f316c2dabd5963ceddc80063392e14e296e816",
     "real_child_sha": "e40504eb64ad929b03d5bd0b30890a9672bd3978",
     "real_child_run": 45706444928,
     "real_child_job": 139529545479,
     "real_child_cases": 14,
     "real_child_passed": 14,
     "real_child_status": "VERIFIED_BOUNDED",
-    "mysql_guard_sha": "0029f94ed743b336b60ab6ed4b26550b06fd10c8",
-    "mysql_guard_run": 45707269893,
-    "mysql_guard_job": 139532321787,
+    "mysql_guard_sha": "eadd31eaa6affdc5b3d10940a89bbc1feaefb96a",
+    "mysql_guard_run": 45767121842,
+    "mysql_guard_job": 139730580872,
     "mysql_guard_status": "VERIFIED_BOUNDED",
     "unexpected_verify_runs": [
+      45706965492,
+      45707278663,
+      45767128292
+    ],
+    "application_sha": "eadd31eaa6affdc5b3d10940a89bbc1feaefb96a",
+    "application_base": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "application_run": 45767121972,
+    "application_job": 139730580834,
+    "application_status": "VERIFIED_BOUNDED",
+    "verified_unexpected_runs": [
       45706965492,
       45707278663
     ]
