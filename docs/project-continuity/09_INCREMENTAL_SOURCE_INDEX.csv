@@ -358,3 +358,8 @@
 "scripts/windows-l06/test-c9-local-mixed-windows.ps1","35776b152de9d98210c3dbe49d7344a0cc098e64","16166","100644","55e0e5229eef15c4d71b105856d6cfcf27eb5fa1","RELEVANT_RANGES H04 candidate"
 "scripts/windows-l06/test-probe-shape.ps1","61e6aadd6ab6d65a1cee571a8099730210c8e2b0","6116","100644","55e0e5229eef15c4d71b105856d6cfcf27eb5fa1","FULL staged H04 test NOT_RUN"
 "scripts/windows-l06/test-probe-json.ps1","e0b31cb40ae4cc3a4a081c41e9303617e4600bc1","1564","100644","55e0e5229eef15c4d71b105856d6cfcf27eb5fa1","FULL staged H04 test NOT_RUN"
+"docs/handoffs/claude-local-execution-2026-11-24/103_H02_RECEIPT_BINDING_CANDIDATE.md","100f977f301f887dd8bea68d26ec3c555dce3baf","4242","100644","ae910a70aead4ae9ecd2b6ca2bd07331bd80e22f","FULL H02 source candidate NOT_RUN"
+"scripts/windows-l06/jar_receipt.ps1","480bd1e17a3cadb0348f9afb0ae1a1c46c6cf25d","3858","100644","334e08a3849665a0b086dc928c721b18e6fb0a22","FULL H02 source candidate NOT_RUN"
+"scripts/windows-l06/test-jar-receipt.ps1","a3aa249eeb78db19f70571f34d95ccdd0288c4ad","2563","100644","334e08a3849665a0b086dc928c721b18e6fb0a22","FULL H02 source candidate NOT_RUN"
+"scripts/windows-l06/verify-c9-local-mixed-windows.ps1","4008bcc9a30754750cf66839187dee4cb95edc1d","8755","100644","334e08a3849665a0b086dc928c721b18e6fb0a22","RELEVANT_RANGES H02 source candidate NOT_RUN"
+"scripts/windows-l06/stage_prepare.ps1","92d0e692f77048c7115ee859c401fe86591c458d","9051","100644","334e08a3849665a0b086dc928c721b18e6fb0a22","RELEVANT_RANGES H02 source candidate NOT_RUN"
