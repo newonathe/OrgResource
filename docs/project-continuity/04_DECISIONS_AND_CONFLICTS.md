@@ -259,3 +259,7 @@ Actual bounded application receipt on exact main96741bb: JDBC/Flyway V1–V7/app
 ### R035 normal writable logout residual — Report91 (2026-11-26 PHT)
 
 Recovered-session-only receipt does not prove normal writable runtime. Draft PR58 #81 additive candidate, actual CI pending. Compare current session/attributes deletion, peer/foreign preservation and scoped business/identity facts; exclude legitimate last-access/expiry refresh, never print raw credentials or session material. All independent route review remains open. Exact report 3b58993d5c71b8b5b6ccad5913609d7b586ab11b:docs/handoffs/claude-local-execution-2026-11-24/91_G01_ROUTE_RESIDUAL_RECONCILIATION.md.
+
+### R035 actual and R036/R041 candidate — Report92 (2026-11-26 PHT)
+
+R035 actual bounded normal writable logout success. R036 generic HTTP/throttle outcomes are distinct from timing equivalence and log redaction. R041 token-bound tenant is authoritative; existing selected workspace does not change implicitly. New candidates unrun at receipt, independent review open. Exact report 493b7e53041058314c0efb988d147fa446799d1d:docs/handoffs/claude-local-execution-2026-11-24/92_G01_LOGOUT_RECEIPT_AND_RECOVERY_INVITATION_CANDIDATES.md.

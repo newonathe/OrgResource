@@ -332,3 +332,6 @@
 "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","b8251c993b4f970e1884269fcec6855dc05f5767","495945","100644","13837dc28181a0662407e105e089f8360dfcb217","RELEVANT_RANGES #81 staged and helper source"
 "docs/handoffs/claude-local-execution-2026-11-24/91_G01_ROUTE_RESIDUAL_RECONCILIATION.md","74b350bb684d2998c7dbe4a0c61452363f444ffc","5722","100644","3b58993d5c71b8b5b6ccad5913609d7b586ab11b","FULL route reconciliation"
 "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv","150e03dd52e752b45f90823c0d397486c82d3e14","108292","100644","3b58993d5c71b8b5b6ccad5913609d7b586ab11b","RELEVANT_RANGES R035 addendum"
+"extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java","eaaf1a8443f2a022d4c3dc70f1d3f74273453914","509925","100644","6c982a56196269cd30f81545d71c012307c80da6","RELEVANT_RANGES #82/#83 staged"
+"docs/handoffs/claude-local-execution-2026-11-24/92_G01_LOGOUT_RECEIPT_AND_RECOVERY_INVITATION_CANDIDATES.md","770b8d6c61b04ab9b82a4d79ecce916ea1d13568","6395","100644","493b7e53041058314c0efb988d147fa446799d1d","FULL actual R035 and candidate receipt"
+"docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv","da329310ad5442292b556429ac665ac9d3090155","109117","100644","493b7e53041058314c0efb988d147fa446799d1d","RELEVANT_RANGES R035/R036/R041"

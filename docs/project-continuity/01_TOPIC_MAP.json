@@ -634,7 +634,7 @@
         }
       ],
       "authority": "93 route candidate mapping, independent issue34 blocked; current code and actual test evidence.",
-      "next": "Inspect actual PR58 CI45767809301 for #81 R035 normal writable logout and saved-cookie replay, resolve observed failures without weakening oracle. Reconcile terminal automatic full Verify45767128292; then next targeted unresolved security/data-integrity factor. R031 actual bounded app receipt retained, R082/R089/R091 prior pagination actual bounded; 93 route map labels 88+4+1, all independent review open. G01/IR4 BLOCKED, 13 owner-gated privacy flags, H01–H06 native successor, L06 HOLD/no WSL unchanged.",
+      "next": "Inspect actual PR58 CI45796775299 #82 R036 recovery throttle/disabled-account generic outcomes and #83 R041 token tenant binding, resolve observed failures without weakening oracle. R035 actual CI45767809301 class81/Maven106 bounded verified, prior automatic full Verify45767128292 all jobs terminal success; R031 and pagination receipts retained. Next material security/data-integrity residual, e.g. public R038 guarded transient DB failure separate from private positives. All93 independent reviews open; G01/IR4 BLOCKED,13 owner-gated privacy flags,H01–H06 native successor,L06 HOLD/no WSL unchanged.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/74_STRUCTURED_PRIVACY_AND_RECOVERED_ROUTE_RECEIPTS.md",
@@ -797,6 +797,24 @@
           "blob": "150e03dd52e752b45f90823c0d397486c82d3e14",
           "ref": "3b58993d5c71b8b5b6ccad5913609d7b586ab11b",
           "review": "RELEVANT_RANGES R035 addendum"
+        },
+        {
+          "path": "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java",
+          "blob": "eaaf1a8443f2a022d4c3dc70f1d3f74273453914",
+          "ref": "6c982a56196269cd30f81545d71c012307c80da6",
+          "review": "RELEVANT_RANGES #82/#83 staged"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/92_G01_LOGOUT_RECEIPT_AND_RECOVERY_INVITATION_CANDIDATES.md",
+          "blob": "770b8d6c61b04ab9b82a4d79ecce916ea1d13568",
+          "ref": "493b7e53041058314c0efb988d147fa446799d1d",
+          "review": "FULL actual logout and candidate reconciliation"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
+          "blob": "da329310ad5442292b556429ac665ac9d3090155",
+          "ref": "493b7e53041058314c0efb988d147fa446799d1d",
+          "review": "RELEVANT_RANGES R035/R036/R041"
         }
       ]
     },
@@ -1085,7 +1103,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "Inspect actual PR58 CI45767809301 for #81 R035 normal writable logout and saved-cookie replay, resolve observed failures without weakening oracle. Reconcile terminal automatic full Verify45767128292; then next targeted unresolved security/data-integrity factor. R031 actual bounded app receipt retained, R082/R089/R091 prior pagination actual bounded; 93 route map labels 88+4+1, all independent review open. G01/IR4 BLOCKED, 13 owner-gated privacy flags, H01–H06 native successor, L06 HOLD/no WSL unchanged.",
+      "next": "Inspect actual PR58 CI45796775299 #82 R036 recovery throttle/disabled-account generic outcomes and #83 R041 token tenant binding, resolve observed failures without weakening oracle. R035 actual CI45767809301 class81/Maven106 bounded verified, prior automatic full Verify45767128292 all jobs terminal success; R031 and pagination receipts retained. Next material security/data-integrity residual, e.g. public R038 guarded transient DB failure separate from private positives. All93 independent reviews open; G01/IR4 BLOCKED,13 owner-gated privacy flags,H01–H06 native successor,L06 HOLD/no WSL unchanged.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -1492,6 +1510,24 @@
           "blob": "150e03dd52e752b45f90823c0d397486c82d3e14",
           "ref": "3b58993d5c71b8b5b6ccad5913609d7b586ab11b",
           "review": "RELEVANT_RANGES R035 addendum"
+        },
+        {
+          "path": "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java",
+          "blob": "eaaf1a8443f2a022d4c3dc70f1d3f74273453914",
+          "ref": "6c982a56196269cd30f81545d71c012307c80da6",
+          "review": "RELEVANT_RANGES #82/#83 staged"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/92_G01_LOGOUT_RECEIPT_AND_RECOVERY_INVITATION_CANDIDATES.md",
+          "blob": "770b8d6c61b04ab9b82a4d79ecce916ea1d13568",
+          "ref": "493b7e53041058314c0efb988d147fa446799d1d",
+          "review": "FULL actual logout and candidate reconciliation"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
+          "blob": "da329310ad5442292b556429ac665ac9d3090155",
+          "ref": "493b7e53041058314c0efb988d147fa446799d1d",
+          "review": "RELEVANT_RANGES R035/R036/R041"
         }
       ]
     },
@@ -1638,7 +1674,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "Inspect actual PR58 CI45767809301 for #81 R035 normal writable logout and saved-cookie replay, resolve observed failures without weakening oracle. Reconcile terminal automatic full Verify45767128292; then next targeted unresolved security/data-integrity factor. R031 actual bounded app receipt retained, R082/R089/R091 prior pagination actual bounded; 93 route map labels 88+4+1, all independent review open. G01/IR4 BLOCKED, 13 owner-gated privacy flags, H01–H06 native successor, L06 HOLD/no WSL unchanged.",
+      "next": "Inspect actual PR58 CI45796775299 #82 R036 recovery throttle/disabled-account generic outcomes and #83 R041 token tenant binding, resolve observed failures without weakening oracle. R035 actual CI45767809301 class81/Maven106 bounded verified, prior automatic full Verify45767128292 all jobs terminal success; R031 and pagination receipts retained. Next material security/data-integrity residual, e.g. public R038 guarded transient DB failure separate from private positives. All93 independent reviews open; G01/IR4 BLOCKED,13 owner-gated privacy flags,H01–H06 native successor,L06 HOLD/no WSL unchanged.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -1801,6 +1837,24 @@
           "blob": "150e03dd52e752b45f90823c0d397486c82d3e14",
           "ref": "3b58993d5c71b8b5b6ccad5913609d7b586ab11b",
           "review": "RELEVANT_RANGES R035 addendum"
+        },
+        {
+          "path": "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java",
+          "blob": "eaaf1a8443f2a022d4c3dc70f1d3f74273453914",
+          "ref": "6c982a56196269cd30f81545d71c012307c80da6",
+          "review": "RELEVANT_RANGES #82/#83 staged"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/92_G01_LOGOUT_RECEIPT_AND_RECOVERY_INVITATION_CANDIDATES.md",
+          "blob": "770b8d6c61b04ab9b82a4d79ecce916ea1d13568",
+          "ref": "493b7e53041058314c0efb988d147fa446799d1d",
+          "review": "FULL actual logout and candidate reconciliation"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/05_ROUTE_GAP_MAP.csv",
+          "blob": "da329310ad5442292b556429ac665ac9d3090155",
+          "ref": "493b7e53041058314c0efb988d147fa446799d1d",
+          "review": "RELEVANT_RANGES R035/R036/R041"
         }
       ]
     }
