@@ -23,7 +23,7 @@ public sealed class C9Container : IDisposable {
     C9ProfileStorageObservation storage;
     // Legacy entrypoint is deliberately refused while journal integration is incomplete.
     public C9Container(string name) { throw new InvalidOperationException("C9W_PROFILE_JOURNAL_REQUIRED"); }
-    internal C9Container(string name, Action<string> confirmCreated) {
+    internal C9Container(string name, Action<string,object> confirmCreated) {
         if (confirmCreated == null) throw new InvalidOperationException("C9W_PROFILE_JOURNAL_REQUIRED");
         if (!System.Text.RegularExpressions.Regex.IsMatch(name, "^orgresource\\.c9\\.[a-f0-9]{12}$")) throw new ArgumentException("C9W_CONTAINER_NAME");
         Name = name;
@@ -37,7 +37,7 @@ public sealed class C9Container : IDisposable {
         // Observe the new profile's actual filesystem identity before confirming creation.
         // This is not proof of complete registry/profile absence after deletion.
         storage = C9ProfileStorageObservation.Capture(name, SidString, user);
-        confirmCreated(SidString);
+        confirmCreated(SidString, storage.CreatedEvidence());
         job = N.CreateJobObjectW(IntPtr.Zero, null); if (job == IntPtr.Zero) throw new Win32Exception();
         var i = new N.JOBOBJECT_EXTENDED_LIMIT_INFORMATION();
         i.Basic.LimitFlags = 0x2000 | 0x400 | 0x8; // KILL_ON_JOB_CLOSE | DIE_ON_UNHANDLED_EXCEPTION | ACTIVE_PROCESS; no BREAKAWAY flags
@@ -142,6 +142,10 @@ public sealed class C9Container : IDisposable {
     public void AssertProfileStorageAbsent() {
         if (profile || storage == null) throw new InvalidOperationException("C9W_PROFILE_STORAGE_STATE");
         storage.AssertAbsent();
+    }
+    internal object RemovalEvidence() {
+        if (profile || storage == null) throw new InvalidOperationException("C9W_PROFILE_STORAGE_STATE");
+        return storage.RemovedEvidence();
     }
     // Only the journal-owning producer may request deletion, after durable removing.
     internal void DeleteConfirmedProfile() {

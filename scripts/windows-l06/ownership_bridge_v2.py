@@ -6,17 +6,24 @@ This is not a sandbox; the trusted Python runtime and dependencies remain gates.
 """
 import base64
 import hashlib
-import importlib.util
+import types
 import json
 from pathlib import Path
 import sys
 
 
 def load_sibling(name):
-    spec = importlib.util.spec_from_file_location(name, Path(__file__).with_name(name + ".py"))
-    module = importlib.util.module_from_spec(spec)
+    path = Path(__file__).with_name(name + ".py")
+    module = types.ModuleType(name)
+    module.__file__ = str(path)
+    module.__package__ = ""
     sys.modules[name] = module
-    spec.loader.exec_module(module)
+    # -B only suppresses bytecode writes. Compile measured source bytes explicitly
+    # so a stale or unchecked-hash sibling .pyc cannot replace the pinned source.
+    source = path.read_bytes()
+    if not 0 < len(source) <= 65536:
+        raise ValueError("C9W_JOURNAL_MODULE_SIZE")
+    exec(compile(source, str(path), "exec"), module.__dict__)
     return module
 
 

@@ -4,6 +4,8 @@ import hashlib
 import json
 from pathlib import Path
 import subprocess
+import py_compile
+import shutil
 import sys
 import tempfile
 import unittest
@@ -107,6 +109,25 @@ class V2TransportTests(unittest.TestCase):
             self.assertEqual(refused.stdout, b"")
             self.assertEqual(refused.stderr, b"C9W_JOURNAL_V2_BRIDGE_REFUSED\n")
             self.assertEqual(list(Path(root).iterdir()), [])
+
+
+    def test_sibling_unchecked_hash_cache_is_not_executed(self):
+        source_dir = Path(__file__).resolve().parent
+        with tempfile.TemporaryDirectory() as root:
+            root = Path(root)
+            for name in ("ownership_bridge_v2.py", "ownership_journal.py", "ownership_journal_v2.py"):
+                shutil.copyfile(source_dir/name, root/name)
+            for name in ("ownership_journal.py", "ownership_journal_v2.py"):
+                path = root/name
+                original = path.read_bytes()
+                path.write_text("raise RuntimeError('fictional cached module')\n", encoding="ascii")
+                py_compile.compile(str(path), doraise=True,
+                                   invalidation_mode=py_compile.PycInvalidationMode.UNCHECKED_HASH)
+                path.write_bytes(original)
+            proc = subprocess.run([sys.executable, "-I", "-S", "-B", str(root/"ownership_bridge_v2.py")],
+                                  input=env(REQ), cwd=root, capture_output=True, timeout=15)
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            self.assertEqual(json.loads(proc.stdout), call(REQ))
 
 
 if __name__ == "__main__":

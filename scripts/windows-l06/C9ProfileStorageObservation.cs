@@ -83,6 +83,16 @@ internal sealed class C9ProfileStorageObservation {
             baseId.Id, packageId.Id, dataId.Id);
     }
 
+    internal object CreatedEvidence() {
+        AssertPresent();
+        return new { packagesPath = packages, packagesId, packageId, appDataId };
+    }
+
+    internal object RemovedEvidence() {
+        AssertAbsent();
+        return new { kind = "api_success_and_package_absent", hresult = 0, packagesId };
+    }
+
     void AssertContext() {
         if (user != PrimaryUser() || sid != Derive(name) || !EqualPath(Packages(), packages))
             throw new InvalidOperationException("C9W_PROFILE_BINDING");

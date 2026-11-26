@@ -18,9 +18,9 @@ public sealed class C9OwnershipProducer : IDisposable {
     public string WorkId { get { Check(); return workIdentity?.Id; } }
 
     public C9OwnershipProducer(C9ControlLock owner, string python, string pythonSha,
-        string bridge, string bridgeSha, string journalSha) {
+        string bridge, string bridgeSha, string journalSha, string journalV2Sha) {
         this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
-        journal = new C9JournalParent(owner, python, pythonSha, bridge, bridgeSha, journalSha);
+        journal = new C9JournalParent(owner, python, pythonSha, bridge, bridgeSha, journalSha, journalV2Sha);
         // Only a new journal is accepted; no producer resume or inferred ownership.
         sha = Receipt(journal.Invoke("init"));
     }
@@ -32,7 +32,7 @@ public sealed class C9OwnershipProducer : IDisposable {
 
     void Check() {
         if (disposed || poisoned) throw new InvalidOperationException("C9W_PRODUCER_REFUSED");
-        owner.AssertHeld();
+        journal.AssertCurrentContext();
     }
 
     void Transition(string resource, string state, object fields) {
@@ -46,6 +46,7 @@ public sealed class C9OwnershipProducer : IDisposable {
         if (workIdentity != null) throw new InvalidOperationException("C9W_WORK_ALREADY_CREATED");
         try {
             Transition("work", "intent", new {});
+            journal.AssertCurrentContext();
             workIdentity = owner.CreateWorkAfterIntent();
             Transition("work", "created", new { id = workIdentity.Id });
             return WorkPath;
@@ -65,7 +66,9 @@ public sealed class C9OwnershipProducer : IDisposable {
             Transition(role, "intent", new { name });
             // CreateAppContainerProfile must return S_OK, not an existing profile.
             // Constructor callback journals the real returned SID before job initialization.
-            var profile = new C9Container(name, sid => Transition(role, "created", new { sid }));
+            journal.AssertCurrentContext();
+            var profile = new C9Container(name, (sid, storage) =>
+                Transition(role, "created", new { sid, storage }));
             try { profiles.Add(role, profile); }
             catch { profile.Dispose(); throw; } // handle-only cleanup, never delete by inference
             return profile;
@@ -83,10 +86,12 @@ public sealed class C9OwnershipProducer : IDisposable {
             profile.Dispose(); // closes only owned handles; retains OS profile
             profile.AssertProfileStoragePresent();
             Transition(role, "removing", new {});
+            journal.AssertCurrentContext();
             profile.DeleteConfirmedProfile();
             // S_OK alone is not sufficient: independently reobserve captured storage absence.
-            profile.AssertProfileStorageAbsent();
-            Transition(role, "removed", new {});
+            // Storage evidence is derived from the captured native observation only.
+            var evidence = profile.RemovalEvidence();
+            Transition(role, "removed", new { evidence });
             profiles.Remove(role);
         } catch { poisoned = true; throw; }
     }
