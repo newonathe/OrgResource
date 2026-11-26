@@ -428,3 +428,8 @@
 "scripts/windows-l06/test_retention_evidence.py","52018cc2f9e729982052f8158afbd2d0751a7f82","6518","100644","93cb76846eaabd846dde44dff1a7030c44a0f3a5","FULL Report114 source-only tests NOT_RUN"
 "scripts/windows-l06/C9RetentionStage.cs","a94dffe4c79443fb5bc38874fd984f1b3d7478b6","9380","100644","93cb76846eaabd846dde44dff1a7030c44a0f3a5","FULL Report114 source-only tests NOT_RUN"
 "scripts/windows-l06/test-retention-stage.ps1","279a9ac0a930dafb381b55e0c519e09c624df693","5264","100644","93cb76846eaabd846dde44dff1a7030c44a0f3a5","FULL Report114 source-only tests NOT_RUN"
+"docs/handoffs/claude-local-execution-2026-11-24/115_H05_SCOPED_EQUALITY_AND_RETENTION_PORTABLE_RECEIPTS.md","9993ef263c5bf2b09735221a47fbe534a421c5c9","12630","100644","ea673de6d7371ae8186e47c14d47de652810f88e","FULL Report115 H05 source-only and H01-A portable17 actual"
+"scripts/windows-l06/scoped_additive.ps1","ee809f61f9b0726a794c4b63a1c8c77839f80c3d","11549","100644","8c2a79694943a9eabdb9efd3cea8dc40e4358f90","FULL Report115 source-only tests NOT_RUN"
+"scripts/windows-l06/fixture_additive.ps1","e24fb01c65d01a1e44e3d0065f5192bf6b31be3e","10774","100644","8c2a79694943a9eabdb9efd3cea8dc40e4358f90","FULL Report115 source-only tests NOT_RUN"
+"scripts/windows-l06/test-scoped-additive.ps1","1ca5611a910c93a00c764fbd34d3f32b1ac41994","6292","100644","8c2a79694943a9eabdb9efd3cea8dc40e4358f90","FULL Report115 source-only tests NOT_RUN"
+"scripts/windows-l06/test_retention_contract.py","a725de70dbc616212facf314e82795e3ec4ca0d3","4182","100644","8c2a79694943a9eabdb9efd3cea8dc40e4358f90","FULL Report115 actual corrected portable test"

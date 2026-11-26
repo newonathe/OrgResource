@@ -1160,5 +1160,17 @@
     "report": "docs/handoffs/claude-local-execution-2026-11-24/114_H01_A_OBSERVATION_BINDING_AND_FICTIONAL_STAGING.md",
     "report_ref": "23ef65987744347e44c6d2142582133d6aa85c4a",
     "coverage": "61 added harness-only paths; nine new portable methods/native stage fixture NOT_RUN"
+  },
+  "h05_scoped_equality_and_retention_receipt_candidate": {
+    "observed_date": "2026-11-27 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "8c2a79694943a9eabdb9efd3cea8dc40e4358f90",
+    "tree": "ddfb2a83d1c7a5077c9701dc9fac73bb30097fb5",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/115_H05_SCOPED_EQUALITY_AND_RETENTION_PORTABLE_RECEIPTS.md",
+    "report_ref": "ea673de6d7371ae8186e47c14d47de652810f88e",
+    "coverage": "63 harness-only additions; H05 native NOT_RUN; H01-A 17 portable actual passed after observed syntax correction"
   }
 }
