@@ -97,7 +97,7 @@ class V2TransportTests(unittest.TestCase):
     def test_isolated_cli_no_file_transport(self):
         script = Path(__file__).resolve().with_name("ownership_bridge_v2.py")
         with tempfile.TemporaryDirectory() as root:
-            cmd = [sys.executable, "-I", "-B", str(script)]
+            cmd = [sys.executable, "-I", "-S", "-B", str(script)]
             proc = subprocess.run(cmd, input=env(REQ), cwd=root, capture_output=True, timeout=15)
             self.assertEqual(proc.returncode, 0, proc.stderr)
             self.assertEqual(proc.stderr, b"")
