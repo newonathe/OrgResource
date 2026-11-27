@@ -187,18 +187,16 @@ function Invoke-Jar([string] $Role, [hashtable] $Settings, [string] $Command, [s
 }
 function Test-Log([string] $Path, [string] $Text) { return [bool](Select-String -LiteralPath $Path -SimpleMatch -CaseSensitive $Text -Quiet) }
 function Test-Line([string] $Path, [string] $Line) { return (@(Get-Content -LiteralPath $Path) -ccontains $Line) }
+# H06: the legacy editor lacked a native process-tree watchdog and fresh-file
+# identity/ACL contract. Refuse before issuing any grant, spawning a child,
+# consuming a credential, or deleting a login file. Historical source is retained
+# in the pre-H06 blob. Reintegrate only after actual native custody tests.
 function Grant-Transport([string] $Role, [string] $Kind) {
-    $user = "c9_$Kind"; $password = New-Secret; $schema = $roles[$Role].Schema
-    $rights = if ($Kind -ceq 'backup') { 'SELECT, SHOW VIEW, TRIGGER' } else { 'ALL PRIVILEGES' }
-    $null = Invoke-Root $Role "CREATE USER '$user'@'%' IDENTIFIED BY '$password'; GRANT $rights ON $schema.* TO '$user'@'%';"
-    $saved = $env:MYSQL_TEST_LOGIN_FILE; $env:MYSQL_TEST_LOGIN_FILE = Join-Path $work "$Role\.mylogin.cnf"; $env:C9W_EDITOR_PASSWORD = $password
-    try {
-        & $Python -I (Join-Path $PSScriptRoot 'protected_login.py') "$mysqlHome\bin\mysql_config_editor.exe" "c9-$Kind" $user
-        if ($LASTEXITCODE -ne 0) { Fail 'R06B1_PROTECTED_LOGIN' }
-    } finally { $env:C9W_EDITOR_PASSWORD = $null; $env:MYSQL_TEST_LOGIN_FILE = $saved }
-    if (-not (Test-OwnerOnly (Join-Path $work "$Role\.mylogin.cnf") @($roles[$Role].Sid))) { Fail 'R06B1_PROTECTED_LOGIN' }
+    Fail 'C9W_PROTECTED_LOGIN_REFUSED_H06_INCOMPLETE'
 }
-function Revoke-Transport([string] $Role, [string] $Kind) { $null = Invoke-Root $Role "DROP USER 'c9_$Kind'@'%';"; Remove-Item -LiteralPath (Join-Path $work "$Role\.mylogin.cnf") }
+function Revoke-Transport([string] $Role, [string] $Kind) {
+    Fail 'C9W_PROTECTED_LOGIN_REFUSED_H06_INCOMPLETE'
+}
 # Unmodified extended-c-backup.ps1 in its real ProtectedLogin mode, inside the role's container.
 function Invoke-C5([string] $Operation, [string] $Role, [string] $Section, [string] $Key, [string] $ArchiveName, [string] $Log) {
     Assert-Role $Role
