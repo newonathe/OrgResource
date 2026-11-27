@@ -503,3 +503,7 @@
 "docs/handoffs/claude-local-execution-2026-11-24/142_H06_SUSPENDED_CLIENT_WITNESS_CANDIDATE.md","7f5aded6bd5efc1dfb7e85784814ab4b2df8729e","3716","100644","17e81bce4c452ca0c20dca70e6c19754e3b56afb","FULL candidate report; native NOT_RUN"
 ".github/workflows/windows-l06-compile-closure.yml","f26813759d0358bf90e6a6c626959b9b56efdbb2","10650","100644","17e81bce4c452ca0c20dca70e6c19754e3b56afb","Exact focused CI staged NOT_RUN"
 "docs/handoffs/claude-local-execution-2026-11-24/142_H06_SUSPENDED_CLIENT_WITNESS_CANDIDATE.md","0bb7595c4aca294204772edbee84c2ae334e1a72","5532","100644","c0c58915f599615c45a6badaa1379ed1d62c8675","FULL actual terminal focused and three repeat job receipts; native NOT_RUN"
+"docs/EXTENDED_C_RELEASE.md","380e6f452826e90d206c6220718409d4cabc2dcb","9538","100644","a92e484179a092da6e3cd8045e5115da00dee7c4","Changed package/fixture/guide; actual focused pending"
+"scripts/package-extended-c.ps1","d30efad851dec10c0ce202ef7368b0661b8f92ae","18585","100644","a92e484179a092da6e3cd8045e5115da00dee7c4","Changed package/fixture/guide; actual focused pending"
+"scripts/test-extended-c-release-inventory.ps1","fc0d90b979dacd3f5954a57e56a852aa305fdbba","17743","100644","a92e484179a092da6e3cd8045e5115da00dee7c4","Changed package/fixture/guide; actual focused pending"
+"docs/handoffs/claude-local-execution-2026-11-24/143_FULL_SOURCE_ARCHIVE_INTEGRITY_CANDIDATE.md","7aa1d301e9e143f4602daa932c6d8a32ef211f8f","4647","100644","docs/claude-local-execution-handoff-2026-11-24","FULL source guard candidate and actual Course A repeat receipt"
