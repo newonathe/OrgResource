@@ -25,6 +25,13 @@ function Assert-ReleaseCommand([string] $Step) {
     if ($LASTEXITCODE -ne 0) { throw "$Step failed with exit code $LASTEXITCODE." }
 }
 
+# A Windows Git checkout may have CRLF conversion enabled. The source ZIP must
+# carry the committed migration bytes; the subsequent raw-blob guard remains authoritative.
+function New-ReleaseSourceArchive([string] $ArchivePath, [string] $Revision, [string[]] $Paths) {
+    git -c core.autocrlf=false -c core.eol=lf archive --format=zip "--output=$ArchivePath" $Revision -- @Paths
+    Assert-ReleaseCommand 'Exact-commit source ZIP'
+}
+
 # Compare complete migration inventory and bytes, not only version prefixes.
 function Assert-PackagedMigrations([string] $JarPath, [System.Collections.IDictionary] $Expected) {
     $prefix = 'BOOT-INF/classes/db/migration/'
@@ -127,8 +134,7 @@ try {
     if ($flagged.Count) { throw 'Release source contains a private-key, token, or credential-bearing URL marker.' }
     $null = New-Item -ItemType Directory -Path $stage
     Write-Output "Unpublished staging directory: $stage"
-    git archive --format=zip "--output=$archive" $sha -- @included
-    Assert-ReleaseCommand 'Exact-commit source ZIP'
+    New-ReleaseSourceArchive -ArchivePath $archive -Revision $sha -Paths $included
 } finally { Pop-Location }
 
 # The archive contains Windows wrapper metadata and resolves all relative paths on its own.
