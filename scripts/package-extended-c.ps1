@@ -25,6 +25,66 @@ function Assert-ReleaseCommand([string] $Step) {
     if ($LASTEXITCODE -ne 0) { throw "$Step failed with exit code $LASTEXITCODE." }
 }
 
+# Compare complete migration inventory and bytes, not only version prefixes.
+function Assert-PackagedMigrations([string] $JarPath, [System.Collections.IDictionary] $Expected) {
+    $prefix = 'BOOT-INF/classes/db/migration/'
+    $zip = [IO.Compression.ZipFile]::OpenRead($JarPath)
+    try {
+        $actual = @($zip.Entries | Where-Object {
+            $_.FullName.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase) -and $_.FullName -cne $prefix
+        })
+        if ($actual.Count -ne $Expected.Count) { throw 'Executable JAR migration inventory count differs.' }
+        foreach ($name in $Expected.Keys) {
+            $matches = @($actual | Where-Object { $_.FullName -ceq ($prefix + $name) })
+            if ($matches.Count -ne 1) { throw "Executable JAR migration missing or duplicated: $name" }
+            $stream = $matches[0].Open()
+            try {
+                $digest = (Get-FileHash -InputStream $stream -Algorithm SHA256).Hash
+                if ($digest -cne $Expected[$name]) { throw "Executable JAR migration bytes differ: $name" }
+            } finally { $stream.Dispose() }
+        }
+    } finally { $zip.Dispose() }
+}
+
+function Assert-FrozenMigrationSource([string] $Revision, [string] $MigrationDir, [System.Collections.IDictionary] $Pins) {
+    $migrationEntries = @(git ls-tree -r --name-only $Revision -- $MigrationDir)
+    Assert-ReleaseCommand 'Migration inventory'
+    $expectedPaths = @($Pins.Keys | ForEach-Object { "$MigrationDir/$_" })
+    if ($migrationEntries.Count -ne $expectedPaths.Count -or
+        @(Compare-Object $expectedPaths $migrationEntries -CaseSensitive).Count) {
+        throw 'Tracked migrations differ from frozen V1–V7 inventory.'
+    }
+    foreach ($name in $Pins.Keys) {
+        $blob = git rev-parse "${Revision}:$MigrationDir/$name"
+        Assert-ReleaseCommand 'Frozen migration blob'
+        if ($blob -cne $Pins[$name]) { throw "Frozen migration changed: $name" }
+    }
+}
+
+function Get-FrozenMigrationDigests([string] $SourceRoot, [string] $MigrationDir, [System.Collections.IDictionary] $Pins) {
+    $digests = [ordered]@{}
+    foreach ($name in $Pins.Keys) {
+        $path = Join-Path $SourceRoot "$MigrationDir/$name"
+        $blob = git hash-object --no-filters -- $path
+        Assert-ReleaseCommand 'Extracted migration blob'
+        if ($blob -cne $Pins[$name]) { throw "Extracted migration bytes differ: $name" }
+        $digests[$name] = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash
+    }
+    return $digests
+}
+
+# Frozen V1–V7 Git blob identities; changing this list requires the separately approved migration gate.
+$migrationPins = [ordered]@{
+    'V1__extended_c1_baseline.sql' = '22b1e0f589ab05d2b0721e5de39bb29b371a2382'
+    'V2__spring_session_jdbc_mysql.sql' = '4dd537e2bcfb22898fb144860cb5881afe904790'
+    'V3__atomic_inventory_ledger.sql' = '37ce7fffc3a2a5aae6556aec22f5c8f7755b363c'
+    'V4__c3_contact_images_and_reminders.sql' = '56d09c0c7f46a23d0d29f8fd5eb236548e86f29d'
+    'V5__c4_reminder_dispatch_boundary.sql' = 'ff9f7330de52b7f6aba6f4f21c29382896eeb5a5'
+    'V6__c8_project_leads_and_linked_borrowers.sql' = '187e5aeff4481d250db9e45f6f7d7cb685e683d4'
+    'V7__c8_local_demo_provenance.sql' = '7072ea7d77a7d8d4f03b790e5516e4f7fd470cb0'
+}
+$migrationDir = 'extended/backend/src/main/resources/db/migration'
+
 Push-Location $root
 try {
     $changes = @(git status --porcelain --untracked-files=all)
@@ -44,6 +104,7 @@ try {
         if ($courseTree -ne $currentTree) { throw "Protected Course A tree changed: $path" }
         $courseTrees[$path] = $courseTree
     }
+    Assert-FrozenMigrationSource -Revision $sha -MigrationDir $migrationDir -Pins $migrationPins
     $archive = Join-Path $stage 'OrgResource-Extended-C6a-Source.zip'
     $included = @('AGENTS.md', 'extended', 'backend/mvnw', 'backend/mvnw.cmd', 'backend/.mvn',
         'docs/EXTENDED_C_RELEASE.md', 'docs/QUALITY_EVIDENCE_CONTINUOUS_GATE.md', 'docs/EXTENDED_C_REPORTING.md',
@@ -82,6 +143,12 @@ if (@(Compare-Object $entries $extractedFiles -CaseSensitive).Count) {
     throw 'Extracted files differ from the tracked-source inventory.'
 }
 
+# Bind the actual archived migration bytes before build tools execute.
+Push-Location $root
+try {
+    $migrationDigests = Get-FrozenMigrationDigests -SourceRoot $extracted -MigrationDir $migrationDir -Pins $migrationPins
+} finally { Pop-Location }
+
 $verifier = Join-Path $extracted 'scripts/verify-extended-c1.ps1'
 $log = Join-Path $stage 'VERIFICATION.log'
 & pwsh -NoProfile -File $verifier -VerifyRecovery *>&1 | Tee-Object -FilePath $log
@@ -99,6 +166,8 @@ foreach ($pattern in @('^BOOT-INF/classes/static/index.html$', '^BOOT-INF/classe
         '^BOOT-INF/classes/static/assets/.*\.css$')) {
     if (-not ($jarContents -match $pattern)) { throw "Executable JAR lacks required asset: $pattern" }
 }
+Assert-PackagedMigrations -JarPath $jar -Expected $migrationDigests
+
 # This release lane is frozen at V1–V7. Check exact names, not just version prefixes.
 $migrationRoot = 'extended/backend/src/main/resources/db/migration/'
 $jarMigrationRoot = 'BOOT-INF/classes/db/migration/'
