@@ -469,3 +469,8 @@
 "docs/handoffs/claude-local-execution-2026-11-24/136_H06_FULL_LOGIN_INVENTORY_AND_REGRESSION_RECEIPTS.md","6b425331fe80b6b2dd0876480ff145c29243dd49","8878","100644","49d66ed3de5a1669b29f4bed2e0bd68a742f0b8c","FULL bounded report and receipts"
 "scripts/windows-l06/protected_login.py","8686e2012d1bc15cd217f268ac1906afb779aa58","3541","100644","161a93e53ed5d1bf9042ac75d27a065cd0f311c8","FULL exact tested pure source"
 "scripts/windows-l06/test_editor_inventory.py","d56b7d57a96da8b8161f744d38f0935a670dfcb9","2831","100644","161a93e53ed5d1bf9042ac75d27a065cd0f311c8","FULL exact tested pure source"
+"docs/handoffs/claude-local-execution-2026-11-24/137_H06_FICTIONAL_CONPTY_SOURCE_AND_COMPILE_RECEIPT.md","d13822ae88ad2a30c90b5622f182e590c7baf4a1","6617","100644","01330a77b4483447edd46156d8ffa5908ee1382a","FULL bounded source/compile receipt"
+"scripts/windows-l06/C9OwnedJobProbe.cs","5a03655e229793fd2adb3dd46b767fc9aacf24c1","29587","100644","a0b76f05f54bdfab53a894da2796e7de7b227074","FULL exact candidate/compile; native effects NOT_RUN"
+"scripts/windows-l06/C9FictionalConPty.cs","17f41da1eb227a4186279466fc21efccb99ed59d","14937","100644","a0b76f05f54bdfab53a894da2796e7de7b227074","FULL exact candidate/compile; native effects NOT_RUN"
+"scripts/windows-l06/test-fictional-conpty.ps1","866a58028cf84aa92462e3dbdf5e36f608b8fc78","576","100644","a0b76f05f54bdfab53a894da2796e7de7b227074","FULL quarantine parser only"
+".github/workflows/windows-l06-compile-closure.yml","3eafa75447f953e1f479738c815f439429c43ffa","5245","100644","e586be4fa97195ef1d8bf4a223c675b67a8d0042","FULL exact candidate/compile; native effects NOT_RUN"

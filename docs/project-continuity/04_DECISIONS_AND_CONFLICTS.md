@@ -391,3 +391,7 @@ Owner expressly clarified production readiness is the desired academic completio
 ## Current — H06 whole-login inventory (2026-11-28 PHT)
 
 Decision: selected masked login output does not prove absence of default groups; require separately observed whole-file masked inventory with same exact role binding and same-file identity. Pure oracle is verified bounded; no native effect accepted. Fixture path under control and role-visible C5 path are not equivalent. No ACL widening or substitution by inference. See [Report136](https://github.com/newonathe/OrgResource/blob/49d66ed3de5a1669b29f4bed2e0bd68a742f0b8c/docs/handoffs/claude-local-execution-2026-11-24/136_H06_FULL_LOGIN_INVENTORY_AND_REGRESSION_RECEIPTS.md).
+
+## Current — H06 fictional ConPTY separation (2026-11-28 PHT)
+
+Decision: separate reader, writer and close tasks and a dedicated job are necessary but not a complete independent watchdog; compile-only and parser results cannot establish native lifecycle correctness. The fictional entrypoint is private and the fixture refuses until independently supervised. Preserve real credential quarantine, owner-only root and all H03/H06 dependencies. See [Report137](https://github.com/newonathe/OrgResource/blob/01330a77b4483447edd46156d8ffa5908ee1382a/docs/handoffs/claude-local-execution-2026-11-24/137_H06_FICTIONAL_CONPTY_SOURCE_AND_COMPILE_RECEIPT.md).
