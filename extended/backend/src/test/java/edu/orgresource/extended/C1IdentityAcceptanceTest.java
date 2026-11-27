@@ -6189,6 +6189,140 @@ class C1IdentityAcceptanceTest {
         return json(allocation).get("id").getAsLong();
     }
 
+
+    @Test @Order(79)
+    void G01R082MemberDirectoryCrossesActualHundredRowBoundary() throws Exception {
+        Fixture home = newTenant("G01-R082", Membership.Role.OWNER);
+        Fixture admin = fixtureInOrg(home.orgDbId, Membership.Role.ADMIN);
+        Fixture away = newTenant("G01-R082-away", Membership.Role.OWNER);
+        List<Fixture> fixtures = new ArrayList<>(List.of(home, admin));
+        for (int i = 0; i < 99; i++)
+            fixtures.add(fixtureInOrg(home.orgDbId, Membership.Role.MEMBER));
+        List<String> expected = fixtures.stream()
+                .sorted(java.util.Comparator.comparingLong(Fixture::membershipDbId))
+                .map(f -> f.membershipPublicId.toString()).toList();
+        assertEquals(101, expected.size());
+        assertEquals(101, new java.util.HashSet<>(expected).size());
+        assertEquals(101L, jdbc.queryForObject("SELECT COUNT(*) FROM membership WHERE org_id=?", Long.class, home.orgDbId));
+        Session officer = login(admin.username, admin.password);
+        Session owner = login(home.username, home.password);
+        Session outsider = login(away.username, away.password);
+        String path = "/api/v2/orgs/" + home.orgPublicId + "/members";
+        var before = governanceDenialRows(home.orgDbId, away.orgDbId);
+        var first = checkedG01Page(officer, path + "?limit=100");
+        assertEquals(expected.subList(0, 100), memberPageIds(first));
+        String cursor = first.get("nextCursor").getAsString();
+        assertEquals(expected.get(99), cursor);
+        assertEquals(first, checkedG01Page(officer, path + "?limit=101"));
+        assertEquals(first, checkedG01Page(owner, path + "?limit=100"));
+        var second = checkedG01Page(officer, path + "?limit=100&cursor=" + cursor);
+        assertEquals(expected.subList(100, 101), memberPageIds(second));
+        assertTrue(second.get("nextCursor").isJsonNull());
+        var empty = checkedG01Page(officer, path + "?limit=100&cursor=" + expected.get(100));
+        assertTrue(memberPageIds(empty).isEmpty());
+        assertTrue(empty.get("nextCursor").isJsonNull());
+        assertEquals(404, get(officer.client, path + "?cursor=" + away.membershipPublicId).statusCode());
+        assertEquals(404, get(outsider.client, path + "?cursor=" + cursor).statusCode());
+        assertTrue(before.equals(governanceDenialRows(home.orgDbId, away.orgDbId)),
+                "Member directory pagination changed scoped domain/governance rows.");
+    }
+
+    private JsonObject checkedG01Page(Session actor, String path) throws Exception {
+        HttpResponse<String> response = get(actor.client, path);
+        assertEquals(200, response.statusCode());
+        assertTrue(response.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
+        JsonObject data = json(response).getAsJsonObject("data");
+        assertEquals(Set.of("items", "nextCursor"), data.keySet());
+        return data;
+    }
+
+    private List<String> memberPageIds(JsonObject page) {
+        List<String> ids = new ArrayList<>();
+        for (var item : page.getAsJsonArray("items")) {
+            var row = item.getAsJsonObject();
+            assertEquals(Set.of("id", "displayName", "role", "status", "version"), row.keySet());
+            ids.add(row.get("id").getAsString());
+        }
+        return ids;
+    }
+
+    @Test @Order(80)
+    void G01R089R091WorkspacePagesCrossActualHundredRowBoundary() throws Exception {
+        Fixture home = newTenant("G01-pages", Membership.Role.OWNER);
+        Fixture away = newTenant("G01-pages-away", Membership.Role.OWNER);
+        Fixture member = fixtureInOrg(home.orgDbId, Membership.Role.MEMBER);
+        List<Long> departmentIds = new ArrayList<>(), projectIds = new ArrayList<>();
+        // Setup only: direct fictional JPA fixtures avoid 200 redundant HTTP create
+        // operations; all assertions below exercise the real HTTP/JPA/MySQL read path.
+        tx.executeWithoutResult(status -> {
+            LocalDateTime start = LocalDateTime.of(2040, 12, 10, 10, 0);
+            Department first = null;
+            for (int i = 0; i < 101; i++) {
+                String name = "Page-boundary department " + i;
+                Department department = departmentRepository.saveAndFlush(new Department(
+                        home.orgDbId, name, name.toLowerCase(java.util.Locale.ROOT)));
+                departmentIds.add(department.id);
+                if (first == null) first = department;
+                Project project = projectRepository.saveAndFlush(new Project(
+                        home.orgDbId, first, "Page-boundary project " + i, start, start.plusHours(1)));
+                projectIds.add(project.id);
+            }
+            Department excluded = departmentRepository.saveAndFlush(new Department(
+                    home.orgDbId, "Excluded department", "excluded department"));
+            projectRepository.saveAndFlush(new Project(home.orgDbId, excluded,
+                    "Page-boundary other department", start, start.plusHours(1)));
+            Department foreign = departmentRepository.saveAndFlush(new Department(
+                    away.orgDbId, "Page-boundary foreign", "page-boundary foreign"));
+            projectRepository.saveAndFlush(new Project(away.orgDbId, foreign,
+                    "Page-boundary foreign project", start, start.plusHours(1)));
+        });
+        departmentIds.sort(Long::compareTo);
+        projectIds.sort(Long::compareTo);
+        assertEquals(101, new java.util.HashSet<>(departmentIds).size());
+        assertEquals(101, new java.util.HashSet<>(projectIds).size());
+        assertEquals(102L, jdbc.queryForObject("SELECT COUNT(*) FROM department WHERE organization_id=?", Long.class, home.orgDbId));
+        assertEquals(102L, jdbc.queryForObject("SELECT COUNT(*) FROM project WHERE organization_id=?", Long.class, home.orgDbId));
+        Session reader = login(member.username, member.password);
+        Session outsider = login(away.username, away.password);
+        String dept = "/api/v2/workspace/departments?search=page-boundary";
+        String proj = "/api/v2/workspace/projects?departmentId=" + departmentIds.get(0)
+                + "&period=UPCOMING&search=page-boundary";
+        var before = governanceDenialRows(home.orgDbId, away.orgDbId);
+        String dc = assertG01WorkspaceBoundary(reader, dept, departmentIds, Set.of("id", "name"));
+        String pc = assertG01WorkspaceBoundary(reader, proj, projectIds,
+                Set.of("id", "departmentId", "name", "startAt", "endAt", "departmentName"));
+        assertEquals(400, get(reader.client, dept + "&limit=101").statusCode());
+        assertEquals(400, get(reader.client, proj + "&limit=101").statusCode());
+        assertEquals(404, get(outsider.client, dept + "&cursor=" + dc).statusCode());
+        assertEquals(404, get(reader.client, dept + "&cursor=" + pc).statusCode());
+        assertEquals(404, get(reader.client,
+                "/api/v2/workspace/departments?search=excluded&cursor=" + dc).statusCode());
+        assertEquals(404, get(reader.client, proj.replace("UPCOMING", "ENDED") + "&cursor=" + pc).statusCode());
+        assertTrue(before.equals(governanceDenialRows(home.orgDbId, away.orgDbId)),
+                "Workspace pagination changed scoped domain/governance rows.");
+    }
+
+    private String assertG01WorkspaceBoundary(Session actor, String path, List<Long> expected,
+            Set<String> fields) throws Exception {
+        var first = checkedG01Page(actor, path + "&limit=100");
+        assertEquals(expected.subList(0, 100), g01WorkspaceIds(first, fields));
+        String cursor = first.get("nextCursor").getAsString();
+        var second = checkedG01Page(actor, path + "&limit=100&cursor=" + cursor);
+        assertEquals(expected.subList(100, 101), g01WorkspaceIds(second, fields));
+        assertTrue(second.get("nextCursor").isJsonNull());
+        return cursor;
+    }
+
+    private List<Long> g01WorkspaceIds(JsonObject page, Set<String> fields) {
+        List<Long> ids = new ArrayList<>();
+        for (var item : page.getAsJsonArray("items")) {
+            var row = item.getAsJsonObject();
+            assertEquals(fields, row.keySet());
+            ids.add(row.get("id").getAsLong());
+        }
+        return ids;
+    }
+
     private record Fixture(long orgDbId, UUID orgPublicId, long userDbId, String username, String password,
                           long membershipDbId, UUID membershipPublicId, List<String> recoveryCodes) { }
     private static final class Session {
@@ -6197,6 +6331,374 @@ class C1IdentityAcceptanceTest {
             this.client = client; this.csrf = csrf; this.sessionId = sessionId; this.oldSessionId = oldSessionId; this.activeOrgId = activeOrgId;
         }
     }
+    @Test @Order(81)
+    void G01R035WritableLogoutDeletesOnlyCurrentSessionAndRejectsSavedCookie() throws Exception {
+        Fixture home = newTenant("G01-logout-home", Membership.Role.OWNER);
+        Fixture foreign = newTenant("G01-logout-foreign", Membership.Role.OWNER);
+        Session current = login(home.username, home.password);
+        Session peer = login(home.username, home.password);
+        Session outsider = login(foreign.username, foreign.password);
+        assertEquals(201, post(current, "/api/resources",
+                GSON.toJson(new ResourceRequest("Fictional logout home", "REUSABLE", 3))).statusCode());
+        assertEquals(201, post(outsider, "/api/resources",
+                GSON.toJson(new ResourceRequest("Fictional logout foreign", "CONSUMABLE", 4))).statusCode());
+        for (Session actor : List.of(current, peer, outsider))
+            assertEquals(200, get(actor.client, "/api/v2/session").statusCode());
+        String saved = cookie(current.client);
+        assertTrue(saved != null && saved.equals(current.sessionId));
+        assertTrue(Set.of(saved, peer.sessionId, outsider.sessionId).size() == 3);
+        String primary = jdbc.queryForObject("SELECT PRIMARY_ID FROM SPRING_SESSION WHERE SESSION_ID=? AND PRINCIPAL_NAME=?",
+                String.class, saved, home.username);
+        assertNotNull(primary);
+        String attrs = "SELECT SESSION_PRIMARY_ID,ATTRIBUTE_NAME,HEX(ATTRIBUTE_BYTES) AS bytes_hex "
+                + "FROM SPRING_SESSION_ATTRIBUTES WHERE SESSION_PRIMARY_ID IN "
+                + "(SELECT PRIMARY_ID FROM SPRING_SESSION WHERE PRINCIPAL_NAME IN (?,?)) "
+                + "ORDER BY SESSION_PRIMARY_ID,ATTRIBUTE_NAME";
+        String sessions = "SELECT PRIMARY_ID,SESSION_ID,PRINCIPAL_NAME,CREATION_TIME,MAX_INACTIVE_INTERVAL "
+                + "FROM SPRING_SESSION WHERE PRINCIPAL_NAME IN (?,?) ORDER BY PRIMARY_ID";
+        var allSessions = jdbc.queryForList(sessions, home.username, foreign.username);
+        assertEquals(3, allSessions.size());
+        var allAttrs = jdbc.queryForList(attrs, home.username, foreign.username);
+        assertTrue(allAttrs.stream().anyMatch(row -> primary.equals(row.get("SESSION_PRIMARY_ID"))));
+        var keepSessions = allSessions.stream().filter(row -> !primary.equals(row.get("PRIMARY_ID"))).toList();
+        var keepAttrs = allAttrs.stream().filter(row -> !primary.equals(row.get("SESSION_PRIMARY_ID"))).toList();
+        assertEquals(2, keepSessions.size());
+        assertTrue(keepAttrs.stream().map(row -> row.get("SESSION_PRIMARY_ID")).distinct().count() == 2);
+        var domain = governanceDenialRows(home.orgDbId, foreign.orgDbId);
+        var homeIdentity = identityAuthRows(home).subList(0, 4);
+        var foreignIdentity = identityAuthRows(foreign).subList(0, 4);
+
+        // A valid cookie with invalid CSRF may not terminate any authenticated session.
+        assertEquals(403, post(current, "/api/v2/auth/logout", "", "invalid-csrf", origin()).statusCode());
+        assertTrue(allSessions.equals(jdbc.queryForList(sessions, home.username, foreign.username)));
+        assertTrue(allAttrs.equals(jdbc.queryForList(attrs, home.username, foreign.username)));
+        assertTrue(saved.equals(cookie(current.client)));
+        assertEquals(200, get(current.client, "/api/v2/session").statusCode());
+        assertTrue(domain.equals(governanceDenialRows(home.orgDbId, foreign.orgDbId)));
+        assertTrue(homeIdentity.equals(identityAuthRows(home).subList(0, 4)));
+        assertTrue(foreignIdentity.equals(identityAuthRows(foreign).subList(0, 4)));
+
+        HttpResponse<String> logout = post(current, "/api/v2/auth/logout", "");
+        assertEquals(204, logout.statusCode());
+        assertTrue(logout.body().isEmpty());
+        assertNull(springSessions.findById(saved));
+        assertEquals(0, jdbc.queryForObject("SELECT COUNT(*) FROM SPRING_SESSION WHERE PRIMARY_ID=? OR SESSION_ID=?",
+                Integer.class, primary, saved));
+        assertEquals(0, jdbc.queryForObject("SELECT COUNT(*) FROM SPRING_SESSION_ATTRIBUTES WHERE SESSION_PRIMARY_ID=?",
+                Integer.class, primary));
+        assertTrue(keepSessions.equals(jdbc.queryForList(sessions, home.username, foreign.username)));
+        assertTrue(keepAttrs.equals(jdbc.queryForList(attrs, home.username, foreign.username)));
+
+        // No cookie jar or automatic replacement: replay the exact retired value.
+        HttpClient replay = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NEVER).build();
+        HttpResponse<String> stale = replay.send(HttpRequest.newBuilder(URI.create(base() + "/api/v2/session"))
+                .header("Cookie", COOKIE + "=" + saved).GET().build(), HttpResponse.BodyHandlers.ofString());
+        assertEquals(401, stale.statusCode());
+        assertEquals("AUTH_REQUIRED", json(stale).get("code").getAsString());
+        assertTrue(stale.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
+        assertEquals(401, get(current.client, "/api/v2/session").statusCode());
+        for (Session actor : List.of(peer, outsider)) {
+            var response = get(actor.client, "/api/v2/session");
+            assertEquals(200, response.statusCode());
+            assertEquals(actor.activeOrgId, json(response).getAsJsonObject("data").get("activeOrgId").getAsString());
+            assertTrue(actor.sessionId.equals(cookie(actor.client)));
+        }
+        assertTrue(keepSessions.equals(jdbc.queryForList(sessions, home.username, foreign.username)));
+        assertTrue(keepAttrs.equals(jdbc.queryForList(attrs, home.username, foreign.username)));
+        assertTrue(domain.equals(governanceDenialRows(home.orgDbId, foreign.orgDbId)));
+        assertTrue(homeIdentity.equals(identityAuthRows(home).subList(0, 4)));
+        assertTrue(foreignIdentity.equals(identityAuthRows(foreign).subList(0, 4)));
+        // Do not print raw credentials, session identifiers or serialized attributes.
+        // Legitimate last-access and expiry timestamp refreshes are excluded from peer comparisons.
+    }
+
+    @Test @Order(82)
+    void G01R036RecoveryThrottleAndDisabledAccountHaveGenericBoundedOutcomes() throws Exception {
+        Fixture home = newTenant("G01-recover-home", Membership.Role.OWNER);
+        Fixture foreign = newTenant("G01-recover-other", Membership.Role.OWNER);
+        Fixture disabled = fixtureInOrg(home.orgDbId, Membership.Role.MEMBER);
+        // fixtureInOrg intentionally creates no recovery codes; seed a real fictional batch
+        // using the same persistence path as createTenant, before disabling this account.
+        List<String> disabledCodes = C1Secrets.recoveryCodes(5);
+        tx.executeWithoutResult(status -> {
+            LocalDateTime issuedAt = now();
+            UUID batch = C1Secrets.uuid();
+            for (String code : disabledCodes)
+                recoveryCodes.save(new AccountRecoveryCode(disabled.userDbId, C1Secrets.sha256(code),
+                        batch, issuedAt, issuedAt.plusDays(365)));
+        });
+        assertEquals(5, disabledCodes.size());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM account_recovery_code WHERE user_id=? AND code_hash=? AND used_at IS NULL AND revoked_at IS NULL",
+                Integer.class, disabled.userDbId, C1Secrets.sha256(disabledCodes.get(0))));
+        Session active = login(home.username, home.password);
+        Session other = login(foreign.username, foreign.password);
+        Session retired = login(disabled.username, disabled.password);
+        assertEquals(204, post(retired, "/api/v2/account/disable",
+                GSON.toJson(new CurrentPasswordRequest(disabled.password))).statusCode());
+        assertEquals(UserAccount.Status.DISABLED, accounts.findById(disabled.userDbId).orElseThrow().status);
+        assertEquals(401, get(retired.client, "/api/v2/session").statusCode());
+        String endpoint = "/api/v2/auth/recover";
+        String missing = "missing-" + UUID.randomUUID();
+        String replacement = "Fictional-recovery-" + UUID.randomUUID();
+        // Foreign real code cannot recover home; real disabled code cannot recover disabled.
+        String[] names = {home.username, missing, disabled.username};
+        String[] invalidCodes = {foreign.recoveryCodes.get(0), foreign.recoveryCodes.get(0),
+                disabledCodes.get(0)};
+        var domain = governanceDenialRows(home.orgDbId, foreign.orgDbId);
+        var beforeHome = identityAuthRows(home);
+        var beforeForeign = identityAuthRows(foreign);
+        var beforeDisabled = identityAuthRows(disabled);
+        assertEquals(5, jdbc.queryForObject("SELECT COUNT(*) FROM account_recovery_code WHERE user_id=? AND used_at IS NULL AND revoked_at IS NULL AND expires_at>UTC_TIMESTAMP(6)",
+                Integer.class, disabled.userDbId));
+        JsonObject generic = null;
+        for (int group = 0; group < names.length; group++) {
+            // Different clients with the same normalized username/loopback source share the bucket.
+            HttpClient first = newClient(), second = newClient();
+            String firstCsrf = json(get(first, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();
+            String secondCsrf = json(get(second, "/api/v2/auth/csrf")).getAsJsonObject("data").get("csrfToken").getAsString();
+            String invalid = GSON.toJson(new RecoverRequest(names[group], invalidCodes[group], replacement));
+            assertEquals(403, post(first, endpoint, invalid, null, origin()).statusCode());
+            for (int attempt = 0; attempt < 6; attempt++) {
+                HttpClient client = attempt % 2 == 0 ? first : second;
+                String csrf = attempt % 2 == 0 ? firstCsrf : secondCsrf;
+                String normalizedVariant = attempt % 2 == 0 ? names[group] :
+                        " " + names[group].toUpperCase(java.util.Locale.ROOT) + " ";
+                String code = group == 0 && attempt == 5 ? home.recoveryCodes.get(0) : invalidCodes[group];
+                var response = post(client, endpoint,
+                        GSON.toJson(new RecoverRequest(normalizedVariant, code, replacement)), csrf, origin());
+                assertEquals(attempt < 5 ? 200 : 429, response.statusCode());
+                assertTrue(response.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
+                var body = json(response);
+                if (attempt < 5) {
+                    assertEquals(Set.of("data", "requestId"), body.keySet());
+                    var data = body.getAsJsonObject("data");
+                    assertEquals(Set.of("message"), data.keySet());
+                    assertEquals("If the account and recovery code are valid, password recovery has completed.",
+                            data.get("message").getAsString());
+                    if (generic == null) generic = data;
+                    assertTrue(generic.equals(data), "Recovery disclosure differed by account state.");
+                } else {
+                    assertEquals(Set.of("code", "message", "requestId"), body.keySet());
+                    assertEquals("RATE_LIMITED", body.get("code").getAsString());
+                    assertEquals("Too many attempts. Try again later.", body.get("message").getAsString());
+                }
+                assertTrue(!response.body().contains(code) && !response.body().contains(replacement));
+                assertTrue(beforeHome.equals(identityAuthRows(home)), "Recovery refusal changed home identity facts.");
+                assertTrue(beforeForeign.equals(identityAuthRows(foreign)), "Recovery refusal changed foreign identity facts.");
+                assertTrue(beforeDisabled.equals(identityAuthRows(disabled)), "Recovery refusal changed disabled identity facts.");
+                assertTrue(domain.equals(governanceDenialRows(home.orgDbId, foreign.orgDbId)));
+            }
+            assertEquals(401, get(first, "/api/v2/session").statusCode());
+            assertEquals(401, get(second, "/api/v2/session").statusCode());
+        }
+        assertEquals(200, get(active.client, "/api/v2/session").statusCode());
+        assertEquals(200, get(other.client, "/api/v2/session").statusCode());
+        assertEquals(401, get(retired.client, "/api/v2/session").statusCode());
+        // Login and recovery use separate action buckets. No timing-equivalence assertion.
+        assertEquals(200, loginStatus(home.username, home.password));
+        assertEquals(401, loginStatus(disabled.username, disabled.password));
+        assertTrue(passwordEncoder.matches(home.password, credentials.findByUserId(home.userDbId).orElseThrow().passwordHash));
+        assertTrue(beforeDisabled.equals(identityAuthRows(disabled)));
+        assertTrue(domain.equals(governanceDenialRows(home.orgDbId, foreign.orgDbId)));
+    }
+
+    @Test @Order(83)
+    void G01R041ExistingRedemptionBindsOnlyTokenTenantAndPreservesSelectedWorkspace() throws Exception {
+        Fixture home = newTenant("G01-invite-home", Membership.Role.OWNER);
+        Fixture foreign = newTenant("G01-invite-other", Membership.Role.OWNER);
+        Session inviter = login(home.username, home.password);
+        Session recipient = login(foreign.username, foreign.password);
+        String homeRoot = "/api/v2/orgs/" + home.orgPublicId;
+        String foreignRoot = "/api/v2/orgs/" + foreign.orgPublicId;
+        String endpoint = "/api/v2/invitations/redeem";
+        var issue = post(inviter, homeRoot + "/invitations", GSON.toJson(new RoleRequest("CUSTODIAN")));
+        var unrelated = post(recipient, foreignRoot + "/invitations", GSON.toJson(new RoleRequest("MEMBER")));
+        assertEquals(201, issue.statusCode()); assertEquals(201, unrelated.statusCode());
+        var issued = json(issue).getAsJsonObject("data");
+        String token = issued.get("bearerToken").getAsString();
+        String id = issued.get("id").getAsString();
+        String otherToken = json(unrelated).getAsJsonObject("data").get("bearerToken").getAsString();
+        Invitation target = invitations.findByTokenHash(C1Secrets.sha256(token)).orElseThrow();
+        Invitation otherInvite = invitations.findByTokenHash(C1Secrets.sha256(otherToken)).orElseThrow();
+        assertEquals(home.orgDbId, target.organizationId.longValue());
+        assertEquals(foreign.orgDbId, otherInvite.organizationId.longValue());
+        var before = governanceDenialRows(home.orgDbId, foreign.orgDbId);
+        var inviterIdentity = identityAuthRows(home);
+        var recipientIdentity = identityAuthRows(foreign);
+        long accountCount = accounts.count(), recoveryCount = recoveryCodes.count(), memberCount = memberships.count();
+        assertEquals(foreign.orgPublicId.toString(), recipient.activeOrgId);
+        assertTrue(memberships.findByOrganizationIdAndUserId(home.orgDbId, foreign.userDbId).isEmpty());
+
+        var wrongMode = post(recipient, endpoint, GSON.toJson(new RedeemRequest(token,
+                "fictional-forbidden", "Fictional-password-" + UUID.randomUUID(), "Forbidden")));
+        assertEquals(400, wrongMode.statusCode());
+        assertEquals("VALIDATION_FAILED", json(wrongMode).get("code").getAsString());
+        var duplicate = post(inviter, endpoint, GSON.toJson(new TokenRequest(token)));
+        assertEquals(409, duplicate.statusCode());
+        assertEquals("MEMBERSHIP_EXISTS", json(duplicate).get("code").getAsString());
+        assertTrue(before.equals(governanceDenialRows(home.orgDbId, foreign.orgDbId)));
+        assertTrue(inviterIdentity.equals(identityAuthRows(home)));
+        assertTrue(recipientIdentity.equals(identityAuthRows(foreign)));
+        assertEquals(accountCount, accounts.count()); assertEquals(recoveryCount, recoveryCodes.count());
+        assertEquals(memberCount, memberships.count());
+
+        var joined = post(recipient, endpoint, GSON.toJson(new TokenRequest(token)));
+        assertEquals(200, joined.statusCode());
+        assertTrue(joined.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
+        var envelope = json(joined);
+        assertEquals(Set.of("data", "requestId"), envelope.keySet());
+        var data = envelope.getAsJsonObject("data");
+        assertTrue(Set.of("organizationId", "membershipId", "role", "newAccount", "recoveryCodes", "session", "csrfToken").containsAll(data.keySet()));
+        assertEquals(home.orgPublicId.toString(), data.get("organizationId").getAsString());
+        assertEquals("CUSTODIAN", data.get("role").getAsString());
+        assertFalse(data.get("newAccount").getAsBoolean());
+        assertEquals(0, data.getAsJsonArray("recoveryCodes").size());
+        assertTrue(!data.has("session") || data.get("session").isJsonNull());
+        assertTrue(!data.has("csrfToken") || data.get("csrfToken").isJsonNull());
+        assertTrue(!joined.body().contains(token) && !joined.body().contains(otherToken));
+        var member = memberships.findByOrganizationIdAndUserId(home.orgDbId, foreign.userDbId).orElseThrow();
+        assertEquals(member.publicId.toString(), data.get("membershipId").getAsString());
+        assertEquals(Membership.Role.CUSTODIAN, member.role);
+        assertEquals(Membership.Status.ACTIVE, member.status);
+        assertEquals(0, member.version);
+        var accepted = invitations.findById(target.id).orElseThrow();
+        assertEquals(id, accepted.publicId.toString());
+        assertEquals(Invitation.Status.ACCEPTED, accepted.status);
+        assertEquals(foreign.userDbId, accepted.acceptedByUserId.longValue());
+        assertEquals(target.version + 1, accepted.version);
+        assertEquals(target.organizationId, accepted.organizationId);
+        assertEquals(target.role, accepted.role);
+        assertEquals(target.invitedByMembershipId, accepted.invitedByMembershipId);
+        assertTrue(java.security.MessageDigest.isEqual(target.tokenHash, accepted.tokenHash));
+        assertEquals(target.createdAt, accepted.createdAt); assertEquals(target.expiresAt, accepted.expiresAt);
+        assertEquals(Invitation.Status.INVITED, invitations.findById(otherInvite.id).orElseThrow().status);
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM audit_event WHERE org_id=? AND actor_user_id=? AND action='INVITATION_REDEEMED' AND target_type='membership' AND target_id=?",
+                Integer.class, home.orgDbId, foreign.userDbId, member.publicId.toString()));
+        var after = governanceDenialRows(home.orgDbId, foreign.orgDbId);
+        for (int i = 0; i < before.size(); i++) {
+            if (i == 7 || i == 8) {
+                assertEquals(before.get(i).size() + 1, after.get(i).size());
+                assertTrue(before.get(i).equals(after.get(i).subList(0, before.get(i).size())));
+            } else if (i == 9) {
+                // Both invitations were created in order: only the home token changes.
+                assertEquals(2, before.get(i).size()); assertEquals(2, after.get(i).size());
+                assertTrue(before.get(i).get(1).equals(after.get(i).get(1)));
+            } else assertTrue(before.get(i).equals(after.get(i)));
+        }
+        assertEquals(accountCount, accounts.count()); assertEquals(recoveryCount, recoveryCodes.count());
+        assertEquals(memberCount + 1, memberships.count());
+        assertTrue(inviterIdentity.equals(identityAuthRows(home)));
+        var recipientAfter = identityAuthRows(foreign);
+        for (int i : List.of(0, 1, 2, 4)) assertTrue(recipientIdentity.get(i).equals(recipientAfter.get(i)));
+        assertEquals(recipientIdentity.get(3).size() + 1, recipientAfter.get(3).size());
+        assertTrue(recipientIdentity.get(3).equals(recipientAfter.get(3).subList(0, recipientIdentity.get(3).size())));
+        assertTrue(recipient.sessionId.equals(cookie(recipient.client)));
+        var session = json(get(recipient.client, "/api/v2/session")).getAsJsonObject("data");
+        assertEquals(foreign.orgPublicId.toString(), session.get("activeOrgId").getAsString());
+        assertEquals(2, session.getAsJsonArray("memberships").size());
+        var replay = post(recipient, endpoint, GSON.toJson(new TokenRequest(token)));
+        assertEquals(404, replay.statusCode());
+        assertEquals("INVITE_INVALID", json(replay).get("code").getAsString());
+        assertTrue(after.equals(governanceDenialRows(home.orgDbId, foreign.orgDbId)));
+        assertTrue(recipientAfter.equals(identityAuthRows(foreign)));
+        assertTrue(inviterIdentity.equals(identityAuthRows(home)));
+        // Switching is an explicit subsequent action, not a consequence of redemption.
+        var selected = post(recipient, "/api/v2/session/active-org", GSON.toJson(new OrgRequest(home.orgPublicId)));
+        assertEquals(200, selected.statusCode());
+        assertEquals(home.orgPublicId.toString(), json(selected).getAsJsonObject("data").get("activeOrgId").getAsString());
+        assertTrue(after.equals(governanceDenialRows(home.orgDbId, foreign.orgDbId)));
+    }
+
+    @Test @Order(84)
+    void G01R038MetadataDatabaseDenialFailsClosedAndRecovers() throws Exception {
+        // This is a real SELECT permission fault, not a lock/deadlock or connectivity simulation.
+        // Only the already-guarded disposable test server and its exact runtime grant are eligible.
+        String runtimeUrl = System.getenv("EXT_DB_URL");
+        String migrationUrl = System.getenv("EXT_DB_MIGRATION_URL");
+        String disposable = "^jdbc:mysql://(?:127\\.0\\.0\\.1|localhost):[0-9]+/orgresource_c[12]_[A-Za-z0-9_]+(?:\\?.*)?$";
+        assertNotNull(runtimeUrl); assertNotNull(migrationUrl);
+        assertTrue(runtimeUrl.matches(disposable) && migrationUrl.matches(disposable));
+        assertEquals(runtimeUrl.split("\\?", 2)[0], migrationUrl.split("\\?", 2)[0]);
+        String schema = jdbc.queryForObject("SELECT DATABASE()", String.class);
+        assertNotNull(schema);
+        assertTrue(schema.matches("orgresource_c[12]_[A-Za-z0-9_]+"));
+        String runtime = jdbc.queryForObject("SELECT CURRENT_USER()", String.class);
+        assertNotNull(runtime);
+        assertTrue(runtime.matches("[A-Za-z0-9_]+@(?:%|127\\.0\\.0\\.1|localhost)"));
+        String[] principal = runtime.split("@", 2);
+        assertEquals(System.getenv("EXT_DB_USER"), principal[0]);
+        assertNotEquals("root", principal[0]);
+        assertNotEquals(System.getenv("EXT_DB_MIGRATION_USER"), principal[0]);
+        String account = "'" + principal[0] + "'@'" + principal[1] + "'";
+        Fixture first = newTenant("G01-metadata-db-first", Membership.Role.OWNER);
+        Fixture second = newTenant("G01-metadata-db-second", Membership.Role.OWNER);
+        String endpoint = "/api/v2/demo/metadata";
+        var before = get(newClient(), endpoint);
+        assertEquals(200, before.statusCode());
+        assertFalse(json(before).getAsJsonObject("data").get("synthetic").getAsBoolean());
+        var rows = r07LifecycleRows(first.orgDbId, second.orgDbId);
+        var firstIdentity = identityAuthRows(first);
+        var secondIdentity = identityAuthRows(second);
+        long organizationCount = organizations.count();
+        String grantQuery = "SELECT PRIVILEGE_TYPE, IS_GRANTABLE FROM information_schema.TABLE_PRIVILEGES "
+                + "WHERE TABLE_SCHEMA=? AND TABLE_NAME='organization' AND GRANTEE=? ORDER BY PRIVILEGE_TYPE";
+        try (Connection migration = DriverManager.getConnection(migrationUrl,
+                System.getenv("EXT_DB_MIGRATION_USER"), System.getenv("EXT_DB_MIGRATION_PASSWORD"));
+             var statement = migration.createStatement();
+             var grants = migration.prepareStatement(grantQuery)) {
+            assertEquals(schema, migration.getCatalog());
+            grants.setString(1, schema); grants.setString(2, account);
+            List<String> original = new ArrayList<>();
+            try (var rs = grants.executeQuery()) {
+                while (rs.next()) original.add(rs.getString(1) + ":" + rs.getString(2));
+            }
+            assertEquals(List.of("DELETE:NO", "INSERT:NO", "SELECT:NO", "UPDATE:NO"), original,
+                    "Do not change any grant other than the exact established disposable table privilege.");
+            String target = "`" + schema + "`.`organization`";
+            try {
+                statement.execute("REVOKE SELECT ON " + target + " FROM " + account);
+                // Demonstrate the actual SQL fault through the same application data source.
+                var denied = assertThrows(org.springframework.dao.DataAccessException.class,
+                        () -> jdbc.queryForObject("SELECT COUNT(*) FROM organization", Long.class));
+                boolean actualDenied = false;
+                for (Throwable cause = denied; cause != null; cause = cause.getCause()) {
+                    if (cause instanceof java.sql.SQLException sql && sql.getErrorCode() == 1142
+                            && "42000".equals(sql.getSQLState())) actualDenied = true;
+                }
+                assertTrue(actualDenied, "MySQL must actually deny SELECT (1142/42000).");
+                var failed = newClient().send(HttpRequest.newBuilder(URI.create(base() + endpoint))
+                        .timeout(java.time.Duration.ofSeconds(15)).GET().build(), HttpResponse.BodyHandlers.ofString());
+                assertEquals(500, failed.statusCode(), "A nonretryable SQL denial must not advertise ordinary or demo data.");
+                assertTrue(failed.headers().firstValue("Content-Type").orElse("").startsWith("application/json"));
+                assertTrue(failed.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
+                var envelope = json(failed);
+                assertEquals(Set.of("code", "message", "requestId"), envelope.keySet());
+                assertEquals("INTERNAL_ERROR", envelope.get("code").getAsString());
+                assertEquals("The request could not be completed.", envelope.get("message").getAsString());
+                String requestId = envelope.get("requestId").getAsString();
+                assertEquals(requestId, failed.headers().firstValue("X-Request-ID").orElseThrow());
+                assertDoesNotThrow(() -> UUID.fromString(requestId));
+                assertFalse(failed.body().contains(runtime) || failed.body().contains(schema));
+            } finally {
+                // Restore only the exact pre-existing non-grantable SELECT privilege, even on assertion failure.
+                statement.execute("GRANT SELECT ON " + target + " TO " + account);
+                List<String> restored = new ArrayList<>();
+                try (var rs = grants.executeQuery()) {
+                    while (rs.next()) restored.add(rs.getString(1) + ":" + rs.getString(2));
+                }
+                assertEquals(original, restored, "Original disposable privilege set must be restored.");
+            }
+        }
+        var recovered = get(newClient(), endpoint);
+        assertEquals(200, recovered.statusCode());
+        assertEquals(json(before).get("data"), json(recovered).get("data"));
+        assertEquals(organizationCount, organizations.count());
+        assertTrue(rows.equals(r07LifecycleRows(first.orgDbId, second.orgDbId)));
+        assertTrue(firstIdentity.equals(identityAuthRows(first)));
+        assertTrue(secondIdentity.equals(identityAuthRows(second)));
+        System.out.println("G01_R038_SQL_DENIAL_OK:actual1142=true http500=true noStore=true exactScopedRows=true restoredGrant=true recovered200=true");
+    }
+
     private record LoginRequest(String username, String password) { }
     private record NameRequest(String name) { }
     private record OrgRequest(UUID organizationId) { }

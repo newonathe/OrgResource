@@ -295,3 +295,148 @@ jobs:
             EXT_E2E_USERNAME="$EXT_BOOTSTRAP_USERNAME" \
             EXT_E2E_PASSWORD="$EXT_BOOTSTRAP_PASSWORD" \
             npm --prefix extended/frontend run e2e
+          # R038: actual complete connectivity loss in this job's disposable CI service.
+          # Never execute on a self-hosted runner or against a local/operator database.
+          if [ "$GITHUB_ACTIONS" != true ] || [ "$RUNNER_ENVIRONMENT" != github-hosted ]; then
+            echo "R038 outage fixture refused: not a GitHub-hosted job" >&2
+            exit 1
+          fi
+          APP_PID="$app_pid" python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import re
+          import socket
+          import subprocess
+          import time
+          import urllib.error
+          import urllib.request
+          import uuid
+
+          def require(ok, phase):
+              if not ok:
+                  raise RuntimeError("R038_OUTAGE_REFUSED:" + phase)
+
+          def docker(*args, timeout=25, env=None):
+              # Do not emit raw SQL dumps, service environment, command errors or credentials.
+              result = subprocess.run(["docker", *args], stdout=subprocess.PIPE,
+                                      stderr=subprocess.PIPE, timeout=timeout, env=env)
+              require(result.returncode == 0, "docker_" + args[0])
+              return result.stdout
+
+          cid = os.environ.get("MYSQL_CONTAINER", "")
+          require(re.fullmatch(r"[0-9a-f]{64}", cid) is not None, "service_id")
+          require(os.environ.get("GITHUB_ACTIONS") == "true"
+                  and os.environ.get("RUNNER_ENVIRONMENT") == "github-hosted", "runner")
+          schema = "orgresource_c1_ci"
+          endpoint = "jdbc:mysql://127.0.0.1:3306/" + schema
+          require(all(os.environ.get(k, "").split("?", 1)[0] == endpoint
+                      for k in ("EXT_DB_URL", "EXT_DB_MIGRATION_URL")), "db_urls")
+          require(os.environ.get("EXT_DB_USER") == schema
+                  and os.environ.get("EXT_DB_MIGRATION_USER") == "root", "fixture_principals")
+          info = json.loads(docker("inspect", cid))[0]
+          require(info["Id"] == cid and info["Config"]["Image"] == "mysql:8.0.46"
+                  and info["State"]["Running"]
+                  and "MYSQL_DATABASE=" + schema in info["Config"]["Env"]
+                  and any(p.get("HostPort") == "3306"
+                          for p in info["NetworkSettings"]["Ports"].get("3306/tcp", []) or []),
+                  "exact_job_service")
+          sql_env = dict(os.environ, MYSQL_PWD=os.environ["EXT_DB_MIGRATION_PASSWORD"])
+
+          def mysql(query):
+              return docker("exec", "--env", "MYSQL_PWD", cid, "mysql", "-uroot",
+                            "--connect-timeout=3", "--batch", "--skip-column-names",
+                            schema, "-e", query, timeout=8, env=sql_env).decode().strip()
+
+          def snapshot():
+              # Exact rows in the four tables read by the metadata classifier.
+              # Sessions and unrelated scheduled state are intentionally outside this oracle.
+              raw = docker("exec", "--env", "MYSQL_PWD", cid, "mysqldump", "-uroot",
+                           "--no-create-info", "--skip-comments", "--skip-triggers",
+                           "--skip-lock-tables", "--single-transaction", "--order-by-primary",
+                           "--skip-extended-insert", "--no-tablespaces",
+                           "--set-gtid-purged=OFF", schema, "organization", "membership",
+                           "user_account", "local_credential", env=sql_env)
+              require(bool(raw), "empty_snapshot")
+              return hashlib.sha256(raw).hexdigest()
+
+          app_pid = int(os.environ["APP_PID"])
+          require(app_pid > 1, "app_pid")
+          def start_id():
+              with open("/proc/" + str(app_pid) + "/stat", encoding="ascii") as f:
+                  return f.read().rsplit(")", 1)[1].split()[19]
+
+          app_start = start_id()
+          # No proxy, retries, auth cookies or cached HTTP result.
+          opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+          def request(path, timeout=25):
+              try:
+                  response = opener.open("http://127.0.0.1:8080" + path, timeout=timeout)
+              except urllib.error.HTTPError as failure:
+                  response = failure
+              with response:
+                  return response.status, response.headers, response.read(65537)
+
+          def metadata():
+              status, headers, body = request("/api/v2/demo/metadata")
+              require(len(body) <= 65536 and
+                      headers.get("Content-Type", "").startswith("application/json"), "json_response")
+              require("no-store" in headers.get("Cache-Control", ""), "no_store")
+              payload = json.loads(body)
+              request_id = payload.get("requestId")
+              require(isinstance(request_id, str) and str(uuid.UUID(request_id)) == request_id
+                      and headers.get("X-Request-ID") == request_id, "request_identity")
+              return status, payload, body
+
+          server_before = mysql("SELECT CONCAT(@@server_uuid,':',DATABASE())")
+          require(server_before.endswith(":" + schema), "server_identity")
+          uuid.UUID(server_before.split(":", 1)[0])
+          before_rows = snapshot()
+          before_status, before, _ = metadata()
+          require(before_status == 200 and before["data"]["synthetic"] is False, "ordinary_baseline")
+          require(request("/")[0] == 200, "app_baseline")
+          print("G01_R038_DISCONNECT_PHASE:baseline_ok", flush=True)
+          attempted = False
+          try:
+              # This ID is the service container created by the CURRENT hosted job.
+              attempted = True
+              docker("stop", "--time", "10", cid)
+              require(json.loads(docker("inspect", cid))[0]["State"]["Running"] is False,
+                      "service_not_stopped")
+              try:
+                  conn = socket.create_connection(("127.0.0.1", 3306), timeout=2)
+              except OSError:
+                  pass
+              else:
+                  conn.close()
+                  raise RuntimeError("R038_OUTAGE_REFUSED:port_still_listening")
+              require(start_id() == app_start and request("/")[0] == 200, "app_not_alive")
+              status, failure, body = metadata()
+              require(status == 500 and set(failure) == {"code", "message", "requestId"}
+                      and failure["code"] == "INTERNAL_ERROR"
+                      and failure["message"] == "The request could not be completed.",
+                      "generic_http500")
+              require(schema.encode() not in body and b"jdbc:" not in body, "leak")
+              require(start_id() == app_start, "app_restarted_during_outage")
+              print("G01_R038_DISCONNECT_PHASE:actual_service_stopped_http500", flush=True)
+          finally:
+              if attempted:
+                  # Restore the same service even if an assertion fails; never create a replacement.
+                  docker("start", cid)
+                  ready = False
+                  for _ in range(30):
+                      try:
+                          if mysql("SELECT CONCAT(@@server_uuid,':',DATABASE())") == server_before:
+                              ready = True
+                              break
+                      except (RuntimeError, subprocess.TimeoutExpired):
+                          pass
+                      time.sleep(1)
+                  require(ready, "same_service_restore")
+          # The same running JVM must recover without application restart.
+          status, recovered, _ = metadata()
+          require(status == 200 and recovered["data"] == before["data"]
+                  and start_id() == app_start, "same_app_recovery")
+          require(snapshot() == before_rows, "classifier_rows_changed")
+          print("G01_R038_DISCONNECT_OK:actual_service_stopped=true http500=true noStore=true sameServer=true sameJvm=true exactClassifierRows=true recovered200=true", flush=True)
+          PY
