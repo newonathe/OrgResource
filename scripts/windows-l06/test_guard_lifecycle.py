@@ -113,6 +113,58 @@ class GuardLifecycle(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"C9W_GUARD_NATIVE_SHAPE"): g.acl_sids("fictional")
         self.k.LocalFree.assert_called_once_with(ctypes.addressof(b))
 
+    def allow_ace_spy(self, kind=0, bad_address=False):
+        b = ctypes.create_string_buffer(64)
+        p = ctypes.addressof(b)
+        owner = self.fake_sid(b,20)
+        self.fake_sid(b,48)
+        ctypes.c_ushort.from_address(p+34).value = 28  # ACL header + one ACE
+        ctypes.c_ubyte.from_address(p+40).value = kind
+        ctypes.c_ushort.from_address(p+42).value = 20  # ACE header/mask + SID
+        def security(path, typ, info, own, group, acl, sacl, sd):
+            ctypes.cast(own,ctypes.POINTER(ctypes.c_void_p))[0] = owner
+            ctypes.cast(acl,ctypes.POINTER(ctypes.c_void_p))[0] = p+32
+            ctypes.cast(sd,ctypes.POINTER(ctypes.c_void_p))[0] = p
+            return 0
+        def info(acl, out, size, cls):
+            fields = ctypes.cast(out,ctypes.POINTER(g.w.DWORD))
+            fields[0], fields[1], fields[2] = 1,28,0
+            return 1
+        def get_ace(acl, index, out):
+            ctypes.cast(out,ctypes.POINTER(ctypes.c_void_p))[0] = p+64 if bad_address else p+40
+            return 1
+        self.a.GetNamedSecurityInfoW.side_effect = security
+        self.a.GetSecurityDescriptorLength.return_value = 64
+        self.a.GetAclInformation.side_effect = info
+        self.a.GetAce.side_effect = get_ace
+        return b
+
+    def test_allow_ace_and_owner_free_separately(self):
+        b = self.allow_ace_spy()
+        values = [ctypes.create_unicode_buffer(v) for v in ("S-1-5-21","S-1-5-21")]
+        calls = iter(values)
+        def convert(_, out):
+            ctypes.cast(out,ctypes.POINTER(ctypes.c_void_p))[0] = ctypes.addressof(next(calls))
+            return 1
+        self.a.ConvertSidToStringSidW.side_effect = convert
+        self.assertEqual(g.acl_sids("fictional"),("S-1-5-21",["S-1-5-21"]))
+        from unittest.mock import call
+        self.assertEqual(self.k.LocalFree.call_args_list,
+                         [call(ctypes.addressof(v)) for v in values]+[call(ctypes.addressof(b))])
+
+    def test_unsupported_ace_releases_without_sid_read(self):
+        b = self.allow_ace_spy(kind=1)
+        self.assertEqual(g.acl_sids("fictional"),(None,None))
+        self.a.ConvertSidToStringSidW.assert_not_called()
+        self.k.LocalFree.assert_called_once_with(ctypes.addressof(b))
+
+    def test_outside_ace_refusal_releases(self):
+        b = self.allow_ace_spy(bad_address=True)
+        with self.assertRaisesRegex(ValueError,"C9W_GUARD_NATIVE_SHAPE"):
+            g.acl_sids("fictional")
+        self.a.ConvertSidToStringSidW.assert_not_called()
+        self.k.LocalFree.assert_called_once_with(ctypes.addressof(b))
+
     def test_free_failure_refuses(self):
         self.k.LocalFree.return_value = 1
         with self.assertRaisesRegex(OSError,"C9W_GUARD_LOCAL_FREE"): g._free(123)
