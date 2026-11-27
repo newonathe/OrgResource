@@ -486,7 +486,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "Close existing fixture backlog: 41 portable,64 PowerShell,14 Windows spies and pure C# lifecycle interpretation verified bounded at b762c419; release21 actual separate. Do not duplicate. Advance next material H03 owned suspended worker transport/boot-namespace/held-lock integration and H06 credential lifecycle source corrections or independent app/security residual; use native hosted tests only where actual safety prerequisites are satisfied. Reconcile PR59 CI46018878134 and handoff46019206764 Extended jobs still running at last observation. Full local package, native32+H04, private L06/P0, independent review and privacy gates open."
+    "next_action": "Inspect actual PR58 run46021269467 (new R038 SQL denial, expected 84 identity/109 Maven if discovered); fix any observed failure without weakening oracle. Reconcile remaining PR59 run46018878134 exact-head Extended job140573004942. Continue eligible H03/H06 integration source work and academic/product residuals; no repeat fixture tests absent drift. R038 transient lock and disconnect remain separate; full package/native32+H04, private L06/P0, 93 independent and13 privacy flags open."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -2826,7 +2826,7 @@
       "native_execution": "NOT_RUN",
       "private_l06_ready": false
     },
-    "pre_handoff_next": "Close existing fixture backlog: 41 portable,64 PowerShell,14 Windows spies and pure C# lifecycle interpretation verified bounded at b762c419; release21 actual separate. Do not duplicate. Advance next material H03 owned suspended worker transport/boot-namespace/held-lock integration and H06 credential lifecycle source corrections or independent app/security residual; use native hosted tests only where actual safety prerequisites are satisfied. Reconcile PR59 CI46018878134 and handoff46019206764 Extended jobs still running at last observation. Full local package, native32+H04, private L06/P0, independent review and privacy gates open.",
+    "pre_handoff_next": "Inspect actual PR58 run46021269467 (new R038 SQL denial, expected 84 identity/109 Maven if discovered); fix any observed failure without weakening oracle. Reconcile remaining PR59 run46018878134 exact-head Extended job140573004942. Continue eligible H03/H06 integration source work and academic/product residuals; no repeat fixture tests absent drift. R038 transient lock and disconnect remain separate; full package/native32+H04, private L06/P0, 93 independent and13 privacy flags open.",
     "release_inventory_candidate": {
       "report": "docs/handoffs/claude-local-execution-2026-11-24/125_RELEASE_MIGRATION_INVENTORY_CORRECTION.md",
       "pr": 59,
@@ -2858,6 +2858,22 @@
       },
       "current_ci_run": 46018878134,
       "latest_ci_course_a_and_react": "VERIFIED_BOUNDED; Extended in progress"
+    },
+    "r038_sql_denial_candidate": {
+      "report": "docs/handoffs/claude-local-execution-2026-11-24/128_R038_METADATA_SQL_DENIAL_REGRESSION.md",
+      "pr": 58,
+      "head": "196bd6f0721ff429dfec66172aa23cc412904f04",
+      "parent": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+      "run": 46021269467,
+      "state": "NOT_RUN_AT_COMMIT",
+      "scope": "nonretryable SQL permission denial; transient lock/disconnect separate"
+    },
+    "handoff_regression_receipt": {
+      "sha": "8d7934b87f89da434d842378110db86918f7dc8a",
+      "run": 46019206764,
+      "job": 140574137372,
+      "state": "VERIFIED_BOUNDED",
+      "actual": "91 Maven/66 identity,110 Newman assertions,19 browser,3/36/97 and8/960/3013 fictional additive"
     }
   }
 }

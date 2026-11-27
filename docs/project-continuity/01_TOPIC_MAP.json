@@ -730,7 +730,7 @@
         }
       ],
       "authority": "93 route candidate mapping, independent issue34 blocked; current code and actual test evidence.",
-      "next": "Resume ChatGPT feasible pre-Codex work under production-ready Extended C academic objective. Reopen Report65/78 privacy flags and exact package allowlists, Report99/101 actual residuals and Report58/60/67 CPX dependencies; select first authorized unresolved remote source/test/package correction, execute and verify, continue independent work around P0/private/native gates. Do not default to another plan or hand over all remaining engineering. Then Codex completes genuinely local-dependent remaining work using Report121 M0–M10 and Report123 AC0–AC7 academic lane; student/independent/operator gates remain.",
+      "next": "Inspect actual PR58 run46021269467 (new R038 SQL denial, expected 84 identity/109 Maven if discovered); fix any observed failure without weakening oracle. Reconcile remaining PR59 run46018878134 exact-head Extended job140573004942. Continue eligible H03/H06 integration source work and academic/product residuals; no repeat fixture tests absent drift. R038 transient lock and disconnect remain separate; full package/native32+H04, private L06/P0, 93 independent and13 privacy flags open.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/74_STRUCTURED_PRIVACY_AND_RECOVERED_ROUTE_RECEIPTS.md",
@@ -1049,6 +1049,14 @@
           "blob": "268ce184c8074842d5a79458e13291ca29e81563",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL owner scope correction; implementation/test NOT_RUN; exact blob"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/128_R038_METADATA_SQL_DENIAL_REGRESSION.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "ce1f5f9fef8e6fb997cc22f1ee9aade1492e9325",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL bounded R038 candidate and historical actual receipts; new test NOT_RUN"
         }
       ]
     },
@@ -1263,7 +1271,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "Close existing fixture backlog: 41 portable,64 PowerShell,14 Windows spies and pure C# lifecycle interpretation verified bounded at b762c419; release21 actual separate. Do not duplicate. Advance next material H03 owned suspended worker transport/boot-namespace/held-lock integration and H06 credential lifecycle source corrections or independent app/security residual; use native hosted tests only where actual safety prerequisites are satisfied. Reconcile PR59 CI46018878134 and handoff46019206764 Extended jobs still running at last observation. Full local package, native32+H04, private L06/P0, independent review and privacy gates open.",
+      "next": "Inspect actual PR58 run46021269467 (new R038 SQL denial, expected 84 identity/109 Maven if discovered); fix any observed failure without weakening oracle. Reconcile remaining PR59 run46018878134 exact-head Extended job140573004942. Continue eligible H03/H06 integration source work and academic/product residuals; no repeat fixture tests absent drift. R038 transient lock and disconnect remain separate; full package/native32+H04, private L06/P0, 93 independent and13 privacy flags open.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -1544,6 +1552,14 @@
           "blob": "0f58ee44f8fe2e71605cfc75fb71686bf2b2d6d7",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL actual 64+14 fixture receipts; native NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/128_R038_METADATA_SQL_DENIAL_REGRESSION.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "ce1f5f9fef8e6fb997cc22f1ee9aade1492e9325",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL bounded R038 candidate and historical actual receipts; new test NOT_RUN"
         }
       ]
     },
@@ -1567,7 +1583,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "Close existing fixture backlog: 41 portable,64 PowerShell,14 Windows spies and pure C# lifecycle interpretation verified bounded at b762c419; release21 actual separate. Do not duplicate. Advance next material H03 owned suspended worker transport/boot-namespace/held-lock integration and H06 credential lifecycle source corrections or independent app/security residual; use native hosted tests only where actual safety prerequisites are satisfied. Reconcile PR59 CI46018878134 and handoff46019206764 Extended jobs still running at last observation. Full local package, native32+H04, private L06/P0, independent review and privacy gates open.",
+      "next": "Inspect actual PR58 run46021269467 (new R038 SQL denial, expected 84 identity/109 Maven if discovered); fix any observed failure without weakening oracle. Reconcile remaining PR59 run46018878134 exact-head Extended job140573004942. Continue eligible H03/H06 integration source work and academic/product residuals; no repeat fixture tests absent drift. R038 transient lock and disconnect remain separate; full package/native32+H04, private L06/P0, 93 independent and13 privacy flags open.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -2294,6 +2310,14 @@
           "blob": "0f58ee44f8fe2e71605cfc75fb71686bf2b2d6d7",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL actual 64+14 fixture receipts; native NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/128_R038_METADATA_SQL_DENIAL_REGRESSION.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "ce1f5f9fef8e6fb997cc22f1ee9aade1492e9325",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL bounded R038 candidate and historical actual receipts; new test NOT_RUN"
         }
       ]
     },
@@ -2440,7 +2464,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "Close existing fixture backlog: 41 portable,64 PowerShell,14 Windows spies and pure C# lifecycle interpretation verified bounded at b762c419; release21 actual separate. Do not duplicate. Advance next material H03 owned suspended worker transport/boot-namespace/held-lock integration and H06 credential lifecycle source corrections or independent app/security residual; use native hosted tests only where actual safety prerequisites are satisfied. Reconcile PR59 CI46018878134 and handoff46019206764 Extended jobs still running at last observation. Full local package, native32+H04, private L06/P0, independent review and privacy gates open.",
+      "next": "Inspect actual PR58 run46021269467 (new R038 SQL denial, expected 84 identity/109 Maven if discovered); fix any observed failure without weakening oracle. Reconcile remaining PR59 run46018878134 exact-head Extended job140573004942. Continue eligible H03/H06 integration source work and academic/product residuals; no repeat fixture tests absent drift. R038 transient lock and disconnect remain separate; full package/native32+H04, private L06/P0, 93 independent and13 privacy flags open.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -2923,6 +2947,14 @@
           "blob": "0f58ee44f8fe2e71605cfc75fb71686bf2b2d6d7",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL actual 64+14 fixture receipts; native NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/128_R038_METADATA_SQL_DENIAL_REGRESSION.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "ce1f5f9fef8e6fb997cc22f1ee9aade1492e9325",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL bounded R038 candidate and historical actual receipts; new test NOT_RUN"
         }
       ]
     }
