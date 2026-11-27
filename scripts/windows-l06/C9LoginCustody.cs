@@ -6,7 +6,8 @@ using System.Security.Principal;
 using System.Text;
 using Microsoft.Win32.SafeHandles;
 
-// H06 fictional, host-side slot only. No credential read/write, editor,
+// H06 fictional, host-side slot only. Fixed non-credential fixture bytes
+// may be created under exclusive custody; no actual credential read/write, editor,
 // SQL, ACL transition to a role, publication, revoke or deletion. A vacancy
 // observation is not an atomic reservation of the filename against same-user
 // writers. Keep the parent pinned; the real owned editor/job and journal
@@ -21,7 +22,8 @@ public sealed partial class C9ControlLock {
         SafeFileHandle observed;
         string observedId;
         long observedBytes;
-        bool poisoned, disposed;
+        bool poisoned, disposed, createdFixedPayload;
+        static readonly byte[] FixedPayload = Encoding.ASCII.GetBytes("FICTIONAL_C9W_CUSTODY_PROBE_NOT_A_LOGIN\n");
 
         internal FictionalLoginSlot(C9ControlLock control, C9DirectoryIdentity directory,
                                     string path, SecurityIdentifier owner) {
@@ -72,7 +74,7 @@ public sealed partial class C9ControlLock {
             } catch { poisoned = true; throw; }
         }
 
-        string CheckFile(SafeFileHandle h, out long bytes) {
+        string CheckFile(SafeFileHandle h, out long bytes, bool expectEmpty = false) {
             AssertOwnerOnly(h, owner);
             byte[] tag = new byte[8], standard = new byte[24], identity = new byte[24];
             if (!GetFileInformationByHandleEx(h,9,tag,(uint)tag.Length) ||
@@ -83,7 +85,7 @@ public sealed partial class C9ControlLock {
             string volume = BitConverter.ToUInt64(identity,0).ToString("x16");
             if ((BitConverter.ToUInt32(tag,0) & 0x441410) != 0 ||
                 BitConverter.ToUInt32(standard,16) != 1 || standard[20] != 0 || standard[21] != 0 ||
-                bytes <= 0 || bytes > 1048576 || volume != id.Substring(0,16))
+                (expectEmpty ? bytes != 0 : bytes <= 0 || bytes > 1048576) || volume != id.Substring(0,16))
                 throw new InvalidOperationException("C9W_LOGIN_FILE_SHAPE");
             var name = new StringBuilder(32768);
             uint count = GetFinalPathNameByHandleW(h,name,(uint)name.Capacity,0);
@@ -121,12 +123,65 @@ public sealed partial class C9ControlLock {
             finally { if (candidate != null) candidate.Dispose(); }
         }
 
+        // Fixed, deliberately unusable bytes only. No arbitrary input and no
+        // OPEN_EXISTING, replacement, ACL repair, or path outside this slot.
+        // The successful CREATE_NEW handle itself stays held; no close/reopen gap.
+        public string CreateFixedFictionalFile() {
+            lock(control) {
+                SafeFileHandle candidate = null;
+                try {
+                    AssertVacant();
+                    WithSecurity(owner,false,sa => {
+                        candidate = CreateFileNew(path,0xC0020080,0,ref sa,1,0x00200080,IntPtr.Zero);
+                        if (candidate.IsInvalid)
+                            throw new Win32Exception(Marshal.GetLastWin32Error(),"C9W_LOGIN_FILE_CREATE");
+                    });
+                    string found = CheckFile(candidate,out _,true);
+                    CheckEntries(true);
+                    Check();
+                    if (CheckFile(candidate,out _,true) != found)
+                        throw new InvalidOperationException("C9W_LOGIN_FILE_CHANGED");
+                    RandomAccess.Write(candidate,FixedPayload,0);
+                    RandomAccess.FlushToDisk(candidate);
+                    CheckFixedPayload(candidate,found);
+                    CheckEntries(true);
+                    Check();
+                    CheckFixedPayload(candidate,found);
+                    observedId = found;
+                    observedBytes = FixedPayload.Length;
+                    createdFixedPayload = true;
+                    observed = candidate;
+                    candidate = null;
+                    return observedId;
+                } catch { poisoned = true; throw; }
+                finally { candidate?.Dispose(); }
+                // Partial creation/failure retains the exact file/directory.
+                // No auto-unlink, overwrite or claim of crash-safe settlement.
+            }
+        }
+
+        void CheckFixedPayload(SafeFileHandle h,string expectedId) {
+            if (CheckFile(h,out long size) != expectedId || size != FixedPayload.Length)
+                throw new InvalidOperationException("C9W_LOGIN_FIXED_PAYLOAD");
+            byte[] read = new byte[FixedPayload.Length];
+            int done = 0;
+            while (done < read.Length) {
+                int n = RandomAccess.Read(h,read.AsSpan(done),done);
+                if (n == 0) throw new InvalidOperationException("C9W_LOGIN_FIXED_PAYLOAD");
+                done += n;
+            }
+            if (!read.AsSpan().SequenceEqual(FixedPayload) ||
+                CheckFile(h,out long again) != expectedId || again != size)
+                throw new InvalidOperationException("C9W_LOGIN_FIXED_PAYLOAD");
+        }
+
         public void AssertObserved() {
             try {
                 Check();
                 if (observed == null || observed.IsClosed ||
                     CheckFile(observed,out long bytes) != observedId || bytes != observedBytes)
                     throw new InvalidOperationException("C9W_LOGIN_FILE_CHANGED");
+                if (createdFixedPayload) CheckFixedPayload(observed,observedId);
                 CheckEntries(true);
                 Check();
             } catch { poisoned = true; throw; }
