@@ -13,28 +13,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 22c9238880d654b5dde9bcf5f07659ced0b06420
+          ref: 839db889534c4cc8a2839396463246b948d35cb5
           persist-credentials: false
       - name: Compile exact H01 H03 H06 dependency union without invoking native code
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          if ((git rev-parse HEAD) -cne '22c9238880d654b5dde9bcf5f07659ced0b06420' -or $LASTEXITCODE -ne 0) { throw 'Wrong candidate' }
+          if ((git rev-parse HEAD) -cne '839db889534c4cc8a2839396463246b948d35cb5' -or $LASTEXITCODE -ne 0) { throw 'Wrong candidate' }
           $pins = [ordered]@{
             'C9DirectoryIdentity.cs' = '67d705d9d66f0ca05cee018900b346d913d687b3'
             'C9ControlLock.cs' = '9dfc3fdb42c40ae5622676d22795eb3c61a2f2ab'
-            'C9JournalStorage.cs' = '307304b454be2313e4b2c9938d90f8c57310b10f'
+            'C9JournalStorage.cs' = 'ab95a6cef639c3731dea6cd1135a0b073bc75c4b'
             'C9JournalParent.cs' = '882343527ef986710b4fca6d14004c301b0bbc1e'
             'C9DosDeviceObservation.cs' = 'd3b9c101c07c268b1596c4556716fd2e5e1ac64c'
             'C9LogonContext.cs' = 'fe2d1bd497badb36eb6c93379c0577e100553b6b'
             'C9ProfileStorageObservation.cs' = 'c29a49ef65abe02965ffa471ff16e2d2e6d600a4'
             'C9Contain.cs' = '45a93d294f52da3af9139531a36bd8d97c0e344b'
-            'C9OwnedJobProbe.cs' = '41a714eb49648781fcf7d54488fc9a4887122011'
+            'C9OwnedJobProbe.cs' = '4295411b0bf7c9e488e440da214a5699951b643a'
             'C9OwnershipProducer.cs' = '1195a098e4bb3d6fa6556d2cf6df9ece3319df6e'
             'C9WorkCreation.cs' = '69106d16b9373e7610db5783847e85d93e45381b'
             'C9LoginCustody.cs' = 'd3ccbd4189b6900e0351d1fa7a4015706f7dc986'
-            'C9FictionalConPty.cs' = '17f41da1eb227a4186279466fc21efccb99ed59d'
-            'C9PtyHelper.cs' = 'a1245a2d2919403486c6ff7b376b826c67e5ab7f'
+            'C9FictionalConPty.cs' = '7dc743138867fe78d984d896e4a1277f26791e02'
+            'C9PtyHelper.cs' = '2be0f52db77b5dfa7564e20a88a3c6258cac8f03'
             'C9RetentionStage.cs' = 'a94dffe4c79443fb5bc38874fd984f1b3d7478b6'
           }
           $paths = @()
@@ -100,6 +100,16 @@ jobs:
           $null = [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path -LiteralPath $jobFixture).Path,[ref]$tokens,[ref]$errors)
           if ($errors.Count -ne 0) { throw 'Job fixture parser failed' }
           'C9W_H06_JOB_FIXTURE_PARSE_OK:native_effects_not_run=true'
+
+          # Pure data-only oracle; no native calls, fixture roots, or process launch.
+          $records = 'scripts/windows-l06/test-pty-records.ps1'
+          $recordsBlob = git rev-parse "HEAD:$records"
+          if ($LASTEXITCODE -ne 0 -or $recordsBlob -cne 'bcca4236fbaa0d899aa2f3cd7ff8a8502e14f634') { throw 'Wrong record fixture blob' }
+          $recordsActual = git hash-object --path=$records $records
+          if ($LASTEXITCODE -ne 0 -or $recordsActual -cne $recordsBlob) { throw 'Wrong record fixture content' }
+          $recordsOutput = @(& (Resolve-Path -LiteralPath $records).Path)
+          if ($recordsOutput.Count -ne 1 -or $recordsOutput[0] -cne 'C9W_H06_PTY_RECORDS_OK:positive=8 negative=23 native_effects_not_run=true') { throw 'Pure record oracle failed' }
+          $recordsOutput[0]
 
           # Build the actual fixed framework-dependent helper. No valid launch
           # args, native root, credentials, SQL, ConPTY or native test execution.
