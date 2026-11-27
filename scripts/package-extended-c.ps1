@@ -207,7 +207,7 @@ try {
         'docs/EXTENDED_C_RELEASE.md', 'docs/QUALITY_EVIDENCE_CONTINUOUS_GATE.md', 'docs/EXTENDED_C_REPORTING.md',
         'evidence/C5', 'evidence/C6a', 'scripts/extended-c-backup.ps1', 'scripts/package-extended-c.ps1',
         'scripts/verify-extended-c1.ps1', 'scripts/verify-extended-c-recovery.ps1', 'scripts/verify-extended-c6a-operator.ps1',
-        'scripts/run-extended-c3-newman.ps1',
+        'scripts/run-extended-c3-newman.ps1', 'scripts/verify-extended-package-integrity.ps1',
         'postman/OrgResource-Extended-C3-28-Operations.postman_collection.json',
         'postman/OrgResource-Extended-C6a-Reporting.postman_collection.json',
         'postman/OrgResource-Extended-C3-Local.postman_environment.json', 'postman/fixtures/academic-demo-image.png')
@@ -321,5 +321,12 @@ foreach ($row in $hashes) {
 $manifestListHash = (Get-FileHash -LiteralPath $hashPath -Algorithm SHA256).Hash.ToLowerInvariant()
 [ordered]@{ sourceSha = $sha; checksumsSha256 = $manifestListHash } |
     ConvertTo-Json | Set-Content -LiteralPath (Join-Path $stage 'READY.json') -Encoding utf8
+# Independently reread the staged manifest, READY, list and actual payloads
+# with the same trusted checker operators use after copying a package.
+$integrity = @(& (Join-Path $root 'scripts/verify-extended-package-integrity.ps1') -PackageRoot $stage -ExpectedSourceSha $sha -ExpectedChecksumsSha256 $manifestListHash)
+if ($integrity.Count -ne 1 -or $integrity[0] -cne 'EXTENDED_PACKAGE_INTEGRITY_OK:files=6 payloads=3 source_and_checksum_pinned=true') {
+    throw 'Final staged release integrity verification failed.'
+}
+$integrity[0]
 [IO.Directory]::Move($stage, $output)
 Write-Output "Local release candidate for $sha verified at $output"

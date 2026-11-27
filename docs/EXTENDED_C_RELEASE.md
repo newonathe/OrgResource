@@ -15,6 +15,16 @@ pwsh -NoProfile -File .\scripts\package-extended-c.ps1 -Destination 'C:\local-re
 
 Choose an existing parent outside the checkout with no junctions or symlinks and a new destination name. The script creates an unmistakably named staging directory next to the destination and a fresh temporary extraction. It compares the protected Course A Git trees, validates every source ZIP entry before extraction, checks each extracted file against its exact committed Git blob before any build or verifier runs, and runs the gates from that extraction. The seven approved V1–V7 migration filenames and frozen Git blobs are checked, and each packaged migration is compared against the extracted migration SHA-256. Final artifact hashes are checked separately. These checks do not by themselves establish independent restore, public distribution rights, or byte-for-byte deterministic JAR builds. Only then does it write `READY.json` and move the staged directory to the final name. Treat the final directory and its matching checksum list as the package. Treat abandoned staging folders as failure diagnostics. The script does not remove your directories. You may remove the printed staging, extraction and disposable MySQL folders after closing their processes and retaining needed evidence. Byte-for-byte deterministic JAR output across independent builds is unverified.
 
+## Verify a copied package before use
+
+From the trusted source checkout, run the read-only checker against the copied package. Supply the exact expected source commit and SHA-256 of SHA256SUMS.txt obtained independently from the trusted producer. Do not obtain the expected values solely from the copied package itself.
+
+```powershell
+pwsh -NoProfile -File .\scripts\verify-extended-package-integrity.ps1 -PackageRoot 'C:\local-releases\OrgResource-C6a' -ExpectedSourceSha '<trusted 40-character commit>' -ExpectedChecksumsSha256 '<trusted 64-character digest>'
+```
+
+The checker requires the exact six ordinary files, validates READY and the manifest against the expected identity, checks the checksum list and all four listed hashes, and reconciles the three payload sizes and digests. Run it with exclusive custody of the directory. A pass confirms integrity relative to those trusted pins, not a digital signature, runtime acceptance, privacy clearance, or permission to distribute. Keep VERIFICATION.log and local-path metadata in approved private custody.
+
 ## First run on a fresh local schema
 
 For a fully scripted fictional demonstration and real tests, use the verifier above. For a persistent local workspace, use a newly created empty `orgresource_extended_local` schema with UTF-8 `utf8mb4` and `utf8mb4_0900_ai_ci`. Confirm the MySQL host and schema before granting permissions. Provision separate migration and runtime accounts at loopback with passwords from a protected password manager.

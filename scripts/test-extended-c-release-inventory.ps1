@@ -296,3 +296,64 @@ try {
     Pop-Location
     Remove-Item -LiteralPath $testRoot -Recurse -Force
 }
+
+# Actual read-only package checker with fictional payloads; never launch Java.
+$checker = Join-Path $PSScriptRoot 'verify-extended-package-integrity.ps1'
+$testRoot = Join-Path ([IO.Path]::GetTempPath()) ('OrgResource-PackageCheck-' + [guid]::NewGuid().ToString('N'))
+$null = New-Item -ItemType Directory -Path $testRoot
+$script:packageCases=0
+$source = 'a' * 40
+$payloads = @('OrgResource-Extended-C6a-Source.zip','OrgResource-Extended-C6a-Java21.jar','VERIFICATION.log')
+function Build-CheckFixture([string] $Name) {
+    $dir = Join-Path $testRoot $Name
+    $null = New-Item -ItemType Directory -Path $dir
+    $records = @(foreach ($file in $payloads) {
+        $path = Join-Path $dir $file
+        [IO.File]::WriteAllText($path,'fictional payload')
+        [ordered]@{name=$file;bytes=[IO.FileInfo]::new($path).Length;sha256=(Get-FileHash -LiteralPath $path).Hash.ToLowerInvariant()}
+    })
+    $manifest=[ordered]@{status='local-release-candidate';sourceSha=$source;protectedCourseSha='7f8c0746da18fd54b47f430ac1435ac36e605d67';courseTrees=@{backend=('b'*40);frontend=('c'*40)};extractedSourceRoot='fictional';environment=@{};artifacts=$records}
+    $manifest | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $dir 'RELEASE-MANIFEST.json') -Encoding utf8
+    return $dir
+}
+function Seal-CheckFixture([string] $Dir,[switch] $Duplicate) {
+    $rows = @(foreach ($file in @($payloads + 'RELEASE-MANIFEST.json')) {
+        "$((Get-FileHash -LiteralPath (Join-Path $Dir $file)).Hash.ToLowerInvariant())  $file"
+    })
+    if ($Duplicate) { $rows[1]=$rows[0] }
+    $sum=Join-Path $Dir 'SHA256SUMS.txt'
+    $rows | Set-Content -LiteralPath $sum -Encoding utf8
+    $pin=(Get-FileHash -LiteralPath $sum).Hash.ToLowerInvariant()
+    [ordered]@{sourceSha=$source;checksumsSha256=$pin} | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $Dir 'READY.json') -Encoding utf8
+    return $pin
+}
+function Check-FictionalPackage([string] $Name,[string] $Expected='', [scriptblock] $BeforeSeal, [scriptblock] $AfterSeal,[switch] $Duplicate,[switch] $WrongSource,[switch] $WrongPin) {
+    $dir=Build-CheckFixture $Name
+    if ($BeforeSeal) { & $BeforeSeal $dir }
+    $pin=Seal-CheckFixture $dir -Duplicate:$Duplicate
+    if ($AfterSeal) { & $AfterSeal $dir }
+    $actual=''
+    try {
+        $output=@(& $checker -PackageRoot $dir -ExpectedSourceSha $(if($WrongSource){'d'*40}else{$source}) -ExpectedChecksumsSha256 $(if($WrongPin){'e'*64}else{$pin}))
+        if ($output.Count -ne 1 -or $output[0] -cne 'EXTENDED_PACKAGE_INTEGRITY_OK:files=6 payloads=3 source_and_checksum_pinned=true') { throw 'WRONG_SUCCESS_MARKER' }
+    } catch { $actual=$_.Exception.Message }
+    if ($actual -cne $Expected) { throw "Package checker case $Name expected '$Expected' got '$actual'" }
+    $script:packageCases++
+    Write-Output "PASS package checker: $Name"
+}
+try {
+    Check-FictionalPackage 'exact'
+    Check-FictionalPackage 'wrong-source' 'PACKAGE_READY_IDENTITY' -WrongSource
+    Check-FictionalPackage 'wrong-anchor' 'PACKAGE_READY_IDENTITY' -WrongPin
+    Check-FictionalPackage 'missing-ready' 'PACKAGE_INVENTORY' -AfterSeal { param($d) Remove-Item -LiteralPath (Join-Path $d 'READY.json') }
+    Check-FictionalPackage 'extra-file' 'PACKAGE_INVENTORY' -AfterSeal { param($d) [IO.File]::WriteAllText((Join-Path $d 'extra.txt'),'x') }
+    Check-FictionalPackage 'payload-mutation' 'PACKAGE_ARTIFACT_HASH' -AfterSeal { param($d) [IO.File]::AppendAllText((Join-Path $d $payloads[0]),'x') }
+    Check-FictionalPackage 'list-mutation' 'PACKAGE_CHECKSUM_LIST_HASH' -AfterSeal { param($d) [IO.File]::AppendAllText((Join-Path $d 'SHA256SUMS.txt'),'x') }
+    Check-FictionalPackage 'duplicate-list' 'PACKAGE_CHECKSUM_LIST_SHAPE' -Duplicate
+    Check-FictionalPackage 'duplicate-ready-key' 'PACKAGE_JSON_SHAPE' -AfterSeal { param($d) $p=Join-Path $d 'READY.json';$raw=[IO.File]::ReadAllText($p);[IO.File]::WriteAllText($p,$raw.Insert(1,'"sourceSha":"fictional",')) }
+    Check-FictionalPackage 'manifest-size-lie' 'PACKAGE_MANIFEST_ARTIFACTS' -BeforeSeal { param($d) $p=Join-Path $d 'RELEASE-MANIFEST.json';$m=Get-Content -LiteralPath $p -Raw | ConvertFrom-Json -AsHashtable;$m.artifacts[0].bytes++;$m | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $p -Encoding utf8 }
+    Check-FictionalPackage 'manifest-source-lie' 'PACKAGE_MANIFEST_IDENTITY' -BeforeSeal { param($d) $p=Join-Path $d 'RELEASE-MANIFEST.json';$m=Get-Content -LiteralPath $p -Raw | ConvertFrom-Json -AsHashtable;$m.sourceSha='f'*40;$m | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $p -Encoding utf8 }
+    Check-FictionalPackage 'directory-instead-of-payload' 'PACKAGE_FILE_TYPE' -AfterSeal { param($d) $p=Join-Path $d $payloads[0];Remove-Item -LiteralPath $p;$null=New-Item -ItemType Directory -Path $p }
+    if ($script:packageCases -ne 12) { throw 'Wrong package checker case count' }
+    Write-Output 'Read-only package integrity checker: 12/12 passed.'
+} finally { Remove-Item -LiteralPath $testRoot -Recurse -Force }
