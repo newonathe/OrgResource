@@ -82,7 +82,8 @@ public static partial class C9OwnedJobProbe {
         if (task!=null && (task.IsFaulted || task.IsCanceled)) task.GetAwaiter().GetResult();
     }
 
-    public static int RunFictionalConPty(C9ControlLock owner,string python,string expectedSha,string mode,int timeoutMillis) {
+    // Private until a separately reviewed independent outer watchdog calls it.
+    static int RunFictionalConPty(C9ControlLock owner,string python,string expectedSha,string mode,int timeoutMillis) {
         string script=PtyScript(mode);
         if (!OperatingSystem.IsWindows() || IntPtr.Size!=8 || owner==null ||
             timeoutMillis<1000 || timeoutMillis>10000 ||
