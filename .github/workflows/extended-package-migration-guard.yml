@@ -1,0 +1,25 @@
+name: Extended package migration guard
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/package-extended-c.ps1
+      - scripts/test-packaged-migration-inventory.ps1
+      - .github/workflows/extended-package-migration-guard.yml
+permissions:
+  contents: read
+jobs:
+  fictional-zip-oracle:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'fix/extended-package-v7-inventory-2026-11-27'
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Run isolated fictional migration guard assertions
+        shell: pwsh
+        run: |
+          Write-Output "Exact checkout: $(git rev-parse HEAD)"
+          & ./scripts/test-packaged-migration-inventory.ps1
