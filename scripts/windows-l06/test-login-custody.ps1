@@ -45,7 +45,11 @@ try {
     $a.AssertObserved()
     # Exclusive metadata handle: no ordinary concurrent read/write open.
     $blocked=$false
-    try { $other=[IO.File]::Open($path,'Open','ReadWrite','None'); $other.Dispose() } catch [IO.IOException] { $blocked=$true }
+    try { $other=[IO.File]::Open($path,'Open','ReadWrite','None'); $other.Dispose() }
+    catch [IO.IOException] {
+        if (($_.Exception.HResult -band 0xffff) -ne 32) { throw }
+        $blocked=$true
+    }
     Require $blocked 'C9W_TEST_FILE_NOT_EXCLUSIVE'
     $a.Dispose()
     Require ((Get-FileHash -LiteralPath $path).Hash -ceq $hash) 'C9W_TEST_FILE_CHANGED'

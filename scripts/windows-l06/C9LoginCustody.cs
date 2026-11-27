@@ -101,7 +101,10 @@ public sealed partial class C9ControlLock {
             try {
                 Check();
                 if (observed != null) throw new InvalidOperationException("C9W_LOGIN_SLOT_ALREADY_OBSERVED");
-                candidate = CreateFileExisting(path,0x20080,0,IntPtr.Zero,3,0x00200080,IntPtr.Zero);
+                // Request GENERIC_READ (no data is read) plus READ_CONTROL and
+                // FILE_READ_ATTRIBUTES; metadata-only opens may not participate
+                // in normal share access enforcement. Require share mode zero.
+                candidate = CreateFileExisting(path,0x80020080,0,IntPtr.Zero,3,0x00200080,IntPtr.Zero);
                 if (candidate.IsInvalid)
                     throw new Win32Exception(Marshal.GetLastWin32Error(),"C9W_LOGIN_FILE_OPEN");
                 string found = CheckFile(candidate,out long bytes);
