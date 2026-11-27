@@ -405,3 +405,7 @@ Report138 follow-up: actual exact 14-source compile and four fixture parsers pas
 ## Current — H06 fixed compiled helper binding (2026-11-28 PHT)
 
 Use a limited parent-process liveness handle, never an inherited Job Object handle, to preserve sole outer-job ownership across child suspension or stalls. Retained parent digest and distinct child token do not yet establish recoverable child identity or terminal settlement. Actual corrected compile15/five parsers/build/four matching output hashes/two direct refusal tests passed; initial wrapper red retained; 42 platform analyzer warnings, zero build errors. Native valid helper invocation and console-host/descendant termination NOT_RUN. See [Report139](https://github.com/newonathe/OrgResource/blob/531e752e18ccabdadf81d49d367cd54ff65e47da/docs/handoffs/claude-local-execution-2026-11-24/139_H06_FIXED_COMPILED_HELPER_BINDING.md).
+
+## Current — H06 recoverable child records (2026-11-28 PHT)
+
+Retain canonical parent/child identity, result and outer observation separately with cross-check digest bindings. Missing or inconsistent evidence refuses; no marker removal, retry or cleanup authorization. Actual 31 pure assertions and exact compile/build/refusal CI passed; native valid helper invocation and independent descendant/console-host witnesses NOT_RUN. See [Report140](https://github.com/newonathe/OrgResource/blob/64d74b334c3757a6fa0d05309b372d5ab3550b04/docs/handoffs/claude-local-execution-2026-11-24/140_H06_RECOVERABLE_CHILD_RECORDS.md).

@@ -1499,5 +1499,56 @@
     "harness_sha": "22c9238880d654b5dde9bcf5f07659ced0b06420",
     "workflow_sha": "c44d01e55f6947f78244a303d8e52f9439c667d7",
     "native_effects": "NOT_RUN"
+  },
+  "h06_recoverable_child_records": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/140_H06_RECOVERABLE_CHILD_RECORDS.md",
+    "ref": "64d74b334c3757a6fa0d05309b372d5ab3550b04",
+    "sha": "839db889534c4cc8a2839396463246b948d35cb5",
+    "prior": "22c9238880d654b5dde9bcf5f07659ced0b06420",
+    "state": "CANDIDATE",
+    "receipt": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "839db889534c4cc8a2839396463246b948d35cb5",
+      "run": 46064825460,
+      "job": 140727488693,
+      "oracle": "Exact 15 C# compile/five parsers/31 pure record checks/fixed helper build/four SHA256 outputs/two direct refusals/terminal success",
+      "actual": "All markers and terminal success; 8 positive/23 refusal assertions; 42 platform analyzer warnings/0 errors, valid native invocation NOT_RUN"
+    },
+    "automatic_receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "c44d01e55f6947f78244a303d8e52f9439c667d7",
+        "runs": [
+          46061327443,
+          46061327513,
+          46061327535,
+          46061146014,
+          46061146097,
+          46061146008
+        ],
+        "jobs": [
+          140716038319,
+          140716038910,
+          140716039033,
+          140716039339,
+          140716039410,
+          140715441561,
+          140715441883,
+          140715441931,
+          140715441656,
+          140715441653
+        ],
+        "actual": "Ten terminal successes, two repeat Course A61/160/1 and Extended66/91/110/19, React success, older pinned14+41 twice; repeat coverage only"
+      }
+    ],
+    "pending_runs": [
+      46064825307,
+      46064825328
+    ],
+    "native_state": "NOT_RUN",
+    "next": "H06 recoverable child records 839db889 exact terminal CI success run46064825460/job140727488693: 31 pure checks (8 positive/23 refusal), 15 C# compile, five fixture parsers, helper build/four output hashes/two direct refusals. 42 platform analyzer warnings/0 build errors. Valid native invocation NOT_RUN. Consume pending automatic CI, no repeat absent drift. Next independent held descendant/console-host termination witness, nested job and approved fictional native fixture. Private launcher and fixture refusal remain; no automatic settlement/deletion. H03 termination/settlement and H06 role custody/SQL/revoke/cleanup outstanding. Private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged; no merge/deploy/release.",
+    "harness_sha": "839db889534c4cc8a2839396463246b948d35cb5",
+    "workflow_sha": "3136a2ebbd540c1a17c501c4692ef02de3a2f925",
+    "native_effects": "NOT_RUN"
   }
 }
