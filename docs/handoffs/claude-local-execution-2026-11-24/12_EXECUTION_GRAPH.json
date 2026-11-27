@@ -2826,7 +2826,7 @@
       "native_execution": "NOT_RUN",
       "private_l06_ready": false
     },
-    "pre_handoff_next": "Inspect actual PR58 run46021269467 (new R038 SQL denial, expected 84 identity/109 Maven if discovered); fix any observed failure without weakening oracle. Reconcile remaining PR59 run46018878134 exact-head Extended job140573004942. Continue eligible H03/H06 integration source work and academic/product residuals; no repeat fixture tests absent drift. R038 transient lock and disconnect remain separate; full package/native32+H04, private L06/P0, 93 independent and13 privacy flags open.",
+    "pre_handoff_next": "Inspect actual PR58 exact-head run46028645015/job140606463099 R038 stopped-service HTTP500/same-JVM recovery and four classifier-table equality; correct observed failure without weakening oracle. Prior R038 lock and SQL denial/PR59 integrated and H03 compile/parser receipts retained, no repeat absent drift. Advance independent eligible H03/H06/product work; approved nonadmin disposable native root/trusted interpreter required; full native/package/private/P0/L07/independent/privacy/student gates unchanged, no merge/release.",
     "release_inventory_candidate": {
       "report": "docs/handoffs/claude-local-execution-2026-11-24/125_RELEASE_MIGRATION_INVENTORY_CORRECTION.md",
       "pr": 59,
@@ -2949,5 +2949,18 @@
     "state": "CANDIDATE",
     "legacy_transport": "QUARANTINED",
     "next": "PR59 corrected-head Verify terminal success; no repeat absent drift. H03 one-shot transport candidate compiled/parser passed, native four cases NOT_RUN. Advance independent eligible harness source/product residuals; approved nonadmin disposable NTFS root/trusted Python required for native fixture. Verify inheritance, child denial, termination and terminal intent settlement before real journal integration. Existing runner/recovery quarantined; H06 credential lifecycle separate, full native package/private L06/P0/L07/independent/privacy/student gates unchanged; no merge/release."
+  },
+  "g01_r038_disconnect_candidate": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/133_R038_ISOLATED_MYSQL_DISCONNECT_RECOVERY_CANDIDATE.md",
+    "ref": "8cef9aa6bbbe66a75de53b604dacf476b7aad18f",
+    "pr": 58,
+    "sha": "4545fdd81a09772f1ac667af9a0f0c034b9e31ee",
+    "prior": "196bd6f0721ff429dfec66172aa23cc412904f04",
+    "run": 46028645015,
+    "job": 140606463099,
+    "state": "CANDIDATE",
+    "actual": "NOT_RUN",
+    "scope": "real disposable CI MySQL service stop/restart, same JVM, exact four classifier tables",
+    "next": "Inspect actual PR58 exact-head run46028645015/job140606463099 R038 stopped-service HTTP500/same-JVM recovery and four classifier-table equality; correct observed failure without weakening oracle. Prior R038 lock and SQL denial/PR59 integrated and H03 compile/parser receipts retained, no repeat absent drift. Advance independent eligible H03/H06/product work; approved nonadmin disposable native root/trusted interpreter required; full native/package/private/P0/L07/independent/privacy/student gates unchanged, no merge/release."
   }
 }
