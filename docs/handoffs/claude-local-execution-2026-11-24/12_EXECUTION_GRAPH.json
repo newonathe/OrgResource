@@ -486,7 +486,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "Inspect exact PR59 corrected-head CI (no run visible at first readback); run actual package guard/native clean extraction when available, without marking READY or merging. In parallel advance next material public application/security residual from Report99 or portable H02–H06 exact-hash unrun tests; do not repeat bounded checks. Privacy 13-path remediation needs private custody/rights decision; P0 and L06 remain HOLD. Production-ready academic objective unchanged."
+    "next_action": "Reconcile PR59 prior fde7fff CI46017022964 and new exact 3fb28bb47 Windows guard+general regression, plus PR47 dedicated portable H03/H06 exact-harness fixture CI. Inspect actual logs; correct observed failures, never qualify native package/runner by portable pass. Continue independent app/security residual or eligible harness work. Privacy custody/rights, private L06, P0 and all independent/host gates remain."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -2722,7 +2722,15 @@
     "h06_owned_job_candidate": "a1b07705dbe58b56f64846977d71b429ce8f32c5",
     "h06_owned_job_fixture": "Five native fictional modes and four refusal assertions plus unrelated sentinel NOT_RUN; no actual credentials/editor/ConPTY",
     "h03_worker_transport_candidate": "b762c4195393ae92e03ee149531ca0ab944f438b",
-    "h03_worker_fixture": "Four fictional scenarios and retry/reopen assertions NOT_RUN"
+    "h03_worker_fixture": "Four fictional scenarios and retry/reopen assertions NOT_RUN",
+    "portable_ci": {
+      "workflow": ".github/workflows/windows-l06-portable-fixtures.yml",
+      "report": "docs/handoffs/claude-local-execution-2026-11-24/126_RELEASE_GUARD_AND_PORTABLE_FIXTURE_CI.md",
+      "checkout": "b762c4195393ae92e03ee149531ca0ab944f438b",
+      "methods": 41,
+      "state": "NOT_RUN_AT_COMMIT",
+      "native": "NOT_RUN"
+    }
   },
   "fictional_native_dispatch": {
     "executor": "CODEX_CLI",
@@ -2797,16 +2805,28 @@
       "native_execution": "NOT_RUN",
       "private_l06_ready": false
     },
-    "pre_handoff_next": "Inspect exact PR59 corrected-head CI (no run visible at first readback); run actual package guard/native clean extraction when available, without marking READY or merging. In parallel advance next material public application/security residual from Report99 or portable H02–H06 exact-hash unrun tests; do not repeat bounded checks. Privacy 13-path remediation needs private custody/rights decision; P0 and L06 remain HOLD. Production-ready academic objective unchanged.",
+    "pre_handoff_next": "Reconcile PR59 prior fde7fff CI46017022964 and new exact 3fb28bb47 Windows guard+general regression, plus PR47 dedicated portable H03/H06 exact-harness fixture CI. Inspect actual logs; correct observed failures, never qualify native package/runner by portable pass. Continue independent app/security residual or eligible harness work. Privacy custody/rights, private L06, P0 and all independent/host gates remain.",
     "release_inventory_candidate": {
       "report": "docs/handoffs/claude-local-execution-2026-11-24/125_RELEASE_MIGRATION_INVENTORY_CORRECTION.md",
       "pr": 59,
-      "head": "fde7fff5907fcf133d4b34656300de423334e649",
+      "head": "3fb28bb47e10cc64d82cd52e76bf8e889c166383",
       "base": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
       "state": "SOURCE_CANDIDATE",
       "model_checks": 9,
       "native": "NOT_RUN",
-      "ci": "PENDING_EXACT_HEAD_READBACK"
+      "ci": "PENDING_EXACT_HEAD_READBACK",
+      "previous_head": "fde7fff5907fcf133d4b34656300de423334e649",
+      "test_report": "docs/handoffs/claude-local-execution-2026-11-24/126_RELEASE_GUARD_AND_PORTABLE_FIXTURE_CI.md",
+      "guard_cases_staged": 21,
+      "guard_test": "NOT_RUN",
+      "previous_ci": {
+        "run": 46017022964,
+        "course_a_job": 140566645295,
+        "react_job": 140566644900,
+        "extended_job": 140566645178,
+        "extended_state": "IN_PROGRESS",
+        "course_a_and_react": "VERIFIED_BOUNDED"
+      }
     }
   }
 }

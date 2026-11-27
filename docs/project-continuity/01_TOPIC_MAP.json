@@ -1263,7 +1263,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "Inspect exact PR59 corrected-head CI (no run visible at first readback); run actual package guard/native clean extraction when available, without marking READY or merging. In parallel advance next material public application/security residual from Report99 or portable H02–H06 exact-hash unrun tests; do not repeat bounded checks. Privacy 13-path remediation needs private custody/rights decision; P0 and L06 remain HOLD. Production-ready academic objective unchanged.",
+      "next": "Reconcile PR59 prior fde7fff CI46017022964 and new exact 3fb28bb47 Windows guard+general regression, plus PR47 dedicated portable H03/H06 exact-harness fixture CI. Inspect actual logs; correct observed failures, never qualify native package/runner by portable pass. Continue independent app/security residual or eligible harness work. Privacy custody/rights, private L06, P0 and all independent/host gates remain.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -1512,6 +1512,14 @@
           "blob": "f0d95de4377b824177c905b3ca981898668600ef",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL bounded source correction; native NOT_RUN; exact blob"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/126_RELEASE_GUARD_AND_PORTABLE_FIXTURE_CI.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "76bccde177db4bd9ae680c39aef66b504d74170f",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL fixture CI source and prior bounded receipts; new execution NOT_RUN"
         }
       ]
     },
@@ -1535,7 +1543,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "Inspect exact PR59 corrected-head CI (no run visible at first readback); run actual package guard/native clean extraction when available, without marking READY or merging. In parallel advance next material public application/security residual from Report99 or portable H02–H06 exact-hash unrun tests; do not repeat bounded checks. Privacy 13-path remediation needs private custody/rights decision; P0 and L06 remain HOLD. Production-ready academic objective unchanged.",
+      "next": "Reconcile PR59 prior fde7fff CI46017022964 and new exact 3fb28bb47 Windows guard+general regression, plus PR47 dedicated portable H03/H06 exact-harness fixture CI. Inspect actual logs; correct observed failures, never qualify native package/runner by portable pass. Continue independent app/security residual or eligible harness work. Privacy custody/rights, private L06, P0 and all independent/host gates remain.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -2230,6 +2238,14 @@
           "blob": "f0d95de4377b824177c905b3ca981898668600ef",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL bounded source correction; native NOT_RUN; exact blob"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/126_RELEASE_GUARD_AND_PORTABLE_FIXTURE_CI.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "76bccde177db4bd9ae680c39aef66b504d74170f",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL fixture CI source and prior bounded receipts; new execution NOT_RUN"
         }
       ]
     },
@@ -2376,7 +2392,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "Inspect exact PR59 corrected-head CI (no run visible at first readback); run actual package guard/native clean extraction when available, without marking READY or merging. In parallel advance next material public application/security residual from Report99 or portable H02–H06 exact-hash unrun tests; do not repeat bounded checks. Privacy 13-path remediation needs private custody/rights decision; P0 and L06 remain HOLD. Production-ready academic objective unchanged.",
+      "next": "Reconcile PR59 prior fde7fff CI46017022964 and new exact 3fb28bb47 Windows guard+general regression, plus PR47 dedicated portable H03/H06 exact-harness fixture CI. Inspect actual logs; correct observed failures, never qualify native package/runner by portable pass. Continue independent app/security residual or eligible harness work. Privacy custody/rights, private L06, P0 and all independent/host gates remain.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -2827,6 +2843,14 @@
           "blob": "f0d95de4377b824177c905b3ca981898668600ef",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL bounded source correction; native NOT_RUN; exact blob"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/126_RELEASE_GUARD_AND_PORTABLE_FIXTURE_CI.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "76bccde177db4bd9ae680c39aef66b504d74170f",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL fixture CI source and prior bounded receipts; new execution NOT_RUN"
         }
       ]
     }

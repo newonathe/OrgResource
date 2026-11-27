@@ -1,0 +1,59 @@
+name: Windows L06 portable fictional fixtures
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/windows-l06-portable-fixtures.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  portable:
+    name: Exact-hash portable H03/H06 fixtures (no native or private acceptance)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: b762c4195393ae92e03ee149531ca0ab944f438b
+          persist-credentials: false
+      - name: Verify exact candidate and test/dependency Git blobs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 'b762c4195393ae92e03ee149531ca0ab944f438b'
+          test "$(git rev-parse HEAD:scripts/windows-l06/test_ownership_bridge.py)" = '9c24246903cb8975ff4dd40318b93d64abd378f9'
+          test "$(git rev-parse HEAD:scripts/windows-l06/test_ownership_journal_v2.py)" = 'b344ce0e658f8dd97067739e21160f918bd3ce28'
+          test "$(git rev-parse HEAD:scripts/windows-l06/test_ownership_bridge_v2.py)" = '6b5cebb74413835c0edd117762653f4e4074a87b'
+          test "$(git rev-parse HEAD:scripts/windows-l06/test_ownership_transform.py)" = '0f83cca57b786076a72b7551ff11eace7223c16f'
+          test "$(git rev-parse HEAD:scripts/windows-l06/test_protected_login_contract.py)" = 'ca1193565bce7352db392b82b6db7093f5d881da'
+          test "$(git rev-parse HEAD:scripts/windows-l06/ownership_journal.py)" = '1b87dd5a04055f48935e197f720e4a5e067841f1'
+          test "$(git rev-parse HEAD:scripts/windows-l06/ownership_journal_v2.py)" = '391b141f1cb8310380b32e177b9ff049710ec77d'
+          test "$(git rev-parse HEAD:scripts/windows-l06/ownership_bridge.py)" = 'b72cce6356c00232f527e1f3f179d9d50fb98dc7'
+          test "$(git rev-parse HEAD:scripts/windows-l06/ownership_bridge_v2.py)" = '5352f6ffe3291026dfe275714891e01086678e32'
+          test "$(git rev-parse HEAD:scripts/windows-l06/protected_login.py)" = 'ace8124034dd9f8adc48b6523979fabed04d6a87'
+          python3 --version
+      - name: Execute only the five reviewed fictional unittest modules
+        working-directory: scripts/windows-l06
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B - <<'PY'
+          import unittest
+          modules = [
+              'test_ownership_bridge',
+              'test_ownership_journal_v2',
+              'test_ownership_bridge_v2',
+              'test_ownership_transform',
+              'test_protected_login_contract',
+          ]
+          suite = unittest.defaultTestLoader.loadTestsFromNames(modules)
+          if suite.countTestCases() != 41:
+              raise SystemExit('Expected exactly 41 staged test methods')
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          if (not result.wasSuccessful() or result.testsRun != 41
+                  or result.skipped or result.expectedFailures or result.unexpectedSuccesses):
+              raise SystemExit(1)
+          print('Portable fictional fixtures: 41/41 passed; no native or private acceptance.')
+          PY
