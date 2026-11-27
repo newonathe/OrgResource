@@ -100,12 +100,35 @@ public static partial class C9OwnedJobProbe {
             case "root-hang": return "import time; time.sleep(120)";
             case "child-zero": return "import sys,subprocess; raise SystemExit(subprocess.call([sys.executable,'-I','-S','-B','-c','raise SystemExit(0)']))";
             case "descendant-hang": return "import sys,subprocess; subprocess.Popen([sys.executable,'-I','-S','-B','-c','import time; time.sleep(120)']); raise SystemExit(0)";
+            case "helper-tree-hang": return "import sys,subprocess,time; child=subprocess.Popen([sys.executable,'-I','-S','-B','-c','import time; time.sleep(120)']); time.sleep(120)";
             default: throw new InvalidOperationException("C9W_WATCHDOG_MODE");
         }
     }
 
     public static Observation RunFictional(C9ControlLock owner,string python,string expectedSha,
                                            string mode,int timeoutMillis) {
+        if (owner == null || mode == "helper-tree-hang")
+            throw new InvalidOperationException("C9W_WATCHDOG_ARGUMENT");
+        lock (owner) {
+            owner.AssertJournalWorkerUsable();
+            return RunFictionalCore(owner,python,expectedSha,mode,timeoutMillis,false);
+        }
+    }
+
+    // The outer supervisor surrogate owns a separate process tree, not the
+    // ConPTY worker itself. Retain intent on every launch, including success.
+    // Only fixed fictional Python scripts; never accept a command or helper path.
+    public static Observation RunFictionalOuterWatchdog(C9ControlLock owner,string python,
+                                                string expectedSha,string mode,int timeoutMillis) {
+        if (owner == null) throw new InvalidOperationException("C9W_WATCHDOG_ARGUMENT");
+        lock (owner) {
+            owner.AssertJournalWorkerUsable();
+            return RunFictionalCore(owner,python,expectedSha,mode,timeoutMillis,true);
+        }
+    }
+
+    static Observation RunFictionalCore(C9ControlLock owner,string python,string expectedSha,
+                                       string mode,int timeoutMillis,bool retainIntent) {
         string script = Script(mode);
         if (!OperatingSystem.IsWindows() || IntPtr.Size != 8 || owner == null ||
             timeoutMillis < 1000 || timeoutMillis > 30000 ||
@@ -171,6 +194,13 @@ public static partial class C9OwnedJobProbe {
             // login-path setting, profile path, or secret.
             environment=Marshal.StringToHGlobalUni("SystemDrive="+drive+"\0SystemRoot="+system+"\0\0");
             owner.AssertWatchdogCustody();
+            // Persist the existing exclusive owner-only uncertainty marker before
+            // launching the surrogate. No positive result settles or deletes it.
+            if (retainIntent) {
+                owner.MarkJournalWorkerUncertain();
+                if (clock.ElapsedMilliseconds >= timeoutMillis)
+                    throw new InvalidOperationException("C9W_OUTER_SETUP_TIMEOUT");
+            }
             if (!N.CreateProcessW(python,cmd,IntPtr.Zero,IntPtr.Zero,false,
                  0x80000u|0x400u|0x4u|0x08000000u,environment,owner.ControlPath,ref si,out var pi))
                 throw Native("C9W_WATCHDOG_CREATE");
@@ -182,10 +212,14 @@ public static partial class C9OwnedJobProbe {
             var initial=Account(job);
             if (initial.ActiveProcesses != 1 || initial.TotalProcesses != 1)
                 throw new InvalidOperationException("C9W_WATCHDOG_INITIAL_COUNT");
+            if (retainIntent && clock.ElapsedMilliseconds >= timeoutMillis)
+                throw new InvalidOperationException("C9W_OUTER_SETUP_TIMEOUT");
             C9Lifecycle.RequireInitialResume(N.ResumeThread(thread));
             Close(ref thread);
 
-            var watch=Stopwatch.StartNew();
+            // For the outer path, one deadline includes native setup and execution;
+            // bounded termination grace is separate, not a hard kernel deadline.
+            var watch=retainIntent ? clock : Stopwatch.StartNew();
             bool rootExited=false, completed=false;
             N.JOBOBJECT_BASIC_ACCOUNTING_INFORMATION current=initial;
             while (watch.ElapsedMilliseconds < timeoutMillis) {
@@ -198,8 +232,11 @@ public static partial class C9OwnedJobProbe {
             if (!completed) {
                 rootExited=Signaled(root,0);
                 current=Account(job);
-                completed=rootExited && current.ActiveProcesses == 0;
+                // Do not convert late completion into success on the outer path.
+                completed=!retainIntent && rootExited && current.ActiveProcesses == 0;
             }
+            if (retainIntent && watch.ElapsedMilliseconds >= timeoutMillis)
+                completed=false;
             int activeBefore=(int)current.ActiveProcesses;
             var last=completed ? current : Stop(job,root);
             terminalObserved=true;
