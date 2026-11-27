@@ -223,7 +223,11 @@ public static partial class C9OwnedJobProbe {
             // launching the surrogate. No positive result settles or deletes it.
             if (retainIntent) {
                 owner.MarkJournalWorkerUncertain();
-                if (helper!=null) owner.MarkPtyParentBinding(PtyBindingDigest(helperArgs));
+                if (helper!=null) {
+                    helper.ParentRecord=C9PtyRecords.Parent(helper.RootId,helper.ParentId,helper.ParentToken,
+                        helper.ChildToken,helper.Mode,helper.PackageDigest,PtyBindingDigest(helperArgs));
+                    owner.MarkPtyParentBinding(helper.ParentRecord);
+                }
                 if (clock.ElapsedMilliseconds >= timeoutMillis)
                     throw new InvalidOperationException("C9W_OUTER_SETUP_TIMEOUT");
             }

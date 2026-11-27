@@ -83,7 +83,7 @@ public static partial class C9OwnedJobProbe {
     }
 
     // Private until a separately reviewed independent outer watchdog calls it.
-    static int RunFictionalConPty(C9ControlLock owner,string python,string expectedSha,string mode,int timeoutMillis) {
+    static int RunFictionalConPty(C9ControlLock owner,byte[] parent,byte[] identity,string python,string expectedSha,string mode,int timeoutMillis) {
         string script=PtyScript(mode);
         if (!OperatingSystem.IsWindows() || IntPtr.Size!=8 || owner==null ||
             timeoutMillis<1000 || timeoutMillis>10000 ||
@@ -92,7 +92,7 @@ public static partial class C9OwnedJobProbe {
             Path.GetFullPath(python)!=python || !String.Equals(Path.GetFileName(python),"python.exe",StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException("C9W_PTY_ARGUMENT");
         lock(owner) {
-            owner.AssertJournalWorkerUsable();
+            owner.AssertPtyChildBinding(parent,identity);
             using var directory=C9DirectoryIdentity.Open(Path.GetDirectoryName(python));
             using var cwd=C9DirectoryIdentity.Open(owner.ControlPath);
             if (cwd.Id!=owner.ControlId || ((int)File.GetAttributes(python)&0x441410)!=0)
@@ -141,7 +141,7 @@ public static partial class C9OwnedJobProbe {
 
                 // The fixed journal uncertainty marker is retained even after a good
                 // fictional exchange. No actual journal update or credential launch.
-                owner.MarkJournalWorkerUncertain();
+                owner.AssertPtyChildBinding(parent,identity);
                 owner.AssertWatchdogCustody();
                 int hr=CreatePseudoConsole(new PtyCoord{X=80,Y=25},pipes[0],pipes[3],0,out hp);
                 if(hr!=0||hp==IntPtr.Zero) throw new InvalidOperationException("C9W_PTY_CREATE");

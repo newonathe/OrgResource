@@ -36,6 +36,7 @@ public static partial class C9OwnedJobProbe {
     }
     sealed class PtyLaunchPlan {
         internal string Root,RootId,ParentToken,ParentId,ChildToken,Python,PythonSha,Mode,PackageDigest;
+        internal byte[] ParentRecord;
         internal string[] Arguments(IntPtr parentWitness) {
             return new[]{PtyHelperSwitch,Root,RootId,ParentToken,ParentId,ChildToken,Python,PythonSha,
                 Mode,PackageDigest,Environment.ProcessId.ToString(CultureInfo.InvariantCulture),
@@ -86,7 +87,14 @@ public static partial class C9OwnedJobProbe {
                 // overwrite an existing child directory. Parent markers remain.
                 var result=RunPinnedFictionalCore(owner,Path.Combine(helperDir,PtyHelperFiles[0]),
                     mode,timeoutMillis,true,null,plan);
-                return result; // bounded process observation, not native acceptance
+                byte[] outer=C9PtyRecords.Outer(plan.ParentRecord,result.TimedOut,
+                    result.RootExitedBeforeStop,result.RootExitCode,result.ActiveBeforeStop,
+                    result.TotalProcesses,result.ActiveAfterStop);
+                owner.RecordPtyOuter(plan.ParentRecord,outer);
+                // Missing/partial child evidence refuses even after an outer
+                // terminal observation; the outer record remains retained.
+                owner.CrossCheckPtyChild(plan.ParentRecord,outer);
+                return result; // bounded observation, not native acceptance
             } finally {
                 foreach (var stream in held) stream.Dispose();
             }
@@ -108,6 +116,7 @@ public static partial class C9OwnedJobProbe {
             return 71;
         try {
             _=PtyScript(args[8]);
+            byte[] parent=C9PtyRecords.Parent(args[2],args[4],args[3],args[5],args[8],args[9],PtyBindingDigest(args));
             IntPtr witness=new IntPtr(handle);
             // Parent independently checks exact outer membership before resume.
             // Child checks live inherited parent process identity and any-job
@@ -118,13 +127,19 @@ public static partial class C9OwnedJobProbe {
                     Signaled(witness,0) ||
                     !N.IsProcessInJob(PtyCurrentProcess(),IntPtr.Zero,out bool inside) || !inside)
                     return 72;
-                C9ControlLock.VerifyPtyParentBinding(args[1],args[2],args[3],args[4],PtyBindingDigest(args));
+                C9ControlLock.VerifyPtyParentBinding(args[1],parent);
                 if (Signaled(witness,0)) return 72;
             } finally { Close(ref witness); }
             using var child=C9ControlLock.Create(args[1],args[5]);
             if (child.RootId!=args[2] || child.ControlId==args[4])
                 return 73;
-            return RunFictionalConPty(child,args[6],args[7],args[8],10000)==0 ? 0 : 74;
+            byte[] identity=child.MarkPtyChildBinding(parent);
+            bool returned=false;
+            try {
+                returned=RunFictionalConPty(child,parent,identity,args[6],args[7],args[8],10000)==0;
+            } catch { /* fixed refusal; no raw output */ }
+            child.MarkPtyChildResult(parent,identity,returned);
+            return returned ? 0 : 74;
         } catch { return 74; }
     }
 }
