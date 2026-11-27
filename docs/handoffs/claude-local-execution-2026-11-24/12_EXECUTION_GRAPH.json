@@ -2,7 +2,7 @@
   "schema": "orgresource.pre_handoff.execution_graph.v2",
   "date": "2026-11-24 PHT",
   "ready_to_launch": false,
-  "decision": "POST_LOCAL_HOLD: R09 historical bounded remote preparation retained; no new Claude launch. Report56 H01 custody + accepted H02–H06 successor, independent/native acceptance and direct owner confirmation required before L06.",
+  "decision": "POST_LOCAL_HOLD: private L06 remains blocked. Owner selected Codex CLI for separately authorized fictional native engineering, manual start only; Report120 governs that batch. R09 historical bounded; H01 custody, accepted successor, independent/native acceptance and direct owner confirmation required before private L06.",
   "verified_source": {
     "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
     "tree": "180f9708b78a9479d50531edbd04e0dee48a57e7",
@@ -486,7 +486,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "H03 journal-worker I/O/exit failure and retained quarantine source candidate b762c4195393ae92e03ee149531ca0ab944f438b, 72 added harness-only paths vs R09. Common deadline/first-completed task faults, bounded root and I/O settlement observation, exact returned process, shared in-memory refusal plus fixed exclusive owner-only marker on launch/transport exception, reopening refuses staging; four fictional native failure scenarios and retry/reopen assertions NOT_RUN. No actual suspended-job worker integration or complete descendant termination proof; no hard kernel deadline or crash-safe launch intent. Container ClientError/Python did not execute; 47 prior separate portable passes retained, 41 additional portable (34 H03 +7 H06), 14 Windows-only spies NOT_RUN; H03-01–12/H06-01–03 native NOT_RUN. Both runner/recovery and transport quarantined. Next exact-hash portable tests if available; integrate genuinely owned suspended-job worker transport with explicit inherited handle list, bounded I/O and sufficient descendant termination witness; credential editor/ConPTY and role custody/connection/revoke/cleanup separate. H03 boot/namespace/exclusive mapping/absence, held-lock cleanup/lock-first recovery independently eligible. H02 provenance/native, H05 actual MySQL, H01-A owned observations/protected ACL/authenticated fictional C5/independent seal/vault/cleanup; 64 prior PowerShell+spy and independent acceptance open. H01-B preparation only; actual vault/machine/operator/transfer and failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and13 privacy flags open. No private import/launch/merge/deploy."
+    "next_action": "Owner manually starts Codex CLI for H01–H06 fictional harness engineering only on exact successor b762c419. Verify refs/scope/native prerequisites, run existing tests, fix observed failures, simplify with equivalent acceptance, consolidate fictional end-to-end pass and evidence handback. No private bytes, L06 launch, actual vault/transfer, failed-stage disposal, off-host/host action, merge/deploy or new product phase. L06 HOLD and ready_to_launch=false remain; independent acceptance separate."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -2723,5 +2723,16 @@
     "h06_owned_job_fixture": "Five native fictional modes and four refusal assertions plus unrelated sentinel NOT_RUN; no actual credentials/editor/ConPTY",
     "h03_worker_transport_candidate": "b762c4195393ae92e03ee149531ca0ab944f438b",
     "h03_worker_fixture": "Four fictional scenarios and retry/reopen assertions NOT_RUN"
+  },
+  "fictional_native_dispatch": {
+    "executor": "CODEX_CLI",
+    "state": "OWNER_MANUAL_START_REQUIRED",
+    "scope": "H01–H06 fictional harness engineering only; no private access",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/120_CODEX_CLI_FICTIONAL_NATIVE_HANDOFF.md",
+    "candidate": "b762c4195393ae92e03ee149531ca0ab944f438b",
+    "owner_initiation_required": true,
+    "private_l06_ready": false,
+    "previous_executor": "CLAUDE_LOCAL",
+    "canonical_task_ids_unchanged": true
   }
 }

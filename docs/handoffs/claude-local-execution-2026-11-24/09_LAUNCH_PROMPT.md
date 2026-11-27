@@ -1,5 +1,9 @@
 # 09 — Current Claude local execution launch prompt (Report52)
 
+## Current — Codex CLI fictional-only handoff (2026-11-27 PHT)
+
+Owner manually starts Codex CLI for H01–H06 fictional harness engineering only on exact successor b762c419. Verify refs/scope/native prerequisites, run existing tests, fix observed failures, simplify with equivalent acceptance, consolidate fictional end-to-end pass and evidence handback. No private bytes, L06 launch, actual vault/transfer, failed-stage disposal, off-host/host action, merge/deploy or new product phase. L06 HOLD and ready_to_launch=false remain; independent acceptance separate. See [Report120](https://github.com/newonathe/OrgResource/blob/docs/claude-local-execution-handoff-2026-11-24/docs/handoffs/claude-local-execution-2026-11-24/120_CODEX_CLI_FICTIONAL_NATIVE_HANDOFF.md). Prior checkpoints retained as history, not active instructions for this batch.
+
 > **SUPERSEDING CHECKPOINT (2026-11-25 PHT): CONDITIONAL PREPARATION ONLY — L06 HOLD.** The Report52 launch/resume language and POSIX/WSL recipe below are historical, not current permission. Owner paused Claude pending consolidated handoff. Read live issue #50 and root PROJECT_CONTEXT_START_HERE.md, then graph12 and Reports56–66, especially 59_ORCHESTRATOR_EXECUTION_CONTRACT.md, 61_NEXT_RUN_MANIFEST.json and Report62/64/66. Main exact CI45576702774 verified bounded; local L03 receipt reported and reconciled in Report56, not reason to rerun. Current manifest ready_to_launch_all=false. Do not initiate local execution until the owner explicitly starts the accepted next-run scope; no L06 before corrected accepted harness, private retention/transfer decision and direct owner challenge. No WSL, hosted access, protected edits, new phase, merge or deployment inferred. Preserve historical text below only as provenance.
 
 ## Historical Report52 snapshot (superseded for execution)
