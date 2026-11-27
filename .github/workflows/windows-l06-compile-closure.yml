@@ -1,0 +1,47 @@
+name: Windows L06 compile-only dependency closure
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/windows-l06-compile-closure.yml'
+permissions:
+  contents: read
+jobs:
+  compile-closure:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'docs/claude-local-execution-handoff-2026-11-24'
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: b762c4195393ae92e03ee149531ca0ab944f438b
+          persist-credentials: false
+      - name: Compile exact H03 H06 dependency union without invoking native code
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ((git rev-parse HEAD) -cne 'b762c4195393ae92e03ee149531ca0ab944f438b' -or $LASTEXITCODE -ne 0) { throw 'Wrong candidate' }
+          $pins = [ordered]@{
+            'C9DirectoryIdentity.cs' = '67d705d9d66f0ca05cee018900b346d913d687b3'
+            'C9ControlLock.cs' = '9dfc3fdb42c40ae5622676d22795eb3c61a2f2ab'
+            'C9JournalStorage.cs' = '189e8aa4bb039e5557c4b87acf230c63541fccc2'
+            'C9JournalParent.cs' = '882343527ef986710b4fca6d14004c301b0bbc1e'
+            'C9DosDeviceObservation.cs' = 'd3b9c101c07c268b1596c4556716fd2e5e1ac64c'
+            'C9LogonContext.cs' = 'fe2d1bd497badb36eb6c93379c0577e100553b6b'
+            'C9ProfileStorageObservation.cs' = 'c29a49ef65abe02965ffa471ff16e2d2e6d600a4'
+            'C9Contain.cs' = '45a93d294f52da3af9139531a36bd8d97c0e344b'
+            'C9OwnedJobProbe.cs' = '6ba5518f360143584b9450f3b87148e2cb67e0a9'
+            'C9OwnershipProducer.cs' = '1195a098e4bb3d6fa6556d2cf6df9ece3319df6e'
+          }
+          $paths = @()
+          foreach ($name in $pins.Keys) {
+            $path = "scripts/windows-l06/$name"
+            $blob = git rev-parse "HEAD:$path"
+            if ($LASTEXITCODE -ne 0 -or $blob -cne $pins[$name]) { throw "Wrong committed blob: $name" }
+            $actual = git hash-object --path=$path $path
+            if ($LASTEXITCODE -ne 0 -or $actual -cne $pins[$name]) { throw "Wrong checked-out content: $name" }
+            $paths += (Resolve-Path -LiteralPath $path).Path
+          }
+          if ($paths.Count -ne 10) { throw 'Wrong source closure count' }
+          # Compile/load only; no constructors, native entrypoints or test runner invoked.
+          Add-Type -Path $paths -ErrorAction Stop
+          'C9W_H03_H06_COMPILE_CLOSURE_OK:files=10 native_effects_not_run=true'
