@@ -139,8 +139,8 @@ public static partial class C9OwnedJobProbe {
                 foreach(var h in pipes)
                     if(!GetHandleInformation(h,out uint flags)||(flags&1)!=0) throw Native("C9W_PTY_PIPE_INHERITANCE");
 
-                // The fixed journal uncertainty marker is retained even after a good
-                // fictional exchange. No actual journal update or credential launch.
+                // The child identity and uncertainty markers were retained before
+                // entry. Recheck both immediately before the pseudoconsole effect.
                 owner.AssertPtyChildBinding(parent,identity);
                 owner.AssertWatchdogCustody();
                 int hr=CreatePseudoConsole(new PtyCoord{X=80,Y=25},pipes[0],pipes[3],0,out hp);

@@ -53,6 +53,11 @@ Reject { [C9PtyRecords]::ReadParent($bad) } 'noncanonical newline'
 Reject { [C9PtyRecords]::ReadParent([byte[]]($parent+[byte]10)) } 'trailing field'
 Reject { [C9PtyRecords]::ReadParent([byte[]]($parent[0..($parent.Length-2)])) } 'truncation'
 Reject { [C9PtyRecords]::ReadParent([byte[]](@(255)+$parent)) } 'nonascii'
-$badOuter=[Text.Encoding]::ASCII.GetBytes(([Text.Encoding]::ASCII.GetString($outer)).Replace("`n0`n","`n+0`n"))
+$outerLines=[Text.Encoding]::ASCII.GetString($outer).Split([char]10)
+$outerLines[4]='+0'
+$badOuter=[Text.Encoding]::ASCII.GetBytes(($outerLines -join [char]10))
 Reject { [C9PtyRecords]::VerifyOuter($parent,$badOuter) } 'noncanonical number'
-'C9W_H06_PTY_RECORDS_OK:positive=7 negative=20 native_effects_not_run=true'
+$one=[C9PtyRecords]::Outer($parent,$false,$true,0,0,1,0)
+Reject { [C9PtyRecords]::CrossCheck($parent,$child,$result,$one) } 'missing client accounting'
+Reject { [C9PtyRecords]::Outer($parent,$true,$false,139,2,9,0) } 'outer job limit'
+'C9W_H06_PTY_RECORDS_OK:positive=8 negative=23 native_effects_not_run=true'

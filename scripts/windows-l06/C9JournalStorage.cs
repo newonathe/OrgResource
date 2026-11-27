@@ -334,7 +334,7 @@ public static class C9PtyRecords {
     static string Number(int value) { return value.ToString(System.Globalization.CultureInfo.InvariantCulture); }
     public static byte[] Outer(byte[] parent,bool timeout,bool rootExited,int exit,int before,int total,int after) {
         _=ReadParent(parent);
-        Need(total>=1&&before>=0&&before<=total&&after==0&&
+        Need(total>=1&&total<=8&&before>=0&&before<=total&&after==0&&
             (timeout||(rootExited&&before==0)));
         return Pack("C9W_PTY_OUTER_OBSERVED_V1",Digest(parent),timeout?"1":"0",rootExited?"1":"0",
             Number(exit),Number(before),Number(total),Number(after));
@@ -354,6 +354,7 @@ public static class C9PtyRecords {
         // For a timely completion, exit zero iff the child reports success.
         // Timeout can occur after child writes result, before root exits.
         Need(f[1]=="1"||((f[3]=="0")==returned));
+        Need(!returned||Int32.Parse(f[5],System.Globalization.CultureInfo.InvariantCulture)>=2);
         return Pack("C9W_PTY_CROSSCHECK_OBSERVED_V1",Digest(parent),Digest(child),Digest(result),Digest(outer));
     }
 }
