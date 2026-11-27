@@ -257,15 +257,30 @@ public static class C9OwnedJobProbe {
     [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool GetHandleInformation(IntPtr handle, out uint flags);
 
+    [DllImport("kernel32.dll", ExactSpelling=true, SetLastError=true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    static extern bool GetProcessMitigationPolicy(IntPtr process, int policy, out uint flags, UIntPtr length);
+
+    // ProcessChildProcessPolicy = 13; NoChildProcessCreation = bit 0.
+    // Require the actual returned suspended process to be restricted, not audit-only.
+    // This is defense in depth for trusted fictional workers, not an adversarial sandbox.
+    static void RequireChildRestriction(IntPtr root) {
+        if (!GetProcessMitigationPolicy(root,13,out uint flags,(UIntPtr)sizeof(uint)))
+            throw Native("C9W_WORKER_CHILD_POLICY_QUERY");
+        if (flags != 1)
+            throw new InvalidOperationException("C9W_WORKER_CHILD_POLICY");
+    }
+
     static void Pipe(IntPtr[] handles, int at, bool parentWrites) {
         var sa = new N.SECURITY_ATTRIBUTES {
-            nLength=Marshal.SizeOf<N.SECURITY_ATTRIBUTES>(), bInheritHandle=1
+            nLength=Marshal.SizeOf<N.SECURITY_ATTRIBUTES>(), bInheritHandle=0
         };
         if (!CreatePipe(out handles[at],out handles[at+1],ref sa,4096))
             throw Native("C9W_WORKER_PIPE");
         int parent=parentWrites ? at+1 : at;
         int child=parentWrites ? at : at+1;
-        if (!SetHandleInformation(handles[parent],1,0) ||
+        // Only the child-side end is ever marked inheritable.
+        if (!SetHandleInformation(handles[child],1,1) ||
             !GetHandleInformation(handles[parent],out uint pf) || (pf & 1) != 0 ||
             !GetHandleInformation(handles[child],out uint cf) || (cf & 1) != 1)
             throw Native("C9W_WORKER_PIPE_INHERITANCE");
@@ -301,6 +316,15 @@ public static class C9OwnedJobProbe {
         switch (mode) {
             case "echo": return "import sys; sys.stdout.buffer.write(sys.stdin.buffer.read()); sys.stdout.buffer.flush()";
             case "nonzero": return "import sys; sys.stdin.buffer.read(); raise SystemExit(23)";
+            case "child-denied": return "import sys,subprocess\n"
+                + "sys.stdin.buffer.read()\n"
+                + "try:\n"
+                + " subprocess.run([sys.executable,'-I','-S','-B','-c','raise SystemExit(0)'],check=True)\n"
+                + "except OSError as e:\n"
+                + " if getattr(e,'winerror',None)!=367: raise\n"
+                + " sys.stdout.buffer.write(b'child-process-blocked-367'); sys.stdout.buffer.flush()\n"
+                + "else:\n"
+                + " raise SystemExit(24)\n";
             case "overflow": return "import sys,time; sys.stdin.buffer.read(); sys.stdout.buffer.write(b'x'*4096); sys.stdout.buffer.flush(); time.sleep(120)";
             case "hang": return "import time; time.sleep(120)";
             default: throw new InvalidOperationException("C9W_WORKER_MODE");
@@ -334,7 +358,8 @@ public static class C9OwnedJobProbe {
             // child stdout write, parent stderr read, child stderr write.
             var pipes=new IntPtr[6];
             IntPtr job=IntPtr.Zero, root=IntPtr.Zero, thread=IntPtr.Zero,
-                   list=IntPtr.Zero, jobList=IntPtr.Zero, handleList=IntPtr.Zero, environment=IntPtr.Zero;
+                   list=IntPtr.Zero, jobList=IntPtr.Zero, handleList=IntPtr.Zero,
+                   childPolicy=IntPtr.Zero, environment=IntPtr.Zero;
             bool initialized=false, assigned=false, terminalObserved=false;
             var tasks=new List<Task>();
             int code;
@@ -356,12 +381,12 @@ public static class C9OwnedJobProbe {
 
                 Pipe(pipes,0,true); Pipe(pipes,2,false); Pipe(pipes,4,false);
                 IntPtr bytes=IntPtr.Zero;
-                bool first=N.InitializeProcThreadAttributeList(IntPtr.Zero,2,0,ref bytes);
+                bool first=N.InitializeProcThreadAttributeList(IntPtr.Zero,3,0,ref bytes);
                 int error=Marshal.GetLastWin32Error();
                 if (first || error != 122 || bytes.ToInt64() <= 0 || bytes.ToInt64() > 1048576)
                     throw new InvalidOperationException("C9W_WORKER_ATTRIBUTE_SIZE");
                 list=Marshal.AllocHGlobal(bytes);
-                if (!N.InitializeProcThreadAttributeList(list,2,0,ref bytes))
+                if (!N.InitializeProcThreadAttributeList(list,3,0,ref bytes))
                     throw Native("C9W_WORKER_ATTRIBUTE_INIT");
                 initialized=true;
                 jobList=Marshal.AllocHGlobal(IntPtr.Size);
@@ -374,6 +399,12 @@ public static class C9OwnedJobProbe {
                 Marshal.WriteIntPtr(handleList,2*IntPtr.Size,pipes[5]);
                 if (!N.UpdateProcThreadAttribute(list,0,(IntPtr)0x20002,handleList,(IntPtr)(3*IntPtr.Size),IntPtr.Zero,IntPtr.Zero))
                     throw Native("C9W_WORKER_ATTRIBUTE_HANDLES");
+                // PROC_THREAD_ATTRIBUTE_CHILD_PROCESS_POLICY (input DWORD, restricted=1).
+                // Attribute value 0x2000E: number 14, input flag.
+                childPolicy=Marshal.AllocHGlobal(sizeof(uint));
+                Marshal.WriteInt32(childPolicy,1);
+                if (!N.UpdateProcThreadAttribute(list,0,(IntPtr)0x2000E,childPolicy,(IntPtr)sizeof(uint),IntPtr.Zero,IntPtr.Zero))
+                    throw Native("C9W_WORKER_ATTRIBUTE_CHILD_POLICY");
                 var si=new N.STARTUPINFOEX {
                     cb=Marshal.SizeOf<N.STARTUPINFOEX>(),dwFlags=0x100,lpAttributeList=list,
                     hStdInput=pipes[0],hStdOutput=pipes[3],hStdError=pipes[5]
@@ -392,6 +423,7 @@ public static class C9OwnedJobProbe {
                 if (!N.IsProcessInJob(root,job,out bool inJob)) throw Native("C9W_WORKER_JOB_QUERY");
                 if (!inJob) throw new InvalidOperationException("C9W_WORKER_WRONG_JOB");
                 assigned=true;
+                RequireChildRestriction(root);
                 initial=Account(job);
                 if (initial.ActiveProcesses != 1 || initial.TotalProcesses != 1)
                     throw new InvalidOperationException("C9W_WORKER_INITIAL_COUNT");
@@ -439,7 +471,9 @@ public static class C9OwnedJobProbe {
                 var actual=output.GetAwaiter().GetResult();
                 if (errors.GetAwaiter().GetResult().Length != 0 ||
                     (mode == "echo" ? code != 0 || !actual.AsSpan().SequenceEqual(input) :
-                     mode == "nonzero" ? code != 23 || actual.Length != 0 : true))
+                     mode == "nonzero" ? code != 23 || actual.Length != 0 :
+                     mode == "child-denied" ? code != 0 ||
+                        !actual.AsSpan().SequenceEqual(Encoding.ASCII.GetBytes("child-process-blocked-367")) : true))
                     throw new InvalidOperationException("C9W_WORKER_PROTOCOL");
                 owner.AssertWatchdogCustody();
             } finally {
@@ -462,7 +496,7 @@ public static class C9OwnedJobProbe {
                 try { Close(ref root); } catch { cleanupFailed=true; }
                 try { Close(ref job); } catch { cleanupFailed=true; }
                 if (initialized) N.DeleteProcThreadAttributeList(list);
-                foreach (var p in new[]{list,jobList,handleList,environment})
+                foreach (var p in new[]{list,jobList,handleList,childPolicy,environment})
                     if (p != IntPtr.Zero) Marshal.FreeHGlobal(p);
                 Task combined=Task.WhenAll(tasks);
                 try { combined.WaitAsync(TimeSpan.FromSeconds(5)).GetAwaiter().GetResult(); }
