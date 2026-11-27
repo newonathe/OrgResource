@@ -15,7 +15,7 @@ jobs:
         with:
           ref: b762c4195393ae92e03ee149531ca0ab944f438b
           persist-credentials: false
-      - name: Compile exact H03 H06 dependency union without invoking native code
+      - name: Compile exact H01 H03 H06 dependency union without invoking native code
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -31,6 +31,9 @@ jobs:
             'C9Contain.cs' = '45a93d294f52da3af9139531a36bd8d97c0e344b'
             'C9OwnedJobProbe.cs' = '6ba5518f360143584b9450f3b87148e2cb67e0a9'
             'C9OwnershipProducer.cs' = '1195a098e4bb3d6fa6556d2cf6df9ece3319df6e'
+            'C9WorkCreation.cs' = '69106d16b9373e7610db5783847e85d93e45381b'
+            'C9LoginCustody.cs' = 'aed95ad13ab0fe711115dcae1b5ed6624c96a039'
+            'C9RetentionStage.cs' = 'a94dffe4c79443fb5bc38874fd984f1b3d7478b6'
           }
           $paths = @()
           foreach ($name in $pins.Keys) {
@@ -41,7 +44,7 @@ jobs:
             if ($LASTEXITCODE -ne 0 -or $actual -cne $pins[$name]) { throw "Wrong checked-out content: $name" }
             $paths += (Resolve-Path -LiteralPath $path).Path
           }
-          if ($paths.Count -ne 10) { throw 'Wrong source closure count' }
+          if ($paths.Count -ne 13) { throw 'Wrong source closure count' }
           # Compile/load only; no constructors, native entrypoints or test runner invoked.
           Add-Type -Path $paths -ErrorAction Stop
-          'C9W_H03_H06_COMPILE_CLOSURE_OK:files=10 native_effects_not_run=true'
+          'C9W_H03_H06_COMPILE_CLOSURE_OK:files=13 native_effects_not_run=true'
