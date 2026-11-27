@@ -1296,5 +1296,17 @@
     "compile": "VERIFIED_BOUNDED",
     "native_effects": "NOT_RUN",
     "next": "R038 actual isolated service disconnect verified bounded, alongside prior lock and permission denial; PR58 all three CI jobs passed, PR59 corrected-head all four passed. No repeat absent drift. H03 child restriction candidate c8ae807 exact 13-file compile and fixture parser passed, five native cases NOT_RUN. Advance H03 native inheritance/child denial/termination and safe terminal intent settlement only with approved nonadmin disposable NTFS root and trusted Python; H06 credential lifecycle separate. Advance independent eligible work, full native package/private L06/P0/L07/93 independent/13 privacy/student gates unchanged, no merge/release."
+  },
+  "h06_fixed_file_custody_candidate": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/135_H06_EXCLUSIVE_FIXED_FILE_CUSTODY_CANDIDATE.md",
+    "ref": "06160426f6671f022912fa0e75b0200bd762df1e",
+    "harness_sha": "96df9bae738e10b8eb542266401a485e270ec4a4",
+    "workflow_sha": "52d1b3f3a3400b3477390c480f09432d25464f5c",
+    "run": 46038389957,
+    "job": 140639532350,
+    "state": "CANDIDATE",
+    "compile": "VERIFIED_BOUNDED",
+    "native_effects": "NOT_RUN",
+    "next": "H06 exclusive fixed fictional file creation/custody candidate exact 96df9bae compiled 13 C# and parsed both native fixtures, five new H06 scenarios NOT_RUN. Advance independent eligible H06 editor/ConPTY and role custody/connect/revoke/cleanup engineering; actual native fixture only under approved nonadmin disposable owner-only NTFS root and pinned trusted tools. H03 actual inheritance/child denial/termination and durable terminal intent settlement before real journal integration. R038 and packaging receipts retained, no repeat absent drift. Full native package/private L06/P0/L07/93 independent/13 privacy/student gates unchanged, no merge/release."
   }
 }
