@@ -486,7 +486,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "H06 fixed compiled helper binding 22c92388 exact corrected terminal CI success run46061327467/job140716038954: 15 C# compile, five parsers, four identical helper build hashes, two direct refusal tests. 42 CA1416 warnings/0 build errors, native valid helper launch NOT_RUN. Consume pending automatic CI, no repeat absent drift. Next persist recoverable child locator/identity and terminal intent, independent held descendant/console-host witnesses, nested job and approved fictional native fixture. Parent holds sole job handle; private parent launcher and fixture refusal remain. H03 settlement and H06 role custody/SQL/revoke/cleanup outstanding. Private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged; no merge/deploy/release."
+    "next_action": "H06 recoverable child records 839db889 candidate retains parent/child identity and terminal observations, 31 pure checks staged, focused CI run46064825460/job140727488693 pending terminal receipt. Consume actual receipt and automatic CI; repair observed failures only. Next independent held descendant/console-host termination witness, nested job and approved fictional native fixture. Native valid helper launch NOT_RUN; private launcher and fixture refusal remain; no automatic settlement/deletion. H03 termination/settlement and H06 role custody/SQL/revoke/cleanup outstanding. Private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged; no merge/deploy/release."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -2826,7 +2826,7 @@
       "native_execution": "NOT_RUN",
       "private_l06_ready": false
     },
-    "pre_handoff_next": "H06 fixed compiled helper binding 22c92388 exact corrected terminal CI success run46061327467/job140716038954: 15 C# compile, five parsers, four identical helper build hashes, two direct refusal tests. 42 CA1416 warnings/0 build errors, native valid helper launch NOT_RUN. Consume pending automatic CI, no repeat absent drift. Next persist recoverable child locator/identity and terminal intent, independent held descendant/console-host witnesses, nested job and approved fictional native fixture. Parent holds sole job handle; private parent launcher and fixture refusal remain. H03 settlement and H06 role custody/SQL/revoke/cleanup outstanding. Private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged; no merge/deploy/release.",
+    "pre_handoff_next": "H06 recoverable child records 839db889 candidate retains parent/child identity and terminal observations, 31 pure checks staged, focused CI run46064825460/job140727488693 pending terminal receipt. Consume actual receipt and automatic CI; repair observed failures only. Next independent held descendant/console-host termination witness, nested job and approved fictional native fixture. Native valid helper launch NOT_RUN; private launcher and fixture refusal remain; no automatic settlement/deletion. H03 termination/settlement and H06 role custody/SQL/revoke/cleanup outstanding. Private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged; no merge/deploy/release.",
     "release_inventory_candidate": {
       "report": "docs/handoffs/claude-local-execution-2026-11-24/125_RELEASE_MIGRATION_INVENTORY_CORRECTION.md",
       "pr": 59,
@@ -3189,5 +3189,54 @@
     ],
     "native_state": "NOT_RUN",
     "next": "H06 fixed compiled helper binding 22c92388 exact corrected terminal CI success run46061327467/job140716038954: 15 C# compile, five parsers, four identical helper build hashes, two direct refusal tests. 42 CA1416 warnings/0 build errors, native valid helper launch NOT_RUN. Consume pending automatic CI, no repeat absent drift. Next persist recoverable child locator/identity and terminal intent, independent held descendant/console-host witnesses, nested job and approved fictional native fixture. Parent holds sole job handle; private parent launcher and fixture refusal remain. H03 settlement and H06 role custody/SQL/revoke/cleanup outstanding. Private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged; no merge/deploy/release."
+  },
+  "h06_recoverable_child_records": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/140_H06_RECOVERABLE_CHILD_RECORDS.md",
+    "ref": "1ca6a63aa8607c55a2b12ceb9fb21fd876f9b1f2",
+    "sha": "839db889534c4cc8a2839396463246b948d35cb5",
+    "prior": "22c9238880d654b5dde9bcf5f07659ced0b06420",
+    "state": "CANDIDATE",
+    "receipt": {
+      "status": "NOT_RUN",
+      "sha": "839db889534c4cc8a2839396463246b948d35cb5",
+      "run": 46064825460,
+      "job": 140727488693,
+      "oracle": "Exact 15 C# compile/five parsers/31 pure record checks/fixed helper build/two direct refusals and terminal job",
+      "actual": "In progress at last observation; terminal receipt pending"
+    },
+    "automatic_receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "c44d01e55f6947f78244a303d8e52f9439c667d7",
+        "runs": [
+          46061327443,
+          46061327513,
+          46061327535,
+          46061146014,
+          46061146097,
+          46061146008
+        ],
+        "jobs": [
+          140716038319,
+          140716038910,
+          140716039033,
+          140716039339,
+          140716039410,
+          140715441561,
+          140715441883,
+          140715441931,
+          140715441656,
+          140715441653
+        ],
+        "actual": "Ten terminal successes, two repeat Course A61/160/1 and Extended66/91/110/19, React success, older pinned14+41 twice; repeat coverage only"
+      }
+    ],
+    "pending_runs": [
+      46064825460,
+      46064825307,
+      46064825328
+    ],
+    "native_state": "NOT_RUN",
+    "next": "H06 recoverable child records 839db889 candidate retains parent/child identity and terminal observations, 31 pure checks staged, focused CI run46064825460/job140727488693 pending terminal receipt. Consume actual receipt and automatic CI; repair observed failures only. Next independent held descendant/console-host termination witness, nested job and approved fictional native fixture. Native valid helper launch NOT_RUN; private launcher and fixture refusal remain; no automatic settlement/deletion. H03 termination/settlement and H06 role custody/SQL/revoke/cleanup outstanding. Private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged; no merge/deploy/release."
   }
 }
