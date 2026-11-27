@@ -1442,5 +1442,62 @@
     "harness_sha": "b00aa41e001f2728bd87600d25bf0608d1223d23",
     "workflow_sha": "15515baf4324876bda38b19172a1b3357f71e16a",
     "native_effects": "NOT_RUN"
+  },
+  "h06_fixed_compiled_helper_binding": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/139_H06_FIXED_COMPILED_HELPER_BINDING.md",
+    "ref": "531e752e18ccabdadf81d49d367cd54ff65e47da",
+    "sha": "22c9238880d654b5dde9bcf5f07659ced0b06420",
+    "prior": "b00aa41e001f2728bd87600d25bf0608d1223d23",
+    "state": "CANDIDATE",
+    "receipt": {
+      "status": "FAILED",
+      "sha": "22c9238880d654b5dde9bcf5f07659ced0b06420",
+      "run": 46061145990,
+      "job": 140715441486,
+      "oracle": "Exact 15 C# compile/five parsers/build/four files/two expected exit71 empty-output refusals plus terminal job",
+      "actual": "All inner markers pass; runner wrapper exits1 after expected LASTEXITCODE; 42 CA1416 warnings/0 build errors; no native effects"
+    },
+    "corrected_receipt": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "22c9238880d654b5dde9bcf5f07659ced0b06420",
+      "run": 46061327467,
+      "job": 140716038954,
+      "oracle": "Exact 15 C# compile/five parsers/fixed helper build/four output hashes/two expected exit71 empty-output direct refusals/terminal success",
+      "actual": "All markers and terminal success; four output SHA256 identical to initial build, 42 CA1416 warnings/0 errors, no native effects"
+    },
+    "automatic_receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "15515baf4324876bda38b19172a1b3357f71e16a",
+        "runs": [
+          46058439689,
+          46059231885,
+          46059231910,
+          46059231903
+        ],
+        "jobs": [
+          140706549707,
+          140709153400,
+          140709153801,
+          140709153792,
+          140709153984,
+          140709153606
+        ],
+        "actual": "Six terminal successes; Extended repeated66/91/110/19; Course A61/160/1; React success; older pinned14+41; repeat coverage only"
+      }
+    ],
+    "pending_runs": [
+      46061327443,
+      46061327513,
+      46061327535,
+      46061146014,
+      46061146097,
+      46061146008
+    ],
+    "native_state": "NOT_RUN",
+    "next": "H06 fixed compiled helper binding 22c92388 exact corrected terminal CI success run46061327467/job140716038954: 15 C# compile, five parsers, four identical helper build hashes, two direct refusal tests. 42 CA1416 warnings/0 build errors, native valid helper launch NOT_RUN. Consume pending automatic CI, no repeat absent drift. Next persist recoverable child locator/identity and terminal intent, independent held descendant/console-host witnesses, nested job and approved fictional native fixture. Parent holds sole job handle; private parent launcher and fixture refusal remain. H03 settlement and H06 role custody/SQL/revoke/cleanup outstanding. Private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged; no merge/deploy/release.",
+    "harness_sha": "22c9238880d654b5dde9bcf5f07659ced0b06420",
+    "workflow_sha": "c44d01e55f6947f78244a303d8e52f9439c667d7",
+    "native_effects": "NOT_RUN"
   }
 }
