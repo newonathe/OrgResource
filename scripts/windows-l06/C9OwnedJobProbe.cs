@@ -163,7 +163,7 @@ public static partial class C9OwnedJobProbe {
 
         IntPtr job=IntPtr.Zero, root=IntPtr.Zero, thread=IntPtr.Zero, list=IntPtr.Zero,
                jobList=IntPtr.Zero, environment=IntPtr.Zero,
-               queryJob=IntPtr.Zero, inheritedList=IntPtr.Zero;
+               parentWitness=IntPtr.Zero, inheritedList=IntPtr.Zero;
         bool initialized=false, assigned=false, terminalObserved=false;
         Observation receipt=null;
         var clock=Stopwatch.StartNew();
@@ -200,16 +200,17 @@ public static partial class C9OwnedJobProbe {
                 throw Native("C9W_WATCHDOG_ATTRIBUTE_JOB");
             string[] helperArgs=null;
             if (helper!=null) {
-                // Query-only inherited handle; no terminate/assign access.
-                // Child must close it BEFORE any native ConPTY effect.
-                if (!DuplicateHandle(PtyCurrentProcess(),job,PtyCurrentProcess(),out queryJob,4,true,0) ||
-                    !GetHandleInformation(queryJob,out uint qf) || (qf&1)!=1)
-                    throw Native("C9W_PTY_OUTER_QUERY_HANDLE");
+                // Inherit a limited parent-process liveness handle, NEVER a job
+                // handle: a suspended or stalled helper cannot keep the job alive.
+                if (!DuplicateHandle(PtyCurrentProcess(),PtyCurrentProcess(),PtyCurrentProcess(),
+                    out parentWitness,0x101000,true,0) ||
+                    !GetHandleInformation(parentWitness,out uint qf) || (qf&1)!=1)
+                    throw Native("C9W_PTY_OUTER_PARENT_HANDLE");
                 inheritedList=Marshal.AllocHGlobal(IntPtr.Size);
-                Marshal.WriteIntPtr(inheritedList,queryJob);
+                Marshal.WriteIntPtr(inheritedList,parentWitness);
                 if (!N.UpdateProcThreadAttribute(list,0,(IntPtr)0x20002,inheritedList,(IntPtr)IntPtr.Size,IntPtr.Zero,IntPtr.Zero))
                     throw Native("C9W_PTY_OUTER_HANDLES");
-                helperArgs=helper.Arguments(queryJob);
+                helperArgs=helper.Arguments(parentWitness);
             }
             var si=new N.STARTUPINFOEX { cb=Marshal.SizeOf<N.STARTUPINFOEX>(),lpAttributeList=list };
             var cmd=new StringBuilder(helper==null ? fixedCommand() :
@@ -230,7 +231,7 @@ public static partial class C9OwnedJobProbe {
                  0x80000u|0x400u|0x4u|0x08000000u,environment,owner.ControlPath,ref si,out var pi))
                 throw Native("C9W_WATCHDOG_CREATE");
             root=pi.hProcess; thread=pi.hThread;
-            Close(ref queryJob); // parent retains ONLY the full noninheritable job handle
+            Close(ref parentWitness); // parent retains the sole private job handle
             if (!N.IsProcessInJob(root,job,out bool inJob))
                 throw Native("C9W_WATCHDOG_JOB_QUERY");
             if (!inJob) throw new InvalidOperationException("C9W_WATCHDOG_WRONG_JOB");
@@ -296,7 +297,7 @@ public static partial class C9OwnedJobProbe {
                     finally {
                         try { Close(ref job); }
                         finally {
-                            try { Close(ref queryJob); }
+                            try { Close(ref parentWitness); }
                             finally {
                                 if (initialized) N.DeleteProcThreadAttributeList(list);
                                 foreach (var p in new[]{list,jobList,inheritedList,environment})

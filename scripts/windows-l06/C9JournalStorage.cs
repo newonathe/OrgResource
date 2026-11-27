@@ -65,6 +65,28 @@ public sealed partial class C9ControlLock {
             throw new InvalidOperationException("C9W_PTY_BINDING_MISMATCH");
     }
 
+    internal void AssertPtyPackageDirectory(C9DirectoryIdentity dir) {
+        CheckCustody();
+        using var me=WindowsIdentity.GetCurrent();
+        AssertOwnerOnly(dir.FinalHandle,me.User);
+    }
+
+    internal FileStream OpenPtyPinnedFile(string path,string directoryId,bool ownerOnly) {
+        CheckCustody();
+        // OPEN_EXISTING | OPEN_REPARSE_POINT; read and read-control with read-only
+        // sharing; native handle shape and final path, not a pre-open path check.
+        var h=CreateFileExisting(path,0x80020080,1,IntPtr.Zero,3,0x00200080,IntPtr.Zero);
+        try {
+            if (h.IsInvalid) throw new Win32Exception(Marshal.GetLastWin32Error(),"C9W_PTY_PIN_OPEN");
+            CheckJournalFileBound(h,path,directoryId);
+            if (ownerOnly) {
+                using var me=WindowsIdentity.GetCurrent();
+                AssertOwnerOnly(h,me.User);
+            }
+            return new FileStream(h,FileAccess.Read);
+        } catch { h.Dispose(); throw; }
+    }
+
     void WriteRetainedWorkerMarker(string leaf,byte[] data) {
         string path=Path.Combine(ControlPath,leaf);
         using var me = WindowsIdentity.GetCurrent();

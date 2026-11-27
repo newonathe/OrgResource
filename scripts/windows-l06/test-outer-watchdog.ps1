@@ -10,7 +10,7 @@ param(
 Set-StrictMode -Version 3
 $ErrorActionPreference='Stop'
 if (-not $IsWindows -or -not $ConfirmFictional) { throw 'C9W_TEST_FIXTURE_REQUIRED' }
-Add-Type -Path @('C9DirectoryIdentity.cs','C9ControlLock.cs','C9JournalStorage.cs','C9ProfileStorageObservation.cs','C9Contain.cs','C9OwnedJobProbe.cs','C9FictionalConPty.cs' | ForEach-Object { Join-Path $PSScriptRoot $_ })
+Add-Type -Path @('C9DirectoryIdentity.cs','C9ControlLock.cs','C9JournalStorage.cs','C9ProfileStorageObservation.cs','C9Contain.cs','C9OwnedJobProbe.cs','C9FictionalConPty.cs','C9PtyHelper.cs' | ForEach-Object { Join-Path $PSScriptRoot $_ })
 function Require([bool] $ok,[string] $code) { if (-not $ok) { throw $code } }
 function Refuses([scriptblock] $action,[string] $code) {
     $caught=$false

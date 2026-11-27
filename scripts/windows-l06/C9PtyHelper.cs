@@ -18,6 +18,8 @@ public static partial class C9OwnedJobProbe {
     [DllImport("kernel32.dll",EntryPoint="GetCurrentProcess",ExactSpelling=true)]
     static extern IntPtr PtyCurrentProcess();
     [DllImport("kernel32.dll",ExactSpelling=true,SetLastError=true)]
+    static extern uint GetProcessId(IntPtr process);
+    [DllImport("kernel32.dll",ExactSpelling=true,SetLastError=true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool DuplicateHandle(IntPtr sourceProcess,IntPtr source,IntPtr targetProcess,
         out IntPtr target,uint access,[MarshalAs(UnmanagedType.Bool)] bool inherit,uint options);
@@ -34,9 +36,10 @@ public static partial class C9OwnedJobProbe {
     }
     sealed class PtyLaunchPlan {
         internal string Root,RootId,ParentToken,ParentId,ChildToken,Python,PythonSha,Mode,PackageDigest;
-        internal string[] Arguments(IntPtr queryJob) {
+        internal string[] Arguments(IntPtr parentWitness) {
             return new[]{PtyHelperSwitch,Root,RootId,ParentToken,ParentId,ChildToken,Python,PythonSha,
-                Mode,PackageDigest,queryJob.ToInt64().ToString("x",CultureInfo.InvariantCulture)};
+                Mode,PackageDigest,Environment.ProcessId.ToString(CultureInfo.InvariantCulture),
+                parentWitness.ToInt64().ToString("x",CultureInfo.InvariantCulture)};
         }
     }
 
@@ -56,14 +59,13 @@ public static partial class C9OwnedJobProbe {
         foreach (string pin in pins) if (!PtyHex(pin,64)) throw new InvalidOperationException("C9W_PTY_HELPER_PIN");
         lock (owner) {
             owner.AssertJournalWorkerUsable();
-            using var helperDirectory=C9DirectoryIdentity.Open(helperDir);
+            using var helperDirectory=C9DirectoryIdentity.Open(helperDir,true);
+            owner.AssertPtyPackageDirectory(helperDirectory);
             using var pythonDirectory=C9DirectoryIdentity.Open(Path.GetDirectoryName(python));
             var held=new List<FileStream>();
             try {
-                void Pin(string path,string expected) {
-                    if (((int)File.GetAttributes(path)&0x441410)!=0)
-                        throw new InvalidOperationException("C9W_PTY_HELPER_FILE");
-                    var stream=new FileStream(path,FileMode.Open,FileAccess.Read,FileShare.Read);
+                void Pin(string path,string expected,string directoryId,bool ownerOnly) {
+                    var stream=owner.OpenPtyPinnedFile(path,directoryId,ownerOnly);
                     held.Add(stream);
                     if (Convert.ToHexString(SHA256.HashData(stream)).ToLowerInvariant()!=expected)
                         throw new InvalidOperationException("C9W_PTY_HELPER_PIN");
@@ -71,8 +73,10 @@ public static partial class C9OwnedJobProbe {
                 // No extra files/subdirectories, including alternative runtime DLLs.
                 var entries=Directory.GetFileSystemEntries(helperDir);
                 if (entries.Length!=PtyHelperFiles.Length) throw new InvalidOperationException("C9W_PTY_HELPER_LAYOUT");
-                for(int i=0;i<PtyHelperFiles.Length;i++) Pin(Path.Combine(helperDir,PtyHelperFiles[i]),pins[i]);
-                Pin(python,pythonSha);
+                for(int i=0;i<PtyHelperFiles.Length;i++)
+                    Pin(Path.Combine(helperDir,PtyHelperFiles[i]),pins[i],helperDirectory.Id,true);
+                Pin(python,pythonSha,pythonDirectory.Id,false);
+                owner.AssertPtyPackageDirectory(helperDirectory);
                 string child=Convert.ToHexString(RandomNumberGenerator.GetBytes(6)).ToLowerInvariant();
                 if (child==owner.Token) throw new InvalidOperationException("C9W_PTY_CHILD_TOKEN");
                 var plan=new PtyLaunchPlan{Root=owner.Root,RootId=owner.RootId,ParentToken=owner.Token,
@@ -93,27 +97,30 @@ public static partial class C9OwnedJobProbe {
     // Missing/malformed arguments refuse before any native call. Exit codes
     // intentionally carry no paths, exceptions, transcript or other raw output.
     static int Main(string[] args) {
-        if (args==null || args.Length!=11 || args[0]!=PtyHelperSwitch ||
+        if (args==null || args.Length!=12 || args[0]!=PtyHelperSwitch ||
             !PtyHex(args[3],12) || !PtyHex(args[5],12) || args[3]==args[5] ||
             !PtyHex(args[7],64) || !PtyHex(args[9],64) ||
-            !PtyHex(args[10],args[10].Length) || args[10].Length>16 ||
-            !Int64.TryParse(args[10],NumberStyles.AllowHexSpecifier,CultureInfo.InvariantCulture,out long handle) ||
+            !UInt32.TryParse(args[10],NumberStyles.None,CultureInfo.InvariantCulture,out uint parentPid) ||
+            parentPid==0 || args[10]!=parentPid.ToString(CultureInfo.InvariantCulture) ||
+            String.IsNullOrEmpty(args[11]) || args[11].Length>16 || !PtyHex(args[11],args[11].Length) ||
+            !Int64.TryParse(args[11],NumberStyles.AllowHexSpecifier,CultureInfo.InvariantCulture,out long handle) ||
             handle<=0 || !OperatingSystem.IsWindows() || IntPtr.Size!=8)
             return 71;
         try {
             _=PtyScript(args[8]);
-            IntPtr query=new IntPtr(handle);
-            // Exact inherited query-only job handle: verify membership and
-            // initial accounting before dropping the reference. Keeping it
-            // open across the exchange would defeat kill-on-last-close.
+            IntPtr witness=new IntPtr(handle);
+            // Parent independently checks exact outer membership before resume.
+            // Child checks live inherited parent process identity and any-job
+            // membership. No inherited job handle or exact child-side job proof.
             try {
-                if (!GetHandleInformation(query,out uint flags) || (flags&1)!=1 ||
-                    !N.IsProcessInJob(PtyCurrentProcess(),query,out bool inside) || !inside)
+                if (!GetHandleInformation(witness,out uint flags) || (flags&1)!=1 ||
+                    GetProcessId(witness)!=parentPid || parentPid==Environment.ProcessId ||
+                    Signaled(witness,0) ||
+                    !N.IsProcessInJob(PtyCurrentProcess(),IntPtr.Zero,out bool inside) || !inside)
                     return 72;
-                var initial=Account(query);
-                if(initial.ActiveProcesses!=1 || initial.TotalProcesses!=1) return 72;
-            } finally { Close(ref query); }
-            C9ControlLock.VerifyPtyParentBinding(args[1],args[2],args[3],args[4],PtyBindingDigest(args));
+                C9ControlLock.VerifyPtyParentBinding(args[1],args[2],args[3],args[4],PtyBindingDigest(args));
+                if (Signaled(witness,0)) return 72;
+            } finally { Close(ref witness); }
             using var child=C9ControlLock.Create(args[1],args[5]);
             if (child.RootId!=args[2] || child.ControlId==args[4])
                 return 73;
