@@ -478,3 +478,4 @@
 "scripts/windows-l06/C9OwnedJobProbe.cs","ec4fd4d8552cef069c341706ae0ff4635e7a9730","31918","100644","b00aa41e001f2728bd87600d25bf0608d1223d23","Changed patch and relevant predecessor ranges; native NOT_RUN"
 "scripts/windows-l06/test-outer-watchdog.ps1","570a36e7e894ab6b298e829e50ab89548cc678e2","3906","100644","b00aa41e001f2728bd87600d25bf0608d1223d23","FULL candidate; native NOT_RUN"
 ".github/workflows/windows-l06-compile-closure.yml","fd5ef327cb22065676c800e10739f6959727e929","6045","100644","15515baf4324876bda38b19172a1b3357f71e16a","FULL candidate; native NOT_RUN"
+"docs/handoffs/claude-local-execution-2026-11-24/138_H06_OUTER_WATCHDOG_SURROGATE.md","092b483df15afee52936b2ce1a060fc1f2479571","5256","100644","d3517dbb89470676e1402eecdee3f331809415f7","FULL updated report actual compile/parser receipt; native NOT_RUN"

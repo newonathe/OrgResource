@@ -399,3 +399,5 @@ Decision: separate reader, writer and close tasks and a dedicated job are necess
 ## Current — H06 outer watchdog surrogate (2026-11-28 PHT)
 
 Reuse the existing owned Job Object launcher for a separate fictional process tree and retain one-shot intent. This does not yet supervise the private ConPTY helper; native six-case fixture and actual helper binding remain open. Do not infer complete descendant termination from accounting alone. See [Report138](https://github.com/newonathe/OrgResource/blob/2ead1b940a86ee0214bbe151ee59b9e6525234d7/docs/handoffs/claude-local-execution-2026-11-24/138_H06_OUTER_WATCHDOG_SURROGATE.md).
+
+Report138 follow-up: actual exact 14-source compile and four fixture parsers passed. Native six-case fixture and real ConPTY outer-helper integration remain NOT_RUN. [Receipt](https://github.com/newonathe/OrgResource/blob/d3517dbb89470676e1402eecdee3f331809415f7/docs/handoffs/claude-local-execution-2026-11-24/138_H06_OUTER_WATCHDOG_SURROGATE.md).

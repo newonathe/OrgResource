@@ -1401,17 +1401,17 @@
   },
   "h06_outer_watchdog_surrogate": {
     "report": "docs/handoffs/claude-local-execution-2026-11-24/138_H06_OUTER_WATCHDOG_SURROGATE.md",
-    "ref": "2ead1b940a86ee0214bbe151ee59b9e6525234d7",
+    "ref": "d3517dbb89470676e1402eecdee3f331809415f7",
     "sha": "b00aa41e001f2728bd87600d25bf0608d1223d23",
     "prior": "a0b76f05f54bdfab53a894da2796e7de7b227074",
     "state": "CANDIDATE",
     "receipt": {
-      "status": "NOT_RUN",
+      "status": "VERIFIED_BOUNDED",
       "sha": "b00aa41e001f2728bd87600d25bf0608d1223d23",
       "run": 46059231900,
       "job": 140709153942,
       "oracle": "Exact 14 C# compile and four fixture parsers",
-      "actual": "In progress at last observation; no terminal receipt"
+      "actual": "Terminal success; exact checkout and five success markers, native_effects_not_run=true"
     },
     "automatic_receipts": [
       {
@@ -1432,14 +1432,13 @@
       }
     ],
     "pending_runs": [
-      46059231900,
       46059231885,
       46059231910,
       46059231903,
       46058439689
     ],
     "native_state": "NOT_RUN",
-    "next": "H06 one-shot fictional outer watchdog surrogate b00aa41e reuses owned job, retained intent, strict setup+run deadline, six native cases staged NOT_RUN. Consume exact compile/parser run46059231900/job140709153942 and prior Extended140706549707; repair observed failures only. Then bind fixed compiled helper, separate child-control token/intent, nested job and console-host termination; actual native only with approved nonadmin owner-only disposable NTFS root and pinned tools. H03 native termination/settlement and H06 role custody/SQL/revoke/cleanup outstanding. Private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged; no merge/deploy/release.",
+    "next": "H06 outer watchdog surrogate b00aa41e exact compile14/four parsers actual pass; six native cases NOT_RUN. Consume prior Extended140706549707 and new automatic CI as applicable; no repeat absent drift. Bind fixed compiled helper, separate child-control token/intent, nested job and console-host termination, with actual native only under approved nonadmin owner-only disposable NTFS root/pinned tools. H03 termination/settlement and H06 role custody/SQL/revoke/cleanup outstanding. Private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged; no merge/deploy/release.",
     "harness_sha": "b00aa41e001f2728bd87600d25bf0608d1223d23",
     "workflow_sha": "15515baf4324876bda38b19172a1b3357f71e16a",
     "native_effects": "NOT_RUN"
