@@ -13,13 +13,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: c8ae80775cfcc6495efe90b5170a81d015f9ce33
+          ref: 96df9bae738e10b8eb542266401a485e270ec4a4
           persist-credentials: false
       - name: Compile exact H01 H03 H06 dependency union without invoking native code
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          if ((git rev-parse HEAD) -cne 'c8ae80775cfcc6495efe90b5170a81d015f9ce33' -or $LASTEXITCODE -ne 0) { throw 'Wrong candidate' }
+          if ((git rev-parse HEAD) -cne '96df9bae738e10b8eb542266401a485e270ec4a4' -or $LASTEXITCODE -ne 0) { throw 'Wrong candidate' }
           $pins = [ordered]@{
             'C9DirectoryIdentity.cs' = '67d705d9d66f0ca05cee018900b346d913d687b3'
             'C9ControlLock.cs' = '9dfc3fdb42c40ae5622676d22795eb3c61a2f2ab'
@@ -32,7 +32,7 @@ jobs:
             'C9OwnedJobProbe.cs' = '22d40fa76fb73fe0a496ebc2a1fad59bb219aabb'
             'C9OwnershipProducer.cs' = '1195a098e4bb3d6fa6556d2cf6df9ece3319df6e'
             'C9WorkCreation.cs' = '69106d16b9373e7610db5783847e85d93e45381b'
-            'C9LoginCustody.cs' = 'aed95ad13ab0fe711115dcae1b5ed6624c96a039'
+            'C9LoginCustody.cs' = 'd3ccbd4189b6900e0351d1fa7a4015706f7dc986'
             'C9RetentionStage.cs' = 'a94dffe4c79443fb5bc38874fd984f1b3d7478b6'
           }
           $paths = @()
@@ -58,3 +58,13 @@ jobs:
           $null = [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path -LiteralPath $fixture).Path,[ref]$tokens,[ref]$errors)
           if ($errors.Count -ne 0) { throw 'Fictional transport fixture parser failed' }
           'C9W_OWNED_TRANSPORT_FIXTURE_PARSE_OK:native_effects_not_run=true'
+
+          $loginFixture = 'scripts/windows-l06/test-login-custody.ps1'
+          $loginFixtureBlob = git rev-parse "HEAD:$loginFixture"
+          if ($LASTEXITCODE -ne 0 -or $loginFixtureBlob -cne '40bea0a069c15b17588f9faa25a0d730121021cd') { throw 'Wrong login fixture blob' }
+          $loginFixtureActual = git hash-object --path=$loginFixture $loginFixture
+          if ($LASTEXITCODE -ne 0 -or $loginFixtureActual -cne $loginFixtureBlob) { throw 'Wrong login fixture content' }
+          $tokens = $null; $errors = $null
+          $null = [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path -LiteralPath $loginFixture).Path,[ref]$tokens,[ref]$errors)
+          if ($errors.Count -ne 0) { throw 'Fictional login custody fixture parser failed' }
+          'C9W_H06_FIXED_SLOT_FIXTURE_PARSE_OK:native_effects_not_run=true'
