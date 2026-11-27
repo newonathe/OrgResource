@@ -2,7 +2,7 @@
   "schema": "orgresource.pre_handoff.execution_graph.v2",
   "date": "2026-11-24 PHT",
   "ready_to_launch": false,
-  "decision": "Owner authorizes full existing completion program and CPX/C9–C11 scoped engineering subject to dependencies. Codex CLI owner-manual start. Private L06 ready_to_launch=false remains; no automatic live operations or independent acceptance.",
+  "decision": "Owner corrected final Extended C goal to ACADEMIC COMPLETION; Report122 supersedes Report121 production-first objective. Codex owner-manual start; prior gated tasks retained but not default academic prerequisites. Private L06 HOLD unchanged.",
   "verified_source": {
     "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
     "tree": "180f9708b78a9479d50531edbd04e0dee48a57e7",
@@ -486,7 +486,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "Owner manually launches one Codex CLI completion session from Report121. Existing H01–H06 fictional native batch first, academic packaging and independent eligible work in parallel; continue all authorized feasible CPX and C9–C11 work in dependency order with exact acceptance. Private L06 HOLD until actual accepted harness and direct owner challenge; L07 distinct authorized operator; P0/G02 exact target/backup/maintenance/operator gates; no automatic merge, spending, host mutation or release. Stop only on genuine blocked dependency; preserve evidence and continue independent tasks."
+    "next_action": "Owner correction: Extended C final objective is ACADEMIC COMPLETION, not commercial production readiness. Start Codex with Report122 over Report121; protect Dec5 deadline, verify actual assignment/Canvas and frozen A submission, finish demonstrable Extended C academic workflows, real local tests, reproducible package/documentation/demo evidence. Prior CPX/host/recovery program retained but nonblocking unless materially required for the academic deliverable; preserve applicable safety and exact phase gates. No private import/host/merge/deploy without established prerequisites; no claim instructor accepts C as substitute for A."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -2746,7 +2746,7 @@
     "product_scope": "AUTHORIZED_CONDITIONAL_POST_P0",
     "actual_operational_gates": "UNCHANGED",
     "canonical_task_ids_unchanged": true,
-    "academic_priority": "G07 parallel student lane",
+    "academic_priority": "A strict compliance + C academic demo/package first; optional production work nonblocking",
     "batches": [
       "M0",
       "M1",
@@ -2759,6 +2759,9 @@
       "M8",
       "M9",
       "M10"
-    ]
+    ],
+    "objective": "ACADEMIC_COMPLETION_EXTENDED_C",
+    "priority_report": "docs/handoffs/claude-local-execution-2026-11-24/122_ACADEMIC_FIRST_EXTENDED_C_OBJECTIVE.md",
+    "production_scope": "PRESERVED_NOT_DEFAULT_ACADEMIC_PREREQUISITE"
   }
 }

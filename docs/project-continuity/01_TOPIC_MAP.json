@@ -149,7 +149,7 @@
         }
       ],
       "authority": "Parallel PR9 requirements research; course PDFs still primary.",
-      "next": "Owner manually launches one Codex CLI completion session from Report121. Existing H01–H06 fictional native batch first, academic packaging and independent eligible work in parallel; continue all authorized feasible CPX and C9–C11 work in dependency order with exact acceptance. Private L06 HOLD until actual accepted harness and direct owner challenge; L07 distinct authorized operator; P0/G02 exact target/backup/maintenance/operator gates; no automatic merge, spending, host mutation or release. Stop only on genuine blocked dependency; preserve evidence and continue independent tasks.",
+      "next": "Owner correction: Extended C final objective is ACADEMIC COMPLETION, not commercial production readiness. Start Codex with Report122 over Report121; protect Dec5 deadline, verify actual assignment/Canvas and frozen A submission, finish demonstrable Extended C academic workflows, real local tests, reproducible package/documentation/demo evidence. Prior CPX/host/recovery program retained but nonblocking unless materially required for the academic deliverable; preserve applicable safety and exact phase gates. No private import/host/merge/deploy without established prerequisites; no claim instructor accepts C as substitute for A.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
@@ -166,6 +166,14 @@
           "blob": "431850139ab208176c179691dd1f18bea2a2d135",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL dispatch plan; implementation/test NOT_RUN; exact blob"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/122_ACADEMIC_FIRST_EXTENDED_C_OBJECTIVE.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "6690f8a2addfeb8a56dba6d1ed4e26216674f1ce",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL objective correction; no execution; exact blob"
         }
       ]
     },
@@ -181,7 +189,17 @@
         }
       ],
       "authority": "Parallel PR10 exact execution specs; not active source or completed tests.",
-      "next": "Read targeted file; compare frozen A."
+      "next": "Owner correction: Extended C final objective is ACADEMIC COMPLETION, not commercial production readiness. Start Codex with Report122 over Report121; protect Dec5 deadline, verify actual assignment/Canvas and frozen A submission, finish demonstrable Extended C academic workflows, real local tests, reproducible package/documentation/demo evidence. Prior CPX/host/recovery program retained but nonblocking unless materially required for the academic deliverable; preserve applicable safety and exact phase gates. No private import/host/merge/deploy without established prerequisites; no claim instructor accepts C as substitute for A.",
+      "latest_sources": [
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/122_ACADEMIC_FIRST_EXTENDED_C_OBJECTIVE.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "6690f8a2addfeb8a56dba6d1ed4e26216674f1ce",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL objective correction; no execution; exact blob"
+        }
+      ]
     },
     {
       "id": "T06_FROZEN_COURSE_FINAL_A",
@@ -224,7 +242,7 @@
         }
       ],
       "authority": "Immutable A 7f8c0746; actual course code and evidence separate from Extended.",
-      "next": "Reuse verified 120-entry frozen manifest and 18-payload temporary CI evidence; actual final private DOCX, Windows launcher, Eclipse, rights and student acceptance remain separate. No frozen edits.",
+      "next": "Owner correction: Extended C final objective is ACADEMIC COMPLETION, not commercial production readiness. Start Codex with Report122 over Report121; protect Dec5 deadline, verify actual assignment/Canvas and frozen A submission, finish demonstrable Extended C academic workflows, real local tests, reproducible package/documentation/demo evidence. Prior CPX/host/recovery program retained but nonblocking unless materially required for the academic deliverable; preserve applicable safety and exact phase gates. No private import/host/merge/deploy without established prerequisites; no claim instructor accepts C as substitute for A.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
@@ -233,6 +251,14 @@
           "blob": "5fcd9fc7aee3bda8359c186ba203b3018299ab95",
           "ref": "b2310af2d90215e7f7bf794c22e0b07d1a54a94f",
           "review": "SOURCE_ONLY and actual exact-main CI log receipt; native/private not run"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/122_ACADEMIC_FIRST_EXTENDED_C_OBJECTIVE.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "6690f8a2addfeb8a56dba6d1ed4e26216674f1ce",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL objective correction; no execution; exact blob"
         }
       ]
     },
@@ -1008,7 +1034,7 @@
         }
       ],
       "authority": "DEC-D01 proposed only; existing role/data contracts govern until approved.",
-      "next": "Owner manually launches one Codex CLI completion session from Report121. Existing H01–H06 fictional native batch first, academic packaging and independent eligible work in parallel; continue all authorized feasible CPX and C9–C11 work in dependency order with exact acceptance. Private L06 HOLD until actual accepted harness and direct owner challenge; L07 distinct authorized operator; P0/G02 exact target/backup/maintenance/operator gates; no automatic merge, spending, host mutation or release. Stop only on genuine blocked dependency; preserve evidence and continue independent tasks.",
+      "next": "Owner correction: Extended C final objective is ACADEMIC COMPLETION, not commercial production readiness. Start Codex with Report122 over Report121; protect Dec5 deadline, verify actual assignment/Canvas and frozen A submission, finish demonstrable Extended C academic workflows, real local tests, reproducible package/documentation/demo evidence. Prior CPX/host/recovery program retained but nonblocking unless materially required for the academic deliverable; preserve applicable safety and exact phase gates. No private import/host/merge/deploy without established prerequisites; no claim instructor accepts C as substitute for A.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -1099,6 +1125,14 @@
           "blob": "431850139ab208176c179691dd1f18bea2a2d135",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL dispatch plan; implementation/test NOT_RUN; exact blob"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/122_ACADEMIC_FIRST_EXTENDED_C_OBJECTIVE.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "6690f8a2addfeb8a56dba6d1ed4e26216674f1ce",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL objective correction; no execution; exact blob"
         }
       ]
     },
@@ -1121,7 +1155,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "Owner manually launches one Codex CLI completion session from Report121. Existing H01–H06 fictional native batch first, academic packaging and independent eligible work in parallel; continue all authorized feasible CPX and C9–C11 work in dependency order with exact acceptance. Private L06 HOLD until actual accepted harness and direct owner challenge; L07 distinct authorized operator; P0/G02 exact target/backup/maintenance/operator gates; no automatic merge, spending, host mutation or release. Stop only on genuine blocked dependency; preserve evidence and continue independent tasks.",
+      "next": "Owner correction: Extended C final objective is ACADEMIC COMPLETION, not commercial production readiness. Start Codex with Report122 over Report121; protect Dec5 deadline, verify actual assignment/Canvas and frozen A submission, finish demonstrable Extended C academic workflows, real local tests, reproducible package/documentation/demo evidence. Prior CPX/host/recovery program retained but nonblocking unless materially required for the academic deliverable; preserve applicable safety and exact phase gates. No private import/host/merge/deploy without established prerequisites; no claim instructor accepts C as substitute for A.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -1346,6 +1380,14 @@
           "blob": "431850139ab208176c179691dd1f18bea2a2d135",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL dispatch plan; implementation/test NOT_RUN; exact blob"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/122_ACADEMIC_FIRST_EXTENDED_C_OBJECTIVE.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "6690f8a2addfeb8a56dba6d1ed4e26216674f1ce",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL objective correction; no execution; exact blob"
         }
       ]
     },
@@ -1369,7 +1411,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "Owner manually launches one Codex CLI completion session from Report121. Existing H01–H06 fictional native batch first, academic packaging and independent eligible work in parallel; continue all authorized feasible CPX and C9–C11 work in dependency order with exact acceptance. Private L06 HOLD until actual accepted harness and direct owner challenge; L07 distinct authorized operator; P0/G02 exact target/backup/maintenance/operator gates; no automatic merge, spending, host mutation or release. Stop only on genuine blocked dependency; preserve evidence and continue independent tasks.",
+      "next": "Owner correction: Extended C final objective is ACADEMIC COMPLETION, not commercial production readiness. Start Codex with Report122 over Report121; protect Dec5 deadline, verify actual assignment/Canvas and frozen A submission, finish demonstrable Extended C academic workflows, real local tests, reproducible package/documentation/demo evidence. Prior CPX/host/recovery program retained but nonblocking unless materially required for the academic deliverable; preserve applicable safety and exact phase gates. No private import/host/merge/deploy without established prerequisites; no claim instructor accepts C as substitute for A.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -2026,6 +2068,14 @@
           "blob": "431850139ab208176c179691dd1f18bea2a2d135",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL dispatch plan; implementation/test NOT_RUN; exact blob"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/122_ACADEMIC_FIRST_EXTENDED_C_OBJECTIVE.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "6690f8a2addfeb8a56dba6d1ed4e26216674f1ce",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL objective correction; no execution; exact blob"
         }
       ]
     },
@@ -2172,7 +2222,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "Owner manually launches one Codex CLI completion session from Report121. Existing H01–H06 fictional native batch first, academic packaging and independent eligible work in parallel; continue all authorized feasible CPX and C9–C11 work in dependency order with exact acceptance. Private L06 HOLD until actual accepted harness and direct owner challenge; L07 distinct authorized operator; P0/G02 exact target/backup/maintenance/operator gates; no automatic merge, spending, host mutation or release. Stop only on genuine blocked dependency; preserve evidence and continue independent tasks.",
+      "next": "Owner correction: Extended C final objective is ACADEMIC COMPLETION, not commercial production readiness. Start Codex with Report122 over Report121; protect Dec5 deadline, verify actual assignment/Canvas and frozen A submission, finish demonstrable Extended C academic workflows, real local tests, reproducible package/documentation/demo evidence. Prior CPX/host/recovery program retained but nonblocking unless materially required for the academic deliverable; preserve applicable safety and exact phase gates. No private import/host/merge/deploy without established prerequisites; no claim instructor accepts C as substitute for A.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -2585,6 +2635,14 @@
           "blob": "431850139ab208176c179691dd1f18bea2a2d135",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL dispatch plan; implementation/test NOT_RUN; exact blob"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/122_ACADEMIC_FIRST_EXTENDED_C_OBJECTIVE.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "6690f8a2addfeb8a56dba6d1ed4e26216674f1ce",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL objective correction; no execution; exact blob"
         }
       ]
     }
