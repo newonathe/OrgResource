@@ -1674,15 +1674,32 @@
     "prior": "86d3c53b8668f5cf25beb9045a53c82aaec564b0",
     "state": "CANDIDATE",
     "receipt": {
-      "status": "NOT_RUN",
+      "status": "VERIFIED_BOUNDED",
       "sha": "a92e484179a092da6e3cd8045e5115da00dee7c4",
-      "oracle": "Actual full tracked ZIP extraction and exact all-file raw Git blob comparison; 16 new source-path/archive cases and existing 33 migration cases",
-      "actual": "Candidate pushed; terminal exact-head CI not yet inspected. Full native package/operator NOT_RUN."
+      "run": 46067620499,
+      "job": 140736654162,
+      "oracle": "Full source Git archive allowlist and raw blob equality, 16 source path/ZIP cases plus prior 33 migration cases",
+      "actual": "49/49 focused cases passed; 195/195 actual Git archive extracted source files matched raw committed blobs; exact checkout and terminal success; full native package/operator NOT_RUN."
     },
     "pending_runs": [
       46067620499
     ],
     "native_state": "NOT_RUN",
-    "next": "PR59 exact a92e4841 full-source ZIP/path/blob guard, 16 new cases staged; existing 33 migration cases preserved. Exact workflow runs 46067620499 listed; inspect actual logs. Consume exact focused and automatic receipts, fix observed failures only, then full native package/operator remains separate. H06 prior compile/wire bounded; Course A automatic passed, Extended automatic receipt pending. Native console-host/handle transfer and H03/H06 settlement remain blocked/not run; private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged. Report124 controls production-ready academic objective, strict A protected. No merge/deploy/release."
+    "next": "Inspect terminal actual logs for PR59 Verify46067620499 Java8 job140736654194 and Extended140736653799 and prior handoff Extended140734859634. Repair observed failures only. Full native package/operator, H03/H06 native and console-host attribution, private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates remain. Report124 controls production-ready academic objective; strict A protected. No merge/deploy/release.",
+    "ref": "ece08d1d56714f0676d8234286bcbc8a0ef8f4ee",
+    "automatic_receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "a92e484179a092da6e3cd8045e5115da00dee7c4",
+        "run": 46067620499,
+        "job": 140736654143,
+        "oracle": "React typecheck/tests/lint/build",
+        "actual": "Exact checkout, 15 tests and terminal success."
+      }
+    ],
+    "pending_jobs": [
+      140736654194,
+      140736653799
+    ]
   }
 }

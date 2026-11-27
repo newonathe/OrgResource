@@ -507,3 +507,4 @@
 "scripts/package-extended-c.ps1","d30efad851dec10c0ce202ef7368b0661b8f92ae","18585","100644","a92e484179a092da6e3cd8045e5115da00dee7c4","Changed package/fixture/guide; actual focused pending"
 "scripts/test-extended-c-release-inventory.ps1","fc0d90b979dacd3f5954a57e56a852aa305fdbba","17743","100644","a92e484179a092da6e3cd8045e5115da00dee7c4","Changed package/fixture/guide; actual focused pending"
 "docs/handoffs/claude-local-execution-2026-11-24/143_FULL_SOURCE_ARCHIVE_INTEGRITY_CANDIDATE.md","7aa1d301e9e143f4602daa932c6d8a32ef211f8f","4647","100644","docs/claude-local-execution-handoff-2026-11-24","FULL source guard candidate and actual Course A repeat receipt"
+"docs/handoffs/claude-local-execution-2026-11-24/143_FULL_SOURCE_ARCHIVE_INTEGRITY_CANDIDATE.md","32351490b69727a11c76b38cb0f730c984d26574","5873","100644","ece08d1d56714f0676d8234286bcbc8a0ef8f4ee","FULL actual focused 195-file and 49-case receipt"

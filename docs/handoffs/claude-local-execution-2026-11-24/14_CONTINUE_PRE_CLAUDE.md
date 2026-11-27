@@ -1,5 +1,10 @@
 # 14 — Current cross-chat continuation protocol
 
+## Current - Full source archive integrity actual focused receipt (2026-11-28 PHT)
+
+[Report143](https://github.com/newonathe/OrgResource/blob/ece08d1d56714f0676d8234286bcbc8a0ef8f4ee/docs/handoffs/claude-local-execution-2026-11-24/143_FULL_SOURCE_ARCHIVE_INTEGRITY_CANDIDATE.md): PR59 exact a92e484 Windows full-source archive integrity verified bounded: 195/195 raw Git blob equality, 16/16 new source guards and 33/33 existing migration guards, 49/49 total; React15 passed. Inspect terminal actual logs for PR59 Verify46067620499 Java8 job140736654194 and Extended140736653799 and prior handoff Extended140734859634. Repair observed failures only. Full native package/operator, H03/H06 native and console-host attribution, private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates remain. Report124 controls production-ready academic objective; strict A protected. No merge/deploy/release.
+
+
 ## Current - Full source archive integrity candidate (2026-11-28 PHT)
 
 [Report143](https://github.com/newonathe/OrgResource/blob/docs/claude-local-execution-handoff-2026-11-24/docs/handoffs/claude-local-execution-2026-11-24/143_FULL_SOURCE_ARCHIVE_INTEGRITY_CANDIDATE.md): PR59 full allowlisted source archive path and raw committed blob verification candidate; 16 new guard cases staged, 33 prior migration cases retained. Course A automatic actual pass. PR59 exact a92e4841 full-source ZIP/path/blob guard, 16 new cases staged; existing 33 migration cases preserved. Exact workflow runs 46067620499 listed; inspect actual logs. Consume exact focused and automatic receipts, fix observed failures only, then full native package/operator remains separate. H06 prior compile/wire bounded; Course A automatic passed, Extended automatic receipt pending. Native console-host/handle transfer and H03/H06 settlement remain blocked/not run; private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged. Report124 controls production-ready academic objective, strict A protected. No merge/deploy/release.
