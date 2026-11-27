@@ -14,7 +14,7 @@ using Microsoft.Win32.SafeHandles;
 // role/MySQL job reuse, inherited handles, password, network or arbitrary script.
 // Job accounting plus the root's held handle is bounded evidence, not an
 // independent per-descendant termination witness or a hard kernel-call deadline.
-public static class C9OwnedJobProbe {
+public static partial class C9OwnedJobProbe {
     const int Limit = 8;
     const int StopMillis = 10000;
 
