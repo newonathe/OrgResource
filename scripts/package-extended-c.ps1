@@ -32,6 +32,96 @@ function New-ReleaseSourceArchive([string] $ArchivePath, [string] $Revision, [st
     Assert-ReleaseCommand 'Exact-commit source ZIP'
 }
 
+# Parse the exact tracked allowlist. Windows must not alias distinct committed
+# names, devices, directories, or alternate streams. Refuse unfamiliar paths.
+function Get-ReleaseSourcePins([string[]] $TreeRows) {
+    $pins = [Collections.Generic.Dictionary[string,string]]::new([StringComparer]::Ordinal)
+    $spellings = [Collections.Generic.Dictionary[string,string]]::new([StringComparer]::OrdinalIgnoreCase)
+    $directories = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    foreach ($row in $TreeRows) {
+        if ($row -cnotmatch '^100(644|755) blob ([0-9a-f]{40})\t([A-Za-z0-9._/-]+)$') {
+            throw 'Unsupported tracked release-source entry.'
+        }
+        $blob = $Matches[2]; $name = $Matches[3]; $parts = $name.Split('/')
+        $prefix = ''
+        for ($i = 0; $i -lt $parts.Count; $i++) {
+            $part = $parts[$i]
+            if (-not $part -or $part -eq '.' -or $part -eq '..' -or $part.EndsWith('.') -or
+                $part -match '^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\.|$)') {
+                throw 'Unsupported tracked release-source path.'
+            }
+            $prefix = if ($prefix) { "$prefix/$part" } else { $part }
+            if ($spellings.ContainsKey($prefix) -and $spellings[$prefix] -cne $prefix) {
+                throw 'Case-aliased tracked release-source path.'
+            }
+            $spellings[$prefix] = $prefix
+            if ($i -lt $parts.Count - 1) {
+                if ($pins.ContainsKey($prefix)) { throw 'Conflicting tracked release-source path.' }
+                $null = $directories.Add($prefix)
+            } elseif ($directories.Contains($prefix) -or -not $pins.TryAdd($prefix,$blob)) {
+                throw 'Conflicting tracked release-source path.'
+            }
+        }
+    }
+    if ($pins.Count -eq 0) { throw 'Empty tracked release-source inventory.' }
+    return ,$pins
+}
+
+# Inspect every archive entry before extraction. Extract only exact tracked
+# file names ourselves, never a ZIP-supplied traversal/alias or link path.
+# The caller owns a newly created empty staging root; no concurrent writer is
+# assumed. The raw Git blob check binds every file, not only SQL migrations.
+function Expand-VerifiedReleaseSource([string] $ArchivePath, [string] $SourceRoot,
+        [Collections.Generic.Dictionary[string,string]] $Pins) {
+    $item = Get-Item -LiteralPath $SourceRoot -Force
+    if (-not $item.PSIsContainer -or ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -or
+        @(Get-ChildItem -LiteralPath $SourceRoot -Force).Count) {
+        throw 'Release extraction root must be fresh and empty.'
+    }
+    $dirs = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    foreach ($name in $Pins.Keys) {
+        $at = $name.LastIndexOf('/')
+        while ($at -ge 0) {
+            $null = $dirs.Add($name.Substring(0,$at+1))
+            $at = $name.LastIndexOf('/', $at-1)
+        }
+    }
+    $seen = [Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+    $files = [Collections.Generic.Dictionary[string,IO.Compression.ZipArchiveEntry]]::new([StringComparer]::Ordinal)
+    $zip = [IO.Compression.ZipFile]::OpenRead($ArchivePath)
+    try {
+        foreach ($entry in $zip.Entries) {
+            $name = $entry.FullName
+            if (-not $seen.Add($name)) { throw 'Duplicate or case-aliased release ZIP entry.' }
+            $type = ($entry.ExternalAttributes -shr 16) -band 0xF000
+            if (($entry.ExternalAttributes -band 0x400) -ne 0) { throw 'Unsupported release ZIP entry type.' }
+            if ($name.EndsWith('/')) {
+                if (-not $dirs.Contains($name) -or $entry.Length -ne 0) { throw 'Unexpected release ZIP directory.' }
+                if ($type -ne 0 -and $type -ne 0x4000) { throw 'Unsupported release ZIP entry type.' }
+                continue
+            }
+            if (-not $Pins.ContainsKey($name)) { throw 'Unexpected release ZIP file.' }
+            if (($type -ne 0 -and $type -ne 0x8000) -or ($entry.ExternalAttributes -band 0x10)) {
+                throw 'Unsupported release ZIP entry type.'
+            }
+            $files.Add($name,$entry)
+        }
+        if ($files.Count -ne $Pins.Count) { throw 'Release ZIP file inventory differs.' }
+        foreach ($name in $Pins.Keys) {
+            $path = Join-Path $SourceRoot $name
+            $null = [IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($path))
+            $inputStream = $files[$name].Open()
+            try {
+                $outputStream = [IO.File]::Open($path,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None)
+                try { $inputStream.CopyTo($outputStream) } finally { $outputStream.Dispose() }
+            } finally { $inputStream.Dispose() }
+            $blob = git hash-object --no-filters -- $path
+            Assert-ReleaseCommand 'Extracted release source blob'
+            if ($blob -cne $Pins[$name]) { throw "Extracted release source bytes differ: $name" }
+        }
+    } finally { $zip.Dispose() }
+}
+
 # Compare complete migration inventory and bytes, not only version prefixes.
 function Assert-PackagedMigrations([string] $JarPath, [System.Collections.IDictionary] $Expected) {
     $prefix = 'BOOT-INF/classes/db/migration/'
@@ -128,6 +218,11 @@ try {
     $tree = @(git ls-tree -r $sha -- @included)
     Assert-ReleaseCommand 'Tracked source mode inspection'
     if ($tree -match '^(120000|160000) ') { throw 'Release source includes a symlink or submodule.' }
+    $sourcePins = Get-ReleaseSourcePins -TreeRows $tree
+    if ($sourcePins.Count -ne $entries.Count -or
+        @(Compare-Object @($sourcePins.Keys) $entries -CaseSensitive).Count) {
+        throw 'Tracked release source inventory differs.'
+    }
     $secretPatterns = '-----BEGIN ([A-Z0-9]+ )?PRIVATE KEY-----|gh[pousr]_[A-Za-z0-9]{30,}|AKIA[A-Z0-9]{16}|://[^/[:space:]:]+:[^/@[:space:]]+@'
     $flagged = @(git grep -IlE -e $secretPatterns $sha -- @included)
     if ($LASTEXITCODE -gt 1) { throw 'Source secret-marker scan did not complete.' }
@@ -140,14 +235,10 @@ try {
 # The archive contains Windows wrapper metadata and resolves all relative paths on its own.
 $extracted = Join-Path ([IO.Path]::GetTempPath()) ('OrgResource-C6a-SOURCE-' + [guid]::NewGuid().ToString('N'))
 $null = New-Item -ItemType Directory -Path $extracted
-tar -xf $archive -C $extracted
-Assert-ReleaseCommand 'Clean ZIP extraction'
-$extractedFiles = @(Get-ChildItem -LiteralPath $extracted -File -Recurse -Force | ForEach-Object {
-    [IO.Path]::GetRelativePath($extracted, $_.FullName).Replace('\', '/')
-})
-if (@(Compare-Object $entries $extractedFiles -CaseSensitive).Count) {
-    throw 'Extracted files differ from the tracked-source inventory.'
-}
+Push-Location $root
+try {
+    Expand-VerifiedReleaseSource -ArchivePath $archive -SourceRoot $extracted -Pins $sourcePins
+} finally { Pop-Location }
 
 # Bind the actual archived migration bytes before build tools execute.
 Push-Location $root

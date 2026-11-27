@@ -207,3 +207,92 @@ try {
 } finally {
     Remove-Item -LiteralPath $root -Recurse -Force
 }
+
+# Full-source inventory/byte guard: execute production AST functions only.
+foreach ($functionName in @('Get-ReleaseSourcePins','Expand-VerifiedReleaseSource')) {
+    $definitions = @($ast.FindAll({
+        param($node)
+        $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -ceq $functionName
+    }, $false))
+    if ($definitions.Count -ne 1) { throw "Missing production function: $functionName" }
+    . ([scriptblock]::Create($definitions[0].Extent.Text))
+}
+$assignment = @($ast.FindAll({
+    param($node)
+    $node -is [System.Management.Automation.Language.AssignmentStatementAst] -and
+    $node.Left -is [System.Management.Automation.Language.VariableExpressionAst] -and
+    $node.Left.VariablePath.UserPath -ceq 'included'
+}, $true))
+if ($assignment.Count -ne 1) { throw 'Cannot locate exact source allowlist.' }
+. ([scriptblock]::Create($assignment[0].Extent.Text))
+$repo = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+$testRoot = Join-Path ([IO.Path]::GetTempPath()) ('OrgResource-SourcePins-' + [guid]::NewGuid().ToString('N'))
+$null = New-Item -ItemType Directory -Path $testRoot
+$script:sourceCases=0
+function Assert-SourceCase([string] $Name,[scriptblock] $Action,[string] $Expected='') {
+    $failure=''
+    try { & $Action | Out-Null } catch { $failure=$_.Exception.Message }
+    if ($failure -cne $Expected) { throw "Unexpected source guard disposition: $Name (expected '$Expected', actual '$failure')" }
+    $script:sourceCases++
+    Write-Output "PASS source guard: $Name"
+}
+Push-Location $repo
+try {
+    $rows = @(git ls-tree -r HEAD -- @included)
+    Assert-ReleaseCommand 'Actual source inventory fixture'
+    $pins = Get-ReleaseSourcePins $rows
+    $full = Join-Path $testRoot 'actual.zip'
+    New-ReleaseSourceArchive -ArchivePath $full -Revision HEAD -Paths $included
+    $dest = Join-Path $testRoot 'actual'
+    $null = New-Item -ItemType Directory -Path $dest
+    Assert-SourceCase 'actual full tracked allowlist' { Expand-VerifiedReleaseSource $full $dest $pins }
+    if (@(Get-ChildItem -LiteralPath $dest -File -Recurse -Force).Count -ne $pins.Count) { throw 'Wrong actual extracted count' }
+    Write-Output "SOURCE_ALLOWLIST_EXACT:files=$($pins.Count)"
+
+    $tiny = Join-Path $testRoot 'fixture.txt'
+    [IO.File]::WriteAllBytes($tiny,[byte[]](65,10))
+    $hash = git hash-object --no-filters -- $tiny
+    Assert-ReleaseCommand 'Fictional source blob'
+    $row = "100644 blob $hash`t"
+    $tinyPins = Get-ReleaseSourcePins @(($row+'a/x.txt'),($row+'a/y.txt'))
+    Assert-SourceCase 'case-aliased Git paths' { Get-ReleaseSourcePins @(($row+'A/x.txt'),($row+'a/y.txt')) } 'Case-aliased tracked release-source path.'
+    Assert-SourceCase 'device path' { Get-ReleaseSourcePins @(($row+'a/CON.txt')) } 'Unsupported tracked release-source path.'
+    Assert-SourceCase 'traversal Git path' { Get-ReleaseSourcePins @(($row+'a/../x.txt')) } 'Unsupported tracked release-source path.'
+    Assert-SourceCase 'file directory collision' { Get-ReleaseSourcePins @(($row+'a'),($row+'a/x.txt')) } 'Conflicting tracked release-source path.'
+    Assert-SourceCase 'unsupported Git mode' { Get-ReleaseSourcePins @("120000 blob $hash`ta/x.txt") } 'Unsupported tracked release-source entry.'
+    function Test-SourceZip([string] $Case,[string[]] $Names,[string] $Expected='', [switch] $Alter,[switch] $Link) {
+        $file = Join-Path $testRoot "$Case.zip"
+        $out = Join-Path $testRoot $Case
+        $null = New-Item -ItemType Directory -Path $out
+        $zip = [IO.Compression.ZipFile]::Open($file,[IO.Compression.ZipArchiveMode]::Create)
+        try {
+            foreach ($name in $Names) {
+                $entry = $zip.CreateEntry($name)
+                if ($Link -and $name -ceq 'a/x.txt') { $entry.ExternalAttributes = -1610612736 }
+                if ($name.EndsWith('/')) { continue }
+                $stream = $entry.Open()
+                try {
+                    $bytes = if ($Alter -and $name -ceq 'a/x.txt') { [byte[]](66,10) } else { [byte[]](65,10) }
+                    $stream.Write($bytes,0,$bytes.Length)
+                } finally { $stream.Dispose() }
+            }
+        } finally { $zip.Dispose() }
+        Assert-SourceCase $Case { Expand-VerifiedReleaseSource $file $out $tinyPins } $Expected
+    }
+    Test-SourceZip 'exact' @('a/','a/x.txt','a/y.txt')
+    Test-SourceZip 'missing' @('a/x.txt') 'Release ZIP file inventory differs.'
+    Test-SourceZip 'duplicate' @('a/x.txt','a/x.txt','a/y.txt') 'Duplicate or case-aliased release ZIP entry.'
+    Test-SourceZip 'case-alias' @('a/x.txt','a/X.txt','a/y.txt') 'Duplicate or case-aliased release ZIP entry.'
+    Test-SourceZip 'wrong-case' @('A/x.txt','a/y.txt') 'Unexpected release ZIP file.'
+    Test-SourceZip 'extra' @('a/x.txt','a/y.txt','private.txt') 'Unexpected release ZIP file.'
+    Test-SourceZip 'traversal' @('a/x.txt','a/y.txt','../outside.txt') 'Unexpected release ZIP file.'
+    Test-SourceZip 'extra-directory' @('a/x.txt','a/y.txt','extra/') 'Unexpected release ZIP directory.'
+    Test-SourceZip 'changed-bytes' @('a/x.txt','a/y.txt') 'Extracted release source bytes differ: a/x.txt' -Alter
+    Test-SourceZip 'link-type' @('a/x.txt','a/y.txt') 'Unsupported release ZIP entry type.' -Link
+    if (Test-Path -LiteralPath (Join-Path $testRoot 'outside.txt')) { throw 'Unexpected traversal output' }
+    if ($script:sourceCases -ne 16) { throw "Wrong source case count: $script:sourceCases" }
+    Write-Output 'Full source archive guard: 16/16 passed.'
+} finally {
+    Pop-Location
+    Remove-Item -LiteralPath $testRoot -Recurse -Force
+}
