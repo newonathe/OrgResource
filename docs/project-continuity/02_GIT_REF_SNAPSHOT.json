@@ -1270,5 +1270,17 @@
     "state": "CANDIDATE",
     "native_effects": "NOT_RUN",
     "next": "Consume PR59 Extended terminal actual receipt; H03 one-shot owned transport candidate compiled and fixture parsed, four native modes NOT_RUN. Advance actual native fixture only under approved nonadmin disposable NTFS root with trusted Python pin; verify child-creation denial, inheritance/termination witness and safe terminal intent settlement before integrating real journal. H06 credential lifecycle separate; advance independent eligible work rather than repeat compile/fixture checks. Legacy runner/recovery quarantined; private/P0/independent/rights/privacy/student gates unchanged; no merge/release."
+  },
+  "g01_r038_disconnect_candidate": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/133_R038_ISOLATED_MYSQL_DISCONNECT_RECOVERY_CANDIDATE.md",
+    "ref": "8cef9aa6bbbe66a75de53b604dacf476b7aad18f",
+    "pr58": {
+      "head": "4545fdd81a09772f1ac667af9a0f0c034b9e31ee",
+      "base": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+      "run": 46028645015,
+      "job": 140606463099
+    },
+    "state": "CANDIDATE",
+    "next": "Inspect actual PR58 exact-head run46028645015/job140606463099 R038 stopped-service HTTP500/same-JVM recovery and four classifier-table equality; correct observed failure without weakening oracle. Prior R038 lock and SQL denial/PR59 integrated and H03 compile/parser receipts retained, no repeat absent drift. Advance independent eligible H03/H06/product work; approved nonadmin disposable native root/trusted interpreter required; full native/package/private/P0/L07/independent/privacy/student gates unchanged, no merge/release."
   }
 }
