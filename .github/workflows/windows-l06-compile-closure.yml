@@ -13,13 +13,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: a0b76f05f54bdfab53a894da2796e7de7b227074
+          ref: b00aa41e001f2728bd87600d25bf0608d1223d23
           persist-credentials: false
       - name: Compile exact H01 H03 H06 dependency union without invoking native code
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          if ((git rev-parse HEAD) -cne 'a0b76f05f54bdfab53a894da2796e7de7b227074' -or $LASTEXITCODE -ne 0) { throw 'Wrong candidate' }
+          if ((git rev-parse HEAD) -cne 'b00aa41e001f2728bd87600d25bf0608d1223d23' -or $LASTEXITCODE -ne 0) { throw 'Wrong candidate' }
           $pins = [ordered]@{
             'C9DirectoryIdentity.cs' = '67d705d9d66f0ca05cee018900b346d913d687b3'
             'C9ControlLock.cs' = '9dfc3fdb42c40ae5622676d22795eb3c61a2f2ab'
@@ -29,7 +29,7 @@ jobs:
             'C9LogonContext.cs' = 'fe2d1bd497badb36eb6c93379c0577e100553b6b'
             'C9ProfileStorageObservation.cs' = 'c29a49ef65abe02965ffa471ff16e2d2e6d600a4'
             'C9Contain.cs' = '45a93d294f52da3af9139531a36bd8d97c0e344b'
-            'C9OwnedJobProbe.cs' = '5a03655e229793fd2adb3dd46b767fc9aacf24c1'
+            'C9OwnedJobProbe.cs' = 'ec4fd4d8552cef069c341706ae0ff4635e7a9730'
             'C9OwnershipProducer.cs' = '1195a098e4bb3d6fa6556d2cf6df9ece3319df6e'
             'C9WorkCreation.cs' = '69106d16b9373e7610db5783847e85d93e45381b'
             'C9LoginCustody.cs' = 'd3ccbd4189b6900e0351d1fa7a4015706f7dc986'
@@ -79,3 +79,13 @@ jobs:
           $null = [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path -LiteralPath $ptyFixture).Path,[ref]$tokens,[ref]$errors)
           if ($errors.Count -ne 0) { throw 'ConPTY quarantine fixture parser failed' }
           'C9W_H06_PTY_QUARANTINE_PARSE_OK:native_effects_not_run=true'
+
+          $outerFixture = 'scripts/windows-l06/test-outer-watchdog.ps1'
+          $outerBlob = git rev-parse "HEAD:$outerFixture"
+          if ($LASTEXITCODE -ne 0 -or $outerBlob -cne '570a36e7e894ab6b298e829e50ab89548cc678e2') { throw 'Wrong outer fixture blob' }
+          $outerActual = git hash-object --path=$outerFixture $outerFixture
+          if ($LASTEXITCODE -ne 0 -or $outerActual -cne $outerBlob) { throw 'Wrong outer fixture content' }
+          $tokens = $null; $errors = $null
+          $null = [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path -LiteralPath $outerFixture).Path,[ref]$tokens,[ref]$errors)
+          if ($errors.Count -ne 0) { throw 'Outer watchdog fixture parser failed' }
+          'C9W_H06_OUTER_SURROGATE_PARSE_OK:native_effects_not_run=true'
