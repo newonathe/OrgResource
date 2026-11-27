@@ -1,0 +1,76 @@
+#Requires -Version 7.4
+# Native fictional metadata fixture only. No editor/DB/actual credential or role access.
+# Retains all generated fixture paths for inspection; use approved disposable owner-only NTFS root.
+param([Parameter(Mandatory)][string] $FixtureRoot,[switch] $ConfirmFictional)
+Set-StrictMode -Version 3
+$ErrorActionPreference = 'Stop'
+if (-not $IsWindows -or -not $ConfirmFictional) { throw 'C9W_TEST_FIXTURE_REQUIRED' }
+Add-Type -Path @('C9DirectoryIdentity.cs','C9ControlLock.cs','C9JournalStorage.cs','C9LoginCustody.cs' | ForEach-Object { Join-Path $PSScriptRoot $_ })
+function Require([bool] $ok,[string] $code) { if (-not $ok) { throw $code } }
+function Refuses([scriptblock] $action,[string] $code) {
+    $caught = $false
+    try { $null = & $action }
+    catch { if (-not $_.Exception.GetBaseException().Message.Contains($code,[StringComparison]::Ordinal)) { throw }; $caught=$true }
+    Require $caught "C9W_TEST_EXPECTED_$code"
+}
+function Write-Fictional([string] $path,[switch] $Wide) {
+    $data=[Text.Encoding]::ASCII.GetBytes('FICTIONAL_METADATA_ONLY_NOT_A_LOGIN')
+    $stream=[IO.FileStream]::new($path,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None)
+    try { $stream.Write($data,0,$data.Length); $stream.Flush($true) } finally { $stream.Dispose() }
+    $acl=[Security.AccessControl.FileSecurity]::new()
+    $acl.SetOwner($sid); $acl.SetAccessRuleProtection($true,$false)
+    $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new($sid,'FullControl','Allow'))
+    if ($Wide) { $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new([Security.Principal.SecurityIdentifier]::new('S-1-1-0'),'Read','Allow')) }
+    Set-Acl -LiteralPath $path -AclObject $acl
+}
+$identity=[Security.Principal.WindowsIdentity]::GetCurrent()
+$sid=$identity.User
+$token=[Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(6)).ToLowerInvariant()
+$held=[C9ControlLock]::Create($FixtureRoot,$token)
+$slots=[Collections.Generic.List[IDisposable]]::new()
+try {
+    Refuses { $held.BeginFictionalLoginSlot('source','restore') } 'C9W_LOGIN_SLOT_SCOPE'
+    Refuses { $held.BeginFictionalLoginSlot('mixed','backup') } 'C9W_LOGIN_SLOT_SCOPE'
+    Refuses { $held.BeginFictionalLoginSlot('SOURCE','backup') } 'C9W_LOGIN_SLOT_SCOPE'
+    $a=$held.BeginFictionalLoginSlot('source','backup'); $slots.Add($a)
+    $path=$a.FilePath; $id=$a.DirectoryId
+    Require ($id -cne $held.ControlId -and $id -cne $held.RootId) 'C9W_TEST_SLOT_ID'
+    $a.AssertVacant()
+    Write-Fictional $path
+    $hash=(Get-FileHash -LiteralPath $path).Hash
+    Refuses { $held.BeginFictionalLoginSlot('source','backup') } 'C9W_LOGIN_SLOT_CREATE'
+    Require ((Get-FileHash -LiteralPath $path).Hash -ceq $hash) 'C9W_TEST_SLOT_OVERWRITE'
+    $fileId=$a.ObserveFictionalFile()
+    Require ($fileId -cmatch '^[a-f0-9]{16}:[a-f0-9]{32}$' -and $fileId -cne $id) 'C9W_TEST_FILE_ID'
+    $a.AssertObserved()
+    # Exclusive metadata handle: no ordinary concurrent read/write open.
+    $blocked=$false
+    try { $other=[IO.File]::Open($path,'Open','ReadWrite','None'); $other.Dispose() } catch [IO.IOException] { $blocked=$true }
+    Require $blocked 'C9W_TEST_FILE_NOT_EXCLUSIVE'
+    $a.Dispose()
+    Require ((Get-FileHash -LiteralPath $path).Hash -ceq $hash) 'C9W_TEST_FILE_CHANGED'
+    $b=$held.BeginFictionalLoginSlot('restore','restore'); $slots.Add($b)
+    $wide=$b.FilePath; Write-Fictional $wide -Wide
+    $wideHash=(Get-FileHash -LiteralPath $wide).Hash
+    Refuses { $b.ObserveFictionalFile() } 'C9W_CONTROL_ACL'
+    Refuses { $b.AssertVacant() } 'C9W_LOGIN_SLOT_REFUSED'
+    Require ((Get-FileHash -LiteralPath $wide).Hash -ceq $wideHash) 'C9W_TEST_WIDE_CHANGED'
+    $c=$held.BeginFictionalLoginSlot('restore','backup'); $slots.Add($c)
+    $existing=$c.FilePath; Write-Fictional $existing
+    $existingHash=(Get-FileHash -LiteralPath $existing).Hash
+    Refuses { $c.AssertVacant() } 'C9W_LOGIN_FILE_EXISTS'
+    Require ((Get-FileHash -LiteralPath $existing).Hash -ceq $existingHash) 'C9W_TEST_EXISTING_CHANGED'
+    $d=$held.BeginFictionalLoginSlot('mixed','restore'); $slots.Add($d)
+    $linked=$d.FilePath; Write-Fictional $linked
+    $extra=Join-Path (Split-Path $linked) 'fictional-extra-link'
+    New-Item -ItemType HardLink -Path $extra -Target $linked | Out-Null
+    Refuses { $d.ObserveFictionalFile() } 'C9W_LOGIN_FILE_SHAPE'
+    Require ((Get-FileHash -LiteralPath $linked).Hash -ceq (Get-FileHash -LiteralPath $extra).Hash) 'C9W_TEST_LINK_CHANGED'
+    Require ((Get-FileHash -LiteralPath $path).Hash -ceq $hash) 'C9W_TEST_SENTINEL_CHANGED'
+} finally {
+    foreach ($slot in $slots) { $slot.Dispose() }
+    $held.Dispose()
+    $identity.Dispose()
+}
+Refuses { $held.BeginFictionalLoginSlot('source','backup') } 'C9W_CONTROL_LOCK_NOT_HELD'
+[Console]::WriteLine('C9W_H06_LOGIN_SLOT_FIXTURE_OK:metadata_only=true no_editor=true no_database=true no_cleanup=true')
