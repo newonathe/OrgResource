@@ -455,3 +455,4 @@
 "scripts/windows-l06/C9JournalStorage.cs","189e8aa4bb039e5557c4b87acf230c63541fccc2","7583","100644","b762c4195393ae92e03ee149531ca0ab944f438b","FULL Report119 source-only tests NOT_RUN"
 "scripts/windows-l06/test-journal-worker-failures.ps1","ceb5a09e531dfb56aad6ce78fb6dd7d55db04b2e","4840","100644","b762c4195393ae92e03ee149531ca0ab944f438b","FULL Report119 source-only tests NOT_RUN"
 "docs/handoffs/claude-local-execution-2026-11-24/120_CODEX_CLI_FICTIONAL_NATIVE_HANDOFF.md","ac4550943a0cd58220ec31d7fe5f764f3c602e22","6956","100644","docs/claude-local-execution-handoff-2026-11-24","FULL dispatch plan; native NOT_RUN; exact blob"
+"docs/handoffs/claude-local-execution-2026-11-24/121_CODEX_MASTER_COMPLETION_PROGRAM.md","431850139ab208176c179691dd1f18bea2a2d135","16634","100644","docs/claude-local-execution-handoff-2026-11-24","FULL dispatch plan; implementation/test NOT_RUN; exact blob"

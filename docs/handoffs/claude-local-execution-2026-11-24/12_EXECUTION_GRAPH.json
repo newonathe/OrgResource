@@ -2,7 +2,7 @@
   "schema": "orgresource.pre_handoff.execution_graph.v2",
   "date": "2026-11-24 PHT",
   "ready_to_launch": false,
-  "decision": "POST_LOCAL_HOLD: private L06 remains blocked. Owner selected Codex CLI for separately authorized fictional native engineering, manual start only; Report120 governs that batch. R09 historical bounded; H01 custody, accepted successor, independent/native acceptance and direct owner confirmation required before private L06.",
+  "decision": "Owner authorizes full existing completion program and CPX/C9–C11 scoped engineering subject to dependencies. Codex CLI owner-manual start. Private L06 ready_to_launch=false remains; no automatic live operations or independent acceptance.",
   "verified_source": {
     "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
     "tree": "180f9708b78a9479d50531edbd04e0dee48a57e7",
@@ -486,7 +486,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "Owner manually starts Codex CLI for H01–H06 fictional harness engineering only on exact successor b762c419. Verify refs/scope/native prerequisites, run existing tests, fix observed failures, simplify with equivalent acceptance, consolidate fictional end-to-end pass and evidence handback. No private bytes, L06 launch, actual vault/transfer, failed-stage disposal, off-host/host action, merge/deploy or new product phase. L06 HOLD and ready_to_launch=false remain; independent acceptance separate."
+    "next_action": "Owner manually launches one Codex CLI completion session from Report121. Existing H01–H06 fictional native batch first, academic packaging and independent eligible work in parallel; continue all authorized feasible CPX and C9–C11 work in dependency order with exact acceptance. Private L06 HOLD until actual accepted harness and direct owner challenge; L07 distinct authorized operator; P0/G02 exact target/backup/maintenance/operator gates; no automatic merge, spending, host mutation or release. Stop only on genuine blocked dependency; preserve evidence and continue independent tasks."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -2726,7 +2726,7 @@
   },
   "fictional_native_dispatch": {
     "executor": "CODEX_CLI",
-    "state": "OWNER_MANUAL_START_REQUIRED",
+    "state": "FIRST_BATCH_OF_MASTER_PROGRAM",
     "scope": "H01–H06 fictional harness engineering only; no private access",
     "report": "docs/handoffs/claude-local-execution-2026-11-24/120_CODEX_CLI_FICTIONAL_NATIVE_HANDOFF.md",
     "candidate": "b762c4195393ae92e03ee149531ca0ab944f438b",
@@ -2734,5 +2734,31 @@
     "private_l06_ready": false,
     "previous_executor": "CLAUDE_LOCAL",
     "canonical_task_ids_unchanged": true
+  },
+  "master_completion_dispatch": {
+    "executor": "CODEX_CLI",
+    "state": "OWNER_MANUAL_START_REQUIRED",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/121_CODEX_MASTER_COMPLETION_PROGRAM.md",
+    "candidate": "b762c4195393ae92e03ee149531ca0ab944f438b",
+    "scope": "Existing H/L/G/CPX completion program; implementation/qualification subject to dependencies",
+    "owner_initiation_required": true,
+    "private_l06_ready": false,
+    "product_scope": "AUTHORIZED_CONDITIONAL_POST_P0",
+    "actual_operational_gates": "UNCHANGED",
+    "canonical_task_ids_unchanged": true,
+    "academic_priority": "G07 parallel student lane",
+    "batches": [
+      "M0",
+      "M1",
+      "M2",
+      "M3",
+      "M4",
+      "M5",
+      "M6",
+      "M7",
+      "M8",
+      "M9",
+      "M10"
+    ]
   }
 }

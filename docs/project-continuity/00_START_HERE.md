@@ -1,5 +1,9 @@
 # OrgResource — universal project context entry point
 
+## Current — single Codex CLI completion program (2026-11-27 PHT)
+
+Owner manually launches one Codex CLI completion session from Report121. Existing H01–H06 fictional native batch first, academic packaging and independent eligible work in parallel; continue all authorized feasible CPX and C9–C11 work in dependency order with exact acceptance. Private L06 HOLD until actual accepted harness and direct owner challenge; L07 distinct authorized operator; P0/G02 exact target/backup/maintenance/operator gates; no automatic merge, spending, host mutation or release. Stop only on genuine blocked dependency; preserve evidence and continue independent tasks. See [Report121](https://github.com/newonathe/OrgResource/blob/docs/claude-local-execution-handoff-2026-11-24/docs/handoffs/claude-local-execution-2026-11-24/121_CODEX_MASTER_COMPLETION_PROGRAM.md). This supersedes Report120's overall fictional-only dispatch while retaining its first-batch scope and every acceptance gate. Earlier checkpoints historical where conflicting.
+
 ## Current — Codex CLI fictional-only handoff (2026-11-27 PHT)
 
 Owner manually starts Codex CLI for H01–H06 fictional harness engineering only on exact successor b762c419. Verify refs/scope/native prerequisites, run existing tests, fix observed failures, simplify with equivalent acceptance, consolidate fictional end-to-end pass and evidence handback. No private bytes, L06 launch, actual vault/transfer, failed-stage disposal, off-host/host action, merge/deploy or new product phase. L06 HOLD and ready_to_launch=false remain; independent acceptance separate. See [Report120](https://github.com/newonathe/OrgResource/blob/docs/claude-local-execution-handoff-2026-11-24/docs/handoffs/claude-local-execution-2026-11-24/120_CODEX_CLI_FICTIONAL_NATIVE_HANDOFF.md). Prior checkpoints retained as history, not active instructions for this batch.
