@@ -95,9 +95,134 @@ $jar = Join-Path $stage 'OrgResource-Extended-C6a-Java21.jar'
 Copy-Item -LiteralPath $builtJar -Destination $jar
 $jarContents = @(tar -tf $jar)
 Assert-ReleaseCommand 'Executable JAR archive inventory'
-foreach ($pattern in @('^BOOT-INF/classes/static/index.html$', '^BOOT-INF/classes/static/assets/.*\.js$',
-        '^BOOT-INF/classes/static/assets/.*\.css$') + @(1..5 | ForEach-Object { "^BOOT-INF/classes/db/migration/V${_}__" })) {
-    if (-not ($jarContents -match $pattern)) { throw "Executable JAR lacks required asset or migration: $pattern" }
+foreach ($pattern in @('^BOOT-INF/classes/static/index.html
+
+$artifacts = foreach ($path in @($archive, $jar, $log)) {
+    [ordered]@{
+        name = [IO.Path]::GetFileName($path)
+        bytes = [IO.FileInfo]::new($path).Length
+        sha256 = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
+    }
+}
+$manifest = Join-Path $stage 'RELEASE-MANIFEST.json'
+[ordered]@{
+    status = 'local-release-candidate'
+    sourceSha = $sha
+    protectedCourseSha = $courseSha
+    courseTrees = $courseTrees
+    extractedSourceRoot = $extracted
+    environment = [ordered]@{ windows = [Environment]::OSVersion.VersionString; powershell = [string]$PSVersionTable.PSVersion; java = (& java -version 2>&1 | Select-Object -First 1).ToString(); node = (& node --version); npm = (& npm --version) }
+    artifacts = @($artifacts)
+} | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $manifest -Encoding utf8
+$manifestHash = (Get-FileHash -LiteralPath $manifest -Algorithm SHA256).Hash.ToLowerInvariant()
+$hashes = @($artifacts | ForEach-Object { "$($_.sha256)  $($_.name)" }) + @("$manifestHash  RELEASE-MANIFEST.json")
+$hashPath = Join-Path $stage 'SHA256SUMS.txt'
+$hashes | Set-Content -LiteralPath $hashPath -Encoding utf8
+foreach ($row in $hashes) {
+    $expected, $file = $row -split '  ', 2
+    $actual = (Get-FileHash -LiteralPath (Join-Path $stage $file) -Algorithm SHA256).Hash
+    if ($actual -ne $expected) { throw "Hash verification failed: $file" }
+}
+$manifestListHash = (Get-FileHash -LiteralPath $hashPath -Algorithm SHA256).Hash.ToLowerInvariant()
+[ordered]@{ sourceSha = $sha; checksumsSha256 = $manifestListHash } |
+    ConvertTo-Json | Set-Content -LiteralPath (Join-Path $stage 'READY.json') -Encoding utf8
+[IO.Directory]::Move($stage, $output)
+Write-Output "Local release candidate for $sha verified at $output"
+, '^BOOT-INF/classes/static/assets/.*\.js
+
+$artifacts = foreach ($path in @($archive, $jar, $log)) {
+    [ordered]@{
+        name = [IO.Path]::GetFileName($path)
+        bytes = [IO.FileInfo]::new($path).Length
+        sha256 = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
+    }
+}
+$manifest = Join-Path $stage 'RELEASE-MANIFEST.json'
+[ordered]@{
+    status = 'local-release-candidate'
+    sourceSha = $sha
+    protectedCourseSha = $courseSha
+    courseTrees = $courseTrees
+    extractedSourceRoot = $extracted
+    environment = [ordered]@{ windows = [Environment]::OSVersion.VersionString; powershell = [string]$PSVersionTable.PSVersion; java = (& java -version 2>&1 | Select-Object -First 1).ToString(); node = (& node --version); npm = (& npm --version) }
+    artifacts = @($artifacts)
+} | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $manifest -Encoding utf8
+$manifestHash = (Get-FileHash -LiteralPath $manifest -Algorithm SHA256).Hash.ToLowerInvariant()
+$hashes = @($artifacts | ForEach-Object { "$($_.sha256)  $($_.name)" }) + @("$manifestHash  RELEASE-MANIFEST.json")
+$hashPath = Join-Path $stage 'SHA256SUMS.txt'
+$hashes | Set-Content -LiteralPath $hashPath -Encoding utf8
+foreach ($row in $hashes) {
+    $expected, $file = $row -split '  ', 2
+    $actual = (Get-FileHash -LiteralPath (Join-Path $stage $file) -Algorithm SHA256).Hash
+    if ($actual -ne $expected) { throw "Hash verification failed: $file" }
+}
+$manifestListHash = (Get-FileHash -LiteralPath $hashPath -Algorithm SHA256).Hash.ToLowerInvariant()
+[ordered]@{ sourceSha = $sha; checksumsSha256 = $manifestListHash } |
+    ConvertTo-Json | Set-Content -LiteralPath (Join-Path $stage 'READY.json') -Encoding utf8
+[IO.Directory]::Move($stage, $output)
+Write-Output "Local release candidate for $sha verified at $output"
+,
+        '^BOOT-INF/classes/static/assets/.*\.css
+
+$artifacts = foreach ($path in @($archive, $jar, $log)) {
+    [ordered]@{
+        name = [IO.Path]::GetFileName($path)
+        bytes = [IO.FileInfo]::new($path).Length
+        sha256 = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
+    }
+}
+$manifest = Join-Path $stage 'RELEASE-MANIFEST.json'
+[ordered]@{
+    status = 'local-release-candidate'
+    sourceSha = $sha
+    protectedCourseSha = $courseSha
+    courseTrees = $courseTrees
+    extractedSourceRoot = $extracted
+    environment = [ordered]@{ windows = [Environment]::OSVersion.VersionString; powershell = [string]$PSVersionTable.PSVersion; java = (& java -version 2>&1 | Select-Object -First 1).ToString(); node = (& node --version); npm = (& npm --version) }
+    artifacts = @($artifacts)
+} | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $manifest -Encoding utf8
+$manifestHash = (Get-FileHash -LiteralPath $manifest -Algorithm SHA256).Hash.ToLowerInvariant()
+$hashes = @($artifacts | ForEach-Object { "$($_.sha256)  $($_.name)" }) + @("$manifestHash  RELEASE-MANIFEST.json")
+$hashPath = Join-Path $stage 'SHA256SUMS.txt'
+$hashes | Set-Content -LiteralPath $hashPath -Encoding utf8
+foreach ($row in $hashes) {
+    $expected, $file = $row -split '  ', 2
+    $actual = (Get-FileHash -LiteralPath (Join-Path $stage $file) -Algorithm SHA256).Hash
+    if ($actual -ne $expected) { throw "Hash verification failed: $file" }
+}
+$manifestListHash = (Get-FileHash -LiteralPath $hashPath -Algorithm SHA256).Hash.ToLowerInvariant()
+[ordered]@{ sourceSha = $sha; checksumsSha256 = $manifestListHash } |
+    ConvertTo-Json | Set-Content -LiteralPath (Join-Path $stage 'READY.json') -Encoding utf8
+[IO.Directory]::Move($stage, $output)
+Write-Output "Local release candidate for $sha verified at $output"
+)) {
+    if (-not ($jarContents -match $pattern)) { throw "Executable JAR lacks required asset: $pattern" }
+}
+# This release lane is frozen at V1–V7. Check exact names, not just version prefixes.
+$migrationRoot = 'extended/backend/src/main/resources/db/migration/'
+$jarMigrationRoot = 'BOOT-INF/classes/db/migration/'
+$expectedMigrationNames = @(
+    'V1__extended_c1_baseline.sql',
+    'V2__spring_session_jdbc_mysql.sql',
+    'V3__atomic_inventory_ledger.sql',
+    'V4__c3_contact_images_and_reminders.sql',
+    'V5__c4_reminder_dispatch_boundary.sql',
+    'V6__c8_project_leads_and_linked_borrowers.sql',
+    'V7__c8_local_demo_provenance.sql'
+)
+$expectedSourceMigrations = @($expectedMigrationNames | ForEach-Object { $migrationRoot + $_ })
+$expectedJarMigrations = @($expectedMigrationNames | ForEach-Object { $jarMigrationRoot + $_ })
+$sourceMigrations = @($entries | Where-Object { $_.StartsWith($migrationRoot, [StringComparison]::Ordinal) })
+$jarMigrations = @($jarContents | Where-Object {
+    $_.StartsWith($jarMigrationRoot, [StringComparison]::Ordinal) -and -not $_.EndsWith('/')
+})
+if ($sourceMigrations.Count -ne $expectedSourceMigrations.Count -or
+        @(Compare-Object $expectedSourceMigrations $sourceMigrations -CaseSensitive).Count) {
+    throw 'Source migration inventory differs from the approved V1–V7 release lane.'
+}
+if ($jarMigrations.Count -ne $expectedJarMigrations.Count -or
+        @(Compare-Object $expectedJarMigrations $jarMigrations -CaseSensitive).Count) {
+    throw 'Executable JAR migration inventory differs from the approved V1–V7 release lane.'
 }
 
 $artifacts = foreach ($path in @($archive, $jar, $log)) {
