@@ -1,5 +1,10 @@
 # 14 — Current cross-chat continuation protocol
 
+## Current — H06 outer watchdog compile receipt (2026-11-28 PHT)
+
+[Report138 receipt](https://github.com/newonathe/OrgResource/blob/d3517dbb89470676e1402eecdee3f331809415f7/docs/handoffs/claude-local-execution-2026-11-24/138_H06_OUTER_WATCHDOG_SURROGATE.md): exact 14 C# compile/four fixture parsers passed, native six cases NOT_RUN. H06 outer watchdog surrogate b00aa41e exact compile14/four parsers actual pass; six native cases NOT_RUN. Consume prior Extended140706549707 and new automatic CI as applicable; no repeat absent drift. Bind fixed compiled helper, separate child-control token/intent, nested job and console-host termination, with actual native only under approved nonadmin owner-only disposable NTFS root/pinned tools. H03 termination/settlement and H06 role custody/SQL/revoke/cleanup outstanding. Private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged; no merge/deploy/release.
+
+
 ## Current — H06 one-shot outer watchdog surrogate (2026-11-28 PHT)
 
 [Report138](https://github.com/newonathe/OrgResource/blob/2ead1b940a86ee0214bbe151ee59b9e6525234d7/docs/handoffs/claude-local-execution-2026-11-24/138_H06_OUTER_WATCHDOG_SURROGATE.md): H06 one-shot owned outer watchdog surrogate staged with retained intent and six native cases; actual ConPTY helper remains private, no native execution. Prior Course A/React and older guard/portable repeat receipts consumed; exact successor compile pending. H06 one-shot fictional outer watchdog surrogate b00aa41e reuses owned job, retained intent, strict setup+run deadline, six native cases staged NOT_RUN. Consume exact compile/parser run46059231900/job140709153942 and prior Extended140706549707; repair observed failures only. Then bind fixed compiled helper, separate child-control token/intent, nested job and console-host termination; actual native only with approved nonadmin owner-only disposable NTFS root and pinned tools. H03 native termination/settlement and H06 role custody/SQL/revoke/cleanup outstanding. Private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged; no merge/deploy/release.
