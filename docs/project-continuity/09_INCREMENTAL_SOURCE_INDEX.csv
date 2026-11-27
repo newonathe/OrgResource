@@ -447,3 +447,6 @@
 "scripts/windows-l06/test-login-custody.ps1","64e42c8d6b43c546cb634092e8c880fc11dcb164","4994","100644","51b1aa2160011f53af2d1d9fd7eff4149e90c6ee","FULL Report117 source-only tests NOT_RUN"
 "scripts/windows-l06/C9DirectoryIdentity.cs","67d705d9d66f0ca05cee018900b346d913d687b3","5144","100644","51b1aa2160011f53af2d1d9fd7eff4149e90c6ee","FULL Report117 source-only tests NOT_RUN"
 "scripts/windows-l06/test-control-lock.ps1","64603c1169721847bc17ca0e4c756e997c20dc99","4859","100644","51b1aa2160011f53af2d1d9fd7eff4149e90c6ee","FULL Report117 source-only tests NOT_RUN"
+"docs/handoffs/claude-local-execution-2026-11-24/118_H06_DEDICATED_OWNED_JOB_WATCHDOG_PROBE.md","ca7b40fb6607596bfb468c373130cc199a5a9dee","11350","100644","779caf6b4260b03b79f562492efdacc41053dd42","FULL Report118 H06 source-only"
+"scripts/windows-l06/C9OwnedJobProbe.cs","6ba5518f360143584b9450f3b87148e2cb67e0a9","13083","100644","a1b07705dbe58b56f64846977d71b429ce8f32c5","FULL Report118 source-only tests NOT_RUN"
+"scripts/windows-l06/test-owned-job-probe.ps1","810ee2c1e69424dc3d433fc150116e3df6f8bbe3","4947","100644","a1b07705dbe58b56f64846977d71b429ce8f32c5","FULL Report118 source-only tests NOT_RUN"

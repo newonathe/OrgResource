@@ -1196,5 +1196,17 @@
     "report": "docs/handoffs/claude-local-execution-2026-11-24/117_H06_GUARD_AND_LOGIN_CUSTODY_H03_DIRECTORY_SHARING.md",
     "report_ref": "53716c53fae6c410fb93df107d08d46a6adfa361",
     "coverage": "69 harness-only additions; 14 Windows-only spies and two native fixtures NOT_RUN; both transport functions quarantined"
+  },
+  "h06_dedicated_owned_job_probe_candidate": {
+    "observed_date": "2026-11-27 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "a1b07705dbe58b56f64846977d71b429ce8f32c5",
+    "tree": "7d1d76ad3a8a9e5b458e57a6b73a2eecc804c085",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/118_H06_DEDICATED_OWNED_JOB_WATCHDOG_PROBE.md",
+    "report_ref": "779caf6b4260b03b79f562492efdacc41053dd42",
+    "coverage": "71 harness-only additions; five fixed native modes and refusal/sentinel fixture NOT_RUN; no complete descendant termination claim; transport quarantined"
   }
 }

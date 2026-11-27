@@ -1087,7 +1087,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "H06 guard allocation/handle/pointer correction and owner-only fictional login metadata slot; H03 directory list-access/no-delete-share correction, partial source candidate 51b1aa2160011f53af2d1d9fd7eff4149e90c6ee, 69 added harness-only paths vs R09. Exact four role/kind slots under held control, native absent-only file check, protected ACL/ID/single-link/exclusive file observation, no editor/credential/SQL/role transfer/delete; directory DELETE-access positive/32/positive native oracle staged. 14 Windows-only spy methods and two native PowerShell fixtures NOT_RUN; H06-01–03/H03-01–12 native NOT_RUN. Container ClientError/Python did not execute; 47 prior separate portable passes retained; 41 additional portable methods NOT_RUN (34 H03 +7 H06), separate 14 Windows spies. Both runner/recovery and transport quarantined. Next recover exact-hash portable tests if environment available; H06 actual owned process-tree watchdog/pinned editor and role-bound fresh login custody/ACL/contained connection and verified revocation/cleanup, or H03 boot/namespace/exclusive mapping/absence, held-lock cleanup/lock-first recovery while blocked. H02 provenance/native, H05 actual MySQL, H01-A owned observations/protected ACL/authenticated fictional C5/independent seal/vault/cleanup; 64 prior PowerShell+spy and independent acceptance open. H01-B preparation only; actual vault/machine/operator/transfer and failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and13 privacy flags open. No private import/launch/merge/deploy.",
+      "next": "H06 dedicated fictional host Job Object watchdog source candidate a1b07705dbe58b56f64846977d71b429ce8f32c5, 71 added harness-only paths vs R09. Separate unnamed noninheritable kill-on-close job, suspended creation with JOB_LIST and exact membership/resume, pinned Python/minimal env/held control custody, root signal vs active accounting, bounded user-space stop and exact owned handles; five fixed native modes plus refusal/sentinel assertions staged NOT_RUN. No actual credentials/editor/ConPTY/role access/SQL; no claim complete descendant termination from accounting alone or hard kernel deadline. Container and Python ClientError; 47 prior separate portable passes retained, 41 additional portable (34 H03 +7 H06) and 14 Windows-only spies NOT_RUN; H06-01–03/H03-01–12 native NOT_RUN. Both runner/recovery and transport quarantined. Next exact-hash portable tests if available; H06 actual pinned worker process-tree supervision including bounded I/O/ConPTY and separately sufficient descendant termination witness, role-bound fresh login custody/ACL/contained connection/revoke and verified cleanup; H03 journal parent/watchdog and boot/namespace/exclusive mapping/absence, held-lock cleanup/lock-first recovery independently eligible. H02 provenance/native, H05 actual MySQL, H01-A owned observations/protected ACL/authenticated fictional C5/independent seal/vault/cleanup; 64 prior PowerShell+spy and independent acceptance open. H01-B preparation only; actual vault/machine/operator/transfer and failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and13 privacy flags open. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -1284,6 +1284,12 @@
           "blob": "7fbc1cd7db861bd03d3382cbcffcfd1bcbd6e3ab",
           "ref": "53716c53fae6c410fb93df107d08d46a6adfa361",
           "review": "FULL Report117; H06 guard/fictional custody and H03 directory sharing source-only, tests NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/118_H06_DEDICATED_OWNED_JOB_WATCHDOG_PROBE.md",
+          "blob": "ca7b40fb6607596bfb468c373130cc199a5a9dee",
+          "ref": "779caf6b4260b03b79f562492efdacc41053dd42",
+          "review": "FULL Report118; fictional dedicated owned job watchdog source-only, native NOT_RUN"
         }
       ]
     },
@@ -1307,7 +1313,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "H06 guard allocation/handle/pointer correction and owner-only fictional login metadata slot; H03 directory list-access/no-delete-share correction, partial source candidate 51b1aa2160011f53af2d1d9fd7eff4149e90c6ee, 69 added harness-only paths vs R09. Exact four role/kind slots under held control, native absent-only file check, protected ACL/ID/single-link/exclusive file observation, no editor/credential/SQL/role transfer/delete; directory DELETE-access positive/32/positive native oracle staged. 14 Windows-only spy methods and two native PowerShell fixtures NOT_RUN; H06-01–03/H03-01–12 native NOT_RUN. Container ClientError/Python did not execute; 47 prior separate portable passes retained; 41 additional portable methods NOT_RUN (34 H03 +7 H06), separate 14 Windows spies. Both runner/recovery and transport quarantined. Next recover exact-hash portable tests if environment available; H06 actual owned process-tree watchdog/pinned editor and role-bound fresh login custody/ACL/contained connection and verified revocation/cleanup, or H03 boot/namespace/exclusive mapping/absence, held-lock cleanup/lock-first recovery while blocked. H02 provenance/native, H05 actual MySQL, H01-A owned observations/protected ACL/authenticated fictional C5/independent seal/vault/cleanup; 64 prior PowerShell+spy and independent acceptance open. H01-B preparation only; actual vault/machine/operator/transfer and failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and13 privacy flags open. No private import/launch/merge/deploy.",
+      "next": "H06 dedicated fictional host Job Object watchdog source candidate a1b07705dbe58b56f64846977d71b429ce8f32c5, 71 added harness-only paths vs R09. Separate unnamed noninheritable kill-on-close job, suspended creation with JOB_LIST and exact membership/resume, pinned Python/minimal env/held control custody, root signal vs active accounting, bounded user-space stop and exact owned handles; five fixed native modes plus refusal/sentinel assertions staged NOT_RUN. No actual credentials/editor/ConPTY/role access/SQL; no claim complete descendant termination from accounting alone or hard kernel deadline. Container and Python ClientError; 47 prior separate portable passes retained, 41 additional portable (34 H03 +7 H06) and 14 Windows-only spies NOT_RUN; H06-01–03/H03-01–12 native NOT_RUN. Both runner/recovery and transport quarantined. Next exact-hash portable tests if available; H06 actual pinned worker process-tree supervision including bounded I/O/ConPTY and separately sufficient descendant termination witness, role-bound fresh login custody/ACL/contained connection/revoke and verified cleanup; H03 journal parent/watchdog and boot/namespace/exclusive mapping/absence, held-lock cleanup/lock-first recovery independently eligible. H02 provenance/native, H05 actual MySQL, H01-A owned observations/protected ACL/authenticated fictional C5/independent seal/vault/cleanup; 64 prior PowerShell+spy and independent acceptance open. H01-B preparation only; actual vault/machine/operator/transfer and failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and13 privacy flags open. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -1936,6 +1942,12 @@
           "blob": "7fbc1cd7db861bd03d3382cbcffcfd1bcbd6e3ab",
           "ref": "53716c53fae6c410fb93df107d08d46a6adfa361",
           "review": "FULL Report117; H06 guard/fictional custody and H03 directory sharing source-only, tests NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/118_H06_DEDICATED_OWNED_JOB_WATCHDOG_PROBE.md",
+          "blob": "ca7b40fb6607596bfb468c373130cc199a5a9dee",
+          "ref": "779caf6b4260b03b79f562492efdacc41053dd42",
+          "review": "FULL Report118; fictional dedicated owned job watchdog source-only, native NOT_RUN"
         }
       ]
     },
@@ -2082,7 +2094,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "H06 guard allocation/handle/pointer correction and owner-only fictional login metadata slot; H03 directory list-access/no-delete-share correction, partial source candidate 51b1aa2160011f53af2d1d9fd7eff4149e90c6ee, 69 added harness-only paths vs R09. Exact four role/kind slots under held control, native absent-only file check, protected ACL/ID/single-link/exclusive file observation, no editor/credential/SQL/role transfer/delete; directory DELETE-access positive/32/positive native oracle staged. 14 Windows-only spy methods and two native PowerShell fixtures NOT_RUN; H06-01–03/H03-01–12 native NOT_RUN. Container ClientError/Python did not execute; 47 prior separate portable passes retained; 41 additional portable methods NOT_RUN (34 H03 +7 H06), separate 14 Windows spies. Both runner/recovery and transport quarantined. Next recover exact-hash portable tests if environment available; H06 actual owned process-tree watchdog/pinned editor and role-bound fresh login custody/ACL/contained connection and verified revocation/cleanup, or H03 boot/namespace/exclusive mapping/absence, held-lock cleanup/lock-first recovery while blocked. H02 provenance/native, H05 actual MySQL, H01-A owned observations/protected ACL/authenticated fictional C5/independent seal/vault/cleanup; 64 prior PowerShell+spy and independent acceptance open. H01-B preparation only; actual vault/machine/operator/transfer and failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and13 privacy flags open. No private import/launch/merge/deploy.",
+      "next": "H06 dedicated fictional host Job Object watchdog source candidate a1b07705dbe58b56f64846977d71b429ce8f32c5, 71 added harness-only paths vs R09. Separate unnamed noninheritable kill-on-close job, suspended creation with JOB_LIST and exact membership/resume, pinned Python/minimal env/held control custody, root signal vs active accounting, bounded user-space stop and exact owned handles; five fixed native modes plus refusal/sentinel assertions staged NOT_RUN. No actual credentials/editor/ConPTY/role access/SQL; no claim complete descendant termination from accounting alone or hard kernel deadline. Container and Python ClientError; 47 prior separate portable passes retained, 41 additional portable (34 H03 +7 H06) and 14 Windows-only spies NOT_RUN; H06-01–03/H03-01–12 native NOT_RUN. Both runner/recovery and transport quarantined. Next exact-hash portable tests if available; H06 actual pinned worker process-tree supervision including bounded I/O/ConPTY and separately sufficient descendant termination witness, role-bound fresh login custody/ACL/contained connection/revoke and verified cleanup; H03 journal parent/watchdog and boot/namespace/exclusive mapping/absence, held-lock cleanup/lock-first recovery independently eligible. H02 provenance/native, H05 actual MySQL, H01-A owned observations/protected ACL/authenticated fictional C5/independent seal/vault/cleanup; 64 prior PowerShell+spy and independent acceptance open. H01-B preparation only; actual vault/machine/operator/transfer and failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and13 privacy flags open. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -2467,6 +2479,12 @@
           "blob": "7fbc1cd7db861bd03d3382cbcffcfd1bcbd6e3ab",
           "ref": "53716c53fae6c410fb93df107d08d46a6adfa361",
           "review": "FULL Report117; H06 guard/fictional custody and H03 directory sharing source-only, tests NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/118_H06_DEDICATED_OWNED_JOB_WATCHDOG_PROBE.md",
+          "blob": "ca7b40fb6607596bfb468c373130cc199a5a9dee",
+          "ref": "779caf6b4260b03b79f562492efdacc41053dd42",
+          "review": "FULL Report118; fictional dedicated owned job watchdog source-only, native NOT_RUN"
         }
       ]
     }
