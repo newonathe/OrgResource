@@ -148,13 +148,22 @@ public static partial class C9OwnedJobProbe {
         using var pin = new FileStream(python,FileMode.Open,FileAccess.Read,FileShare.Read);
         if (Convert.ToHexString(SHA256.HashData(pin)).ToLowerInvariant() != expectedSha)
             throw new InvalidOperationException("C9W_WATCHDOG_TOOL");
+        return RunPinnedFictionalCore(owner,python,mode,timeoutMillis,retainIntent,
+            () => Quote(python)+" -I -S -B -c "+Quote(script),null);
+    }
+
+    // Private shared native core. The optional helper plan is built only from
+    // the fixed compiled helper contract; never from arbitrary command input.
+    static Observation RunPinnedFictionalCore(C9ControlLock owner,string executable,
+        string mode,int timeoutMillis,bool retainIntent,Func<string> fixedCommand,PtyLaunchPlan helper) {
         string system = Environment.GetEnvironmentVariable("SystemRoot");
         string drive = Environment.GetEnvironmentVariable("SystemDrive");
         if (String.IsNullOrEmpty(system) || String.IsNullOrEmpty(drive))
             throw new InvalidOperationException("C9W_WATCHDOG_TOOL");
 
         IntPtr job=IntPtr.Zero, root=IntPtr.Zero, thread=IntPtr.Zero, list=IntPtr.Zero,
-               jobList=IntPtr.Zero, environment=IntPtr.Zero;
+               jobList=IntPtr.Zero, environment=IntPtr.Zero,
+               queryJob=IntPtr.Zero, inheritedList=IntPtr.Zero;
         bool initialized=false, assigned=false, terminalObserved=false;
         Observation receipt=null;
         var clock=Stopwatch.StartNew();
@@ -176,20 +185,35 @@ public static partial class C9OwnedJobProbe {
                 throw new InvalidOperationException("C9W_WATCHDOG_JOB_NOT_FRESH");
 
             IntPtr bytes=IntPtr.Zero;
-            bool first=N.InitializeProcThreadAttributeList(IntPtr.Zero,1,0,ref bytes);
+            int attributeCount=helper==null ? 1 : 2;
+            bool first=N.InitializeProcThreadAttributeList(IntPtr.Zero,attributeCount,0,ref bytes);
             int error=Marshal.GetLastWin32Error();
             if (first || error != 122 || bytes.ToInt64() <= 0 || bytes.ToInt64() > 1048576)
                 throw new InvalidOperationException("C9W_WATCHDOG_ATTRIBUTE_SIZE");
             list=Marshal.AllocHGlobal(bytes);
-            if (!N.InitializeProcThreadAttributeList(list,1,0,ref bytes))
+            if (!N.InitializeProcThreadAttributeList(list,attributeCount,0,ref bytes))
                 throw Native("C9W_WATCHDOG_ATTRIBUTE_INIT");
             initialized=true;
             jobList=Marshal.AllocHGlobal(IntPtr.Size);
             Marshal.WriteIntPtr(jobList,job);
             if (!N.UpdateProcThreadAttribute(list,0,(IntPtr)0x2000D,jobList,(IntPtr)IntPtr.Size,IntPtr.Zero,IntPtr.Zero))
                 throw Native("C9W_WATCHDOG_ATTRIBUTE_JOB");
+            string[] helperArgs=null;
+            if (helper!=null) {
+                // Query-only inherited handle; no terminate/assign access.
+                // Child must close it BEFORE any native ConPTY effect.
+                if (!DuplicateHandle(PtyCurrentProcess(),job,PtyCurrentProcess(),out queryJob,4,true,0) ||
+                    !GetHandleInformation(queryJob,out uint qf) || (qf&1)!=1)
+                    throw Native("C9W_PTY_OUTER_QUERY_HANDLE");
+                inheritedList=Marshal.AllocHGlobal(IntPtr.Size);
+                Marshal.WriteIntPtr(inheritedList,queryJob);
+                if (!N.UpdateProcThreadAttribute(list,0,(IntPtr)0x20002,inheritedList,(IntPtr)IntPtr.Size,IntPtr.Zero,IntPtr.Zero))
+                    throw Native("C9W_PTY_OUTER_HANDLES");
+                helperArgs=helper.Arguments(queryJob);
+            }
             var si=new N.STARTUPINFOEX { cb=Marshal.SizeOf<N.STARTUPINFOEX>(),lpAttributeList=list };
-            var cmd=new StringBuilder(Quote(python)+" -I -S -B -c "+Quote(script));
+            var cmd=new StringBuilder(helper==null ? fixedCommand() :
+                Quote(executable)+" "+String.Join(" ",Array.ConvertAll(helperArgs,Quote)));
             // Explicit minimal environment; no caller environment, MYSQL_PWD,
             // login-path setting, profile path, or secret.
             environment=Marshal.StringToHGlobalUni("SystemDrive="+drive+"\0SystemRoot="+system+"\0\0");
@@ -198,13 +222,15 @@ public static partial class C9OwnedJobProbe {
             // launching the surrogate. No positive result settles or deletes it.
             if (retainIntent) {
                 owner.MarkJournalWorkerUncertain();
+                if (helper!=null) owner.MarkPtyParentBinding(PtyBindingDigest(helperArgs));
                 if (clock.ElapsedMilliseconds >= timeoutMillis)
                     throw new InvalidOperationException("C9W_OUTER_SETUP_TIMEOUT");
             }
-            if (!N.CreateProcessW(python,cmd,IntPtr.Zero,IntPtr.Zero,false,
+            if (!N.CreateProcessW(executable,cmd,IntPtr.Zero,IntPtr.Zero,helper!=null,
                  0x80000u|0x400u|0x4u|0x08000000u,environment,owner.ControlPath,ref si,out var pi))
                 throw Native("C9W_WATCHDOG_CREATE");
             root=pi.hProcess; thread=pi.hThread;
+            Close(ref queryJob); // parent retains ONLY the full noninheritable job handle
             if (!N.IsProcessInJob(root,job,out bool inJob))
                 throw Native("C9W_WATCHDOG_JOB_QUERY");
             if (!inJob) throw new InvalidOperationException("C9W_WATCHDOG_WRONG_JOB");
@@ -270,9 +296,12 @@ public static partial class C9OwnedJobProbe {
                     finally {
                         try { Close(ref job); }
                         finally {
-                            if (initialized) N.DeleteProcThreadAttributeList(list);
-                            foreach (var p in new[]{list,jobList,environment})
-                                if (p != IntPtr.Zero) Marshal.FreeHGlobal(p);
+                            try { Close(ref queryJob); }
+                            finally {
+                                if (initialized) N.DeleteProcThreadAttributeList(list);
+                                foreach (var p in new[]{list,jobList,inheritedList,environment})
+                                    if (p != IntPtr.Zero) Marshal.FreeHGlobal(p);
+                            }
                         }
                     }
                 }

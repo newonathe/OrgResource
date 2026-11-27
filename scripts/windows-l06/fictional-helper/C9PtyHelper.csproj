@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>C9PtyHelper</AssemblyName>
+    <StartupObject>C9OwnedJobProbe</StartupObject>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <Deterministic>true</Deterministic>
+    <SelfContained>false</SelfContained>
+    <UseAppHost>true</UseAppHost>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../C9DirectoryIdentity.cs" />
+    <Compile Include="../C9ControlLock.cs" />
+    <Compile Include="../C9JournalStorage.cs" />
+    <Compile Include="../C9ProfileStorageObservation.cs" />
+    <Compile Include="../C9Contain.cs" />
+    <Compile Include="../C9OwnedJobProbe.cs" />
+    <Compile Include="../C9FictionalConPty.cs" />
+    <Compile Include="../C9PtyHelper.cs" />
+  </ItemGroup>
+</Project>

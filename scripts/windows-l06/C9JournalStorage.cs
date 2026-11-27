@@ -26,8 +26,47 @@ public sealed partial class C9ControlLock {
     internal void MarkJournalWorkerUncertain() {
         journalWorkerUncertain = true;
         CheckCustody();
-        string path = Path.Combine(ControlPath,WorkerMarker);
-        byte[] data = Encoding.ASCII.GetBytes("C9W_JOURNAL_WORKER_UNCERTAIN\n");
+        WriteRetainedWorkerMarker(WorkerMarker,Encoding.ASCII.GetBytes("C9W_JOURNAL_WORKER_UNCERTAIN\n"));
+    }
+
+    const string PtyParentMarker = "ownership.pty-binding.tmp";
+    static byte[] PtyMarkerBytes(string digest) {
+        if (digest==null || !System.Text.RegularExpressions.Regex.IsMatch(digest,@"\A[a-f0-9]{64}\z"))
+            throw new InvalidOperationException("C9W_PTY_BINDING_DIGEST");
+        return Encoding.ASCII.GetBytes("C9W_PTY_BINDING_V1\n"+digest+"\n");
+    }
+
+    internal void MarkPtyParentBinding(string digest) {
+        if (!journalWorkerUncertain) throw new InvalidOperationException("C9W_PTY_BINDING_NO_INTENT");
+        CheckCustody();
+        if (!SameSnapshot(ReadJournalFile(Path.Combine(ControlPath,WorkerMarker),false),
+            Encoding.ASCII.GetBytes("C9W_JOURNAL_WORKER_UNCERTAIN\n")))
+            throw new InvalidOperationException("C9W_PTY_BINDING_NO_INTENT");
+        WriteRetainedWorkerMarker(PtyParentMarker,PtyMarkerBytes(digest));
+    }
+
+    // Read parent intent without reopening its exclusive ownership.lock.
+    // Only the trusted fictional helper calls this after actual job membership.
+    internal static void VerifyPtyParentBinding(string root,string rootId,string parentToken,string parentId,string digest) {
+        if (parentToken==null || !System.Text.RegularExpressions.Regex.IsMatch(parentToken,@"\A[a-f0-9]{12}\z"))
+            throw new InvalidOperationException("C9W_PTY_BINDING_TOKEN");
+        using var me=WindowsIdentity.GetCurrent();
+        using var rootHeld=C9DirectoryIdentity.Open(root,true);
+        string parent=Path.Combine(root,"orgresource-c9w-control-"+parentToken);
+        using var parentHeld=C9DirectoryIdentity.Open(parent,true);
+        AssertOwnerOnly(rootHeld.FinalHandle,me.User);
+        AssertOwnerOnly(parentHeld.FinalHandle,me.User);
+        if (rootHeld.Id!=rootId || parentHeld.Id!=parentId ||
+            rootHeld.Id==parentHeld.Id || rootHeld.Id.Substring(0,16)!=parentHeld.Id.Substring(0,16))
+            throw new InvalidOperationException("C9W_PTY_BINDING_IDENTITY");
+        if (!SameSnapshot(ReadJournalFileBound(Path.Combine(parent,WorkerMarker),false,parentId),
+              Encoding.ASCII.GetBytes("C9W_JOURNAL_WORKER_UNCERTAIN\n")) ||
+            !SameSnapshot(ReadJournalFileBound(Path.Combine(parent,PtyParentMarker),false,parentId),PtyMarkerBytes(digest)))
+            throw new InvalidOperationException("C9W_PTY_BINDING_MISMATCH");
+    }
+
+    void WriteRetainedWorkerMarker(string leaf,byte[] data) {
+        string path=Path.Combine(ControlPath,leaf);
         using var me = WindowsIdentity.GetCurrent();
         WithSecurity(me.User,false,sa => {
             using var h = CreateFileNew(path,0xC0020080,0,ref sa,1,0x00200080,IntPtr.Zero);
@@ -68,6 +107,9 @@ public sealed partial class C9ControlLock {
     }
 
     byte[] ReadJournalFile(string path, bool allowMissing) {
+        return ReadJournalFileBound(path,allowMissing,ControlId);
+    }
+    static byte[] ReadJournalFileBound(string path,bool allowMissing,string controlId) {
         using var h = CreateFileExisting(path, 0x80020080, 0, IntPtr.Zero, 3, 0x00200080, IntPtr.Zero);
         if (h.IsInvalid) {
             int error = Marshal.GetLastWin32Error();
@@ -76,7 +118,7 @@ public sealed partial class C9ControlLock {
         }
         using var me = WindowsIdentity.GetCurrent();
         AssertOwnerOnly(h, me.User);
-        CheckJournalFile(h, path);
+        CheckJournalFileBound(h,path,controlId);
         using var stream = new FileStream(h, FileAccess.Read);
         long size = stream.Length;
         if (size <= 0 || size > MaxJournal) throw new InvalidOperationException("C9W_JOURNAL_SIZE");
@@ -88,6 +130,9 @@ public sealed partial class C9ControlLock {
     }
 
     void CheckJournalFile(SafeFileHandle h, string path) {
+        CheckJournalFileBound(h,path,ControlId);
+    }
+    static void CheckJournalFileBound(SafeFileHandle h,string path,string controlId) {
         byte[] tag = new byte[8], standard = new byte[24], id = new byte[24];
         if (!GetFileInformationByHandleEx(h, 9, tag, (uint)tag.Length) ||
             !GetFileInformationByHandleEx(h, 1, standard, (uint)standard.Length) ||
@@ -95,7 +140,7 @@ public sealed partial class C9ControlLock {
             throw new Win32Exception(Marshal.GetLastWin32Error(), "C9W_JOURNAL_INFO");
         if ((BitConverter.ToUInt32(tag,0) & 0x441410) != 0 ||
             BitConverter.ToUInt32(standard,16) != 1 || standard[20] != 0 || standard[21] != 0 ||
-            BitConverter.ToUInt64(id,0).ToString("x16") != ControlId.Substring(0,16))
+            BitConverter.ToUInt64(id,0).ToString("x16") != controlId.Substring(0,16))
             throw new InvalidOperationException("C9W_JOURNAL_SHAPE");
         var name = new StringBuilder(32768);
         uint count = GetFinalPathNameByHandleW(h, name, (uint)name.Capacity, 0);
