@@ -105,7 +105,7 @@ if ($script:casesPassed -ne 21) { throw "Expected 21 executed cases, got $script
 Write-Output 'Release inventory guard: 21/21 passed (PowerShell and synthetic JAR listings).'
 
 # Execute the real byte guards without running the package or accessing a DB.
-foreach ($functionName in @('Assert-ReleaseCommand', 'Assert-FrozenMigrationSource', 'Get-FrozenMigrationDigests', 'Assert-PackagedMigrations')) {
+foreach ($functionName in @('Assert-ReleaseCommand', 'New-ReleaseSourceArchive', 'Assert-FrozenMigrationSource', 'Get-FrozenMigrationDigests', 'Assert-PackagedMigrations')) {
     $matches = @($ast.FindAll({
         param($node)
         $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -ceq $functionName
@@ -138,8 +138,7 @@ try {
     if ($failure -cne "Frozen migration changed: $($names[6])") { throw 'Wrong refusal for altered source pin.' }
     Write-Output 'PASS: wrong tracked migration pin refused'
     $archivePath = Join-Path $sourceTmp 'source.zip'
-    git archive --format=zip "--output=$archivePath" HEAD -- $migrationDir
-    Assert-ReleaseCommand 'Migration-only Git archive'
+    New-ReleaseSourceArchive -ArchivePath $archivePath -Revision HEAD -Paths @($migrationDir)
     $archiveRoot = Join-Path $sourceTmp 'extracted'
     $null = New-Item -ItemType Directory -Path $archiveRoot
     tar -xf $archivePath -C $archiveRoot
