@@ -1,0 +1,105 @@
+name: Windows L06 isolated fixture compile closure
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/windows-l06-fixture-closure.yml'
+permissions:
+  contents: read
+jobs:
+  fixture-closure:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'docs/claude-local-execution-handoff-2026-11-24'
+    runs-on: windows-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 768418c9b503e280fa363668d5362fcce3cb6dba
+          persist-credentials: false
+      - name: Compile each exact native fixture source list in a fresh PowerShell process
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ((git rev-parse HEAD) -cne '768418c9b503e280fa363668d5362fcce3cb6dba' -or $LASTEXITCODE -ne 0) { throw 'Wrong candidate' }
+          $pins = [ordered]@{
+            'C9DirectoryIdentity.cs' = '67d705d9d66f0ca05cee018900b346d913d687b3'
+            'C9ControlLock.cs' = '9dfc3fdb42c40ae5622676d22795eb3c61a2f2ab'
+            'C9JournalStorage.cs' = 'ab95a6cef639c3731dea6cd1135a0b073bc75c4b'
+            'C9JournalParent.cs' = '882343527ef986710b4fca6d14004c301b0bbc1e'
+            'C9DosDeviceObservation.cs' = 'd3b9c101c07c268b1596c4556716fd2e5e1ac64c'
+            'C9LogonContext.cs' = 'fe2d1bd497badb36eb6c93379c0577e100553b6b'
+            'C9ProfileStorageObservation.cs' = 'c29a49ef65abe02965ffa471ff16e2d2e6d600a4'
+            'C9Contain.cs' = '45a93d294f52da3af9139531a36bd8d97c0e344b'
+            'C9OwnedJobProbe.cs' = '300fb80a3b8a63be752e09d51979a10a4fd7e16e'
+            'C9OwnershipProducer.cs' = '1195a098e4bb3d6fa6556d2cf6df9ece3319df6e'
+            'C9WorkCreation.cs' = '69106d16b9373e7610db5783847e85d93e45381b'
+            'C9LoginCustody.cs' = 'd3ccbd4189b6900e0351d1fa7a4015706f7dc986'
+            'C9FictionalConPty.cs' = 'd85936f1132416b824cd4a5806f0c9511bbf66ae'
+            'C9PtyHelper.cs' = '91c4112d087d5f61f8fb296edfa19a050bcee3c4'
+            'C9RetentionStage.cs' = 'a94dffe4c79443fb5bc38874fd984f1b3d7478b6'
+          }
+          $fixtures = @(
+            @{ Name='test-owned-journal-transport.ps1'; Blob='daab4849b25a0d3cadfec6f947c6678bb4530485'; Sources=@('C9DirectoryIdentity.cs','C9ControlLock.cs','C9JournalStorage.cs','C9ProfileStorageObservation.cs','C9Contain.cs','C9OwnedJobProbe.cs','C9FictionalConPty.cs','C9PtyHelper.cs') },
+            @{ Name='test-outer-watchdog.ps1'; Blob='0f0b0326faa9e0cfe2048381dbb0ce0c279bb448'; Sources=@('C9DirectoryIdentity.cs','C9ControlLock.cs','C9JournalStorage.cs','C9ProfileStorageObservation.cs','C9Contain.cs','C9OwnedJobProbe.cs','C9FictionalConPty.cs','C9PtyHelper.cs') },
+            @{ Name='test-owned-job-probe.ps1'; Blob='c1fe51577b0eb55b33b123dd66d0771c13833ef6'; Sources=@('C9DirectoryIdentity.cs','C9ControlLock.cs','C9JournalStorage.cs','C9ProfileStorageObservation.cs','C9Contain.cs','C9OwnedJobProbe.cs','C9FictionalConPty.cs','C9PtyHelper.cs') },
+            @{ Name='test-login-custody.ps1'; Blob='40bea0a069c15b17588f9faa25a0d730121021cd'; Sources=@('C9DirectoryIdentity.cs','C9ControlLock.cs','C9JournalStorage.cs','C9LoginCustody.cs') },
+            @{ Name='test-retention-stage.ps1'; Blob='279a9ac0a930dafb381b55e0c519e09c624df693'; Sources=@('C9DirectoryIdentity.cs','C9ControlLock.cs','C9JournalStorage.cs','C9RetentionStage.cs') },
+            @{ Name='test-ownership-producer.ps1'; Blob='cde9fc2aa41d166ab7169fa79ca9dc97d093f4b3'; Sources=@('C9DirectoryIdentity.cs','C9ControlLock.cs','C9JournalStorage.cs','C9JournalParent.cs','C9DosDeviceObservation.cs','C9LogonContext.cs','C9WorkCreation.cs','C9ProfileStorageObservation.cs','C9Contain.cs','C9OwnershipProducer.cs') },
+            @{ Name='test-journal-parent-v2.ps1'; Blob='72988a37456e0da2241050c15da3a22351cd230f'; Sources=@('C9DirectoryIdentity.cs','C9ControlLock.cs','C9JournalStorage.cs','C9JournalParent.cs','C9DosDeviceObservation.cs','C9LogonContext.cs') },
+            @{ Name='test-journal-worker-failures.ps1'; Blob='ceb5a09e531dfb56aad6ce78fb6dd7d55db04b2e'; Sources=@('C9DirectoryIdentity.cs','C9ControlLock.cs','C9JournalStorage.cs','C9JournalParent.cs','C9DosDeviceObservation.cs','C9LogonContext.cs') },
+            @{ Name='test-control-lock.ps1'; Blob='64603c1169721847bc17ca0e4c756e997c20dc99'; Sources=@('C9DirectoryIdentity.cs','C9ControlLock.cs') }
+          )
+          $root = (Resolve-Path -LiteralPath 'scripts/windows-l06').Path
+          function Assert-Pin([string] $name,[string] $expected) {
+            $path = "scripts/windows-l06/$name"
+            $blob = git rev-parse "HEAD:$path"
+            if ($LASTEXITCODE -ne 0 -or $blob -cne $expected) { throw "Wrong committed blob: $name" }
+            $actual = git hash-object --path=$path $path
+            if ($LASTEXITCODE -ne 0 -or $actual -cne $expected) { throw "Wrong checked-out content: $name" }
+          }
+          foreach ($name in $pins.Keys) { Assert-Pin $name $pins[$name] }
+          # Never dot-source a fixture or evaluate its command AST. Compile only
+          # independently pinned literal source names in a fresh process.
+          $runner = Join-Path $env:RUNNER_TEMP ('c9w-fixture-compile-'+[Guid]::NewGuid().ToString('N')+'.ps1')
+          @'
+          param([string] $Root,[string] $Names)
+          $ErrorActionPreference='Stop'
+          $paths=@($Names.Split('|') | ForEach-Object { Join-Path $Root $_ })
+          Add-Type -Path $paths -ErrorAction Stop
+          'C9W_ISOLATED_ADD_TYPE_OK'
+          '@ | Set-Content -LiteralPath $runner -Encoding utf8
+          $passed=0
+          $failed=@()
+          try {
+            foreach ($fixture in $fixtures) {
+              Assert-Pin $fixture.Name $fixture.Blob
+              $source=Join-Path $root $fixture.Name
+              $tokens=$null; $errors=$null
+              $ast=[System.Management.Automation.Language.Parser]::ParseFile($source,[ref]$tokens,[ref]$errors)
+              if ($errors.Count) { throw "Fixture parse failed: $($fixture.Name)" }
+              $commands=@($ast.FindAll({
+                param($node)
+                $node -is [System.Management.Automation.Language.CommandAst] -and
+                $node.GetCommandName() -ceq 'Add-Type' -and
+                @($node.CommandElements | Where-Object { $_ -is [System.Management.Automation.Language.CommandParameterAst] -and $_.ParameterName -ceq 'Path' }).Count -eq 1
+              },$true))
+              if ($commands.Count -ne 1) { throw "Fixture Add-Type path command ambiguous: $($fixture.Name)" }
+              $names=@($commands[0].FindAll({
+                param($node)
+                $node -is [System.Management.Automation.Language.StringConstantExpressionAst] -and $node.Value -cmatch '^[A-Za-z0-9]+\.cs$'
+              },$true) | ForEach-Object { $_.Value })
+              if (($names -join '|') -cne ($fixture.Sources -join '|')) { throw "Fixture source list drift: $($fixture.Name)" }
+              $result=@(& pwsh -NoProfile -NonInteractive -File $runner -Root $root -Names ($names -join '|') 2>&1)
+              $code=$LASTEXITCODE
+              if ($code -ne 0 -or 'C9W_ISOLATED_ADD_TYPE_OK' -cnotin $result) {
+                $result | Write-Output
+                "C9W_FIXTURE_CLOSURE_FAILED:$($fixture.Name):exit=$code"
+                $failed+= $fixture.Name
+              } else {
+                "C9W_FIXTURE_CLOSURE_OK:$($fixture.Name):files=$($names.Count):native_effects_not_run=true"
+                $passed++
+              }
+            }
+          } finally { Remove-Item -LiteralPath $runner -Force }
+          "C9W_FIXTURE_CLOSURE_TOTAL:passed=$passed failed=$($failed.Count) native_effects_not_run=true"
+          if ($failed.Count -or $passed -ne 9) { throw 'Fixture dependency closure failure' }
+          exit 0
