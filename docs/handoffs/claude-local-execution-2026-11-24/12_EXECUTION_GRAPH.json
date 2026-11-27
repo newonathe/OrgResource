@@ -486,7 +486,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "H06 fictional ConPTY source candidate exact a0b76f05, 14-source compile and three fixture parsers actual passed; private entrypoint and fixture refusal, native NOT_RUN. Implement independent outer watchdog, exact pinned helper identity, whole-tree containment/termination and durable one-shot intent; native fixture only after approved nonadmin disposable owner-only NTFS root and tool provenance. Preserve H03 native acceptance, H06 same-file role custody/SQL/revoke/cleanup dependencies; no redundant tests absent drift. Consume pending automatic CI receipts. Full native package/private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged; no merge/deploy/release."
+    "next_action": "H06 one-shot fictional outer watchdog surrogate b00aa41e reuses owned job, retained intent, strict setup+run deadline, six native cases staged NOT_RUN. Consume exact compile/parser run46059231900/job140709153942 and prior Extended140706549707; repair observed failures only. Then bind fixed compiled helper, separate child-control token/intent, nested job and console-host termination; actual native only with approved nonadmin owner-only disposable NTFS root and pinned tools. H03 native termination/settlement and H06 role custody/SQL/revoke/cleanup outstanding. Private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged; no merge/deploy/release."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -2826,7 +2826,7 @@
       "native_execution": "NOT_RUN",
       "private_l06_ready": false
     },
-    "pre_handoff_next": "H06 fictional ConPTY source candidate exact a0b76f05, 14-source compile and three fixture parsers actual passed; private entrypoint and fixture refusal, native NOT_RUN. Implement independent outer watchdog, exact pinned helper identity, whole-tree containment/termination and durable one-shot intent; native fixture only after approved nonadmin disposable owner-only NTFS root and tool provenance. Preserve H03 native acceptance, H06 same-file role custody/SQL/revoke/cleanup dependencies; no redundant tests absent drift. Consume pending automatic CI receipts. Full native package/private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged; no merge/deploy/release.",
+    "pre_handoff_next": "H06 one-shot fictional outer watchdog surrogate b00aa41e reuses owned job, retained intent, strict setup+run deadline, six native cases staged NOT_RUN. Consume exact compile/parser run46059231900/job140709153942 and prior Extended140706549707; repair observed failures only. Then bind fixed compiled helper, separate child-control token/intent, nested job and console-host termination; actual native only with approved nonadmin owner-only disposable NTFS root and pinned tools. H03 native termination/settlement and H06 role custody/SQL/revoke/cleanup outstanding. Private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged; no merge/deploy/release.",
     "release_inventory_candidate": {
       "report": "docs/handoffs/claude-local-execution-2026-11-24/125_RELEASE_MIGRATION_INVENTORY_CORRECTION.md",
       "pr": 59,
@@ -3094,5 +3094,47 @@
     ],
     "native_state": "NOT_RUN",
     "next": "H06 fictional ConPTY source candidate exact a0b76f05, 14-source compile and three fixture parsers actual passed; private entrypoint and fixture refusal, native NOT_RUN. Implement independent outer watchdog, exact pinned helper identity, whole-tree containment/termination and durable one-shot intent; native fixture only after approved nonadmin disposable owner-only NTFS root and tool provenance. Preserve H03 native acceptance, H06 same-file role custody/SQL/revoke/cleanup dependencies; no redundant tests absent drift. Consume pending automatic CI receipts. Full native package/private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged; no merge/deploy/release."
+  },
+  "h06_outer_watchdog_surrogate": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/138_H06_OUTER_WATCHDOG_SURROGATE.md",
+    "ref": "2ead1b940a86ee0214bbe151ee59b9e6525234d7",
+    "sha": "b00aa41e001f2728bd87600d25bf0608d1223d23",
+    "prior": "a0b76f05f54bdfab53a894da2796e7de7b227074",
+    "state": "CANDIDATE",
+    "receipt": {
+      "status": "NOT_RUN",
+      "sha": "b00aa41e001f2728bd87600d25bf0608d1223d23",
+      "run": 46059231900,
+      "job": 140709153942,
+      "oracle": "Exact 14 C# compile and four fixture parsers",
+      "actual": "In progress at last observation; no terminal receipt"
+    },
+    "automatic_receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "e586be4fa97195ef1d8bf4a223c675b67a8d0042",
+        "runs": [
+          46058439665,
+          46058439673,
+          46058439689
+        ],
+        "jobs": [
+          140706549076,
+          140706550931,
+          140706549664,
+          140706549322
+        ],
+        "actual": "Older pinned guard14+portable41; Course A61/160/1, React success; repeat coverage only; Extended140706549707 pending"
+      }
+    ],
+    "pending_runs": [
+      46059231900,
+      46059231885,
+      46059231910,
+      46059231903,
+      46058439689
+    ],
+    "native_state": "NOT_RUN",
+    "next": "H06 one-shot fictional outer watchdog surrogate b00aa41e reuses owned job, retained intent, strict setup+run deadline, six native cases staged NOT_RUN. Consume exact compile/parser run46059231900/job140709153942 and prior Extended140706549707; repair observed failures only. Then bind fixed compiled helper, separate child-control token/intent, nested job and console-host termination; actual native only with approved nonadmin owner-only disposable NTFS root and pinned tools. H03 native termination/settlement and H06 role custody/SQL/revoke/cleanup outstanding. Private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged; no merge/deploy/release."
   }
 }
