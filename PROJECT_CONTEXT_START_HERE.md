@@ -1,5 +1,10 @@
 # OrgResource — read first in every project chat
 
+## Current — integrated package correction and R038 actual (2026-11-27 PHT)
+
+[Report130](https://github.com/newonathe/OrgResource/blob/8dc1d7417ea95df2e0036e6cbc464fefab096c10/docs/handoffs/claude-local-execution-2026-11-24/130_PACKAGE_INTEGRATION_WINDOWS_ARCHIVE_FAILURE_AND_R038_RECEIPT.md): PR59 86d3c53b integrates PR60, observed Windows V1 archive-byte mismatch on da1e6eee then command-local EOL correction; 33/33 actual Windows focused checks, full Verify pending. PR58 196bd6f0 actual SQL1142/HTTP500/no-store/unchanged rows/restored grant/recovered200,109 Maven/84 identity,110 Newman,19 browser. PR60 historical full pass retained, reference only. Consume corrected PR59 exact-head Verify46025850327 Java8/Extended terminal actual receipts; 33 focused Windows cases already pass, no repeat absent drift. Advance eligible H03/H06 or product residuals; no private L06, P0, full native package, independent/rights/privacy or student gate waiver. PR60 historical reference only; no merge/release.
+
+
 ## Current — package byte guard / overlapping candidate reconciliation (2026-11-27 PHT)
 
 [Report129](https://github.com/newonathe/OrgResource/blob/8dbd8483465bf1629216a8f0a839eeca944240f0/docs/handoffs/claude-local-execution-2026-11-24/129_PACKAGE_MIGRATION_BYTE_INTEGRITY_AND_OVERLAP.md): PR59 exact 3fb28bb4 actual inventory21 and full Extended103 Maven/78 identity/110 Newman/19 browser; PR60 5e013a87 actual 8 fictional ZIP checks including changed migration bytes. PR60 overlaps earlier filename work; keep PR59 primary, integrate only byte-integrity increment in one successor. Full native package/operator NOT_RUN, no merge/release. Reconcile only the incremental migration byte-integrity guard into a single correctly based successor of PR59; reuse PR59 21 and PR60 8 actual fictional assertions. Inspect PR58 R038 terminal actual receipt and relevant PR60 Verify; continue eligible independent H03/H06 or product residuals. Native full package, private L06/P0, independent/rights/privacy gates unchanged. No merge or release.
