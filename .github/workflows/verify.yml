@@ -9,6 +9,18 @@ permissions:
   contents: read
 
 jobs:
+  release-inventory:
+    name: Extended C release migration inventory guard
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Exercise actual PowerShell guard against fictional archive inventories
+        shell: pwsh
+        run: ./scripts/test-extended-c-release-inventory.ps1
+
   backend:
     name: Java 8 and isolated MySQL tests
     runs-on: ubuntu-latest
