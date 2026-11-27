@@ -3229,13 +3229,71 @@
           140715441653
         ],
         "actual": "Ten terminal successes, two repeat Course A61/160/1 and Extended66/91/110/19, React success, older pinned14+41 twice; repeat coverage only"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "3136a2ebbd540c1a17c501c4692ef02de3a2f925",
+        "runs": [
+          46064825307
+        ],
+        "jobs": [
+          140727488227,
+          140727488375,
+          140727488536
+        ],
+        "actual": "React15; Course A61 Maven/160 Newman/1 browser; Extended38 React/66 identity/91 Maven/110 Newman/19 browser; zero Maven failures/errors/skips; repeat coverage"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "b762c4195393ae92e03ee149531ca0ab944f438b",
+        "runs": [
+          46064825328,
+          46064825325
+        ],
+        "jobs": [
+          140727488599,
+          140727488296
+        ],
+        "actual": "Older pinned guard14 and lifecycle marker, portable41; repeat coverage, no native effects"
       }
     ],
-    "pending_runs": [
-      46064825307,
-      46064825328
-    ],
+    "pending_runs": [],
     "native_state": "NOT_RUN",
-    "next": "H06 recoverable child records 839db889 exact terminal CI success run46064825460/job140727488693: 31 pure checks (8 positive/23 refusal), 15 C# compile, five fixture parsers, helper build/four output hashes/two direct refusals. 42 platform analyzer warnings/0 build errors. Valid native invocation NOT_RUN. Consume pending automatic CI, no repeat absent drift. Next independent held descendant/console-host termination witness, nested job and approved fictional native fixture. Private launcher and fixture refusal remain; no automatic settlement/deletion. H03 termination/settlement and H06 role custody/SQL/revoke/cleanup outstanding. Private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged; no merge/deploy/release."
+    "next": "Report141: all five automatic jobs terminal actual success (repeat coverage); exact harness 839db889 remains CANDIDATE, native NOT_RUN. Next bounded pre-resume independent Python client handle handoff with acknowledgement, exact outer membership and held-handle wait; establish documented attributable console-host witness or keep full settlement BLOCKED. No guessed PID/global conhost kill, no inherited outer job handle, no native/private launch or cleanup. Academic-first independent eligible work per Report122 remains available. H03 settlement, H06 role custody/SQL/revoke/cleanup, L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged."
+  },
+  "h06_termination_witness_contract": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/141_H06_TERMINATION_WITNESS_CONTRACT_AND_REGRESSION_RECEIPTS.md",
+    "state": "CANDIDATE",
+    "sha": "839db889534c4cc8a2839396463246b948d35cb5",
+    "native_state": "NOT_RUN",
+    "automatic_receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "3136a2ebbd540c1a17c501c4692ef02de3a2f925",
+        "runs": [
+          46064825307
+        ],
+        "jobs": [
+          140727488227,
+          140727488375,
+          140727488536
+        ],
+        "actual": "React15; Course A61 Maven/160 Newman/1 browser; Extended38 React/66 identity/91 Maven/110 Newman/19 browser; zero Maven failures/errors/skips; repeat coverage"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "b762c4195393ae92e03ee149531ca0ab944f438b",
+        "runs": [
+          46064825328,
+          46064825325
+        ],
+        "jobs": [
+          140727488599,
+          140727488296
+        ],
+        "actual": "Older pinned guard14 and lifecycle marker, portable41; repeat coverage, no native effects"
+      }
+    ],
+    "next": "Report141: all five automatic jobs terminal actual success (repeat coverage); exact harness 839db889 remains CANDIDATE, native NOT_RUN. Next bounded pre-resume independent Python client handle handoff with acknowledgement, exact outer membership and held-handle wait; establish documented attributable console-host witness or keep full settlement BLOCKED. No guessed PID/global conhost kill, no inherited outer job handle, no native/private launch or cleanup. Academic-first independent eligible work per Report122 remains available. H03 settlement, H06 role custody/SQL/revoke/cleanup, L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged."
   }
 }

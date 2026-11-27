@@ -409,3 +409,7 @@ Use a limited parent-process liveness handle, never an inherited Job Object hand
 ## Current — H06 recoverable child records (2026-11-28 PHT)
 
 Retain canonical parent/child identity, result and outer observation separately with cross-check digest bindings. Missing or inconsistent evidence refuses; no marker removal, retry or cleanup authorization. Actual 31 pure assertions and exact compile/build/refusal CI passed; native valid helper invocation and independent descendant/console-host witnesses NOT_RUN. See [Report140](https://github.com/newonathe/OrgResource/blob/64d74b334c3757a6fa0d05309b372d5ab3550b04/docs/handoffs/claude-local-execution-2026-11-24/140_H06_RECOVERABLE_CHILD_RECORDS.md).
+
+## Current - H06 independently held client and console-host witness (2026-11-28 PHT)
+
+Report141: preserve original process handle identity, bounded pre-resume handoff/acknowledgement and exact membership; ordinary notifications and aggregate job counts cannot establish independent termination. Unattributed console host remains unverified and blocks settlement. No guessed PID/global kill, broadened child handle or automatic cleanup. See docs/handoffs/claude-local-execution-2026-11-24/141_H06_TERMINATION_WITNESS_CONTRACT_AND_REGRESSION_RECEIPTS.md. All five automatic jobs passed, not native proof.

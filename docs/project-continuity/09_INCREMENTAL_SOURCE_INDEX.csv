@@ -495,3 +495,4 @@
 "scripts/windows-l06/C9FictionalConPty.cs","7dc743138867fe78d984d896e4a1277f26791e02","14983","100644","839db889534c4cc8a2839396463246b948d35cb5","Changed source and relevant predecessor ranges; native NOT_RUN"
 "scripts/windows-l06/test-pty-records.ps1","bcca4236fbaa0d899aa2f3cd7ff8a8502e14f634","4406","100644","839db889534c4cc8a2839396463246b948d35cb5","FULL pure fixture or CI; valid native invocation NOT_RUN"
 ".github/workflows/windows-l06-compile-closure.yml","cf16cdd64b4e3992bce2e3dc9d3f941b2dc107e4","9949","100644","3136a2ebbd540c1a17c501c4692ef02de3a2f925","FULL pure fixture or CI; valid native invocation NOT_RUN"
+"docs/handoffs/claude-local-execution-2026-11-24/141_H06_TERMINATION_WITNESS_CONTRACT_AND_REGRESSION_RECEIPTS.md","5dde15e79baefdc8ed54425319492ce8d65eb08e","7167","100644","docs/claude-local-execution-handoff-2026-11-24","FULL report; actual CI receipts and bounded source research; native NOT_RUN"
