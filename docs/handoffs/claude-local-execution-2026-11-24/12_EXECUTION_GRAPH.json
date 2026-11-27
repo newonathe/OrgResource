@@ -2877,16 +2877,29 @@
     }
   },
   "packaging_byte_integrity_checkpoint": {
-    "report": "docs/handoffs/claude-local-execution-2026-11-24/129_PACKAGE_MIGRATION_BYTE_INTEGRITY_AND_OVERLAP.md",
-    "ref": "8dbd8483465bf1629216a8f0a839eeca944240f0",
-    "primary_inventory_candidate": "3fb28bb47e10cc64d82cd52e76bf8e889c166383",
-    "byte_candidate": "5e013a87386d151e215ac131a14652c465aa05c2",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/130_PACKAGE_INTEGRATION_WINDOWS_ARCHIVE_FAILURE_AND_R038_RECEIPT.md",
+    "ref": "8dc1d7417ea95df2e0036e6cbc464fefab096c10",
+    "primary_candidate": "86d3c53b8668f5cf25beb9045a53c82aaec564b0",
+    "prior_failed": "da1e6eee793be7df4383c2c04b56f1fea60ceb1c",
+    "pr60_reference": "5e013a87386d151e215ac131a14652c465aa05c2",
     "pr59": 59,
-    "pr60": 60,
-    "actual_inventory_cases": 21,
-    "actual_byte_guard_cases": 8,
+    "actual_focused_cases": 33,
+    "run": 46025850327,
+    "job": 140596932270,
     "state": "CANDIDATE",
     "full_native_package": "NOT_RUN",
-    "next": "Reconcile only the incremental migration byte-integrity guard into a single correctly based successor of PR59; reuse PR59 21 and PR60 8 actual fictional assertions. Inspect PR58 R038 terminal actual receipt and relevant PR60 Verify; continue eligible independent H03/H06 or product residuals. Native full package, private L06/P0, independent/rights/privacy gates unchanged. No merge or release."
+    "next": "Consume corrected PR59 exact-head Verify46025850327 Java8/Extended terminal actual receipts; 33 focused Windows cases already pass, no repeat absent drift. Advance eligible H03/H06 or product residuals; no private L06, P0, full native package, independent/rights/privacy or student gate waiver. PR60 historical reference only; no merge/release."
+  },
+  "g01_r038_sql_denial_actual": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/130_PACKAGE_INTEGRATION_WINDOWS_ARCHIVE_FAILURE_AND_R038_RECEIPT.md",
+    "sha": "196bd6f0721ff429dfec66172aa23cc412904f04",
+    "run": 46021269467,
+    "job": 140581213550,
+    "state": "VERIFIED_BOUNDED",
+    "identity": 84,
+    "maven": 109,
+    "newman_assertions": 110,
+    "browser": 19,
+    "remaining": "generic disconnect/private cohort/independent acceptance"
   }
 }
