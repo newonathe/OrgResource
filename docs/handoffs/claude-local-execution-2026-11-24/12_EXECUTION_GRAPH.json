@@ -486,7 +486,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "Resume ChatGPT feasible pre-Codex work under production-ready Extended C academic objective. Reopen Report65/78 privacy flags and exact package allowlists, Report99/101 actual residuals and Report58/60/67 CPX dependencies; select first authorized unresolved remote source/test/package correction, execute and verify, continue independent work around P0/private/native gates. Do not default to another plan or hand over all remaining engineering. Then Codex completes genuinely local-dependent remaining work using Report121 M0–M10 and Report123 AC0–AC7 academic lane; student/independent/operator gates remain."
+    "next_action": "Inspect exact PR59 corrected-head CI (no run visible at first readback); run actual package guard/native clean extraction when available, without marking READY or merging. In parallel advance next material public application/security residual from Report99 or portable H02–H06 exact-hash unrun tests; do not repeat bounded checks. Privacy 13-path remediation needs private custody/rights decision; P0 and L06 remain HOLD. Production-ready academic objective unchanged."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -2797,6 +2797,16 @@
       "native_execution": "NOT_RUN",
       "private_l06_ready": false
     },
-    "pre_handoff_next": "Resume ChatGPT feasible pre-Codex work under production-ready Extended C academic objective. Reopen Report65/78 privacy flags and exact package allowlists, Report99/101 actual residuals and Report58/60/67 CPX dependencies; select first authorized unresolved remote source/test/package correction, execute and verify, continue independent work around P0/private/native gates. Do not default to another plan or hand over all remaining engineering. Then Codex completes genuinely local-dependent remaining work using Report121 M0–M10 and Report123 AC0–AC7 academic lane; student/independent/operator gates remain."
+    "pre_handoff_next": "Inspect exact PR59 corrected-head CI (no run visible at first readback); run actual package guard/native clean extraction when available, without marking READY or merging. In parallel advance next material public application/security residual from Report99 or portable H02–H06 exact-hash unrun tests; do not repeat bounded checks. Privacy 13-path remediation needs private custody/rights decision; P0 and L06 remain HOLD. Production-ready academic objective unchanged.",
+    "release_inventory_candidate": {
+      "report": "docs/handoffs/claude-local-execution-2026-11-24/125_RELEASE_MIGRATION_INVENTORY_CORRECTION.md",
+      "pr": 59,
+      "head": "fde7fff5907fcf133d4b34656300de423334e649",
+      "base": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+      "state": "SOURCE_CANDIDATE",
+      "model_checks": 9,
+      "native": "NOT_RUN",
+      "ci": "PENDING_EXACT_HEAD_READBACK"
+    }
   }
 }
