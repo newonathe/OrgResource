@@ -6609,6 +6609,96 @@ class C1IdentityAcceptanceTest {
         assertTrue(after.equals(governanceDenialRows(home.orgDbId, foreign.orgDbId)));
     }
 
+    @Test @Order(84)
+    void G01R038MetadataDatabaseDenialFailsClosedAndRecovers() throws Exception {
+        // This is a real SELECT permission fault, not a lock/deadlock or connectivity simulation.
+        // Only the already-guarded disposable test server and its exact runtime grant are eligible.
+        String runtimeUrl = System.getenv("EXT_DB_URL");
+        String migrationUrl = System.getenv("EXT_DB_MIGRATION_URL");
+        String disposable = "^jdbc:mysql://(?:127\\.0\\.0\\.1|localhost):[0-9]+/orgresource_c[12]_[A-Za-z0-9_]+(?:\\?.*)?$";
+        assertNotNull(runtimeUrl); assertNotNull(migrationUrl);
+        assertTrue(runtimeUrl.matches(disposable) && migrationUrl.matches(disposable));
+        assertEquals(runtimeUrl.split("\\?", 2)[0], migrationUrl.split("\\?", 2)[0]);
+        String schema = jdbc.queryForObject("SELECT DATABASE()", String.class);
+        assertNotNull(schema);
+        assertTrue(schema.matches("orgresource_c[12]_[A-Za-z0-9_]+"));
+        String runtime = jdbc.queryForObject("SELECT CURRENT_USER()", String.class);
+        assertNotNull(runtime);
+        assertTrue(runtime.matches("[A-Za-z0-9_]+@(?:%|127\\.0\\.0\\.1|localhost)"));
+        String[] principal = runtime.split("@", 2);
+        assertEquals(System.getenv("EXT_DB_USER"), principal[0]);
+        assertNotEquals("root", principal[0]);
+        assertNotEquals(System.getenv("EXT_DB_MIGRATION_USER"), principal[0]);
+        String account = "'" + principal[0] + "'@'" + principal[1] + "'";
+        Fixture first = newTenant("G01-metadata-db-first", Membership.Role.OWNER);
+        Fixture second = newTenant("G01-metadata-db-second", Membership.Role.OWNER);
+        String endpoint = "/api/v2/demo/metadata";
+        var before = get(newClient(), endpoint);
+        assertEquals(200, before.statusCode());
+        assertFalse(json(before).getAsJsonObject("data").get("synthetic").getAsBoolean());
+        var rows = r07LifecycleRows(first.orgDbId, second.orgDbId);
+        var firstIdentity = identityAuthRows(first);
+        var secondIdentity = identityAuthRows(second);
+        long organizationCount = organizations.count();
+        String grantQuery = "SELECT PRIVILEGE_TYPE, IS_GRANTABLE FROM information_schema.TABLE_PRIVILEGES "
+                + "WHERE TABLE_SCHEMA=? AND TABLE_NAME='organization' AND GRANTEE=? ORDER BY PRIVILEGE_TYPE";
+        try (Connection migration = DriverManager.getConnection(migrationUrl,
+                System.getenv("EXT_DB_MIGRATION_USER"), System.getenv("EXT_DB_MIGRATION_PASSWORD"));
+             var statement = migration.createStatement();
+             var grants = migration.prepareStatement(grantQuery)) {
+            assertEquals(schema, migration.getCatalog());
+            grants.setString(1, schema); grants.setString(2, account);
+            List<String> original = new ArrayList<>();
+            try (var rs = grants.executeQuery()) {
+                while (rs.next()) original.add(rs.getString(1) + ":" + rs.getString(2));
+            }
+            assertEquals(List.of("DELETE:NO", "INSERT:NO", "SELECT:NO", "UPDATE:NO"), original,
+                    "Do not change any grant other than the exact established disposable table privilege.");
+            String target = "`" + schema + "`.`organization`";
+            try {
+                statement.execute("REVOKE SELECT ON " + target + " FROM " + account);
+                // Demonstrate the actual SQL fault through the same application data source.
+                var denied = assertThrows(org.springframework.dao.DataAccessException.class,
+                        () -> jdbc.queryForObject("SELECT COUNT(*) FROM organization", Long.class));
+                boolean actualDenied = false;
+                for (Throwable cause = denied; cause != null; cause = cause.getCause()) {
+                    if (cause instanceof java.sql.SQLException sql && sql.getErrorCode() == 1142
+                            && "42000".equals(sql.getSQLState())) actualDenied = true;
+                }
+                assertTrue(actualDenied, "MySQL must actually deny SELECT (1142/42000).");
+                var failed = newClient().send(HttpRequest.newBuilder(URI.create(base() + endpoint))
+                        .timeout(java.time.Duration.ofSeconds(15)).GET().build(), HttpResponse.BodyHandlers.ofString());
+                assertEquals(500, failed.statusCode(), "A nonretryable SQL denial must not advertise ordinary or demo data.");
+                assertTrue(failed.headers().firstValue("Content-Type").orElse("").startsWith("application/json"));
+                assertTrue(failed.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
+                var envelope = json(failed);
+                assertEquals(Set.of("code", "message", "requestId"), envelope.keySet());
+                assertEquals("INTERNAL_ERROR", envelope.get("code").getAsString());
+                assertEquals("The request could not be completed.", envelope.get("message").getAsString());
+                String requestId = envelope.get("requestId").getAsString();
+                assertEquals(requestId, failed.headers().firstValue("X-Request-ID").orElseThrow());
+                assertDoesNotThrow(() -> UUID.fromString(requestId));
+                assertFalse(failed.body().contains(runtime) || failed.body().contains(schema));
+            } finally {
+                // Restore only the exact pre-existing non-grantable SELECT privilege, even on assertion failure.
+                statement.execute("GRANT SELECT ON " + target + " TO " + account);
+                List<String> restored = new ArrayList<>();
+                try (var rs = grants.executeQuery()) {
+                    while (rs.next()) restored.add(rs.getString(1) + ":" + rs.getString(2));
+                }
+                assertEquals(original, restored, "Original disposable privilege set must be restored.");
+            }
+        }
+        var recovered = get(newClient(), endpoint);
+        assertEquals(200, recovered.statusCode());
+        assertEquals(json(before).get("data"), json(recovered).get("data"));
+        assertEquals(organizationCount, organizations.count());
+        assertTrue(rows.equals(r07LifecycleRows(first.orgDbId, second.orgDbId)));
+        assertTrue(firstIdentity.equals(identityAuthRows(first)));
+        assertTrue(secondIdentity.equals(identityAuthRows(second)));
+        System.out.println("G01_R038_SQL_DENIAL_OK:actual1142=true http500=true noStore=true exactScopedRows=true restoredGrant=true recovered200=true");
+    }
+
     private record LoginRequest(String username, String password) { }
     private record NameRequest(String name) { }
     private record OrgRequest(UUID organizationId) { }
