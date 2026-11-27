@@ -11,6 +11,39 @@ using Microsoft.Win32.SafeHandles;
 // All changes remain under a verified native lock; no generic file/path write interface.
 public sealed partial class C9ControlLock {
     const int MaxJournal = 16384;
+    bool journalWorkerUncertain;
+    const string WorkerMarker = "ownership.worker-uncertain.tmp";
+
+    // The same held lock shares refusal across parent instances.
+    // Reopening refuses the retained staging marker through RefuseStaging.
+    internal void AssertJournalWorkerUsable() {
+        CheckCustody();
+        if (journalWorkerUncertain)
+            throw new InvalidOperationException("C9W_JOURNAL_WORKER_QUARANTINED");
+        RefuseStaging();
+    }
+
+    internal void MarkJournalWorkerUncertain() {
+        journalWorkerUncertain = true;
+        CheckCustody();
+        string path = Path.Combine(ControlPath,WorkerMarker);
+        byte[] data = Encoding.ASCII.GetBytes("C9W_JOURNAL_WORKER_UNCERTAIN\n");
+        using var me = WindowsIdentity.GetCurrent();
+        WithSecurity(me.User,false,sa => {
+            using var h = CreateFileNew(path,0xC0020080,0,ref sa,1,0x00200080,IntPtr.Zero);
+            if (h.IsInvalid)
+                throw new Win32Exception(Marshal.GetLastWin32Error(),"C9W_JOURNAL_WORKER_MARKER_CREATE");
+            AssertOwnerOnly(h,me.User);
+            CheckJournalFile(h,path);
+            using var stream = new FileStream(h,FileAccess.Write);
+            stream.Write(data,0,data.Length);
+            stream.Flush(true);
+        });
+        CheckCustody();
+        if (!SameSnapshot(ReadJournalFile(path,false),data))
+            throw new InvalidOperationException("C9W_JOURNAL_WORKER_MARKER_READBACK");
+        // Never automatically remove or overwrite this evidence.
+    }
     string JournalPath { get { return Path.Combine(ControlPath, "ownership.json"); } }
 
     void CheckCustody() {
@@ -30,8 +63,7 @@ public sealed partial class C9ControlLock {
     }
 
     internal byte[] ReadSnapshot() {
-        CheckCustody();
-        RefuseStaging();
+        AssertJournalWorkerUsable();
         return ReadJournalFile(JournalPath, true);
     }
 

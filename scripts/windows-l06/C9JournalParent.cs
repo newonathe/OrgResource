@@ -50,7 +50,7 @@ public sealed class C9JournalParent {
     }
 
     internal void AssertCurrentContext() {
-        owner.AssertHeld();
+        owner.AssertJournalWorkerUsable();
         if (isV2 && !initialContext.SameContext(C9LogonContext.Read()))
             throw new InvalidOperationException("C9W_JOURNAL_CONTEXT_CHANGED");
     }
@@ -100,7 +100,7 @@ public sealed class C9JournalParent {
     static FileStream Pin(string path, string expected) {
         if (!Digest(expected) || !Path.IsPathFullyQualified(path) ||
             !String.Equals(Path.GetFullPath(path), path, StringComparison.Ordinal) ||
-            (File.GetAttributes(path) & (FileAttributes.ReparsePoint | FileAttributes.Directory | FileAttributes.Offline)) != 0)
+            ((int)File.GetAttributes(path) & 0x441410) != 0)
             throw new InvalidOperationException("C9W_JOURNAL_TOOL");
         var s = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
         try {
@@ -147,6 +147,44 @@ public sealed class C9JournalParent {
         return output.ToArray();
     }
 
+    // Observe every independent I/O and exit task against one deadline.
+    // A failed bounded drain must not hide behind a blocked writer or exit wait.
+    static async Task AwaitAllBounded(List<Task> pending, CancellationToken ct) {
+        while (pending.Count != 0) {
+            Task next = await Task.WhenAny(pending).WaitAsync(ct).ConfigureAwait(false);
+            pending.Remove(next);
+            await next.ConfigureAwait(false);
+        }
+    }
+
+    static void ObserveFault(Task task) {
+        // A late fault is observed, not counted as confirmed cleanup.
+        _ = task.ContinueWith(t => { _ = t.Exception; },
+            CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted |
+            TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+    }
+
+    static async Task<bool> StopRootAndObserveIo(Process child, List<Task> tasks) {
+        bool rootStopped = false;
+        try {
+            // Exact returned process object and held handle only. No tree/PID scan.
+            if (!child.HasExited) {
+                try { child.Kill(); }
+                catch (InvalidOperationException) { if (!child.HasExited) throw; }
+                rootStopped = child.WaitForExit(5000) && child.HasExited;
+            } else rootStopped = true;
+        } catch { rootStopped = false; }
+        bool settled = false;
+        Task combined = Task.WhenAll(tasks);
+        try {
+            await combined.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            settled = true;
+        } catch { settled = tasks.TrueForAll(t => t.IsCompleted); }
+        ObserveFault(combined);
+        foreach (Task task in tasks) ObserveFault(task);
+        return rootStopped && settled;
+    }
+
     async Task<byte[]> Compute(byte[] input) {
         using var pinPythonDir = C9DirectoryIdentity.Open(Path.GetDirectoryName(python));
         using var pinSourceDir = C9DirectoryIdentity.Open(Path.GetDirectoryName(bridge));
@@ -160,7 +198,7 @@ public sealed class C9JournalParent {
             WorkingDirectory = owner.ControlPath
         };
         psi.ArgumentList.Add("-I");
-        if (isV2) psi.ArgumentList.Add("-S"); // suppress site initialization on this new transport
+        if (isV2) psi.ArgumentList.Add("-S");
         psi.ArgumentList.Add("-B"); psi.ArgumentList.Add(bridge);
         psi.Environment.Clear();
         string system = Environment.GetEnvironmentVariable("SystemRoot");
@@ -169,24 +207,73 @@ public sealed class C9JournalParent {
             throw new InvalidOperationException("C9W_JOURNAL_TOOL");
         psi.Environment["SystemRoot"] = system;
         psi.Environment["SystemDrive"] = drive;
-        using var child = Process.Start(psi) ?? throw new InvalidOperationException("C9W_JOURNAL_CHILD");
+        AssertCurrentContext();
+
         using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(20));
+        CancellationToken ct = deadline.Token;
+        Process child = null;
+        Stream stdin = null, stdout = null, err = null;
+        var tasks = new List<Task>(5);
+        byte[] result, stderr;
+        int exit;
+        // This remains ordinary Process.Start, not suspended job creation.
+        // Any ambiguous launch or transport failure quarantines the record.
         try {
-            var output = Drain(child.StandardOutput.BaseStream, MaxEnvelope + 1, deadline.Token);
-            var error = Drain(child.StandardError.BaseStream, 256, deadline.Token);
-            await child.StandardInput.BaseStream.WriteAsync(input.AsMemory(), deadline.Token).ConfigureAwait(false);
-            child.StandardInput.Close();
-            await child.WaitForExitAsync(deadline.Token).ConfigureAwait(false);
-            byte[] result = await output.ConfigureAwait(false);
-            byte[] stderr = await error.ConfigureAwait(false);
-            if (child.ExitCode != 0 || stderr.Length != 0 || result.Length == 0)
-                throw new InvalidOperationException("C9W_JOURNAL_CHILD");
-            return result;
+            child = Process.Start(psi) ?? throw new InvalidOperationException("C9W_JOURNAL_CHILD");
+            _ = child.SafeHandle;
+            stdin = child.StandardInput.BaseStream;
+            stdout = child.StandardOutput.BaseStream;
+            err = child.StandardError.BaseStream;
+            // Isolate synchronous portions of pipe operations too. Do not
+            // depend on cancellation alone to interrupt an arbitrary pipe.
+            var output = Task.Run(() => Drain(stdout, MaxEnvelope + 1, ct));
+            tasks.Add(output);
+            var error = Task.Run(() => Drain(err, 256, ct));
+            tasks.Add(error);
+            tasks.Add(Task.Run(async () => {
+                await stdin.WriteAsync(input.AsMemory(), ct).ConfigureAwait(false);
+                // Raw stream, no StreamWriter flush of a blocked pipe.
+                stdin.Dispose();
+            }));
+            tasks.Add(Task.Run(() => child.WaitForExitAsync(ct)));
+            await AwaitAllBounded(new List<Task>(tasks), ct).ConfigureAwait(false);
+            result = await output.ConfigureAwait(false);
+            stderr = await error.ConfigureAwait(false);
+            if (!child.HasExited) throw new InvalidOperationException("C9W_JOURNAL_CHILD_RUNNING");
+            exit = child.ExitCode;
+            stdout.Dispose();
+            err.Dispose();
+            child.Dispose();
         } catch {
-            // Only this owned process is signaled. No PID search or tree-wide kill.
-            try { if (!child.HasExited) { child.Kill(); child.WaitForExit(5000); } } catch { }
-            throw new InvalidOperationException("C9W_JOURNAL_CHILD");
+            // Persist refusal before attempting cleanup. No exception text,
+            // journal bytes, private paths or worker output in the marker.
+            bool recorded = false, stopped = false;
+            try { owner.MarkJournalWorkerUncertain(); recorded = true; }
+            catch { /* shared memory refusal set before persistence */ }
+            try {
+                tasks.Add(deadline.CancelAsync());
+                if (child != null)
+                    stopped = await StopRootAndObserveIo(child,tasks).ConfigureAwait(false);
+                else foreach (Task task in tasks) ObserveFault(task);
+                if (tasks.TrueForAll(t => t.IsCompleted)) {
+                    // No outstanding task can be using these streams now.
+                    try { stdin?.Dispose(); }
+                    finally { try { stdout?.Dispose(); } finally { err?.Dispose(); } }
+                }
+            } catch { stopped = false; }
+            finally {
+                try { child?.Dispose(); } catch { stopped = false; }
+            }
+            if (!recorded) throw new InvalidOperationException("C9W_JOURNAL_WORKER_MARKER_FAILED");
+            if (!stopped) throw new InvalidOperationException("C9W_JOURNAL_WORKER_STOP_UNKNOWN");
+            // Root/pipe observations do not prove all descendants stopped.
+            throw new InvalidOperationException("C9W_JOURNAL_WORKER_QUARANTINED");
         }
+        // A fully observed transport with nonzero exit or stderr is a protocol
+        // refusal. Retain the existing v1/v2 incompatibility refusal oracle.
+        if (exit != 0 || stderr.Length != 0 || result.Length == 0)
+            throw new InvalidOperationException("C9W_JOURNAL_CHILD");
+        return result;
     }
 
     // Single-threaded parent. An uncertain result requires refusal, never automatic retry.
