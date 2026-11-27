@@ -12,17 +12,25 @@ using Microsoft.Win32.SafeHandles;
 // Every child is created suspended, checked by HANDLE (never by PID), then resumed.
 public sealed class C9Process : IDisposable {
     internal IntPtr H; public int Pid; public string Role;
+    internal Action MarkUncertain;
+    void Uncertain() { MarkUncertain?.Invoke(); }
     public bool HasExited { get { return Wait(0); } }
     public bool Wait(int ms) {
         if (H == IntPtr.Zero || ms < 0) throw new InvalidOperationException("C9W_PROCESS_WAIT_ARGUMENT");
         uint result = N.WaitForSingleObject(H, (uint)ms);
-        return C9Lifecycle.WaitResult(result, Marshal.GetLastWin32Error());
+        int error = Marshal.GetLastWin32Error();
+        try { return C9Lifecycle.WaitResult(result, error); }
+        catch { Uncertain(); throw; }
     }
     public int ExitCode {
         get {
             if (!HasExited) throw new InvalidOperationException("C9W_PROCESS_RUNNING");
             uint c;
-            if (!N.GetExitCodeProcess(H, out c)) throw new Win32Exception(Marshal.GetLastWin32Error(), "C9W_PROCESS_EXIT_CODE");
+            if (!N.GetExitCodeProcess(H, out c)) {
+                int error = Marshal.GetLastWin32Error();
+                Uncertain();
+                throw new Win32Exception(error, "C9W_PROCESS_EXIT_CODE");
+            }
             return unchecked((int)c);
         }
     }
@@ -33,13 +41,21 @@ public sealed class C9Process : IDisposable {
             // A natural exit may race the signal. Only a signaled held HANDLE
             // confirms that the process ended; an API failure is not a timeout.
             if (error == 5 && HasExited) return;
+            Uncertain();
             throw new Win32Exception(error, "C9W_PROCESS_TERMINATE");
         }
-        if (!Wait(10000)) throw new InvalidOperationException("C9W_PROCESS_STOP_TIMEOUT");
+        if (!Wait(10000)) {
+            Uncertain();
+            throw new InvalidOperationException("C9W_PROCESS_STOP_TIMEOUT");
+        }
     }
     public void Dispose() {
         if (H == IntPtr.Zero) return;
-        if (!N.CloseHandle(H)) throw new Win32Exception(Marshal.GetLastWin32Error(), "C9W_PROCESS_HANDLE_CLOSE");
+        if (!N.CloseHandle(H)) {
+            int error = Marshal.GetLastWin32Error();
+            Uncertain();
+            throw new Win32Exception(error, "C9W_PROCESS_HANDLE_CLOSE");
+        }
         H = IntPtr.Zero;
     }
 }
@@ -84,8 +100,14 @@ public sealed class C9Container : IDisposable {
     }
     public int ActiveProcesses { get {
         int n = Marshal.SizeOf(typeof(N.JOBOBJECT_BASIC_ACCOUNTING_INFORMATION)); IntPtr p = Marshal.AllocHGlobal(n);
-        try { if (!N.QueryInformationJobObject(job, 1, p, n, IntPtr.Zero)) throw new Win32Exception();
-            return (int)((N.JOBOBJECT_BASIC_ACCOUNTING_INFORMATION)Marshal.PtrToStructure(p, typeof(N.JOBOBJECT_BASIC_ACCOUNTING_INFORMATION))).ActiveProcesses; }
+        try {
+            if (job == IntPtr.Zero) throw new InvalidOperationException("C9W_JOB_UNUSABLE");
+            if (!N.QueryInformationJobObject(job, 1, p, n, IntPtr.Zero))
+                throw new Win32Exception(Marshal.GetLastWin32Error(), "C9W_JOB_ACCOUNTING");
+            uint count = ((N.JOBOBJECT_BASIC_ACCOUNTING_INFORMATION)Marshal.PtrToStructure(p, typeof(N.JOBOBJECT_BASIC_ACCOUNTING_INFORMATION))).ActiveProcesses;
+            if (count > 96) throw new InvalidOperationException("C9W_JOB_ACCOUNTING");
+            return (int)count;
+        } catch { lifecycleUncertain = true; throw; }
         finally { Marshal.FreeHGlobal(p); } } }
     static string Quote(string a) {
         if (a.Length > 0 && a.IndexOfAny(new[]{' ','\t','"'}) < 0) return a;
@@ -135,6 +157,7 @@ public sealed class C9Container : IDisposable {
             N.PROCESS_INFORMATION pi;
             if (!N.CreateProcessW(exe, cmd, IntPtr.Zero, IntPtr.Zero, true, 0x80000u|0x400u|0x4u|0x08000000u, envp, cwd, ref si, out pi)) throw new Win32Exception(Marshal.GetLastWin32Error(), "C9W_CREATE " + role);
             var proc = new C9Process(); proc.H = pi.hProcess; proc.Pid = pi.dwProcessId; proc.Role = role;
+            proc.MarkUncertain = () => { lifecycleUncertain = true; };
             try {
                 Verify(proc);
                 if (resume) C9Lifecycle.RequireInitialResume(N.ResumeThread(pi.hThread));
@@ -228,6 +251,9 @@ public sealed class C9Container : IDisposable {
     public bool KillAll() {
         if (job == IntPtr.Zero) return !lifecycleUncertain;
         try {
+            // The serial owner may already have observed an empty job (including
+            // the producer's explicit KillAll followed by Dispose).
+            if (ActiveProcesses == 0) return !lifecycleUncertain;
             if (!N.TerminateJobObject(job, 139))
                 throw new Win32Exception(Marshal.GetLastWin32Error(), "C9W_JOB_TERMINATE");
             var clock = System.Diagnostics.Stopwatch.StartNew();
