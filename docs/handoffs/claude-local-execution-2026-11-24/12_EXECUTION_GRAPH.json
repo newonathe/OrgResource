@@ -2,7 +2,7 @@
   "schema": "orgresource.pre_handoff.execution_graph.v2",
   "date": "2026-11-24 PHT",
   "ready_to_launch": false,
-  "decision": "Academic-only Codex dispatch prepared (Report123); owner manual start, not private L06 authorization. Report122 objective controls. Existing formal states and dependencies unchanged.",
+  "decision": "Owner clarified production-ready Extended C is academic completion goal; Report124 controls priority. Pre-handoff execution reopened; private L06 HOLD unchanged.",
   "verified_source": {
     "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
     "tree": "180f9708b78a9479d50531edbd04e0dee48a57e7",
@@ -486,7 +486,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "Pre-handoff P01–P12 bounded preparation closed. Owner manually starts Codex AC0–AC7 on clean academic feature worktree from main 96741bbd; use Report123 Launch readback launch instructions. No more speculative remote work. Private L06 HOLD, commercial and CPX scope nonblocking unless academically required; actual native and student acceptance remain open."
+    "next_action": "Resume ChatGPT feasible pre-Codex work under production-ready Extended C academic objective. Reopen Report65/78 privacy flags and exact package allowlists, Report99/101 actual residuals and Report58/60/67 CPX dependencies; select first authorized unresolved remote source/test/package correction, execute and verify, continue independent work around P0/private/native gates. Do not default to another plan or hand over all remaining engineering. Then Codex completes genuinely local-dependent remaining work using Report121 M0–M10 and Report123 AC0–AC7 academic lane; student/independent/operator gates remain."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -2737,7 +2737,7 @@
   },
   "master_completion_dispatch": {
     "executor": "CODEX_CLI",
-    "state": "OWNER_MANUAL_START_REQUIRED",
+    "state": "PRE_HANDOFF_FEASIBLE_REMOTE_EXECUTION_RESUMED",
     "report": "docs/handoffs/claude-local-execution-2026-11-24/121_CODEX_MASTER_COMPLETION_PROGRAM.md",
     "candidate": "b762c4195393ae92e03ee149531ca0ab944f438b",
     "scope": "Existing H/L/G/CPX completion program; implementation/qualification subject to dependencies",
@@ -2746,7 +2746,7 @@
     "product_scope": "AUTHORIZED_CONDITIONAL_POST_P0",
     "actual_operational_gates": "UNCHANGED",
     "canonical_task_ids_unchanged": true,
-    "academic_priority": "A strict compliance + C academic demo/package first; optional production work nonblocking",
+    "academic_priority": "Strict A submission and C academic deliverables in parallel with full production qualification, not substitute for production readiness",
     "batches": [
       "M0",
       "M1",
@@ -2760,11 +2760,11 @@
       "M9",
       "M10"
     ],
-    "objective": "ACADEMIC_COMPLETION_EXTENDED_C",
-    "priority_report": "docs/handoffs/claude-local-execution-2026-11-24/123_ACADEMIC_CODEX_EXECUTION_HANDOFF.md",
-    "production_scope": "PRESERVED_NOT_DEFAULT_ACADEMIC_PREREQUISITE",
+    "objective": "PRODUCTION_READY_EXTENDED_C_FOR_ACADEMIC_COMPLETION",
+    "priority_report": "docs/handoffs/claude-local-execution-2026-11-24/124_PRODUCTION_READY_ACADEMIC_OBJECTIVE.md",
+    "production_scope": "REQUIRED_OWNER_COMPLETION_STANDARD_SUBJECT_TO_EXISTING_GATES",
     "academic_dispatch": {
-      "state": "OWNER_MANUAL_START_REQUIRED",
+      "state": "ACADEMIC_LANE_PREPARED_NOT_FINAL_HANDOVER",
       "report": "docs/handoffs/claude-local-execution-2026-11-24/123_ACADEMIC_CODEX_EXECUTION_HANDOFF.md",
       "base": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
       "courseA": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
@@ -2796,6 +2796,7 @@
       ],
       "native_execution": "NOT_RUN",
       "private_l06_ready": false
-    }
+    },
+    "pre_handoff_next": "Resume ChatGPT feasible pre-Codex work under production-ready Extended C academic objective. Reopen Report65/78 privacy flags and exact package allowlists, Report99/101 actual residuals and Report58/60/67 CPX dependencies; select first authorized unresolved remote source/test/package correction, execute and verify, continue independent work around P0/private/native gates. Do not default to another plan or hand over all remaining engineering. Then Codex completes genuinely local-dependent remaining work using Report121 M0–M10 and Report123 AC0–AC7 academic lane; student/independent/operator gates remain."
   }
 }
