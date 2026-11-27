@@ -25,6 +25,7 @@ function Hash([string] $p) { (Get-FileHash -LiteralPath $p -Algorithm SHA256).Ha
 foreach ($case in @(
     @{Mode='echo';Exit=0;Failure='';Timeout=8000},
     @{Mode='nonzero';Exit=23;Failure='';Timeout=8000},
+    @{Mode='child-denied';Exit=0;Failure='';Timeout=8000},
     @{Mode='overflow';Exit=-1;Failure='C9W_WORKER_PIPE_OVERFLOW';Timeout=8000},
     @{Mode='hang';Exit=-1;Failure='C9W_WORKER_TIMEOUT';Timeout=3000}
 )) {
