@@ -1,5 +1,11 @@
 # 14 — Current cross-chat continuation protocol
 
+## Current - Terminal Extended C regression receipts (2026-11-28 PHT)
+
+[Report147](https://github.com/newonathe/OrgResource/blob/docs/claude-local-execution-handoff-2026-11-24/docs/handoffs/claude-local-execution-2026-11-24/147_TERMINAL_REGRESSION_RECEIPTS.md): PR59 exact 0b07f45 103 Maven/78 identity, handoff exact ad0616b 91 Maven/66 identity, both React38/Newman110/Playwright19, zero failures and terminal success. Both Report146 pending Extended jobs terminal actual success. No repeat unchanged verification. First six-fixture native batch remains NOT_RUN and blocked on owner-approved dedicated nonadmin Windows NTFS roots and trusted tools. Advance materially distinct authorized remote defects/academic delivery under Report124; do not generate speculative wrappers. Private L06 HOLD/no WSL; no valid ConPTY until independent outer/console-host acceptance; H03/H06 settlement, full native package/operator, P0/L07/93 independent/13 privacy/student gates unchanged. No merge/deploy/release.
+
+
+
 ## Current - Fictional native dispatch preparation (2026-11-28 PHT)
 
 [Report146](https://github.com/newonathe/OrgResource/blob/a6eef5778f1d6fb0d3aef3aceab25547ea2ae1cc/docs/handoffs/claude-local-execution-2026-11-24/146_FICTIONAL_NATIVE_DISPATCH_PREPARATION.md): Exact six-fixture fictional native dispatch prepared; 16 unique source blobs and seven separate root labels checked against harness768418c9; actual native effects NOT_RUN. Handoff CourseA61/160/1 repeat passed. Consume pending PR59 Extended140740862802 and handoff Extended140742710573 actual terminal logs. First six-fixture native batch prepared, blocked on owner-approved dedicated nonadmin Windows NTFS roots and trusted tools. Advance materially distinct eligible defects/academic delivery, no speculative wrappers or repeat unchanged checks. Report124 controls. Private L06 HOLD/no WSL, no valid ConPTY until independent outer/console-host acceptance, H03/H06 settlement/full native package/operator/P0/L07/93 independent/13 privacy/student gates unchanged. No merge/deploy/release.

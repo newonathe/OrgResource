@@ -3434,16 +3434,20 @@
         "job": 140740863234,
         "oracle": "Latest exact PR59 Course A automatic actual logs",
         "actual": "61 Maven zero failures/errors/skips,160 Newman assertions zero failures, browser1; terminal success."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "0b07f45c0eb6482b9dcdd8f38f0d8cdb6bdf6427",
+        "run": 46068914869,
+        "job": 140740862802,
+        "oracle": "Exact PR59 Extended C automatic regression",
+        "actual": "Terminal success; actual checkout; 103 Maven (78 identity), zero failures/errors/skips; React38; Newman90+20 zero failures; Playwright19; isolated fictional additive/partial restore and row dump equality."
       }
     ],
-    "pending_runs": [
-      46068914869
-    ],
-    "pending_jobs": [
-      140740862802
-    ],
+    "pending_runs": [],
+    "pending_jobs": [],
     "native_state": "NOT_RUN",
-    "next": "Inspect pending latest PR59 Extended140740862802 and handoff Verify46069481376 CourseA140742710627/Extended140742710573 terminal actual logs. Do not repeat unchanged compile/guard checks. Next bounded approved nonadmin owner-only NTFS fictional native H03/H06 fixture dispatch; no valid ConPTY launch before independent outer/console-host acceptance contract. Full native package/operator, H03/H06 settlement, private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates remain. Report124 controls production-ready academic objective; strict A protected. No merge/deploy/release."
+    "next": "Both Report146 pending Extended jobs terminal actual success. No repeat unchanged verification. First six-fixture native batch remains NOT_RUN and blocked on owner-approved dedicated nonadmin Windows NTFS roots and trusted tools. Advance materially distinct authorized remote defects/academic delivery under Report124; do not generate speculative wrappers. Private L06 HOLD/no WSL; no valid ConPTY until independent outer/console-host acceptance; H03/H06 settlement, full native package/operator, P0/L07/93 independent/13 privacy/student gates unchanged. No merge/deploy/release."
   },
   "isolated_native_fixture_compile_closure": {
     "report": "docs/handoffs/claude-local-execution-2026-11-24/145_ISOLATED_NATIVE_FIXTURE_COMPILE_CLOSURE.md",
@@ -3497,16 +3501,20 @@
         "job": 140742710627,
         "oracle": "Handoff Course A regression",
         "actual": "Actual exact checkout, 61 Maven zero failures/errors/skips,160 Newman assertions zero failures, browser1; terminal success."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "ad0616bbce23d6e38421ac8108b1b5895411bbf9",
+        "run": 46069481376,
+        "job": 140742710573,
+        "oracle": "Exact handoff automatic Extended C regression",
+        "actual": "Terminal success; actual checkout; 91 Maven (66 identity), zero failures/errors/skips; React38; Newman90+20 zero failures; Playwright19; isolated fictional additive/partial restore and row dump equality."
       }
     ],
-    "pending_runs": [
-      46069481376
-    ],
-    "pending_jobs": [
-      140742710573
-    ],
+    "pending_runs": [],
+    "pending_jobs": [],
     "native_state": "NOT_RUN",
-    "next": "Consume pending PR59 Extended140740862802 and handoff Extended140742710573 actual terminal logs. First six-fixture native batch prepared, blocked on owner-approved dedicated nonadmin Windows NTFS roots and trusted tools. Advance materially distinct eligible defects/academic delivery, no speculative wrappers or repeat unchanged checks. Report124 controls. Private L06 HOLD/no WSL, no valid ConPTY until independent outer/console-host acceptance, H03/H06 settlement/full native package/operator/P0/L07/93 independent/13 privacy/student gates unchanged. No merge/deploy/release."
+    "next": "Both Report146 pending Extended jobs terminal actual success. No repeat unchanged verification. First six-fixture native batch remains NOT_RUN and blocked on owner-approved dedicated nonadmin Windows NTFS roots and trusted tools. Advance materially distinct authorized remote defects/academic delivery under Report124; do not generate speculative wrappers. Private L06 HOLD/no WSL; no valid ConPTY until independent outer/console-host acceptance; H03/H06 settlement, full native package/operator, P0/L07/93 independent/13 privacy/student gates unchanged. No merge/deploy/release."
   },
   "fictional_native_dispatch_prepared": {
     "report": "docs/handoffs/claude-local-execution-2026-11-24/146_FICTIONAL_NATIVE_DISPATCH_PREPARATION.md",
@@ -3526,6 +3534,48 @@
     "roots": 7,
     "native_state": "NOT_RUN",
     "owner_environment_verified": false,
-    "next": "Consume pending PR59 Extended140740862802 and handoff Extended140742710573 actual terminal logs. First six-fixture native batch prepared, blocked on owner-approved dedicated nonadmin Windows NTFS roots and trusted tools. Advance materially distinct eligible defects/academic delivery, no speculative wrappers or repeat unchanged checks. Report124 controls. Private L06 HOLD/no WSL, no valid ConPTY until independent outer/console-host acceptance, H03/H06 settlement/full native package/operator/P0/L07/93 independent/13 privacy/student gates unchanged. No merge/deploy/release."
+    "next": "Both Report146 pending Extended jobs terminal actual success. No repeat unchanged verification. First six-fixture native batch remains NOT_RUN and blocked on owner-approved dedicated nonadmin Windows NTFS roots and trusted tools. Advance materially distinct authorized remote defects/academic delivery under Report124; do not generate speculative wrappers. Private L06 HOLD/no WSL; no valid ConPTY until independent outer/console-host acceptance; H03/H06 settlement, full native package/operator, P0/L07/93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+    "terminal_regression_receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "0b07f45c0eb6482b9dcdd8f38f0d8cdb6bdf6427",
+        "run": 46068914869,
+        "job": 140740862802,
+        "oracle": "Exact PR59 Extended C automatic regression",
+        "actual": "Terminal success; actual checkout; 103 Maven (78 identity), zero failures/errors/skips; React38; Newman90+20 zero failures; Playwright19; isolated fictional additive/partial restore and row dump equality."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "ad0616bbce23d6e38421ac8108b1b5895411bbf9",
+        "run": 46069481376,
+        "job": 140742710573,
+        "oracle": "Exact handoff automatic Extended C regression",
+        "actual": "Terminal success; actual checkout; 91 Maven (66 identity), zero failures/errors/skips; React38; Newman90+20 zero failures; Playwright19; isolated fictional additive/partial restore and row dump equality."
+      }
+    ]
+  },
+  "terminal_regression_receipts_147": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/147_TERMINAL_REGRESSION_RECEIPTS.md",
+    "blob": "35129c6cddc91eb6ca33ede4bdc4f0635388d6dd",
+    "state": "VERIFIED_BOUNDED",
+    "receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "0b07f45c0eb6482b9dcdd8f38f0d8cdb6bdf6427",
+        "run": 46068914869,
+        "job": 140740862802,
+        "oracle": "Exact PR59 Extended C automatic regression",
+        "actual": "Terminal success; actual checkout; 103 Maven (78 identity), zero failures/errors/skips; React38; Newman90+20 zero failures; Playwright19; isolated fictional additive/partial restore and row dump equality."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "ad0616bbce23d6e38421ac8108b1b5895411bbf9",
+        "run": 46069481376,
+        "job": 140742710573,
+        "oracle": "Exact handoff automatic Extended C regression",
+        "actual": "Terminal success; actual checkout; 91 Maven (66 identity), zero failures/errors/skips; React38; Newman90+20 zero failures; Playwright19; isolated fictional additive/partial restore and row dump equality."
+      }
+    ],
+    "next": "Both Report146 pending Extended jobs terminal actual success. No repeat unchanged verification. First six-fixture native batch remains NOT_RUN and blocked on owner-approved dedicated nonadmin Windows NTFS roots and trusted tools. Advance materially distinct authorized remote defects/academic delivery under Report124; do not generate speculative wrappers. Private L06 HOLD/no WSL; no valid ConPTY until independent outer/console-host acceptance; H03/H06 settlement, full native package/operator, P0/L07/93 independent/13 privacy/student gates unchanged. No merge/deploy/release."
   }
 }
