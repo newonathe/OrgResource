@@ -127,3 +127,6 @@ jobs:
           $output = @(& $exe '--fictional-conpty-v1' 2>&1)
           if ($LASTEXITCODE -ne 71 -or $output.Count -ne 0) { throw 'Incomplete helper invocation refusal failed' }
           'C9W_H06_HELPER_BUILD_AND_DIRECT_REFUSAL_OK:files=4 refusal_cases=2 native_effects_not_run=true'
+          # Both exact nonzero refusal exits and empty outputs were asserted above.
+          # Do not let the final expected native LASTEXITCODE propagate to the runner.
+          exit 0
