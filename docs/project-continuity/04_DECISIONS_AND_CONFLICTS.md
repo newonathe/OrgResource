@@ -395,3 +395,7 @@ Decision: selected masked login output does not prove absence of default groups;
 ## Current — H06 fictional ConPTY separation (2026-11-28 PHT)
 
 Decision: separate reader, writer and close tasks and a dedicated job are necessary but not a complete independent watchdog; compile-only and parser results cannot establish native lifecycle correctness. The fictional entrypoint is private and the fixture refuses until independently supervised. Preserve real credential quarantine, owner-only root and all H03/H06 dependencies. See [Report137](https://github.com/newonathe/OrgResource/blob/01330a77b4483447edd46156d8ffa5908ee1382a/docs/handoffs/claude-local-execution-2026-11-24/137_H06_FICTIONAL_CONPTY_SOURCE_AND_COMPILE_RECEIPT.md).
+
+## Current — H06 outer watchdog surrogate (2026-11-28 PHT)
+
+Reuse the existing owned Job Object launcher for a separate fictional process tree and retain one-shot intent. This does not yet supervise the private ConPTY helper; native six-case fixture and actual helper binding remain open. Do not infer complete descendant termination from accounting alone. See [Report138](https://github.com/newonathe/OrgResource/blob/2ead1b940a86ee0214bbe151ee59b9e6525234d7/docs/handoffs/claude-local-execution-2026-11-24/138_H06_OUTER_WATCHDOG_SURROGATE.md).
