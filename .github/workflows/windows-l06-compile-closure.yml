@@ -13,13 +13,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 839db889534c4cc8a2839396463246b948d35cb5
+          ref: 768418c9b503e280fa363668d5362fcce3cb6dba
           persist-credentials: false
       - name: Compile exact H01 H03 H06 dependency union without invoking native code
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          if ((git rev-parse HEAD) -cne '839db889534c4cc8a2839396463246b948d35cb5' -or $LASTEXITCODE -ne 0) { throw 'Wrong candidate' }
+          if ((git rev-parse HEAD) -cne '768418c9b503e280fa363668d5362fcce3cb6dba' -or $LASTEXITCODE -ne 0) { throw 'Wrong candidate' }
           $pins = [ordered]@{
             'C9DirectoryIdentity.cs' = '67d705d9d66f0ca05cee018900b346d913d687b3'
             'C9ControlLock.cs' = '9dfc3fdb42c40ae5622676d22795eb3c61a2f2ab'
@@ -29,12 +29,12 @@ jobs:
             'C9LogonContext.cs' = 'fe2d1bd497badb36eb6c93379c0577e100553b6b'
             'C9ProfileStorageObservation.cs' = 'c29a49ef65abe02965ffa471ff16e2d2e6d600a4'
             'C9Contain.cs' = '45a93d294f52da3af9139531a36bd8d97c0e344b'
-            'C9OwnedJobProbe.cs' = '4295411b0bf7c9e488e440da214a5699951b643a'
+            'C9OwnedJobProbe.cs' = '300fb80a3b8a63be752e09d51979a10a4fd7e16e'
             'C9OwnershipProducer.cs' = '1195a098e4bb3d6fa6556d2cf6df9ece3319df6e'
             'C9WorkCreation.cs' = '69106d16b9373e7610db5783847e85d93e45381b'
             'C9LoginCustody.cs' = 'd3ccbd4189b6900e0351d1fa7a4015706f7dc986'
-            'C9FictionalConPty.cs' = '7dc743138867fe78d984d896e4a1277f26791e02'
-            'C9PtyHelper.cs' = '2be0f52db77b5dfa7564e20a88a3c6258cac8f03'
+            'C9FictionalConPty.cs' = 'd85936f1132416b824cd4a5806f0c9511bbf66ae'
+            'C9PtyHelper.cs' = '91c4112d087d5f61f8fb296edfa19a050bcee3c4'
             'C9RetentionStage.cs' = 'a94dffe4c79443fb5bc38874fd984f1b3d7478b6'
           }
           $paths = @()
@@ -111,6 +111,15 @@ jobs:
           if ($recordsOutput.Count -ne 1 -or $recordsOutput[0] -cne 'C9W_H06_PTY_RECORDS_OK:positive=8 negative=23 native_effects_not_run=true') { throw 'Pure record oracle failed' }
           $recordsOutput[0]
 
+          $wire = 'scripts/windows-l06/test-pty-client-witness.ps1'
+          $wireBlob = git rev-parse "HEAD:$wire"
+          if ($LASTEXITCODE -ne 0 -or $wireBlob -cne '3b56e19e296ced6cccc082ca67d8e078de5e06e8') { throw 'Wrong witness fixture blob' }
+          $wireActual = git hash-object --path=$wire $wire
+          if ($LASTEXITCODE -ne 0 -or $wireActual -cne $wireBlob) { throw 'Wrong witness fixture content' }
+          $wireOutput = @(& (Resolve-Path -LiteralPath $wire).Path)
+          if ($wireOutput.Count -ne 1 -or $wireOutput[0] -cne 'C9W_H06_PTY_CLIENT_WIRE_OK:positive=3 negative=12 native_effects_not_run=true') { throw 'Pure witness wire oracle failed' }
+          $wireOutput[0]
+
           # Build the actual fixed framework-dependent helper. No valid launch
           # args, native root, credentials, SQL, ConPTY or native test execution.
           $project = 'scripts/windows-l06/fictional-helper/C9PtyHelper.csproj'
@@ -134,7 +143,7 @@ jobs:
           $exe = Join-Path $out 'C9PtyHelper.exe'
           $output = @(& $exe 2>&1)
           if ($LASTEXITCODE -ne 71 -or $output.Count -ne 0) { throw 'Direct helper refusal failed' }
-          $output = @(& $exe '--fictional-conpty-v1' 2>&1)
+          $output = @(& $exe '--fictional-conpty-v2' 2>&1)
           if ($LASTEXITCODE -ne 71 -or $output.Count -ne 0) { throw 'Incomplete helper invocation refusal failed' }
           'C9W_H06_HELPER_BUILD_AND_DIRECT_REFUSAL_OK:files=4 refusal_cases=2 native_effects_not_run=true'
           # Both exact nonzero refusal exits and empty outputs were asserted above.
