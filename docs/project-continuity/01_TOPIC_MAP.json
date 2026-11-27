@@ -149,7 +149,7 @@
         }
       ],
       "authority": "Parallel PR9 requirements research; course PDFs still primary.",
-      "next": "Inspect terminal actual logs for PR59 Verify46067620499 Java8 job140736654194 and Extended140736653799 and prior handoff Extended140734859634. Repair observed failures only. Full native package/operator, H03/H06 native and console-host attribution, private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates remain. Report124 controls production-ready academic objective; strict A protected. No merge/deploy/release.",
+      "next": "Inspect prior PR59 Extended140736653799 and latest Verify46068914869 Java8 job140740863234/Extended140740862802 actual terminal logs. Repair observed failures only; no repeat unchanged guards. Full native package/operator, H03/H06 native and console-host attribution, private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates remain. Report124 controls production-ready academic objective; strict A protected. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
@@ -202,6 +202,12 @@
           "blob": "32351490b69727a11c76b38cb0f730c984d26574",
           "ref": "ece08d1d56714f0676d8234286bcbc8a0ef8f4ee",
           "review": "FULL report and actual 49 focused cases plus React repeat; native NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/144_READ_ONLY_PACKAGE_INTEGRITY_CHECKER.md",
+          "blob": "070ad1f15502c4869d169e1abad6a096d04759a1",
+          "ref": "6bd08c8cb2333a85beb9dbabd09ac71e229a92a5",
+          "review": "FULL report and actual 61 focused cases; native NOT_RUN"
         }
       ]
     },
@@ -217,7 +223,7 @@
         }
       ],
       "authority": "Parallel PR10 exact execution specs; not active source or completed tests.",
-      "next": "Inspect terminal actual logs for PR59 Verify46067620499 Java8 job140736654194 and Extended140736653799 and prior handoff Extended140734859634. Repair observed failures only. Full native package/operator, H03/H06 native and console-host attribution, private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates remain. Report124 controls production-ready academic objective; strict A protected. No merge/deploy/release.",
+      "next": "Inspect prior PR59 Extended140736653799 and latest Verify46068914869 Java8 job140740863234/Extended140740862802 actual terminal logs. Repair observed failures only; no repeat unchanged guards. Full native package/operator, H03/H06 native and console-host attribution, private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates remain. Report124 controls production-ready academic objective; strict A protected. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/122_ACADEMIC_FIRST_EXTENDED_C_OBJECTIVE.md",
@@ -260,6 +266,12 @@
           "blob": "32351490b69727a11c76b38cb0f730c984d26574",
           "ref": "ece08d1d56714f0676d8234286bcbc8a0ef8f4ee",
           "review": "FULL report and actual 49 focused cases plus React repeat; native NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/144_READ_ONLY_PACKAGE_INTEGRITY_CHECKER.md",
+          "blob": "070ad1f15502c4869d169e1abad6a096d04759a1",
+          "ref": "6bd08c8cb2333a85beb9dbabd09ac71e229a92a5",
+          "review": "FULL report and actual 61 focused cases; native NOT_RUN"
         }
       ]
     },
@@ -454,7 +466,7 @@
         }
       ],
       "authority": "Actual exact-main integration and historical phase receipts; exact head and bounded scope only.",
-      "next": "Current merged exact-main bounded CI only; preserve V1–V7. G01 residual and G03 formal evidence pending; do not repeat unchanged regression or implement CPX without approval.",
+      "next": "Inspect prior PR59 Extended140736653799 and latest Verify46068914869 Java8 job140740863234/Extended140740862802 actual terminal logs. Repair observed failures only; no repeat unchanged guards. Full native package/operator, H03/H06 native and console-host attribution, private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates remain. Report124 controls production-ready academic objective; strict A protected. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/129_PACKAGE_MIGRATION_BYTE_INTEGRITY_AND_OVERLAP.md",
@@ -479,6 +491,12 @@
           "blob": "e3f91762a335ce876fbe82dc5a0c4a548e9bb641",
           "ref": "7df3497e2ac08ff8a92b71f1a528fe0c547aadb0",
           "review": "Actual terminal Extended receipt, native gates unchanged"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/144_READ_ONLY_PACKAGE_INTEGRITY_CHECKER.md",
+          "blob": "070ad1f15502c4869d169e1abad6a096d04759a1",
+          "ref": "6bd08c8cb2333a85beb9dbabd09ac71e229a92a5",
+          "review": "FULL report and actual 61 focused cases; native NOT_RUN"
         }
       ]
     },
@@ -2742,7 +2760,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "Inspect terminal actual logs for PR59 Verify46067620499 Java8 job140736654194 and Extended140736653799 and prior handoff Extended140734859634. Repair observed failures only. Full native package/operator, H03/H06 native and console-host attribution, private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates remain. Report124 controls production-ready academic objective; strict A protected. No merge/deploy/release.",
+      "next": "Inspect prior PR59 Extended140736653799 and latest Verify46068914869 Java8 job140740863234/Extended140740862802 actual terminal logs. Repair observed failures only; no repeat unchanged guards. Full native package/operator, H03/H06 native and console-host attribution, private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates remain. Report124 controls production-ready academic objective; strict A protected. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -3347,6 +3365,12 @@
           "blob": "32351490b69727a11c76b38cb0f730c984d26574",
           "ref": "ece08d1d56714f0676d8234286bcbc8a0ef8f4ee",
           "review": "FULL report and actual 49 focused cases plus React repeat; native NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/144_READ_ONLY_PACKAGE_INTEGRITY_CHECKER.md",
+          "blob": "070ad1f15502c4869d169e1abad6a096d04759a1",
+          "ref": "6bd08c8cb2333a85beb9dbabd09ac71e229a92a5",
+          "review": "FULL report and actual 61 focused cases; native NOT_RUN"
         }
       ]
     }

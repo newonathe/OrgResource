@@ -3312,9 +3312,7 @@
       "oracle": "Exact 15-source compile, five parsers, 31 prior record + 15 pure wire assertions, fixed helper build/four hashes and two direct malformed refusals",
       "actual": "All actual markers and terminal success; 3 positive/12 refusal wire cases; 42 platform warnings/0 errors; valid native invocation NOT_RUN."
     },
-    "pending_runs": [
-      46067070581
-    ],
+    "pending_runs": [],
     "native_state": "NOT_RUN",
     "next": "PR59 exact a92e4841 full-source ZIP/path/blob guard, 16 new cases staged; existing 33 migration cases preserved. Exact workflow runs 46067620499 listed; inspect actual logs. Consume exact focused and automatic receipts, fix observed failures only, then full native package/operator remains separate. H06 prior compile/wire bounded; Course A automatic passed, Extended automatic receipt pending. Native console-host/handle transfer and H03/H06 settlement remain blocked/not run; private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged. Report124 controls production-ready academic objective, strict A protected. No merge/deploy/release.",
     "automatic_receipts": [
@@ -3349,11 +3347,17 @@
         "job": 140734859381,
         "oracle": "Automatic Course A repeat actual logs",
         "actual": "Exact checkout; 61 Maven zero fail/error/skip, 160 Newman assertions zero failures, one browser passed; repeat coverage."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "17e81bce4c452ca0c20dca70e6c19754e3b56afb",
+        "run": 46067070581,
+        "job": 140734859634,
+        "oracle": "Prior handoff Extended automatic actual logs",
+        "actual": "38 frontend, 66 identity/91 Maven zero failures/errors/skips, C5 actual archive/independent restore markers, 110 Newman assertions zero failures, browser19; exact terminal success."
       }
     ],
-    "pending_jobs": [
-      140734859634
-    ]
+    "pending_jobs": []
   },
   "extended_full_source_archive_integrity": {
     "report": "docs/handoffs/claude-local-execution-2026-11-24/143_FULL_SOURCE_ARCHIVE_INTEGRITY_CANDIDATE.md",
@@ -3372,7 +3376,7 @@
       46067620499
     ],
     "native_state": "NOT_RUN",
-    "next": "Inspect terminal actual logs for PR59 Verify46067620499 Java8 job140736654194 and Extended140736653799 and prior handoff Extended140734859634. Repair observed failures only. Full native package/operator, H03/H06 native and console-host attribution, private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates remain. Report124 controls production-ready academic objective; strict A protected. No merge/deploy/release.",
+    "next": "Inspect prior PR59 Extended140736653799 and latest Verify46068914869 Java8 job140740863234/Extended140740862802 actual terminal logs. Repair observed failures only; no repeat unchanged guards. Full native package/operator, H03/H06 native and console-host attribution, private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates remain. Report124 controls production-ready academic objective; strict A protected. No merge/deploy/release.",
     "ref": "ece08d1d56714f0676d8234286bcbc8a0ef8f4ee",
     "automatic_receipts": [
       {
@@ -3382,11 +3386,52 @@
         "job": 140736654143,
         "oracle": "React typecheck/tests/lint/build",
         "actual": "Exact checkout, 15 tests and terminal success."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "a92e484179a092da6e3cd8045e5115da00dee7c4",
+        "run": 46067620499,
+        "job": 140736654194,
+        "oracle": "Prior PR59 Course A automatic actual logs",
+        "actual": "61 Maven zero failures/errors/skips, 160 Newman assertions zero failures, browser1; exact terminal success."
       }
     ],
     "pending_jobs": [
-      140736654194,
       140736653799
     ]
+  },
+  "extended_read_only_package_integrity": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/144_READ_ONLY_PACKAGE_INTEGRITY_CHECKER.md",
+    "ref": "6bd08c8cb2333a85beb9dbabd09ac71e229a92a5",
+    "sha": "0b07f45c0eb6482b9dcdd8f38f0d8cdb6bdf6427",
+    "prior": "a92e484179a092da6e3cd8045e5115da00dee7c4",
+    "state": "CANDIDATE",
+    "receipt": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "0b07f45c0eb6482b9dcdd8f38f0d8cdb6bdf6427",
+      "run": 46068914869,
+      "job": 140740863134,
+      "oracle": "Actual package checker 12 new fictional checks; exact full source archive and 49 prior guards",
+      "actual": "12/12 new and 61/61 total focused cases; 196/196 actual committed source blobs; exact terminal success. Full native packager/operator NOT_RUN."
+    },
+    "automatic_receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "0b07f45c0eb6482b9dcdd8f38f0d8cdb6bdf6427",
+        "run": 46068914869,
+        "job": 140740863125,
+        "oracle": "React typecheck/tests/lint/build",
+        "actual": "Exact checkout; 15 tests and terminal success."
+      }
+    ],
+    "pending_runs": [
+      46068914869
+    ],
+    "pending_jobs": [
+      140740863234,
+      140740862802
+    ],
+    "native_state": "NOT_RUN",
+    "next": "Inspect prior PR59 Extended140736653799 and latest Verify46068914869 Java8 job140740863234/Extended140740862802 actual terminal logs. Repair observed failures only; no repeat unchanged guards. Full native package/operator, H03/H06 native and console-host attribution, private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates remain. Report124 controls production-ready academic objective; strict A protected. No merge/deploy/release."
   }
 }

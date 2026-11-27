@@ -1,5 +1,10 @@
 # OrgResource — read first in every project chat
 
+## Current - Read-only package integrity checker actual focused receipt (2026-11-28 PHT)
+
+[Report144](https://github.com/newonathe/OrgResource/blob/6bd08c8cb2333a85beb9dbabd09ac71e229a92a5/docs/handoffs/claude-local-execution-2026-11-24/144_READ_ONLY_PACKAGE_INTEGRITY_CHECKER.md): PR59 exact 0b07f45 read-only copied package checker, 12/12 actual new cases, 61/61 focused total, 196/196 exact extracted source blobs; React15 and earlier two pending regressions actual passed. Inspect prior PR59 Extended140736653799 and latest Verify46068914869 Java8 job140740863234/Extended140740862802 actual terminal logs. Repair observed failures only; no repeat unchanged guards. Full native package/operator, H03/H06 native and console-host attribution, private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates remain. Report124 controls production-ready academic objective; strict A protected. No merge/deploy/release.
+
+
 ## Current - Full source archive integrity actual focused receipt (2026-11-28 PHT)
 
 [Report143](https://github.com/newonathe/OrgResource/blob/ece08d1d56714f0676d8234286bcbc8a0ef8f4ee/docs/handoffs/claude-local-execution-2026-11-24/143_FULL_SOURCE_ARCHIVE_INTEGRITY_CANDIDATE.md): PR59 exact a92e484 Windows full-source archive integrity verified bounded: 195/195 raw Git blob equality, 16/16 new source guards and 33/33 existing migration guards, 49/49 total; React15 passed. Inspect terminal actual logs for PR59 Verify46067620499 Java8 job140736654194 and Extended140736653799 and prior handoff Extended140734859634. Repair observed failures only. Full native package/operator, H03/H06 native and console-host attribution, private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates remain. Report124 controls production-ready academic objective; strict A protected. No merge/deploy/release.
