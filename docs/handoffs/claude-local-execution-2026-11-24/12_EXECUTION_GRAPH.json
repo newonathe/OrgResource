@@ -2888,7 +2888,20 @@
     "job": 140596932270,
     "state": "CANDIDATE",
     "full_native_package": "NOT_RUN",
-    "next": "Consume corrected PR59 exact-head Verify46025850327 Java8/Extended terminal actual receipts; 33 focused Windows cases already pass, no repeat absent drift. Advance eligible H03/H06 or product residuals; no private L06, P0, full native package, independent/rights/privacy or student gate waiver. PR60 historical reference only; no merge/release."
+    "next": "Consume PR59 Extended terminal actual receipt; 13-file compile closure and Course A/React/33 focused packaging checks verified bounded, no repeat absent drift. Advance H03 owned suspended worker transport, explicit inherited handles, descendant termination witness and durable launch uncertainty; H06 credential lifecycle separate. Existing runner/recovery/ordinary Process.Start transport quarantined. Native/private/P0/independent/rights/privacy/student gates unchanged; no merge/release.",
+    "latest_report": "docs/handoffs/claude-local-execution-2026-11-24/131_HARNESS_COMPILE_CLOSURE_AND_COURSE_A_RECEIPT.md",
+    "course_a_actual": {
+      "run": 46025850327,
+      "job": 140596931853,
+      "maven": 61,
+      "newman": 160,
+      "browser": 1
+    },
+    "react_actual": {
+      "job": 140596932510,
+      "tests": 15
+    },
+    "extended_state": "IN_PROGRESS"
   },
   "g01_r038_sql_denial_actual": {
     "report": "docs/handoffs/claude-local-execution-2026-11-24/130_PACKAGE_INTEGRATION_WINDOWS_ARCHIVE_FAILURE_AND_R038_RECEIPT.md",
@@ -2901,5 +2914,16 @@
     "newman_assertions": 110,
     "browser": 19,
     "remaining": "generic disconnect/private cohort/independent acceptance"
+  },
+  "harness_compile_closure_actual": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/131_HARNESS_COMPILE_CLOSURE_AND_COURSE_A_RECEIPT.md",
+    "ref": "ed8737141ef8fab75fd61e80ce5985d4491d6fd0",
+    "sha": "b762c4195393ae92e03ee149531ca0ab944f438b",
+    "run": 46026796372,
+    "job": 140600160882,
+    "files": 13,
+    "state": "VERIFIED_BOUNDED",
+    "native_effects": "NOT_RUN",
+    "next": "Consume PR59 Extended terminal actual receipt; 13-file compile closure and Course A/React/33 focused packaging checks verified bounded, no repeat absent drift. Advance H03 owned suspended worker transport, explicit inherited handles, descendant termination witness and durable launch uncertainty; H06 credential lifecycle separate. Existing runner/recovery/ordinary Process.Start transport quarantined. Native/private/P0/independent/rights/privacy/student gates unchanged; no merge/release."
   }
 }
