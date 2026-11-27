@@ -10,7 +10,7 @@ using System.Text;
 // Private parent launcher remains quarantined; building the executable grants no
 // authority to run the native fixture. Same-user adversarial isolation is not claimed.
 public static partial class C9OwnedJobProbe {
-    const string PtyHelperSwitch="--fictional-conpty-v1";
+    const string PtyHelperSwitch="--fictional-conpty-v2";
     static readonly string[] PtyHelperFiles={
         "C9PtyHelper.exe","C9PtyHelper.dll","C9PtyHelper.deps.json","C9PtyHelper.runtimeconfig.json"
     };
@@ -23,6 +23,162 @@ public static partial class C9OwnedJobProbe {
     [return: MarshalAs(UnmanagedType.Bool)]
     static extern bool DuplicateHandle(IntPtr sourceProcess,IntPtr source,IntPtr targetProcess,
         out IntPtr target,uint access,[MarshalAs(UnmanagedType.Bool)] bool inherit,uint options);
+
+    // Unnamed, pagefile-backed mapping and two one-shot events. Child gets only
+    // map-write, ready-signal and ack-wait capabilities via the exact handle list.
+    // No job handle, no parent PROCESS_DUP_HANDLE, no name-based reopen.
+    [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)]
+    static extern IntPtr CreateFileMappingW(IntPtr file,IntPtr security,uint protect,uint high,uint low,string name);
+    [DllImport("kernel32.dll",ExactSpelling=true,SetLastError=true)]
+    static extern IntPtr MapViewOfFile(IntPtr map,uint access,uint high,uint low,UIntPtr size);
+    [DllImport("kernel32.dll",ExactSpelling=true,SetLastError=true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    static extern bool UnmapViewOfFile(IntPtr view);
+    [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)]
+    static extern IntPtr CreateEventW(IntPtr security,[MarshalAs(UnmanagedType.Bool)] bool manual,
+        [MarshalAs(UnmanagedType.Bool)] bool initial,string name);
+    [DllImport("kernel32.dll",ExactSpelling=true,SetLastError=true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    static extern bool SetEvent(IntPtr evt);
+
+    // Pure fixed-size frame, never stored as a recoverable process identity.
+    // The values are meaningful only while the original helper handle is held.
+    public static byte[] EncodePtyClientWitness(long handle,uint pid) {
+        if(handle<=0 || pid==0) throw new InvalidOperationException("C9W_PTY_WITNESS_FRAME");
+        var b=new byte[16];
+        System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(b.AsSpan(0,4),0x31573943);
+        System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(b.AsSpan(4,4),pid);
+        System.Buffers.Binary.BinaryPrimitives.WriteInt64LittleEndian(b.AsSpan(8,8),handle);
+        return b;
+    }
+    public static long DecodePtyClientWitness(byte[] b,uint helperPid,out uint pid) {
+        pid=0;
+        if(b==null || b.Length!=16 || helperPid==0 ||
+            System.Buffers.Binary.BinaryPrimitives.ReadUInt32LittleEndian(b.AsSpan(0,4))!=0x31573943)
+            throw new InvalidOperationException("C9W_PTY_WITNESS_FRAME");
+        uint p=System.Buffers.Binary.BinaryPrimitives.ReadUInt32LittleEndian(b.AsSpan(4,4));
+        long h=System.Buffers.Binary.BinaryPrimitives.ReadInt64LittleEndian(b.AsSpan(8,8));
+        if(h<=0 || p==0 || p==helperPid) throw new InvalidOperationException("C9W_PTY_WITNESS_FRAME");
+        pid=p; return h;
+    }
+    static IntPtr PtyInheritable(IntPtr original,uint access) {
+        IntPtr dup=IntPtr.Zero;
+        try {
+            if(!DuplicateHandle(PtyCurrentProcess(),original,PtyCurrentProcess(),out dup,access,true,0) ||
+               !GetHandleInformation(dup,out uint f) || (f&1)!=1)
+                throw Native("C9W_PTY_WITNESS_INHERIT");
+            var result=dup; dup=IntPtr.Zero; return result;
+        } finally { Close(ref dup); }
+    }
+    sealed class PtyExchange : IDisposable {
+        IntPtr map,ready,ack,view;
+        internal IntPtr ChildMap,ChildReady,ChildAck;
+        bool accepted;
+        internal static PtyExchange Create() {
+            var x=new PtyExchange();
+            try {
+                x.map=CreateFileMappingW(new IntPtr(-1),IntPtr.Zero,4,0,16,null);
+                x.ready=CreateEventW(IntPtr.Zero,true,false,null);
+                x.ack=CreateEventW(IntPtr.Zero,true,false,null);
+                if(x.map==IntPtr.Zero||x.ready==IntPtr.Zero||x.ack==IntPtr.Zero)
+                    throw Native("C9W_PTY_WITNESS_CREATE");
+                foreach(var h in new[]{x.map,x.ready,x.ack})
+                    if(!GetHandleInformation(h,out uint f)||(f&1)!=0)
+                        throw Native("C9W_PTY_WITNESS_PARENT_INHERIT");
+                x.view=MapViewOfFile(x.map,4,0,0,(UIntPtr)16);
+                if(x.view==IntPtr.Zero||Signaled(x.ready,0)||Signaled(x.ack,0))
+                    throw new InvalidOperationException("C9W_PTY_WITNESS_INITIAL");
+                var zero=new byte[16]; Marshal.Copy(x.view,zero,0,16);
+                foreach(byte v in zero) if(v!=0) throw new InvalidOperationException("C9W_PTY_WITNESS_INITIAL");
+                x.ChildMap=PtyInheritable(x.map,2);
+                x.ChildReady=PtyInheritable(x.ready,2);
+                x.ChildAck=PtyInheritable(x.ack,0x100000);
+                return x;
+            } catch { x.Dispose(); throw; }
+        }
+        internal void CloseChildCopies() {
+            try { Close(ref ChildMap); }
+            finally { try { Close(ref ChildReady); } finally { Close(ref ChildAck); } }
+        }
+        internal bool Ready => Signaled(ready,0);
+        internal IntPtr Accept(IntPtr helper,IntPtr job,System.Diagnostics.Stopwatch watch,int timeout) {
+            if(accepted||!Ready||Signaled(ack,0)||Signaled(helper,0)||watch.ElapsedMilliseconds>=timeout)
+                throw new InvalidOperationException("C9W_PTY_WITNESS_STATE");
+            System.Threading.Thread.MemoryBarrier();
+            var b=new byte[16]; Marshal.Copy(view,b,0,b.Length);
+            uint helperPid=GetProcessId(helper);
+            long remote=DecodePtyClientWitness(b,helperPid,out uint pid);
+            IntPtr client=IntPtr.Zero;
+            try {
+                // Source process is the exact original helper handle, not a PID
+                // reopen. Only query+wait access on the duplicate is requested.
+                if(!DuplicateHandle(helper,new IntPtr(remote),PtyCurrentProcess(),out client,0x100400,false,0))
+                    throw Native("C9W_PTY_WITNESS_DUP");
+                if(!GetHandleInformation(client,out uint flags)||(flags&1)!=0||
+                   GetProcessId(client)!=pid||Signaled(client,0)||Signaled(helper,0)||
+                   !N.IsProcessInJob(client,job,out bool inside)||!inside)
+                    throw new InvalidOperationException("C9W_PTY_WITNESS_IDENTITY");
+                RequireChildRestriction(client);
+                var a=Account(job);
+                if(a.TotalProcesses!=2||a.ActiveProcesses!=2||watch.ElapsedMilliseconds>=timeout)
+                    throw new InvalidOperationException("C9W_PTY_WITNESS_COUNT");
+                if(!SetEvent(ack)) throw Native("C9W_PTY_WITNESS_ACK");
+                accepted=true;
+                var result=client; client=IntPtr.Zero; return result;
+            } finally { Close(ref client); }
+        }
+        public void Dispose() {
+            bool failed=false;
+            try { CloseChildCopies(); } catch { failed=true; }
+            if(view!=IntPtr.Zero) {
+                if(!UnmapViewOfFile(view)) failed=true;
+                else view=IntPtr.Zero;
+            }
+            try { Close(ref map); } catch { failed=true; }
+            try { Close(ref ready); } catch { failed=true; }
+            try { Close(ref ack); } catch { failed=true; }
+            if(failed) throw new InvalidOperationException("C9W_PTY_WITNESS_CLOSE");
+        }
+    }
+    sealed class PtyChildExchange : IDisposable {
+        IntPtr map,ready,ack;
+        bool sent;
+        internal PtyChildExchange(IntPtr m,IntPtr r,IntPtr a) {
+            map=m; ready=r; ack=a;
+            foreach(var h in new[]{map,ready,ack})
+                if(!GetHandleInformation(h,out uint f)||(f&1)!=1)
+                    throw new InvalidOperationException("C9W_PTY_WITNESS_CHILD_INHERIT");
+        }
+        internal void Publish(IntPtr client,System.Diagnostics.Stopwatch watch,int timeout) {
+            if(sent||Signaled(client,0)||Signaled(ack,0)||watch.ElapsedMilliseconds>=timeout)
+                throw new InvalidOperationException("C9W_PTY_WITNESS_STATE");
+            var b=EncodePtyClientWitness(client.ToInt64(),GetProcessId(client));
+            IntPtr v=MapViewOfFile(map,2,0,0,(UIntPtr)16);
+            if(v==IntPtr.Zero) throw Native("C9W_PTY_WITNESS_MAP");
+            try {
+                var empty=new byte[16]; Marshal.Copy(v,empty,0,16);
+                foreach(byte n in empty) if(n!=0) throw new InvalidOperationException("C9W_PTY_WITNESS_REUSE");
+                Marshal.Copy(b,0,v,b.Length);
+                System.Threading.Thread.MemoryBarrier();
+            } finally {
+                if(!UnmapViewOfFile(v)) throw Native("C9W_PTY_WITNESS_UNMAP");
+            }
+            sent=true;
+            if(!SetEvent(ready)) throw Native("C9W_PTY_WITNESS_READY");
+            long remaining=timeout-watch.ElapsedMilliseconds;
+            if(remaining<=0||!Signaled(ack,(int)remaining)||watch.ElapsedMilliseconds>=timeout||Signaled(client,0))
+                throw new InvalidOperationException("C9W_PTY_WITNESS_ACK_TIMEOUT");
+        }
+        public void Dispose() {
+            try { Close(ref map); } finally { try { Close(ref ready); } finally { Close(ref ack); } }
+        }
+    }
+    static bool PtyHandleArg(string value,out long handle) {
+        handle=0;
+        return !String.IsNullOrEmpty(value)&&value.Length<=16&&PtyHex(value,value.Length)&&
+            Int64.TryParse(value,NumberStyles.AllowHexSpecifier,CultureInfo.InvariantCulture,out handle)&&
+            handle>0&&value==handle.ToString("x",CultureInfo.InvariantCulture);
+    }
 
     static bool PtyHex(string value,int length) {
         return value!=null && value.Length==length &&
@@ -37,10 +193,13 @@ public static partial class C9OwnedJobProbe {
     sealed class PtyLaunchPlan {
         internal string Root,RootId,ParentToken,ParentId,ChildToken,Python,PythonSha,Mode,PackageDigest;
         internal byte[] ParentRecord;
-        internal string[] Arguments(IntPtr parentWitness) {
+        internal string[] Arguments(IntPtr parentWitness,PtyExchange exchange) {
             return new[]{PtyHelperSwitch,Root,RootId,ParentToken,ParentId,ChildToken,Python,PythonSha,
                 Mode,PackageDigest,Environment.ProcessId.ToString(CultureInfo.InvariantCulture),
-                parentWitness.ToInt64().ToString("x",CultureInfo.InvariantCulture)};
+                parentWitness.ToInt64().ToString("x",CultureInfo.InvariantCulture),
+                exchange.ChildMap.ToInt64().ToString("x",CultureInfo.InvariantCulture),
+                exchange.ChildReady.ToInt64().ToString("x",CultureInfo.InvariantCulture),
+                exchange.ChildAck.ToInt64().ToString("x",CultureInfo.InvariantCulture)};
         }
     }
 
@@ -105,14 +264,14 @@ public static partial class C9OwnedJobProbe {
     // Missing/malformed arguments refuse before any native call. Exit codes
     // intentionally carry no paths, exceptions, transcript or other raw output.
     static int Main(string[] args) {
-        if (args==null || args.Length!=12 || args[0]!=PtyHelperSwitch ||
+        if (args==null || args.Length!=15 || args[0]!=PtyHelperSwitch ||
             !PtyHex(args[3],12) || !PtyHex(args[5],12) || args[3]==args[5] ||
             !PtyHex(args[7],64) || !PtyHex(args[9],64) ||
             !UInt32.TryParse(args[10],NumberStyles.None,CultureInfo.InvariantCulture,out uint parentPid) ||
             parentPid==0 || args[10]!=parentPid.ToString(CultureInfo.InvariantCulture) ||
-            String.IsNullOrEmpty(args[11]) || args[11].Length>16 || !PtyHex(args[11],args[11].Length) ||
-            !Int64.TryParse(args[11],NumberStyles.AllowHexSpecifier,CultureInfo.InvariantCulture,out long handle) ||
-            handle<=0 || !OperatingSystem.IsWindows() || IntPtr.Size!=8)
+            !PtyHandleArg(args[11],out long handle) || !PtyHandleArg(args[12],out long map) ||
+            !PtyHandleArg(args[13],out long ready) || !PtyHandleArg(args[14],out long ack) ||
+            new HashSet<long>{handle,map,ready,ack}.Count!=4 || !OperatingSystem.IsWindows() || IntPtr.Size!=8)
             return 71;
         try {
             _=PtyScript(args[8]);
@@ -130,13 +289,14 @@ public static partial class C9OwnedJobProbe {
                 C9ControlLock.VerifyPtyParentBinding(args[1],parent);
                 if (Signaled(witness,0)) return 72;
             } finally { Close(ref witness); }
+            using var exchange=new PtyChildExchange(new IntPtr(map),new IntPtr(ready),new IntPtr(ack));
             using var child=C9ControlLock.Create(args[1],args[5]);
             if (child.RootId!=args[2] || child.ControlId==args[4])
                 return 73;
             byte[] identity=child.MarkPtyChildBinding(parent);
             bool returned=false;
             try {
-                returned=RunFictionalConPty(child,parent,identity,args[6],args[7],args[8],10000)==0;
+                returned=RunFictionalConPty(child,parent,identity,args[6],args[7],args[8],10000,exchange)==0;
             } catch { /* fixed refusal; no raw output */ }
             child.MarkPtyChildResult(parent,identity,returned);
             return returned ? 0 : 74;

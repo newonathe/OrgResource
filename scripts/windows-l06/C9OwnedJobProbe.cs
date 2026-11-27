@@ -163,7 +163,8 @@ public static partial class C9OwnedJobProbe {
 
         IntPtr job=IntPtr.Zero, root=IntPtr.Zero, thread=IntPtr.Zero, list=IntPtr.Zero,
                jobList=IntPtr.Zero, environment=IntPtr.Zero,
-               parentWitness=IntPtr.Zero, inheritedList=IntPtr.Zero;
+               parentWitness=IntPtr.Zero, inheritedList=IntPtr.Zero, clientWitness=IntPtr.Zero;
+        PtyExchange exchange=null;
         bool initialized=false, assigned=false, terminalObserved=false;
         Observation receipt=null;
         var clock=Stopwatch.StartNew();
@@ -206,11 +207,15 @@ public static partial class C9OwnedJobProbe {
                     out parentWitness,0x101000,true,0) ||
                     !GetHandleInformation(parentWitness,out uint qf) || (qf&1)!=1)
                     throw Native("C9W_PTY_OUTER_PARENT_HANDLE");
-                inheritedList=Marshal.AllocHGlobal(IntPtr.Size);
-                Marshal.WriteIntPtr(inheritedList,parentWitness);
-                if (!N.UpdateProcThreadAttribute(list,0,(IntPtr)0x20002,inheritedList,(IntPtr)IntPtr.Size,IntPtr.Zero,IntPtr.Zero))
+                exchange=PtyExchange.Create();
+                inheritedList=Marshal.AllocHGlobal(4*IntPtr.Size);
+                Marshal.WriteIntPtr(inheritedList,0,parentWitness);
+                Marshal.WriteIntPtr(inheritedList,IntPtr.Size,exchange.ChildMap);
+                Marshal.WriteIntPtr(inheritedList,2*IntPtr.Size,exchange.ChildReady);
+                Marshal.WriteIntPtr(inheritedList,3*IntPtr.Size,exchange.ChildAck);
+                if (!N.UpdateProcThreadAttribute(list,0,(IntPtr)0x20002,inheritedList,(IntPtr)(4*IntPtr.Size),IntPtr.Zero,IntPtr.Zero))
                     throw Native("C9W_PTY_OUTER_HANDLES");
-                helperArgs=helper.Arguments(parentWitness);
+                helperArgs=helper.Arguments(parentWitness,exchange);
             }
             var si=new N.STARTUPINFOEX { cb=Marshal.SizeOf<N.STARTUPINFOEX>(),lpAttributeList=list };
             var cmd=new StringBuilder(helper==null ? fixedCommand() :
@@ -236,6 +241,7 @@ public static partial class C9OwnedJobProbe {
                 throw Native("C9W_WATCHDOG_CREATE");
             root=pi.hProcess; thread=pi.hThread;
             Close(ref parentWitness); // parent retains the sole private job handle
+            exchange?.CloseChildCopies();
             if (!N.IsProcessInJob(root,job,out bool inJob))
                 throw Native("C9W_WATCHDOG_JOB_QUERY");
             if (!inJob) throw new InvalidOperationException("C9W_WATCHDOG_WRONG_JOB");
@@ -254,6 +260,8 @@ public static partial class C9OwnedJobProbe {
             bool rootExited=false, completed=false;
             N.JOBOBJECT_BASIC_ACCOUNTING_INFORMATION current=initial;
             while (watch.ElapsedMilliseconds < timeoutMillis) {
+                if(exchange!=null && clientWitness==IntPtr.Zero && exchange.Ready)
+                    clientWitness=exchange.Accept(root,job,watch,timeoutMillis);
                 rootExited=Signaled(root,0);
                 current=Account(job);
                 if (rootExited && current.ActiveProcesses == 0) { completed=true; break; }
@@ -271,6 +279,10 @@ public static partial class C9OwnedJobProbe {
             int activeBefore=(int)current.ActiveProcesses;
             var last=completed ? current : Stop(job,root);
             terminalObserved=true;
+            // A missing handoff is uncertainty even if the aggregate job is empty.
+            // Only the exact original independently retained client can satisfy this.
+            if(exchange!=null && (clientWitness==IntPtr.Zero||!Signaled(clientWitness,0)||last.TotalProcesses!=2))
+                throw new InvalidOperationException("C9W_PTY_CLIENT_TERMINATION_UNVERIFIED");
             if (!Signaled(root,0) || last.ActiveProcesses != 0 ||
                 last.TotalProcesses < current.TotalProcesses)
                 throw new InvalidOperationException("C9W_WATCHDOG_STOP_UNKNOWN");
@@ -303,9 +315,15 @@ public static partial class C9OwnedJobProbe {
                         finally {
                             try { Close(ref parentWitness); }
                             finally {
-                                if (initialized) N.DeleteProcThreadAttributeList(list);
-                                foreach (var p in new[]{list,jobList,inheritedList,environment})
-                                    if (p != IntPtr.Zero) Marshal.FreeHGlobal(p);
+                                try { Close(ref clientWitness); }
+                                finally {
+                                    try { exchange?.Dispose(); }
+                                    finally {
+                                        if (initialized) N.DeleteProcThreadAttributeList(list);
+                                        foreach (var p in new[]{list,jobList,inheritedList,environment})
+                                            if (p != IntPtr.Zero) Marshal.FreeHGlobal(p);
+                                    }
+                                }
                             }
                         }
                     }

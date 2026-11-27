@@ -83,9 +83,9 @@ public static partial class C9OwnedJobProbe {
     }
 
     // Private until a separately reviewed independent outer watchdog calls it.
-    static int RunFictionalConPty(C9ControlLock owner,byte[] parent,byte[] identity,string python,string expectedSha,string mode,int timeoutMillis) {
+    static int RunFictionalConPty(C9ControlLock owner,byte[] parent,byte[] identity,string python,string expectedSha,string mode,int timeoutMillis,PtyChildExchange exchange) {
         string script=PtyScript(mode);
-        if (!OperatingSystem.IsWindows() || IntPtr.Size!=8 || owner==null ||
+        if (!OperatingSystem.IsWindows() || IntPtr.Size!=8 || owner==null || exchange==null ||
             timeoutMillis<1000 || timeoutMillis>10000 ||
             expectedSha==null || !System.Text.RegularExpressions.Regex.IsMatch(expectedSha,@"\A[a-f0-9]{64}\z") ||
             String.IsNullOrEmpty(python) || !Path.IsPathFullyQualified(python) ||
@@ -182,6 +182,9 @@ public static partial class C9OwnedJobProbe {
                 assigned=true; RequireChildRestriction(root);
                 var initial=Account(job);
                 if(initial.ActiveProcesses!=1||initial.TotalProcesses!=1) throw new InvalidOperationException("C9W_PTY_INITIAL_COUNT");
+                // Original suspended client stays held here until the outer
+                // supervisor duplicates, validates and acknowledges that object.
+                exchange.Publish(root,clock,timeoutMillis);
                 Close(ref pipes[0]); Close(ref pipes[3]);
                 if(clock.ElapsedMilliseconds>=timeoutMillis) throw new InvalidOperationException("C9W_PTY_TIMEOUT");
                 C9Lifecycle.RequireInitialResume(N.ResumeThread(thread)); Close(ref thread);
