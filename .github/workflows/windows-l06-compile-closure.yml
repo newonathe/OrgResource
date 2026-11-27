@@ -13,13 +13,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 96df9bae738e10b8eb542266401a485e270ec4a4
+          ref: a0b76f05f54bdfab53a894da2796e7de7b227074
           persist-credentials: false
       - name: Compile exact H01 H03 H06 dependency union without invoking native code
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          if ((git rev-parse HEAD) -cne '96df9bae738e10b8eb542266401a485e270ec4a4' -or $LASTEXITCODE -ne 0) { throw 'Wrong candidate' }
+          if ((git rev-parse HEAD) -cne 'a0b76f05f54bdfab53a894da2796e7de7b227074' -or $LASTEXITCODE -ne 0) { throw 'Wrong candidate' }
           $pins = [ordered]@{
             'C9DirectoryIdentity.cs' = '67d705d9d66f0ca05cee018900b346d913d687b3'
             'C9ControlLock.cs' = '9dfc3fdb42c40ae5622676d22795eb3c61a2f2ab'
@@ -29,10 +29,11 @@ jobs:
             'C9LogonContext.cs' = 'fe2d1bd497badb36eb6c93379c0577e100553b6b'
             'C9ProfileStorageObservation.cs' = 'c29a49ef65abe02965ffa471ff16e2d2e6d600a4'
             'C9Contain.cs' = '45a93d294f52da3af9139531a36bd8d97c0e344b'
-            'C9OwnedJobProbe.cs' = '22d40fa76fb73fe0a496ebc2a1fad59bb219aabb'
+            'C9OwnedJobProbe.cs' = '5a03655e229793fd2adb3dd46b767fc9aacf24c1'
             'C9OwnershipProducer.cs' = '1195a098e4bb3d6fa6556d2cf6df9ece3319df6e'
             'C9WorkCreation.cs' = '69106d16b9373e7610db5783847e85d93e45381b'
             'C9LoginCustody.cs' = 'd3ccbd4189b6900e0351d1fa7a4015706f7dc986'
+            'C9FictionalConPty.cs' = '17f41da1eb227a4186279466fc21efccb99ed59d'
             'C9RetentionStage.cs' = 'a94dffe4c79443fb5bc38874fd984f1b3d7478b6'
           }
           $paths = @()
@@ -44,10 +45,10 @@ jobs:
             if ($LASTEXITCODE -ne 0 -or $actual -cne $pins[$name]) { throw "Wrong checked-out content: $name" }
             $paths += (Resolve-Path -LiteralPath $path).Path
           }
-          if ($paths.Count -ne 13) { throw 'Wrong source closure count' }
+          if ($paths.Count -ne 14) { throw 'Wrong source closure count' }
           # Compile/load only; no constructors, native entrypoints or test runner invoked.
           Add-Type -Path $paths -ErrorAction Stop
-          'C9W_H03_H06_COMPILE_CLOSURE_OK:files=13 native_effects_not_run=true'
+          'C9W_H03_H06_COMPILE_CLOSURE_OK:files=14 native_effects_not_run=true'
 
           $fixture = 'scripts/windows-l06/test-owned-journal-transport.ps1'
           $fixtureBlob = git rev-parse "HEAD:$fixture"
@@ -68,3 +69,13 @@ jobs:
           $null = [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path -LiteralPath $loginFixture).Path,[ref]$tokens,[ref]$errors)
           if ($errors.Count -ne 0) { throw 'Fictional login custody fixture parser failed' }
           'C9W_H06_FIXED_SLOT_FIXTURE_PARSE_OK:native_effects_not_run=true'
+
+          $ptyFixture = 'scripts/windows-l06/test-fictional-conpty.ps1'
+          $ptyBlob = git rev-parse "HEAD:$ptyFixture"
+          if ($LASTEXITCODE -ne 0 -or $ptyBlob -cne '866a58028cf84aa92462e3dbdf5e36f608b8fc78') { throw 'Wrong ConPTY quarantine fixture blob' }
+          $ptyActual = git hash-object --path=$ptyFixture $ptyFixture
+          if ($LASTEXITCODE -ne 0 -or $ptyActual -cne $ptyBlob) { throw 'Wrong ConPTY quarantine fixture content' }
+          $tokens = $null; $errors = $null
+          $null = [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path -LiteralPath $ptyFixture).Path,[ref]$tokens,[ref]$errors)
+          if ($errors.Count -ne 0) { throw 'ConPTY quarantine fixture parser failed' }
+          'C9W_H06_PTY_QUARANTINE_PARSE_OK:native_effects_not_run=true'
