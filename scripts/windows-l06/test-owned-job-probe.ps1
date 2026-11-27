@@ -9,7 +9,7 @@ param(
 Set-StrictMode -Version 3
 $ErrorActionPreference='Stop'
 if (-not $IsWindows -or -not $ConfirmFictional) { throw 'C9W_TEST_FIXTURE_REQUIRED' }
-Add-Type -Path @('C9DirectoryIdentity.cs','C9ControlLock.cs','C9ProfileStorageObservation.cs','C9Contain.cs','C9OwnedJobProbe.cs' | ForEach-Object { Join-Path $PSScriptRoot $_ })
+Add-Type -Path @('C9DirectoryIdentity.cs','C9ControlLock.cs','C9JournalStorage.cs','C9ProfileStorageObservation.cs','C9Contain.cs','C9OwnedJobProbe.cs' | ForEach-Object { Join-Path $PSScriptRoot $_ })
 function Require([bool] $ok,[string] $code) { if (-not $ok) { throw $code } }
 function Refuses([scriptblock] $action,[string] $code) {
     $caught=$false
@@ -25,7 +25,13 @@ try {
     Refuses { [C9OwnedJobProbe]::RunFictional($held,$Python,$PythonSha256,'zero',0) } 'C9W_WATCHDOG_ARGUMENT'
     # A second independently owned process outside the probe job remains alive.
     # No PID/name-based discovery or kill. Use a held Process object only.
-    Require ((Get-FileHash -LiteralPath $Python -Algorithm SHA256).Hash.ToLowerInvariant() -ceq $PythonSha256) 'C9W_TEST_PYTHON_HASH'
+    Require ([IO.Path]::IsPathFullyQualified($Python) -and [IO.Path]::GetFullPath($Python) -ceq $Python -and [IO.Path]::GetFileName($Python) -ieq 'python.exe') 'C9W_TEST_PYTHON_PATH'
+    Require (([int][IO.File]::GetAttributes($Python) -band 0x441410) -eq 0) 'C9W_TEST_PYTHON_ATTRIBUTES'
+    $dir=[C9DirectoryIdentity]::Open([IO.Path]::GetDirectoryName($Python))
+    $pin=$null
+    try {
+    $pin=[IO.FileStream]::new($Python,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
+    Require ([Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($pin)).ToLowerInvariant() -ceq $PythonSha256) 'C9W_TEST_PYTHON_HASH'
     $psi=[Diagnostics.ProcessStartInfo]::new($Python)
     $psi.UseShellExecute=$false; $psi.CreateNoWindow=$true
     $psi.WorkingDirectory=$held.ControlPath
@@ -35,6 +41,8 @@ try {
     $sentinel=[Diagnostics.Process]::Start($psi)
     Require ($null -ne $sentinel) 'C9W_TEST_SENTINEL_START'
     try {
+        $null=$sentinel.Handle
+        Require (-not $sentinel.HasExited) 'C9W_TEST_SENTINEL_PREMATURE_EXIT'
         foreach ($mode in 'zero','nonzero','child-zero','root-hang','descendant-hang') {
             $before=[Diagnostics.Stopwatch]::StartNew()
             $r=[C9OwnedJobProbe]::RunFictional($held,$Python,$PythonSha256,$mode,8000)
@@ -53,6 +61,7 @@ try {
             if (-not $sentinel.HasExited) { $sentinel.Kill(); Require ($sentinel.WaitForExit(10000)) 'C9W_TEST_SENTINEL_STOP_UNKNOWN' }
         } finally { $sentinel.Dispose() }
     }
+    } finally { if ($null -ne $pin) { $pin.Dispose() }; $dir.Dispose() }
 } finally { $held.Dispose() }
 Refuses { [C9OwnedJobProbe]::RunFictional($held,$Python,$PythonSha256,'zero',8000) } 'C9W_CONTROL_LOCK_NOT_HELD'
 [Console]::WriteLine('C9W_H06_OWNED_JOB_FIXTURE_OK:root_exit=true descendant_accounting=true timeout=true unrelated_sentinel=true credentials=false native_faults_not_injected=true')

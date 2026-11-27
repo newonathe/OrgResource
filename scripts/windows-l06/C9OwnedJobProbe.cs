@@ -111,11 +111,11 @@ public static class C9OwnedJobProbe {
             !String.Equals(Path.GetFullPath(python),python,StringComparison.Ordinal) ||
             !String.Equals(Path.GetFileName(python),"python.exe",StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException("C9W_WATCHDOG_ARGUMENT");
-        owner.AssertHeld();
+        owner.AssertWatchdogCustody();
         using var directory = C9DirectoryIdentity.Open(Path.GetDirectoryName(python));
         using var cwd = C9DirectoryIdentity.Open(owner.ControlPath);
         if (cwd.Id != owner.ControlId ||
-            (File.GetAttributes(python) & (FileAttributes.Directory|FileAttributes.ReparsePoint|FileAttributes.Offline)) != 0)
+            ((int)File.GetAttributes(python) & 0x441410) != 0)
             throw new InvalidOperationException("C9W_WATCHDOG_TOOL");
         // Hold executable read-sharing only across launch/observation; interpreter
         // DLL/stdlib provenance remains an H02 prerequisite, not asserted here.
@@ -167,7 +167,7 @@ public static class C9OwnedJobProbe {
             // Explicit minimal environment; no caller environment, MYSQL_PWD,
             // login-path setting, profile path, or secret.
             environment=Marshal.StringToHGlobalUni("SystemDrive="+drive+"\0SystemRoot="+system+"\0\0");
-            owner.AssertHeld();
+            owner.AssertWatchdogCustody();
             if (!N.CreateProcessW(python,cmd,IntPtr.Zero,IntPtr.Zero,false,
                  0x80000u|0x400u|0x4u|0x08000000u,environment,owner.ControlPath,ref si,out var pi))
                 throw Native("C9W_WATCHDOG_CREATE");
@@ -209,7 +209,7 @@ public static class C9OwnedJobProbe {
                 TotalProcesses=checked((int)last.TotalProcesses),ActiveAfterStop=(int)last.ActiveProcesses,
                 ElapsedMillis=clock.ElapsedMilliseconds
             };
-            owner.AssertHeld();
+            owner.AssertWatchdogCustody();
         } finally {
             // No exception is downgraded to success; even a later zero count
             // cannot repair an earlier native failure. If membership is unknown,
@@ -240,4 +240,8 @@ public static class C9OwnedJobProbe {
         }
         return receipt ?? throw new InvalidOperationException("C9W_WATCHDOG_NO_RECEIPT");
     }
+}
+
+public sealed partial class C9ControlLock {
+    internal void AssertWatchdogCustody() { CheckCustody(); }
 }
