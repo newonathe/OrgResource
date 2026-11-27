@@ -48,6 +48,24 @@ def validate_editor_result(section, user, set_exit, print_exit, output):
     require(fields["user"] == user and fields["host"] == "127.0.0.1")
     require(re.fullmatch(r"\*{1,128}", fields["password"]) is not None)
 
+
+# Four allowed transport slots, independent of caller-provided section/user.
+# A valid named print is insufficient: MySQL also reads default login groups.
+def validate_editor_inventory(role, kind, set_exit, print_exit, output,
+                              all_exit, all_output):
+    """Data-only inventory oracle; caller must bind both real prints to one file."""
+    require(type(role) is str and type(kind) is str)
+    require((role, kind) in (("source", "backup"), ("restore", "backup"),
+                             ("restore", "restore"), ("mixed", "restore")))
+    section = "c9-" + kind
+    user = SECTIONS[section]
+    validate_editor_result(section, user, set_exit, print_exit, output)
+    validate_editor_result(section, user, set_exit, all_exit, all_output)
+    # Compare actual masked representations, allowing only platform EOL and
+    # the already permitted single final newline to differ.
+    require(output.splitlines() ==
+            all_output.splitlines())
+
 if __name__ == "__main__":
     # Refusal before environment/credential/file/tool access. The old caller
     # must remain unusable until the native parent integration is reviewed.
