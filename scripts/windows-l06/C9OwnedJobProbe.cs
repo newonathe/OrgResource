@@ -399,13 +399,23 @@ public static class C9OwnedJobProbe {
                 // Parent must not retain any child-side pipe ends, or EOF is unreliable.
                 Close(ref pipes[0]); Close(ref pipes[3]); Close(ref pipes[5]);
                 byte[] input=Encoding.ASCII.GetBytes("orgresource-fictional-journal-probe");
-                var stdin=TakePipe(pipes,1);
+                // Transfer one handle at a time. A failed task submission disposes
+                // its handle; previously scheduled tasks retain exclusive ownership.
                 var stdout=TakePipe(pipes,2);
+                Task<byte[]> output;
+                try { output=Task.Run(() => ReadFictionalPipe(stdout)); }
+                catch { stdout.Dispose(); throw; }
+                tasks.Add(output);
                 var stderr=TakePipe(pipes,4);
-                // Each task exclusively owns its stream/handle. No concurrent Dispose on timeout.
-                var output=Task.Run(() => ReadFictionalPipe(stdout)); tasks.Add(output);
-                var errors=Task.Run(() => ReadFictionalPipe(stderr)); tasks.Add(errors);
-                var writer=Task.Run(() => WriteFictionalPipe(stdin,input)); tasks.Add(writer);
+                Task<byte[]> errors;
+                try { errors=Task.Run(() => ReadFictionalPipe(stderr)); }
+                catch { stderr.Dispose(); throw; }
+                tasks.Add(errors);
+                var stdin=TakePipe(pipes,1);
+                Task writer;
+                try { writer=Task.Run(() => WriteFictionalPipe(stdin,input)); }
+                catch { stdin.Dispose(); throw; }
+                tasks.Add(writer);
                 owner.AssertWatchdogCustody();
                 C9Lifecycle.RequireInitialResume(N.ResumeThread(thread));
                 Close(ref thread);
