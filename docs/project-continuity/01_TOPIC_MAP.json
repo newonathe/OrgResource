@@ -437,6 +437,12 @@
           "blob": "b3241c212a88e86522d532ce0cc1ce7b42d0262d",
           "ref": "8dbd8483465bf1629216a8f0a839eeca944240f0",
           "review": "FULL bounded candidate/actual receipt; full package NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/130_PACKAGE_INTEGRATION_WINDOWS_ARCHIVE_FAILURE_AND_R038_RECEIPT.md",
+          "blob": "9a60156806bbf83d6a08b4a8d99c6c9fcf3ec0ff",
+          "ref": "8dc1d7417ea95df2e0036e6cbc464fefab096c10",
+          "review": "FULL actual focused receipts; full native package NOT_RUN"
         }
       ]
     },
@@ -744,7 +750,7 @@
         }
       ],
       "authority": "93 route candidate mapping, independent issue34 blocked; current code and actual test evidence.",
-      "next": "Inspect actual PR58 run46021269467 (new R038 SQL denial, expected 84 identity/109 Maven if discovered); fix any observed failure without weakening oracle. Reconcile remaining PR59 run46018878134 exact-head Extended job140573004942. Continue eligible H03/H06 integration source work and academic/product residuals; no repeat fixture tests absent drift. R038 transient lock and disconnect remain separate; full package/native32+H04, private L06/P0, 93 independent and13 privacy flags open.",
+      "next": "Consume corrected PR59 exact-head Verify46025850327 Java8/Extended terminal actual receipts; 33 focused Windows cases already pass, no repeat absent drift. Advance eligible H03/H06 or product residuals; no private L06, P0, full native package, independent/rights/privacy or student gate waiver. PR60 historical reference only; no merge/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/74_STRUCTURED_PRIVACY_AND_RECOVERED_ROUTE_RECEIPTS.md",
@@ -1071,6 +1077,12 @@
           "blob": "ce1f5f9fef8e6fb997cc22f1ee9aade1492e9325",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL bounded R038 candidate and historical actual receipts; new test NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/130_PACKAGE_INTEGRATION_WINDOWS_ARCHIVE_FAILURE_AND_R038_RECEIPT.md",
+          "blob": "9a60156806bbf83d6a08b4a8d99c6c9fcf3ec0ff",
+          "ref": "8dc1d7417ea95df2e0036e6cbc464fefab096c10",
+          "review": "FULL actual focused receipts; full native package NOT_RUN"
         }
       ]
     },
@@ -1285,7 +1297,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "Reconcile only the incremental migration byte-integrity guard into a single correctly based successor of PR59; reuse PR59 21 and PR60 8 actual fictional assertions. Inspect PR58 R038 terminal actual receipt and relevant PR60 Verify; continue eligible independent H03/H06 or product residuals. Native full package, private L06/P0, independent/rights/privacy gates unchanged. No merge or release.",
+      "next": "Consume corrected PR59 exact-head Verify46025850327 Java8/Extended terminal actual receipts; 33 focused Windows cases already pass, no repeat absent drift. Advance eligible H03/H06 or product residuals; no private L06, P0, full native package, independent/rights/privacy or student gate waiver. PR60 historical reference only; no merge/release.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -1580,6 +1592,12 @@
           "blob": "b3241c212a88e86522d532ce0cc1ce7b42d0262d",
           "ref": "8dbd8483465bf1629216a8f0a839eeca944240f0",
           "review": "FULL bounded candidate/actual receipt; full package NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/130_PACKAGE_INTEGRATION_WINDOWS_ARCHIVE_FAILURE_AND_R038_RECEIPT.md",
+          "blob": "9a60156806bbf83d6a08b4a8d99c6c9fcf3ec0ff",
+          "ref": "8dc1d7417ea95df2e0036e6cbc464fefab096c10",
+          "review": "FULL actual focused receipts; full native package NOT_RUN"
         }
       ]
     },
@@ -1603,7 +1621,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "Reconcile only the incremental migration byte-integrity guard into a single correctly based successor of PR59; reuse PR59 21 and PR60 8 actual fictional assertions. Inspect PR58 R038 terminal actual receipt and relevant PR60 Verify; continue eligible independent H03/H06 or product residuals. Native full package, private L06/P0, independent/rights/privacy gates unchanged. No merge or release.",
+      "next": "Consume corrected PR59 exact-head Verify46025850327 Java8/Extended terminal actual receipts; 33 focused Windows cases already pass, no repeat absent drift. Advance eligible H03/H06 or product residuals; no private L06, P0, full native package, independent/rights/privacy or student gate waiver. PR60 historical reference only; no merge/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -2344,6 +2362,12 @@
           "blob": "b3241c212a88e86522d532ce0cc1ce7b42d0262d",
           "ref": "8dbd8483465bf1629216a8f0a839eeca944240f0",
           "review": "FULL bounded candidate/actual receipt; full package NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/130_PACKAGE_INTEGRATION_WINDOWS_ARCHIVE_FAILURE_AND_R038_RECEIPT.md",
+          "blob": "9a60156806bbf83d6a08b4a8d99c6c9fcf3ec0ff",
+          "ref": "8dc1d7417ea95df2e0036e6cbc464fefab096c10",
+          "review": "FULL actual focused receipts; full native package NOT_RUN"
         }
       ]
     },
@@ -2987,6 +3011,12 @@
           "blob": "b3241c212a88e86522d532ce0cc1ce7b42d0262d",
           "ref": "8dbd8483465bf1629216a8f0a839eeca944240f0",
           "review": "FULL bounded candidate/actual receipt; full package NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/130_PACKAGE_INTEGRATION_WINDOWS_ARCHIVE_FAILURE_AND_R038_RECEIPT.md",
+          "blob": "9a60156806bbf83d6a08b4a8d99c6c9fcf3ec0ff",
+          "ref": "8dc1d7417ea95df2e0036e6cbc464fefab096c10",
+          "review": "FULL actual focused receipts; full native package NOT_RUN"
         }
       ]
     }
