@@ -3489,16 +3489,43 @@
         "job": 140742710347,
         "oracle": "Older pinned guard repeat",
         "actual": "b762c41 actual14 tests OK and lifecycle marker."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "ad0616bbce23d6e38421ac8108b1b5895411bbf9",
+        "run": 46069481376,
+        "job": 140742710627,
+        "oracle": "Handoff Course A regression",
+        "actual": "Actual exact checkout, 61 Maven zero failures/errors/skips,160 Newman assertions zero failures, browser1; terminal success."
       }
     ],
     "pending_runs": [
       46069481376
     ],
     "pending_jobs": [
-      140742710627,
       140742710573
     ],
     "native_state": "NOT_RUN",
-    "next": "Inspect pending latest PR59 Extended140740862802 and handoff Verify46069481376 CourseA140742710627/Extended140742710573 terminal actual logs. Do not repeat unchanged compile/guard checks. Next bounded approved nonadmin owner-only NTFS fictional native H03/H06 fixture dispatch; no valid ConPTY launch before independent outer/console-host acceptance contract. Full native package/operator, H03/H06 settlement, private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates remain. Report124 controls production-ready academic objective; strict A protected. No merge/deploy/release."
+    "next": "Consume pending PR59 Extended140740862802 and handoff Extended140742710573 actual terminal logs. First six-fixture native batch prepared, blocked on owner-approved dedicated nonadmin Windows NTFS roots and trusted tools. Advance materially distinct eligible defects/academic delivery, no speculative wrappers or repeat unchanged checks. Report124 controls. Private L06 HOLD/no WSL, no valid ConPTY until independent outer/console-host acceptance, H03/H06 settlement/full native package/operator/P0/L07/93 independent/13 privacy/student gates unchanged. No merge/deploy/release."
+  },
+  "fictional_native_dispatch_prepared": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/146_FICTIONAL_NATIVE_DISPATCH_PREPARATION.md",
+    "ref": "a6eef5778f1d6fb0d3aef3aceab25547ea2ae1cc",
+    "manifest": "docs/handoffs/claude-local-execution-2026-11-24/146_FICTIONAL_NATIVE_DISPATCH_MANIFEST.json",
+    "manifest_blob": "6ed2c8e4846cd145bdd5898d022cd1c2e14e9fba",
+    "sha": "768418c9b503e280fa363668d5362fcce3cb6dba",
+    "state": "PREPARED_SOURCE_ONLY",
+    "receipt": {
+      "status": "SOURCE_ONLY",
+      "sha": "768418c9b503e280fa363668d5362fcce3cb6dba",
+      "oracle": "Six fixture bodies, exact Add-Type dependencies, parameter and marker source checks, tree identity",
+      "actual": "16 unique fixture/dependency blob pins matched exact nontruncated tree, 6 fixture source lists, 7 distinct root labels; native execution NOT_RUN."
+    },
+    "fixtures": 6,
+    "unique_source_paths": 16,
+    "roots": 7,
+    "native_state": "NOT_RUN",
+    "owner_environment_verified": false,
+    "next": "Consume pending PR59 Extended140740862802 and handoff Extended140742710573 actual terminal logs. First six-fixture native batch prepared, blocked on owner-approved dedicated nonadmin Windows NTFS roots and trusted tools. Advance materially distinct eligible defects/academic delivery, no speculative wrappers or repeat unchanged checks. Report124 controls. Private L06 HOLD/no WSL, no valid ConPTY until independent outer/console-host acceptance, H03/H06 settlement/full native package/operator/P0/L07/93 independent/13 privacy/student gates unchanged. No merge/deploy/release."
   }
 }
