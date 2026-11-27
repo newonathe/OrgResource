@@ -47,9 +47,12 @@ public sealed class C9DirectoryIdentity : IDisposable {
     }
 
     void OpenComponent(string path, bool readSecurity = false) {
-        // FILE_READ_ATTRIBUTES; share read/write only; OPEN_EXISTING;
-        // BACKUP_SEMANTICS | OPEN_REPARSE_POINT; never follow a final reparse point.
-        var h = CreateFileW(path, readSecurity ? 0x20080u : 0x80u, 3, IntPtr.Zero, 3, 0x02200000, IntPtr.Zero);
+        // FILE_LIST_DIRECTORY | FILE_READ_ATTRIBUTES (+ READ_CONTROL for
+        // the final security observation); share read/write only, never delete.
+        // A metadata-only handle may not participate in normal share checks.
+        // Refuse inaccessible ancestors; do not downgrade to metadata-only access.
+        // OPEN_EXISTING; BACKUP_SEMANTICS | OPEN_REPARSE_POINT.
+        var h = CreateFileW(path, readSecurity ? 0x20081u : 0x81u, 3, IntPtr.Zero, 3, 0x02200000, IntPtr.Zero);
         if (h.IsInvalid) {
             int error = Marshal.GetLastWin32Error();
             h.Dispose();
