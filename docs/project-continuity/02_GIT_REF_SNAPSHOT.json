@@ -1184,5 +1184,17 @@
     "report": "docs/handoffs/claude-local-execution-2026-11-24/116_H06_NATIVE_LIFECYCLE_AND_LOGIN_QUARANTINE.md",
     "report_ref": "865749a1e6fa7279bfc1a9d3fb2ebfee315e1ab2",
     "coverage": "66 harness-only additions; H06 native and three fixtures NOT_RUN; both transport functions quarantined"
+  },
+  "h06_guard_login_custody_h03_directory_share_candidate": {
+    "observed_date": "2026-11-27 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "51b1aa2160011f53af2d1d9fd7eff4149e90c6ee",
+    "tree": "9401e037441d517cf499e44fe147d8a2d67d2ae8",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/117_H06_GUARD_AND_LOGIN_CUSTODY_H03_DIRECTORY_SHARING.md",
+    "report_ref": "53716c53fae6c410fb93df107d08d46a6adfa361",
+    "coverage": "69 harness-only additions; 14 Windows-only spies and two native fixtures NOT_RUN; both transport functions quarantined"
   }
 }

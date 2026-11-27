@@ -1087,7 +1087,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "H06 native lifecycle and protected-login quarantine partial source candidate d04308570d2e5e8c89ce2c9f9a97bad16e24c0dd; 66 added harness-only paths vs R09. Native wait/termination/exit/token/attribute/handle checks, sticky process/job uncertainty, exact suspend-state, token allocation release, direct legacy credential helper and transport grant/revoke refuse before effects, pure strict masked-result oracle. Seven new portable methods and two PowerShell fixtures NOT_RUN; H06-01–03 native NOT_RUN. Container ClientError/Python did not execute; 47 prior separate portable passes retained (H01-A17/H02 12/H03 18); 41 additional methods NOT_RUN. Both runner/recovery and transport quarantined. Next recover remaining exact-hash H03 34/H06 7 portable tests if environment available; H06 actual owned login producer with fresh native file absence/ACL/identity, pinned tools, complete process-tree watchdog, exact exits/contained connection and verified revocation/cleanup; no direct helper or environment bypass. H03 boot/namespace/mapping/absence, held-lock cleanup/recovery, H02 provenance/native, H05 actual MySQL, H01-A actual observations/protected ACL/authenticated fictional C5/independent seal/vault/cleanup; 64 staged PowerShell+spy and H03-01–12 open, independent acceptance open. H01-B preparation only; actual vault/machine/operator/transfer and failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and13 privacy flags open. No private import/launch/merge/deploy.",
+      "next": "H06 guard allocation/handle/pointer correction and owner-only fictional login metadata slot; H03 directory list-access/no-delete-share correction, partial source candidate 51b1aa2160011f53af2d1d9fd7eff4149e90c6ee, 69 added harness-only paths vs R09. Exact four role/kind slots under held control, native absent-only file check, protected ACL/ID/single-link/exclusive file observation, no editor/credential/SQL/role transfer/delete; directory DELETE-access positive/32/positive native oracle staged. 14 Windows-only spy methods and two native PowerShell fixtures NOT_RUN; H06-01–03/H03-01–12 native NOT_RUN. Container ClientError/Python did not execute; 47 prior separate portable passes retained; 41 additional portable methods NOT_RUN (34 H03 +7 H06), separate 14 Windows spies. Both runner/recovery and transport quarantined. Next recover exact-hash portable tests if environment available; H06 actual owned process-tree watchdog/pinned editor and role-bound fresh login custody/ACL/contained connection and verified revocation/cleanup, or H03 boot/namespace/exclusive mapping/absence, held-lock cleanup/lock-first recovery while blocked. H02 provenance/native, H05 actual MySQL, H01-A owned observations/protected ACL/authenticated fictional C5/independent seal/vault/cleanup; 64 prior PowerShell+spy and independent acceptance open. H01-B preparation only; actual vault/machine/operator/transfer and failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and13 privacy flags open. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -1278,6 +1278,12 @@
           "blob": "2ba39f714f3e0a36b13acbc121b45ab2a219d232",
           "ref": "865749a1e6fa7279bfc1a9d3fb2ebfee315e1ab2",
           "review": "FULL report; H06 source-only, transport quarantine, native and portable tests NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/117_H06_GUARD_AND_LOGIN_CUSTODY_H03_DIRECTORY_SHARING.md",
+          "blob": "7fbc1cd7db861bd03d3382cbcffcfd1bcbd6e3ab",
+          "ref": "53716c53fae6c410fb93df107d08d46a6adfa361",
+          "review": "FULL Report117; H06 guard/fictional custody and H03 directory sharing source-only, tests NOT_RUN"
         }
       ]
     },
@@ -1301,7 +1307,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "H06 native lifecycle and protected-login quarantine partial source candidate d04308570d2e5e8c89ce2c9f9a97bad16e24c0dd; 66 added harness-only paths vs R09. Native wait/termination/exit/token/attribute/handle checks, sticky process/job uncertainty, exact suspend-state, token allocation release, direct legacy credential helper and transport grant/revoke refuse before effects, pure strict masked-result oracle. Seven new portable methods and two PowerShell fixtures NOT_RUN; H06-01–03 native NOT_RUN. Container ClientError/Python did not execute; 47 prior separate portable passes retained (H01-A17/H02 12/H03 18); 41 additional methods NOT_RUN. Both runner/recovery and transport quarantined. Next recover remaining exact-hash H03 34/H06 7 portable tests if environment available; H06 actual owned login producer with fresh native file absence/ACL/identity, pinned tools, complete process-tree watchdog, exact exits/contained connection and verified revocation/cleanup; no direct helper or environment bypass. H03 boot/namespace/mapping/absence, held-lock cleanup/recovery, H02 provenance/native, H05 actual MySQL, H01-A actual observations/protected ACL/authenticated fictional C5/independent seal/vault/cleanup; 64 staged PowerShell+spy and H03-01–12 open, independent acceptance open. H01-B preparation only; actual vault/machine/operator/transfer and failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and13 privacy flags open. No private import/launch/merge/deploy.",
+      "next": "H06 guard allocation/handle/pointer correction and owner-only fictional login metadata slot; H03 directory list-access/no-delete-share correction, partial source candidate 51b1aa2160011f53af2d1d9fd7eff4149e90c6ee, 69 added harness-only paths vs R09. Exact four role/kind slots under held control, native absent-only file check, protected ACL/ID/single-link/exclusive file observation, no editor/credential/SQL/role transfer/delete; directory DELETE-access positive/32/positive native oracle staged. 14 Windows-only spy methods and two native PowerShell fixtures NOT_RUN; H06-01–03/H03-01–12 native NOT_RUN. Container ClientError/Python did not execute; 47 prior separate portable passes retained; 41 additional portable methods NOT_RUN (34 H03 +7 H06), separate 14 Windows spies. Both runner/recovery and transport quarantined. Next recover exact-hash portable tests if environment available; H06 actual owned process-tree watchdog/pinned editor and role-bound fresh login custody/ACL/contained connection and verified revocation/cleanup, or H03 boot/namespace/exclusive mapping/absence, held-lock cleanup/lock-first recovery while blocked. H02 provenance/native, H05 actual MySQL, H01-A owned observations/protected ACL/authenticated fictional C5/independent seal/vault/cleanup; 64 prior PowerShell+spy and independent acceptance open. H01-B preparation only; actual vault/machine/operator/transfer and failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and13 privacy flags open. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -1924,6 +1930,12 @@
           "blob": "2ba39f714f3e0a36b13acbc121b45ab2a219d232",
           "ref": "865749a1e6fa7279bfc1a9d3fb2ebfee315e1ab2",
           "review": "FULL report; H06 source-only, transport quarantine, native and portable tests NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/117_H06_GUARD_AND_LOGIN_CUSTODY_H03_DIRECTORY_SHARING.md",
+          "blob": "7fbc1cd7db861bd03d3382cbcffcfd1bcbd6e3ab",
+          "ref": "53716c53fae6c410fb93df107d08d46a6adfa361",
+          "review": "FULL Report117; H06 guard/fictional custody and H03 directory sharing source-only, tests NOT_RUN"
         }
       ]
     },
@@ -2070,7 +2082,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "H06 native lifecycle and protected-login quarantine partial source candidate d04308570d2e5e8c89ce2c9f9a97bad16e24c0dd; 66 added harness-only paths vs R09. Native wait/termination/exit/token/attribute/handle checks, sticky process/job uncertainty, exact suspend-state, token allocation release, direct legacy credential helper and transport grant/revoke refuse before effects, pure strict masked-result oracle. Seven new portable methods and two PowerShell fixtures NOT_RUN; H06-01–03 native NOT_RUN. Container ClientError/Python did not execute; 47 prior separate portable passes retained (H01-A17/H02 12/H03 18); 41 additional methods NOT_RUN. Both runner/recovery and transport quarantined. Next recover remaining exact-hash H03 34/H06 7 portable tests if environment available; H06 actual owned login producer with fresh native file absence/ACL/identity, pinned tools, complete process-tree watchdog, exact exits/contained connection and verified revocation/cleanup; no direct helper or environment bypass. H03 boot/namespace/mapping/absence, held-lock cleanup/recovery, H02 provenance/native, H05 actual MySQL, H01-A actual observations/protected ACL/authenticated fictional C5/independent seal/vault/cleanup; 64 staged PowerShell+spy and H03-01–12 open, independent acceptance open. H01-B preparation only; actual vault/machine/operator/transfer and failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and13 privacy flags open. No private import/launch/merge/deploy.",
+      "next": "H06 guard allocation/handle/pointer correction and owner-only fictional login metadata slot; H03 directory list-access/no-delete-share correction, partial source candidate 51b1aa2160011f53af2d1d9fd7eff4149e90c6ee, 69 added harness-only paths vs R09. Exact four role/kind slots under held control, native absent-only file check, protected ACL/ID/single-link/exclusive file observation, no editor/credential/SQL/role transfer/delete; directory DELETE-access positive/32/positive native oracle staged. 14 Windows-only spy methods and two native PowerShell fixtures NOT_RUN; H06-01–03/H03-01–12 native NOT_RUN. Container ClientError/Python did not execute; 47 prior separate portable passes retained; 41 additional portable methods NOT_RUN (34 H03 +7 H06), separate 14 Windows spies. Both runner/recovery and transport quarantined. Next recover exact-hash portable tests if environment available; H06 actual owned process-tree watchdog/pinned editor and role-bound fresh login custody/ACL/contained connection and verified revocation/cleanup, or H03 boot/namespace/exclusive mapping/absence, held-lock cleanup/lock-first recovery while blocked. H02 provenance/native, H05 actual MySQL, H01-A owned observations/protected ACL/authenticated fictional C5/independent seal/vault/cleanup; 64 prior PowerShell+spy and independent acceptance open. H01-B preparation only; actual vault/machine/operator/transfer and failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and13 privacy flags open. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -2449,6 +2461,12 @@
           "blob": "2ba39f714f3e0a36b13acbc121b45ab2a219d232",
           "ref": "865749a1e6fa7279bfc1a9d3fb2ebfee315e1ab2",
           "review": "FULL report; H06 source-only, transport quarantine, native and portable tests NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/117_H06_GUARD_AND_LOGIN_CUSTODY_H03_DIRECTORY_SHARING.md",
+          "blob": "7fbc1cd7db861bd03d3382cbcffcfd1bcbd6e3ab",
+          "ref": "53716c53fae6c410fb93df107d08d46a6adfa361",
+          "review": "FULL Report117; H06 guard/fictional custody and H03 directory sharing source-only, tests NOT_RUN"
         }
       ]
     }
