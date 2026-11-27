@@ -466,3 +466,6 @@
 "docs/handoffs/claude-local-execution-2026-11-24/127_WINDOWS_FICTIONAL_FIXTURE_EXECUTION.md","8f233ca731e036e331594e57f0f505bd762edf72","4480","100644","docs/claude-local-execution-handoff-2026-11-24","FULL fixture dispatch; actual NOT_RUN"
 "docs/handoffs/claude-local-execution-2026-11-24/127_WINDOWS_FICTIONAL_FIXTURE_EXECUTION.md","0f58ee44f8fe2e71605cfc75fb71686bf2b2d6d7","6897","100644","docs/claude-local-execution-handoff-2026-11-24","FULL actual 64+14 fixture receipts; native NOT_RUN"
 "docs/handoffs/claude-local-execution-2026-11-24/128_R038_METADATA_SQL_DENIAL_REGRESSION.md","ce1f5f9fef8e6fb997cc22f1ee9aade1492e9325","6023","100644","docs/claude-local-execution-handoff-2026-11-24","FULL bounded R038 candidate and historical actual receipts; new test NOT_RUN"
+"docs/handoffs/claude-local-execution-2026-11-24/136_H06_FULL_LOGIN_INVENTORY_AND_REGRESSION_RECEIPTS.md","6b425331fe80b6b2dd0876480ff145c29243dd49","8878","100644","49d66ed3de5a1669b29f4bed2e0bd68a742f0b8c","FULL bounded report and receipts"
+"scripts/windows-l06/protected_login.py","8686e2012d1bc15cd217f268ac1906afb779aa58","3541","100644","161a93e53ed5d1bf9042ac75d27a065cd0f311c8","FULL exact tested pure source"
+"scripts/windows-l06/test_editor_inventory.py","d56b7d57a96da8b8161f744d38f0935a670dfcb9","2831","100644","161a93e53ed5d1bf9042ac75d27a065cd0f311c8","FULL exact tested pure source"
