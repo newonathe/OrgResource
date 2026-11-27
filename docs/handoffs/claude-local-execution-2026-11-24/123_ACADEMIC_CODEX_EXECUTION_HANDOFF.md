@@ -57,3 +57,26 @@ Read live issue50/root/00/graph12 and this Report123, then Report122 (goal), Rep
 
 ## P12 — Preparation status and handover gate
 P01–P12 consolidated at bounded planning/source-evidence level: P01 authority crosswalk reconciled; P02/P03 scope and acceptance frozen for deadline lane subject to live Canvas; P04 selected implementation anchors and historical F register reconciled (full semantic audit not repeated); P05 existing behavior/contract selected; P06 dependency queue; P07 actual prior receipt mapping; P08 simplified academic runner; P09 fictional fixture/oracles; P10 package/academic inventory; P11 dispatch; P12 remote persistence verified separately. No tests executed here; no claim application or coursework finished. Owner manual Codex start next. Private L06 graph ready_to_launch=false does not block academic-only lane. Historic source/route review open, all93 independent reviews and 13 privacy flags still open; actual Canvas, provider/instructor interpretation, actual final local packages and student duties unverified. Two guessed historic report paths returned 404; used actual graph and verified report refs instead. Initial connector arg mismatch corrected; no effect on source. No merge/deploy/private operation.
+
+## Launch readback — final pre-handoff closure (2026-11-27 PHT)
+This is a launch correction, not a new preparation task. Canonical execution aliases are AC0–AC7 (not A01–A08); previous P01–P12 historical prep retained. Live main 96741bbd295a2d1e7b4bbf6a75cb558a793b09bd; PR58 exact 75bbc99ceb4d5be3b1c1def1e80abb3509a287fb is four commits ahead, zero behind, one changed file extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java, +412/-0; run45798910597 terminal success metadata rechecked. No fresh job-log inspection or local tests. No need to use PR58 or the quarantined private-import harness as initial application base; use main plus directed test additions only if needed. 
+From an existing Windows OrgResource clone (or clone the public repository first), confirm origin points to newonathe/OrgResource, preserve all existing worktrees and private artifacts. Run each command in PowerShell; stop if any command fails. Use a new branch and unused adjacent directory; if they already exist, inspect and resume their actual state rather than overwrite or reset. This is a command recipe, not an observed local run.
+
+```powershell
+git fetch origin main docs/claude-local-execution-handoff-2026-11-24
+git worktree add -b verify/academic-codex-20261127 ../OrgResource-academic-codex 96741bbd295a2d1e7b4bbf6a75cb558a793b09bd
+Set-Location ../OrgResource-academic-codex
+git rev-parse HEAD
+git status --short
+codex --version
+codex
+```
+
+Before starting Codex ensure HEAD equals the full main pin above and status is clean. Do not install anything with elevated privileges or weaken sandbox controls automatically; if CLI unavailable, owner installs/authenticates using official guidance. Start with ordinary workspace-scoped permission; request narrowly scoped actions only when needed. Use a separate A worktree at its frozen SHA for read/build, no A code edits. If origin advanced, read live refs and reconcile before edits; no implicit main update.
+
+Initial prompt: Continue OrgResource academic completion. Read the pinned original handoff:
+```
+git show 79dfe68824bb8ac4585e3362b745f0727eb6d3ab:docs/handoffs/claude-local-execution-2026-11-24/123_ACADEMIC_CODEX_EXECUTION_HANDOFF.md
+```
+Read live issue50, root/00 and graph12 on handoff branch, latest Report123 launch readback and Report122 goal. Follow AC0–AC7 exactly; do actual eligible academic work continuously, not another plan. Prioritize final A package and functioning demonstrable C, preserve protected source, V1–V7, fictional loopback safety, privacy and no WSL/GUI browser/real SMS/host/merge/deploy. Use current source and existing actual evidence; repair failures and retest, package and preserve exact receipts. Check actual artifacts and student Canvas/instructor obligations. If blocked, advance independent work, record exact external action. Resume after compaction/restart from graph and ledger. No claim of independent sign-off, production readiness or student submission. 
+Pre-handoff P01–P12 prepared bounded; no further speculative preparation required. The next step requires owner manual CLI launch or actual returned execution evidence. No ability to start local Windows Codex from ChatGPT; installed CLI and machine prerequisites not verified.

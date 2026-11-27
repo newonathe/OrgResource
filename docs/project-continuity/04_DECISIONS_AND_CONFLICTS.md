@@ -379,3 +379,7 @@ Owner explicitly corrects Report121's final objective: ACADEMIC COMPLETION for E
 ## Current — academic preparation consolidation (2026-11-27 PHT)
 
 Report123 P01–P12 prepared at bounded planning level. Whole-batch proposal and existing verified scope govern academic demo; optional CPX/private hosted/production work nonblocking, safety gates unchanged. Student Canvas/Twilio/edition/authorship/recording remain unverified. Academic preparation P01–P12 consolidated in Report123; owner can manually start Codex academic lane on exact main 96741bbd (not quarantined L06 harness). Verify Canvas/edition/Twilio interpretation with student; recover actual packages and evidence; execute A01–A08 academic dispatch in Report123, fix material defects and package. Existing private/host/recovery/CPX gates retained and not mandatory academic prerequisites. No automatic private launch, merge, deploy, production release or migration freeze bypass.
+
+## Current — academic dispatch launch readback (2026-11-27 PHT)
+
+AC0–AC7 aliases corrected in active pointers. PR58 exact delta verified test-only and success metadata; no fresh runtime. Launch instructions appended to Report123; Pre-handoff P01–P12 bounded preparation closed. Owner manually starts Codex AC0–AC7 on clean academic feature worktree from main 96741bbd; use Report123 Launch readback launch instructions. No more speculative remote work. Private L06 HOLD, commercial and CPX scope nonblocking unless academically required; actual native and student acceptance remain open.

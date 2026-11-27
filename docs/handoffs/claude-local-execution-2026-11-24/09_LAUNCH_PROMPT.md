@@ -1,8 +1,8 @@
-# 09 — Current Claude local execution launch prompt (Report52)
+# 09 — Current Codex academic execution launch pointer (Report123; historical Claude instructions below)
 
 ## Current — consolidated academic Codex handoff (2026-11-27 PHT)
 
-Academic preparation P01–P12 consolidated in Report123; owner can manually start Codex academic lane on exact main 96741bbd (not quarantined L06 harness). Verify Canvas/edition/Twilio interpretation with student; recover actual packages and evidence; execute A01–A08 academic dispatch in Report123, fix material defects and package. Existing private/host/recovery/CPX gates retained and not mandatory academic prerequisites. No automatic private launch, merge, deploy, production release or migration freeze bypass. See [Report123](https://github.com/newonathe/OrgResource/blob/docs/claude-local-execution-handoff-2026-11-24/docs/handoffs/claude-local-execution-2026-11-24/123_ACADEMIC_CODEX_EXECUTION_HANDOFF.md). Report122 controls objective; Report121/120 subordinate for relevant gated work. All earlier evidence retained.
+Academic preparation P01–P12 consolidated in Report123; owner can manually start Codex academic lane on exact main 96741bbd (not quarantined L06 harness). Verify Canvas/edition/Twilio interpretation with student; recover actual packages and evidence; execute AC0–AC7 academic dispatch in Report123, fix material defects and package. Existing private/host/recovery/CPX gates retained and not mandatory academic prerequisites. No automatic private launch, merge, deploy, production release or migration freeze bypass. See [Report123](https://github.com/newonathe/OrgResource/blob/docs/claude-local-execution-handoff-2026-11-24/docs/handoffs/claude-local-execution-2026-11-24/123_ACADEMIC_CODEX_EXECUTION_HANDOFF.md). Report122 controls objective; Report121/120 subordinate for relevant gated work. All earlier evidence retained.
 
 ## Current — Extended C academic completion (2026-11-27 PHT)
 

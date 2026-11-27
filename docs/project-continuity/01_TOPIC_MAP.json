@@ -149,7 +149,7 @@
         }
       ],
       "authority": "Parallel PR9 requirements research; course PDFs still primary.",
-      "next": "Academic preparation P01–P12 consolidated in Report123; owner can manually start Codex academic lane on exact main 96741bbd (not quarantined L06 harness). Verify Canvas/edition/Twilio interpretation with student; recover actual packages and evidence; execute A01–A08 academic dispatch in Report123, fix material defects and package. Existing private/host/recovery/CPX gates retained and not mandatory academic prerequisites. No automatic private launch, merge, deploy, production release or migration freeze bypass.",
+      "next": "Academic preparation P01–P12 consolidated in Report123; owner can manually start Codex academic lane on exact main 96741bbd (not quarantined L06 harness). Verify Canvas/edition/Twilio interpretation with student; recover actual packages and evidence; execute AC0–AC7 academic dispatch in Report123, fix material defects and package. Existing private/host/recovery/CPX gates retained and not mandatory academic prerequisites. No automatic private launch, merge, deploy, production release or migration freeze bypass.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
@@ -197,7 +197,7 @@
         }
       ],
       "authority": "Parallel PR10 exact execution specs; not active source or completed tests.",
-      "next": "Academic preparation P01–P12 consolidated in Report123; owner can manually start Codex academic lane on exact main 96741bbd (not quarantined L06 harness). Verify Canvas/edition/Twilio interpretation with student; recover actual packages and evidence; execute A01–A08 academic dispatch in Report123, fix material defects and package. Existing private/host/recovery/CPX gates retained and not mandatory academic prerequisites. No automatic private launch, merge, deploy, production release or migration freeze bypass.",
+      "next": "Pre-handoff P01–P12 bounded preparation closed. Owner manually starts Codex AC0–AC7 on clean academic feature worktree from main 96741bbd; use Report123 Launch readback launch instructions. No more speculative remote work. Private L06 HOLD, commercial and CPX scope nonblocking unless academically required; actual native and student acceptance remain open.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/122_ACADEMIC_FIRST_EXTENDED_C_OBJECTIVE.md",
@@ -214,6 +214,12 @@
           "blob": "a902cf73e56472dcd8299f3e6b294afb2e1c7f8a",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL academic dispatch; implementation/test NOT_RUN; exact blob"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/123_ACADEMIC_CODEX_EXECUTION_HANDOFF.md",
+          "blob": "e21a9d26f576ec6995cc108cc7e89847be5c5b88",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL launch readback; local NOT_RUN; exact blob"
         }
       ]
     },
@@ -258,7 +264,7 @@
         }
       ],
       "authority": "Immutable A 7f8c0746; actual course code and evidence separate from Extended.",
-      "next": "Academic preparation P01–P12 consolidated in Report123; owner can manually start Codex academic lane on exact main 96741bbd (not quarantined L06 harness). Verify Canvas/edition/Twilio interpretation with student; recover actual packages and evidence; execute A01–A08 academic dispatch in Report123, fix material defects and package. Existing private/host/recovery/CPX gates retained and not mandatory academic prerequisites. No automatic private launch, merge, deploy, production release or migration freeze bypass.",
+      "next": "Academic preparation P01–P12 consolidated in Report123; owner can manually start Codex academic lane on exact main 96741bbd (not quarantined L06 harness). Verify Canvas/edition/Twilio interpretation with student; recover actual packages and evidence; execute AC0–AC7 academic dispatch in Report123, fix material defects and package. Existing private/host/recovery/CPX gates retained and not mandatory academic prerequisites. No automatic private launch, merge, deploy, production release or migration freeze bypass.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
@@ -692,7 +698,7 @@
         }
       ],
       "authority": "93 route candidate mapping, independent issue34 blocked; current code and actual test evidence.",
-      "next": "Academic preparation P01–P12 consolidated in Report123; owner can manually start Codex academic lane on exact main 96741bbd (not quarantined L06 harness). Verify Canvas/edition/Twilio interpretation with student; recover actual packages and evidence; execute A01–A08 academic dispatch in Report123, fix material defects and package. Existing private/host/recovery/CPX gates retained and not mandatory academic prerequisites. No automatic private launch, merge, deploy, production release or migration freeze bypass.",
+      "next": "Pre-handoff P01–P12 bounded preparation closed. Owner manually starts Codex AC0–AC7 on clean academic feature worktree from main 96741bbd; use Report123 Launch readback launch instructions. No more speculative remote work. Private L06 HOLD, commercial and CPX scope nonblocking unless academically required; actual native and student acceptance remain open.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/74_STRUCTURED_PRIVACY_AND_RECOVERED_ROUTE_RECEIPTS.md",
@@ -997,6 +1003,12 @@
           "blob": "a902cf73e56472dcd8299f3e6b294afb2e1c7f8a",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL academic dispatch; implementation/test NOT_RUN; exact blob"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/123_ACADEMIC_CODEX_EXECUTION_HANDOFF.md",
+          "blob": "e21a9d26f576ec6995cc108cc7e89847be5c5b88",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL launch readback; local NOT_RUN; exact blob"
         }
       ]
     },
@@ -1066,7 +1078,7 @@
         }
       ],
       "authority": "DEC-D01 proposed only; existing role/data contracts govern until approved.",
-      "next": "Academic preparation P01–P12 consolidated in Report123; owner can manually start Codex academic lane on exact main 96741bbd (not quarantined L06 harness). Verify Canvas/edition/Twilio interpretation with student; recover actual packages and evidence; execute A01–A08 academic dispatch in Report123, fix material defects and package. Existing private/host/recovery/CPX gates retained and not mandatory academic prerequisites. No automatic private launch, merge, deploy, production release or migration freeze bypass.",
+      "next": "Academic preparation P01–P12 consolidated in Report123; owner can manually start Codex academic lane on exact main 96741bbd (not quarantined L06 harness). Verify Canvas/edition/Twilio interpretation with student; recover actual packages and evidence; execute AC0–AC7 academic dispatch in Report123, fix material defects and package. Existing private/host/recovery/CPX gates retained and not mandatory academic prerequisites. No automatic private launch, merge, deploy, production release or migration freeze bypass.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -1451,7 +1463,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "Academic preparation P01–P12 consolidated in Report123; owner can manually start Codex academic lane on exact main 96741bbd (not quarantined L06 harness). Verify Canvas/edition/Twilio interpretation with student; recover actual packages and evidence; execute A01–A08 academic dispatch in Report123, fix material defects and package. Existing private/host/recovery/CPX gates retained and not mandatory academic prerequisites. No automatic private launch, merge, deploy, production release or migration freeze bypass.",
+      "next": "Pre-handoff P01–P12 bounded preparation closed. Owner manually starts Codex AC0–AC7 on clean academic feature worktree from main 96741bbd; use Report123 Launch readback launch instructions. No more speculative remote work. Private L06 HOLD, commercial and CPX scope nonblocking unless academically required; actual native and student acceptance remain open.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -2124,6 +2136,12 @@
           "blob": "a902cf73e56472dcd8299f3e6b294afb2e1c7f8a",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL academic dispatch; implementation/test NOT_RUN; exact blob"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/123_ACADEMIC_CODEX_EXECUTION_HANDOFF.md",
+          "blob": "e21a9d26f576ec6995cc108cc7e89847be5c5b88",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL launch readback; local NOT_RUN; exact blob"
         }
       ]
     },
@@ -2270,7 +2288,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "Academic preparation P01–P12 consolidated in Report123; owner can manually start Codex academic lane on exact main 96741bbd (not quarantined L06 harness). Verify Canvas/edition/Twilio interpretation with student; recover actual packages and evidence; execute A01–A08 academic dispatch in Report123, fix material defects and package. Existing private/host/recovery/CPX gates retained and not mandatory academic prerequisites. No automatic private launch, merge, deploy, production release or migration freeze bypass.",
+      "next": "Pre-handoff P01–P12 bounded preparation closed. Owner manually starts Codex AC0–AC7 on clean academic feature worktree from main 96741bbd; use Report123 Launch readback launch instructions. No more speculative remote work. Private L06 HOLD, commercial and CPX scope nonblocking unless academically required; actual native and student acceptance remain open.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -2699,6 +2717,12 @@
           "blob": "a902cf73e56472dcd8299f3e6b294afb2e1c7f8a",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL academic dispatch; implementation/test NOT_RUN; exact blob"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/123_ACADEMIC_CODEX_EXECUTION_HANDOFF.md",
+          "blob": "e21a9d26f576ec6995cc108cc7e89847be5c5b88",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL launch readback; local NOT_RUN; exact blob"
         }
       ]
     }
