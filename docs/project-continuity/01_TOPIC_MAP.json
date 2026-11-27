@@ -1263,7 +1263,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "21/21 real Windows-hosted PowerShell release guard and 41/41 exact candidate portable H03/H06 tests VERIFIED_BOUNDED; do not rerun absent changed source or material risk. Reconcile remaining PR59 CI46018878134 and handoff Verify46019206764; advance independent material application/security residual and remaining H03/H06 native integration source corrections, not another portable test expansion. Full local package, 32-case native matrix+H04, actual private L06/P0/independent review and 13 privacy flags remain open.",
+      "next": "Inspect actual Windows fixture CI for H02/H04 64 PowerShell cases, H06 14 Windows spy methods and pure C# lifecycle interpretation; repair observed failures on harness-only successor if necessary. Do not repeat prior 41 portable or 21 release guard results absent drift. Reconcile pending exact PR59/handoff general CI; continue remaining eligible source corrections. Full local package, native matrix and L06/private/P0/independent gates remain open.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -1528,6 +1528,14 @@
           "blob": "f7f6689a91742ecb9790adfbb91f8274d819bdbd",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL actual 21+41 fixture receipts; native NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/127_WINDOWS_FICTIONAL_FIXTURE_EXECUTION.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "8f233ca731e036e331594e57f0f505bd762edf72",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL fixture dispatch; actual NOT_RUN"
         }
       ]
     },
@@ -1551,7 +1559,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "21/21 real Windows-hosted PowerShell release guard and 41/41 exact candidate portable H03/H06 tests VERIFIED_BOUNDED; do not rerun absent changed source or material risk. Reconcile remaining PR59 CI46018878134 and handoff Verify46019206764; advance independent material application/security residual and remaining H03/H06 native integration source corrections, not another portable test expansion. Full local package, 32-case native matrix+H04, actual private L06/P0/independent review and 13 privacy flags remain open.",
+      "next": "Inspect actual Windows fixture CI for H02/H04 64 PowerShell cases, H06 14 Windows spy methods and pure C# lifecycle interpretation; repair observed failures on harness-only successor if necessary. Do not repeat prior 41 portable or 21 release guard results absent drift. Reconcile pending exact PR59/handoff general CI; continue remaining eligible source corrections. Full local package, native matrix and L06/private/P0/independent gates remain open.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -2262,6 +2270,14 @@
           "blob": "f7f6689a91742ecb9790adfbb91f8274d819bdbd",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL actual 21+41 fixture receipts; native NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/127_WINDOWS_FICTIONAL_FIXTURE_EXECUTION.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "8f233ca731e036e331594e57f0f505bd762edf72",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL fixture dispatch; actual NOT_RUN"
         }
       ]
     },
@@ -2408,7 +2424,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "21/21 real Windows-hosted PowerShell release guard and 41/41 exact candidate portable H03/H06 tests VERIFIED_BOUNDED; do not rerun absent changed source or material risk. Reconcile remaining PR59 CI46018878134 and handoff Verify46019206764; advance independent material application/security residual and remaining H03/H06 native integration source corrections, not another portable test expansion. Full local package, 32-case native matrix+H04, actual private L06/P0/independent review and 13 privacy flags remain open.",
+      "next": "Inspect actual Windows fixture CI for H02/H04 64 PowerShell cases, H06 14 Windows spy methods and pure C# lifecycle interpretation; repair observed failures on harness-only successor if necessary. Do not repeat prior 41 portable or 21 release guard results absent drift. Reconcile pending exact PR59/handoff general CI; continue remaining eligible source corrections. Full local package, native matrix and L06/private/P0/independent gates remain open.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -2875,6 +2891,14 @@
           "blob": "f7f6689a91742ecb9790adfbb91f8274d819bdbd",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL actual 21+41 fixture receipts; native NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/127_WINDOWS_FICTIONAL_FIXTURE_EXECUTION.md",
+          "kind": "file",
+          "count": 1,
+          "blob": "8f233ca731e036e331594e57f0f505bd762edf72",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL fixture dispatch; actual NOT_RUN"
         }
       ]
     }
