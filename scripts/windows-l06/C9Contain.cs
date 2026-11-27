@@ -12,15 +12,47 @@ using Microsoft.Win32.SafeHandles;
 // Every child is created suspended, checked by HANDLE (never by PID), then resumed.
 public sealed class C9Process : IDisposable {
     internal IntPtr H; public int Pid; public string Role;
-    public bool HasExited { get { return N.WaitForSingleObject(H, 0) == 0; } }
-    public bool Wait(int ms) { return N.WaitForSingleObject(H, ms < 0 ? 0xFFFFFFFF : (uint)ms) == 0; }
-    public int ExitCode { get { uint c; if (!N.GetExitCodeProcess(H, out c)) throw new Win32Exception(); return unchecked((int)c); } }
-    public void Terminate() { if (!HasExited) { N.TerminateProcess(H, 137); Wait(10000); } }
-    public void Dispose() { if (H != IntPtr.Zero) { N.CloseHandle(H); H = IntPtr.Zero; } }
+    public bool HasExited { get { return Wait(0); } }
+    public bool Wait(int ms) {
+        if (H == IntPtr.Zero || ms < 0) throw new InvalidOperationException("C9W_PROCESS_WAIT_ARGUMENT");
+        uint result = N.WaitForSingleObject(H, (uint)ms);
+        return C9Lifecycle.WaitResult(result, Marshal.GetLastWin32Error());
+    }
+    public int ExitCode {
+        get {
+            if (!HasExited) throw new InvalidOperationException("C9W_PROCESS_RUNNING");
+            uint c;
+            if (!N.GetExitCodeProcess(H, out c)) throw new Win32Exception(Marshal.GetLastWin32Error(), "C9W_PROCESS_EXIT_CODE");
+            return unchecked((int)c);
+        }
+    }
+    public void Terminate() {
+        if (HasExited) return;
+        if (!N.TerminateProcess(H, 137)) {
+            int error = Marshal.GetLastWin32Error();
+            // A natural exit may race the signal. Only a signaled held HANDLE
+            // confirms that the process ended; an API failure is not a timeout.
+            if (error == 5 && HasExited) return;
+            throw new Win32Exception(error, "C9W_PROCESS_TERMINATE");
+        }
+        if (!Wait(10000)) throw new InvalidOperationException("C9W_PROCESS_STOP_TIMEOUT");
+    }
+    public void Dispose() {
+        if (H == IntPtr.Zero) return;
+        if (!N.CloseHandle(H)) throw new Win32Exception(Marshal.GetLastWin32Error(), "C9W_PROCESS_HANDLE_CLOSE");
+        H = IntPtr.Zero;
+    }
 }
 public sealed class C9Container : IDisposable {
     public readonly string Name, SidString; IntPtr sid, job; bool profile;
     C9ProfileStorageObservation storage;
+    // A failed native lifecycle observation is sticky. A later zero count
+    // or successful handle close cannot retroactively certify cleanup.
+    bool lifecycleUncertain;
+    void RequireUsableJob() {
+        if (job == IntPtr.Zero || sid == IntPtr.Zero || lifecycleUncertain)
+            throw new InvalidOperationException("C9W_JOB_UNUSABLE");
+    }
     // Legacy entrypoint is deliberately refused while journal integration is incomplete.
     public C9Container(string name) { throw new InvalidOperationException("C9W_PROFILE_JOURNAL_REQUIRED"); }
     internal C9Container(string name, Action<string,object> confirmCreated) {
@@ -42,8 +74,12 @@ public sealed class C9Container : IDisposable {
         var i = new N.JOBOBJECT_EXTENDED_LIMIT_INFORMATION();
         i.Basic.LimitFlags = 0x2000 | 0x400 | 0x8; // KILL_ON_JOB_CLOSE | DIE_ON_UNHANDLED_EXCEPTION | ACTIVE_PROCESS; no BREAKAWAY flags
         i.Basic.ActiveProcessLimit = 96;
-        int n = Marshal.SizeOf(i); IntPtr p = Marshal.AllocHGlobal(n); Marshal.StructureToPtr(i, p, false);
-        bool set = N.SetInformationJobObject(job, 9, p, n); Marshal.FreeHGlobal(p); if (!set) throw new Win32Exception();
+        int n = Marshal.SizeOf(i); IntPtr p = Marshal.AllocHGlobal(n);
+        try {
+            Marshal.StructureToPtr(i, p, false);
+            if (!N.SetInformationJobObject(job, 9, p, n))
+                throw new Win32Exception(Marshal.GetLastWin32Error(), "C9W_JOB_LIMITS");
+        } finally { Marshal.FreeHGlobal(p); }
         } catch { CloseOwnedHandles(); throw; }
     }
     public int ActiveProcesses { get {
@@ -67,11 +103,21 @@ public sealed class C9Container : IDisposable {
     // Only Start resumes a process. SelfTest passes resume=false, so no test shape ever executes an instruction.
     C9Process Create(string role, string exe, string[] args, IDictionary env, string cwd, string stdin, string stdout, string stderr, IntPtr useSid, bool capability, bool resume) {
         IntPtr hin = IntPtr.Zero, ho = IntPtr.Zero, he = IntPtr.Zero, capSid = IntPtr.Zero, capArray = IntPtr.Zero;
+        RequireUsableJob();
+        if (IntPtr.Size != 8) throw new InvalidOperationException("C9W_NATIVE_ABI");
         IntPtr list = IntPtr.Zero, caps = IntPtr.Zero, hl = IntPtr.Zero, jl = IntPtr.Zero, envp = IntPtr.Zero;
+        bool listInitialized = false;
         try {
             hin = OpenInherit(String.IsNullOrEmpty(stdin) ? "NUL" : stdin, false); ho = OpenInherit(String.IsNullOrEmpty(stdout) ? "NUL" : stdout, true); he = stderr == stdout ? ho : OpenInherit(String.IsNullOrEmpty(stderr) ? "NUL" : stderr, true);
-            IntPtr size = IntPtr.Zero; N.InitializeProcThreadAttributeList(IntPtr.Zero, 3, 0, ref size);
-            list = Marshal.AllocHGlobal(size); if (!N.InitializeProcThreadAttributeList(list, 3, 0, ref size)) throw new Win32Exception();
+            IntPtr size = IntPtr.Zero;
+            bool sized = N.InitializeProcThreadAttributeList(IntPtr.Zero, 3, 0, ref size);
+            int sizeError = Marshal.GetLastWin32Error();
+            if (sized || sizeError != 122 || size.ToInt64() <= 0 || size.ToInt64() > 1048576)
+                throw new InvalidOperationException("C9W_ATTRIBUTE_SIZE");
+            list = Marshal.AllocHGlobal(size);
+            if (!N.InitializeProcThreadAttributeList(list, 3, 0, ref size))
+                throw new Win32Exception(Marshal.GetLastWin32Error(), "C9W_ATTRIBUTE_INIT");
+            listInitialized = true;
             var sc = new N.SECURITY_CAPABILITIES(); sc.AppContainerSid = useSid; sc.Capabilities = IntPtr.Zero; sc.CapabilityCount = 0;
             if (capability) { if (!N.ConvertStringSidToSidW("S-1-15-3-1", out capSid)) throw new Win32Exception(); capArray = Marshal.AllocHGlobal(16); Marshal.WriteIntPtr(capArray, capSid); Marshal.WriteInt32(capArray, 8, 4); sc.Capabilities = capArray; sc.CapabilityCount = 1; }
             caps = Marshal.AllocHGlobal(Marshal.SizeOf(sc)); Marshal.StructureToPtr(sc, caps, false);
@@ -89,14 +135,34 @@ public sealed class C9Container : IDisposable {
             N.PROCESS_INFORMATION pi;
             if (!N.CreateProcessW(exe, cmd, IntPtr.Zero, IntPtr.Zero, true, 0x80000u|0x400u|0x4u|0x08000000u, envp, cwd, ref si, out pi)) throw new Win32Exception(Marshal.GetLastWin32Error(), "C9W_CREATE " + role);
             var proc = new C9Process(); proc.H = pi.hProcess; proc.Pid = pi.dwProcessId; proc.Role = role;
-            try { Verify(proc); if (resume && N.ResumeThread(pi.hThread) == 0xFFFFFFFF) throw new Win32Exception(); }
-            catch { N.TerminateProcess(pi.hProcess, 138); proc.Wait(5000); proc.Dispose(); throw; }
-            finally { N.CloseHandle(pi.hThread); }
+            try {
+                Verify(proc);
+                if (resume) C9Lifecycle.RequireInitialResume(N.ResumeThread(pi.hThread));
+            } catch {
+                try { proc.Terminate(); }
+                catch { lifecycleUncertain = true; throw new InvalidOperationException("C9W_UNVERIFIED_CHILD_STOP_UNKNOWN"); }
+                finally {
+                    try { proc.Dispose(); }
+                    catch { lifecycleUncertain = true; throw; }
+                }
+                throw;
+            } finally {
+                if (!N.CloseHandle(pi.hThread)) {
+                    lifecycleUncertain = true;
+                    // Do not return a process whose creation/cleanup is uncertain.
+                    try { if (proc.H != IntPtr.Zero) proc.Terminate(); }
+                    finally { proc.Dispose(); }
+                    throw new InvalidOperationException("C9W_THREAD_HANDLE_CLOSE");
+                }
+            }
             return proc;
         } finally {
             if (hin != IntPtr.Zero) N.CloseHandle(hin); if (ho != IntPtr.Zero) N.CloseHandle(ho); if (he != ho && he != IntPtr.Zero) N.CloseHandle(he);
             if (capSid != IntPtr.Zero) N.LocalFree(capSid); if (capArray != IntPtr.Zero) Marshal.FreeHGlobal(capArray);
-            if (list != IntPtr.Zero) { N.DeleteProcThreadAttributeList(list); Marshal.FreeHGlobal(list); }
+            if (list != IntPtr.Zero) {
+                if (listInitialized) N.DeleteProcThreadAttributeList(list);
+                Marshal.FreeHGlobal(list);
+            }
             foreach (var p in new[]{caps,hl,jl,envp}) if (p != IntPtr.Zero) Marshal.FreeHGlobal(p);
         }
     }
@@ -111,30 +177,86 @@ public sealed class C9Container : IDisposable {
     }
     // Fail closed unless the child is in this exact job, in this exact container, with zero capabilities.
     public void Verify(C9Process p) {
-        bool inJob; if (!N.IsProcessInJob(p.H, job, out inJob) || !inJob) throw new InvalidOperationException("C9W_NOT_IN_JOB");
-        IntPtr t; if (!N.OpenProcessToken(p.H, 8, out t)) throw new Win32Exception();
+        RequireUsableJob();
+        if (p == null || p.H == IntPtr.Zero) throw new InvalidOperationException("C9W_PROCESS_HANDLE");
+        bool inJob;
+        if (!N.IsProcessInJob(p.H, job, out inJob))
+            throw new Win32Exception(Marshal.GetLastWin32Error(), "C9W_JOB_QUERY");
+        if (!inJob) throw new InvalidOperationException("C9W_NOT_IN_JOB");
+        IntPtr t;
+        if (!N.OpenProcessToken(p.H, 8, out t)) throw new Win32Exception(Marshal.GetLastWin32Error(), "C9W_TOKEN_OPEN");
         try {
             if (Int(t, 29) != 1) throw new InvalidOperationException("C9W_NOT_APPCONTAINER");
-            IntPtr b = Info(t, 31, 8); bool same = N.EqualSid(Marshal.ReadIntPtr(b), sid); Marshal.FreeHGlobal(b); if (!same) throw new InvalidOperationException("C9W_WRONG_CONTAINER");
+            int length;
+            IntPtr b = Info(t, 31, IntPtr.Size, out length);
+            try {
+                IntPtr observed = Marshal.ReadIntPtr(b);
+                long offset = observed.ToInt64() - b.ToInt64();
+                // TOKEN_APPCONTAINER_INFORMATION points into its returned buffer.
+                // Bound the SID header and subauthority array before calling EqualSid.
+                if (offset < IntPtr.Size || offset > length - 8 ||
+                    8 + 4 * Marshal.ReadByte(observed, 1) > length - offset ||
+                    !N.IsValidSid(observed))
+                    throw new InvalidOperationException("C9W_TOKEN_SID_SHAPE");
+                if (!N.EqualSid(observed, sid)) throw new InvalidOperationException("C9W_WRONG_CONTAINER");
+            } finally { Marshal.FreeHGlobal(b); }
             if (Int(t, 30) != 0) throw new InvalidOperationException("C9W_CAPABILITIES");
-        } finally { N.CloseHandle(t); }
+        } finally {
+            if (!N.CloseHandle(t)) {
+                lifecycleUncertain = true;
+                throw new Win32Exception(Marshal.GetLastWin32Error(), "C9W_TOKEN_HANDLE_CLOSE");
+            }
+        }
     }
-    static int Int(IntPtr t, int cls) { IntPtr b = Info(t, cls, 4); int v = Marshal.ReadInt32(b); Marshal.FreeHGlobal(b); return v; }
-    static IntPtr Info(IntPtr t, int cls, int min) { int n; N.GetTokenInformation(t, cls, IntPtr.Zero, 0, out n); if (n < min) n = min; IntPtr b = Marshal.AllocHGlobal(n);
-        if (!N.GetTokenInformation(t, cls, b, n, out n)) throw new Win32Exception(); return b; }
-    public bool KillAll() { if (job == IntPtr.Zero) return true; N.TerminateJobObject(job, 139); for (int i=0;i<100 && ActiveProcesses>0;i++) Thread.Sleep(100); return ActiveProcesses==0; }
+    static int Int(IntPtr t, int cls) {
+        int length; IntPtr b = Info(t, cls, 4, out length);
+        try { return Marshal.ReadInt32(b); }
+        finally { Marshal.FreeHGlobal(b); }
+    }
+    static IntPtr Info(IntPtr t, int cls, int min, out int length) {
+        int n;
+        bool ok = N.GetTokenInformation(t, cls, IntPtr.Zero, 0, out n);
+        C9Lifecycle.RequireTokenSize(ok, Marshal.GetLastWin32Error(), n, min);
+        IntPtr b = Marshal.AllocHGlobal(n);
+        try {
+            if (!N.GetTokenInformation(t, cls, b, n, out length))
+                throw new Win32Exception(Marshal.GetLastWin32Error(), "C9W_TOKEN_QUERY");
+            C9Lifecycle.RequireTokenLength(length, n, min);
+            return b;
+        } catch { Marshal.FreeHGlobal(b); throw; }
+    }
+    public bool KillAll() {
+        if (job == IntPtr.Zero) return !lifecycleUncertain;
+        try {
+            if (!N.TerminateJobObject(job, 139))
+                throw new Win32Exception(Marshal.GetLastWin32Error(), "C9W_JOB_TERMINATE");
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            while (ActiveProcesses > 0 && clock.ElapsedMilliseconds < 10000) Thread.Sleep(100);
+            if (ActiveProcesses != 0) lifecycleUncertain = true;
+            return !lifecycleUncertain;
+        } catch { lifecycleUncertain = true; throw; }
+    }
     // Handle cleanup is not profile deletion. A failed creation must never roll back by name.
     void CloseOwnedHandles() {
         try {
             if (job != IntPtr.Zero) {
                 try { if (!KillAll()) throw new InvalidOperationException("C9W_JOB_KILL"); }
-                finally { N.CloseHandle(job); job = IntPtr.Zero; }
+                finally {
+                    if (!N.CloseHandle(job)) {
+                        lifecycleUncertain = true;
+                        throw new Win32Exception(Marshal.GetLastWin32Error(), "C9W_JOB_HANDLE_CLOSE");
+                    }
+                    job = IntPtr.Zero;
+                }
             }
         } finally {
             if (sid != IntPtr.Zero) { N.FreeSid(sid); sid = IntPtr.Zero; }
         }
     }
-    public void Dispose() { CloseOwnedHandles(); }
+    public void Dispose() {
+        CloseOwnedHandles();
+        if (lifecycleUncertain) throw new InvalidOperationException("C9W_JOB_CLEANUP_UNKNOWN");
+    }
     public void AssertProfileStoragePresent() {
         if (!profile || storage == null) throw new InvalidOperationException("C9W_PROFILE_STORAGE_STATE");
         storage.AssertPresent();
@@ -149,7 +271,7 @@ public sealed class C9Container : IDisposable {
     }
     // Only the journal-owning producer may request deletion, after durable removing.
     internal void DeleteConfirmedProfile() {
-        if (!profile || job != IntPtr.Zero || sid != IntPtr.Zero)
+        if (!profile || job != IntPtr.Zero || sid != IntPtr.Zero || lifecycleUncertain)
             throw new InvalidOperationException("C9W_PROFILE_DELETE_STATE");
         // Revalidate immediately before the name-based API. It is not an atomic identity CAS.
         AssertProfileStoragePresent();
@@ -157,6 +279,27 @@ public sealed class C9Container : IDisposable {
         if (hr != 0) throw new InvalidOperationException("C9W_PROFILE_DELETE");
         profile = false;
         AssertProfileStorageAbsent();
+    }
+}
+// Pure interpretations shared by actual native calls and the fictional fixture.
+// No process launch, handle mutation or simulated native success is exposed here.
+public static class C9Lifecycle {
+    public static bool WaitResult(uint result, int error) {
+        if (result == 0) return true;
+        if (result == 0x102) return false;
+        if (result == 0xffffffff) throw new Win32Exception(error, "C9W_PROCESS_WAIT_FAILED");
+        throw new InvalidOperationException("C9W_PROCESS_WAIT_UNKNOWN");
+    }
+    public static void RequireInitialResume(uint previous) {
+        if (previous != 1) throw new InvalidOperationException("C9W_THREAD_RESUME_STATE");
+    }
+    public static void RequireTokenSize(bool ok, int error, int length, int min) {
+        if (ok || error != 122 || min < 4 || length < min || length > 1048576)
+            throw new InvalidOperationException("C9W_TOKEN_SIZE");
+    }
+    public static void RequireTokenLength(int actual, int allocated, int min) {
+        if (min < 4 || actual < min || actual > allocated || allocated > 1048576)
+            throw new InvalidOperationException("C9W_TOKEN_LENGTH");
     }
 }
 static class N {
@@ -174,6 +317,7 @@ static class N {
     [DllImport("advapi32")] public static extern IntPtr FreeSid(IntPtr s);
     [DllImport("advapi32", SetLastError=true, CharSet=CharSet.Unicode)] public static extern bool ConvertStringSidToSidW(string s,out IntPtr sid);
     [DllImport("advapi32")] public static extern bool EqualSid(IntPtr a,IntPtr b);
+    [DllImport("advapi32")] public static extern bool IsValidSid(IntPtr s);
     [DllImport("advapi32", SetLastError=true)] public static extern bool OpenProcessToken(IntPtr p,uint a,out IntPtr t);
     [DllImport("advapi32", SetLastError=true)] public static extern bool GetTokenInformation(IntPtr t,int c,IntPtr b,int n,out int r);
     [DllImport("kernel32")] public static extern IntPtr LocalFree(IntPtr p);
@@ -189,7 +333,7 @@ static class N {
     [DllImport("kernel32", SetLastError=true, CharSet=CharSet.Unicode)] public static extern bool CreateProcessW(string app,StringBuilder cmd,IntPtr pa,IntPtr ta,bool inh,uint flags,IntPtr env,string cwd,ref STARTUPINFOEX si,out PROCESS_INFORMATION pi);
     [DllImport("kernel32", SetLastError=true)] public static extern uint ResumeThread(IntPtr t);
     [DllImport("kernel32", SetLastError=true)] public static extern bool TerminateProcess(IntPtr p,uint c);
-    [DllImport("kernel32")] public static extern uint WaitForSingleObject(IntPtr h,uint ms);
+    [DllImport("kernel32", SetLastError=true)] public static extern uint WaitForSingleObject(IntPtr h,uint ms);
     [DllImport("kernel32", SetLastError=true)] public static extern bool GetExitCodeProcess(IntPtr p,out uint c);
-    [DllImport("kernel32")] public static extern bool CloseHandle(IntPtr h);
+    [DllImport("kernel32", SetLastError=true)] public static extern bool CloseHandle(IntPtr h);
 }
