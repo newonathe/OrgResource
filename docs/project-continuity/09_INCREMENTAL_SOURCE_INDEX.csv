@@ -450,3 +450,7 @@
 "docs/handoffs/claude-local-execution-2026-11-24/118_H06_DEDICATED_OWNED_JOB_WATCHDOG_PROBE.md","ca7b40fb6607596bfb468c373130cc199a5a9dee","11350","100644","779caf6b4260b03b79f562492efdacc41053dd42","FULL Report118 H06 source-only"
 "scripts/windows-l06/C9OwnedJobProbe.cs","6ba5518f360143584b9450f3b87148e2cb67e0a9","13083","100644","a1b07705dbe58b56f64846977d71b429ce8f32c5","FULL Report118 source-only tests NOT_RUN"
 "scripts/windows-l06/test-owned-job-probe.ps1","810ee2c1e69424dc3d433fc150116e3df6f8bbe3","4947","100644","a1b07705dbe58b56f64846977d71b429ce8f32c5","FULL Report118 source-only tests NOT_RUN"
+"docs/handoffs/claude-local-execution-2026-11-24/119_H03_JOURNAL_WORKER_TRANSPORT_QUARANTINE.md","befc5c8cc4d930b4bcdd318c21151b604c44e686","9525","100644","fee312d5a4ea33fad63fbe50320338153a9502fc","FULL Report119 H03 source-only"
+"scripts/windows-l06/C9JournalParent.cs","882343527ef986710b4fca6d14004c301b0bbc1e","20327","100644","b762c4195393ae92e03ee149531ca0ab944f438b","FULL Report119 source-only tests NOT_RUN"
+"scripts/windows-l06/C9JournalStorage.cs","189e8aa4bb039e5557c4b87acf230c63541fccc2","7583","100644","b762c4195393ae92e03ee149531ca0ab944f438b","FULL Report119 source-only tests NOT_RUN"
+"scripts/windows-l06/test-journal-worker-failures.ps1","ceb5a09e531dfb56aad6ce78fb6dd7d55db04b2e","4840","100644","b762c4195393ae92e03ee149531ca0ab944f438b","FULL Report119 source-only tests NOT_RUN"

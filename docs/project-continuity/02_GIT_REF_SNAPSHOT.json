@@ -1208,5 +1208,17 @@
     "report": "docs/handoffs/claude-local-execution-2026-11-24/118_H06_DEDICATED_OWNED_JOB_WATCHDOG_PROBE.md",
     "report_ref": "779caf6b4260b03b79f562492efdacc41053dd42",
     "coverage": "71 harness-only additions; five fixed native modes and refusal/sentinel fixture NOT_RUN; no complete descendant termination claim; transport quarantined"
+  },
+  "h03_journal_worker_quarantine_candidate": {
+    "observed_date": "2026-11-27 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "b762c4195393ae92e03ee149531ca0ab944f438b",
+    "tree": "1c197e71191848d8336a3578c3393036f799f1ba",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/119_H03_JOURNAL_WORKER_TRANSPORT_QUARANTINE.md",
+    "report_ref": "fee312d5a4ea33fad63fbe50320338153a9502fc",
+    "coverage": "72 harness-only additions; four native transport scenarios NOT_RUN; ordinary Process.Start not owned job; both entrypoints/transport quarantined"
   }
 }
