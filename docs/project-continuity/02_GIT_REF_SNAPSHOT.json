@@ -1685,9 +1685,7 @@
       "oracle": "Full source Git archive allowlist and raw blob equality, 16 source path/ZIP cases plus prior 33 migration cases",
       "actual": "49/49 focused cases passed; 195/195 actual Git archive extracted source files matched raw committed blobs; exact checkout and terminal success; full native package/operator NOT_RUN."
     },
-    "pending_runs": [
-      46067620499
-    ],
+    "pending_runs": [],
     "native_state": "NOT_RUN",
     "next": "Inspect prior PR59 Extended140736653799 and latest Verify46068914869 Java8 job140740863234/Extended140740862802 actual terminal logs. Repair observed failures only; no repeat unchanged guards. Full native package/operator, H03/H06 native and console-host attribution, private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates remain. Report124 controls production-ready academic objective; strict A protected. No merge/deploy/release.",
     "ref": "ece08d1d56714f0676d8234286bcbc8a0ef8f4ee",
@@ -1707,11 +1705,17 @@
         "job": 140736654194,
         "oracle": "Prior PR59 Course A automatic actual logs",
         "actual": "61 Maven zero failures/errors/skips, 160 Newman assertions zero failures, browser1; exact terminal success."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "a92e484179a092da6e3cd8045e5115da00dee7c4",
+        "run": 46067620499,
+        "job": 140736653799,
+        "oracle": "Prior exact PR59 Extended automatic actual logs",
+        "actual": "38 frontend, 78 identity/103 Maven zero failures/errors/skips, actual C5 archive/independent restore, 110 Newman assertions zero failures, browser19; terminal success."
       }
     ],
-    "pending_jobs": [
-      140736653799
-    ]
+    "pending_jobs": []
   },
   "extended_read_only_package_integrity": {
     "report": "docs/handoffs/claude-local-execution-2026-11-24/144_READ_ONLY_PACKAGE_INTEGRITY_CHECKER.md",
@@ -1735,16 +1739,79 @@
         "job": 140740863125,
         "oracle": "React typecheck/tests/lint/build",
         "actual": "Exact checkout; 15 tests and terminal success."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "0b07f45c0eb6482b9dcdd8f38f0d8cdb6bdf6427",
+        "run": 46068914869,
+        "job": 140740863234,
+        "oracle": "Latest exact PR59 Course A automatic actual logs",
+        "actual": "61 Maven zero failures/errors/skips,160 Newman assertions zero failures, browser1; terminal success."
       }
     ],
     "pending_runs": [
       46068914869
     ],
     "pending_jobs": [
-      140740863234,
       140740862802
     ],
     "native_state": "NOT_RUN",
-    "next": "Inspect prior PR59 Extended140736653799 and latest Verify46068914869 Java8 job140740863234/Extended140740862802 actual terminal logs. Repair observed failures only; no repeat unchanged guards. Full native package/operator, H03/H06 native and console-host attribution, private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates remain. Report124 controls production-ready academic objective; strict A protected. No merge/deploy/release."
+    "next": "Inspect pending latest PR59 Extended140740862802 and handoff Verify46069481376 CourseA140742710627/Extended140742710573 terminal actual logs. Do not repeat unchanged compile/guard checks. Next bounded approved nonadmin owner-only NTFS fictional native H03/H06 fixture dispatch; no valid ConPTY launch before independent outer/console-host acceptance contract. Full native package/operator, H03/H06 settlement, private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates remain. Report124 controls production-ready academic objective; strict A protected. No merge/deploy/release."
+  },
+  "isolated_native_fixture_compile_closure": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/145_ISOLATED_NATIVE_FIXTURE_COMPILE_CLOSURE.md",
+    "ref": "2baceb94d023713fcc35eb54037a232fa452dbbf",
+    "sha": "768418c9b503e280fa363668d5362fcce3cb6dba",
+    "workflow_sha": "ad0616bbce23d6e38421ac8108b1b5895411bbf9",
+    "state": "VERIFIED_BOUNDED",
+    "receipt": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "768418c9b503e280fa363668d5362fcce3cb6dba",
+      "run": 46069481565,
+      "job": 140742710451,
+      "oracle": "Nine exact individual fixture Add-Type source lists compiled in isolated fresh PowerShell processes with pinned blobs and AST names",
+      "actual": "9/9 exact fixture source lists, counts 8/8/8/4/4/10/6/6/2; no native fixture invocation."
+    },
+    "automatic_receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "768418c9b503e280fa363668d5362fcce3cb6dba",
+        "run": 46069481365,
+        "job": 140742709837,
+        "oracle": "Automatic repeat exact union compile, parser, pure assertions, helper build/refusal",
+        "actual": "15 source files compiled, five parsers,31+15 pure assertions, helper build 42 warnings/0 errors and two malformed invocation refusals; no native."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "ad0616bbce23d6e38421ac8108b1b5895411bbf9",
+        "run": 46069481376,
+        "job": 140742710150,
+        "oracle": "Automatic React repeat",
+        "actual": "15 tests and terminal success."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "run": 46069481596,
+        "job": 140742711079,
+        "oracle": "Older pinned portable repeat",
+        "actual": "b762c41 actual41 tests OK."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "run": 46069481369,
+        "job": 140742710347,
+        "oracle": "Older pinned guard repeat",
+        "actual": "b762c41 actual14 tests OK and lifecycle marker."
+      }
+    ],
+    "pending_runs": [
+      46069481376
+    ],
+    "pending_jobs": [
+      140742710627,
+      140742710573
+    ],
+    "native_state": "NOT_RUN",
+    "next": "Inspect pending latest PR59 Extended140740862802 and handoff Verify46069481376 CourseA140742710627/Extended140742710573 terminal actual logs. Do not repeat unchanged compile/guard checks. Next bounded approved nonadmin owner-only NTFS fictional native H03/H06 fixture dispatch; no valid ConPTY launch before independent outer/console-host acceptance contract. Full native package/operator, H03/H06 settlement, private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates remain. Report124 controls production-ready academic objective; strict A protected. No merge/deploy/release."
   }
 }
