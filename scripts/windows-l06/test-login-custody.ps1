@@ -78,3 +78,62 @@ try {
 }
 Refuses { $held.BeginFictionalLoginSlot('source','backup') } 'C9W_CONTROL_LOCK_NOT_HELD'
 [Console]::WriteLine('C9W_H06_LOGIN_SLOT_FIXTURE_OK:metadata_only=true no_editor=true no_database=true no_cleanup=true')
+
+# Separate tokens: cover every allowed pair without reusing the metadata fixture's slots.
+foreach ($pair in @('source/backup','restore/backup','restore/restore','mixed/restore')) {
+    $role,$kind=$pair.Split('/')
+    $newToken=[Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(6)).ToLowerInvariant()
+    $control=[C9ControlLock]::Create($FixtureRoot,$newToken)
+    $slot=$null
+    try {
+        $slot=$control.BeginFictionalLoginSlot($role,$kind)
+        $file=$slot.FilePath
+        $dirId=$slot.DirectoryId
+        $created=$slot.CreateFixedFictionalFile()
+        Require ($created -cmatch '^[a-f0-9]{16}:[a-f0-9]{32}$' -and $created -cne $dirId) 'C9W_TEST_FIXED_FILE_ID'
+        $slot.AssertObserved()
+        $blocked=$false
+        try { $other=[IO.File]::Open($file,'Open','ReadWrite','None'); $other.Dispose() }
+        catch [IO.IOException] {
+            if (($_.Exception.HResult -band 0xffff) -ne 32) { throw }
+            $blocked=$true
+        }
+        Require $blocked 'C9W_TEST_FIXED_FILE_NOT_EXCLUSIVE'
+        # A repeated creation must refuse, poison this instance, and retain bytes.
+        Refuses { $slot.CreateFixedFictionalFile() } 'C9W_LOGIN_SLOT_ALREADY_OBSERVED'
+        Refuses { $slot.AssertObserved() } 'C9W_LOGIN_SLOT_REFUSED'
+        $slot.Dispose()
+        Require ([IO.File]::ReadAllText($file) -ceq ("FICTIONAL_C9W_CUSTODY_PROBE_NOT_A_LOGIN"+[char]10)) 'C9W_TEST_FIXED_BYTES'
+        $before=(Get-FileHash -LiteralPath $file).Hash
+        Refuses { $control.BeginFictionalLoginSlot($role,$kind) } 'C9W_LOGIN_SLOT_CREATE'
+        Require ((Get-FileHash -LiteralPath $file).Hash -ceq $before) 'C9W_TEST_FIXED_RETRY_CHANGED'
+    } finally {
+        if ($null -ne $slot) { $slot.Dispose() }
+        $control.Dispose()
+    }
+    $reopened=[C9ControlLock]::OpenExisting($FixtureRoot,$newToken)
+    try {
+        Refuses { $reopened.BeginFictionalLoginSlot($role,$kind) } 'C9W_LOGIN_SLOT_CREATE'
+        Require ((Get-FileHash -LiteralPath $file).Hash -ceq $before) 'C9W_TEST_FIXED_REOPEN_CHANGED'
+    } finally { $reopened.Dispose() }
+    [Console]::WriteLine('C9W_H06_FIXED_SLOT_CASE_OK:'+$pair)
+}
+
+# A pre-existing fixture file must survive an attempted create unchanged.
+$collisionToken=[Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(6)).ToLowerInvariant()
+$control=[C9ControlLock]::Create($FixtureRoot,$collisionToken)
+$slot=$null
+try {
+    $slot=$control.BeginFictionalLoginSlot('source','backup')
+    $file=$slot.FilePath
+    # Deliberately fixed, harmless existing payload; not a real credential.
+    [IO.File]::WriteAllText($file,'FICTIONAL_EXISTING_SENTINEL')
+    $before=(Get-FileHash -LiteralPath $file).Hash
+    Refuses { $slot.CreateFixedFictionalFile() } 'C9W_LOGIN_FILE_EXISTS'
+    Refuses { $slot.AssertObserved() } 'C9W_LOGIN_SLOT_REFUSED'
+    Require ((Get-FileHash -LiteralPath $file).Hash -ceq $before) 'C9W_TEST_FIXED_COLLISION_CHANGED'
+} finally {
+    if ($null -ne $slot) { $slot.Dispose() }
+    $control.Dispose()
+}
+[Console]::WriteLine('C9W_H06_FIXED_SLOT_FIXTURE_OK:four_pairs=true collision_refused=true retained=true no_editor=true no_database=true')
