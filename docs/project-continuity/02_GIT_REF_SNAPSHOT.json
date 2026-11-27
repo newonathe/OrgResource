@@ -1172,5 +1172,17 @@
     "report": "docs/handoffs/claude-local-execution-2026-11-24/115_H05_SCOPED_EQUALITY_AND_RETENTION_PORTABLE_RECEIPTS.md",
     "report_ref": "ea673de6d7371ae8186e47c14d47de652810f88e",
     "coverage": "63 harness-only additions; H05 native NOT_RUN; H01-A 17 portable actual passed after observed syntax correction"
+  },
+  "h06_native_lifecycle_and_login_quarantine_candidate": {
+    "observed_date": "2026-11-27 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "d04308570d2e5e8c89ce2c9f9a97bad16e24c0dd",
+    "tree": "effb1f5aade0ea0a0b9794291abaf2d33e535a4d",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/116_H06_NATIVE_LIFECYCLE_AND_LOGIN_QUARANTINE.md",
+    "report_ref": "865749a1e6fa7279bfc1a9d3fb2ebfee315e1ab2",
+    "coverage": "66 harness-only additions; H06 native and three fixtures NOT_RUN; both transport functions quarantined"
   }
 }

@@ -1087,7 +1087,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "H05 exact scoped equality source candidate 8c2a79694943a9eabdb9efd3cea8dc40e4358f90; 63 added harness-only paths vs R09. Scoped fictional schema/owned mixed UUID/port, exact 18-table inventory/PK, 16+2 ordered dumps with one INSERT per row count coverage, specific repeat exception+callsite, exact table-level grants/denial probes, tagged same-count sensitivity/restoration and original-role/cleanup checks. H05-01–07 and pure PowerShell fixture NOT_RUN. Linux container available, GitHub DNS fetch failed, no pwsh/MySQL/dotnet. Recovered exact H01-A retention portable tests: original test blob failed SyntaxError before methods, corrected one extra quote with assertions unchanged; 17/17 actual exit0 in 0.047s exact four blobs, 47 total separate historical/new portable passes, 34 additional portable methods NOT_RUN. Both runner/recovery quarantined. Next H06 bounded process/credential lifecycle source and fixtures; recover remaining H03 portable tests on exact blob hashes, then native H05/H03/H02/H06 and authenticated fictional C5 retention/actual owned observation/ACL/independent seal/vault/cleanup gates. H01-B preparation only; actual vault/machine/operator/transfer and failed-stage disposal separate. H03 boot/namespace/mapping/absence, held-lock cleanup/recovery, H02 provenance/native and 64 PowerShell+spy open; independent acceptance open. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
+      "next": "H06 native lifecycle and protected-login quarantine partial source candidate d04308570d2e5e8c89ce2c9f9a97bad16e24c0dd; 66 added harness-only paths vs R09. Native wait/termination/exit/token/attribute/handle checks, sticky process/job uncertainty, exact suspend-state, token allocation release, direct legacy credential helper and transport grant/revoke refuse before effects, pure strict masked-result oracle. Seven new portable methods and two PowerShell fixtures NOT_RUN; H06-01–03 native NOT_RUN. Container ClientError/Python did not execute; 47 prior separate portable passes retained (H01-A17/H02 12/H03 18); 41 additional methods NOT_RUN. Both runner/recovery and transport quarantined. Next recover remaining exact-hash H03 34/H06 7 portable tests if environment available; H06 actual owned login producer with fresh native file absence/ACL/identity, pinned tools, complete process-tree watchdog, exact exits/contained connection and verified revocation/cleanup; no direct helper or environment bypass. H03 boot/namespace/mapping/absence, held-lock cleanup/recovery, H02 provenance/native, H05 actual MySQL, H01-A actual observations/protected ACL/authenticated fictional C5/independent seal/vault/cleanup; 64 staged PowerShell+spy and H03-01–12 open, independent acceptance open. H01-B preparation only; actual vault/machine/operator/transfer and failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and13 privacy flags open. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -1272,6 +1272,12 @@
           "blob": "9993ef263c5bf2b09735221a47fbe534a421c5c9",
           "ref": "ea673de6d7371ae8186e47c14d47de652810f88e",
           "review": "FULL report; H05 source-only; actual H01-A portable17"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/116_H06_NATIVE_LIFECYCLE_AND_LOGIN_QUARANTINE.md",
+          "blob": "2ba39f714f3e0a36b13acbc121b45ab2a219d232",
+          "ref": "865749a1e6fa7279bfc1a9d3fb2ebfee315e1ab2",
+          "review": "FULL report; H06 source-only, transport quarantine, native and portable tests NOT_RUN"
         }
       ]
     },
@@ -1295,7 +1301,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "H05 exact scoped equality source candidate 8c2a79694943a9eabdb9efd3cea8dc40e4358f90; 63 added harness-only paths vs R09. Scoped fictional schema/owned mixed UUID/port, exact 18-table inventory/PK, 16+2 ordered dumps with one INSERT per row count coverage, specific repeat exception+callsite, exact table-level grants/denial probes, tagged same-count sensitivity/restoration and original-role/cleanup checks. H05-01–07 and pure PowerShell fixture NOT_RUN. Linux container available, GitHub DNS fetch failed, no pwsh/MySQL/dotnet. Recovered exact H01-A retention portable tests: original test blob failed SyntaxError before methods, corrected one extra quote with assertions unchanged; 17/17 actual exit0 in 0.047s exact four blobs, 47 total separate historical/new portable passes, 34 additional portable methods NOT_RUN. Both runner/recovery quarantined. Next H06 bounded process/credential lifecycle source and fixtures; recover remaining H03 portable tests on exact blob hashes, then native H05/H03/H02/H06 and authenticated fictional C5 retention/actual owned observation/ACL/independent seal/vault/cleanup gates. H01-B preparation only; actual vault/machine/operator/transfer and failed-stage disposal separate. H03 boot/namespace/mapping/absence, held-lock cleanup/recovery, H02 provenance/native and 64 PowerShell+spy open; independent acceptance open. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
+      "next": "H06 native lifecycle and protected-login quarantine partial source candidate d04308570d2e5e8c89ce2c9f9a97bad16e24c0dd; 66 added harness-only paths vs R09. Native wait/termination/exit/token/attribute/handle checks, sticky process/job uncertainty, exact suspend-state, token allocation release, direct legacy credential helper and transport grant/revoke refuse before effects, pure strict masked-result oracle. Seven new portable methods and two PowerShell fixtures NOT_RUN; H06-01–03 native NOT_RUN. Container ClientError/Python did not execute; 47 prior separate portable passes retained (H01-A17/H02 12/H03 18); 41 additional methods NOT_RUN. Both runner/recovery and transport quarantined. Next recover remaining exact-hash H03 34/H06 7 portable tests if environment available; H06 actual owned login producer with fresh native file absence/ACL/identity, pinned tools, complete process-tree watchdog, exact exits/contained connection and verified revocation/cleanup; no direct helper or environment bypass. H03 boot/namespace/mapping/absence, held-lock cleanup/recovery, H02 provenance/native, H05 actual MySQL, H01-A actual observations/protected ACL/authenticated fictional C5/independent seal/vault/cleanup; 64 staged PowerShell+spy and H03-01–12 open, independent acceptance open. H01-B preparation only; actual vault/machine/operator/transfer and failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and13 privacy flags open. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -1912,6 +1918,12 @@
           "blob": "9993ef263c5bf2b09735221a47fbe534a421c5c9",
           "ref": "ea673de6d7371ae8186e47c14d47de652810f88e",
           "review": "FULL report; H05 source-only; actual H01-A portable17"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/116_H06_NATIVE_LIFECYCLE_AND_LOGIN_QUARANTINE.md",
+          "blob": "2ba39f714f3e0a36b13acbc121b45ab2a219d232",
+          "ref": "865749a1e6fa7279bfc1a9d3fb2ebfee315e1ab2",
+          "review": "FULL report; H06 source-only, transport quarantine, native and portable tests NOT_RUN"
         }
       ]
     },
@@ -2058,7 +2070,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "H05 exact scoped equality source candidate 8c2a79694943a9eabdb9efd3cea8dc40e4358f90; 63 added harness-only paths vs R09. Scoped fictional schema/owned mixed UUID/port, exact 18-table inventory/PK, 16+2 ordered dumps with one INSERT per row count coverage, specific repeat exception+callsite, exact table-level grants/denial probes, tagged same-count sensitivity/restoration and original-role/cleanup checks. H05-01–07 and pure PowerShell fixture NOT_RUN. Linux container available, GitHub DNS fetch failed, no pwsh/MySQL/dotnet. Recovered exact H01-A retention portable tests: original test blob failed SyntaxError before methods, corrected one extra quote with assertions unchanged; 17/17 actual exit0 in 0.047s exact four blobs, 47 total separate historical/new portable passes, 34 additional portable methods NOT_RUN. Both runner/recovery quarantined. Next H06 bounded process/credential lifecycle source and fixtures; recover remaining H03 portable tests on exact blob hashes, then native H05/H03/H02/H06 and authenticated fictional C5 retention/actual owned observation/ACL/independent seal/vault/cleanup gates. H01-B preparation only; actual vault/machine/operator/transfer and failed-stage disposal separate. H03 boot/namespace/mapping/absence, held-lock cleanup/recovery, H02 provenance/native and 64 PowerShell+spy open; independent acceptance open. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and 13 privacy flags open. No private import/launch/merge/deploy.",
+      "next": "H06 native lifecycle and protected-login quarantine partial source candidate d04308570d2e5e8c89ce2c9f9a97bad16e24c0dd; 66 added harness-only paths vs R09. Native wait/termination/exit/token/attribute/handle checks, sticky process/job uncertainty, exact suspend-state, token allocation release, direct legacy credential helper and transport grant/revoke refuse before effects, pure strict masked-result oracle. Seven new portable methods and two PowerShell fixtures NOT_RUN; H06-01–03 native NOT_RUN. Container ClientError/Python did not execute; 47 prior separate portable passes retained (H01-A17/H02 12/H03 18); 41 additional methods NOT_RUN. Both runner/recovery and transport quarantined. Next recover remaining exact-hash H03 34/H06 7 portable tests if environment available; H06 actual owned login producer with fresh native file absence/ACL/identity, pinned tools, complete process-tree watchdog, exact exits/contained connection and verified revocation/cleanup; no direct helper or environment bypass. H03 boot/namespace/mapping/absence, held-lock cleanup/recovery, H02 provenance/native, H05 actual MySQL, H01-A actual observations/protected ACL/authenticated fictional C5/independent seal/vault/cleanup; 64 staged PowerShell+spy and H03-01–12 open, independent acceptance open. H01-B preparation only; actual vault/machine/operator/transfer and failed-stage disposal separate. L06 HOLD/no WSL, L07 separate off-host, 93 independent IR4 and13 privacy flags open. No private import/launch/merge/deploy.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -2431,6 +2443,12 @@
           "blob": "9993ef263c5bf2b09735221a47fbe534a421c5c9",
           "ref": "ea673de6d7371ae8186e47c14d47de652810f88e",
           "review": "FULL report; H05 source-only; actual H01-A portable17"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/116_H06_NATIVE_LIFECYCLE_AND_LOGIN_QUARANTINE.md",
+          "blob": "2ba39f714f3e0a36b13acbc121b45ab2a219d232",
+          "ref": "865749a1e6fa7279bfc1a9d3fb2ebfee315e1ab2",
+          "review": "FULL report; H06 source-only, transport quarantine, native and portable tests NOT_RUN"
         }
       ]
     }
