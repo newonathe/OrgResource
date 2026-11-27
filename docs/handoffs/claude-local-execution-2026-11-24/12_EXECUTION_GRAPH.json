@@ -2,7 +2,7 @@
   "schema": "orgresource.pre_handoff.execution_graph.v2",
   "date": "2026-11-24 PHT",
   "ready_to_launch": false,
-  "decision": "Owner corrected final Extended C goal to ACADEMIC COMPLETION; Report122 supersedes Report121 production-first objective. Codex owner-manual start; prior gated tasks retained but not default academic prerequisites. Private L06 HOLD unchanged.",
+  "decision": "Academic-only Codex dispatch prepared (Report123); owner manual start, not private L06 authorization. Report122 objective controls. Existing formal states and dependencies unchanged.",
   "verified_source": {
     "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
     "tree": "180f9708b78a9479d50531edbd04e0dee48a57e7",
@@ -486,7 +486,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "Owner correction: Extended C final objective is ACADEMIC COMPLETION, not commercial production readiness. Start Codex with Report122 over Report121; protect Dec5 deadline, verify actual assignment/Canvas and frozen A submission, finish demonstrable Extended C academic workflows, real local tests, reproducible package/documentation/demo evidence. Prior CPX/host/recovery program retained but nonblocking unless materially required for the academic deliverable; preserve applicable safety and exact phase gates. No private import/host/merge/deploy without established prerequisites; no claim instructor accepts C as substitute for A."
+    "next_action": "Academic preparation P01–P12 consolidated in Report123; owner can manually start Codex academic lane on exact main 96741bbd (not quarantined L06 harness). Verify Canvas/edition/Twilio interpretation with student; recover actual packages and evidence; execute A01–A08 academic dispatch in Report123, fix material defects and package. Existing private/host/recovery/CPX gates retained and not mandatory academic prerequisites. No automatic private launch, merge, deploy, production release or migration freeze bypass."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -2761,7 +2761,41 @@
       "M10"
     ],
     "objective": "ACADEMIC_COMPLETION_EXTENDED_C",
-    "priority_report": "docs/handoffs/claude-local-execution-2026-11-24/122_ACADEMIC_FIRST_EXTENDED_C_OBJECTIVE.md",
-    "production_scope": "PRESERVED_NOT_DEFAULT_ACADEMIC_PREREQUISITE"
+    "priority_report": "docs/handoffs/claude-local-execution-2026-11-24/123_ACADEMIC_CODEX_EXECUTION_HANDOFF.md",
+    "production_scope": "PRESERVED_NOT_DEFAULT_ACADEMIC_PREREQUISITE",
+    "academic_dispatch": {
+      "state": "OWNER_MANUAL_START_REQUIRED",
+      "report": "docs/handoffs/claude-local-execution-2026-11-24/123_ACADEMIC_CODEX_EXECUTION_HANDOFF.md",
+      "base": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+      "courseA": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+      "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+      "prep_ids": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07",
+        "P08",
+        "P09",
+        "P10",
+        "P11",
+        "P12"
+      ],
+      "prep_state": "PREPARED_BOUNDED",
+      "execution_ids": [
+        "AC0",
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7"
+      ],
+      "native_execution": "NOT_RUN",
+      "private_l06_ready": false
+    }
   }
 }

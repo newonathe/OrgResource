@@ -1,5 +1,9 @@
 # OrgResource — read first in every project chat
 
+## Current — consolidated academic Codex handoff (2026-11-27 PHT)
+
+Academic preparation P01–P12 consolidated in Report123; owner can manually start Codex academic lane on exact main 96741bbd (not quarantined L06 harness). Verify Canvas/edition/Twilio interpretation with student; recover actual packages and evidence; execute A01–A08 academic dispatch in Report123, fix material defects and package. Existing private/host/recovery/CPX gates retained and not mandatory academic prerequisites. No automatic private launch, merge, deploy, production release or migration freeze bypass. See [Report123](https://github.com/newonathe/OrgResource/blob/docs/claude-local-execution-handoff-2026-11-24/docs/handoffs/claude-local-execution-2026-11-24/123_ACADEMIC_CODEX_EXECUTION_HANDOFF.md). Report122 controls objective; Report121/120 subordinate for relevant gated work. All earlier evidence retained.
+
 ## Current — Extended C academic completion (2026-11-27 PHT)
 
 Owner correction: Extended C final objective is ACADEMIC COMPLETION, not commercial production readiness. Start Codex with Report122 over Report121; protect Dec5 deadline, verify actual assignment/Canvas and frozen A submission, finish demonstrable Extended C academic workflows, real local tests, reproducible package/documentation/demo evidence. Prior CPX/host/recovery program retained but nonblocking unless materially required for the academic deliverable; preserve applicable safety and exact phase gates. No private import/host/merge/deploy without established prerequisites; no claim instructor accepts C as substitute for A. See [Report122](https://github.com/newonathe/OrgResource/blob/docs/claude-local-execution-handoff-2026-11-24/docs/handoffs/claude-local-execution-2026-11-24/122_ACADEMIC_FIRST_EXTENDED_C_OBJECTIVE.md). Prior commercial-priority language superseded; historical evidence retained.
