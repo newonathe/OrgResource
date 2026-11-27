@@ -486,7 +486,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "Inspect actual PR58 run46021269467 (new R038 SQL denial, expected 84 identity/109 Maven if discovered); fix any observed failure without weakening oracle. Reconcile remaining PR59 run46018878134 exact-head Extended job140573004942. Continue eligible H03/H06 integration source work and academic/product residuals; no repeat fixture tests absent drift. R038 transient lock and disconnect remain separate; full package/native32+H04, private L06/P0, 93 independent and13 privacy flags open."
+    "next_action": "H06 role-bound full login inventory oracle exact 161a93e5, 4 new +7 prior pure tests actual pass, direct helper refusal unchanged. Earlier pinned automatic 14+41 and full Verify terminal success; no new native acceptance. Advance fictional ConPTY bounded independent transport, same-file identity binding, exact role-visible path/ACL and contained SQL proof/revoke/cleanup under approved nonadmin disposable NTFS root with pinned tools; H03 actual inheritance/child denial/termination and terminal intent settlement prerequisites. No rerun absent drift; full native package/private L06/P0/L07/93 independent/13 privacy/student gates unchanged, no merge/release."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -2826,7 +2826,7 @@
       "native_execution": "NOT_RUN",
       "private_l06_ready": false
     },
-    "pre_handoff_next": "H06 exclusive fixed fictional file creation/custody candidate exact 96df9bae compiled 13 C# and parsed both native fixtures, five new H06 scenarios NOT_RUN. Advance independent eligible H06 editor/ConPTY and role custody/connect/revoke/cleanup engineering; actual native fixture only under approved nonadmin disposable owner-only NTFS root and pinned trusted tools. H03 actual inheritance/child denial/termination and durable terminal intent settlement before real journal integration. R038 and packaging receipts retained, no repeat absent drift. Full native package/private L06/P0/L07/93 independent/13 privacy/student gates unchanged, no merge/release.",
+    "pre_handoff_next": "H06 role-bound full login inventory oracle exact 161a93e5, 4 new +7 prior pure tests actual pass, direct helper refusal unchanged. Earlier pinned automatic 14+41 and full Verify terminal success; no new native acceptance. Advance fictional ConPTY bounded independent transport, same-file identity binding, exact role-visible path/ACL and contained SQL proof/revoke/cleanup under approved nonadmin disposable NTFS root with pinned tools; H03 actual inheritance/child denial/termination and terminal intent settlement prerequisites. No rerun absent drift; full native package/private L06/P0/L07/93 independent/13 privacy/student gates unchanged, no merge/release.",
     "release_inventory_candidate": {
       "report": "docs/handoffs/claude-local-execution-2026-11-24/125_RELEASE_MIGRATION_INVENTORY_CORRECTION.md",
       "pr": 59,
@@ -3003,5 +3003,53 @@
     "native_state": "NOT_RUN",
     "state": "CANDIDATE",
     "next": "H06 exclusive fixed fictional file creation/custody candidate exact 96df9bae compiled 13 C# and parsed both native fixtures, five new H06 scenarios NOT_RUN. Advance independent eligible H06 editor/ConPTY and role custody/connect/revoke/cleanup engineering; actual native fixture only under approved nonadmin disposable owner-only NTFS root and pinned trusted tools. H03 actual inheritance/child denial/termination and durable terminal intent settlement before real journal integration. R038 and packaging receipts retained, no repeat absent drift. Full native package/private L06/P0/L07/93 independent/13 privacy/student gates unchanged, no merge/release."
+  },
+  "h06_full_login_inventory_candidate": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/136_H06_FULL_LOGIN_INVENTORY_AND_REGRESSION_RECEIPTS.md",
+    "ref": "49d66ed3de5a1669b29f4bed2e0bd68a742f0b8c",
+    "sha": "161a93e53ed5d1bf9042ac75d27a065cd0f311c8",
+    "prior": "96df9bae738e10b8eb542266401a485e270ec4a4",
+    "state": "CANDIDATE",
+    "receipt": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "161a93e53ed5d1bf9042ac75d27a065cd0f311c8",
+      "oracle": "Pure Python masked inventory and unchanged refusal",
+      "actual": "11/11 pass (4 new, 7 prior), direct exit1 exact refusal; native effects NOT_RUN",
+      "blobs": [
+        "8686e2012d1bc15cd217f268ac1906afb779aa58",
+        "d56b7d57a96da8b8161f744d38f0935a670dfcb9",
+        "ca1193565bce7352db392b82b6db7093f5d881da"
+      ]
+    },
+    "automatic_receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "52d1b3f3a3400b3477390c480f09432d25464f5c",
+        "run": 46038389937,
+        "jobs": [
+          140639532285,
+          140639532623,
+          140639532737
+        ],
+        "oracle": "Automatic full Verify; actual log anchors",
+        "actual": "Course A61 Maven/160 Newman/1 browser; React success; Extended91 Maven/66 identity/110 Newman/19 browser"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "b762c4195393ae92e03ee149531ca0ab944f438b",
+        "oracle": "Older pinned guard and portable fixture jobs, not new successor",
+        "actual": "14+41 pass; native faults NOT_RUN",
+        "runs": [
+          46038390054,
+          46038389950
+        ],
+        "jobs": [
+          140639533135,
+          140639532204
+        ]
+      }
+    ],
+    "native_state": "NOT_RUN",
+    "next": "H06 role-bound full login inventory oracle exact 161a93e5, 4 new +7 prior pure tests actual pass, direct helper refusal unchanged. Earlier pinned automatic 14+41 and full Verify terminal success; no new native acceptance. Advance fictional ConPTY bounded independent transport, same-file identity binding, exact role-visible path/ACL and contained SQL proof/revoke/cleanup under approved nonadmin disposable NTFS root with pinned tools; H03 actual inheritance/child denial/termination and terminal intent settlement prerequisites. No rerun absent drift; full native package/private L06/P0/L07/93 independent/13 privacy/student gates unchanged, no merge/release."
   }
 }
