@@ -1,5 +1,11 @@
 # OrgResource — universal project context entry point
 
+## Current - Native C1 client configuration isolation (2026-11-28 PHT)
+
+[Report148](https://github.com/newonathe/OrgResource/blob/docs/claude-local-execution-handoff-2026-11-24/docs/handoffs/claude-local-execution-2026-11-24/148_NATIVE_C1_CLIENT_CONFIGURATION_ISOLATION.md): PR59 corrected d398ebd115c7c6fa8dcdfdf84f3918fe2e60d0f8 actual Windows guard success, four fixture cases/five source bindings, 196 exact source files/16 archive/12 checker cases; no native MySQL execution. Inherited option/login/password correction, environment restore on cleanup exception; only verification/test/guide paths changed. Consume actual terminal PR59 Verify46127885650 Java8/Extended jobs140926417573/140926417437 and first candidate Verify46127857072 outstanding Java8/Extended140926330528/140926330498; inspect React actual logs as applicable. Repair observed failures only. Native C1 package/operator effects NOT_RUN. First six-fixture H03/H06 native batch remains prepared and owner environment gated. No valid ConPTY until independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. Report124 controls. No merge/deploy/release.
+
+
+
 ## Current - Terminal Extended C regression receipts (2026-11-28 PHT)
 
 [Report147](https://github.com/newonathe/OrgResource/blob/docs/claude-local-execution-handoff-2026-11-24/docs/handoffs/claude-local-execution-2026-11-24/147_TERMINAL_REGRESSION_RECEIPTS.md): PR59 exact 0b07f45 103 Maven/78 identity, handoff exact ad0616b 91 Maven/66 identity, both React38/Newman110/Playwright19, zero failures and terminal success. Both Report146 pending Extended jobs terminal actual success. No repeat unchanged verification. First six-fixture native batch remains NOT_RUN and blocked on owner-approved dedicated nonadmin Windows NTFS roots and trusted tools. Advance materially distinct authorized remote defects/academic delivery under Report124; do not generate speculative wrappers. Private L06 HOLD/no WSL; no valid ConPTY until independent outer/console-host acceptance; H03/H06 settlement, full native package/operator, P0/L07/93 independent/13 privacy/student gates unchanged. No merge/deploy/release.

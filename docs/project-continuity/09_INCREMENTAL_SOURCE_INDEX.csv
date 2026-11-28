@@ -518,3 +518,7 @@
 "docs/handoffs/claude-local-execution-2026-11-24/146_FICTIONAL_NATIVE_DISPATCH_PREPARATION.md","e47ce95255ec5f747f78dc7b7703f8a117eaff42","8688","100644","a6eef5778f1d6fb0d3aef3aceab25547ea2ae1cc","FULL native dispatch preparation and actual CourseA repeat"
 "docs/handoffs/claude-local-execution-2026-11-24/146_FICTIONAL_NATIVE_DISPATCH_MANIFEST.json","6ed2c8e4846cd145bdd5898d022cd1c2e14e9fba","12781","100644","a6eef5778f1d6fb0d3aef3aceab25547ea2ae1cc","FULL exact six-fixture source manifest"
 "docs/handoffs/claude-local-execution-2026-11-24/147_TERMINAL_REGRESSION_RECEIPTS.md","35129c6cddc91eb6ca33ede4bdc4f0635388d6dd","3137","100644","docs/claude-local-execution-handoff-2026-11-24","FULL report; actual two terminal regression receipts"
+"scripts/verify-extended-c1.ps1","2bfd823343383893f35feef9cf632d8bd0747d5f","42141","100644","d398ebd115c7c6fa8dcdfdf84f3918fe2e60d0f8","PATCH; actual focused receipt; native NOT_RUN"
+"scripts/test-extended-c-release-inventory.ps1","95ea707edf658721f2577efdd71f431bb1c5e3e5","26842","100644","d398ebd115c7c6fa8dcdfdf84f3918fe2e60d0f8","PATCH; actual focused receipt; native NOT_RUN"
+"docs/EXTENDED_C_RELEASE.md","10672c419f0db8308ffc099d471cf8579071997f","11122","100644","d398ebd115c7c6fa8dcdfdf84f3918fe2e60d0f8","PATCH; actual focused receipt; native NOT_RUN"
+"docs/handoffs/claude-local-execution-2026-11-24/148_NATIVE_C1_CLIENT_CONFIGURATION_ISOLATION.md","a65f60ce63ea6ff64521392129c449b46c3abb5e","6597","100644","docs/claude-local-execution-handoff-2026-11-24","FULL report; actual focused receipt and pending full CI"
