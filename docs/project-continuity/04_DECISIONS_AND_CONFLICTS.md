@@ -469,3 +469,7 @@ Report156: eight invalid historical event rows normalized in active stream, orig
 ## Current - Existing Course A artifact bytes (2026-11-28 PHT)
 
 Report157: exact existing artifact15256323196 verified actual outer and inner hashes/CRC, application class major52 and referenced assets in separate read-only CI; supersedes Report150 byte-inspection blocker only. No local copy, new runtime, final submission or release inferred.
+
+## Current - Native application listener attribution (2026-11-28 PHT)
+
+Report158: both verifiers check captured Java listener before HTTP readiness and at call boundaries; four fictional actual refusal checks pass, native application effects NOT_RUN. Prior exact Extended terminal success closes outstanding regression only. No atomic port reservation or independent acceptance. Consume exact PR59 successor run46136326796 Java8 job140952338264 and Extended job140952338269 actual terminal logs; repair observed failures only. New Windows four-case attribution guard and previous Extended regression passed. Prioritize materially distinct gaps under Report124; no redundant CI or speculative wrappers. Native full package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Course A existing artifact bytes bounded verified; final local copy/DOCX/launcher/student/rights remain separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.

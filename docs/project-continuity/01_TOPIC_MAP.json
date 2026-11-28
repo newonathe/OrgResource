@@ -350,6 +350,12 @@
           "blob": "cbeac4deca0fa237ffec993fa3f2b9b7cd9a04af",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; actual downloaded existing artifact byte inspection"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/158_NATIVE_APPLICATION_LISTENER_ATTRIBUTION_AND_REGRESSION_RECEIPTS.md",
+          "blob": "cd8e751133063bc7ccb9f2e7892ba48cd15ba928",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; exact candidate diff and actual terminal logs"
         }
       ]
     },
@@ -581,6 +587,12 @@
           "blob": "070ad1f15502c4869d169e1abad6a096d04759a1",
           "ref": "6bd08c8cb2333a85beb9dbabd09ac71e229a92a5",
           "review": "FULL report and actual 61 focused cases; native NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/158_NATIVE_APPLICATION_LISTENER_ATTRIBUTION_AND_REGRESSION_RECEIPTS.md",
+          "blob": "cd8e751133063bc7ccb9f2e7892ba48cd15ba928",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; exact candidate diff and actual terminal logs"
         }
       ]
     },
@@ -1910,6 +1922,12 @@
           "blob": "e106fab42df460a991f34b8727651b462a5eb92c",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; deterministic schema and ID validation, actual regression logs"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/158_NATIVE_APPLICATION_LISTENER_ATTRIBUTION_AND_REGRESSION_RECEIPTS.md",
+          "blob": "cd8e751133063bc7ccb9f2e7892ba48cd15ba928",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; exact candidate diff and actual terminal logs"
         }
       ]
     },
@@ -1933,7 +1951,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "Consume exact PR59 Extended job140948747130 (run46135176986) actual terminal log, repair observed failure only. Course A existing artifact15256323196 byte inspection VERIFIED_BOUNDED on dedicated branch, no need to repeat. Local downloaded copy, final DOCX/Windows launcher, student/Canvas and publication rights remain separate. Prioritize eligible material acceptance gaps under Report124; no redundant wrappers/CI. Native package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+      "next": "Consume exact PR59 successor run46136326796 Java8 job140952338264 and Extended job140952338269 actual terminal logs; repair observed failures only. New Windows four-case attribution guard and previous Extended regression passed. Prioritize materially distinct gaps under Report124; no redundant CI or speculative wrappers. Native full package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Course A existing artifact bytes bounded verified; final local copy/DOCX/launcher/student/rights remain separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -2854,6 +2872,12 @@
           "blob": "cbeac4deca0fa237ffec993fa3f2b9b7cd9a04af",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; actual downloaded existing artifact byte inspection"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/158_NATIVE_APPLICATION_LISTENER_ATTRIBUTION_AND_REGRESSION_RECEIPTS.md",
+          "blob": "cd8e751133063bc7ccb9f2e7892ba48cd15ba928",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; exact candidate diff and actual terminal logs"
         }
       ]
     },
@@ -3689,6 +3713,12 @@
           "blob": "cbeac4deca0fa237ffec993fa3f2b9b7cd9a04af",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; actual downloaded existing artifact byte inspection"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/158_NATIVE_APPLICATION_LISTENER_ATTRIBUTION_AND_REGRESSION_RECEIPTS.md",
+          "blob": "cd8e751133063bc7ccb9f2e7892ba48cd15ba928",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; exact candidate diff and actual terminal logs"
         }
       ]
     }

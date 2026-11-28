@@ -486,7 +486,7 @@
     "issue": 50,
     "entry": "14_CONTINUE_PRE_CLAUDE.md",
     "ledger": "15_CONTINUATION_LEDGER.jsonl",
-    "next_action": "H06 recoverable child records 839db889 exact terminal CI success run46064825460/job140727488693: 31 pure checks (8 positive/23 refusal), 15 C# compile, five fixture parsers, helper build/four output hashes/two direct refusals. 42 platform analyzer warnings/0 build errors. Valid native invocation NOT_RUN. Consume pending automatic CI, no repeat absent drift. Next independent held descendant/console-host termination witness, nested job and approved fictional native fixture. Private launcher and fixture refusal remain; no automatic settlement/deletion. H03 termination/settlement and H06 role custody/SQL/revoke/cleanup outstanding. Private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged; no merge/deploy/release."
+    "next_action": "Consume exact PR59 successor run46136326796 Java8 job140952338264 and Extended job140952338269 actual terminal logs; repair observed failures only. New Windows four-case attribution guard and previous Extended regression passed. Prioritize materially distinct gaps under Report124; no redundant CI or speculative wrappers. Native full package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Course A existing artifact bytes bounded verified; final local copy/DOCX/launcher/student/rights remain separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release."
   },
   "r06b2_candidate": {
     "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
@@ -3889,7 +3889,7 @@
     "sha": "d3fe2f8d49cf59418362c8a978f5bc9646ca8bd7",
     "prior": "7b1d539577653a19e29a7fd312638f583f7f9718",
     "pr": 59,
-    "state": "CANDIDATE",
+    "state": "VERIFIED_BOUNDED",
     "native_state": "NOT_RUN",
     "receipts": [
       {
@@ -3915,15 +3915,19 @@
         "job": 140948747156,
         "oracle": "Exact standalone React regression",
         "actual": "React15, exact checkout, terminal success."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "d3fe2f8d49cf59418362c8a978f5bc9646ca8bd7",
+        "run": 46135176986,
+        "job": 140948747130,
+        "oracle": "Exact prior Extended regression against isolated MySQL, packaged browser and restore",
+        "actual": "103 Maven including78 identity, 0 failures/errors/skips; React38, Newman90+20 zero failures, Playwright19; 8/960/3013 additive and 3/36/97 partial fixture, 15 archive refusals, actual encrypted cross-server network-none restore and C5 runtime restore, actual lost-response and JVM restart/replay, restored role/tenant denials, mixed browser fail-closed 22 metadata503/0 protected requests, cleanup. Terminal success."
       }
     ],
-    "pending_runs": [
-      46135176986
-    ],
-    "pending_jobs": [
-      140948747130
-    ],
-    "next": "Consume exact PR59 Extended job140948747130 (run46135176986) actual terminal log, repair observed failure only. Course A existing artifact15256323196 byte inspection VERIFIED_BOUNDED on dedicated branch, no need to repeat. Local downloaded copy, final DOCX/Windows launcher, student/Canvas and publication rights remain separate. Prioritize eligible material acceptance gaps under Report124; no redundant wrappers/CI. Native package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release."
+    "pending_runs": [],
+    "pending_jobs": [],
+    "next": "Consume exact PR59 successor run46136326796 Java8 job140952338264 and Extended job140952338269 actual terminal logs; repair observed failures only. New Windows four-case attribution guard and previous Extended regression passed. Prioritize materially distinct gaps under Report124; no redundant CI or speculative wrappers. Native full package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Course A existing artifact bytes bounded verified; final local copy/DOCX/launcher/student/rights remain separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release."
   },
   "continuity_schema_repair": {
     "report": "docs/handoffs/claude-local-execution-2026-11-24/156_CONTINUITY_SCHEMA_REPAIR_AND_REGRESSION_RECEIPTS.md",
@@ -3938,5 +3942,40 @@
     "unknown_ids": 0,
     "state": "VERIFIED_BOUNDED",
     "next": "Consume remaining exact PR59 Extended job140948747130 (run46135176986), repair observed failures only. Active continuity event stream schema repaired; preserve original historical rows by pinned Git ref/blob and do not infer new historical receipts. Course A artifact independent byte inspection still blocked (container ClientError). Prioritize eligible material gaps under Report124, no redundant wrappers or CI. Native full package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host attribution. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release."
+  },
+  "native_application_listener_attribution": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/158_NATIVE_APPLICATION_LISTENER_ATTRIBUTION_AND_REGRESSION_RECEIPTS.md",
+    "blob": "cd8e751133063bc7ccb9f2e7892ba48cd15ba928",
+    "sha": "c868c90320539d29963f8ee063c7eaa9d9562a07",
+    "prior": "d3fe2f8d49cf59418362c8a978f5bc9646ca8bd7",
+    "pr": 59,
+    "state": "VERIFIED_BOUNDED",
+    "native_state": "NOT_RUN",
+    "receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "c868c90320539d29963f8ee063c7eaa9d9562a07",
+        "run": 46136326796,
+        "job": 140952338079,
+        "oracle": "Actual Windows guard executes both real startup functions with fictional listener and HTTP/process spies",
+        "actual": "Four exact PASS markers: C1 and C6a each foreign listener before root (0 HTTP spy calls), changed owner after root (1 spy call), final C1_C6A_APP_ATTRIBUTION_OK. Prior bootstrap transport marker retained. Terminal success; no HTTP, Java or MySQL launched by the four new cases."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "c868c90320539d29963f8ee063c7eaa9d9562a07",
+        "run": 46136326796,
+        "job": 140952338371,
+        "oracle": "Exact standalone React regression",
+        "actual": "15 tests passed, terminal success."
+      }
+    ],
+    "pending_runs": [
+      46136326796
+    ],
+    "pending_jobs": [
+      140952338264,
+      140952338269
+    ],
+    "next": "Consume exact PR59 successor run46136326796 Java8 job140952338264 and Extended job140952338269 actual terminal logs; repair observed failures only. New Windows four-case attribution guard and previous Extended regression passed. Prioritize materially distinct gaps under Report124; no redundant CI or speculative wrappers. Native full package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Course A existing artifact bytes bounded verified; final local copy/DOCX/launcher/student/rights remain separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release."
   }
 }
