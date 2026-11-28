@@ -1,0 +1,34 @@
+name: Course A existing artifact byte inspection
+on:
+  push:
+    branches: [verify/course-a-existing-artifact-bytes-20261128]
+    paths:
+      - '.github/workflows/course-a-existing-artifact-bytes.yml'
+      - 'docs/handoffs/claude-local-execution-2026-11-24/verify_existing_course_a_artifact.py'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify pre-existing pinned ZIP and nested JAR without execution
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          umask 077
+          archive="$(mktemp "$RUNNER_TEMP/course-a-existing.XXXXXX")"
+          trap 'rm -f -- "$archive"' EXIT
+          curl --fail --silent --show-error --location --proto '=https' --max-time 90 \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            --output "$archive" \
+            'https://api.github.com/repos/newonathe/OrgResource/actions/artifacts/15256323196/zip'
+          unset GH_TOKEN
+          python3 docs/handoffs/claude-local-execution-2026-11-24/verify_existing_course_a_artifact.py "$archive"
