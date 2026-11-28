@@ -1,5 +1,11 @@
 # OrgResource — read first in every project chat
 
+## Current - Continuity schema repair and regression receipts (2026-11-28 PHT)
+
+[Report156](https://github.com/newonathe/OrgResource/blob/docs/claude-local-execution-handoff-2026-11-24/docs/handoffs/claude-local-execution-2026-11-24/156_CONTINUITY_SCHEMA_REPAIR_AND_REGRESSION_RECEIPTS.md): 8 malformed historical events normalized, original exact Git blob retained, 178/178 active events pass schema/ID checks; three actual regression logs consumed. Consume remaining exact PR59 Extended job140948747130 (run46135176986), repair observed failures only. Active continuity event stream schema repaired; preserve original historical rows by pinned Git ref/blob and do not infer new historical receipts. Course A artifact independent byte inspection still blocked (container ClientError). Prioritize eligible material gaps under Report124, no redundant wrappers or CI. Native full package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host attribution. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.
+
+
+
 ## Current - C1 bootstrap transport bounds (2026-11-28 PHT)
 
 [Report155](https://github.com/newonathe/OrgResource/blob/docs/claude-local-execution-handoff-2026-11-24/docs/handoffs/claude-local-execution-2026-11-24/155_C1_BOOTSTRAP_TRANSPORT_BOUNDS.md): PR59 d3fe2f8d49cf59418362c8a978f5bc9646ca8bd7 concurrent bootstrap pipe drain, bounded per-phase waits and sanitized exit; three actual harmless child process cases passed. Consume actual terminal logs for PR59 prior run46134475566 Extended140946596661 and successor run46135176986 jobs140948747130/140948747156/140948747162; repair observed failures only. Bootstrap transport actual focused guard passed, not native MySQL. Do not proliferate wrappers without material defect/evidence; native full package/owner process and six H03/H06 fixtures still blocked by approved isolated environment and independent acceptance; no valid ConPTY before independent outer/console-host attribution. Course A artifact binary blocked per150. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.

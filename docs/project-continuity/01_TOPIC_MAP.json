@@ -241,7 +241,7 @@
         }
       ],
       "authority": "Parallel PR10 exact execution specs; not active source or completed tests.",
-      "next": "Consume actual terminal logs for PR59 prior run46134475566 Extended140946596661 and successor run46135176986 jobs140948747130/140948747156/140948747162; repair observed failures only. Bootstrap transport actual focused guard passed, not native MySQL. Do not proliferate wrappers without material defect/evidence; native full package/owner process and six H03/H06 fixtures still blocked by approved isolated environment and independent acceptance; no valid ConPTY before independent outer/console-host attribution. Course A artifact binary blocked per150. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+      "next": "Consume remaining exact PR59 Extended job140948747130 (run46135176986), repair observed failures only. Active continuity event stream schema repaired; preserve original historical rows by pinned Git ref/blob and do not infer new historical receipts. Course A artifact independent byte inspection still blocked (container ClientError). Prioritize eligible material gaps under Report124, no redundant wrappers or CI. Native full package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host attribution. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/122_ACADEMIC_FIRST_EXTENDED_C_OBJECTIVE.md",
@@ -338,6 +338,12 @@
           "blob": "ba85abc2e4786d21cec78e4d680926dd8b2f3418",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; exact three-path diff and actual child-process/prior receipts"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/156_CONTINUITY_SCHEMA_REPAIR_AND_REGRESSION_RECEIPTS.md",
+          "blob": "e106fab42df460a991f34b8727651b462a5eb92c",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; deterministic schema and ID validation, actual regression logs"
         }
       ]
     },
@@ -1429,7 +1435,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "Consume actual terminal logs for PR59 prior run46134475566 Extended140946596661 and successor run46135176986 jobs140948747130/140948747156/140948747162; repair observed failures only. Bootstrap transport actual focused guard passed, not native MySQL. Do not proliferate wrappers without material defect/evidence; native full package/owner process and six H03/H06 fixtures still blocked by approved isolated environment and independent acceptance; no valid ConPTY before independent outer/console-host attribution. Course A artifact binary blocked per150. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+      "next": "Consume remaining exact PR59 Extended job140948747130 (run46135176986), repair observed failures only. Active continuity event stream schema repaired; preserve original historical rows by pinned Git ref/blob and do not infer new historical receipts. Course A artifact independent byte inspection still blocked (container ClientError). Prioritize eligible material gaps under Report124, no redundant wrappers or CI. Native full package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host attribution. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -1886,6 +1892,12 @@
           "blob": "ba85abc2e4786d21cec78e4d680926dd8b2f3418",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; exact three-path diff and actual child-process/prior receipts"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/156_CONTINUITY_SCHEMA_REPAIR_AND_REGRESSION_RECEIPTS.md",
+          "blob": "e106fab42df460a991f34b8727651b462a5eb92c",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; deterministic schema and ID validation, actual regression logs"
         }
       ]
     },
@@ -1909,7 +1921,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "Consume actual terminal logs for PR59 prior run46134475566 Extended140946596661 and successor run46135176986 jobs140948747130/140948747156/140948747162; repair observed failures only. Bootstrap transport actual focused guard passed, not native MySQL. Do not proliferate wrappers without material defect/evidence; native full package/owner process and six H03/H06 fixtures still blocked by approved isolated environment and independent acceptance; no valid ConPTY before independent outer/console-host attribution. Course A artifact binary blocked per150. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+      "next": "Consume remaining exact PR59 Extended job140948747130 (run46135176986), repair observed failures only. Active continuity event stream schema repaired; preserve original historical rows by pinned Git ref/blob and do not infer new historical receipts. Course A artifact independent byte inspection still blocked (container ClientError). Prioritize eligible material gaps under Report124, no redundant wrappers or CI. Native full package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host attribution. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -2818,6 +2830,12 @@
           "blob": "ba85abc2e4786d21cec78e4d680926dd8b2f3418",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; exact three-path diff and actual child-process/prior receipts"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/156_CONTINUITY_SCHEMA_REPAIR_AND_REGRESSION_RECEIPTS.md",
+          "blob": "e106fab42df460a991f34b8727651b462a5eb92c",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; deterministic schema and ID validation, actual regression logs"
         }
       ]
     },
@@ -2964,7 +2982,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "Consume actual terminal logs for PR59 prior run46134475566 Extended140946596661 and successor run46135176986 jobs140948747130/140948747156/140948747162; repair observed failures only. Bootstrap transport actual focused guard passed, not native MySQL. Do not proliferate wrappers without material defect/evidence; native full package/owner process and six H03/H06 fixtures still blocked by approved isolated environment and independent acceptance; no valid ConPTY before independent outer/console-host attribution. Course A artifact binary blocked per150. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+      "next": "Consume remaining exact PR59 Extended job140948747130 (run46135176986), repair observed failures only. Active continuity event stream schema repaired; preserve original historical rows by pinned Git ref/blob and do not infer new historical receipts. Course A artifact independent byte inspection still blocked (container ClientError). Prioritize eligible material gaps under Report124, no redundant wrappers or CI. Native full package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host attribution. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -3641,6 +3659,12 @@
           "blob": "ba85abc2e4786d21cec78e4d680926dd8b2f3418",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; exact three-path diff and actual child-process/prior receipts"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/156_CONTINUITY_SCHEMA_REPAIR_AND_REGRESSION_RECEIPTS.md",
+          "blob": "e106fab42df460a991f34b8727651b462a5eb92c",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; deterministic schema and ID validation, actual regression logs"
         }
       ]
     }
