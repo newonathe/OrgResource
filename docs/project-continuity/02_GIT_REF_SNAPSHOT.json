@@ -1877,5 +1877,16 @@
     "notice_sha": "6f94bb14675e44522f0e58b5ef4593f06943e206",
     "notice_state": "NOT_RUN",
     "report": "docs/handoffs/claude-local-execution-2026-11-24/161_PR59_TERMINAL_REGRESSION_AND_EXISTING_ARTIFACT_NOTICE_CANDIDATE.md"
+  },
+  "course_a_notice_terminal": {
+    "date": "2026-11-28 PHT",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr59": "c868c90320539d29963f8ee063c7eaa9d9562a07",
+    "notice_sha": "6f94bb14675e44522f0e58b5ef4593f06943e206",
+    "run": 46137525095,
+    "job": 140956053486,
+    "state": "VERIFIED_BOUNDED",
+    "inventory": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-library-inventory.csv",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/164_COURSE_A_ACTUAL_EMBEDDED_LIBRARY_NOTICE_RECEIPT.md"
   }
 }
