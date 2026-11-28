@@ -523,3 +523,4 @@
 "docs/EXTENDED_C_RELEASE.md","10672c419f0db8308ffc099d471cf8579071997f","11122","100644","d398ebd115c7c6fa8dcdfdf84f3918fe2e60d0f8","PATCH; actual focused receipt; native NOT_RUN"
 "docs/handoffs/claude-local-execution-2026-11-24/148_NATIVE_C1_CLIENT_CONFIGURATION_ISOLATION.md","a65f60ce63ea6ff64521392129c449b46c3abb5e","6597","100644","docs/claude-local-execution-handoff-2026-11-24","FULL report; actual focused receipt and pending full CI"
 "docs/handoffs/claude-local-execution-2026-11-24/149_C1_ISOLATION_TERMINAL_REGRESSION_RECEIPTS.md","510b392b90197cfd8d06b872ca2c1cff90d2145b","4749","100644","docs/claude-local-execution-handoff-2026-11-24","FULL report; six actual terminal regression receipts"
+"docs/handoffs/claude-local-execution-2026-11-24/150_COURSE_A_ARTIFACT_PROVENANCE.md","9d2714829e19458602ed33a411aa5f72e1dc9927","5315","100644","docs/claude-local-execution-handoff-2026-11-24","FULL report; actual CI artifact provenance; bytes inaccessible"

@@ -1,5 +1,11 @@
 # OrgResource — read first in every project chat
 
+## Current - Course A CI artifact provenance (2026-11-28 PHT)
+
+[Report150](https://github.com/newonathe/OrgResource/blob/docs/claude-local-execution-handoff-2026-11-24/docs/handoffs/claude-local-execution-2026-11-24/150_COURSE_A_ARTIFACT_PROVENANCE.md): Existing PR59 Course A artifact15256323196 retrieved, frozen backend/frontend tree identities match, actual upload-log/API ZIP digest and size agree; 120 source/75 Java/18 standalone candidate actual prior receipt reconciled. Independent byte inspection BLOCKED (local runtime ClientError). For AC1/AC5, independently hash downloaded existing Course A CI artifact15256323196 against recorded ZIP digest, inspect inner JAR and exact class/assets inventory; owner verify final local DOCX, launcher, package and Canvas. No whole-HEAD archive or redistribution. No repeat unchanged CI. Advance materially distinct eligible work under Report124; native C1 package/operator and first six H03/H06 fixtures NOT_RUN, owner environment gated; no valid ConPTY before independent acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.
+
+
+
 ## Current - C1 isolation terminal regression receipts (2026-11-28 PHT)
 
 [Report149](https://github.com/newonathe/OrgResource/blob/docs/claude-local-execution-handoff-2026-11-24/docs/handoffs/claude-local-execution-2026-11-24/149_C1_ISOLATION_TERMINAL_REGRESSION_RECEIPTS.md): Both PR59 exact initial7d9bfba and corrected d398ebd runs all four jobs terminal success; six new actual log receipts, each Course A61/160/1, Extended103/78 identity/38 React/110/19, separate React15. Report148 both exact-head Verify runs terminal actual success, no failure to repair or reason to repeat unchanged CI. Native C1 MySQL option handling and full package/operator effects NOT_RUN; approved isolated environment still required. First six-fixture H03/H06 native batch prepared and owner environment gated; no valid ConPTY until independent outer/console-host acceptance. Advance only materially distinct authorized remote defects or academic delivery under Report124, not speculative wrappers. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.

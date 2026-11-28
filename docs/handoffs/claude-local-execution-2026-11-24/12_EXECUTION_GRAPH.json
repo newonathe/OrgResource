@@ -2826,7 +2826,7 @@
       "native_execution": "NOT_RUN",
       "private_l06_ready": false
     },
-    "pre_handoff_next": "Report148 both exact-head Verify runs terminal actual success, no failure to repair or reason to repeat unchanged CI. Native C1 MySQL option handling and full package/operator effects NOT_RUN; approved isolated environment still required. First six-fixture H03/H06 native batch prepared and owner environment gated; no valid ConPTY until independent outer/console-host acceptance. Advance only materially distinct authorized remote defects or academic delivery under Report124, not speculative wrappers. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+    "pre_handoff_next": "For AC1/AC5, independently hash downloaded existing Course A CI artifact15256323196 against recorded ZIP digest, inspect inner JAR and exact class/assets inventory; owner verify final local DOCX, launcher, package and Canvas. No whole-HEAD archive or redistribution. No repeat unchanged CI. Advance materially distinct eligible work under Report124; native C1 package/operator and first six H03/H06 fixtures NOT_RUN, owner environment gated; no valid ConPTY before independent acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
     "release_inventory_candidate": {
       "report": "docs/handoffs/claude-local-execution-2026-11-24/125_RELEASE_MIGRATION_INVENTORY_CORRECTION.md",
       "pr": 59,
@@ -3659,5 +3659,28 @@
     "terminal_report": "docs/handoffs/claude-local-execution-2026-11-24/149_C1_ISOLATION_TERMINAL_REGRESSION_RECEIPTS.md",
     "terminal_report_blob": "510b392b90197cfd8d06b872ca2c1cff90d2145b",
     "regression_state": "VERIFIED_BOUNDED"
+  },
+  "course_a_existing_ci_artifact": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/150_COURSE_A_ARTIFACT_PROVENANCE.md",
+    "blob": "9d2714829e19458602ed33a411aa5f72e1dc9927",
+    "sha": "d398ebd115c7c6fa8dcdfdf84f3918fe2e60d0f8",
+    "frozen": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+    "artifact_id": 15256323196,
+    "run": 46127885650,
+    "job": 140926417573,
+    "zip_size": 37371675,
+    "recorded_zip_sha256": "37db61e0ff82954d88a7158f7f92b12f6a5dfd4f3c84dac5e900bc59ca6dffc9",
+    "expires": "2027-02-26T08:53:17Z",
+    "state": "VERIFIED_BOUNDED",
+    "binary_inspection": "BLOCKED",
+    "receipt": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "d398ebd115c7c6fa8dcdfdf84f3918fe2e60d0f8",
+      "run": 46127885650,
+      "job": 140926417573,
+      "oracle": "Existing Course A CI artifact identity and upload-log/API digest reconciliation; frozen build-tree equality",
+      "actual": "Artifact15256323196 size37371675; upload log and API metadata SHA256 37db61e0ff82954d88a7158f7f92b12f6a5dfd4f3c84dac5e900bc59ca6dffc9 agree. Connector retrieval returned ZIP file reference; independent byte hash and inner JAR inspection BLOCKED by both local runtime ClientError. No final release package claim."
+    },
+    "next": "For AC1/AC5, independently hash downloaded existing Course A CI artifact15256323196 against recorded ZIP digest, inspect inner JAR and exact class/assets inventory; owner verify final local DOCX, launcher, package and Canvas. No whole-HEAD archive or redistribution. No repeat unchanged CI. Advance materially distinct eligible work under Report124; native C1 package/operator and first six H03/H06 fixtures NOT_RUN, owner environment gated; no valid ConPTY before independent acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release."
   }
 }
