@@ -2826,7 +2826,7 @@
       "native_execution": "NOT_RUN",
       "private_l06_ready": false
     },
-    "pre_handoff_next": "Consume actual terminal PR59 Verify46127885650 Java8/Extended jobs140926417573/140926417437 and first candidate Verify46127857072 outstanding Java8/Extended140926330528/140926330498; inspect React actual logs as applicable. Repair observed failures only. Native C1 package/operator effects NOT_RUN. First six-fixture H03/H06 native batch remains prepared and owner environment gated. No valid ConPTY until independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. Report124 controls. No merge/deploy/release.",
+    "pre_handoff_next": "Report148 both exact-head Verify runs terminal actual success, no failure to repair or reason to repeat unchanged CI. Native C1 MySQL option handling and full package/operator effects NOT_RUN; approved isolated environment still required. First six-fixture H03/H06 native batch prepared and owner environment gated; no valid ConPTY until independent outer/console-host acceptance. Advance only materially distinct authorized remote defects or academic delivery under Report124, not speculative wrappers. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
     "release_inventory_candidate": {
       "report": "docs/handoffs/claude-local-execution-2026-11-24/125_RELEASE_MIGRATION_INVENTORY_CORRECTION.md",
       "pr": 59,
@@ -3602,19 +3602,62 @@
         "job": 140926417329,
         "oracle": "Corrected exact successor Windows hosted focused configuration guard",
         "actual": "Exact checkout at 08:53:28 UTC; SOURCE_ALLOWLIST_EXACT files=196, 16/16 archive cases, 12/12 package cases, prior migration guards retained, four actual fixture cases, five source bindings; terminal success; no MySQL launched."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "7d9bfba24bcaae2f72c74fcafd546ae3e645b926",
+        "run": 46127857072,
+        "job": 140926330498,
+        "oracle": "Exact Extended C Linux regression",
+        "actual": "Terminal success; actual exact checkout; 103 Maven (78 identity), zero failures/errors/skips, React38, Newman90+20 zero failures, browser19; isolated fictional additive/partial restore and row dump equality."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "7d9bfba24bcaae2f72c74fcafd546ae3e645b926",
+        "run": 46127857072,
+        "job": 140926330528,
+        "oracle": "Exact Course A regression",
+        "actual": "Actual exact checkout; 61 Maven zero failures/errors/skips; React15; Newman29+30+19+27+37+9+9=160 assertions zero failures; packaged browser1; terminal success."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "7d9bfba24bcaae2f72c74fcafd546ae3e645b926",
+        "run": 46127857072,
+        "job": 140926330548,
+        "oracle": "Exact standalone React regression",
+        "actual": "Actual exact checkout; three test files,15 tests passed, terminal success."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "d398ebd115c7c6fa8dcdfdf84f3918fe2e60d0f8",
+        "run": 46127885650,
+        "job": 140926417437,
+        "oracle": "Exact Extended C Linux regression",
+        "actual": "Terminal success; actual exact checkout; 103 Maven (78 identity), zero failures/errors/skips, React38, Newman90+20 zero failures, browser19; isolated fictional additive/partial restore and row dump equality."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "d398ebd115c7c6fa8dcdfdf84f3918fe2e60d0f8",
+        "run": 46127885650,
+        "job": 140926417573,
+        "oracle": "Exact Course A regression",
+        "actual": "Actual exact checkout; 61 Maven zero failures/errors/skips; React15; Newman29+30+19+27+37+9+9=160 assertions zero failures; packaged browser1; terminal success."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "d398ebd115c7c6fa8dcdfdf84f3918fe2e60d0f8",
+        "run": 46127885650,
+        "job": 140926417524,
+        "oracle": "Exact standalone React regression",
+        "actual": "Actual exact checkout; three test files,15 tests passed, terminal success."
       }
     ],
     "native_state": "NOT_RUN",
-    "pending_runs": [
-      46127857072,
-      46127885650
-    ],
-    "pending_jobs": [
-      140926330498,
-      140926330528,
-      140926417437,
-      140926417573
-    ],
-    "next": "Consume actual terminal PR59 Verify46127885650 Java8/Extended jobs140926417573/140926417437 and first candidate Verify46127857072 outstanding Java8/Extended140926330528/140926330498; inspect React actual logs as applicable. Repair observed failures only. Native C1 package/operator effects NOT_RUN. First six-fixture H03/H06 native batch remains prepared and owner environment gated. No valid ConPTY until independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. Report124 controls. No merge/deploy/release."
+    "pending_runs": [],
+    "pending_jobs": [],
+    "next": "Report148 both exact-head Verify runs terminal actual success, no failure to repair or reason to repeat unchanged CI. Native C1 MySQL option handling and full package/operator effects NOT_RUN; approved isolated environment still required. First six-fixture H03/H06 native batch prepared and owner environment gated; no valid ConPTY until independent outer/console-host acceptance. Advance only materially distinct authorized remote defects or academic delivery under Report124, not speculative wrappers. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+    "terminal_report": "docs/handoffs/claude-local-execution-2026-11-24/149_C1_ISOLATION_TERMINAL_REGRESSION_RECEIPTS.md",
+    "terminal_report_blob": "510b392b90197cfd8d06b872ca2c1cff90d2145b",
+    "regression_state": "VERIFIED_BOUNDED"
   }
 }

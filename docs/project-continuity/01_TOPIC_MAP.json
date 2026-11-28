@@ -149,7 +149,7 @@
         }
       ],
       "authority": "Parallel PR9 requirements research; course PDFs still primary.",
-      "next": "Consume actual terminal PR59 Verify46127885650 Java8/Extended jobs140926417573/140926417437 and first candidate Verify46127857072 outstanding Java8/Extended140926330528/140926330498; inspect React actual logs as applicable. Repair observed failures only. Native C1 package/operator effects NOT_RUN. First six-fixture H03/H06 native batch remains prepared and owner environment gated. No valid ConPTY until independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. Report124 controls. No merge/deploy/release.",
+      "next": "Report148 both exact-head Verify runs terminal actual success, no failure to repair or reason to repeat unchanged CI. Native C1 MySQL option handling and full package/operator effects NOT_RUN; approved isolated environment still required. First six-fixture H03/H06 native batch prepared and owner environment gated; no valid ConPTY until independent outer/console-host acceptance. Advance only materially distinct authorized remote defects or academic delivery under Report124, not speculative wrappers. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
@@ -214,6 +214,12 @@
           "blob": "a65f60ce63ea6ff64521392129c449b46c3abb5e",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; exact focused Windows log ranges, native NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/149_C1_ISOLATION_TERMINAL_REGRESSION_RECEIPTS.md",
+          "blob": "510b392b90197cfd8d06b872ca2c1cff90d2145b",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; six actual terminal log ranges; native NOT_RUN"
         }
       ]
     },
@@ -229,7 +235,7 @@
         }
       ],
       "authority": "Parallel PR10 exact execution specs; not active source or completed tests.",
-      "next": "Consume actual terminal PR59 Verify46127885650 Java8/Extended jobs140926417573/140926417437 and first candidate Verify46127857072 outstanding Java8/Extended140926330528/140926330498; inspect React actual logs as applicable. Repair observed failures only. Native C1 package/operator effects NOT_RUN. First six-fixture H03/H06 native batch remains prepared and owner environment gated. No valid ConPTY until independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. Report124 controls. No merge/deploy/release.",
+      "next": "Report148 both exact-head Verify runs terminal actual success, no failure to repair or reason to repeat unchanged CI. Native C1 MySQL option handling and full package/operator effects NOT_RUN; approved isolated environment still required. First six-fixture H03/H06 native batch prepared and owner environment gated; no valid ConPTY until independent outer/console-host acceptance. Advance only materially distinct authorized remote defects or academic delivery under Report124, not speculative wrappers. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/122_ACADEMIC_FIRST_EXTENDED_C_OBJECTIVE.md",
@@ -284,6 +290,12 @@
           "blob": "a65f60ce63ea6ff64521392129c449b46c3abb5e",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; exact focused Windows log ranges, native NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/149_C1_ISOLATION_TERMINAL_REGRESSION_RECEIPTS.md",
+          "blob": "510b392b90197cfd8d06b872ca2c1cff90d2145b",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; six actual terminal log ranges; native NOT_RUN"
         }
       ]
     },
@@ -1375,7 +1387,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "Consume actual terminal PR59 Verify46127885650 Java8/Extended jobs140926417573/140926417437 and first candidate Verify46127857072 outstanding Java8/Extended140926330528/140926330498; inspect React actual logs as applicable. Repair observed failures only. Native C1 package/operator effects NOT_RUN. First six-fixture H03/H06 native batch remains prepared and owner environment gated. No valid ConPTY until independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. Report124 controls. No merge/deploy/release.",
+      "next": "Report148 both exact-head Verify runs terminal actual success, no failure to repair or reason to repeat unchanged CI. Native C1 MySQL option handling and full package/operator effects NOT_RUN; approved isolated environment still required. First six-fixture H03/H06 native batch prepared and owner environment gated; no valid ConPTY until independent outer/console-host acceptance. Advance only materially distinct authorized remote defects or academic delivery under Report124, not speculative wrappers. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -1796,6 +1808,12 @@
           "blob": "a65f60ce63ea6ff64521392129c449b46c3abb5e",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; exact focused Windows log ranges, native NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/149_C1_ISOLATION_TERMINAL_REGRESSION_RECEIPTS.md",
+          "blob": "510b392b90197cfd8d06b872ca2c1cff90d2145b",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; six actual terminal log ranges; native NOT_RUN"
         }
       ]
     },
@@ -1819,7 +1837,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "Consume actual terminal PR59 Verify46127885650 Java8/Extended jobs140926417573/140926417437 and first candidate Verify46127857072 outstanding Java8/Extended140926330528/140926330498; inspect React actual logs as applicable. Repair observed failures only. Native C1 package/operator effects NOT_RUN. First six-fixture H03/H06 native batch remains prepared and owner environment gated. No valid ConPTY until independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. Report124 controls. No merge/deploy/release.",
+      "next": "Report148 both exact-head Verify runs terminal actual success, no failure to repair or reason to repeat unchanged CI. Native C1 MySQL option handling and full package/operator effects NOT_RUN; approved isolated environment still required. First six-fixture H03/H06 native batch prepared and owner environment gated; no valid ConPTY until independent outer/console-host acceptance. Advance only materially distinct authorized remote defects or academic delivery under Report124, not speculative wrappers. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -2686,6 +2704,12 @@
           "blob": "a65f60ce63ea6ff64521392129c449b46c3abb5e",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; exact focused Windows log ranges, native NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/149_C1_ISOLATION_TERMINAL_REGRESSION_RECEIPTS.md",
+          "blob": "510b392b90197cfd8d06b872ca2c1cff90d2145b",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; six actual terminal log ranges; native NOT_RUN"
         }
       ]
     },
@@ -2832,7 +2856,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "Consume actual terminal PR59 Verify46127885650 Java8/Extended jobs140926417573/140926417437 and first candidate Verify46127857072 outstanding Java8/Extended140926330528/140926330498; inspect React actual logs as applicable. Repair observed failures only. Native C1 package/operator effects NOT_RUN. First six-fixture H03/H06 native batch remains prepared and owner environment gated. No valid ConPTY until independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. Report124 controls. No merge/deploy/release.",
+      "next": "Report148 both exact-head Verify runs terminal actual success, no failure to repair or reason to repeat unchanged CI. Native C1 MySQL option handling and full package/operator effects NOT_RUN; approved isolated environment still required. First six-fixture H03/H06 native batch prepared and owner environment gated; no valid ConPTY until independent outer/console-host acceptance. Advance only materially distinct authorized remote defects or academic delivery under Report124, not speculative wrappers. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -3473,6 +3497,12 @@
           "blob": "a65f60ce63ea6ff64521392129c449b46c3abb5e",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; exact focused Windows log ranges, native NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/149_C1_ISOLATION_TERMINAL_REGRESSION_RECEIPTS.md",
+          "blob": "510b392b90197cfd8d06b872ca2c1cff90d2145b",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; six actual terminal log ranges; native NOT_RUN"
         }
       ]
     }
