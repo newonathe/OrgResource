@@ -1,0 +1,84 @@
+name: Windows L06 fictional guard fixtures
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/windows-l06-guard-fixtures.yml'
+permissions:
+  contents: read
+jobs:
+  guard-fixtures:
+    name: Exact candidate H02/H04/H06 guard fixtures (no private or native containment acceptance)
+    runs-on: windows-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: b762c4195393ae92e03ee149531ca0ab944f438b
+          persist-credentials: false
+      - name: Verify exact candidate and fixture dependencies
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ((git rev-parse HEAD) -cne 'b762c4195393ae92e03ee149531ca0ab944f438b' -or $LASTEXITCODE -ne 0) { throw 'Wrong candidate' }
+          if ((git rev-parse HEAD:scripts/windows-l06/test_guard_lifecycle.py) -cne 'aab454d404412c890df884f7acddb6dd4d18f137' -or $LASTEXITCODE -ne 0) { throw 'Wrong blob: test_guard_lifecycle.py' }
+          if ((git rev-parse HEAD:scripts/windows-l06/c9_windows_guard.py) -cne '09af01cd29d918a8c02dcce9cdee558bc709193c' -or $LASTEXITCODE -ne 0) { throw 'Wrong blob: c9_windows_guard.py' }
+          if ((git rev-parse HEAD:scripts/windows-l06/test-probe-shape.ps1) -cne '61e6aadd6ab6d65a1cee571a8099730210c8e2b0' -or $LASTEXITCODE -ne 0) { throw 'Wrong blob: test-probe-shape.ps1' }
+          if ((git rev-parse HEAD:scripts/windows-l06/test-probe-json.ps1) -cne 'e0b31cb40ae4cc3a4a081c41e9303617e4600bc1' -or $LASTEXITCODE -ne 0) { throw 'Wrong blob: test-probe-json.ps1' }
+          if ((git rev-parse HEAD:scripts/windows-l06/test-jar-receipt.ps1) -cne 'a3aa249eeb78db19f70571f34d95ccdd0288c4ad' -or $LASTEXITCODE -ne 0) { throw 'Wrong blob: test-jar-receipt.ps1' }
+          if ((git rev-parse HEAD:scripts/windows-l06/jar_receipt.ps1) -cne '480bd1e17a3cadb0348f9afb0ae1a1c46c6cf25d' -or $LASTEXITCODE -ne 0) { throw 'Wrong blob: jar_receipt.ps1' }
+          if ((git rev-parse HEAD:scripts/windows-l06/windows_common.ps1) -cne '33215a7e3d8747d82ea26e2915231501c5e5103c' -or $LASTEXITCODE -ne 0) { throw 'Wrong blob: windows_common.ps1' }
+          if ((git rev-parse HEAD:scripts/windows-l06/test-lifecycle-interpretation.ps1) -cne 'b7027439d52f21490388bd02714fbc2d1befadb1' -or $LASTEXITCODE -ne 0) { throw 'Wrong blob: test-lifecycle-interpretation.ps1' }
+          if ((git rev-parse HEAD:scripts/windows-l06/C9DirectoryIdentity.cs) -cne '67d705d9d66f0ca05cee018900b346d913d687b3' -or $LASTEXITCODE -ne 0) { throw 'Wrong blob: C9DirectoryIdentity.cs' }
+          if ((git rev-parse HEAD:scripts/windows-l06/C9ProfileStorageObservation.cs) -cne 'c29a49ef65abe02965ffa471ff16e2d2e6d600a4' -or $LASTEXITCODE -ne 0) { throw 'Wrong blob: C9ProfileStorageObservation.cs' }
+          if ((git rev-parse HEAD:scripts/windows-l06/C9Contain.cs) -cne '45a93d294f52da3af9139531a36bd8d97c0e344b' -or $LASTEXITCODE -ne 0) { throw 'Wrong blob: C9Contain.cs' }
+          # Confirm checked-out bytes against the committed blob (including Git's normal EOL conversion).
+          foreach ($name in @('test_guard_lifecycle.py', 'c9_windows_guard.py', 'test-probe-shape.ps1', 'test-probe-json.ps1', 'test-jar-receipt.ps1', 'jar_receipt.ps1', 'windows_common.ps1', 'test-lifecycle-interpretation.ps1', 'C9DirectoryIdentity.cs', 'C9ProfileStorageObservation.cs', 'C9Contain.cs')) {
+            $path = "scripts/windows-l06/$name"
+            if ((git hash-object --path=$path $path) -cne (git rev-parse "HEAD:$path") -or $LASTEXITCODE -ne 0) { throw "Working file mismatch: $path" }
+          }
+          $PSVersionTable.PSVersion.ToString()
+          python --version
+          if ($LASTEXITCODE -ne 0) { throw 'Python missing' }
+      - name: Exercise existing fictional H02 and H04 PowerShell cases
+        working-directory: scripts/windows-l06
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $common = (Resolve-Path ./windows_common.ps1).Path
+          $hash = (Get-FileHash -LiteralPath $common -Algorithm SHA256).Hash
+          $cases = @(
+            @{ File = 'test-jar-receipt.ps1'; Args = @(); Marker = 'H02_PURE_OK:24' },
+            @{ File = 'test-probe-shape.ps1'; Args = @('-Common', $common, '-ExpectedSha256', $hash); Marker = 'H04_CASE_SUMMARY:cases=31 failed=0 spec_parameter=True' },
+            @{ File = 'test-probe-json.ps1'; Args = @('-Common', $common, '-ExpectedSha256', $hash); Marker = 'H04_PARSER_SUMMARY:cases=9 failed=0' }
+          )
+          foreach ($case in $cases) {
+            $arguments = @($case.Args)
+            $result = @(pwsh -NoProfile -File $case.File @arguments)
+            $code = $LASTEXITCODE
+            $result | Write-Output
+            if ($code -ne 0 -or $case.Marker -cnotin $result) { throw "Fixture failed: $($case.File)" }
+          }
+          '64/64 existing PowerShell cases passed'
+      - name: Execute 14 Windows API spies, not actual native actions
+        working-directory: scripts/windows-l06
+        shell: pwsh
+        run: |
+          @'
+          import unittest
+          suite = unittest.defaultTestLoader.loadTestsFromName('test_guard_lifecycle')
+          if suite.countTestCases() != 14:
+              raise SystemExit('Expected exactly 14 spy methods')
+          r = unittest.TextTestRunner(verbosity=2).run(suite)
+          if not r.wasSuccessful() or r.testsRun != 14 or r.skipped or r.expectedFailures or r.unexpectedSuccesses:
+              raise SystemExit(1)
+          print('14/14 Windows API spy methods passed')
+          '@ | python -B -
+          if ($LASTEXITCODE -ne 0) { throw 'Spy fixture failed' }
+      - name: Compile native source and test pure result interpretation only
+        working-directory: scripts/windows-l06
+        shell: pwsh
+        run: |
+          $result = @(pwsh -NoProfile -File ./test-lifecycle-interpretation.ps1 -ConfirmFictional)
+          $code = $LASTEXITCODE
+          $result | Write-Output
+          if ($code -ne 0 -or 'C9W_H06_LIFECYCLE_INTERPRETATION_OK:fictional_only=true native_faults_not_run=true' -cnotin $result) { throw 'Lifecycle interpretation fixture failed' }

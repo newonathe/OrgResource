@@ -1,0 +1,27 @@
+name: R031 fictional capture process controls
+on:
+  push:
+    branches: [docs/claude-local-execution-handoff-2026-11-24]
+    paths:
+      - 'docs/handoffs/claude-local-execution-2026-11-24/84_R031_REAL_CHILD_FIXTURE.mjs'
+      - 'docs/handoffs/claude-local-execution-2026-11-24/80_R031_CAPTURE_SCANNER.mjs'
+      - 'docs/handoffs/claude-local-execution-2026-11-24/82_R031_CAPTURE_LIFECYCLE.mjs'
+      - '.github/workflows/r031-fictional-capture.yml'
+permissions:
+  contents: read
+jobs:
+  fictional-child:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Execute fixed fictional child controls
+        run: |
+          node --version
+          node docs/handoffs/claude-local-execution-2026-11-24/84_R031_REAL_CHILD_FIXTURE.mjs

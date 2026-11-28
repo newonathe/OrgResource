@@ -1,0 +1,729 @@
+{
+  "schema": "orgresource.course_a.source_candidate.v1",
+  "source_commit": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+  "classification": "LOCAL_REVIEW_CANDIDATE_NOT_PUBLICATION_CLEARANCE",
+  "file_count": 120,
+  "total_bytes": 793613,
+  "entries": [
+    {
+      "path": "backend/.classpath",
+      "mode": "100644",
+      "sha": "a8965644d4e4f7b1144f444a938d6ad110d11827",
+      "size": 2301
+    },
+    {
+      "path": "backend/.gitignore",
+      "mode": "100644",
+      "sha": "110e4e1341737eefb7f924ff59ea6611a5e86961",
+      "size": 93
+    },
+    {
+      "path": "backend/.mvn/wrapper/maven-wrapper.properties",
+      "mode": "100644",
+      "sha": "c4735cf60ead50bd69158b91464f360b30986564",
+      "size": 259
+    },
+    {
+      "path": "backend/.project",
+      "mode": "100644",
+      "sha": "f82d4eae2747c09eae579db178b28126d3e9f47f",
+      "size": 890
+    },
+    {
+      "path": "backend/.settings/org.eclipse.jdt.apt.core.prefs",
+      "mode": "100644",
+      "sha": "d4313d4b25e4b826b5efa4bed06fd69068761519",
+      "size": 67
+    },
+    {
+      "path": "backend/.settings/org.eclipse.jdt.core.prefs",
+      "mode": "100644",
+      "sha": "ca2993ac15149ce50f77bd57d8b93fc3bb605b71",
+      "size": 1295
+    },
+    {
+      "path": "backend/.settings/org.eclipse.m2e.core.prefs",
+      "mode": "100644",
+      "sha": "f897a7f1cb2389f85fe6381425d29f0a9866fb65",
+      "size": 86
+    },
+    {
+      "path": "backend/README.md",
+      "mode": "100644",
+      "sha": "ba0ed2364b5ebee513875e54c06b56755b391fff",
+      "size": 7323
+    },
+    {
+      "path": "backend/mvnw",
+      "mode": "100644",
+      "sha": "bd8896bf2217b46faa0291585e01ac1a3441a958",
+      "size": 11790
+    },
+    {
+      "path": "backend/mvnw.cmd",
+      "mode": "100644",
+      "sha": "5761d948924c19571d27b465c519b2e2f9e30351",
+      "size": 8481
+    },
+    {
+      "path": "backend/pom.xml",
+      "mode": "100644",
+      "sha": "65293736b992e4db708b00b3fe6f52060ae2f787",
+      "size": 5570
+    },
+    {
+      "path": "backend/src/main/java/app/SpringBootApp.java",
+      "mode": "100644",
+      "sha": "eb9f0d3e5fbed405fa9c9646aab06a14935a9bce",
+      "size": 383
+    },
+    {
+      "path": "backend/src/main/java/app/components/AllocationComponent.java",
+      "mode": "100644",
+      "sha": "35703258964f54eea45828c5549b99d6379b4af3",
+      "size": 17502
+    },
+    {
+      "path": "backend/src/main/java/app/components/ApiException.java",
+      "mode": "100644",
+      "sha": "4acf7c7947b21d2056b64d92dcf414af01cc6189",
+      "size": 346
+    },
+    {
+      "path": "backend/src/main/java/app/components/DepartmentComponent.java",
+      "mode": "100644",
+      "sha": "83b0d3b95e47bce6ead00dba82925522edbbb682",
+      "size": 2682
+    },
+    {
+      "path": "backend/src/main/java/app/components/ExpiryScheduler.java",
+      "mode": "100644",
+      "sha": "aabca73facb5304a11a9f970d1fa8f1c5010c70d",
+      "size": 2175
+    },
+    {
+      "path": "backend/src/main/java/app/components/NameNormalizer.java",
+      "mode": "100644",
+      "sha": "687aee6755c852128a1987751e765e2b35d55aae",
+      "size": 733
+    },
+    {
+      "path": "backend/src/main/java/app/components/ProjectComponent.java",
+      "mode": "100644",
+      "sha": "4a871f7aa19620a99338a34e7c85d93c452059bc",
+      "size": 4457
+    },
+    {
+      "path": "backend/src/main/java/app/components/ReminderComponent.java",
+      "mode": "100644",
+      "sha": "01dae9fddaddb835d74883bc2a5fbd829500ba6d",
+      "size": 6491
+    },
+    {
+      "path": "backend/src/main/java/app/components/ReminderDispatcher.java",
+      "mode": "100644",
+      "sha": "187d321360124a5610ddef477dd58b3bba017ee5",
+      "size": 1122
+    },
+    {
+      "path": "backend/src/main/java/app/components/ReminderScheduler.java",
+      "mode": "100644",
+      "sha": "d55aa54a28276073fb3e848e9c8de40f43125c41",
+      "size": 3339
+    },
+    {
+      "path": "backend/src/main/java/app/components/RequestValidation.java",
+      "mode": "100644",
+      "sha": "7ce4dbb9e146a23dab30feabd82fd18821251b45",
+      "size": 748
+    },
+    {
+      "path": "backend/src/main/java/app/components/RequirementComponent.java",
+      "mode": "100644",
+      "sha": "9e2dd44150711b25d3ae2f7a1c48aec2a89e3c06",
+      "size": 6907
+    },
+    {
+      "path": "backend/src/main/java/app/components/ResourceComponent.java",
+      "mode": "100644",
+      "sha": "ee6da3935ff16a18e29bf560c604792df01f1bcb",
+      "size": 11172
+    },
+    {
+      "path": "backend/src/main/java/app/components/ResourceImageSupport.java",
+      "mode": "100644",
+      "sha": "cb87a51e44d742cdda26df263e1841ac41f7d4f7",
+      "size": 5846
+    },
+    {
+      "path": "backend/src/main/java/app/config/ApiExceptionMapper.java",
+      "mode": "100644",
+      "sha": "ca68a55b1ffda19f0045415dc5e718ae951765be",
+      "size": 5805
+    },
+    {
+      "path": "backend/src/main/java/app/config/ClockConfiguration.java",
+      "mode": "100644",
+      "sha": "46e9959d01affff4d421d66e77e7a1ff20d45736",
+      "size": 343
+    },
+    {
+      "path": "backend/src/main/java/app/config/JerseyConfig.java",
+      "mode": "100644",
+      "sha": "0250a62795702370fb91dcf9d6b21008a994db81",
+      "size": 993
+    },
+    {
+      "path": "backend/src/main/java/app/config/TestDatabaseGuard.java",
+      "mode": "100644",
+      "sha": "ecd8337ff167b50733296cdaeb8b5b4fbfe08a4e",
+      "size": 1786
+    },
+    {
+      "path": "backend/src/main/java/app/dto/ApiDtos.java",
+      "mode": "100644",
+      "sha": "4c1223c0cd5f10ba90b50727bd3bc9b4435665c6",
+      "size": 7846
+    },
+    {
+      "path": "backend/src/main/java/app/entities/Allocation.java",
+      "mode": "100644",
+      "sha": "54ac4364a6d13778036eb44a82f325b1ed9c2856",
+      "size": 3563
+    },
+    {
+      "path": "backend/src/main/java/app/entities/AllocationStatus.java",
+      "mode": "100644",
+      "sha": "ce586ed3b119940cdaf737efba063e53becf2fe2",
+      "size": 137
+    },
+    {
+      "path": "backend/src/main/java/app/entities/CancellationReason.java",
+      "mode": "100644",
+      "sha": "1767021f85ed580ce697069191cde1b514004f49",
+      "size": 88
+    },
+    {
+      "path": "backend/src/main/java/app/entities/Department.java",
+      "mode": "100644",
+      "sha": "5c36198e2b3883e47e073c47c223584061f0e489",
+      "size": 1036
+    },
+    {
+      "path": "backend/src/main/java/app/entities/Project.java",
+      "mode": "100644",
+      "sha": "fa3ae4cf42e82592371310560f5977dd65a21ed5",
+      "size": 1732
+    },
+    {
+      "path": "backend/src/main/java/app/entities/ReminderOutcome.java",
+      "mode": "100644",
+      "sha": "3139ce524343992438738a2a0af76aaf95eb0f8a",
+      "size": 158
+    },
+    {
+      "path": "backend/src/main/java/app/entities/Resource.java",
+      "mode": "100644",
+      "sha": "687c28a49d768c5a9c222b02cabb7c410802eefd",
+      "size": 2253
+    },
+    {
+      "path": "backend/src/main/java/app/entities/ResourceRequirement.java",
+      "mode": "100644",
+      "sha": "e73f5cca7c35733d123e150bb37b576ad7ba75ba",
+      "size": 2082
+    },
+    {
+      "path": "backend/src/main/java/app/entities/ResourceType.java",
+      "mode": "100644",
+      "sha": "0a55a5580058dd9dc758f647ef1539a237077fe9",
+      "size": 81
+    },
+    {
+      "path": "backend/src/main/java/app/reminders/DisabledReminderTransport.java",
+      "mode": "100644",
+      "sha": "ed4545130546c2bf2ee28a18c25508bde0fc5bfd",
+      "size": 235
+    },
+    {
+      "path": "backend/src/main/java/app/reminders/FakeTwilioApi.java",
+      "mode": "100644",
+      "sha": "9af43c5f094d3031466904bd839a2c694557bfd9",
+      "size": 557
+    },
+    {
+      "path": "backend/src/main/java/app/reminders/FakeTwilioReply.java",
+      "mode": "100644",
+      "sha": "3eb3eb80f1d415dadc96a81f4aae8870110b854b",
+      "size": 553
+    },
+    {
+      "path": "backend/src/main/java/app/reminders/FakeTwilioTransport.java",
+      "mode": "100644",
+      "sha": "be7eee3fa9d70412ee52c1575cf86cb2ff2d2af4",
+      "size": 4715
+    },
+    {
+      "path": "backend/src/main/java/app/reminders/ReminderConfiguration.java",
+      "mode": "100644",
+      "sha": "b948970d5adefc05de1c69281b56bbb2115f29e6",
+      "size": 1774
+    },
+    {
+      "path": "backend/src/main/java/app/reminders/ReminderDispatch.java",
+      "mode": "100644",
+      "sha": "7cec3b6443ce691eb01a5f8eff555d7bd87c0baa",
+      "size": 633
+    },
+    {
+      "path": "backend/src/main/java/app/reminders/ReminderMode.java",
+      "mode": "100644",
+      "sha": "50fb0ae5d7001e8439a6c509acc85a59aeccc5e1",
+      "size": 103
+    },
+    {
+      "path": "backend/src/main/java/app/reminders/ReminderSendResult.java",
+      "mode": "100644",
+      "sha": "3d71f9174702b3a19ef3756816039762b55f03d9",
+      "size": 1289
+    },
+    {
+      "path": "backend/src/main/java/app/reminders/ReminderTransport.java",
+      "mode": "100644",
+      "sha": "ca896797c9601efa158cd2882f98cddea578383d",
+      "size": 119
+    },
+    {
+      "path": "backend/src/main/java/app/reminders/TwilioMessagesApi.java",
+      "mode": "100644",
+      "sha": "a25595ec8c44b1545ea352d48b5f7507b3bf8a76",
+      "size": 656
+    },
+    {
+      "path": "backend/src/main/java/app/reminders/TwilioRestTransport.java",
+      "mode": "100644",
+      "sha": "f977516ce2ad58bea8e7341fb8a5a6e083e71b6b",
+      "size": 6168
+    },
+    {
+      "path": "backend/src/main/java/app/repositories/AllocationRepository.java",
+      "mode": "100644",
+      "sha": "141c259a58b52f56ed83aa0abee4132a64405af7",
+      "size": 5675
+    },
+    {
+      "path": "backend/src/main/java/app/repositories/DepartmentRepository.java",
+      "mode": "100644",
+      "sha": "98fd0dac4bb784b72b9a0948a3c867e4da94f2bc",
+      "size": 311
+    },
+    {
+      "path": "backend/src/main/java/app/repositories/ProjectRepository.java",
+      "mode": "100644",
+      "sha": "c18dbd3c88c57cd3fb04a25b861f13f06111c534",
+      "size": 773
+    },
+    {
+      "path": "backend/src/main/java/app/repositories/ResourceRepository.java",
+      "mode": "100644",
+      "sha": "3957b3a458ab91f03a239d8ef48665a81e1e835f",
+      "size": 1076
+    },
+    {
+      "path": "backend/src/main/java/app/repositories/ResourceRequirementRepository.java",
+      "mode": "100644",
+      "sha": "a60b062499dcf5ed3a2419e3a613b4254a4a72f9",
+      "size": 962
+    },
+    {
+      "path": "backend/src/main/java/app/rest/controllers/AllocationController.java",
+      "mode": "100644",
+      "sha": "4de30eb24d2f894611380d1c177a1becc7709180",
+      "size": 2729
+    },
+    {
+      "path": "backend/src/main/java/app/rest/controllers/DepartmentController.java",
+      "mode": "100644",
+      "sha": "7d06633870126f236378f7e8562495886277896c",
+      "size": 1645
+    },
+    {
+      "path": "backend/src/main/java/app/rest/controllers/ProjectController.java",
+      "mode": "100644",
+      "sha": "32c5cdcb8b359fb32694982743156ce9e32e3298",
+      "size": 1778
+    },
+    {
+      "path": "backend/src/main/java/app/rest/controllers/RequirementController.java",
+      "mode": "100644",
+      "sha": "86fa92814d0cb3a8ff1e6fcc502a8c965b37ab52",
+      "size": 1807
+    },
+    {
+      "path": "backend/src/main/java/app/rest/controllers/ResourceController.java",
+      "mode": "100644",
+      "sha": "e969349eaa9ad269c3e08b86861d5537d073d9e2",
+      "size": 3888
+    },
+    {
+      "path": "backend/src/main/resources/application-test.properties",
+      "mode": "100644",
+      "sha": "e6f445bb4c8485105dd3d3ce3a11be0e36752603",
+      "size": 377
+    },
+    {
+      "path": "backend/src/main/resources/application.properties",
+      "mode": "100644",
+      "sha": "38af8f97b581e0b15d22578d34482eff6344bdba",
+      "size": 1961
+    },
+    {
+      "path": "backend/src/test/java/app/components/AllocationComponentTest.java",
+      "mode": "100644",
+      "sha": "c3f6036a95c6d52fb552139a9ac5d9b3670ec3ae",
+      "size": 5796
+    },
+    {
+      "path": "backend/src/test/java/app/components/AllocationLifecycleMySqlTest.java",
+      "mode": "100644",
+      "sha": "309751b62d6906e0c513b743fa3082b17da0b2f8",
+      "size": 24428
+    },
+    {
+      "path": "backend/src/test/java/app/components/DepartmentComponentTest.java",
+      "mode": "100644",
+      "sha": "4124bb275cadf9d63988df6d4a820fdef542e046",
+      "size": 3489
+    },
+    {
+      "path": "backend/src/test/java/app/components/ProjectComponentTest.java",
+      "mode": "100644",
+      "sha": "bc723b6f2ff504805e88ec08fe72d84e19a17ea4",
+      "size": 7427
+    },
+    {
+      "path": "backend/src/test/java/app/components/ReminderLifecycleMySqlTest.java",
+      "mode": "100644",
+      "sha": "ce6d8f4963a6b163633823594959745ba218ccaf",
+      "size": 11098
+    },
+    {
+      "path": "backend/src/test/java/app/components/RequirementComponentTest.java",
+      "mode": "100644",
+      "sha": "418172374c378c13d4167ad860fcd85271da3d19",
+      "size": 8077
+    },
+    {
+      "path": "backend/src/test/java/app/components/ResourceComponentTest.java",
+      "mode": "100644",
+      "sha": "3bd43de0224672177f2a59357253df82bb3c8f75",
+      "size": 7765
+    },
+    {
+      "path": "backend/src/test/java/app/components/ResourceListAggregationMySqlTest.java",
+      "mode": "100644",
+      "sha": "fc4e1255339926a5ad7cb311d628b0d6310b68c9",
+      "size": 8356
+    },
+    {
+      "path": "backend/src/test/java/app/config/ApiExceptionMapperTest.java",
+      "mode": "100644",
+      "sha": "9e0a9f620ea81e9f2db0bb2e1ca84402caa74590",
+      "size": 3765
+    },
+    {
+      "path": "backend/src/test/java/app/reminders/FakeTwilioTransportTest.java",
+      "mode": "100644",
+      "sha": "dd8494bf701cb3c85a956f62706a0233d9997c37",
+      "size": 5961
+    },
+    {
+      "path": "backend/src/test/java/app/reminders/TwilioRestTransportTest.java",
+      "mode": "100644",
+      "sha": "9d3e8ce82d077d3dfac8af6d720d79eef0e4925c",
+      "size": 8080
+    },
+    {
+      "path": "backend/src/test/java/app/repositories/AllocationRepositoryMySqlTest.java",
+      "mode": "100644",
+      "sha": "416f0893f0a09bd854a00b860dffe85a3acae0f9",
+      "size": 6124
+    },
+    {
+      "path": "backend/src/test/java/app/rest/ResourceImageHttpMySqlTest.java",
+      "mode": "100644",
+      "sha": "3b2081c12ae519d303a281b51043d6eac139d98a",
+      "size": 13464
+    },
+    {
+      "path": "docs/COURSE_A_FINAL_DEMO_GUIDE.md",
+      "mode": "100644",
+      "sha": "48bdbd6038400c24c68a59ec533cc51e403d26f6",
+      "size": 8092
+    },
+    {
+      "path": "docs/PORTABLE_FIRST_RUN.md",
+      "mode": "100644",
+      "sha": "c1147e3aaa2dd0ce6051202bd0c0e03a72f78b4f",
+      "size": 6603
+    },
+    {
+      "path": "frontend/README.md",
+      "mode": "100644",
+      "sha": "958ddb285cde70e9f1bd6f04286139f7fca012a4",
+      "size": 3629
+    },
+    {
+      "path": "frontend/e2e/orgresource.spec.ts",
+      "mode": "100644",
+      "sha": "d9bb1fe2fcd7d1936d42503e9fa066a5ebc10854",
+      "size": 30195
+    },
+    {
+      "path": "frontend/eslint.config.js",
+      "mode": "100644",
+      "sha": "3cde917654f790b72eb287f7f17034f72f85541b",
+      "size": 706
+    },
+    {
+      "path": "frontend/index.html",
+      "mode": "100644",
+      "sha": "0957f98f308f8b232d59b92db7d632f6bacc8148",
+      "size": 457
+    },
+    {
+      "path": "frontend/package-lock.json",
+      "mode": "100644",
+      "sha": "afb61e01cb85fd423626f61ac2e60e5e955b7824",
+      "size": 138789
+    },
+    {
+      "path": "frontend/package.json",
+      "mode": "100644",
+      "sha": "25eb225afa54e617a8b59fbf80cdc66399c54317",
+      "size": 1025
+    },
+    {
+      "path": "frontend/playwright.config.ts",
+      "mode": "100644",
+      "sha": "bae6f0cad00a0adc911ebbef82e7771f5e4cba79",
+      "size": 496
+    },
+    {
+      "path": "frontend/src/App.test.tsx",
+      "mode": "100644",
+      "sha": "00c2665f5a879520f185494cb54adf180146cf4d",
+      "size": 6549
+    },
+    {
+      "path": "frontend/src/App.tsx",
+      "mode": "100644",
+      "sha": "7f3d86e90d603c5b13dd955c0152baba630e28f8",
+      "size": 1434
+    },
+    {
+      "path": "frontend/src/api/client.test.ts",
+      "mode": "100644",
+      "sha": "a0ea9bcd73a53f3f02de1b00227cb5d1a6592bcc",
+      "size": 2198
+    },
+    {
+      "path": "frontend/src/api/client.ts",
+      "mode": "100644",
+      "sha": "2e49a4188675be26abe2659a1b95b05e72121bc2",
+      "size": 7088
+    },
+    {
+      "path": "frontend/src/api/types.ts",
+      "mode": "100644",
+      "sha": "5798934b092e4572857c00c36f466667351c8162",
+      "size": 1582
+    },
+    {
+      "path": "frontend/src/domain.test.ts",
+      "mode": "100644",
+      "sha": "a8fee74eb471d8131499a17f2321e00e0027989f",
+      "size": 4010
+    },
+    {
+      "path": "frontend/src/domain.ts",
+      "mode": "100644",
+      "sha": "feb0ea1b95251d5f08a11cb9a17b89740c8cf5db",
+      "size": 4984
+    },
+    {
+      "path": "frontend/src/main.tsx",
+      "mode": "100644",
+      "sha": "e7e51d8b18205a389415b0655e72033ae28b1b3d",
+      "size": 242
+    },
+    {
+      "path": "frontend/src/pages/AboutPage.tsx",
+      "mode": "100644",
+      "sha": "48adbf9fe8251108b245df7155b5e269d0ce3b87",
+      "size": 5073
+    },
+    {
+      "path": "frontend/src/pages/AllocationsPage.tsx",
+      "mode": "100644",
+      "sha": "781d4b16499770ddf3340397f583c2670d3b0737",
+      "size": 19391
+    },
+    {
+      "path": "frontend/src/pages/DepartmentsPage.tsx",
+      "mode": "100644",
+      "sha": "fb85f207c1180ae49a97d230a4de69c0cd026e54",
+      "size": 8382
+    },
+    {
+      "path": "frontend/src/pages/OverviewPage.tsx",
+      "mode": "100644",
+      "sha": "00d382c8fb3819f79881cfacf7a33216ef6d8013",
+      "size": 12807
+    },
+    {
+      "path": "frontend/src/pages/ProjectsPage.tsx",
+      "mode": "100644",
+      "sha": "78a8b1b3e0e92f07f6e1e64c3db40c3160826a1d",
+      "size": 16130
+    },
+    {
+      "path": "frontend/src/pages/RemindersPage.tsx",
+      "mode": "100644",
+      "sha": "510bbb6bebc0e1d1af858c9693b082707f4a23b0",
+      "size": 7180
+    },
+    {
+      "path": "frontend/src/pages/RequirementsPage.tsx",
+      "mode": "100644",
+      "sha": "be7d0177b2c1c2a120cba62fb921e72bc90504b9",
+      "size": 12607
+    },
+    {
+      "path": "frontend/src/pages/ResourcesPage.tsx",
+      "mode": "100644",
+      "sha": "123dc2760653498ad778174a3ee076e3c9a10668",
+      "size": 15375
+    },
+    {
+      "path": "frontend/src/shell/AcademicShell.tsx",
+      "mode": "100644",
+      "sha": "7e4a0b05eef9382f1b75201a6fdad4137ee64e62",
+      "size": 6358
+    },
+    {
+      "path": "frontend/src/styles.css",
+      "mode": "100644",
+      "sha": "93aa0e581a467721361030781eebb294490ccd40",
+      "size": 45993
+    },
+    {
+      "path": "frontend/src/test/setup.ts",
+      "mode": "100644",
+      "sha": "5476b6afdea92623ac626c7688765b6af7f97524",
+      "size": 489
+    },
+    {
+      "path": "frontend/src/ui.tsx",
+      "mode": "100644",
+      "sha": "53585309369793caebac46b05b9418b0e2032008",
+      "size": 10714
+    },
+    {
+      "path": "frontend/src/vite-env.d.ts",
+      "mode": "100644",
+      "sha": "11f02fe2a0061d6e6e1f271b21da95423b448b32",
+      "size": 38
+    },
+    {
+      "path": "frontend/tsconfig.json",
+      "mode": "100644",
+      "sha": "8d98a00a0a2ef6b0361d4479ab0f97bd2b063a10",
+      "size": 627
+    },
+    {
+      "path": "frontend/vite.config.ts",
+      "mode": "100644",
+      "sha": "c19910d27bcb7eebd1319bd15cdf7fd05c2e10af",
+      "size": 482
+    },
+    {
+      "path": "postman/OrgResource-Course-A-28-Routes.postman_collection.json",
+      "mode": "100644",
+      "sha": "2619f53ca5df2d245ce0c24f8a5735cead253449",
+      "size": 30945
+    },
+    {
+      "path": "postman/OrgResource-Course-A-Image-HTTP.postman_collection.json",
+      "mode": "100644",
+      "sha": "f27b53a5e80ef5fe9edfa9e80845218d54759631",
+      "size": 4821
+    },
+    {
+      "path": "postman/OrgResource-Course-A-Local.postman_environment.json",
+      "mode": "100644",
+      "sha": "b8eef578af8db258192da0cf1891a8d207c5847c",
+      "size": 531
+    },
+    {
+      "path": "postman/OrgResource-O1-Local.postman_environment.json",
+      "mode": "100644",
+      "sha": "615386bb8c20393750a72620b2e708a9e928d8ac",
+      "size": 1142
+    },
+    {
+      "path": "postman/OrgResource-O1-Skeleton.postman_collection.json",
+      "mode": "100644",
+      "sha": "77f7f67577bf4e038e5dcb4526cad92d0e2b981c",
+      "size": 15119
+    },
+    {
+      "path": "postman/OrgResource-O14-Dependency-Integrity.postman_collection.json",
+      "mode": "100644",
+      "sha": "b6e7b1ab83b21c2ef8a4a3a4c923bf861e7e4962",
+      "size": 18006
+    },
+    {
+      "path": "postman/OrgResource-O3-CRUD.postman_collection.json",
+      "mode": "100644",
+      "sha": "ef52065e7b00f257811824d666a8412060b73ea0",
+      "size": 18366
+    },
+    {
+      "path": "postman/OrgResource-O3-Department-Update.postman_collection.json",
+      "mode": "100644",
+      "sha": "c8eed83ebe747601d5e542360064360747f229a5",
+      "size": 9793
+    },
+    {
+      "path": "postman/OrgResource-O4-O5-Allocation-Expiry.postman_collection.json",
+      "mode": "100644",
+      "sha": "2aa16dee16c33614dd54f7c766b059d0a2d4d87d",
+      "size": 21948
+    },
+    {
+      "path": "postman/fixtures/academic-demo-image.png",
+      "mode": "100644",
+      "sha": "97dcd7f9bac25be1962d53636bc4d81340c34cec",
+      "size": 137
+    },
+    {
+      "path": "scripts/course-a-demo.sql",
+      "mode": "100644",
+      "sha": "91201567923391cf5c4de5e958d7f5a0d93a3aa4",
+      "size": 2570
+    },
+    {
+      "path": "scripts/run-api-acceptance.ps1",
+      "mode": "100644",
+      "sha": "7d617b11954750975a6345b9e7f2f45eb5fed5a6",
+      "size": 2437
+    },
+    {
+      "path": "scripts/start-portable-demo.ps1",
+      "mode": "100644",
+      "sha": "68bc6afe54eae3925251d7fa6e97187995fbe575",
+      "size": 4498
+    }
+  ]
+}

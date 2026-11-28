@@ -1,0 +1,1945 @@
+{
+  "schema": "orgresource.project_context.git_ref_snapshot.v1",
+  "observed_date": "2026-11-25 PHT, R06B3a checkpoint",
+  "repository": "newonathe/OrgResource",
+  "visibility": "public",
+  "default_branch": "main",
+  "authority": "Point-in-time locator, not proof of merged/deployed/runtime state; refresh live every chat.",
+  "pagination": {
+    "pr_count": 47,
+    "branch_count": 50,
+    "issue_response_count": 52,
+    "per_page": 100,
+    "all_within_page": true
+  },
+  "pull_requests": [
+    {
+      "id": 52,
+      "title": "test(R06B3a): independent full-mixed C5 recovery and restored postflight",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+      "head_branch": "test/c9-local-full-mixed-recovery-2026-11-25",
+      "base": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+      "base_branch": "test/c9-local-operator-gated-import-2026-11-25"
+    },
+    {
+      "id": 51,
+      "title": "test(R06B2): owner-gated disposable full-plan import and independent postflight",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+      "head_branch": "test/c9-local-operator-gated-import-2026-11-25",
+      "base": "406ce2af1c4905bf7b845bcc072f71903327e0a1",
+      "base_branch": "test/c9-local-mixed-preparation-2026-11-24"
+    },
+    {
+      "id": 49,
+      "title": "test(R06B1): executable local mixed rehearsal preparation and preflight guards",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "406ce2af1c4905bf7b845bcc072f71903327e0a1",
+      "head_branch": "test/c9-local-mixed-preparation-2026-11-24",
+      "base": "c91333766f3082b88a8c0414450dcaf6fc934ca2",
+      "base_branch": "test/c9-local-original-transport-2026-11-24"
+    },
+    {
+      "id": 48,
+      "title": "test(R06A): guarded Linux C5 original-only transport and POSIX baseline proof",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "c91333766f3082b88a8c0414450dcaf6fc934ca2",
+      "head_branch": "test/c9-local-original-transport-2026-11-24",
+      "base": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
+      "base_branch": "test/c9-recovered-application-2026-11-24"
+    },
+    {
+      "id": 47,
+      "title": "docs: Claude Code local-only execution handoff and end-to-end completion map",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "60fed8ca69b7453d0a1b552a25958a34a39dc6e8",
+      "head_branch": "docs/claude-local-execution-handoff-2026-11-24",
+      "base": "ec8600f5fdb58b7ea8bdafa42b109b1c41c4f306",
+      "base_branch": "test/c9-recovered-application-2026-11-24"
+    },
+    {
+      "id": 46,
+      "title": "test(C9 Stage 1D): recovered packaged application and durable receipt on isolated loopback namespaces",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "b62ff3c65552b258291ed52f85e9c1413c5e63fa",
+      "head_branch": "test/c9-recovered-application-2026-11-24",
+      "base": "09e3e5a0b2a1e87132c8f7ba9fb44ab1c50de2c0",
+      "base_branch": "test/c9-encrypted-c5-archive-recovery-2026-11-24"
+    },
+    {
+      "id": 45,
+      "title": "test(C9 Stage 1C): actual C5 AES-GCM archive recovery on isolated intermediate fixture",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "09e3e5a0b2a1e87132c8f7ba9fb44ab1c50de2c0",
+      "head_branch": "test/c9-encrypted-c5-archive-recovery-2026-11-24",
+      "base": "be91d557d4f19d38c759ca77aaa151e793c125fe",
+      "base_branch": "test/c9-network-isolated-mysql-cross-server-restore-2026-11-24"
+    },
+    {
+      "id": 44,
+      "title": "test(C9 Stage 1B): recover fictional SQL on an independent networkless MySQL 8 server",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "be91d557d4f19d38c759ca77aaa151e793c125fe",
+      "head_branch": "test/c9-network-isolated-mysql-cross-server-restore-2026-11-24",
+      "base": "a7c4ec8192997d38f97a5ed942f1e3cea710f72e",
+      "base_branch": "test/c9-intermediate-backup-restore-capacity-2026-11-24"
+    },
+    {
+      "id": 43,
+      "title": "test(C9 Stage 1A): measure C5-shaped SQL backup and verify independent CI-schema restore",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "a7c4ec8192997d38f97a5ed942f1e3cea710f72e",
+      "head_branch": "test/c9-intermediate-backup-restore-capacity-2026-11-24",
+      "base": "720df01be34110038af6422443434c66fbde8d65",
+      "base_branch": "test/c9-native-inventory-page-balance-plan-2026-11-24"
+    },
+    {
+      "id": 42,
+      "title": "test(C9 Stage 0b): explain full native Resource-page stock/holds/issued balance",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "720df01be34110038af6422443434c66fbde8d65",
+      "head_branch": "test/c9-native-inventory-page-balance-plan-2026-11-24",
+      "base": "14416f069f654c7d2db2b8c2908aab6cc2b05557",
+      "base_branch": "test/c9-isolated-mysql-query-plan-probe-2026-11-24"
+    },
+    {
+      "id": 41,
+      "title": "test(C9 Stage 0): SELECT-only MySQL plan/timing probe and explicit authorization handoff",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "14416f069f654c7d2db2b8c2908aab6cc2b05557",
+      "head_branch": "test/c9-isolated-mysql-query-plan-probe-2026-11-24",
+      "base": "f0cf2ace7623a38fda29ab6b209fcb898d8740a8",
+      "base_branch": "docs/c8-legacy29-assertion-reconciliation-2026-11-24"
+    },
+    {
+      "id": 40,
+      "title": "docs(c8): complete 93-route source-to-test mapping and update blocked release handoff",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "f0cf2ace7623a38fda29ab6b209fcb898d8740a8",
+      "head_branch": "docs/c8-legacy29-assertion-reconciliation-2026-11-24",
+      "base": "763542d4bd1f0fd6d21ba373bc28d54b23a0126d",
+      "base_branch": "test/c8-identity20-assertion-reconciliation-2026-11-24"
+    },
+    {
+      "id": 39,
+      "title": "test(c8): reconcile 20 identity/governance routes and prove account-disable state",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "763542d4bd1f0fd6d21ba373bc28d54b23a0126d",
+      "head_branch": "test/c8-identity20-assertion-reconciliation-2026-11-24",
+      "base": "b772613a02f4f8fa3e43238259d062188cc2a4c4",
+      "base_branch": "test/c8-movement-identity-reconciliation-2026-11-24"
+    },
+    {
+      "id": 38,
+      "title": "fix(c8): verify exact synthetic stock-movement row history",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "b772613a02f4f8fa3e43238259d062188cc2a4c4",
+      "head_branch": "test/c8-movement-identity-reconciliation-2026-11-24",
+      "base": "785d89d8ad386ddb1637b872c0e2cff73face613",
+      "base_branch": "test/c8-postflight-negative-reproductions-2026-11-24"
+    },
+    {
+      "id": 37,
+      "title": "fix(c8): fail-closed V1–V7 validation and synthetic stock-history postflight",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "785d89d8ad386ddb1637b872c0e2cff73face613",
+      "head_branch": "test/c8-postflight-negative-reproductions-2026-11-24",
+      "base": "bb343058694ffa2c543e094cd425362baed6860d",
+      "base_branch": "test/c8-inventory33-assertions-lead-options-2026-11-24"
+    },
+    {
+      "id": 36,
+      "title": "test(C8): reconcile 33 inventory routes and prove LEAD options directory boundaries",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "bb343058694ffa2c543e094cd425362baed6860d",
+      "head_branch": "test/c8-inventory33-assertions-lead-options-2026-11-24",
+      "base": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+      "base_branch": "test/c8-project-work-denied-sql-2026-11-24"
+    },
+    {
+      "id": 35,
+      "title": "test(C8): verify Project Work role/foreign-object refusals preserve MySQL state",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "f0f670f65a9f706713591d94d19f4700fa2e3084",
+      "head_branch": "test/c8-project-work-denied-sql-2026-11-24",
+      "base": "51b2bfff808a04800e6adba4f80811f35e7e0f06",
+      "base_branch": "audit/c8-93-route-evidence-reconciliation-2026-11-24"
+    },
+    {
+      "id": 33,
+      "title": "docs(C8): reconcile all 93 route policies against executed test evidence and blockers",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "51b2bfff808a04800e6adba4f80811f35e7e0f06",
+      "head_branch": "audit/c8-93-route-evidence-reconciliation-2026-11-24",
+      "base": "64d44cb6d64027b2e26860f250a255b4fa3c0e1a",
+      "base_branch": "test/c8-all-post-csrf-origin-gate-2026-11-24"
+    },
+    {
+      "id": 32,
+      "title": "test(C8): require CSRF and same-origin on every registered POST operation",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "64d44cb6d64027b2e26860f250a255b4fa3c0e1a",
+      "head_branch": "test/c8-all-post-csrf-origin-gate-2026-11-24",
+      "base": "921b95176036e4bb69828d13cb3e45a4a45523ef",
+      "base_branch": "test/c8-live-membership-switch-revocation-2026-11-24"
+    },
+    {
+      "id": 31,
+      "title": "test(C8): invalidate selected-workspace privileges on switch, demotion and suspension",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "921b95176036e4bb69828d13cb3e45a4a45523ef",
+      "head_branch": "test/c8-live-membership-switch-revocation-2026-11-24",
+      "base": "ca046b9c21bfc590abbe363370206c7922df836b",
+      "base_branch": "test/c8-legacy-workspace-role-boundary-2026-11-23"
+    },
+    {
+      "id": 29,
+      "title": "test(C8): prove baseline workspace role boundaries and denied-write SQL invariants",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "ca046b9c21bfc590abbe363370206c7922df836b",
+      "head_branch": "test/c8-legacy-workspace-role-boundary-2026-11-23",
+      "base": "235f23a1f9678f0073cd2172f717345ed1228d6a",
+      "base_branch": "audit/c8-last29-policy-2026-11-23"
+    },
+    {
+      "id": 28,
+      "title": "audit(C8): complete remaining 29 source-policy oracles with CI traceability",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "235f23a1f9678f0073cd2172f717345ed1228d6a",
+      "head_branch": "audit/c8-last29-policy-2026-11-23",
+      "base": "45bcdfc7285598de3fe98684448aa65b5dd47e12",
+      "base_branch": "feat/extended-c-c8-domain-workflows-2026-11-19"
+    },
+    {
+      "id": 25,
+      "title": "C8 domain workflows, scoped roles, and isolated synthetic demo",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "45bcdfc7285598de3fe98684448aa65b5dd47e12",
+      "head_branch": "feat/extended-c-c8-domain-workflows-2026-11-19",
+      "base": "b4ca5cd1b8a2a128f997f4dbd5e6848cf2b39d0b",
+      "base_branch": "feat/extended-c-c7-security-privacy-2026-11-19"
+    },
+    {
+      "id": 24,
+      "title": "audit(C6): original 2611-source manifest, 28 academic delegates, 65 API routes and publication vetoes",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "727c270f0a5f2d34bb3b049124d2d5cfca218f35",
+      "head_branch": "docs/c6-source-and-publication-audit-2026-11-19",
+      "base": "d794e8d2a9db1167729a54dcab844f03642d2c36",
+      "base_branch": "docs/superpowers-evidence-goat-router-2026-11-19"
+    },
+    {
+      "id": 23,
+      "title": "docs: audited Superpowers/GOAT Native-first handoff, corrected agent isolation, C6 entry and CI blockers",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "d794e8d2a9db1167729a54dcab844f03642d2c36",
+      "head_branch": "docs/superpowers-evidence-goat-router-2026-11-19",
+      "base": "6036f2d1a02aaecd6fa916c95718a3ee77083d80",
+      "base_branch": "docs/extended-c-efficient-evidence-orchestration-2026-11-19"
+    },
+    {
+      "id": 22,
+      "title": "Extended C7: verify and harden identity, tenancy and contact privacy",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "b4ca5cd1b8a2a128f997f4dbd5e6848cf2b39d0b",
+      "head_branch": "feat/extended-c-c7-security-privacy-2026-11-19",
+      "base": "856f73baeb76cab09f880ac1a3ca64c649eb481e",
+      "base_branch": "feat/extended-c-c6a-independent-acceptance-2026-11-19"
+    },
+    {
+      "id": 21,
+      "title": "docs(codex): quality-gated C6–C11 plan with strict subagent models, token controls and Ateneo demo scope",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "6036f2d1a02aaecd6fa916c95718a3ee77083d80",
+      "head_branch": "docs/extended-c-efficient-evidence-orchestration-2026-11-19",
+      "base": "29efe86298431db16a780ae2e582b2276a699530",
+      "base_branch": "docs/continuous-evidence-completeness-standard-2026-11-19"
+    },
+    {
+      "id": 20,
+      "title": "C6a reporting, independent operator acceptance, and release hardening",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "856f73baeb76cab09f880ac1a3ca64c649eb481e",
+      "head_branch": "feat/extended-c-c6a-independent-acceptance-2026-11-19",
+      "base": "29efe86298431db16a780ae2e582b2276a699530",
+      "base_branch": "docs/continuous-evidence-completeness-standard-2026-11-19"
+    },
+    {
+      "id": 19,
+      "title": "docs: require evidence-first Socratic completeness for every OrgResource cycle",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "29efe86298431db16a780ae2e582b2276a699530",
+      "head_branch": "docs/continuous-evidence-completeness-standard-2026-11-19",
+      "base": "9755ef63bd4c02a7042cb48823bf759e609357cd",
+      "base_branch": "feat/extended-c-c5-release-recovery-2026-11-18"
+    },
+    {
+      "id": 18,
+      "title": "Extended C5 corrective gates, local release and MySQL recovery",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "9755ef63bd4c02a7042cb48823bf759e609357cd",
+      "head_branch": "feat/extended-c-c5-release-recovery-2026-11-18",
+      "base": "3c0d677e37fb4df883d8eeb075ba14a773c90c8f",
+      "base_branch": "feat/extended-c-c4-connected-react-2026-11-18"
+    },
+    {
+      "id": 17,
+      "title": "Extended C4: authenticated React workspace and course acceptance audit",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "3c0d677e37fb4df883d8eeb075ba14a773c90c8f",
+      "head_branch": "feat/extended-c-c4-connected-react-2026-11-18",
+      "base": "95439de8492ef1a8192afc8b4ec45b981c99b032",
+      "base_branch": "feat/extended-c-c3-course-parity-2026-11-18"
+    },
+    {
+      "id": 16,
+      "title": "C3: complete secured Course A route parity",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "95439de8492ef1a8192afc8b4ec45b981c99b032",
+      "head_branch": "feat/extended-c-c3-course-parity-2026-11-18",
+      "base": "c8b6e76c249f99f3642c1513ddd7d55b584e027a",
+      "base_branch": "feat/extended-c-c2-ledger-atomicity-2026-11-17"
+    },
+    {
+      "id": 15,
+      "title": "C2: atomic inventory and movement ledger",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "c8b6e76c249f99f3642c1513ddd7d55b584e027a",
+      "head_branch": "feat/extended-c-c2-ledger-atomicity-2026-11-17",
+      "base": "7c349a6a818f2aafd21598e76d3eb8b9faa9a8ef",
+      "base_branch": "feat/extended-c-c1-identity-tenancy-2026-11-17"
+    },
+    {
+      "id": 14,
+      "title": "C1: secure identity, organizations, and governance",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "7c349a6a818f2aafd21598e76d3eb8b9faa9a8ef",
+      "head_branch": "feat/extended-c-c1-identity-tenancy-2026-11-17",
+      "base": "e492aeb24623476b05ad6d1ba9f4c9792e1bd105",
+      "base_branch": "feat/extended-c-c0-compat-2026-11-17"
+    },
+    {
+      "id": 13,
+      "title": "C0: isolated supported-runtime compatibility proof",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "e492aeb24623476b05ad6d1ba9f4c9792e1bd105",
+      "head_branch": "feat/extended-c-c0-compat-2026-11-17",
+      "base": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+      "base_branch": "feat/course-final-a3-freeze-2026-11-17"
+    },
+    {
+      "id": 12,
+      "title": "Course Final A3: as-built acceptance and reproducible release freeze",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+      "head_branch": "feat/course-final-a3-freeze-2026-11-17",
+      "base": "af2a405ebe893268c54f463ec37da6a37cf6b917",
+      "base_branch": "feat/course-final-a1-a2-2026-11-17"
+    },
+    {
+      "id": 11,
+      "title": "Course A1+A2: add image API and Twilio protocol acceptance",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "af2a405ebe893268c54f463ec37da6a37cf6b917",
+      "head_branch": "feat/course-final-a1-a2-2026-11-17",
+      "base": "2dd336ed39cecd417a8bce3388b303e688e95dee",
+      "base_branch": "feat/o14-academic-final-acceptance-2026-11-15"
+    },
+    {
+      "id": 10,
+      "title": "docs(academic): Course Final A exact execution specification, Luna-efficient A1/A2 build prompt and agent policy",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "4a137b8acb4d1dda486bf03a4151835613240fd5",
+      "head_branch": "docs/course-a-final-spec-build-handoff-2026-11-16",
+      "base": "ab32f3fc2aa9afa36953007ac147c0dba0f4e882",
+      "base_branch": "docs/orgresource2-research-continuity-2026-11-15"
+    },
+    {
+      "id": 9,
+      "title": "docs(academic): canonical full CSCI 180.05 requirements, 26-route contract, EERD and efficient agent policy",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "b0b648874608634ed8e113b0bc10ccc9a8be7284",
+      "head_branch": "docs/academic-canonical-requirements-2026-11-16",
+      "base": "3c2c2321acb069080706034e70782fe29abd0ca9",
+      "base_branch": "docs/orgresource2-research-continuity-2026-11-15"
+    },
+    {
+      "id": 8,
+      "title": "O14: interim academic baseline and release handoff",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "2dd336ed39cecd417a8bce3388b303e688e95dee",
+      "head_branch": "feat/o14-academic-final-acceptance-2026-11-15",
+      "base": "fd34a8a66242f795dda758d45f220f2c331472db",
+      "base_branch": "feat/o11-o13-system-acceptance-release-2026-11-15"
+    },
+    {
+      "id": 7,
+      "title": "docs(final): A-first course-complete + Extended C second — Codex master handoff and academic matrix",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "dfda6434450c3e57a621bf23373ce6f4f68aa148",
+      "head_branch": "docs/orgresource2-research-continuity-2026-11-15",
+      "base": "725ad0ad796b787bf63e67db728ff2882f6a7252",
+      "base_branch": "feat/o8-o10-academic-glass-ui-2026-11-15"
+    },
+    {
+      "id": 6,
+      "title": "O11 + O13: system acceptance and release packaging",
+      "state": "open",
+      "draft": false,
+      "merged_at": null,
+      "head": "fd34a8a66242f795dda758d45f220f2c331472db",
+      "head_branch": "feat/o11-o13-system-acceptance-release-2026-11-15",
+      "base": "725ad0ad796b787bf63e67db728ff2882f6a7252",
+      "base_branch": "feat/o8-o10-academic-glass-ui-2026-11-15"
+    },
+    {
+      "id": 5,
+      "title": "O8-O10: Academic Glass Commons functional UI",
+      "state": "open",
+      "draft": false,
+      "merged_at": null,
+      "head": "725ad0ad796b787bf63e67db728ff2882f6a7252",
+      "head_branch": "feat/o8-o10-academic-glass-ui-2026-11-15",
+      "base": "83b02ba01b367b1b6df537aa1652d93922faed48",
+      "base_branch": "feat/o6-o7-reminders-react-2026-11-15"
+    },
+    {
+      "id": 4,
+      "title": "O6–O7: safe reminders and Department/Resource UI",
+      "state": "open",
+      "draft": false,
+      "merged_at": null,
+      "head": "83b02ba01b367b1b6df537aa1652d93922faed48",
+      "head_branch": "feat/o6-o7-reminders-react-2026-11-15",
+      "base": "65829bcdcd5445d7ff88893032c6f82db6de357e",
+      "base_branch": "feat/o4-o5-allocation-expiry-2026-11-15"
+    },
+    {
+      "id": 3,
+      "title": "O4/O5: implement allocation lifecycle and expiry scheduler",
+      "state": "open",
+      "draft": false,
+      "merged_at": null,
+      "head": "65829bcdcd5445d7ff88893032c6f82db6de357e",
+      "head_branch": "feat/o4-o5-allocation-expiry-2026-11-15",
+      "base": "6ced417b0d1ab84fe4f88dceff5fdc79d2d4dd22",
+      "base_branch": "codex/o3-crud-integrity"
+    },
+    {
+      "id": 2,
+      "title": "O3: complete project, resource, and requirement CRUD",
+      "state": "open",
+      "draft": false,
+      "merged_at": null,
+      "head": "6ced417b0d1ab84fe4f88dceff5fdc79d2d4dd22",
+      "head_branch": "codex/o3-crud-integrity",
+      "base": "16e781c837dd7e1f0481fb7a01e49c27d80a91e8",
+      "base_branch": "main"
+    },
+    {
+      "id": 1,
+      "title": "O2: prepare one-click Java skeleton video demo (no agent needed)",
+      "state": "open",
+      "draft": true,
+      "merged_at": null,
+      "head": "89d61934b145a9139085d782dd4ddfc38f17b474",
+      "head_branch": "demo/o2-recording-kit-2026-11-14",
+      "base": "acc301992da820089ff9b2567ee095241cf8c307",
+      "base_branch": "main"
+    }
+  ],
+  "branches": [
+    {
+      "name": "audit/c8-93-route-evidence-reconciliation-2026-11-24",
+      "sha": "51b2bfff808a04800e6adba4f80811f35e7e0f06"
+    },
+    {
+      "name": "audit/c8-last29-policy-2026-11-23",
+      "sha": "235f23a1f9678f0073cd2172f717345ed1228d6a"
+    },
+    {
+      "name": "codex/o3-crud-integrity",
+      "sha": "6ced417b0d1ab84fe4f88dceff5fdc79d2d4dd22"
+    },
+    {
+      "name": "demo/o2-recording-kit-2026-11-14",
+      "sha": "89d61934b145a9139085d782dd4ddfc38f17b474"
+    },
+    {
+      "name": "deploy/northflank-c8-staging",
+      "sha": "32a4687bd745bfd37b547867e5a72ae1ea623794"
+    },
+    {
+      "name": "docs/academic-canonical-requirements-2026-11-16",
+      "sha": "b0b648874608634ed8e113b0bc10ccc9a8be7284"
+    },
+    {
+      "name": "docs/c6-source-and-publication-audit-2026-11-19",
+      "sha": "727c270f0a5f2d34bb3b049124d2d5cfca218f35"
+    },
+    {
+      "name": "docs/c8-legacy29-assertion-reconciliation-2026-11-24",
+      "sha": "f0cf2ace7623a38fda29ab6b209fcb898d8740a8"
+    },
+    {
+      "name": "docs/claude-local-execution-handoff-2026-11-24",
+      "sha": "60fed8ca69b7453d0a1b552a25958a34a39dc6e8"
+    },
+    {
+      "name": "docs/continuous-evidence-completeness-standard-2026-11-19",
+      "sha": "29efe86298431db16a780ae2e582b2276a699530"
+    },
+    {
+      "name": "docs/conversation-continuity-2026-11-14",
+      "sha": "b95a669209a6c027ba568ebf46084d5dc902ecc3"
+    },
+    {
+      "name": "docs/course-a-final-spec-build-handoff-2026-11-16",
+      "sha": "4a137b8acb4d1dda486bf03a4151835613240fd5"
+    },
+    {
+      "name": "docs/extended-c-efficient-evidence-orchestration-2026-11-19",
+      "sha": "6036f2d1a02aaecd6fa916c95718a3ee77083d80"
+    },
+    {
+      "name": "docs/orgresource2-research-continuity-2026-11-15",
+      "sha": "dfda6434450c3e57a621bf23373ce6f4f68aa148"
+    },
+    {
+      "name": "docs/superpowers-evidence-goat-router-2026-11-19",
+      "sha": "d794e8d2a9db1167729a54dcab844f03642d2c36"
+    },
+    {
+      "name": "feat/course-final-a1-a2-2026-11-17",
+      "sha": "af2a405ebe893268c54f463ec37da6a37cf6b917"
+    },
+    {
+      "name": "feat/course-final-a3-freeze-2026-11-17",
+      "sha": "7f8c0746da18fd54b47f430ac1435ac36e605d67"
+    },
+    {
+      "name": "feat/extended-c-c0-compat-2026-11-17",
+      "sha": "e492aeb24623476b05ad6d1ba9f4c9792e1bd105"
+    },
+    {
+      "name": "feat/extended-c-c1-identity-tenancy-2026-11-17",
+      "sha": "7c349a6a818f2aafd21598e76d3eb8b9faa9a8ef"
+    },
+    {
+      "name": "feat/extended-c-c2-ledger-atomicity-2026-11-17",
+      "sha": "c8b6e76c249f99f3642c1513ddd7d55b584e027a"
+    },
+    {
+      "name": "feat/extended-c-c3-course-parity-2026-11-18",
+      "sha": "95439de8492ef1a8192afc8b4ec45b981c99b032"
+    },
+    {
+      "name": "feat/extended-c-c4-connected-react-2026-11-18",
+      "sha": "3c0d677e37fb4df883d8eeb075ba14a773c90c8f"
+    },
+    {
+      "name": "feat/extended-c-c5-release-recovery-2026-11-18",
+      "sha": "9755ef63bd4c02a7042cb48823bf759e609357cd"
+    },
+    {
+      "name": "feat/extended-c-c6a-independent-acceptance-2026-11-19",
+      "sha": "856f73baeb76cab09f880ac1a3ca64c649eb481e"
+    },
+    {
+      "name": "feat/extended-c-c7-security-privacy-2026-11-19",
+      "sha": "b4ca5cd1b8a2a128f997f4dbd5e6848cf2b39d0b"
+    },
+    {
+      "name": "feat/extended-c-c8-domain-workflows-2026-11-19",
+      "sha": "45bcdfc7285598de3fe98684448aa65b5dd47e12"
+    },
+    {
+      "name": "feat/o4-o5-allocation-expiry-2026-11-15",
+      "sha": "65829bcdcd5445d7ff88893032c6f82db6de357e"
+    },
+    {
+      "name": "feat/o6-o7-reminders-react-2026-11-15",
+      "sha": "83b02ba01b367b1b6df537aa1652d93922faed48"
+    },
+    {
+      "name": "feat/o8-o10-academic-glass-ui-2026-11-15",
+      "sha": "725ad0ad796b787bf63e67db728ff2882f6a7252"
+    },
+    {
+      "name": "feat/o11-o13-system-acceptance-release-2026-11-15",
+      "sha": "fd34a8a66242f795dda758d45f220f2c331472db"
+    },
+    {
+      "name": "feat/o14-academic-final-acceptance-2026-11-15",
+      "sha": "2dd336ed39cecd417a8bce3388b303e688e95dee"
+    },
+    {
+      "name": "main",
+      "sha": "16e781c837dd7e1f0481fb7a01e49c27d80a91e8"
+    },
+    {
+      "name": "test/c8-all-post-csrf-origin-gate-2026-11-24",
+      "sha": "64d44cb6d64027b2e26860f250a255b4fa3c0e1a"
+    },
+    {
+      "name": "test/c8-identity20-assertion-reconciliation-2026-11-24",
+      "sha": "763542d4bd1f0fd6d21ba373bc28d54b23a0126d"
+    },
+    {
+      "name": "test/c8-inventory33-assertions-lead-options-2026-11-24",
+      "sha": "bb343058694ffa2c543e094cd425362baed6860d"
+    },
+    {
+      "name": "test/c8-legacy-workspace-role-boundary-2026-11-23",
+      "sha": "ca046b9c21bfc590abbe363370206c7922df836b"
+    },
+    {
+      "name": "test/c8-live-membership-switch-revocation-2026-11-24",
+      "sha": "921b95176036e4bb69828d13cb3e45a4a45523ef"
+    },
+    {
+      "name": "test/c8-movement-identity-reconciliation-2026-11-24",
+      "sha": "b772613a02f4f8fa3e43238259d062188cc2a4c4"
+    },
+    {
+      "name": "test/c8-postflight-negative-reproductions-2026-11-24",
+      "sha": "785d89d8ad386ddb1637b872c0e2cff73face613"
+    },
+    {
+      "name": "test/c8-project-work-denied-sql-2026-11-24",
+      "sha": "f0f670f65a9f706713591d94d19f4700fa2e3084"
+    },
+    {
+      "name": "test/c9-encrypted-c5-archive-recovery-2026-11-24",
+      "sha": "09e3e5a0b2a1e87132c8f7ba9fb44ab1c50de2c0"
+    },
+    {
+      "name": "test/c9-intermediate-backup-restore-capacity-2026-11-24",
+      "sha": "a7c4ec8192997d38f97a5ed942f1e3cea710f72e"
+    },
+    {
+      "name": "test/c9-isolated-mysql-query-plan-probe-2026-11-24",
+      "sha": "14416f069f654c7d2db2b8c2908aab6cc2b05557"
+    },
+    {
+      "name": "test/c9-local-full-mixed-recovery-2026-11-25",
+      "sha": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1"
+    },
+    {
+      "name": "test/c9-local-mixed-preparation-2026-11-24",
+      "sha": "406ce2af1c4905bf7b845bcc072f71903327e0a1"
+    },
+    {
+      "name": "test/c9-local-operator-gated-import-2026-11-25",
+      "sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6"
+    },
+    {
+      "name": "test/c9-local-original-transport-2026-11-24",
+      "sha": "c91333766f3082b88a8c0414450dcaf6fc934ca2"
+    },
+    {
+      "name": "test/c9-native-inventory-page-balance-plan-2026-11-24",
+      "sha": "720df01be34110038af6422443434c66fbde8d65"
+    },
+    {
+      "name": "test/c9-network-isolated-mysql-cross-server-restore-2026-11-24",
+      "sha": "be91d557d4f19d38c759ca77aaa151e793c125fe"
+    },
+    {
+      "name": "test/c9-recovered-application-2026-11-24",
+      "sha": "b62ff3c65552b258291ed52f85e9c1413c5e63fa"
+    }
+  ],
+  "issues": [
+    {
+      "id": 50,
+      "title": "Canonical OrgResource project-wide continuity — every chat and pre-Claude queue",
+      "state": "open"
+    },
+    {
+      "id": 34,
+      "title": "C8 exit gate: reconcile 93 route-level authorization receipts and obtain independent sign-off",
+      "state": "open"
+    },
+    {
+      "id": 30,
+      "title": "CI-BLOCKER: all three Actions jobs fail before steps on C8 authorization test PR",
+      "state": "closed"
+    },
+    {
+      "id": 27,
+      "title": "DEC-D01 (proposal): primary department per membership, cross-dept resource catalog, scoped Project needs/requests",
+      "state": "open"
+    },
+    {
+      "id": 26,
+      "title": "P0: Safely populate existing Northflank deployment with exact approved 96-organization synthetic demo",
+      "state": "open"
+    }
+  ],
+  "tree_snapshots": [
+    {
+      "id": "active_implementation",
+      "ref": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+      "tree_response_sha": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+      "blobs": 786,
+      "indexed_blobs": 556,
+      "truncated": false
+    },
+    {
+      "id": "claude_handoff_before_global_index",
+      "ref": "6ff1f2cebc69d3c490f6f469c6d3b119e04d6758",
+      "tree_response_sha": "6ff1f2cebc69d3c490f6f469c6d3b119e04d6758",
+      "blobs": 795,
+      "indexed_blobs": 565,
+      "truncated": false
+    },
+    {
+      "id": "early_conversation",
+      "ref": "b95a669209a6c027ba568ebf46084d5dc902ecc3",
+      "tree_response_sha": "b95a669209a6c027ba568ebf46084d5dc902ecc3",
+      "blobs": 406,
+      "indexed_blobs": 186,
+      "truncated": false
+    },
+    {
+      "id": "unified_research",
+      "ref": "dfda6434450c3e57a621bf23373ce6f4f68aa148",
+      "tree_response_sha": "dfda6434450c3e57a621bf23373ce6f4f68aa148",
+      "blobs": 569,
+      "indexed_blobs": 343,
+      "truncated": false
+    },
+    {
+      "id": "academic_authority",
+      "ref": "b0b648874608634ed8e113b0bc10ccc9a8be7284",
+      "tree_response_sha": "b0b648874608634ed8e113b0bc10ccc9a8be7284",
+      "blobs": 560,
+      "indexed_blobs": 334,
+      "truncated": false
+    },
+    {
+      "id": "academic_execution",
+      "ref": "4a137b8acb4d1dda486bf03a4151835613240fd5",
+      "tree_response_sha": "4a137b8acb4d1dda486bf03a4151835613240fd5",
+      "blobs": 574,
+      "indexed_blobs": 348,
+      "truncated": false
+    },
+    {
+      "id": "router",
+      "ref": "d794e8d2a9db1167729a54dcab844f03642d2c36",
+      "tree_response_sha": "d794e8d2a9db1167729a54dcab844f03642d2c36",
+      "blobs": 699,
+      "indexed_blobs": 469,
+      "truncated": false
+    },
+    {
+      "id": "c6_audit",
+      "ref": "727c270f0a5f2d34bb3b049124d2d5cfca218f35",
+      "tree_response_sha": "727c270f0a5f2d34bb3b049124d2d5cfca218f35",
+      "blobs": 723,
+      "indexed_blobs": 493,
+      "truncated": false
+    },
+    {
+      "id": "staging",
+      "ref": "32a4687bd745bfd37b547867e5a72ae1ea623794",
+      "tree_response_sha": "32a4687bd745bfd37b547867e5a72ae1ea623794",
+      "blobs": 733,
+      "indexed_blobs": 503,
+      "truncated": false
+    },
+    {
+      "id": "frozen_course_A",
+      "ref": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+      "tree_response_sha": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+      "blobs": 504,
+      "indexed_blobs": 277,
+      "truncated": false
+    },
+    {
+      "id": "early_o2_demo",
+      "ref": "89d61934b145a9139085d782dd4ddfc38f17b474",
+      "tree_response_sha": "89d61934b145a9139085d782dd4ddfc38f17b474",
+      "blobs": 378,
+      "indexed_blobs": 158,
+      "truncated": false
+    },
+    {
+      "id": "r06b3a_candidate",
+      "ref": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+      "tree_response_sha": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+      "blobs": 787,
+      "indexed_blobs": 6,
+      "truncated": false,
+      "coverage": "incremental candidate delta only"
+    }
+  ],
+  "index_unique_path_blob_versions": 953,
+  "coverage_limit": "All listed refs captured as metadata; recursive trees inspected for eleven anchor refs. All other branch-tip contents can be reopened from exact refs. Not a full historical commit-DAG traversal or semantic audit. Excludes uploaded original course files, binaries/screenshots/raw artifacts and potential private payload paths from duplicated index. No access to every chat transcript.",
+  "incremental_index": {
+    "path": "09_INCREMENTAL_SOURCE_INDEX.csv",
+    "base_index": "03_DOCUMENT_VERSION_INDEX.csv",
+    "from": "17bd5bf05dba9481a5aff14af1bdb6654f0505b6",
+    "to": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+    "changed_path_blob_versions": 6,
+    "coverage": "Exact active tree compared; unchanged entries are covered by previous base. New handoff docs are separate live branch; index metadata only. Do not treat 953 initial indexed versions as current exhaustive count."
+  },
+  "latest_scoped_observation": {
+    "date": "2026-11-25 PHT",
+    "handoff_parent": "c446e701a55b7f723967a73c9ad77ae0bec27097",
+    "pr53": "d2cf2fa7da1fb71ab1c8bd3ab2029dea320beb12",
+    "pr54": "9646ff743c6678af90aa357ee761ac11ed366dff",
+    "pr55": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
+    "pr56": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "coverage": "Report57 exact main/PR tree equality, PR CI actual all3, main separate CI unverified",
+    "candidate_runs": [],
+    "actual_runs": [
+      [
+        45491538911,
+        "Verify",
+        "completed",
+        "success"
+      ],
+      [
+        45493345989,
+        "R07-R08 isolated preparation",
+        "completed",
+        "success"
+      ],
+      [
+        45493192571,
+        "Verify",
+        "completed",
+        "failure"
+      ],
+      [
+        45494597313,
+        "R07-R08 isolated preparation",
+        "completed",
+        "success"
+      ],
+      [
+        45493345999,
+        "Verify",
+        "completed",
+        "success"
+      ],
+      [
+        45493392042,
+        "Verify",
+        "completed",
+        "success"
+      ],
+      [
+        45494597345,
+        "Verify",
+        "completed",
+        "success"
+      ]
+    ],
+    "job_receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768924,
+        "job": 138992173040,
+        "oracle": "exact corrected source full Extended Linux regression, attempt2",
+        "actual": "93 registered routes once; 103 Maven/78 identity and corrected 8 import guard cases, zero failures/errors/skips; 60 Newman requests/110 assertions, 19 Playwright; actual deadlock rollback/retry/replay; distinct JVM response-loss and reminder restart, independent C5 1039696 bytes exact non-session rows and empty sessions; 15 archive refusals, 10 local prechecks, public original-only metadata/API/browser/grants and SQL aggregate/projection controls, all cleanup; 450+75 packaged serial HTTP, JAR 72486427 bytes SHA256 76e5977499edb6a01a0c6de95ce166c2975d08f70bcdbd57680049d1af32c10a"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768785,
+        "job": 138991124364,
+        "oracle": "exact corrected source dedicated fresh-schema tests",
+        "actual": "six groups, seven method executions, zero failures/errors/skips, six cleanups, 450 measured+75 warmups, 3 fresh schema/JVM invocations, final R0708_PREPARATION_OK"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768924,
+        "job": 138992175595,
+        "oracle": "exact frozen Java8 regression",
+        "actual": "61 Maven, 100 Newman requests/151 assertions, one packaged Playwright; zero failures/errors/skips"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768924,
+        "job": 138992174413,
+        "oracle": "exact React regression",
+        "actual": "3 test files/15 tests, typecheck/lint/build success"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+        "run": 45550768892,
+        "job": 138991124431,
+        "oracle": "exact corrected source Windows Java21 DB-free guard suite",
+        "actual": "WINDOWS_GUARD_SOURCE exact SHA; Temurin 21.0.13; C8HostedDemoImportCommandTest 8, C8HostedDemoPostflightTest 3, C8HostedDemoPreflightTest 3, C8HostedOriginalBaselineTest 3; total 17, failures/errors/skips 0, BUILD SUCCESS, job success"
+      }
+    ],
+    "next_action": "20 non-full privacy reviews (12 ranges/8 metadata); prioritize flagged incomplete paths, G01 residual assertions and independent review; H01 consent/H02–H06 accepted native successor; L06 HOLD/no WSL.",
+    "pr57": "c7ed762f1cfb1f5603d9e34028653f072c877773",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "native_harness": "72de0c106621dabc26a63390003f46c86d63b066",
+    "merged": true,
+    "historical_scope": "Prior Report52 corrected R09 receipts; not current dispatch authority"
+  },
+  "exact_main_postmerge_receipt": {
+    "sha": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "run": 45576702774,
+    "status": "VERIFIED_BOUNDED",
+    "jobs": [
+      {
+        "job": 139076319203,
+        "actual": "61 Maven; 100/151 Newman; separate standalone 4/9; one packaged browser; 120-file candidate and cleanup"
+      },
+      {
+        "job": 139076319540,
+        "actual": "15 tests, lint/typecheck/build"
+      },
+      {
+        "job": 139076319641,
+        "actual": "103 Maven/78 identity, 38 frontend, 60/110 Newman, 19 Playwright, actual deadlock/restart/C5/R08/public SQL and cleanup"
+      }
+    ],
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
+    "report_ref": "b2310af2d90215e7f7bf794c22e0b07d1a54a94f",
+    "next_action": "Complete remaining H01–H06 transitive method-body/SQL/runtime review and prepare authorized harness-only successor and fictional native tests; obtain explicit retention/transfer and independent/owner acceptance before L06. Complete remaining semantic privacy/rights review of integration paths, prepare G01 route-factor review, decide CPX only after P0/approval. Keep Claude paused and L06 HOLD. Exact-main CI evidence now bounded verified."
+  },
+  "current_postlocal_checkpoint": {
+    "handoff_ref": "0f116e2a5be8f04dad66ac7f1b28efe6aad31419",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "main_ci": 45576702774,
+    "dispatch_hold": true,
+    "scope": "66 full/12 ranges/8 metadata/0 unread; 13 flagged paths; 91 prior events schema-valid",
+    "next": "20 non-full privacy reviews (12 ranges/8 metadata); prioritize flagged incomplete paths, G01 residual assertions and independent review; H01 consent/H02–H06 accepted native successor; L06 HOLD/no WSL.",
+    "tree": "192e38f2e8b6b08806974507e324e390062dab43"
+  },
+  "g01_pagination_candidate": {
+    "observed_date": "2026-11-26 PHT",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "handoff_parent": "be54e415488d89ab204c8338ffd40fab458128ad",
+    "branch": "test/g01-pagination-residual-2026-11-26",
+    "head": "9208f29a7877ea7e5d51a5cc0ed72d67dafe0624",
+    "pr": 58,
+    "pr_state": "draft open",
+    "run": 45702182390,
+    "run_state": "in_progress at observation",
+    "changed_paths": [
+      "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java"
+    ],
+    "coverage": "scoped live refs, not full refreshed repository inventory"
+  },
+  "h02_receipt_candidate": {
+    "observed_date": "2026-11-26 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "334e08a3849665a0b086dc928c721b18e6fb0a22",
+    "tree": "8ff963228bd6455f8cff1be62c2380abbdd07a2f",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/103_H02_RECEIPT_BINDING_CANDIDATE.md",
+    "report_ref": "ae910a70aead4ae9ecd2b6ca2bd07331bd80e22f",
+    "coverage": "Scoped live refs; 29 added harness-only paths, no native acceptance"
+  },
+  "h02_runtime_copy_candidate": {
+    "observed_date": "2026-11-26 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "e6eabe0e1682f6a2d8a64e6fd721d1b6b45e043f",
+    "tree": "67b7955767670e854a18dde0ff2e2a65ef01a87e",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/104_H02_RUNTIME_COPY_AND_INTAKE_CANDIDATE.md",
+    "report_ref": "483059014786219ab86d49cc09ce475c1b8be70a",
+    "coverage": "Scoped live refs; 32 added harness-only paths; portable tests actual, native acceptance open"
+  },
+  "h03_journal_candidate": {
+    "observed_date": "2026-11-26 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "88284bb3f1886d23b15a382d904d7b6244d2cd67",
+    "tree": "d46c7b946422fec7af40ebf3e738e21352d8fbfc",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/105_H03_OWNERSHIP_JOURNAL_PORTABLE_RECEIPT.md",
+    "report_ref": "553241a20f569bef5a76f8fd1c5f27476cf62908",
+    "coverage": "Scoped live refs; 34 added harness-only paths; portable tests actual, native integration incomplete"
+  },
+  "h03_native_identity_candidate": {
+    "observed_date": "2026-11-26 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "7409ee9ab82a60c2f2133b7d7fd8af96d1cabade",
+    "tree": "8fb1637f5f24b1f984b7911651f5aa3adee7f746",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/106_H03_NATIVE_IDENTITY_AND_RECOVERY_QUARANTINE.md",
+    "report_ref": "405a5bbdf8b48272ce4e6c8e6f4c7ba3bf466170",
+    "coverage": "35 added harness-only paths; source-only; native NOT_RUN"
+  },
+  "h03_control_lock_bridge_candidate": {
+    "observed_date": "2026-11-26 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "f16f5e30f3e45bf1e2893ac79c1f1c492eb2fd16",
+    "tree": "9893d71857bfb658fa07e06eb1a399de87171722",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/107_H03_CONTROL_LOCK_AND_JOURNAL_BRIDGE.md",
+    "report_ref": "dd906ff0e0344fd64f8cb9ac59be899359683d87",
+    "coverage": "39 added harness-only paths; source-only, native/portable new tests NOT_RUN"
+  },
+  "h03_parent_publication_candidate": {
+    "observed_date": "2026-11-26 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "0501d5f596ed4e2dfce813126479a9eedf6a8e18",
+    "tree": "54bfb0a7ee902842c907ee952908587fd0e5af05",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/108_H03_PARENT_ONLY_JOURNAL_PUBLICATION.md",
+    "report_ref": "5fb381b517dad454b295e79d105b6327ce47271f",
+    "coverage": "43 added harness-only paths; source-only, native/new portable tests NOT_RUN"
+  },
+  "h03_intent_first_producer_candidate": {
+    "observed_date": "2026-11-26 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "e052d7032841d39465813ecad334ba10abbaf887",
+    "tree": "df1c816e5bffb3ed58b54143978a9133047ec53a",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/109_H03_INTENT_FIRST_WORK_AND_PROFILE_PRODUCER.md",
+    "report_ref": "0b18c1fe46d66a879bb997ba0a570614c1e65cd2",
+    "coverage": "46 added harness-only paths; source-only, native tests NOT_RUN"
+  },
+  "h03_profile_storage_dos_observation_candidate": {
+    "observed_date": "2026-11-26 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "b0ccbc8572e670655e8bd3fb103ce67d633e6e61",
+    "tree": "3e7f6644d47a4afb9539e4c55406abfa9a5cb71d",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/110_H03_PROFILE_STORAGE_AND_DOS_NAMESPACE_OBSERVATION.md",
+    "report_ref": "b160e823de5e3a349e6aaee1c3f3f6f1b00b1fa2",
+    "coverage": "49 added harness-only paths; source-only, native NOT_RUN"
+  },
+  "h03_v2_durable_binding_fixture_correction_candidate": {
+    "observed_date": "2026-11-26 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "1115c65faee9db6f85f399387086d515f8c1b9d3",
+    "tree": "03cca78f7394bbb1984641011455b8e665bdeca2",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/111_H03_DURABLE_OBSERVATION_BINDING_AND_FIXTURE_CORRECTION.md",
+    "report_ref": "9e8402f3bd5bbe5632cf88861fe722b21ed7b3dc",
+    "coverage": "52 added harness-only paths; source-only, native and new portable NOT_RUN"
+  },
+  "h03_v2_parent_profile_evidence_candidate": {
+    "observed_date": "2026-11-27 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "578855bfe04c8786088a1dfc76cf8cfa0626d9d0",
+    "tree": "403452f543e49489175e96b85f06f9bfffbb0a2c",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/112_H03_V2_PARENT_AND_PROFILE_EVIDENCE_INTEGRATION.md",
+    "report_ref": "2862f809fda036e7a23338450d54d60167316dd1",
+    "coverage": "55 added harness-only paths; source-only, native and new portable NOT_RUN"
+  },
+  "h01_a_retention_data_contract_candidate": {
+    "observed_date": "2026-11-27 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "63fbbc14e6b42f1660d4655c08028b230f230996",
+    "tree": "0d28b1040ea89196c5695cb2cd7cfdcba038b152",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/113_H01_A_RETENTION_DATA_CONTRACT.md",
+    "report_ref": "56e61deac281913e7718bfd5bd2f85c9f8f66aea",
+    "coverage": "57 added harness-only paths; eight new portable methods NOT_RUN"
+  },
+  "h01_a_observation_and_fictional_stage_candidate": {
+    "observed_date": "2026-11-27 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "93cb76846eaabd846dde44dff1a7030c44a0f3a5",
+    "tree": "58e066a26d829d5b06084a6e6da945a197653104",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/114_H01_A_OBSERVATION_BINDING_AND_FICTIONAL_STAGING.md",
+    "report_ref": "23ef65987744347e44c6d2142582133d6aa85c4a",
+    "coverage": "61 added harness-only paths; nine new portable methods/native stage fixture NOT_RUN"
+  },
+  "h05_scoped_equality_and_retention_receipt_candidate": {
+    "observed_date": "2026-11-27 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "8c2a79694943a9eabdb9efd3cea8dc40e4358f90",
+    "tree": "ddfb2a83d1c7a5077c9701dc9fac73bb30097fb5",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/115_H05_SCOPED_EQUALITY_AND_RETENTION_PORTABLE_RECEIPTS.md",
+    "report_ref": "ea673de6d7371ae8186e47c14d47de652810f88e",
+    "coverage": "63 harness-only additions; H05 native NOT_RUN; H01-A 17 portable actual passed after observed syntax correction"
+  },
+  "h06_native_lifecycle_and_login_quarantine_candidate": {
+    "observed_date": "2026-11-27 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "d04308570d2e5e8c89ce2c9f9a97bad16e24c0dd",
+    "tree": "effb1f5aade0ea0a0b9794291abaf2d33e535a4d",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/116_H06_NATIVE_LIFECYCLE_AND_LOGIN_QUARANTINE.md",
+    "report_ref": "865749a1e6fa7279bfc1a9d3fb2ebfee315e1ab2",
+    "coverage": "66 harness-only additions; H06 native and three fixtures NOT_RUN; both transport functions quarantined"
+  },
+  "h06_guard_login_custody_h03_directory_share_candidate": {
+    "observed_date": "2026-11-27 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "51b1aa2160011f53af2d1d9fd7eff4149e90c6ee",
+    "tree": "9401e037441d517cf499e44fe147d8a2d67d2ae8",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/117_H06_GUARD_AND_LOGIN_CUSTODY_H03_DIRECTORY_SHARING.md",
+    "report_ref": "53716c53fae6c410fb93df107d08d46a6adfa361",
+    "coverage": "69 harness-only additions; 14 Windows-only spies and two native fixtures NOT_RUN; both transport functions quarantined"
+  },
+  "h06_dedicated_owned_job_probe_candidate": {
+    "observed_date": "2026-11-27 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "a1b07705dbe58b56f64846977d71b429ce8f32c5",
+    "tree": "7d1d76ad3a8a9e5b458e57a6b73a2eecc804c085",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/118_H06_DEDICATED_OWNED_JOB_WATCHDOG_PROBE.md",
+    "report_ref": "779caf6b4260b03b79f562492efdacc41053dd42",
+    "coverage": "71 harness-only additions; five fixed native modes and refusal/sentinel fixture NOT_RUN; no complete descendant termination claim; transport quarantined"
+  },
+  "h03_journal_worker_quarantine_candidate": {
+    "observed_date": "2026-11-27 PHT",
+    "branch": "verify/windows-l06-successor-20261126",
+    "head": "b762c4195393ae92e03ee149531ca0ab944f438b",
+    "tree": "1c197e71191848d8336a3578c3393036f799f1ba",
+    "approved_source": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "75bbc99ceb4d5be3b1c1def1e80abb3509a287fb",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/119_H03_JOURNAL_WORKER_TRANSPORT_QUARANTINE.md",
+    "report_ref": "fee312d5a4ea33fad63fbe50320338153a9502fc",
+    "coverage": "72 harness-only additions; four native transport scenarios NOT_RUN; ordinary Process.Start not owned job; both entrypoints/transport quarantined"
+  },
+  "packaging_byte_guard_candidate": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/130_PACKAGE_INTEGRATION_WINDOWS_ARCHIVE_FAILURE_AND_R038_RECEIPT.md",
+    "ref": "8dc1d7417ea95df2e0036e6cbc464fefab096c10",
+    "pr59": {
+      "head": "86d3c53b8668f5cf25beb9045a53c82aaec564b0",
+      "run": 46025850327,
+      "job": 140596932270
+    },
+    "pr60": {
+      "head": "5e013a87386d151e215ac131a14652c465aa05c2",
+      "state": "HISTORICAL_REFERENCE_ONLY"
+    },
+    "pr58": {
+      "head": "196bd6f0721ff429dfec66172aa23cc412904f04",
+      "run": 46021269467,
+      "job": 140581213550
+    },
+    "state": "CANDIDATE",
+    "next": "PR59 corrected-head Verify terminal success; no repeat absent drift. H03 one-shot transport candidate compiled/parser passed, native four cases NOT_RUN. Advance independent eligible harness source/product residuals; approved nonadmin disposable NTFS root/trusted Python required for native fixture. Verify inheritance, child denial, termination and terminal intent settlement before real journal integration. Existing runner/recovery quarantined; H06 credential lifecycle separate, full native package/private L06/P0/L07/independent/privacy/student gates unchanged; no merge/release.",
+    "latest_report": "docs/handoffs/claude-local-execution-2026-11-24/132_H03_OWNED_FICTIONAL_TRANSPORT_PRELAUNCH_INTENT.md",
+    "extended_actual": {
+      "sha": "86d3c53b8668f5cf25beb9045a53c82aaec564b0",
+      "run": 46025850327,
+      "job": 140596932152,
+      "state": "VERIFIED_BOUNDED"
+    }
+  },
+  "harness_compile_closure_actual": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/131_HARNESS_COMPILE_CLOSURE_AND_COURSE_A_RECEIPT.md",
+    "ref": "ed8737141ef8fab75fd61e80ce5985d4491d6fd0",
+    "harness_sha": "b762c4195393ae92e03ee149531ca0ab944f438b",
+    "workflow_sha": "b616b98ab254e674df218adbdd3f9ee864531a26",
+    "run": 46026796372,
+    "job": 140600160882,
+    "files": 13,
+    "state": "VERIFIED_BOUNDED",
+    "next": "Consume PR59 Extended terminal actual receipt; 13-file compile closure and Course A/React/33 focused packaging checks verified bounded, no repeat absent drift. Advance H03 owned suspended worker transport, explicit inherited handles, descendant termination witness and durable launch uncertainty; H06 credential lifecycle separate. Existing runner/recovery/ordinary Process.Start transport quarantined. Native/private/P0/independent/rights/privacy/student gates unchanged; no merge/release."
+  },
+  "h03_owned_transport_prelaunch_candidate": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/132_H03_OWNED_FICTIONAL_TRANSPORT_PRELAUNCH_INTENT.md",
+    "ref": "12fc9d14a74a08387011bcac742e3949397a4618",
+    "harness_sha": "e41b29da8a64ddab8b34588e837f97555121385c",
+    "workflow_sha": "886d5153a08ca91241a43c67e3f2df1943eb2b63",
+    "run": 46027691895,
+    "job": 140603211507,
+    "files": 13,
+    "state": "CANDIDATE",
+    "native_effects": "NOT_RUN",
+    "next": "Consume PR59 Extended terminal actual receipt; H03 one-shot owned transport candidate compiled and fixture parsed, four native modes NOT_RUN. Advance actual native fixture only under approved nonadmin disposable NTFS root with trusted Python pin; verify child-creation denial, inheritance/termination witness and safe terminal intent settlement before integrating real journal. H06 credential lifecycle separate; advance independent eligible work rather than repeat compile/fixture checks. Legacy runner/recovery quarantined; private/P0/independent/rights/privacy/student gates unchanged; no merge/release."
+  },
+  "g01_r038_disconnect_candidate": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/133_R038_ISOLATED_MYSQL_DISCONNECT_RECOVERY_CANDIDATE.md",
+    "ref": "8cef9aa6bbbe66a75de53b604dacf476b7aad18f",
+    "pr58": {
+      "head": "4545fdd81a09772f1ac667af9a0f0c034b9e31ee",
+      "base": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+      "run": 46028645015,
+      "job": 140606463099
+    },
+    "state": "VERIFIED_BOUNDED",
+    "next": "R038 actual isolated service disconnect verified bounded, alongside prior lock and permission denial; PR58 all three CI jobs passed, PR59 corrected-head all four passed. No repeat absent drift. H03 child restriction candidate c8ae807 exact 13-file compile and fixture parser passed, five native cases NOT_RUN. Advance H03 native inheritance/child denial/termination and safe terminal intent settlement only with approved nonadmin disposable NTFS root and trusted Python; H06 credential lifecycle separate. Advance independent eligible work, full native package/private L06/P0/L07/93 independent/13 privacy/student gates unchanged, no merge/release.",
+    "actual_report": "docs/handoffs/claude-local-execution-2026-11-24/134_R038_DISCONNECT_ACTUAL_AND_H03_CHILD_RESTRICTION.md",
+    "actual_ref": "99a8d263d7ccd1ddaed4aea7634507e511b4d369"
+  },
+  "h03_child_restriction_candidate": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/134_R038_DISCONNECT_ACTUAL_AND_H03_CHILD_RESTRICTION.md",
+    "ref": "99a8d263d7ccd1ddaed4aea7634507e511b4d369",
+    "harness_sha": "c8ae80775cfcc6495efe90b5170a81d015f9ce33",
+    "workflow_sha": "7fb1dd2802276d931619061051170bf0b811c951",
+    "run": 46034959927,
+    "job": 140627908959,
+    "state": "CANDIDATE",
+    "compile": "VERIFIED_BOUNDED",
+    "native_effects": "NOT_RUN",
+    "next": "R038 actual isolated service disconnect verified bounded, alongside prior lock and permission denial; PR58 all three CI jobs passed, PR59 corrected-head all four passed. No repeat absent drift. H03 child restriction candidate c8ae807 exact 13-file compile and fixture parser passed, five native cases NOT_RUN. Advance H03 native inheritance/child denial/termination and safe terminal intent settlement only with approved nonadmin disposable NTFS root and trusted Python; H06 credential lifecycle separate. Advance independent eligible work, full native package/private L06/P0/L07/93 independent/13 privacy/student gates unchanged, no merge/release."
+  },
+  "h06_fixed_file_custody_candidate": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/135_H06_EXCLUSIVE_FIXED_FILE_CUSTODY_CANDIDATE.md",
+    "ref": "06160426f6671f022912fa0e75b0200bd762df1e",
+    "harness_sha": "96df9bae738e10b8eb542266401a485e270ec4a4",
+    "workflow_sha": "52d1b3f3a3400b3477390c480f09432d25464f5c",
+    "run": 46038389957,
+    "job": 140639532350,
+    "state": "CANDIDATE",
+    "compile": "VERIFIED_BOUNDED",
+    "native_effects": "NOT_RUN",
+    "next": "H06 exclusive fixed fictional file creation/custody candidate exact 96df9bae compiled 13 C# and parsed both native fixtures, five new H06 scenarios NOT_RUN. Advance independent eligible H06 editor/ConPTY and role custody/connect/revoke/cleanup engineering; actual native fixture only under approved nonadmin disposable owner-only NTFS root and pinned trusted tools. H03 actual inheritance/child denial/termination and durable terminal intent settlement before real journal integration. R038 and packaging receipts retained, no repeat absent drift. Full native package/private L06/P0/L07/93 independent/13 privacy/student gates unchanged, no merge/release."
+  },
+  "h06_full_login_inventory_candidate": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/136_H06_FULL_LOGIN_INVENTORY_AND_REGRESSION_RECEIPTS.md",
+    "ref": "49d66ed3de5a1669b29f4bed2e0bd68a742f0b8c",
+    "harness_sha": "161a93e53ed5d1bf9042ac75d27a065cd0f311c8",
+    "prior": "96df9bae738e10b8eb542266401a485e270ec4a4",
+    "state": "CANDIDATE",
+    "native_effects": "NOT_RUN",
+    "receipt": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "161a93e53ed5d1bf9042ac75d27a065cd0f311c8",
+      "oracle": "Pure Python masked inventory and unchanged refusal",
+      "actual": "11/11 pass (4 new, 7 prior), direct exit1 exact refusal; native effects NOT_RUN",
+      "blobs": [
+        "8686e2012d1bc15cd217f268ac1906afb779aa58",
+        "d56b7d57a96da8b8161f744d38f0935a670dfcb9",
+        "ca1193565bce7352db392b82b6db7093f5d881da"
+      ]
+    },
+    "automatic_receipts": [
+      {
+        "run": 46038389937,
+        "sha": "52d1b3f3a3400b3477390c480f09432d25464f5c",
+        "jobs": [
+          140639532285,
+          140639532623,
+          140639532737
+        ],
+        "state": "VERIFIED_BOUNDED"
+      },
+      {
+        "runs": [
+          46038390054,
+          46038389950
+        ],
+        "sha": "b762c4195393ae92e03ee149531ca0ab944f438b",
+        "jobs": [
+          140639533135,
+          140639532204
+        ],
+        "state": "VERIFIED_BOUNDED"
+      }
+    ],
+    "next": "H06 role-bound full login inventory oracle exact 161a93e5, 4 new +7 prior pure tests actual pass, direct helper refusal unchanged. Earlier pinned automatic 14+41 and full Verify terminal success; no new native acceptance. Advance fictional ConPTY bounded independent transport, same-file identity binding, exact role-visible path/ACL and contained SQL proof/revoke/cleanup under approved nonadmin disposable NTFS root with pinned tools; H03 actual inheritance/child denial/termination and terminal intent settlement prerequisites. No rerun absent drift; full native package/private L06/P0/L07/93 independent/13 privacy/student gates unchanged, no merge/release."
+  },
+  "h06_fictional_conpty_candidate": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/137_H06_FICTIONAL_CONPTY_SOURCE_AND_COMPILE_RECEIPT.md",
+    "ref": "01330a77b4483447edd46156d8ffa5908ee1382a",
+    "sha": "a0b76f05f54bdfab53a894da2796e7de7b227074",
+    "prior": "161a93e53ed5d1bf9042ac75d27a065cd0f311c8",
+    "state": "CANDIDATE",
+    "receipt": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "a0b76f05f54bdfab53a894da2796e7de7b227074",
+      "run": 46058439663,
+      "job": 140706549339,
+      "oracle": "Exact 14 C# source files compile and three PowerShell fixture scripts parse",
+      "actual": "Four success markers, native_effects_not_run=true"
+    },
+    "automatic_receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "15cc87c64d7bb4637ccb0303c19f71dc42855427",
+        "runs": [
+          46044195039,
+          46044194949,
+          46044195126,
+          46044194938
+        ],
+        "jobs": [
+          140659225639,
+          140659225362,
+          140659225803,
+          140659225837,
+          140659225476,
+          140659225884
+        ],
+        "actual": "Earlier pinned 13-file compile/2 parsers and 14+41 tests; Course A61/160/1, Extended91/110/19, React success; not new coverage"
+      }
+    ],
+    "pending_runs": [
+      46058439689,
+      46058439665,
+      46058439673
+    ],
+    "native_state": "NOT_RUN",
+    "next": "H06 fictional ConPTY source candidate exact a0b76f05, 14-source compile and three fixture parsers actual passed; private entrypoint and fixture refusal, native NOT_RUN. Implement independent outer watchdog, exact pinned helper identity, whole-tree containment/termination and durable one-shot intent; native fixture only after approved nonadmin disposable owner-only NTFS root and tool provenance. Preserve H03 native acceptance, H06 same-file role custody/SQL/revoke/cleanup dependencies; no redundant tests absent drift. Consume pending automatic CI receipts. Full native package/private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged; no merge/deploy/release.",
+    "harness_sha": "a0b76f05f54bdfab53a894da2796e7de7b227074",
+    "workflow_sha": "e586be4fa97195ef1d8bf4a223c675b67a8d0042",
+    "native_effects": "NOT_RUN"
+  },
+  "h06_outer_watchdog_surrogate": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/138_H06_OUTER_WATCHDOG_SURROGATE.md",
+    "ref": "d3517dbb89470676e1402eecdee3f331809415f7",
+    "sha": "b00aa41e001f2728bd87600d25bf0608d1223d23",
+    "prior": "a0b76f05f54bdfab53a894da2796e7de7b227074",
+    "state": "CANDIDATE",
+    "receipt": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "b00aa41e001f2728bd87600d25bf0608d1223d23",
+      "run": 46059231900,
+      "job": 140709153942,
+      "oracle": "Exact 14 C# compile and four fixture parsers",
+      "actual": "Terminal success; exact checkout and five success markers, native_effects_not_run=true"
+    },
+    "automatic_receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "e586be4fa97195ef1d8bf4a223c675b67a8d0042",
+        "runs": [
+          46058439665,
+          46058439673,
+          46058439689
+        ],
+        "jobs": [
+          140706549076,
+          140706550931,
+          140706549664,
+          140706549322
+        ],
+        "actual": "Older pinned guard14+portable41; Course A61/160/1, React success; repeat coverage only; Extended140706549707 pending"
+      }
+    ],
+    "pending_runs": [
+      46059231885,
+      46059231910,
+      46059231903,
+      46058439689
+    ],
+    "native_state": "NOT_RUN",
+    "next": "H06 outer watchdog surrogate b00aa41e exact compile14/four parsers actual pass; six native cases NOT_RUN. Consume prior Extended140706549707 and new automatic CI as applicable; no repeat absent drift. Bind fixed compiled helper, separate child-control token/intent, nested job and console-host termination, with actual native only under approved nonadmin owner-only disposable NTFS root/pinned tools. H03 termination/settlement and H06 role custody/SQL/revoke/cleanup outstanding. Private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged; no merge/deploy/release.",
+    "harness_sha": "b00aa41e001f2728bd87600d25bf0608d1223d23",
+    "workflow_sha": "15515baf4324876bda38b19172a1b3357f71e16a",
+    "native_effects": "NOT_RUN"
+  },
+  "h06_fixed_compiled_helper_binding": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/139_H06_FIXED_COMPILED_HELPER_BINDING.md",
+    "ref": "531e752e18ccabdadf81d49d367cd54ff65e47da",
+    "sha": "22c9238880d654b5dde9bcf5f07659ced0b06420",
+    "prior": "b00aa41e001f2728bd87600d25bf0608d1223d23",
+    "state": "CANDIDATE",
+    "receipt": {
+      "status": "FAILED",
+      "sha": "22c9238880d654b5dde9bcf5f07659ced0b06420",
+      "run": 46061145990,
+      "job": 140715441486,
+      "oracle": "Exact 15 C# compile/five parsers/build/four files/two expected exit71 empty-output refusals plus terminal job",
+      "actual": "All inner markers pass; runner wrapper exits1 after expected LASTEXITCODE; 42 CA1416 warnings/0 build errors; no native effects"
+    },
+    "corrected_receipt": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "22c9238880d654b5dde9bcf5f07659ced0b06420",
+      "run": 46061327467,
+      "job": 140716038954,
+      "oracle": "Exact 15 C# compile/five parsers/fixed helper build/four output hashes/two expected exit71 empty-output direct refusals/terminal success",
+      "actual": "All markers and terminal success; four output SHA256 identical to initial build, 42 CA1416 warnings/0 errors, no native effects"
+    },
+    "automatic_receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "15515baf4324876bda38b19172a1b3357f71e16a",
+        "runs": [
+          46058439689,
+          46059231885,
+          46059231910,
+          46059231903
+        ],
+        "jobs": [
+          140706549707,
+          140709153400,
+          140709153801,
+          140709153792,
+          140709153984,
+          140709153606
+        ],
+        "actual": "Six terminal successes; Extended repeated66/91/110/19; Course A61/160/1; React success; older pinned14+41; repeat coverage only"
+      }
+    ],
+    "pending_runs": [
+      46061327443,
+      46061327513,
+      46061327535,
+      46061146014,
+      46061146097,
+      46061146008
+    ],
+    "native_state": "NOT_RUN",
+    "next": "H06 fixed compiled helper binding 22c92388 exact corrected terminal CI success run46061327467/job140716038954: 15 C# compile, five parsers, four identical helper build hashes, two direct refusal tests. 42 CA1416 warnings/0 build errors, native valid helper launch NOT_RUN. Consume pending automatic CI, no repeat absent drift. Next persist recoverable child locator/identity and terminal intent, independent held descendant/console-host witnesses, nested job and approved fictional native fixture. Parent holds sole job handle; private parent launcher and fixture refusal remain. H03 settlement and H06 role custody/SQL/revoke/cleanup outstanding. Private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged; no merge/deploy/release.",
+    "harness_sha": "22c9238880d654b5dde9bcf5f07659ced0b06420",
+    "workflow_sha": "c44d01e55f6947f78244a303d8e52f9439c667d7",
+    "native_effects": "NOT_RUN"
+  },
+  "h06_recoverable_child_records": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/140_H06_RECOVERABLE_CHILD_RECORDS.md",
+    "ref": "64d74b334c3757a6fa0d05309b372d5ab3550b04",
+    "sha": "839db889534c4cc8a2839396463246b948d35cb5",
+    "prior": "22c9238880d654b5dde9bcf5f07659ced0b06420",
+    "state": "CANDIDATE",
+    "receipt": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "839db889534c4cc8a2839396463246b948d35cb5",
+      "run": 46064825460,
+      "job": 140727488693,
+      "oracle": "Exact 15 C# compile/five parsers/31 pure record checks/fixed helper build/four SHA256 outputs/two direct refusals/terminal success",
+      "actual": "All markers and terminal success; 8 positive/23 refusal assertions; 42 platform analyzer warnings/0 errors, valid native invocation NOT_RUN"
+    },
+    "automatic_receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "c44d01e55f6947f78244a303d8e52f9439c667d7",
+        "runs": [
+          46061327443,
+          46061327513,
+          46061327535,
+          46061146014,
+          46061146097,
+          46061146008
+        ],
+        "jobs": [
+          140716038319,
+          140716038910,
+          140716039033,
+          140716039339,
+          140716039410,
+          140715441561,
+          140715441883,
+          140715441931,
+          140715441656,
+          140715441653
+        ],
+        "actual": "Ten terminal successes, two repeat Course A61/160/1 and Extended66/91/110/19, React success, older pinned14+41 twice; repeat coverage only"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "3136a2ebbd540c1a17c501c4692ef02de3a2f925",
+        "runs": [
+          46064825307
+        ],
+        "jobs": [
+          140727488227,
+          140727488375,
+          140727488536
+        ],
+        "actual": "React15; Course A61 Maven/160 Newman/1 browser; Extended38 React/66 identity/91 Maven/110 Newman/19 browser; zero Maven failures/errors/skips; repeat coverage"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "b762c4195393ae92e03ee149531ca0ab944f438b",
+        "runs": [
+          46064825328,
+          46064825325
+        ],
+        "jobs": [
+          140727488599,
+          140727488296
+        ],
+        "actual": "Older pinned guard14 and lifecycle marker, portable41; repeat coverage, no native effects"
+      }
+    ],
+    "pending_runs": [],
+    "native_state": "NOT_RUN",
+    "next": "Report141: all five automatic jobs terminal actual success (repeat coverage); exact harness 839db889 remains CANDIDATE, native NOT_RUN. Next bounded pre-resume independent Python client handle handoff with acknowledgement, exact outer membership and held-handle wait; establish documented attributable console-host witness or keep full settlement BLOCKED. No guessed PID/global conhost kill, no inherited outer job handle, no native/private launch or cleanup. Academic-first independent eligible work per Report122 remains available. H03 settlement, H06 role custody/SQL/revoke/cleanup, L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged.",
+    "harness_sha": "839db889534c4cc8a2839396463246b948d35cb5",
+    "workflow_sha": "3136a2ebbd540c1a17c501c4692ef02de3a2f925",
+    "native_effects": "NOT_RUN"
+  },
+  "h06_termination_witness_contract": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/141_H06_TERMINATION_WITNESS_CONTRACT_AND_REGRESSION_RECEIPTS.md",
+    "state": "CANDIDATE",
+    "sha": "839db889534c4cc8a2839396463246b948d35cb5",
+    "native_state": "NOT_RUN",
+    "automatic_receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "3136a2ebbd540c1a17c501c4692ef02de3a2f925",
+        "runs": [
+          46064825307
+        ],
+        "jobs": [
+          140727488227,
+          140727488375,
+          140727488536
+        ],
+        "actual": "React15; Course A61 Maven/160 Newman/1 browser; Extended38 React/66 identity/91 Maven/110 Newman/19 browser; zero Maven failures/errors/skips; repeat coverage"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "b762c4195393ae92e03ee149531ca0ab944f438b",
+        "runs": [
+          46064825328,
+          46064825325
+        ],
+        "jobs": [
+          140727488599,
+          140727488296
+        ],
+        "actual": "Older pinned guard14 and lifecycle marker, portable41; repeat coverage, no native effects"
+      }
+    ],
+    "next": "Report141: all five automatic jobs terminal actual success (repeat coverage); exact harness 839db889 remains CANDIDATE, native NOT_RUN. Next bounded pre-resume independent Python client handle handoff with acknowledgement, exact outer membership and held-handle wait; establish documented attributable console-host witness or keep full settlement BLOCKED. No guessed PID/global conhost kill, no inherited outer job handle, no native/private launch or cleanup. Academic-first independent eligible work per Report122 remains available. H03 settlement, H06 role custody/SQL/revoke/cleanup, L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged.",
+    "ref": "06ce7f90c52b190fb4d5f923d62d77cf7e0dd924"
+  },
+  "h06_suspended_client_witness": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/142_H06_SUSPENDED_CLIENT_WITNESS_CANDIDATE.md",
+    "ref": "c0c58915f599615c45a6badaa1379ed1d62c8675",
+    "sha": "768418c9b503e280fa363668d5362fcce3cb6dba",
+    "prior": "839db889534c4cc8a2839396463246b948d35cb5",
+    "workflow_sha": "17e81bce4c452ca0c20dca70e6c19754e3b56afb",
+    "state": "CANDIDATE",
+    "receipt": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "768418c9b503e280fa363668d5362fcce3cb6dba",
+      "run": 46067070539,
+      "job": 140734859021,
+      "oracle": "Exact 15-source compile, five parsers, 31 prior record + 15 pure wire assertions, fixed helper build/four hashes and two direct malformed refusals",
+      "actual": "All actual markers and terminal success; 3 positive/12 refusal wire cases; 42 platform warnings/0 errors; valid native invocation NOT_RUN."
+    },
+    "pending_runs": [],
+    "native_state": "NOT_RUN",
+    "next": "PR59 exact a92e4841 full-source ZIP/path/blob guard, 16 new cases staged; existing 33 migration cases preserved. Exact workflow runs 46067620499 listed; inspect actual logs. Consume exact focused and automatic receipts, fix observed failures only, then full native package/operator remains separate. H06 prior compile/wire bounded; Course A automatic passed, Extended automatic receipt pending. Native console-host/handle transfer and H03/H06 settlement remain blocked/not run; private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates unchanged. Report124 controls production-ready academic objective, strict A protected. No merge/deploy/release.",
+    "automatic_receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "b762c4195393ae92e03ee149531ca0ab944f438b",
+        "run": 46067070478,
+        "job": 140734858724,
+        "oracle": "Pinned guard repeat",
+        "actual": "14 tests and lifecycle marker; native faults NOT_RUN"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "b762c4195393ae92e03ee149531ca0ab944f438b",
+        "run": 46067070487,
+        "job": 140734858747,
+        "oracle": "Pinned portable repeat",
+        "actual": "41 tests passed; repeat coverage"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "17e81bce4c452ca0c20dca70e6c19754e3b56afb",
+        "run": 46067070581,
+        "job": 140734859751,
+        "oracle": "React typecheck/tests/lint/build",
+        "actual": "15 tests and terminal success; repeat coverage"
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "17e81bce4c452ca0c20dca70e6c19754e3b56afb",
+        "run": 46067070581,
+        "job": 140734859381,
+        "oracle": "Automatic Course A repeat actual logs",
+        "actual": "Exact checkout; 61 Maven zero fail/error/skip, 160 Newman assertions zero failures, one browser passed; repeat coverage."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "17e81bce4c452ca0c20dca70e6c19754e3b56afb",
+        "run": 46067070581,
+        "job": 140734859634,
+        "oracle": "Prior handoff Extended automatic actual logs",
+        "actual": "38 frontend, 66 identity/91 Maven zero failures/errors/skips, C5 actual archive/independent restore markers, 110 Newman assertions zero failures, browser19; exact terminal success."
+      }
+    ],
+    "pending_jobs": []
+  },
+  "extended_full_source_archive_integrity": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/143_FULL_SOURCE_ARCHIVE_INTEGRITY_CANDIDATE.md",
+    "sha": "a92e484179a092da6e3cd8045e5115da00dee7c4",
+    "prior": "86d3c53b8668f5cf25beb9045a53c82aaec564b0",
+    "state": "CANDIDATE",
+    "receipt": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "a92e484179a092da6e3cd8045e5115da00dee7c4",
+      "run": 46067620499,
+      "job": 140736654162,
+      "oracle": "Full source Git archive allowlist and raw blob equality, 16 source path/ZIP cases plus prior 33 migration cases",
+      "actual": "49/49 focused cases passed; 195/195 actual Git archive extracted source files matched raw committed blobs; exact checkout and terminal success; full native package/operator NOT_RUN."
+    },
+    "pending_runs": [],
+    "native_state": "NOT_RUN",
+    "next": "Inspect prior PR59 Extended140736653799 and latest Verify46068914869 Java8 job140740863234/Extended140740862802 actual terminal logs. Repair observed failures only; no repeat unchanged guards. Full native package/operator, H03/H06 native and console-host attribution, private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates remain. Report124 controls production-ready academic objective; strict A protected. No merge/deploy/release.",
+    "ref": "ece08d1d56714f0676d8234286bcbc8a0ef8f4ee",
+    "automatic_receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "a92e484179a092da6e3cd8045e5115da00dee7c4",
+        "run": 46067620499,
+        "job": 140736654143,
+        "oracle": "React typecheck/tests/lint/build",
+        "actual": "Exact checkout, 15 tests and terminal success."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "a92e484179a092da6e3cd8045e5115da00dee7c4",
+        "run": 46067620499,
+        "job": 140736654194,
+        "oracle": "Prior PR59 Course A automatic actual logs",
+        "actual": "61 Maven zero failures/errors/skips, 160 Newman assertions zero failures, browser1; exact terminal success."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "a92e484179a092da6e3cd8045e5115da00dee7c4",
+        "run": 46067620499,
+        "job": 140736653799,
+        "oracle": "Prior exact PR59 Extended automatic actual logs",
+        "actual": "38 frontend, 78 identity/103 Maven zero failures/errors/skips, actual C5 archive/independent restore, 110 Newman assertions zero failures, browser19; terminal success."
+      }
+    ],
+    "pending_jobs": []
+  },
+  "extended_read_only_package_integrity": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/144_READ_ONLY_PACKAGE_INTEGRITY_CHECKER.md",
+    "ref": "6bd08c8cb2333a85beb9dbabd09ac71e229a92a5",
+    "sha": "0b07f45c0eb6482b9dcdd8f38f0d8cdb6bdf6427",
+    "prior": "a92e484179a092da6e3cd8045e5115da00dee7c4",
+    "state": "CANDIDATE",
+    "receipt": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "0b07f45c0eb6482b9dcdd8f38f0d8cdb6bdf6427",
+      "run": 46068914869,
+      "job": 140740863134,
+      "oracle": "Actual package checker 12 new fictional checks; exact full source archive and 49 prior guards",
+      "actual": "12/12 new and 61/61 total focused cases; 196/196 actual committed source blobs; exact terminal success. Full native packager/operator NOT_RUN."
+    },
+    "automatic_receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "0b07f45c0eb6482b9dcdd8f38f0d8cdb6bdf6427",
+        "run": 46068914869,
+        "job": 140740863125,
+        "oracle": "React typecheck/tests/lint/build",
+        "actual": "Exact checkout; 15 tests and terminal success."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "0b07f45c0eb6482b9dcdd8f38f0d8cdb6bdf6427",
+        "run": 46068914869,
+        "job": 140740863234,
+        "oracle": "Latest exact PR59 Course A automatic actual logs",
+        "actual": "61 Maven zero failures/errors/skips,160 Newman assertions zero failures, browser1; terminal success."
+      }
+    ],
+    "pending_runs": [
+      46068914869
+    ],
+    "pending_jobs": [
+      140740862802
+    ],
+    "native_state": "NOT_RUN",
+    "next": "Inspect pending latest PR59 Extended140740862802 and handoff Verify46069481376 CourseA140742710627/Extended140742710573 terminal actual logs. Do not repeat unchanged compile/guard checks. Next bounded approved nonadmin owner-only NTFS fictional native H03/H06 fixture dispatch; no valid ConPTY launch before independent outer/console-host acceptance contract. Full native package/operator, H03/H06 settlement, private L06 HOLD/no WSL/P0/L07/93 independent/13 privacy/student gates remain. Report124 controls production-ready academic objective; strict A protected. No merge/deploy/release."
+  },
+  "isolated_native_fixture_compile_closure": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/145_ISOLATED_NATIVE_FIXTURE_COMPILE_CLOSURE.md",
+    "ref": "2baceb94d023713fcc35eb54037a232fa452dbbf",
+    "sha": "768418c9b503e280fa363668d5362fcce3cb6dba",
+    "workflow_sha": "ad0616bbce23d6e38421ac8108b1b5895411bbf9",
+    "state": "VERIFIED_BOUNDED",
+    "receipt": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "768418c9b503e280fa363668d5362fcce3cb6dba",
+      "run": 46069481565,
+      "job": 140742710451,
+      "oracle": "Nine exact individual fixture Add-Type source lists compiled in isolated fresh PowerShell processes with pinned blobs and AST names",
+      "actual": "9/9 exact fixture source lists, counts 8/8/8/4/4/10/6/6/2; no native fixture invocation."
+    },
+    "automatic_receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "768418c9b503e280fa363668d5362fcce3cb6dba",
+        "run": 46069481365,
+        "job": 140742709837,
+        "oracle": "Automatic repeat exact union compile, parser, pure assertions, helper build/refusal",
+        "actual": "15 source files compiled, five parsers,31+15 pure assertions, helper build 42 warnings/0 errors and two malformed invocation refusals; no native."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "ad0616bbce23d6e38421ac8108b1b5895411bbf9",
+        "run": 46069481376,
+        "job": 140742710150,
+        "oracle": "Automatic React repeat",
+        "actual": "15 tests and terminal success."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "run": 46069481596,
+        "job": 140742711079,
+        "oracle": "Older pinned portable repeat",
+        "actual": "b762c41 actual41 tests OK."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "run": 46069481369,
+        "job": 140742710347,
+        "oracle": "Older pinned guard repeat",
+        "actual": "b762c41 actual14 tests OK and lifecycle marker."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "ad0616bbce23d6e38421ac8108b1b5895411bbf9",
+        "run": 46069481376,
+        "job": 140742710627,
+        "oracle": "Handoff Course A regression",
+        "actual": "Actual exact checkout, 61 Maven zero failures/errors/skips,160 Newman assertions zero failures, browser1; terminal success."
+      }
+    ],
+    "pending_runs": [
+      46069481376
+    ],
+    "pending_jobs": [
+      140742710573
+    ],
+    "native_state": "NOT_RUN",
+    "next": "Consume pending PR59 Extended140740862802 and handoff Extended140742710573 actual terminal logs. First six-fixture native batch prepared, blocked on owner-approved dedicated nonadmin Windows NTFS roots and trusted tools. Advance materially distinct eligible defects/academic delivery, no speculative wrappers or repeat unchanged checks. Report124 controls. Private L06 HOLD/no WSL, no valid ConPTY until independent outer/console-host acceptance, H03/H06 settlement/full native package/operator/P0/L07/93 independent/13 privacy/student gates unchanged. No merge/deploy/release."
+  },
+  "fictional_native_dispatch_prepared": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/146_FICTIONAL_NATIVE_DISPATCH_PREPARATION.md",
+    "ref": "a6eef5778f1d6fb0d3aef3aceab25547ea2ae1cc",
+    "manifest": "docs/handoffs/claude-local-execution-2026-11-24/146_FICTIONAL_NATIVE_DISPATCH_MANIFEST.json",
+    "manifest_blob": "6ed2c8e4846cd145bdd5898d022cd1c2e14e9fba",
+    "sha": "768418c9b503e280fa363668d5362fcce3cb6dba",
+    "state": "PREPARED_SOURCE_ONLY",
+    "receipt": {
+      "status": "SOURCE_ONLY",
+      "sha": "768418c9b503e280fa363668d5362fcce3cb6dba",
+      "oracle": "Six fixture bodies, exact Add-Type dependencies, parameter and marker source checks, tree identity",
+      "actual": "16 unique fixture/dependency blob pins matched exact nontruncated tree, 6 fixture source lists, 7 distinct root labels; native execution NOT_RUN."
+    },
+    "fixtures": 6,
+    "unique_source_paths": 16,
+    "roots": 7,
+    "native_state": "NOT_RUN",
+    "owner_environment_verified": false,
+    "next": "Consume pending PR59 Extended140740862802 and handoff Extended140742710573 actual terminal logs. First six-fixture native batch prepared, blocked on owner-approved dedicated nonadmin Windows NTFS roots and trusted tools. Advance materially distinct eligible defects/academic delivery, no speculative wrappers or repeat unchanged checks. Report124 controls. Private L06 HOLD/no WSL, no valid ConPTY until independent outer/console-host acceptance, H03/H06 settlement/full native package/operator/P0/L07/93 independent/13 privacy/student gates unchanged. No merge/deploy/release."
+  },
+  "course_a_successor_and_active_refs": {
+    "date": "2026-11-28 PHT",
+    "handoff_parent": "11cff76923c5d8a0f181b58df8a0a89e115aceca",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "4545fdd81a09772f1ac667af9a0f0c034b9e31ee",
+    "pr59": "c868c90320539d29963f8ee063c7eaa9d9562a07",
+    "pr60": "5e013a87386d151e215ac131a14652c465aa05c2",
+    "scope": "Current scoped observation only; prior snapshots retained",
+    "run": 46136326796,
+    "completed_jobs": [
+      140952338079,
+      140952338264,
+      140952338371
+    ],
+    "pending_jobs": [
+      140952338269
+    ],
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/159_COURSE_A_TERMINAL_RECEIPT_AND_ACTIVE_POINTER_RECONCILIATION.md"
+  },
+  "pr59_terminal_and_notice_candidate": {
+    "date": "2026-11-28 PHT",
+    "handoff_parent": "e528ce10dea3340985eb89d5e21ebea3595be960",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr59": "c868c90320539d29963f8ee063c7eaa9d9562a07",
+    "run": 46136326796,
+    "completed_jobs": [
+      140952338079,
+      140952338264,
+      140952338269,
+      140952338371
+    ],
+    "pending_jobs": [],
+    "notice_branch": "verify/course-a-existing-artifact-bytes-20261128",
+    "notice_sha": "6f94bb14675e44522f0e58b5ef4593f06943e206",
+    "notice_state": "NOT_RUN",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/161_PR59_TERMINAL_REGRESSION_AND_EXISTING_ARTIFACT_NOTICE_CANDIDATE.md"
+  },
+  "course_a_notice_terminal": {
+    "date": "2026-11-28 PHT",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr59": "c868c90320539d29963f8ee063c7eaa9d9562a07",
+    "notice_sha": "6f94bb14675e44522f0e58b5ef4593f06943e206",
+    "run": 46137525095,
+    "job": 140956053486,
+    "state": "VERIFIED_BOUNDED",
+    "inventory": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-library-inventory.csv",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/164_COURSE_A_ACTUAL_EMBEDDED_LIBRARY_NOTICE_RECEIPT.md"
+  },
+  "course_a_hk2_jpa_license_evidence": {
+    "date": "2026-11-28 PHT",
+    "ref": "bbc5011cb34b1fbb427a5c68c8e5a72f8695cfb8",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr59": "c868c90320539d29963f8ee063c7eaa9d9562a07",
+    "run": 46136326796,
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/166_COURSE_A_HK2_REPACKAGING_AND_JPA_LICENSE_EVIDENCE.md",
+    "report_blob": "41e0eae2e062e575dd7a3f9a1118bd76bdab6bcf",
+    "map": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-upstream-license-evidence.csv",
+    "map_blob": "26255306dff5185c8666de7e7b1c6017835e6d7f",
+    "state": "VERIFIED_BOUNDED",
+    "distribution": "BLOCKED",
+    "next": "Report166: 61/96 initial upstream evidence (three repackaged underlying terms still open; two prior source-header-only), 35 unresolved. Prioritize original AOP Alliance1.0, ASM asm-debug-all6.0_ALPHA vs manifest5.1, javax.inject1, remaining javax/AspectJ/JBoss then permissive families; all96 binary correspondence and distribution clearance open. Separate Extended actual inventory open. PR59 and Course A prior CI success; no rerun. Native full package/six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent acceptance. Final local DOCX/launcher/student/rights separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy gates unchanged. No merge/deploy/release."
+  },
+  "course_a_javax_jboss_license_evidence": {
+    "date": "2026-11-28 PHT",
+    "ref": "52d0492eba7845b47446ddda4a354d5d9bed945a",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr59": "c868c90320539d29963f8ee063c7eaa9d9562a07",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/167_COURSE_A_JAVAX_JBOSS_AND_EMBEDDED_LICENSE_EVIDENCE.md",
+    "report_blob": "94df92120d5e3bcded0e7305d5deb388f7e3b053",
+    "map": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-upstream-license-evidence.csv",
+    "map_blob": "b363f884812835ae1d28a1eb3de184c70b4e3b3e",
+    "state": "VERIFIED_BOUNDED",
+    "distribution": "BLOCKED",
+    "next": "Report167: 68/96 initial upstream evidence, 28 unresolved; seven new rows and two repackaged rows refined. Next exact ASM6.0_ALPHA terms/shaded version, Javax Transaction/JAX-RS/JAXB/validation/MIMEPull/OSGi, ANTLR/dom4j then permissive families. All96 binary correspondence NOT_RUN and distribution BLOCKED; separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release."
+  },
+  "course_a_javax_dom4j_license_evidence": {
+    "date": "2026-11-28 PHT",
+    "ref": "898a090ee5a1bd3c17cf6a001740e49077a47b55",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr59": "c868c90320539d29963f8ee063c7eaa9d9562a07",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/168_COURSE_A_JAVAX_LICENSES_AND_DOM4J_METADATA_CONFLICT.md",
+    "report_blob": "e93b5a69390a2a746fdc467893739b3d38f5d207",
+    "map": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-upstream-license-evidence.csv",
+    "map_blob": "b2a436b919978cbd253a53028369deeefef2ec86",
+    "state": "VERIFIED_BOUNDED",
+    "distribution": "BLOCKED",
+    "next": "Report168: 74/96 initial upstream evidence (including dom4j metadata/text conflict), 22 unresolved. Prioritize exact ASM6.0_ALPHA terms/shaded version, MIMEPull/OSGi/ANTLR and remaining permissive families; dom4j actual packaged text and discrepancy rights review required; all96 binary correspondence NOT_RUN and distribution BLOCKED. Separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release."
+  },
+  "course_a_jackson_logging_byte_buddy_license_evidence": {
+    "date": "2026-11-28 PHT",
+    "ref": "bb39273bf584dd04e3d021ab3c730507b6ae574b",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr59": "c868c90320539d29963f8ee063c7eaa9d9562a07",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/169_COURSE_A_JACKSON_LOGGING_AND_SHADED_BYTE_BUDDY_LICENSE_EVIDENCE.md",
+    "report_blob": "80d5805457a1b377801303aa1f6fbed95e110a61",
+    "map": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-upstream-license-evidence.csv",
+    "map_blob": "f75e9481d384f526832808e427ab0e6329a80f36",
+    "state": "VERIFIED_BOUNDED",
+    "distribution": "BLOCKED",
+    "next": "Report169: 88/96 initial upstream evidence, 8 unresolved (ANTLR2.7.7, converter-gson2.1.0, MIMEPull1.9.10, OkHttp3.14.9, Okio1.17.2, OSGi locator1.0.1, Retrofit2.4.0, SnakeYAML1.23). Prioritize those exact releases, then original/shaded ASM (HK2 6.0_ALPHA vs manifest5.1, Byte Buddy7.0 separate) and actual notices, DOM4J conflict, binary correspondence and rights. All96 distribution BLOCKED and binary correspondence NOT_RUN. Separate Extended actual inventory open. No redundant CI; private L06 HOLD/no WSL; native/independent/off-host/student/rights gates unchanged; P0/V7 freeze; no merge/deploy/release."
+  }
+}

@@ -1,0 +1,151 @@
+name: Windows L06 compile-only dependency closure
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/windows-l06-compile-closure.yml'
+permissions:
+  contents: read
+jobs:
+  compile-closure:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'docs/claude-local-execution-handoff-2026-11-24'
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 768418c9b503e280fa363668d5362fcce3cb6dba
+          persist-credentials: false
+      - name: Compile exact H01 H03 H06 dependency union without invoking native code
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ((git rev-parse HEAD) -cne '768418c9b503e280fa363668d5362fcce3cb6dba' -or $LASTEXITCODE -ne 0) { throw 'Wrong candidate' }
+          $pins = [ordered]@{
+            'C9DirectoryIdentity.cs' = '67d705d9d66f0ca05cee018900b346d913d687b3'
+            'C9ControlLock.cs' = '9dfc3fdb42c40ae5622676d22795eb3c61a2f2ab'
+            'C9JournalStorage.cs' = 'ab95a6cef639c3731dea6cd1135a0b073bc75c4b'
+            'C9JournalParent.cs' = '882343527ef986710b4fca6d14004c301b0bbc1e'
+            'C9DosDeviceObservation.cs' = 'd3b9c101c07c268b1596c4556716fd2e5e1ac64c'
+            'C9LogonContext.cs' = 'fe2d1bd497badb36eb6c93379c0577e100553b6b'
+            'C9ProfileStorageObservation.cs' = 'c29a49ef65abe02965ffa471ff16e2d2e6d600a4'
+            'C9Contain.cs' = '45a93d294f52da3af9139531a36bd8d97c0e344b'
+            'C9OwnedJobProbe.cs' = '300fb80a3b8a63be752e09d51979a10a4fd7e16e'
+            'C9OwnershipProducer.cs' = '1195a098e4bb3d6fa6556d2cf6df9ece3319df6e'
+            'C9WorkCreation.cs' = '69106d16b9373e7610db5783847e85d93e45381b'
+            'C9LoginCustody.cs' = 'd3ccbd4189b6900e0351d1fa7a4015706f7dc986'
+            'C9FictionalConPty.cs' = 'd85936f1132416b824cd4a5806f0c9511bbf66ae'
+            'C9PtyHelper.cs' = '91c4112d087d5f61f8fb296edfa19a050bcee3c4'
+            'C9RetentionStage.cs' = 'a94dffe4c79443fb5bc38874fd984f1b3d7478b6'
+          }
+          $paths = @()
+          foreach ($name in $pins.Keys) {
+            $path = "scripts/windows-l06/$name"
+            $blob = git rev-parse "HEAD:$path"
+            if ($LASTEXITCODE -ne 0 -or $blob -cne $pins[$name]) { throw "Wrong committed blob: $name" }
+            $actual = git hash-object --path=$path $path
+            if ($LASTEXITCODE -ne 0 -or $actual -cne $pins[$name]) { throw "Wrong checked-out content: $name" }
+            $paths += (Resolve-Path -LiteralPath $path).Path
+          }
+          if ($paths.Count -ne 15) { throw 'Wrong source closure count' }
+          # Compile/load only; no constructors, native entrypoints or test runner invoked.
+          Add-Type -Path $paths -ErrorAction Stop
+          'C9W_H03_H06_COMPILE_CLOSURE_OK:files=15 native_effects_not_run=true'
+
+          $fixture = 'scripts/windows-l06/test-owned-journal-transport.ps1'
+          $fixtureBlob = git rev-parse "HEAD:$fixture"
+          if ($LASTEXITCODE -ne 0 -or $fixtureBlob -cne 'daab4849b25a0d3cadfec6f947c6678bb4530485') { throw 'Wrong fixture blob' }
+          $fixtureActual = git hash-object --path=$fixture $fixture
+          if ($LASTEXITCODE -ne 0 -or $fixtureActual -cne $fixtureBlob) { throw 'Wrong fixture content' }
+          $tokens = $null; $errors = $null
+          $null = [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path -LiteralPath $fixture).Path,[ref]$tokens,[ref]$errors)
+          if ($errors.Count -ne 0) { throw 'Fictional transport fixture parser failed' }
+          'C9W_OWNED_TRANSPORT_FIXTURE_PARSE_OK:native_effects_not_run=true'
+
+          $loginFixture = 'scripts/windows-l06/test-login-custody.ps1'
+          $loginFixtureBlob = git rev-parse "HEAD:$loginFixture"
+          if ($LASTEXITCODE -ne 0 -or $loginFixtureBlob -cne '40bea0a069c15b17588f9faa25a0d730121021cd') { throw 'Wrong login fixture blob' }
+          $loginFixtureActual = git hash-object --path=$loginFixture $loginFixture
+          if ($LASTEXITCODE -ne 0 -or $loginFixtureActual -cne $loginFixtureBlob) { throw 'Wrong login fixture content' }
+          $tokens = $null; $errors = $null
+          $null = [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path -LiteralPath $loginFixture).Path,[ref]$tokens,[ref]$errors)
+          if ($errors.Count -ne 0) { throw 'Fictional login custody fixture parser failed' }
+          'C9W_H06_FIXED_SLOT_FIXTURE_PARSE_OK:native_effects_not_run=true'
+
+          $ptyFixture = 'scripts/windows-l06/test-fictional-conpty.ps1'
+          $ptyBlob = git rev-parse "HEAD:$ptyFixture"
+          if ($LASTEXITCODE -ne 0 -or $ptyBlob -cne '866a58028cf84aa92462e3dbdf5e36f608b8fc78') { throw 'Wrong ConPTY quarantine fixture blob' }
+          $ptyActual = git hash-object --path=$ptyFixture $ptyFixture
+          if ($LASTEXITCODE -ne 0 -or $ptyActual -cne $ptyBlob) { throw 'Wrong ConPTY quarantine fixture content' }
+          $tokens = $null; $errors = $null
+          $null = [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path -LiteralPath $ptyFixture).Path,[ref]$tokens,[ref]$errors)
+          if ($errors.Count -ne 0) { throw 'ConPTY quarantine fixture parser failed' }
+          'C9W_H06_PTY_QUARANTINE_PARSE_OK:native_effects_not_run=true'
+
+          $outerFixture = 'scripts/windows-l06/test-outer-watchdog.ps1'
+          $outerBlob = git rev-parse "HEAD:$outerFixture"
+          if ($LASTEXITCODE -ne 0 -or $outerBlob -cne '0f0b0326faa9e0cfe2048381dbb0ce0c279bb448') { throw 'Wrong outer fixture blob' }
+          $outerActual = git hash-object --path=$outerFixture $outerFixture
+          if ($LASTEXITCODE -ne 0 -or $outerActual -cne $outerBlob) { throw 'Wrong outer fixture content' }
+          $tokens = $null; $errors = $null
+          $null = [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path -LiteralPath $outerFixture).Path,[ref]$tokens,[ref]$errors)
+          if ($errors.Count -ne 0) { throw 'Outer watchdog fixture parser failed' }
+          'C9W_H06_OUTER_SURROGATE_PARSE_OK:native_effects_not_run=true'
+
+          $jobFixture = 'scripts/windows-l06/test-owned-job-probe.ps1'
+          $jobBlob = git rev-parse "HEAD:$jobFixture"
+          if ($LASTEXITCODE -ne 0 -or $jobBlob -cne 'c1fe51577b0eb55b33b123dd66d0771c13833ef6') { throw 'Wrong job fixture blob' }
+          $jobActual = git hash-object --path=$jobFixture $jobFixture
+          if ($LASTEXITCODE -ne 0 -or $jobActual -cne $jobBlob) { throw 'Wrong job fixture content' }
+          $tokens = $null; $errors = $null
+          $null = [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path -LiteralPath $jobFixture).Path,[ref]$tokens,[ref]$errors)
+          if ($errors.Count -ne 0) { throw 'Job fixture parser failed' }
+          'C9W_H06_JOB_FIXTURE_PARSE_OK:native_effects_not_run=true'
+
+          # Pure data-only oracle; no native calls, fixture roots, or process launch.
+          $records = 'scripts/windows-l06/test-pty-records.ps1'
+          $recordsBlob = git rev-parse "HEAD:$records"
+          if ($LASTEXITCODE -ne 0 -or $recordsBlob -cne 'bcca4236fbaa0d899aa2f3cd7ff8a8502e14f634') { throw 'Wrong record fixture blob' }
+          $recordsActual = git hash-object --path=$records $records
+          if ($LASTEXITCODE -ne 0 -or $recordsActual -cne $recordsBlob) { throw 'Wrong record fixture content' }
+          $recordsOutput = @(& (Resolve-Path -LiteralPath $records).Path)
+          if ($recordsOutput.Count -ne 1 -or $recordsOutput[0] -cne 'C9W_H06_PTY_RECORDS_OK:positive=8 negative=23 native_effects_not_run=true') { throw 'Pure record oracle failed' }
+          $recordsOutput[0]
+
+          $wire = 'scripts/windows-l06/test-pty-client-witness.ps1'
+          $wireBlob = git rev-parse "HEAD:$wire"
+          if ($LASTEXITCODE -ne 0 -or $wireBlob -cne '3b56e19e296ced6cccc082ca67d8e078de5e06e8') { throw 'Wrong witness fixture blob' }
+          $wireActual = git hash-object --path=$wire $wire
+          if ($LASTEXITCODE -ne 0 -or $wireActual -cne $wireBlob) { throw 'Wrong witness fixture content' }
+          $wireOutput = @(& (Resolve-Path -LiteralPath $wire).Path)
+          if ($wireOutput.Count -ne 1 -or $wireOutput[0] -cne 'C9W_H06_PTY_CLIENT_WIRE_OK:positive=3 negative=12 native_effects_not_run=true') { throw 'Pure witness wire oracle failed' }
+          $wireOutput[0]
+
+          # Build the actual fixed framework-dependent helper. No valid launch
+          # args, native root, credentials, SQL, ConPTY or native test execution.
+          $project = 'scripts/windows-l06/fictional-helper/C9PtyHelper.csproj'
+          $projectBlob = git rev-parse "HEAD:$project"
+          if ($LASTEXITCODE -ne 0 -or $projectBlob -cne '038e213169723e6ddc3210dbf10277eb6c271a0c') { throw 'Wrong helper project blob' }
+          $projectActual = git hash-object --path=$project $project
+          if ($LASTEXITCODE -ne 0 -or $projectActual -cne $projectBlob) { throw 'Wrong helper project content' }
+          dotnet --list-sdks
+          if ($LASTEXITCODE -ne 0) { throw 'SDK inspection failed' }
+          $out = Join-Path $env:RUNNER_TEMP ('c9w-helper-'+[Guid]::NewGuid().ToString('N'))
+          dotnet build $project --configuration Release --output $out --nologo -p:RestoreIgnoreFailedSources=true
+          if ($LASTEXITCODE -ne 0) { throw 'Fixed helper build failed' }
+          $expected = @('C9PtyHelper.deps.json','C9PtyHelper.dll','C9PtyHelper.exe','C9PtyHelper.runtimeconfig.json')
+          $actual = @(Get-ChildItem -LiteralPath $out -Force | Sort-Object Name | ForEach-Object { $_.Name })
+          if (($actual -join '|') -cne ($expected -join '|')) { throw 'Unexpected helper output layout' }
+          foreach ($name in $expected) {
+            $hash = (Get-FileHash -LiteralPath (Join-Path $out $name) -Algorithm SHA256).Hash.ToLowerInvariant()
+            "C9W_HELPER_BUILD_FILE:${name}:$hash"
+          }
+          $PSNativeCommandUseErrorActionPreference = $false
+          $exe = Join-Path $out 'C9PtyHelper.exe'
+          $output = @(& $exe 2>&1)
+          if ($LASTEXITCODE -ne 71 -or $output.Count -ne 0) { throw 'Direct helper refusal failed' }
+          $output = @(& $exe '--fictional-conpty-v2' 2>&1)
+          if ($LASTEXITCODE -ne 71 -or $output.Count -ne 0) { throw 'Incomplete helper invocation refusal failed' }
+          'C9W_H06_HELPER_BUILD_AND_DIRECT_REFUSAL_OK:files=4 refusal_cases=2 native_effects_not_run=true'
+          # Both exact nonzero refusal exits and empty outputs were asserted above.
+          # Do not let the final expected native LASTEXITCODE propagate to the runner.
+          exit 0

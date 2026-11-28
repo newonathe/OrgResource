@@ -1,0 +1,24 @@
+# 08 — Original/private-source custody, retrieval and incompleteness
+
+## Known original sources (Project attachments, not new public uploads)
+Assignment `09_ESP_PROJECT_ASSIGNMENT.pdf`, syllabus `08_CSCI180_SYLLABUS.pdf`, concise proposal `10_ORGRESOURCE_CONCISE_PROPOSAL.docx`, kickoff `01_KICKOFF_PROMPT.md`, dossier `02_MASTER_CONTEXT_DOSSIER.md`, course corpus `03_COURSE_REFERENCE_CORPUS.txt`, prior work and manifest `04_ORGRESOURCE_PRIOR_WORK_RESEARCH_AND_MANIFEST.md`, transcripts `06_VIDEO_TRANSCRIPTS.md`, two complete non-video original ZIPs 11/12 and individually attached slides/references. Project attachments are authoritative originals; use Files or runtime exact path when required. Do not rely on filenames, a summary, or this register for substantive content claims. Raw videos not attached, no frame analysis; cite timestamp and ask student to verify local original when necessary.
+
+Existing public-safe source audit and historical coverage records: PR24 `evidence/C6/`, PR7 `docs/research-2.0/00_CONTEXT_TRANSFER_AND_SOURCE_REGISTER.md`, `22_PRIMARY_ARCHIVE_VERIFICATION.md`, `46_CP24_RELEASE_AND_ORIGINAL_ARCHIVE_PROVENANCE.md`; active `evidence/source-inventory.json` and `ChatGPT-Project-Pack/PROJECT_INSTRUCTIONS.md`. Exact refs in 01/02/03. Historical 2,611 path inventory is a prior reported audit; this pass does not revalidate original archives or full content, rights or video frames. The original archives should not be republished. Current repo visibility PUBLIC. No source content duplicated in global index; potential sensitive binary/attachment/raw data paths excluded from indexed file versions; original branch snapshots retain historical refs only.
+
+## Local restricted inputs
+- Exact approved 96-org fictional plan, private IR4 restricted ledger and private course/host artifacts: owner-local custody, exact approved plan metadata already in handoff 04 and private dataset manifest. Never upload raw, regenerate lookalike, scan unrelated local files or expose credentials/keys/paths/raw logs. Use actual owner-provided private path in authorized local session.
+- Owner-only confirmation, private local environment/toolchain, actual off-host and hosted evidence, signed/student academic material, Canvas submission and instructor decisions: not established by this registry. Record only safe status and exact authorized custody pointers.
+- Actual previous ChatGPT conversations may contain unrecorded information. Use project conversation retrieval and original sources when needed, distinguish accessible results from historical summaries. No automatic access to every prior chat and no complete transcript export in this task. Avoid storing raw conversations, identifying or private details on GitHub.
+- Current runtime container returned ClientError during attempted attachment listing. No file content inspection or archive revalidation claimed in this pass. GitHub source metadata and targeted historical source ranges were accessible. If future task needs attachment details, reopen using available Files or private local source; mark INACCESSIBLE if still unavailable.
+
+## Coverage classifications
+FULL, RELEVANT_RANGES, PATCH, METADATA, REPORTED_ONLY, UNREAD, INACCESSIBLE; distinguish those from executed acceptance. New material facts require exact evidence/citations, and unresolved gaps remain open. Metadata index includes every qualifying path/blob among 11 anchor snapshots, not all commits, all 49 branch file contents, every source path in original ZIPs, or every chat message. Topic/branch discovery is broad, substantive proof is task-specific. Append further sources, never declare global completeness merely from counts.
+
+## Failure and retention contract
+If a chat cannot write GitHub, provide a public-safe copy-ready event with exact pending updates, and report it was not uploaded. If sensitive context cannot be published, preserve it in the authorized Project/local private source with a safe minimal locator only. No secret ever in public ledger. Do not create copies of restricted data to satisfy "lossless". Protect historical refs from rewriting, but any necessary security/rights remediation must be separately authorized and recorded; historical retention is not a justification for leaving exposed secrets accessible.
+
+
+Report53: historical IR2 evidence-directory clue recovered privately; IR4 exact file unverified. Bounded owner-local project-only metadata discovery; no broad search or public private locator. WSL transfer is same-device but separate filesystem and requires explicit owner authorization; off-host separate.
+
+
+Report56: owner uploaded sanitized L08, owner run, gate readiness, academic handoff and 67-line checkpoint; full visible/Files text inspected. Raw local JAR/IR4/logs/credentials and private paths remain owner-local; no raw uploads to GitHub. L07 artifact/key custody design still requires owner decision, no private transfer authorized.

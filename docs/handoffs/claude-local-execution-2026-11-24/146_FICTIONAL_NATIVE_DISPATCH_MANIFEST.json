@@ -1,0 +1,325 @@
+{
+  "schema": "orgresource.fictional.native.dispatch.v1",
+  "date": "2026-11-28 PHT",
+  "authority": "Report102 H01-C and Report124; Report120 sequencing, Matrix66 unchanged",
+  "candidate": "768418c9b503e280fa363668d5362fcce3cb6dba",
+  "tree": "d9b062c971795a08fb3e9a7e040fe3cf88eef52c",
+  "approval_scope": "Fictional harness tests only; not private L06",
+  "owner_environment_verified": false,
+  "execution_state": "NOT_RUN",
+  "compile_receipt": {
+    "run": 46069481565,
+    "job": 140742710451,
+    "source": "768418c9b503e280fa363668d5362fcce3cb6dba"
+  },
+  "fixtures": [
+    {
+      "path": "scripts/windows-l06/test-control-lock.ps1",
+      "blob": "64603c1169721847bc17ca0e4c756e997c20dc99",
+      "lines": 70,
+      "source_dependencies": [
+        {
+          "path": "scripts/windows-l06/C9DirectoryIdentity.cs",
+          "blob": "67d705d9d66f0ca05cee018900b346d913d687b3"
+        },
+        {
+          "path": "scripts/windows-l06/C9ControlLock.cs",
+          "blob": "9dfc3fdb42c40ae5622676d22795eb3c61a2f2ab"
+        }
+      ],
+      "roots": [
+        "control"
+      ],
+      "needs_python": false,
+      "depends": [],
+      "markers": [
+        "C9W_CONTROL_LOCK_FIXTURE_OK:exclusive_create=true competing_open_refused=true stable_identity=true missing_refused=true delete_access_sharing=true artifacts_retained=true"
+      ],
+      "scope": "H03 control lock and handle-sharing only; same-process competing open, not full recovery",
+      "residual": "Cross-process recovery, journal/mapping/profile identity, cleanup",
+      "state": "NOT_RUN"
+    },
+    {
+      "path": "scripts/windows-l06/test-login-custody.ps1",
+      "blob": "40bea0a069c15b17588f9faa25a0d730121021cd",
+      "lines": 140,
+      "source_dependencies": [
+        {
+          "path": "scripts/windows-l06/C9DirectoryIdentity.cs",
+          "blob": "67d705d9d66f0ca05cee018900b346d913d687b3"
+        },
+        {
+          "path": "scripts/windows-l06/C9ControlLock.cs",
+          "blob": "9dfc3fdb42c40ae5622676d22795eb3c61a2f2ab"
+        },
+        {
+          "path": "scripts/windows-l06/C9JournalStorage.cs",
+          "blob": "ab95a6cef639c3731dea6cd1135a0b073bc75c4b"
+        },
+        {
+          "path": "scripts/windows-l06/C9LoginCustody.cs",
+          "blob": "d3ccbd4189b6900e0351d1fa7a4015706f7dc986"
+        }
+      ],
+      "roots": [
+        "login"
+      ],
+      "needs_python": false,
+      "depends": [
+        "test-control-lock.ps1"
+      ],
+      "markers": [
+        "C9W_H06_LOGIN_SLOT_FIXTURE_OK:metadata_only=true no_editor=true no_database=true no_cleanup=true",
+        "C9W_H06_FIXED_SLOT_CASE_OK:source/backup",
+        "C9W_H06_FIXED_SLOT_CASE_OK:restore/backup",
+        "C9W_H06_FIXED_SLOT_CASE_OK:restore/restore",
+        "C9W_H06_FIXED_SLOT_CASE_OK:mixed/restore",
+        "C9W_H06_FIXED_SLOT_FIXTURE_OK:four_pairs=true collision_refused=true retained=true no_editor=true no_database=true"
+      ],
+      "scope": "H06-02 partial: fictional file metadata, exclusive handles, widened ACL, hardlink and pre-existing-file refusal; four role/kind slots",
+      "residual": "Actual editor, login file, role ACL handoff, credential use/revoke and cleanup",
+      "state": "NOT_RUN"
+    },
+    {
+      "path": "scripts/windows-l06/test-retention-stage.ps1",
+      "blob": "279a9ac0a930dafb381b55e0c519e09c624df693",
+      "lines": 71,
+      "source_dependencies": [
+        {
+          "path": "scripts/windows-l06/C9DirectoryIdentity.cs",
+          "blob": "67d705d9d66f0ca05cee018900b346d913d687b3"
+        },
+        {
+          "path": "scripts/windows-l06/C9ControlLock.cs",
+          "blob": "9dfc3fdb42c40ae5622676d22795eb3c61a2f2ab"
+        },
+        {
+          "path": "scripts/windows-l06/C9JournalStorage.cs",
+          "blob": "ab95a6cef639c3731dea6cd1135a0b073bc75c4b"
+        },
+        {
+          "path": "scripts/windows-l06/C9RetentionStage.cs",
+          "blob": "a94dffe4c79443fb5bc38874fd984f1b3d7478b6"
+        }
+      ],
+      "roots": [
+        "retention-source",
+        "retention-stage"
+      ],
+      "needs_python": false,
+      "depends": [
+        "test-control-lock.ps1"
+      ],
+      "markers": [
+        "C9W_RETENTION_STAGE_FIXTURE_OK:header_only_fixture=true exact_bytes=true exclusive_stage=true source_identity=true link_refused=true no_commit=true evidence_retained=true"
+      ],
+      "scope": "H01-A partial: random header-only fictional bytes, identity, exclusive copy, no overwrite/commit",
+      "residual": "Real encrypted archive authentication/restore, distinct target, seal, cleanup before commit",
+      "state": "NOT_RUN"
+    },
+    {
+      "path": "scripts/windows-l06/test-owned-job-probe.ps1",
+      "blob": "c1fe51577b0eb55b33b123dd66d0771c13833ef6",
+      "lines": 68,
+      "source_dependencies": [
+        {
+          "path": "scripts/windows-l06/C9DirectoryIdentity.cs",
+          "blob": "67d705d9d66f0ca05cee018900b346d913d687b3"
+        },
+        {
+          "path": "scripts/windows-l06/C9ControlLock.cs",
+          "blob": "9dfc3fdb42c40ae5622676d22795eb3c61a2f2ab"
+        },
+        {
+          "path": "scripts/windows-l06/C9JournalStorage.cs",
+          "blob": "ab95a6cef639c3731dea6cd1135a0b073bc75c4b"
+        },
+        {
+          "path": "scripts/windows-l06/C9ProfileStorageObservation.cs",
+          "blob": "c29a49ef65abe02965ffa471ff16e2d2e6d600a4"
+        },
+        {
+          "path": "scripts/windows-l06/C9Contain.cs",
+          "blob": "45a93d294f52da3af9139531a36bd8d97c0e344b"
+        },
+        {
+          "path": "scripts/windows-l06/C9OwnedJobProbe.cs",
+          "blob": "300fb80a3b8a63be752e09d51979a10a4fd7e16e"
+        },
+        {
+          "path": "scripts/windows-l06/C9FictionalConPty.cs",
+          "blob": "d85936f1132416b824cd4a5806f0c9511bbf66ae"
+        },
+        {
+          "path": "scripts/windows-l06/C9PtyHelper.cs",
+          "blob": "91c4112d087d5f61f8fb296edfa19a050bcee3c4"
+        }
+      ],
+      "roots": [
+        "owned-job"
+      ],
+      "needs_python": true,
+      "depends": [
+        "test-control-lock.ps1"
+      ],
+      "markers": [
+        "C9W_H06_OWNED_JOB_FIXTURE_OK:root_exit=true descendant_accounting=true timeout=true unrelated_sentinel=true credentials=false native_faults_not_injected=true"
+      ],
+      "scope": "H03/H06 partial: 5 fixed process modes, exact accounting, unrelated owned sentinel; root timeout and descendant hang",
+      "residual": "Interrupted host, individual descendant witness, API fault injection and settlement",
+      "state": "NOT_RUN"
+    },
+    {
+      "path": "scripts/windows-l06/test-outer-watchdog.ps1",
+      "blob": "0f0b0326faa9e0cfe2048381dbb0ce0c279bb448",
+      "lines": 57,
+      "source_dependencies": [
+        {
+          "path": "scripts/windows-l06/C9DirectoryIdentity.cs",
+          "blob": "67d705d9d66f0ca05cee018900b346d913d687b3"
+        },
+        {
+          "path": "scripts/windows-l06/C9ControlLock.cs",
+          "blob": "9dfc3fdb42c40ae5622676d22795eb3c61a2f2ab"
+        },
+        {
+          "path": "scripts/windows-l06/C9JournalStorage.cs",
+          "blob": "ab95a6cef639c3731dea6cd1135a0b073bc75c4b"
+        },
+        {
+          "path": "scripts/windows-l06/C9ProfileStorageObservation.cs",
+          "blob": "c29a49ef65abe02965ffa471ff16e2d2e6d600a4"
+        },
+        {
+          "path": "scripts/windows-l06/C9Contain.cs",
+          "blob": "45a93d294f52da3af9139531a36bd8d97c0e344b"
+        },
+        {
+          "path": "scripts/windows-l06/C9OwnedJobProbe.cs",
+          "blob": "300fb80a3b8a63be752e09d51979a10a4fd7e16e"
+        },
+        {
+          "path": "scripts/windows-l06/C9FictionalConPty.cs",
+          "blob": "d85936f1132416b824cd4a5806f0c9511bbf66ae"
+        },
+        {
+          "path": "scripts/windows-l06/C9PtyHelper.cs",
+          "blob": "91c4112d087d5f61f8fb296edfa19a050bcee3c4"
+        }
+      ],
+      "roots": [
+        "outer-watchdog"
+      ],
+      "needs_python": true,
+      "depends": [
+        "test-owned-job-probe.ps1"
+      ],
+      "markers": [
+        "C9W_OUTER_SURROGATE_CASE_OK:zero",
+        "C9W_OUTER_SURROGATE_CASE_OK:nonzero",
+        "C9W_OUTER_SURROGATE_CASE_OK:child-zero",
+        "C9W_OUTER_SURROGATE_CASE_OK:root-hang",
+        "C9W_OUTER_SURROGATE_CASE_OK:descendant-hang",
+        "C9W_OUTER_SURROGATE_CASE_OK:helper-tree-hang",
+        "C9W_OUTER_SURROGATE_FIXTURE_OK:fictional_only=true actual_conpty_not_run=true intent_retained=true"
+      ],
+      "scope": "H03/H06 partial: 6 fixed surrogate modes, retained uncertainty, same-owner and reopened refusal",
+      "residual": "Actual ConPTY/console host, interruption and terminal intent settlement",
+      "state": "NOT_RUN"
+    },
+    {
+      "path": "scripts/windows-l06/test-owned-journal-transport.ps1",
+      "blob": "daab4849b25a0d3cadfec6f947c6678bb4530485",
+      "lines": 61,
+      "source_dependencies": [
+        {
+          "path": "scripts/windows-l06/C9DirectoryIdentity.cs",
+          "blob": "67d705d9d66f0ca05cee018900b346d913d687b3"
+        },
+        {
+          "path": "scripts/windows-l06/C9ControlLock.cs",
+          "blob": "9dfc3fdb42c40ae5622676d22795eb3c61a2f2ab"
+        },
+        {
+          "path": "scripts/windows-l06/C9JournalStorage.cs",
+          "blob": "ab95a6cef639c3731dea6cd1135a0b073bc75c4b"
+        },
+        {
+          "path": "scripts/windows-l06/C9ProfileStorageObservation.cs",
+          "blob": "c29a49ef65abe02965ffa471ff16e2d2e6d600a4"
+        },
+        {
+          "path": "scripts/windows-l06/C9Contain.cs",
+          "blob": "45a93d294f52da3af9139531a36bd8d97c0e344b"
+        },
+        {
+          "path": "scripts/windows-l06/C9OwnedJobProbe.cs",
+          "blob": "300fb80a3b8a63be752e09d51979a10a4fd7e16e"
+        },
+        {
+          "path": "scripts/windows-l06/C9FictionalConPty.cs",
+          "blob": "d85936f1132416b824cd4a5806f0c9511bbf66ae"
+        },
+        {
+          "path": "scripts/windows-l06/C9PtyHelper.cs",
+          "blob": "91c4112d087d5f61f8fb296edfa19a050bcee3c4"
+        }
+      ],
+      "roots": [
+        "owned-transport"
+      ],
+      "needs_python": true,
+      "depends": [
+        "test-owned-job-probe.ps1"
+      ],
+      "markers": [
+        "C9W_OWNED_TRANSPORT_CASE_OK:echo",
+        "C9W_OWNED_TRANSPORT_CASE_OK:nonzero",
+        "C9W_OWNED_TRANSPORT_CASE_OK:child-denied",
+        "C9W_OWNED_TRANSPORT_CASE_OK:overflow",
+        "C9W_OWNED_TRANSPORT_CASE_OK:hang",
+        "C9W_OWNED_TRANSPORT_FIXTURE_OK:fictional_only=true intent_retained=true native_acceptance_separate=true"
+      ],
+      "scope": "H03/H06 partial: 5 fixed transport modes incl specific native child-denial, no publication, retained uncertainty",
+      "residual": "Real journal integration, crash/terminal settlement, native API failures, credential lifecycle",
+      "state": "NOT_RUN"
+    }
+  ],
+  "excluded": [
+    {
+      "path": "scripts/windows-l06/test-fictional-conpty.ps1",
+      "reason": "Unconditional refusal; no valid ConPTY invocation before independent outer and console-host attribution gate"
+    },
+    {
+      "path": "scripts/windows-l06/test-journal-parent-v2.ps1",
+      "reason": "Legacy C9JournalParent transport quarantined pending H03 integration"
+    },
+    {
+      "path": "scripts/windows-l06/test-journal-worker-failures.ps1",
+      "reason": "Legacy parent transport quarantined"
+    },
+    {
+      "path": "scripts/windows-l06/test-ownership-producer.ps1",
+      "reason": "Depends on legacy journal parent and work/profile effects; defer until accepted transport"
+    },
+    {
+      "path": "scripts/windows-l06/verify-c9-local-mixed-windows.ps1",
+      "reason": "Private runner quarantined"
+    },
+    {
+      "path": "scripts/windows-l06/recover-c9-windows.ps1",
+      "reason": "Recovery quarantined; no deletion or force unlock"
+    },
+    {
+      "path": "scripts/windows-l06/protected_login.py",
+      "reason": "Direct entrypoint refuses; real credential/editor lifecycle incomplete"
+    }
+  ],
+  "constraints": [
+    "Approved nonadmin disposable owner-only fixed local NTFS roots, empty before each fresh case, seven distinct non-overlapping roots outside repo/shared/sync/temp/profile/production locations",
+    "Trusted independently verified absolute python.exe and transitive runtime; pinned SHA256 supplied before Python tests; no guessed hash or PATH fallback",
+    "Clean exact worktree; separate fresh pwsh per fixture; one operator/writer; inspect actual commands and relevant code before native execution",
+    "Stop affected dependent work after refusal/fault; preserve raw local logs and all generated artifacts, no automatic deletion or retry in same root",
+    "No private plans, real credentials, SQL, mapping, hosted DB, WSL, GUI browser, elevation, merge, deploy, release or accepted marker"
+  ]
+}

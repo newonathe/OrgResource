@@ -1,0 +1,217 @@
+{
+  "schema": "orgresource.proposed-next-run.v1",
+  "date": "2026-11-25",
+  "status": "CONDITIONAL_EXECUTION_PREPARATION_ONLY",
+  "ready_to_launch_all": false,
+  "source": {
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "r09": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+    "harness": "72de0c106621dabc26a63390003f46c86d63b066",
+    "courseA": "7f8c0746da18fd54b47f430ac1435ac36e605d67"
+  },
+  "authority": {
+    "canonical_existing_graph": "12_EXECUTION_GRAPH.json",
+    "reports": [
+      "56_POST_LOCAL_PRODUCTION_PLAN_AND_L07_CUSTODY_BLOCKER.md",
+      "57_FEATURE_SCOPE_RECONCILIATION_AND_PR57_MERGED.md",
+      "58_PRODUCT_COMPLETION_PROGRAM.md",
+      "59_ORCHESTRATOR_EXECUTION_CONTRACT.md",
+      "60_CRITICAL_PATH_AND_PRODUCT_CONTRACTS.md",
+      "62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
+      "63_CPX_EXISTING_ROUTE_IMPACT_INDEX.csv"
+    ],
+    "owner_delegation": "AUTHORIZED_SCOPED",
+    "phase_approval": "NOT_INFERRED",
+    "l06": "HOLD",
+    "main_merge": false,
+    "deploy": false,
+    "paid_resources": false,
+    "real_sms": false
+  },
+  "dispatch": {
+    "root_requested_model": "Opus 5.5",
+    "root_requested_effort": "high",
+    "verify_runtime": true,
+    "default_worker_cap": 3,
+    "single_integration_owner": true,
+    "single_runtime_owner": true,
+    "private_worker_access": false,
+    "agent_teams": false
+  },
+  "tasks": [
+    {
+      "id": "NX00",
+      "state": "PLANNED",
+      "depends_on": [],
+      "executor": "ROOT",
+      "scope": "Reconcile exact refs/graph/actual receipts; verify installed capabilities and owner authority",
+      "acceptance": "Exact pins and actual receipt review; no source drift; no gate release inferred"
+    },
+    {
+      "id": "NX01",
+      "state": "PLANNED",
+      "depends_on": [
+        "NX00"
+      ],
+      "executor": "SCOPED_READ_ONLY",
+      "scope": "Complete public privacy and source coverage review, all25 harness files and material dependencies",
+      "acceptance": "Per-file review/dependency closure and concrete findings; no private excerpts"
+    },
+    {
+      "id": "NX02",
+      "state": "PLANNED",
+      "depends_on": [
+        "NX00"
+      ],
+      "executor": "ROOT_AND_SCOPED_READ_ONLY",
+      "scope": "Finalize CPX00–10 contracts and scope decision packet",
+      "acceptance": "Role/route/schema/API/UI/test mapping and explicit accepted or deferred decisions; no unapproved implementation"
+    },
+    {
+      "id": "NX03",
+      "state": "BLOCKED_APPROVAL_AND_REVIEW",
+      "depends_on": [
+        "NX01"
+      ],
+      "executor": "ROOT_AND_SCOPED_WORKER",
+      "scope": "L07 retention successor, native fictional positive/negative evidence",
+      "acceptance": "Report60 A1–A3, protected exact source, independent review and actual owner acceptance",
+      "gate": "Explicit authorized harness/retention scope; no L06 marker or private input"
+    },
+    {
+      "id": "NX04",
+      "state": "BLOCKED",
+      "depends_on": [
+        "NX03"
+      ],
+      "executor": "OWNER_TERMINAL",
+      "scope": "Existing L06",
+      "acceptance": "Actual canonical L06 receipts and direct owner challenge",
+      "gate": "Graph12 and corrected accepted harness; never agent simulated"
+    },
+    {
+      "id": "NX05",
+      "state": "BLOCKED",
+      "depends_on": [
+        "NX04"
+      ],
+      "executor": "SEPARATE_OWNER_OPERATOR",
+      "scope": "Existing L07",
+      "acceptance": "Distinct machine restore and actual portable artifact equality",
+      "gate": "Separate consent and transfer"
+    },
+    {
+      "id": "NX06",
+      "state": "BLOCKED",
+      "depends_on": [
+        "NX05"
+      ],
+      "executor": "OWNER_OPERATOR",
+      "scope": "Existing G02/P0 host decision and import",
+      "acceptance": "Canonical host evidence and separately authorized actual operation",
+      "gate": "No agent automatic hosting"
+    },
+    {
+      "id": "NX07",
+      "state": "BLOCKED",
+      "depends_on": [
+        "NX00"
+      ],
+      "executor": "INDEPENDENT_REVIEWER_OWNER",
+      "scope": "Existing G01",
+      "acceptance": "Actual independently accepted route-factor evidence; AI review supplemental"
+    },
+    {
+      "id": "NX08",
+      "state": "BLOCKED",
+      "depends_on": [
+        "NX04",
+        "NX07"
+      ],
+      "executor": "OWNER_REVIEWER",
+      "scope": "Existing G03/C9 residual and formal gate",
+      "acceptance": "Canonical graph requirements and actual evidence"
+    },
+    {
+      "id": "NX09",
+      "state": "BLOCKED",
+      "depends_on": [
+        "NX08"
+      ],
+      "executor": "OWNER_AUTHORIZATION",
+      "scope": "Existing G04/C10 and then G05/C11 separate gates",
+      "acceptance": "Separate approvals and exact-head receipts"
+    },
+    {
+      "id": "NX10",
+      "state": "BLOCKED_APPROVAL",
+      "depends_on": [
+        "NX02",
+        "NX06"
+      ],
+      "executor": "ROOT_AND_SCOPED_WORKERS",
+      "scope": "Approved CPX packages only, exact successor branch and serialized additive migrations",
+      "acceptance": "Report58/60 exact finalized contracts, tests and receipts",
+      "gate": "P0 resolved and explicit approved feature/phase/migration scope"
+    },
+    {
+      "id": "NX11",
+      "state": "BLOCKED",
+      "depends_on": [
+        "NX09",
+        "NX10"
+      ],
+      "executor": "ROOT_REVIEWER_OWNER",
+      "scope": "Integrated product qualification and requalification",
+      "acceptance": "Exact source, real runtime, independently accepted security and release prerequisites; separate release approval"
+    },
+    {
+      "id": "NX12",
+      "state": "OPEN_STUDENT",
+      "depends_on": [],
+      "executor": "STUDENT",
+      "scope": "Existing G07 academic obligations",
+      "acceptance": "Actual student decisions/actions; no fabricated submission"
+    },
+    {
+      "id": "NX13",
+      "state": "PLANNED_CONTINUOUS",
+      "depends_on": [],
+      "executor": "ROOT",
+      "scope": "Checkpoint and public-safe handback after every task",
+      "acceptance": "Actual receipts, canonical states, next eligible action, blockers, remote verified ref"
+    }
+  ],
+  "notes": [
+    "NX IDs are advisory dispatch groups, not replacements for existing R/L/G/CPX IDs.",
+    "Each dependency is necessary, not sufficient. Canonical graph and current authority override this advisory schedule.",
+    "If product scope deferred, record approved disposition; do not fake pass.",
+    "Run all eligible independent work; blocked tasks do not justify bypass. No uncontrolled retries or quota purchases.",
+    "No tests or implementation executed by this manifest; source coverage incomplete."
+  ],
+  "checkpoint": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
+    "ref": "79ad73db128f6b86a34be37ab9d2917d47d2e377",
+    "main_ci": 45576702774,
+    "main_ci_status": "VERIFIED_BOUNDED",
+    "harness_derivation": "SOURCE_ONLY 11 files 20 replacements",
+    "next": "Advance CPX05/06 explicit settlement/reservation policy and CPX07 reporting contracts, then CPX08/09 scope; complete unread semantic privacy/rights review. H01 retention decision, H02–H06 authorized successor, native actual tests and independent acceptance remain open. Keep L06 HOLD and all P0/phase/owner gates.",
+    "h04": {
+      "test": "docs/handoffs/claude-local-execution-2026-11-24/64_H04_PROBE_SHAPE_REGRESSION.ps1",
+      "cases": 31,
+      "state": "NOT_RUN"
+    },
+    "privacy_index": "docs/handoffs/claude-local-execution-2026-11-24/65_PR57_PRIVACY_REVIEW_INDEX.csv",
+    "acceptance_matrix": {
+      "path": "docs/handoffs/claude-local-execution-2026-11-24/66_HARNESS_SUCCESSOR_ACCEPTANCE_MATRIX.csv",
+      "cases": 32,
+      "state": "NOT_RUN"
+    },
+    "product_contracts": {
+      "path": "docs/handoffs/claude-local-execution-2026-11-24/60_CRITICAL_PATH_AND_PRODUCT_CONTRACTS.md",
+      "section": "G",
+      "status": "PROPOSED_ONLY"
+    },
+    "launch_authority": "HOLD supersession in CLAUDE.md and 00/03/09/13"
+  }
+}

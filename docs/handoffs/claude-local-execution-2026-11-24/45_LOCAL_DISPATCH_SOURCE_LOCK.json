@@ -1,0 +1,448 @@
+{
+  "schema": "orgresource-local-dispatch-source-lock-v1",
+  "date": "2026-11-25 PHT",
+  "ready_to_launch": false,
+  "approved_source_sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+  "candidate_source_sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+  "repository": "newonathe/OrgResource",
+  "graph": "12_EXECUTION_GRAPH.json",
+  "status": "VERIFIED_BOUNDED_REMOTE_PREPARATION_ONLY",
+  "source_files": [
+    {
+      "path": "AGENTS.md",
+      "blob": "b9a8dd40cc8b8f7591a8d058622a23fa31177d7f",
+      "bytes": 7990,
+      "mode": "100644"
+    },
+    {
+      "path": "docs/QUALITY_EVIDENCE_CONTINUOUS_GATE.md",
+      "blob": "494d9df515dbfcc2e7586c87a1b1fa859aa71564",
+      "bytes": 15033,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/package-extended-c.ps1",
+      "blob": "402594b78473a5c70ad2a78a408ed15d23057847",
+      "bytes": 8009,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/verify-extended-c1.ps1",
+      "blob": "d4a168dbea08460a8ac38efd6df10d2f8dd21221",
+      "bytes": 41074,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/verify-extended-c-recovery.ps1",
+      "blob": "76c8bd4e173f2edd165840a9d3455808fc2ceea0",
+      "bytes": 14360,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/verify-extended-c6a-operator.ps1",
+      "blob": "4015ba4117c720f06b97671c0448b92976d172ed",
+      "bytes": 20793,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/verify-c8-demo-import.ps1",
+      "blob": "b76cc7f0ecca1c690727dba2f77c489e43c821f7",
+      "bytes": 15851,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/extended-c-backup.ps1",
+      "blob": "a909fc2a4b3818f8dec318ab9d12ac49d0bd5fb8",
+      "bytes": 30968,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/verify-c9-local-mixed-preparation.sh",
+      "blob": "f4f5a563817ee5edc8b44d6241a40316b6c01ff7",
+      "bytes": 36683,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/c9-private-mixed-recovered-control.sh",
+      "blob": "7272e978a6e3961a617d6d2ebc0313e7b32d9ecd",
+      "bytes": 14324,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/c9-local-operator-gate.sh",
+      "blob": "98977d6f4a45ee610d926b569bb90deb6dcf3d23",
+      "bytes": 1164,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/verify-c9-private-mixed-api.py",
+      "blob": "a2e35c315d8de63155b3d5047102f76b7a71f0ec",
+      "bytes": 8519,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/verify-c9-private-mixed-browser.mjs",
+      "blob": "96beb793e70322325b2b55c59ce72dab9ba7de98",
+      "bytes": 10647,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/build-c9-private-mixed-expectations.py",
+      "blob": "e8e8d046ba740fb6ee7af327c6c4fd16c278ccde",
+      "bytes": 6578,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/c9-private-mixed-expectations.sql",
+      "blob": "d1db889aab9b11d4284f9f8f3232bda2e7c1fd3d",
+      "bytes": 2461,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/stop-c9-private-mixed-process.py",
+      "blob": "0197217580f8be98a7324f17b1fa66b342739b69",
+      "bytes": 4079,
+      "mode": "100644"
+    }
+  ],
+  "migrations": [
+    {
+      "path": "extended/backend/src/main/resources/db/migration/V1__extended_c1_baseline.sql",
+      "blob": "22b1e0f589ab05d2b0721e5de39bb29b371a2382",
+      "bytes": 10645,
+      "mode": "100644"
+    },
+    {
+      "path": "extended/backend/src/main/resources/db/migration/V2__spring_session_jdbc_mysql.sql",
+      "blob": "4dd537e2bcfb22898fb144860cb5881afe904790",
+      "bytes": 1162,
+      "mode": "100644"
+    },
+    {
+      "path": "extended/backend/src/main/resources/db/migration/V3__atomic_inventory_ledger.sql",
+      "blob": "37ce7fffc3a2a5aae6556aec22f5c8f7755b363c",
+      "bytes": 5479,
+      "mode": "100644"
+    },
+    {
+      "path": "extended/backend/src/main/resources/db/migration/V4__c3_contact_images_and_reminders.sql",
+      "blob": "56d09c0c7f46a23d0d29f8fd5eb236548e86f29d",
+      "bytes": 2158,
+      "mode": "100644"
+    },
+    {
+      "path": "extended/backend/src/main/resources/db/migration/V5__c4_reminder_dispatch_boundary.sql",
+      "blob": "ff9f7330de52b7f6aba6f4f21c29382896eeb5a5",
+      "bytes": 311,
+      "mode": "100644"
+    },
+    {
+      "path": "extended/backend/src/main/resources/db/migration/V6__c8_project_leads_and_linked_borrowers.sql",
+      "blob": "187e5aeff4481d250db9e45f6f7d7cb685e683d4",
+      "bytes": 1594,
+      "mode": "100644"
+    },
+    {
+      "path": "extended/backend/src/main/resources/db/migration/V7__c8_local_demo_provenance.sql",
+      "blob": "7072ea7d77a7d8d4f03b790e5516e4f7fd470cb0",
+      "bytes": 816,
+      "mode": "100644"
+    }
+  ],
+  "protected": {
+    "course_a": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+    "course_a_blob_mode_count": 105,
+    "extended_comparison_base": "d3e8a8550e00e3bb9423d84f51f8141783e71fd1",
+    "extended_unchanged_excluding_test": 169,
+    "designated_test": "extended/backend/src/test/java/edu/orgresource/extended/C1IdentityAcceptanceTest.java",
+    "migration_count": 7
+  },
+  "actual_receipts": [
+    {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+      "run": 45550768924,
+      "job": 138992173040,
+      "oracle": "exact corrected source full Extended Linux regression, attempt2",
+      "actual": "93 registered routes once; 103 Maven/78 identity and corrected 8 import guard cases, zero failures/errors/skips; 60 Newman requests/110 assertions, 19 Playwright; actual deadlock rollback/retry/replay; distinct JVM response-loss and reminder restart, independent C5 1039696 bytes exact non-session rows and empty sessions; 15 archive refusals, 10 local prechecks, public original-only metadata/API/browser/grants and SQL aggregate/projection controls, all cleanup; 450+75 packaged serial HTTP, JAR 72486427 bytes SHA256 76e5977499edb6a01a0c6de95ce166c2975d08f70bcdbd57680049d1af32c10a"
+    },
+    {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+      "run": 45550768785,
+      "job": 138991124364,
+      "oracle": "exact corrected source dedicated fresh-schema tests",
+      "actual": "six groups, seven method executions, zero failures/errors/skips, six cleanups, 450 measured+75 warmups, 3 fresh schema/JVM invocations, final R0708_PREPARATION_OK"
+    },
+    {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+      "run": 45550768924,
+      "job": 138992175595,
+      "oracle": "exact frozen Java8 regression",
+      "actual": "61 Maven, 100 Newman requests/151 assertions, one packaged Playwright; zero failures/errors/skips"
+    },
+    {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+      "run": 45550768924,
+      "job": 138992174413,
+      "oracle": "exact React regression",
+      "actual": "3 test files/15 tests, typecheck/lint/build success"
+    },
+    {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+      "run": 45550768892,
+      "job": 138991124431,
+      "oracle": "exact corrected source Windows Java21 DB-free guard suite",
+      "actual": "WINDOWS_GUARD_SOURCE exact SHA; Temurin 21.0.13; C8HostedDemoImportCommandTest 8, C8HostedDemoPostflightTest 3, C8HostedDemoPreflightTest 3, C8HostedOriginalBaselineTest 3; total 17, failures/errors/skips 0, BUILD SUCCESS, job success"
+    }
+  ],
+  "full_pending": [],
+  "local_queue": [
+    "L00",
+    "L03",
+    "L01/L02 nested",
+    "L04",
+    "L05 independent",
+    "L06 owner-terminal",
+    "L08"
+  ],
+  "academic_separate": {
+    "source": "7f8c0746da18fd54b47f430ac1435ac36e605d67",
+    "temporary_packaging_tools_ref": "9ecabdbc51b280ff1dbb2673f72766cfca2ab9a8",
+    "scope": "R04 bounded temporary evidence only; G07 owner/student, no final assembler or release authorization"
+  },
+  "notes": [
+    "R09 final acceptance must update approved_source_sha and ready_to_launch together with graph, exact actual receipts and owner permission; candidate is never executable authority.",
+    "L04 Windows verifier authenticates encrypted C5 archive and compares four-table count/sum/XOR CRC32 fingerprints and allocation count; not exact all-row equality. Retained stopped disposable datadirs require owner-private custody. Native Windows scripts reserve then release loopback ports before launch and poll ping, so require owner-approved exclusive disposable Windows environment without other MySQL servers/listeners or competing launches; no permission broadening or shared database shutdown. If ownership cannot be established, BLOCKED, do not run. Source-only review; actual native behavior NOT_RUN.",
+    "L06 report27 is authoritative; actual exact private plan/owner confirmation and POSIX capability required. No interim preparation or duplicate import.",
+    "Report48: approved_source_sha denotes ChatGPT-reviewed source identity, not owner consent. All 23 pins matched exact tree. Owner explicitly initiates local queue; L06 separate real terminal confirmation. No native PS execution observed.",
+    "Report49: 17 support pins plus original 23 = 40 exact unique pins; final exact source tree; current 09/11 only. Owner initiation and direct terminal consent distinct. Native execution NOT_RUN.",
+    "Report50: prior actual Linux receipts historical. Reopen R09 after reported native failure; candidate never executable authority.",
+    "Report52: corrected exact source reapproved after actual Windows17/17 and Linux full/dedicated results. Prior native failure historical, current native package NOT_RUN. 42 pins. Owner routine continuation authorized; direct L06 confirmation separate."
+  ],
+  "prior_bounded_receipts": [
+    {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "5afd326f4bd4e03c6027a9a639de682a1996d5e1",
+      "run": 45493345999,
+      "job": 138797218433,
+      "oracle": "actual full PR55 recovery, reminder restart, dedicated evidence and packaged HTTP",
+      "actual": "103 Maven/78 identity/19 Playwright, 60 Newman requests/110 assertions, zero failures/errors/skips, 3/3 jobs success; actual InnoDB deadlock and rollback/retry, response-loss upstream201/downstreamEOF and same-actor temporary receipt/ETag replay across distinct JVM exact domain equality; real C5 independent restore non-session exact and empty sessions, durable replay, role/tenant refusals; reminder stale CLAIMED/DISPATCHING -> UNKNOWN, fresh preserved, exact other rows no transport; cleanup; 450 measured+75 warmups packaged same JVM; public original-only preparation, private positive NOT_RUN"
+    },
+    {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "9d0902b4e8ea2045a30a4ff4a524e213a3b6a7b3",
+      "run": 45493392042,
+      "job": 138797385434,
+      "oracle": "first complete corrected combined full regression",
+      "actual": "103 Maven/78 identity/19 Playwright, 60 Newman requests/110 assertions, all three jobs success, zero failures/errors/skips; real deadlock/rollback/retry, distinct JVM response-loss replay and reminder recovery, C5 exact independent restore, public SQL aggregate/projection, locking denial/positive, seven domain DML denials, real original-only metadata/browser/API/session/logout, exact source/domain row equality, all cleanup; private positive NOT_RUN"
+    },
+    {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+      "run": 45494597313,
+      "job": 138801600507,
+      "oracle": "integrated dedicated isolation, reversed order, measurements",
+      "actual": "six selected cases (1+1+2+1+1+1), zero failures/errors/skips, six cleanups, 450 measured+75 warmups, exact checkout and final markers"
+    },
+    {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+      "run": 45494597345,
+      "job": 138801601440,
+      "oracle": "frozen Java8 actual regression",
+      "actual": "61 Maven, 100 Newman requests/151 assertions, one packaged Playwright, zero failures/errors/skips"
+    },
+    {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+      "run": 45494597345,
+      "job": 138801601172,
+      "oracle": "final exact integrated full Extended regression",
+      "actual": "actual checkout, 93 registered policy routes each once, 103 Maven/78 identity zero failures/errors/skips; 60 Newman requests/110 assertions and 19 Playwright zero failures; real deadlock rollback/retry, lost HTTP response and same actor replay across distinct JVM, stale reminder claims recover UNKNOWN and fresh preserved, exact domain rows/no transport; actual independent C5 restore 1039696 bytes, sessions empty, durable replay and role denials, invalid mixed metadata fail closed; public R06B3b SQL aggregate/projection, lock and seven DML denials, metadata200 original-only API/browser and persisted session/logout, exact non-session/source equality, 15 archive refusals, 10 local prechecks, all cleanup, 450+75 packaged HTTP"
+    },
+    {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+      "run": 45494597345,
+      "job": 138801600647,
+      "oracle": "actual exact final React typecheck, tests, lint and build",
+      "actual": "checkout exact; 3 test files/15 tests passed; typecheck, lint, build completed; Vite reported 162ms; job success"
+    }
+  ],
+  "approved_source_tree": "180f9708b78a9479d50531edbd04e0dee48a57e7",
+  "owner_launch_required": true,
+  "support_files": [
+    {
+      "path": ".agents/skills/orgresource-goat/SKILL.md",
+      "blob": "07cba61eb26958cdd4499eaf557d8cf1fbb4fc7b",
+      "bytes": 3380,
+      "mode": "100644"
+    },
+    {
+      "path": ".agents/skills/orgresource-superpowers-debug/SKILL.md",
+      "blob": "5801f65147642269ef5cefa074dd99b6d524a643",
+      "bytes": 1191,
+      "mode": "100644"
+    },
+    {
+      "path": ".agents/skills/orgresource-superpowers-implement/SKILL.md",
+      "blob": "97e095e16ae1ca2af2a8bf4a6f1c63607621f351",
+      "bytes": 1823,
+      "mode": "100644"
+    },
+    {
+      "path": ".agents/skills/orgresource-superpowers-plan/SKILL.md",
+      "blob": "ccc899b93586e39b919559e691b41dc3ca175c8d",
+      "bytes": 1255,
+      "mode": "100644"
+    },
+    {
+      "path": ".agents/skills/orgresource-superpowers-review/SKILL.md",
+      "blob": "c7f37536f75f146c01283d159fc38eca1bac8060",
+      "bytes": 1435,
+      "mode": "100644"
+    },
+    {
+      "path": ".agents/skills/orgresource-superpowers-verify/SKILL.md",
+      "blob": "716e3858f19fd4d90120c48fc020f051f930326a",
+      "bytes": 1377,
+      "mode": "100644"
+    },
+    {
+      "path": "backend/.mvn/wrapper/maven-wrapper.properties",
+      "blob": "c4735cf60ead50bd69158b91464f360b30986564",
+      "bytes": 259,
+      "mode": "100644"
+    },
+    {
+      "path": "backend/mvnw",
+      "blob": "bd8896bf2217b46faa0291585e01ac1a3441a958",
+      "bytes": 11790,
+      "mode": "100644"
+    },
+    {
+      "path": "backend/mvnw.cmd",
+      "blob": "5761d948924c19571d27b465c519b2e2f9e30351",
+      "bytes": 8481,
+      "mode": "100644"
+    },
+    {
+      "path": "extended/backend/pom.xml",
+      "blob": "2eb4209e67e974fdc99a3c65d8683c9758b4e294",
+      "bytes": 5313,
+      "mode": "100644"
+    },
+    {
+      "path": "extended/frontend/package-lock.json",
+      "blob": "aca7c7a1d094535ceabb9ee01f3536b839d93efe",
+      "bytes": 138807,
+      "mode": "100644"
+    },
+    {
+      "path": "extended/frontend/package.json",
+      "blob": "98bbadf846495f05b284cac211487336ff059d92",
+      "bytes": 1034,
+      "mode": "100644"
+    },
+    {
+      "path": "postman/OrgResource-Extended-C3-28-Operations.postman_collection.json",
+      "blob": "e6c61a10adbfa54a140c493d97b48b36b6c56e39",
+      "bytes": 21044,
+      "mode": "100644"
+    },
+    {
+      "path": "postman/OrgResource-Extended-C3-Local.postman_environment.json",
+      "blob": "2a8de54592d85869400b4ec98ca4e0e668dc5839",
+      "bytes": 535,
+      "mode": "100644"
+    },
+    {
+      "path": "postman/OrgResource-Extended-C6a-Reporting.postman_collection.json",
+      "blob": "0c21fd2a53f1b6a25517a492708bbd0850440b84",
+      "bytes": 10604,
+      "mode": "100644"
+    },
+    {
+      "path": "postman/fixtures/academic-demo-image.png",
+      "blob": "97dcd7f9bac25be1962d53636bc4d81340c34cec",
+      "bytes": 137,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/run-extended-c3-newman.ps1",
+      "blob": "9f719cba01bd57142d0f6438618e5543c7a7831a",
+      "bytes": 3130,
+      "mode": "100644"
+    },
+    {
+      "path": ".github/workflows/windows-demo-guards.yml",
+      "blob": "9daa53fe60fbe9dab2361af9891c81d99800a00e",
+      "bytes": 1555,
+      "mode": "100644"
+    },
+    {
+      "path": "extended/backend/src/test/java/edu/orgresource/extended/demo/C8HostedDemoImportCommandTest.java",
+      "blob": "f6971c0f7d5467bbef9ecd0efc1d1d7b0f5630fb",
+      "bytes": 5793,
+      "mode": "100644"
+    }
+  ],
+  "final_dispatch_audit": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/49_FINAL_ADVERSARIAL_HANDOFF_AUDIT.md",
+    "source": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+    "tree": "d55cecc7afd240da455014e2d9f1b61bb0e74f40",
+    "prior_handoff": "cef3b1d566d5d480156e114a1947089518022f0f",
+    "react_actual": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+      "run": 45494597345,
+      "job": 138801600647,
+      "oracle": "actual exact final React typecheck, tests, lint and build",
+      "actual": "checkout exact; 3 test files/15 tests passed; typecheck, lint, build completed; Vite reported 162ms; job success"
+    },
+    "checks": {
+      "source_pins": 16,
+      "migration_pins": 7,
+      "support_pins": 17,
+      "total_unique_pins": 40,
+      "graph_tasks": 33,
+      "unknown_dependencies": 0,
+      "cycles": 0,
+      "actual_final_ci_jobs": 4
+    },
+    "native_execution": "NOT_RUN",
+    "local_owner_launch_required": true,
+    "private_positive": "NOT_RUN",
+    "independent": "OPEN"
+  },
+  "historical_approved_source_sha": "2c626cb251fc3e0a5e3304f9ea5b03f89f55e024",
+  "candidate_receipts": [
+    {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+      "run": 45550768892,
+      "job": 138991124431,
+      "oracle": "exact corrected source Windows Java21 DB-free guard suite",
+      "actual": "WINDOWS_GUARD_SOURCE exact SHA; Temurin 21.0.13; C8HostedDemoImportCommandTest 8, C8HostedDemoPostflightTest 3, C8HostedDemoPreflightTest 3, C8HostedOriginalBaselineTest 3; total 17, failures/errors/skips 0, BUILD SUCCESS, job success"
+    },
+    {
+      "status": "FAILED",
+      "sha": "fbfe961f861478c1727efa1ebf5df209f81f2c5d",
+      "run": 45550768924,
+      "job": 138991125280,
+      "oracle": "full Extended exact-head Linux regression",
+      "actual": "Actual log: wget failed to fetch pinned Maven 3.10.0 distribution at clean verify start; exit1 before Java test execution. Java8/React jobs success metadata; no source/test failure observed from Extended job. Rerun failed workflow jobs only accepted by GitHub API; next attempt actual logs pending."
+    }
+  ],
+  "large_batch_contract": "docs/handoffs/claude-local-execution-2026-11-24/51_LARGE_BATCH_LOCAL_EXECUTION_AND_RESUME_CONTRACT.md",
+  "current_dispatch_hold": {
+    "state": "HOLD",
+    "authority": "Report56 and Reports59–62",
+    "reason": "H01 custody and H02–H06 successor/native/independent acceptance pending; owner direct confirmation separate",
+    "historical_approved_source_preserved": true
+  }
+}
