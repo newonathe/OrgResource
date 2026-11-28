@@ -241,7 +241,7 @@
         }
       ],
       "authority": "Parallel PR10 exact execution specs; not active source or completed tests.",
-      "next": "Consume actual exact-head PR59 Verify46133266836 remaining Course A140942914774, Extended140942914984 and React140942915024 terminal logs; repair observed failures only. New Windows focused guard passed six actual cleanup-block fictional cases, no MySQL or process termination. Native process stop, readiness/port ownership race, session-dispose fault and combined native package/operator NOT_RUN. First six H03/H06 native fixtures remain owner-environment gated; no valid ConPTY before independent acceptance. Course A artifact binary inspection remains blocked per Report150. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+      "next": "Consume terminal actual logs for prior PR59 run46133266836 Extended140942914984 and successor run46133686909 CourseA140944191073, Extended140944190974, React140944190940; repair observed failures only. Successor focused Windows listener guard actual 1 real listener/4 fictional snapshots plus six retained cleanup cases; authenticated MySQL query and shutdown native effects NOT_RUN. Point-in-time check is not a port reservation; operator verifier separate unmodified, native package blocked until approved isolated environment. No valid ConPTY before independent outer/console-host acceptance; private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. Course A artifact bytes blocked per150. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/122_ACADEMIC_FIRST_EXTENDED_C_OBJECTIVE.md",
@@ -320,6 +320,12 @@
           "blob": "bab3c7a06e91df5eee42f873dfa229438a1668da",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; exact four-path diff and actual focused Windows log"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/153_C1_LISTENER_OWNERSHIP_AND_AUTHENTICATED_READINESS.md",
+          "blob": "44291417d4917f438076d3fad681400e7393101b",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; exact source and actual focused listener receipt"
         }
       ]
     },
@@ -1411,7 +1417,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "Consume actual exact-head PR59 Verify46133266836 remaining Course A140942914774, Extended140942914984 and React140942915024 terminal logs; repair observed failures only. New Windows focused guard passed six actual cleanup-block fictional cases, no MySQL or process termination. Native process stop, readiness/port ownership race, session-dispose fault and combined native package/operator NOT_RUN. First six H03/H06 native fixtures remain owner-environment gated; no valid ConPTY before independent acceptance. Course A artifact binary inspection remains blocked per Report150. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+      "next": "Consume terminal actual logs for prior PR59 run46133266836 Extended140942914984 and successor run46133686909 CourseA140944191073, Extended140944190974, React140944190940; repair observed failures only. Successor focused Windows listener guard actual 1 real listener/4 fictional snapshots plus six retained cleanup cases; authenticated MySQL query and shutdown native effects NOT_RUN. Point-in-time check is not a port reservation; operator verifier separate unmodified, native package blocked until approved isolated environment. No valid ConPTY before independent outer/console-host acceptance; private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. Course A artifact bytes blocked per150. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -1850,6 +1856,12 @@
           "blob": "bab3c7a06e91df5eee42f873dfa229438a1668da",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; exact four-path diff and actual focused Windows log"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/153_C1_LISTENER_OWNERSHIP_AND_AUTHENTICATED_READINESS.md",
+          "blob": "44291417d4917f438076d3fad681400e7393101b",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; exact source and actual focused listener receipt"
         }
       ]
     },
@@ -1873,7 +1885,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "Consume actual exact-head PR59 Verify46133266836 remaining Course A140942914774, Extended140942914984 and React140942915024 terminal logs; repair observed failures only. New Windows focused guard passed six actual cleanup-block fictional cases, no MySQL or process termination. Native process stop, readiness/port ownership race, session-dispose fault and combined native package/operator NOT_RUN. First six H03/H06 native fixtures remain owner-environment gated; no valid ConPTY before independent acceptance. Course A artifact binary inspection remains blocked per Report150. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+      "next": "Consume terminal actual logs for prior PR59 run46133266836 Extended140942914984 and successor run46133686909 CourseA140944191073, Extended140944190974, React140944190940; repair observed failures only. Successor focused Windows listener guard actual 1 real listener/4 fictional snapshots plus six retained cleanup cases; authenticated MySQL query and shutdown native effects NOT_RUN. Point-in-time check is not a port reservation; operator verifier separate unmodified, native package blocked until approved isolated environment. No valid ConPTY before independent outer/console-host acceptance; private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. Course A artifact bytes blocked per150. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -2764,6 +2776,12 @@
           "blob": "bab3c7a06e91df5eee42f873dfa229438a1668da",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; exact four-path diff and actual focused Windows log"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/153_C1_LISTENER_OWNERSHIP_AND_AUTHENTICATED_READINESS.md",
+          "blob": "44291417d4917f438076d3fad681400e7393101b",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; exact source and actual focused listener receipt"
         }
       ]
     },
@@ -2910,7 +2928,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "Consume actual exact-head PR59 Verify46133266836 remaining Course A140942914774, Extended140942914984 and React140942915024 terminal logs; repair observed failures only. New Windows focused guard passed six actual cleanup-block fictional cases, no MySQL or process termination. Native process stop, readiness/port ownership race, session-dispose fault and combined native package/operator NOT_RUN. First six H03/H06 native fixtures remain owner-environment gated; no valid ConPTY before independent acceptance. Course A artifact binary inspection remains blocked per Report150. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+      "next": "Consume terminal actual logs for prior PR59 run46133266836 Extended140942914984 and successor run46133686909 CourseA140944191073, Extended140944190974, React140944190940; repair observed failures only. Successor focused Windows listener guard actual 1 real listener/4 fictional snapshots plus six retained cleanup cases; authenticated MySQL query and shutdown native effects NOT_RUN. Point-in-time check is not a port reservation; operator verifier separate unmodified, native package blocked until approved isolated environment. No valid ConPTY before independent outer/console-host acceptance; private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. Course A artifact bytes blocked per150. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -3569,6 +3587,12 @@
           "blob": "bab3c7a06e91df5eee42f873dfa229438a1668da",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; exact four-path diff and actual focused Windows log"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/153_C1_LISTENER_OWNERSHIP_AND_AUTHENTICATED_READINESS.md",
+          "blob": "44291417d4917f438076d3fad681400e7393101b",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; exact source and actual focused listener receipt"
         }
       ]
     }

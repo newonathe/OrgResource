@@ -449,3 +449,7 @@ Report151: PR60 older overlapping migration fix has exact matching migration gua
 ## Current - C1 cleanup binding (2026-11-28 PHT)
 
 Report152: source and recovery stop must use captured process-specific ports, not mutable active port; always attempt DB cleanup after app/session fault and restore state. Actual six fictional cleanup cases passed. No native process termination, port ownership or complete package acceptance inferred. PR59 successor 610c66ece2bfb20b8a81191d356f78713294351e; retain prior evidence.
+
+## Current - C1 listener ownership (2026-11-28 PHT)
+
+Report153: require owned numeric loopback listener plus authenticated SELECT 1 for source/recovery readiness; pre-operation ownership checks are not a reservation. No native proof, no operator rewrite, no network shutdown under missing/ambiguous listener. Approved isolated environment and independent gate remain.
