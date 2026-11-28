@@ -1840,5 +1840,24 @@
     "native_state": "NOT_RUN",
     "owner_environment_verified": false,
     "next": "Consume pending PR59 Extended140740862802 and handoff Extended140742710573 actual terminal logs. First six-fixture native batch prepared, blocked on owner-approved dedicated nonadmin Windows NTFS roots and trusted tools. Advance materially distinct eligible defects/academic delivery, no speculative wrappers or repeat unchanged checks. Report124 controls. Private L06 HOLD/no WSL, no valid ConPTY until independent outer/console-host acceptance, H03/H06 settlement/full native package/operator/P0/L07/93 independent/13 privacy/student gates unchanged. No merge/deploy/release."
+  },
+  "course_a_successor_and_active_refs": {
+    "date": "2026-11-28 PHT",
+    "handoff_parent": "11cff76923c5d8a0f181b58df8a0a89e115aceca",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr58": "4545fdd81a09772f1ac667af9a0f0c034b9e31ee",
+    "pr59": "c868c90320539d29963f8ee063c7eaa9d9562a07",
+    "pr60": "5e013a87386d151e215ac131a14652c465aa05c2",
+    "scope": "Current scoped observation only; prior snapshots retained",
+    "run": 46136326796,
+    "completed_jobs": [
+      140952338079,
+      140952338264,
+      140952338371
+    ],
+    "pending_jobs": [
+      140952338269
+    ],
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/159_COURSE_A_TERMINAL_RECEIPT_AND_ACTIVE_POINTER_RECONCILIATION.md"
   }
 }
