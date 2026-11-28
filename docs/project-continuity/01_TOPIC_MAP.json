@@ -241,7 +241,7 @@
         }
       ],
       "authority": "Parallel PR10 exact execution specs; not active source or completed tests.",
-      "next": "For AC1/AC5, independently hash downloaded existing Course A CI artifact15256323196 against recorded ZIP digest, inspect inner JAR and exact class/assets inventory; owner verify final local DOCX, launcher, package and Canvas. No whole-HEAD archive or redistribution. No repeat unchanged CI. Advance materially distinct eligible work under Report124; native C1 package/operator and first six H03/H06 fixtures NOT_RUN, owner environment gated; no valid ConPTY before independent acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+      "next": "Use PR59 corrected d398ebd as packaging candidate, PR58 directed-test candidate separately; PR60 historical overlapping draft retained, do not duplicate its migration guard or merge any draft. PR58/59 additive workflow blocks disjoint against exact main; integration still unrun, separate authorization for merge. Course A artifact15256323196 byte inspection BLOCKED (container retry ClientError); no redundant CI or speculative wrappers. Native C1 package/operator and six H03/H06 fixtures NOT_RUN, owner approved isolated environment required. Private L06 HOLD/no WSL; no valid ConPTY before independent acceptance; P0/V7 freeze/L07/93 independent/13 privacy/student gates unchanged. Advance materially distinct eligible tasks under Report124. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/122_ACADEMIC_FIRST_EXTENDED_C_OBJECTIVE.md",
@@ -308,6 +308,12 @@
           "blob": "9d2714829e19458602ed33a411aa5f72e1dc9927",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; actual log/API/tree reconciliation; independent artifact bytes blocked"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/151_PARALLEL_PACKAGING_DRAFT_RECONCILIATION.md",
+          "blob": "ef5420875c1411debfbe6d972deb6faa9e420691",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; exact source block equality and four actual prior logs"
         }
       ]
     },
@@ -1399,7 +1405,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "Report148 both exact-head Verify runs terminal actual success, no failure to repair or reason to repeat unchanged CI. Native C1 MySQL option handling and full package/operator effects NOT_RUN; approved isolated environment still required. First six-fixture H03/H06 native batch prepared and owner environment gated; no valid ConPTY until independent outer/console-host acceptance. Advance only materially distinct authorized remote defects or academic delivery under Report124, not speculative wrappers. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+      "next": "Use PR59 corrected d398ebd as packaging candidate, PR58 directed-test candidate separately; PR60 historical overlapping draft retained, do not duplicate its migration guard or merge any draft. PR58/59 additive workflow blocks disjoint against exact main; integration still unrun, separate authorization for merge. Course A artifact15256323196 byte inspection BLOCKED (container retry ClientError); no redundant CI or speculative wrappers. Native C1 package/operator and six H03/H06 fixtures NOT_RUN, owner approved isolated environment required. Private L06 HOLD/no WSL; no valid ConPTY before independent acceptance; P0/V7 freeze/L07/93 independent/13 privacy/student gates unchanged. Advance materially distinct eligible tasks under Report124. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -1826,6 +1832,12 @@
           "blob": "510b392b90197cfd8d06b872ca2c1cff90d2145b",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; six actual terminal log ranges; native NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/151_PARALLEL_PACKAGING_DRAFT_RECONCILIATION.md",
+          "blob": "ef5420875c1411debfbe6d972deb6faa9e420691",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; exact source block equality and four actual prior logs"
         }
       ]
     },
@@ -1849,7 +1861,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "For AC1/AC5, independently hash downloaded existing Course A CI artifact15256323196 against recorded ZIP digest, inspect inner JAR and exact class/assets inventory; owner verify final local DOCX, launcher, package and Canvas. No whole-HEAD archive or redistribution. No repeat unchanged CI. Advance materially distinct eligible work under Report124; native C1 package/operator and first six H03/H06 fixtures NOT_RUN, owner environment gated; no valid ConPTY before independent acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+      "next": "Use PR59 corrected d398ebd as packaging candidate, PR58 directed-test candidate separately; PR60 historical overlapping draft retained, do not duplicate its migration guard or merge any draft. PR58/59 additive workflow blocks disjoint against exact main; integration still unrun, separate authorization for merge. Course A artifact15256323196 byte inspection BLOCKED (container retry ClientError); no redundant CI or speculative wrappers. Native C1 package/operator and six H03/H06 fixtures NOT_RUN, owner approved isolated environment required. Private L06 HOLD/no WSL; no valid ConPTY before independent acceptance; P0/V7 freeze/L07/93 independent/13 privacy/student gates unchanged. Advance materially distinct eligible tasks under Report124. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -2728,6 +2740,12 @@
           "blob": "9d2714829e19458602ed33a411aa5f72e1dc9927",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; actual log/API/tree reconciliation; independent artifact bytes blocked"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/151_PARALLEL_PACKAGING_DRAFT_RECONCILIATION.md",
+          "blob": "ef5420875c1411debfbe6d972deb6faa9e420691",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; exact source block equality and four actual prior logs"
         }
       ]
     },
@@ -2874,7 +2892,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "Report148 both exact-head Verify runs terminal actual success, no failure to repair or reason to repeat unchanged CI. Native C1 MySQL option handling and full package/operator effects NOT_RUN; approved isolated environment still required. First six-fixture H03/H06 native batch prepared and owner environment gated; no valid ConPTY until independent outer/console-host acceptance. Advance only materially distinct authorized remote defects or academic delivery under Report124, not speculative wrappers. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+      "next": "Use PR59 corrected d398ebd as packaging candidate, PR58 directed-test candidate separately; PR60 historical overlapping draft retained, do not duplicate its migration guard or merge any draft. PR58/59 additive workflow blocks disjoint against exact main; integration still unrun, separate authorization for merge. Course A artifact15256323196 byte inspection BLOCKED (container retry ClientError); no redundant CI or speculative wrappers. Native C1 package/operator and six H03/H06 fixtures NOT_RUN, owner approved isolated environment required. Private L06 HOLD/no WSL; no valid ConPTY before independent acceptance; P0/V7 freeze/L07/93 independent/13 privacy/student gates unchanged. Advance materially distinct eligible tasks under Report124. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -3521,6 +3539,12 @@
           "blob": "510b392b90197cfd8d06b872ca2c1cff90d2145b",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; six actual terminal log ranges; native NOT_RUN"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/151_PARALLEL_PACKAGING_DRAFT_RECONCILIATION.md",
+          "blob": "ef5420875c1411debfbe6d972deb6faa9e420691",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; exact source block equality and four actual prior logs"
         }
       ]
     }

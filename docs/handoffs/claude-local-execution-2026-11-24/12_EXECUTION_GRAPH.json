@@ -2826,7 +2826,7 @@
       "native_execution": "NOT_RUN",
       "private_l06_ready": false
     },
-    "pre_handoff_next": "For AC1/AC5, independently hash downloaded existing Course A CI artifact15256323196 against recorded ZIP digest, inspect inner JAR and exact class/assets inventory; owner verify final local DOCX, launcher, package and Canvas. No whole-HEAD archive or redistribution. No repeat unchanged CI. Advance materially distinct eligible work under Report124; native C1 package/operator and first six H03/H06 fixtures NOT_RUN, owner environment gated; no valid ConPTY before independent acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+    "pre_handoff_next": "Use PR59 corrected d398ebd as packaging candidate, PR58 directed-test candidate separately; PR60 historical overlapping draft retained, do not duplicate its migration guard or merge any draft. PR58/59 additive workflow blocks disjoint against exact main; integration still unrun, separate authorization for merge. Course A artifact15256323196 byte inspection BLOCKED (container retry ClientError); no redundant CI or speculative wrappers. Native C1 package/operator and six H03/H06 fixtures NOT_RUN, owner approved isolated environment required. Private L06 HOLD/no WSL; no valid ConPTY before independent acceptance; P0/V7 freeze/L07/93 independent/13 privacy/student gates unchanged. Advance materially distinct eligible tasks under Report124. No merge/deploy/release.",
     "release_inventory_candidate": {
       "report": "docs/handoffs/claude-local-execution-2026-11-24/125_RELEASE_MIGRATION_INVENTORY_CORRECTION.md",
       "pr": 59,
@@ -3682,5 +3682,54 @@
       "actual": "Artifact15256323196 size37371675; upload log and API metadata SHA256 37db61e0ff82954d88a7158f7f92b12f6a5dfd4f3c84dac5e900bc59ca6dffc9 agree. Connector retrieval returned ZIP file reference; independent byte hash and inner JAR inspection BLOCKED by both local runtime ClientError. No final release package claim."
     },
     "next": "For AC1/AC5, independently hash downloaded existing Course A CI artifact15256323196 against recorded ZIP digest, inspect inner JAR and exact class/assets inventory; owner verify final local DOCX, launcher, package and Canvas. No whole-HEAD archive or redistribution. No repeat unchanged CI. Advance materially distinct eligible work under Report124; native C1 package/operator and first six H03/H06 fixtures NOT_RUN, owner environment gated; no valid ConPTY before independent acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release."
+  },
+  "parallel_packaging_draft_reconciliation": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/151_PARALLEL_PACKAGING_DRAFT_RECONCILIATION.md",
+    "blob": "ef5420875c1411debfbe6d972deb6faa9e420691",
+    "pr60": "5e013a87386d151e215ac131a14652c465aa05c2",
+    "pr59": "d398ebd115c7c6fa8dcdfdf84f3918fe2e60d0f8",
+    "pr58": "4545fdd81a09772f1ac667af9a0f0c034b9e31ee",
+    "base": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "state": "VERIFIED_BOUNDED",
+    "migration_function_equal": true,
+    "pins_equal": true,
+    "test_body_included": true,
+    "workflow_insertion_overlap": false,
+    "combined_runtime": "NOT_RUN",
+    "receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "5e013a87386d151e215ac131a14652c465aa05c2",
+        "run": 46023280362,
+        "job": 140588080215,
+        "oracle": "PR60 actual Windows focused eight fictional migration archive cases",
+        "actual": "Exact checkout and all eight expected PASS markers at 15:15:42 UTC on Nov27; no application or DB run in this job."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "5e013a87386d151e215ac131a14652c465aa05c2",
+        "run": 46023280289,
+        "job": 140588082583,
+        "oracle": "PR60 Extended Linux regression",
+        "actual": "Exact checkout, Maven103/78 identity zero failures/errors/skips, React38, Newman90+20 zero failures, Playwright19; terminal success."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "5e013a87386d151e215ac131a14652c465aa05c2",
+        "run": 46023280289,
+        "job": 140588082968,
+        "oracle": "PR60 Course A Linux regression",
+        "actual": "Exact checkout, Maven61 zero failures/errors/skips, React15, Newman160 zero failures, browser1; terminal success."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "5e013a87386d151e215ac131a14652c465aa05c2",
+        "run": 46023280289,
+        "job": 140588082953,
+        "oracle": "PR60 standalone React",
+        "actual": "Exact checkout, React15 passed; terminal success."
+      }
+    ],
+    "next": "Use PR59 corrected d398ebd as packaging candidate, PR58 directed-test candidate separately; PR60 historical overlapping draft retained, do not duplicate its migration guard or merge any draft. PR58/59 additive workflow blocks disjoint against exact main; integration still unrun, separate authorization for merge. Course A artifact15256323196 byte inspection BLOCKED (container retry ClientError); no redundant CI or speculative wrappers. Native C1 package/operator and six H03/H06 fixtures NOT_RUN, owner approved isolated environment required. Private L06 HOLD/no WSL; no valid ConPTY before independent acceptance; P0/V7 freeze/L07/93 independent/13 privacy/student gates unchanged. Advance materially distinct eligible tasks under Report124. No merge/deploy/release."
   }
 }

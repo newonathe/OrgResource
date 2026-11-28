@@ -441,3 +441,7 @@ Report146: reuse six existing bounded fixtures, exact pins and separate fresh ap
 ## Current - C1 disposable client configuration isolation (2026-11-28 PHT)
 
 Report148: choose MySQL 8.0-supported no-defaults plus absent alternate login file and cleared MYSQL_PWD, not 8.2-only no-login-paths. Retain intentional protected-login operator path. Source-only inherited configuration gap corrected on draft PR59; first and corrected hosted Windows focused checks actual success. Native MySQL effects, cleanup exception runtime and port race unresolved. Consume actual terminal PR59 Verify46127885650 Java8/Extended jobs140926417573/140926417437 and first candidate Verify46127857072 outstanding Java8/Extended140926330528/140926330498; inspect React actual logs as applicable. Repair observed failures only. Native C1 package/operator effects NOT_RUN. First six-fixture H03/H06 native batch remains prepared and owner environment gated. No valid ConPTY until independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. Report124 controls. No merge/deploy/release.
+
+## Current - Parallel packaging drafts (2026-11-28 PHT)
+
+Report151: PR60 older overlapping migration fix has exact matching migration guard, pins and eight-case body in PR59. Prefer PR59 as current packaging candidate; retain PR60 history and leave all drafts unchanged. PR58/59 workflow additions disjoint; combined runtime unrun. No automatic merge or duplicate application of PR60.
