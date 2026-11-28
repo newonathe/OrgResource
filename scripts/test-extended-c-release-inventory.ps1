@@ -357,3 +357,64 @@ try {
     if ($script:packageCases -ne 12) { throw 'Wrong package checker case count' }
     Write-Output 'Read-only package integrity checker: 12/12 passed.'
 } finally { Remove-Item -LiteralPath $testRoot -Recurse -Force }
+
+# Exercise the actual isolated-client environment initializer, not the DB runner.
+$c1Path = Join-Path $PSScriptRoot 'verify-extended-c1.ps1'
+$tokens = $null; $errors = $null
+$c1Ast = [System.Management.Automation.Language.Parser]::ParseFile($c1Path,[ref]$tokens,[ref]$errors)
+if ($errors.Count) { throw 'C1 verifier parser errors.' }
+$functions = @($c1Ast.FindAll({param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -ceq 'Initialize-C1MysqlClientIsolation'},$true))
+if ($functions.Count -ne 1) { throw 'C1 isolation function missing or ambiguous.' }
+. ([scriptblock]::Create($functions[0].Extent.Text))
+$caseRoot = Join-Path ([IO.Path]::GetTempPath()) ('OrgResource-ClientIsolation-' + [guid]::NewGuid().ToString('N'))
+$null = New-Item -ItemType Directory -Path $caseRoot
+$previousLogin = [Environment]::GetEnvironmentVariable('MYSQL_TEST_LOGIN_FILE','Process')
+$previousPassword = [Environment]::GetEnvironmentVariable('MYSQL_PWD','Process')
+try {
+    $fictionalLogin = Join-Path $caseRoot 'unrelated-login.cnf'
+    [IO.File]::WriteAllText($fictionalLogin,'fictional sentinel')
+    $env:MYSQL_TEST_LOGIN_FILE = $fictionalLogin
+    $env:MYSQL_PWD = 'fictional-sentinel'
+    $data = Join-Path $caseRoot 'disposable'
+    $null = New-Item -ItemType Directory -Path $data
+    Initialize-C1MysqlClientIsolation $data
+    $expected = Join-Path $data '.orgresource-no-login.cnf'
+    if ($env:MYSQL_TEST_LOGIN_FILE -cne $expected -or $null -ne [Environment]::GetEnvironmentVariable('MYSQL_PWD','Process') -or
+        (Test-Path -LiteralPath $expected) -or [IO.File]::ReadAllText($fictionalLogin) -cne 'fictional sentinel') {
+        throw 'C1 isolated login environment differs.'
+    }
+    'PASS C1 isolation: alternate absent path, password removed, unrelated file unchanged'
+    [IO.File]::WriteAllText($expected,'fictional existing login')
+    $env:MYSQL_TEST_LOGIN_FILE = $fictionalLogin
+    $env:MYSQL_PWD = 'fictional-sentinel'
+    $failure = ''
+    try { Initialize-C1MysqlClientIsolation $data } catch { $failure = $_.Exception.Message }
+    if ($failure -cne 'C1_MYSQL_ISOLATION_LOGIN_EXISTS' -or $env:MYSQL_TEST_LOGIN_FILE -cne $fictionalLogin -or
+        $env:MYSQL_PWD -cne 'fictional-sentinel' -or [IO.File]::ReadAllText($expected) -cne 'fictional existing login') {
+        throw 'Existing login path refusal changed state.'
+    }
+    'PASS C1 isolation: existing alternate login refused without mutation'
+    foreach ($bad in @('relative', (Join-Path $caseRoot 'missing'))) {
+        $failure = ''
+        try { Initialize-C1MysqlClientIsolation $bad } catch { $failure = $_.Exception.Message }
+        if ($failure -cne 'C1_MYSQL_ISOLATION_DIRECTORY' -or $env:MYSQL_TEST_LOGIN_FILE -cne $fictionalLogin -or
+            $env:MYSQL_PWD -cne 'fictional-sentinel') { throw 'Invalid directory refusal changed state.' }
+    }
+    'PASS C1 isolation: relative and missing directories refused'
+    $source = [IO.File]::ReadAllText($c1Path)
+    foreach ($literal in @(
+        '$startInfo.Arguments = "--no-defaults --protocol=tcp --host=127.0.0.1 --port=$databasePort --user=root --skip-password --batch --raw"',
+        '& $mysqladmin --no-defaults --protocol=tcp --host=127.0.0.1 --port=$databasePort --user=root --skip-password ping',
+        '& $mysqladmin --no-defaults --protocol=tcp --host=127.0.0.1 --port=$databasePort --user=root --skip-password shutdown',
+        'Initialize-C1MysqlClientIsolation $dataDirectory',
+        "'SPRING_PROFILES_ACTIVE', 'MYSQL_TEST_LOGIN_FILE', 'MYSQL_PWD'"
+    )) {
+        if (-not $source.Contains($literal,[StringComparison]::Ordinal)) { throw 'C1 native client source binding differs.' }
+    }
+    'PASS C1 isolation: bootstrap/readiness/shutdown argv and environment binding'
+    'C1_MYSQL_CLIENT_ISOLATION_GUARD_OK:5 fixture cases, 5 source bindings, no MySQL launched'
+} finally {
+    [Environment]::SetEnvironmentVariable('MYSQL_TEST_LOGIN_FILE',$previousLogin,'Process')
+    [Environment]::SetEnvironmentVariable('MYSQL_PWD',$previousPassword,'Process')
+    Remove-Item -LiteralPath $caseRoot -Recurse -Force
+}

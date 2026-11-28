@@ -30,7 +30,7 @@ $environmentNames = @(
     'EXT_BOOTSTRAP_DISPLAY_NAME', 'EXT_BOOTSTRAP_PASSWORD',
     'EXT_CONTACT_ENCRYPTION_KEY',
     'EXT_SMS_ENABLED', 'EXT_REMINDER_MODE', 'EXT_SCHEDULER_DELAY_MS', 'EXT_SERVER_PORT',
-    'SPRING_PROFILES_ACTIVE'
+    'SPRING_PROFILES_ACTIVE', 'MYSQL_TEST_LOGIN_FILE', 'MYSQL_PWD'
 )
 
 function Assert-ExitCode([string] $Label) {
@@ -59,10 +59,24 @@ function Stop-C1App {
     $script:appProcess = $null
 }
 
+# MySQL 8.0 reads .mylogin.cnf even with --no-defaults. Redirect to a
+# deliberately absent file inside the newly created disposable datadir.
+# Do not read, copy or modify the operator's actual login configuration.
+function Initialize-C1MysqlClientIsolation([string] $Directory) {
+    if (-not [IO.Path]::IsPathFullyQualified($Directory) -or
+        -not (Test-Path -LiteralPath $Directory -PathType Container)) { throw 'C1_MYSQL_ISOLATION_DIRECTORY' }
+    $item = Get-Item -LiteralPath $Directory -Force
+    if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'C1_MYSQL_ISOLATION_DIRECTORY' }
+    $login = Join-Path $item.FullName '.orgresource-no-login.cnf'
+    if (Test-Path -LiteralPath $login) { throw 'C1_MYSQL_ISOLATION_LOGIN_EXISTS' }
+    $env:MYSQL_TEST_LOGIN_FILE = $login
+    $env:MYSQL_PWD = $null
+}
+
 function Invoke-MysqlBootstrap([string] $Sql) {
     $startInfo = [System.Diagnostics.ProcessStartInfo]::new()
     $startInfo.FileName = $mysql
-    $startInfo.Arguments = "--protocol=tcp --host=127.0.0.1 --port=$databasePort --user=root --batch --raw"
+    $startInfo.Arguments = "--no-defaults --protocol=tcp --host=127.0.0.1 --port=$databasePort --user=root --skip-password --batch --raw"
     $startInfo.UseShellExecute = $false
     $startInfo.CreateNoWindow = $true
     $startInfo.RedirectStandardInput = $true
@@ -234,6 +248,9 @@ function Add-PersistedDemoProject($Session, [long] $DepartmentId) {
     return @{ Id = [long]$project.id; StartAt = $startAt; EndAt = $endAt }
 }
 
+foreach ($name in $environmentNames) {
+    $savedEnvironment[$name] = [Environment]::GetEnvironmentVariable($name, 'Process')
+}
 try {
     if (-not (Test-Path -LiteralPath $mvnw)) { throw 'Maven Wrapper is missing.' }
     foreach ($file in @($mysqld, $mysql, $mysqladmin)) {
@@ -243,15 +260,12 @@ try {
     if ($version -notmatch '21\.') { throw 'C1 requires the approved Java 21 runtime.' }
     if (-not (Test-Path -LiteralPath (Join-Path $frontend 'package-lock.json'))) { throw 'Frontend lockfile is missing.' }
 
-    foreach ($name in $environmentNames) {
-        $savedEnvironment[$name] = [Environment]::GetEnvironmentVariable($name, 'Process')
-    }
-
     $databasePort = Get-FreeLoopbackPort
     $appPort = Get-FreeLoopbackPort
     while ($appPort -eq $databasePort) { $appPort = Get-FreeLoopbackPort }
     $dataDirectory = Join-Path ([System.IO.Path]::GetTempPath()) ('OrgResource-C1-' + [guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Path $dataDirectory | Out-Null
+    Initialize-C1MysqlClientIsolation $dataDirectory
 
     $initialize = Start-Process -FilePath $mysqld -ArgumentList @('--no-defaults', ('--basedir="' + $mysqlHome + '"'),
         ('--datadir="' + $dataDirectory + '"'), '--initialize-insecure', '--console') -Wait -PassThru -NoNewWindow
@@ -264,7 +278,7 @@ try {
     $ready = $false
     for ($attempt = 0; $attempt -lt 90; $attempt++) {
         if ($dbProcess.HasExited) { throw 'Isolated MySQL exited during startup; inspect its temporary error log.' }
-        & $mysqladmin --protocol=tcp --host=127.0.0.1 --port=$databasePort --user=root ping *> $null
+        & $mysqladmin --no-defaults --protocol=tcp --host=127.0.0.1 --port=$databasePort --user=root --skip-password ping *> $null
         if ($LASTEXITCODE -eq 0) { $ready = $true; break }
         Start-Sleep -Milliseconds 500
     }
@@ -691,7 +705,7 @@ FROM user_account WHERE username_key='$adminUsername';
 } finally {
     Stop-C1App
     if ($dbProcess -and -not $dbProcess.HasExited) {
-        & $mysqladmin --protocol=tcp --host=127.0.0.1 --port=$databasePort --user=root shutdown *> $null
+        & $mysqladmin --no-defaults --protocol=tcp --host=127.0.0.1 --port=$databasePort --user=root --skip-password shutdown *> $null
         try { $null = $dbProcess.WaitForExit(15000) } catch { }
         if (-not $dbProcess.HasExited) { Stop-Process -Id $dbProcess.Id -Force }
     }
