@@ -241,7 +241,7 @@
         }
       ],
       "authority": "Parallel PR10 exact execution specs; not active source or completed tests.",
-      "next": "Report166: 61/96 initial upstream evidence (three repackaged underlying terms still open; two prior source-header-only), 35 unresolved. Prioritize original AOP Alliance1.0, ASM asm-debug-all6.0_ALPHA vs manifest5.1, javax.inject1, remaining javax/AspectJ/JBoss then permissive families; all96 binary correspondence and distribution clearance open. Separate Extended actual inventory open. PR59 and Course A prior CI success; no rerun. Native full package/six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent acceptance. Final local DOCX/launcher/student/rights separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy gates unchanged. No merge/deploy/release.",
+      "next": "Report167: 68/96 initial upstream evidence, 28 unresolved; seven new rows and two repackaged rows refined. Next exact ASM6.0_ALPHA terms/shaded version, Javax Transaction/JAX-RS/JAXB/validation/MIMEPull/OSGi, ANTLR/dom4j then permissive families. All96 binary correspondence NOT_RUN and distribution BLOCKED; separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/122_ACADEMIC_FIRST_EXTENDED_C_OBJECTIVE.md",
@@ -410,6 +410,18 @@
           "blob": "26255306dff5185c8666de7e7b1c6017835e6d7f",
           "ref": "bbc5011cb34b1fbb427a5c68c8e5a72f8695cfb8",
           "review": "FULL 96-row join; 61 initially mapped, 35 unresolved"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/167_COURSE_A_JAVAX_JBOSS_AND_EMBEDDED_LICENSE_EVIDENCE.md",
+          "blob": "94df92120d5e3bcded0e7305d5deb388f7e3b053",
+          "ref": "52d0492eba7845b47446ddda4a354d5d9bed945a",
+          "review": "FULL report; exact upstream release evidence and version-matching source POM, no binary or rights clearance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-upstream-license-evidence.csv",
+          "blob": "b363f884812835ae1d28a1eb3de184c70b4e3b3e",
+          "ref": "52d0492eba7845b47446ddda4a354d5d9bed945a",
+          "review": "FULL 96-row join, 68 initial mappings, 28 unresolved"
         }
       ]
     },
@@ -454,7 +466,7 @@
         }
       ],
       "authority": "Immutable A 7f8c0746; actual course code and evidence separate from Extended.",
-      "next": "Report166: 61/96 initial upstream evidence (three repackaged underlying terms still open; two prior source-header-only), 35 unresolved. Prioritize original AOP Alliance1.0, ASM asm-debug-all6.0_ALPHA vs manifest5.1, javax.inject1, remaining javax/AspectJ/JBoss then permissive families; all96 binary correspondence and distribution clearance open. Separate Extended actual inventory open. PR59 and Course A prior CI success; no rerun. Native full package/six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent acceptance. Final local DOCX/launcher/student/rights separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy gates unchanged. No merge/deploy/release.",
+      "next": "Report167: 68/96 initial upstream evidence, 28 unresolved; seven new rows and two repackaged rows refined. Next exact ASM6.0_ALPHA terms/shaded version, Javax Transaction/JAX-RS/JAXB/validation/MIMEPull/OSGi, ANTLR/dom4j then permissive families. All96 binary correspondence NOT_RUN and distribution BLOCKED; separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
@@ -555,6 +567,18 @@
           "blob": "26255306dff5185c8666de7e7b1c6017835e6d7f",
           "ref": "bbc5011cb34b1fbb427a5c68c8e5a72f8695cfb8",
           "review": "FULL 96-row join; 61 initially mapped, 35 unresolved"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/167_COURSE_A_JAVAX_JBOSS_AND_EMBEDDED_LICENSE_EVIDENCE.md",
+          "blob": "94df92120d5e3bcded0e7305d5deb388f7e3b053",
+          "ref": "52d0492eba7845b47446ddda4a354d5d9bed945a",
+          "review": "FULL report; exact upstream release evidence and version-matching source POM, no binary or rights clearance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-upstream-license-evidence.csv",
+          "blob": "b363f884812835ae1d28a1eb3de184c70b4e3b3e",
+          "ref": "52d0492eba7845b47446ddda4a354d5d9bed945a",
+          "review": "FULL 96-row join, 68 initial mappings, 28 unresolved"
         }
       ]
     },
@@ -776,7 +800,7 @@
         }
       ],
       "authority": "Parallel PR24 source inventory and publication vetoes; metadata != content inspection.",
-      "next": "Report166: 61/96 initial upstream evidence (three repackaged underlying terms still open; two prior source-header-only), 35 unresolved. Prioritize original AOP Alliance1.0, ASM asm-debug-all6.0_ALPHA vs manifest5.1, javax.inject1, remaining javax/AspectJ/JBoss then permissive families; all96 binary correspondence and distribution clearance open. Separate Extended actual inventory open. PR59 and Course A prior CI success; no rerun. Native full package/six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent acceptance. Final local DOCX/launcher/student/rights separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy gates unchanged. No merge/deploy/release.",
+      "next": "Report167: 68/96 initial upstream evidence, 28 unresolved; seven new rows and two repackaged rows refined. Next exact ASM6.0_ALPHA terms/shaded version, Javax Transaction/JAX-RS/JAXB/validation/MIMEPull/OSGi, ANTLR/dom4j then permissive families. All96 binary correspondence NOT_RUN and distribution BLOCKED; separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
@@ -1049,6 +1073,18 @@
           "blob": "26255306dff5185c8666de7e7b1c6017835e6d7f",
           "ref": "bbc5011cb34b1fbb427a5c68c8e5a72f8695cfb8",
           "review": "FULL 96-row join; 61 initially mapped, 35 unresolved"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/167_COURSE_A_JAVAX_JBOSS_AND_EMBEDDED_LICENSE_EVIDENCE.md",
+          "blob": "94df92120d5e3bcded0e7305d5deb388f7e3b053",
+          "ref": "52d0492eba7845b47446ddda4a354d5d9bed945a",
+          "review": "FULL report; exact upstream release evidence and version-matching source POM, no binary or rights clearance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-upstream-license-evidence.csv",
+          "blob": "b363f884812835ae1d28a1eb3de184c70b4e3b3e",
+          "ref": "52d0492eba7845b47446ddda4a354d5d9bed945a",
+          "review": "FULL 96-row join, 68 initial mappings, 28 unresolved"
         }
       ]
     },
@@ -2155,7 +2191,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "Report166: 61/96 initial upstream evidence (three repackaged underlying terms still open; two prior source-header-only), 35 unresolved. Prioritize original AOP Alliance1.0, ASM asm-debug-all6.0_ALPHA vs manifest5.1, javax.inject1, remaining javax/AspectJ/JBoss then permissive families; all96 binary correspondence and distribution clearance open. Separate Extended actual inventory open. PR59 and Course A prior CI success; no rerun. Native full package/six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent acceptance. Final local DOCX/launcher/student/rights separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy gates unchanged. No merge/deploy/release.",
+      "next": "Report167: 68/96 initial upstream evidence, 28 unresolved; seven new rows and two repackaged rows refined. Next exact ASM6.0_ALPHA terms/shaded version, Javax Transaction/JAX-RS/JAXB/validation/MIMEPull/OSGi, ANTLR/dom4j then permissive families. All96 binary correspondence NOT_RUN and distribution BLOCKED; separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -3136,6 +3172,18 @@
           "blob": "26255306dff5185c8666de7e7b1c6017835e6d7f",
           "ref": "bbc5011cb34b1fbb427a5c68c8e5a72f8695cfb8",
           "review": "FULL 96-row join; 61 initially mapped, 35 unresolved"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/167_COURSE_A_JAVAX_JBOSS_AND_EMBEDDED_LICENSE_EVIDENCE.md",
+          "blob": "94df92120d5e3bcded0e7305d5deb388f7e3b053",
+          "ref": "52d0492eba7845b47446ddda4a354d5d9bed945a",
+          "review": "FULL report; exact upstream release evidence and version-matching source POM, no binary or rights clearance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-upstream-license-evidence.csv",
+          "blob": "b363f884812835ae1d28a1eb3de184c70b4e3b3e",
+          "ref": "52d0492eba7845b47446ddda4a354d5d9bed945a",
+          "review": "FULL 96-row join, 68 initial mappings, 28 unresolved"
         }
       ]
     },
@@ -3282,7 +3330,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "Report166: 61/96 initial upstream evidence (three repackaged underlying terms still open; two prior source-header-only), 35 unresolved. Prioritize original AOP Alliance1.0, ASM asm-debug-all6.0_ALPHA vs manifest5.1, javax.inject1, remaining javax/AspectJ/JBoss then permissive families; all96 binary correspondence and distribution clearance open. Separate Extended actual inventory open. PR59 and Course A prior CI success; no rerun. Native full package/six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent acceptance. Final local DOCX/launcher/student/rights separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy gates unchanged. No merge/deploy/release.",
+      "next": "Report167: 68/96 initial upstream evidence, 28 unresolved; seven new rows and two repackaged rows refined. Next exact ASM6.0_ALPHA terms/shaded version, Javax Transaction/JAX-RS/JAXB/validation/MIMEPull/OSGi, ANTLR/dom4j then permissive families. All96 binary correspondence NOT_RUN and distribution BLOCKED; separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -4031,6 +4079,18 @@
           "blob": "26255306dff5185c8666de7e7b1c6017835e6d7f",
           "ref": "bbc5011cb34b1fbb427a5c68c8e5a72f8695cfb8",
           "review": "FULL 96-row join; 61 initially mapped, 35 unresolved"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/167_COURSE_A_JAVAX_JBOSS_AND_EMBEDDED_LICENSE_EVIDENCE.md",
+          "blob": "94df92120d5e3bcded0e7305d5deb388f7e3b053",
+          "ref": "52d0492eba7845b47446ddda4a354d5d9bed945a",
+          "review": "FULL report; exact upstream release evidence and version-matching source POM, no binary or rights clearance"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-upstream-license-evidence.csv",
+          "blob": "b363f884812835ae1d28a1eb3de184c70b4e3b3e",
+          "ref": "52d0492eba7845b47446ddda4a354d5d9bed945a",
+          "review": "FULL 96-row join, 68 initial mappings, 28 unresolved"
         }
       ]
     }

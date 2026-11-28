@@ -1902,5 +1902,18 @@
     "state": "VERIFIED_BOUNDED",
     "distribution": "BLOCKED",
     "next": "Report166: 61/96 initial upstream evidence (three repackaged underlying terms still open; two prior source-header-only), 35 unresolved. Prioritize original AOP Alliance1.0, ASM asm-debug-all6.0_ALPHA vs manifest5.1, javax.inject1, remaining javax/AspectJ/JBoss then permissive families; all96 binary correspondence and distribution clearance open. Separate Extended actual inventory open. PR59 and Course A prior CI success; no rerun. Native full package/six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent acceptance. Final local DOCX/launcher/student/rights separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy gates unchanged. No merge/deploy/release."
+  },
+  "course_a_javax_jboss_license_evidence": {
+    "date": "2026-11-28 PHT",
+    "ref": "52d0492eba7845b47446ddda4a354d5d9bed945a",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr59": "c868c90320539d29963f8ee063c7eaa9d9562a07",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/167_COURSE_A_JAVAX_JBOSS_AND_EMBEDDED_LICENSE_EVIDENCE.md",
+    "report_blob": "94df92120d5e3bcded0e7305d5deb388f7e3b053",
+    "map": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-upstream-license-evidence.csv",
+    "map_blob": "b363f884812835ae1d28a1eb3de184c70b4e3b3e",
+    "state": "VERIFIED_BOUNDED",
+    "distribution": "BLOCKED",
+    "next": "Report167: 68/96 initial upstream evidence, 28 unresolved; seven new rows and two repackaged rows refined. Next exact ASM6.0_ALPHA terms/shaded version, Javax Transaction/JAX-RS/JAXB/validation/MIMEPull/OSGi, ANTLR/dom4j then permissive families. All96 binary correspondence NOT_RUN and distribution BLOCKED; separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release."
   }
 }
