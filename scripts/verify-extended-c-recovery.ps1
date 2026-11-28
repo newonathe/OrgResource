@@ -215,14 +215,23 @@ try {
     Write-Output "C5 recovery PASS: independent MySQL processes, $($tables.Count) tables, Flyway/JAR startup, Chromium, retired sessions, durable replay, and key/tamper refusal."
     Write-Output "Encrypted archive: $($backupRecord.Bytes) bytes; SHA-256 $($backupRecord.Sha256)"
 } finally {
-    Stop-C1App
-    foreach ($session in @($oldSession, $restored, $otherActor, $disabledMember)) { if ($session) { $session.Client.Dispose() } }
-    if ($target -and -not $target.HasExited) {
-        & $mysqladmin --no-defaults --protocol=tcp --host=127.0.0.1 "--port=$recoveryPort" --user=root --skip-password shutdown *> $null
-        if (-not $target.WaitForExit(15000)) { Stop-Process -Id $target.Id -Force }
+    try {
+        try {
+            Stop-C1App
+        } finally {
+            try {
+                foreach ($session in @($oldSession, $restored, $otherActor, $disabledMember)) { if ($session) { $session.Client.Dispose() } }
+            } finally {
+                Stop-C1Database -Process $target -Port $recoveryPort
+            }
+        }
+    } finally {
+        $databasePort = $sourcePort
+        try {
+            foreach ($name in $envNames) { [Environment]::SetEnvironmentVariable($name, $savedRecoveryEnvironment[$name], 'Process') }
+        } finally {
+            [Array]::Clear($contactKey)
+            [Array]::Clear($backupKey)
+        }
     }
-    $databasePort = $sourcePort
-    foreach ($name in $envNames) { [Environment]::SetEnvironmentVariable($name, $savedRecoveryEnvironment[$name], 'Process') }
-    [Array]::Clear($contactKey)
-    [Array]::Clear($backupKey)
 }

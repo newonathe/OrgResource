@@ -19,6 +19,7 @@ $java = if ($env:JAVA_HOME) { Join-Path $env:JAVA_HOME 'bin\java.exe' } else { '
 $dbProcess = $null
 $appProcess = $null
 $databasePort = 0
+$sourceDatabasePort = 0
 $appPort = 0
 $appLaunch = 0
 $dataDirectory = $null
@@ -71,6 +72,18 @@ function Initialize-C1MysqlClientIsolation([string] $Directory) {
     if (Test-Path -LiteralPath $login) { throw 'C1_MYSQL_ISOLATION_LOGIN_EXISTS' }
     $env:MYSQL_TEST_LOGIN_FILE = $login
     $env:MYSQL_PWD = $null
+}
+
+# The caller supplies the port bound to this specific process, never the
+# mutable active database port used during recovery.
+function Stop-C1Database([System.Diagnostics.Process] $Process, [int] $Port) {
+    if (-not $Process -or $Process.HasExited) { return }
+    if ($Port -lt 1 -or $Port -gt 65535) { throw 'C1_DB_CLEANUP_PORT_INVALID' }
+    & $mysqladmin --no-defaults --protocol=tcp --host=127.0.0.1 "--port=$Port" --user=root --skip-password shutdown *> $null
+    if (-not $Process.WaitForExit(15000)) {
+        $Process.Kill()
+        if (-not $Process.WaitForExit(15000)) { throw 'C1_DB_CLEANUP_NOT_STOPPED' }
+    }
 }
 
 function Invoke-MysqlBootstrap([string] $Sql) {
@@ -260,7 +273,8 @@ try {
     if ($version -notmatch '21\.') { throw 'C1 requires the approved Java 21 runtime.' }
     if (-not (Test-Path -LiteralPath (Join-Path $frontend 'package-lock.json'))) { throw 'Frontend lockfile is missing.' }
 
-    $databasePort = Get-FreeLoopbackPort
+    $sourceDatabasePort = Get-FreeLoopbackPort
+    $databasePort = $sourceDatabasePort
     $appPort = Get-FreeLoopbackPort
     while ($appPort -eq $databasePort) { $appPort = Get-FreeLoopbackPort }
     $dataDirectory = Join-Path ([System.IO.Path]::GetTempPath()) ('OrgResource-C1-' + [guid]::NewGuid().ToString('N'))
@@ -704,11 +718,10 @@ FROM user_account WHERE username_key='$adminUsername';
     Write-Output "Packaged JAR: $(Join-Path $experiment 'target\extended-backend-0.1.0-SNAPSHOT.jar')"
 } finally {
     try {
-        Stop-C1App
-        if ($dbProcess -and -not $dbProcess.HasExited) {
-            & $mysqladmin --no-defaults --protocol=tcp --host=127.0.0.1 --port=$databasePort --user=root --skip-password shutdown *> $null
-            try { $null = $dbProcess.WaitForExit(15000) } catch { }
-            if (-not $dbProcess.HasExited) { Stop-Process -Id $dbProcess.Id -Force }
+        try {
+            Stop-C1App
+        } finally {
+            Stop-C1Database -Process $dbProcess -Port $sourceDatabasePort
         }
     } finally {
         foreach ($name in $environmentNames) {

@@ -405,7 +405,7 @@ try {
     foreach ($literal in @(
         '$startInfo.Arguments = "--no-defaults --protocol=tcp --host=127.0.0.1 --port=$databasePort --user=root --skip-password --batch --raw"',
         '& $mysqladmin --no-defaults --protocol=tcp --host=127.0.0.1 --port=$databasePort --user=root --skip-password ping',
-        '& $mysqladmin --no-defaults --protocol=tcp --host=127.0.0.1 --port=$databasePort --user=root --skip-password shutdown',
+        '& $mysqladmin --no-defaults --protocol=tcp --host=127.0.0.1 "--port=$Port" --user=root --skip-password shutdown',
         'Initialize-C1MysqlClientIsolation $dataDirectory',
         "'SPRING_PROFILES_ACTIVE', 'MYSQL_TEST_LOGIN_FILE', 'MYSQL_PWD'"
     )) {
@@ -418,3 +418,63 @@ try {
     [Environment]::SetEnvironmentVariable('MYSQL_PWD',$previousPassword,'Process')
     Remove-Item -LiteralPath $caseRoot -Recurse -Force
 }
+
+# Execute the actual parent/recovery finally blocks with fictional spies only.
+# The network/process stop implementation is intentionally not invoked.
+$recoveryPath = Join-Path $PSScriptRoot 'verify-extended-c-recovery.ps1'
+function Get-OuterCleanup([string] $Path) {
+    $parseTokens = $null; $parseErrors = $null
+    $parsed = [System.Management.Automation.Language.Parser]::ParseFile($Path,[ref]$parseTokens,[ref]$parseErrors)
+    if ($parseErrors.Count) { throw 'C1 cleanup script parser errors.' }
+    $outer = @($parsed.EndBlock.Statements | Where-Object {
+        $_ -is [System.Management.Automation.Language.TryStatementAst] -and $_.Finally
+    })
+    if ($outer.Count -ne 1) { throw 'Cannot locate exact C1 outer cleanup.' }
+    $block = $outer[0].Finally.Extent.Text
+    [scriptblock]::Create($block.Substring(1,$block.Length-2))
+}
+$parentCleanup = Get-OuterCleanup $c1Path
+$recoveryCleanup = Get-OuterCleanup $recoveryPath
+function Assert-C1CleanupCase([string] $Lane,[string] $Fault) {
+    $sourceDatabasePort = 14321; $sourcePort = $sourceDatabasePort
+    $recoveryPort = 14322; $databasePort = $recoveryPort
+    $dbProcess = 'fictional-source'; $target = 'fictional-target'
+    $environmentNames = @('ORGRESOURCE_FICTIONAL_CLEANUP_SENTINEL')
+    $envNames = $environmentNames
+    $savedEnvironment = @{ ORGRESOURCE_FICTIONAL_CLEANUP_SENTINEL = 'prior' }
+    $savedRecoveryEnvironment = $savedEnvironment
+    $contactKey = [byte[]]@(1,2); $backupKey = [byte[]]@(3,4)
+    $oldSession = $null; $restored = $null; $otherActor = $null; $disabledMember = $null
+    $spy = [System.Collections.Generic.List[string]]::new()
+    function Stop-C1App {
+        $spy.Add('app')
+        if ($Fault -ceq 'app') { throw 'fictional app fault' }
+    }
+    function Stop-C1Database($Process,[int]$Port) {
+        $spy.Add("${Process}:$Port")
+        if ($Fault -ceq 'db') { throw 'fictional db fault' }
+    }
+    $prior = [Environment]::GetEnvironmentVariable($environmentNames[0],'Process')
+    try {
+        [Environment]::SetEnvironmentVariable($environmentNames[0],'temporary','Process')
+        $failure = ''
+        try {
+            if ($Lane -ceq 'parent') { . $parentCleanup } else { . $recoveryCleanup }
+        } catch { $failure = $_.Exception.Message }
+        $expectedFailure = if ($Fault -ceq 'none') { '' } else { "fictional $Fault fault" }
+        $expectedStop = if ($Lane -ceq 'parent') { 'fictional-source:14321' } else { 'fictional-target:14322' }
+        if ($failure -cne $expectedFailure -or ($spy -join ',') -cne "app,$expectedStop" -or
+            [Environment]::GetEnvironmentVariable($environmentNames[0],'Process') -cne 'prior') {
+            throw "C1 cleanup disposition differs: $Lane/$Fault"
+        }
+        if ($Lane -ceq 'recovery' -and ($databasePort -ne $sourcePort -or
+            @($contactKey | Where-Object { $_ -ne 0 }).Count -or @($backupKey | Where-Object { $_ -ne 0 }).Count)) {
+            throw 'C1 recovery restoration or key clearing differs.'
+        }
+        "PASS C1 cleanup: $Lane/$Fault"
+    } finally { [Environment]::SetEnvironmentVariable($environmentNames[0],$prior,'Process') }
+}
+foreach ($lane in @('parent','recovery')) {
+    foreach ($fault in @('none','app','db')) { Assert-C1CleanupCase $lane $fault }
+}
+'C1_CLEANUP_CONTROL_FLOW_OK:6 fictional cases, actual finally blocks, no MySQL or process termination'
