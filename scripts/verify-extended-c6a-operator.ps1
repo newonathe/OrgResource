@@ -14,8 +14,9 @@ $temp = Join-Path ([IO.Path]::GetTempPath()) ('OrgResource-C6a-Operator-' + [gui
 $null = New-Item -ItemType Directory -Path $temp
 $servers = [Collections.Generic.List[object]]::new()
 $app = $null
+$applicationPort = 0
 $saved = @{}
-$names = @('MYSQL_HOME','MYSQL_TEST_LOGIN_FILE','EXT_DB_URL','EXT_DB_USER','EXT_DB_PASSWORD','EXT_DB_MIGRATION_URL',
+$names = @('MYSQL_HOME','MYSQL_TEST_LOGIN_FILE','MYSQL_PWD','EXT_DB_URL','EXT_DB_USER','EXT_DB_PASSWORD','EXT_DB_MIGRATION_URL',
     'EXT_DB_MIGRATION_USER','EXT_DB_MIGRATION_PASSWORD','EXT_BOOTSTRAP_SLUG','EXT_BOOTSTRAP_ORG_NAME',
     'EXT_BOOTSTRAP_USERNAME','EXT_BOOTSTRAP_DISPLAY_NAME','EXT_BOOTSTRAP_PASSWORD','EXT_BACKUP_KEY',
     'EXT_CONTACT_ENCRYPTION_KEY','EXT_SMS_ENABLED','EXT_REMINDER_MODE','EXT_SERVER_PORT','SPRING_PROFILES_ACTIVE',
@@ -33,6 +34,33 @@ function Free-C6aPort {
 function New-FixtureSecret {
     return [Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(24))
 }
+# Point-in-time attribution; this does not reserve a port.
+function Test-C6aOwnedListener([System.Diagnostics.Process] $Process,[int] $Port) {
+    if (-not $Process -or $Port -lt 1 -or $Port -gt 65535) { throw 'C6A_LISTENER_INVALID' }
+    $Process.Refresh()
+    if ($Process.HasExited) { throw 'C6A_LISTENER_PROCESS_EXITED' }
+    $rows = @(Get-NetTCPConnection -State Listen -ErrorAction Stop | Where-Object { $_.LocalPort -eq $Port })
+    if ($rows.Count -eq 0) { return $false }
+    if ($rows.Count -ne 1 -or $rows[0].LocalAddress -cne '127.0.0.1' -or
+        $rows[0].OwningProcess -ne $Process.Id) { throw 'C6A_LISTENER_NOT_OWNED' }
+    $Process.Refresh()
+    if ($Process.HasExited) { throw 'C6A_LISTENER_PROCESS_EXITED' }
+    return $true
+}
+function Assert-C6aPort([int] $Port) {
+    $live = @($servers | Where-Object { $_.Port -eq $Port -and -not $_.Process.HasExited })
+    if ($live.Count -ne 1) { throw 'C6A_SERVER_IDENTITY_UNKNOWN' }
+    if (-not (Test-C6aOwnedListener $live[0].Process $Port)) { throw 'C6A_LISTENER_MISSING' }
+}
+function Stop-C6aServer($Server) {
+    if ($Server.Process.HasExited) { return }
+    if (-not (Test-C6aOwnedListener $Server.Process $Server.Port)) { throw 'C6A_LISTENER_MISSING' }
+    & "$bin/mysqladmin.exe" --no-defaults --protocol=tcp --host=127.0.0.1 "--port=$($Server.Port)" --user=root --skip-password shutdown *> $null
+    if (-not $Server.Process.WaitForExit(15000)) {
+        $Server.Process.Kill()
+        if (-not $Server.Process.WaitForExit(15000)) { throw 'C6A_SERVER_NOT_STOPPED' }
+    }
+}
 function Start-C6aMysql([string] $Name, [int] $ReusePort = 0) {
     $dir = Join-Path $temp $Name
     $common = @('--no-defaults', ('--basedir="' + $mysqlHome + '"'), ('--datadir="' + $dir + '"'))
@@ -49,14 +77,19 @@ function Start-C6aMysql([string] $Name, [int] $ReusePort = 0) {
         '--bind-address=127.0.0.1','--mysqlx=0',('--log-error="' + (Join-Path $dir 'mysql.log') + '"'))) -PassThru -WindowStyle Hidden
     $servers.Add(@{ Port = $port; Process = $process })
     for ($i=0; $i -lt 60; $i++) {
-        if ($process.HasExited) { throw 'Isolated MySQL exited early.' }
-        & "$bin/mysqladmin.exe" --no-defaults --protocol=tcp --host=127.0.0.1 "--port=$port" --user=root --skip-password ping *> $null
-        if ($LASTEXITCODE -eq 0) { return $port }
+        if (Test-C6aOwnedListener $process $port) {
+            $answer = @(& "$bin/mysql.exe" --no-defaults --protocol=tcp --host=127.0.0.1 "--port=$port" --user=root --skip-password --connect-timeout=2 --batch --raw --skip-column-names '--execute=SELECT 1' 2>$null)
+            if ($LASTEXITCODE -eq 0 -and $answer.Count -eq 1 -and $answer[0] -ceq '1') {
+                Assert-C6aPort $port
+                return $port
+            }
+        }
         Start-Sleep -Milliseconds 300
     }
     throw 'Isolated MySQL did not start.'
 }
 function Invoke-LocalSql([int] $Port, [string] $Sql) {
+    Assert-C6aPort $Port
     $info = [Diagnostics.ProcessStartInfo]::new("$bin/mysql.exe")
     $info.UseShellExecute = $false
     $info.CreateNoWindow = $true
@@ -111,6 +144,7 @@ editor.close()
     } finally { $env:C6A_EDITOR_PASSWORD = $null }
 }
 function Invoke-Bootstrap([bool] $ExpectSuccess) {
+    Assert-C6aPort $applicationPort
     $info = [Diagnostics.ProcessStartInfo]::new($java)
     $info.UseShellExecute = $false
     $info.CreateNoWindow = $true
@@ -146,6 +180,8 @@ function Invoke-Bootstrap([bool] $ExpectSuccess) {
     }
 }
 function Set-ApplicationDatabase([int] $Port, [string] $Schema) {
+    Assert-C6aPort $Port
+    $script:applicationPort = $Port
     $env:EXT_DB_URL = "jdbc:mysql://127.0.0.1:$Port/$Schema" + '?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC'
     $env:EXT_DB_MIGRATION_URL = $env:EXT_DB_URL
 }
@@ -165,12 +201,21 @@ function Set-RuntimeGrant([int] $Port, [string] $Schema, [string] $Password) {
     $null = Invoke-LocalSql $Port ($grants -join [Environment]::NewLine)
 }
 function Start-OperatorJar {
+    Assert-C6aPort $applicationPort
     $script:app = Start-Process -FilePath $java -ArgumentList @('-jar', ('"' + $jar + '"')) -WindowStyle Hidden -PassThru
     for ($i=0; $i -lt 180; $i++) {
         if ($script:app.HasExited) { throw 'Operator JAR exited during startup.' }
+        if (-not (Test-C6aOwnedListener $script:app ([int]$env:EXT_SERVER_PORT))) {
+            Start-Sleep -Milliseconds 500
+            continue
+        }
         try {
-            if ((Invoke-WebRequest -Uri "$base/" -TimeoutSec 2).StatusCode -eq 200) { return }
-        } catch { }
+            $response = Invoke-WebRequest -Uri "$base/" -TimeoutSec 2
+        } catch { Start-Sleep -Milliseconds 500; continue }
+        if ($response.StatusCode -eq 200) {
+            if (-not (Test-C6aOwnedListener $script:app ([int]$env:EXT_SERVER_PORT))) { throw 'C6A_LISTENER_MISSING' }
+            return
+        }
         Start-Sleep -Milliseconds 500
     }
     throw 'Operator JAR did not serve its packaged root.'
@@ -180,12 +225,17 @@ function Stop-OperatorJar {
     $script:app = $null
 }
 function Assert-WebRead([switch] $Inventory) {
+    if (-not (Test-C6aOwnedListener $script:app ([int]$env:EXT_SERVER_PORT))) { throw 'C6A_LISTENER_MISSING' }
     $grep = if ($Inventory) { 'the packaged Java application serves|connected inventory UI recovers' } else { 'the packaged Java application serves' }
     Push-Location (Join-Path $root 'extended/frontend')
     try {
         & npm run e2e -- --grep $grep
         Assert-Native 'Independent first-run authenticated Chromium'
     } finally { Pop-Location }
+}
+function Invoke-C6aBackup([string] $Mode,[int] $Port,[string] $Schema,[string] $LoginPath,[string] $Archive) {
+    Assert-C6aPort $Port
+    & $backup @PSBoundParameters
 }
 function Assert-Refused([scriptblock] $Action, [string] $Expected) {
     try { $null = & $Action; throw 'Unexpected success.' }
@@ -197,6 +247,7 @@ try {
     Assert-Native 'Test-only Python pywinpty availability'
     $env:MYSQL_HOME = $mysqlHome
     $env:MYSQL_TEST_LOGIN_FILE = Join-Path $temp '.mylogin.cnf'
+    $env:MYSQL_PWD = $null
     $source = Start-C6aMysql 'source'
     $target = Start-C6aMysql 'target'
     $db = 'orgresource_c6a_source'
@@ -254,6 +305,7 @@ GRANT ALL ON $restored.* TO 'c6_migrate'@'127.0.0.1';
     $env:EXT_E2E_BASE_URL = $base
     $env:ORGRESOURCE_E2E_SCREENSHOT_DIR = Join-Path $temp 'screenshots'
     Start-OperatorJar
+    if (-not (Test-C6aOwnedListener $script:app ([int]$env:EXT_SERVER_PORT))) { throw 'C6A_LISTENER_MISSING' }
     & "$PSScriptRoot/run-extended-c3-newman.ps1" -BaseUrl $base -Username $env:EXT_E2E_USERNAME -Password $env:EXT_E2E_PASSWORD
     Assert-WebRead -Inventory
     Stop-OperatorJar
@@ -270,29 +322,29 @@ GRANT ALL ON $restored.* TO 'c6_migrate'@'127.0.0.1';
 
     $backup = "$PSScriptRoot/extended-c-backup.ps1"
     $file = Join-Path $temp 'c6-operator.aesgcm'
-    Assert-Refused { & $backup -Mode Backup -Port $source -Schema $db -LoginPath 'does-not-exist' -Archive $file } 'Protected login path is unavailable'
-    Assert-Refused { & $backup -Mode Backup -Port $source -Schema $db -LoginPath 'c6-limited' -Archive $file } 'Schema inventory differs'
+    Assert-Refused { Invoke-C6aBackup -Mode Backup -Port $source -Schema $db -LoginPath 'does-not-exist' -Archive $file } 'Protected login path is unavailable'
+    Assert-Refused { Invoke-C6aBackup -Mode Backup -Port $source -Schema $db -LoginPath 'c6-limited' -Archive $file } 'Schema inventory differs'
     if (Test-Path -LiteralPath $file) { throw 'An incomplete backup was published.' }
-    $archive = & $backup -Mode Backup -Port $source -Schema $db -LoginPath 'c6-backup' -Archive $file
+    $archive = Invoke-C6aBackup -Mode Backup -Port $source -Schema $db -LoginPath 'c6-backup' -Archive $file
     $truncated = Join-Path $temp 'truncated.aesgcm'
     [IO.File]::WriteAllBytes($truncated, [byte[]]::new(16))
-    Assert-Refused { & $backup -Mode Restore -Port $target -Schema $restored -LoginPath 'c6-restore' -Archive $truncated } 'Backup container size is invalid'
+    Assert-Refused { Invoke-C6aBackup -Mode Restore -Port $target -Schema $restored -LoginPath 'c6-restore' -Archive $truncated } 'Backup container size is invalid'
     $oversized = Join-Path $temp 'oversized.aesgcm'
     $oversizedStream = [IO.File]::Open($oversized, [IO.FileMode]::CreateNew)
     try { $oversizedStream.SetLength(65MB) } finally { $oversizedStream.Dispose() }
     try {
-        Assert-Refused { & $backup -Mode Restore -Port $target -Schema $restored -LoginPath 'c6-restore' -Archive $oversized } 'Backup container size is invalid'
+        Assert-Refused { Invoke-C6aBackup -Mode Restore -Port $target -Schema $restored -LoginPath 'c6-restore' -Archive $oversized } 'Backup container size is invalid'
     } finally { Remove-Item -LiteralPath $oversized -Force }
     if ((Invoke-LocalSql $target "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$restored';") -ne '0') {
         throw 'An out-of-bounds archive modified the target.'
     }
-    Assert-Refused { & $backup -Mode Restore -Port $target -Schema $restored -LoginPath 'c6-limited' -Archive $file } 'mysql failed'
-    Assert-Refused { & $backup -Mode Restore -Port $target -Schema $partial -LoginPath 'c6-limited' -Archive $file } 'Restore did not complete'
+    Assert-Refused { Invoke-C6aBackup -Mode Restore -Port $target -Schema $restored -LoginPath 'c6-limited' -Archive $file } 'mysql failed'
+    Assert-Refused { Invoke-C6aBackup -Mode Restore -Port $target -Schema $partial -LoginPath 'c6-limited' -Archive $file } 'Restore did not complete'
     $partialCount = [int](Invoke-LocalSql $target "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$partial';")
     if ($partialCount -lt 1 -or $partialCount -ge 18) { throw 'SQL fixture did not exercise a genuinely partial import.' }
-    $roundtrip = & $backup -Mode Restore -Port $target -Schema $restored -LoginPath 'c6-restore' -Archive $file
+    $roundtrip = Invoke-C6aBackup -Mode Restore -Port $target -Schema $restored -LoginPath 'c6-restore' -Archive $file
     if ($roundtrip.Sha256 -ne $archive.Sha256) { throw 'Scoped restore archive hash changed.' }
-    Assert-Refused { & $backup -Mode Restore -Port $target -Schema $restored -LoginPath 'c6-restore' -Archive $file } 'Restore requires a newly created empty schema'
+    Assert-Refused { Invoke-C6aBackup -Mode Restore -Port $target -Schema $restored -LoginPath 'c6-restore' -Archive $file } 'Restore requires a newly created empty schema'
     $sourceCounts = Invoke-LocalSql $source "SELECT (SELECT COUNT(*) FROM $db.department),(SELECT COUNT(*) FROM $db.stock_movement),(SELECT COUNT(*) FROM $db.audit_event);"
     $targetCounts = Invoke-LocalSql $target "SELECT (SELECT COUNT(*) FROM $restored.department),(SELECT COUNT(*) FROM $restored.stock_movement),(SELECT COUNT(*) FROM $restored.audit_event);"
     if ($sourceCounts -ne $targetCounts) { throw 'The independent restored row counts differ.' }
@@ -301,11 +353,13 @@ GRANT ALL ON $restored.* TO 'c6_migrate'@'127.0.0.1';
     Set-ApplicationDatabase $target $restored
     Start-OperatorJar
     Assert-WebRead
-    $originalTarget = $servers | Where-Object { $_.Port -eq $target } | Select-Object -Last 1
+    Assert-C6aPort $target
+    $originalTarget = $servers | Where-Object { $_.Port -eq $target -and -not $_.Process.HasExited } | Select-Object -Last 1
     & "$bin/mysqladmin.exe" --no-defaults --protocol=tcp --host=127.0.0.1 "--port=$target" --user=root --skip-password shutdown *> $null
     Assert-Native 'Disposable target shutdown while Java is live'
     if (-not $originalTarget.Process.WaitForExit(15000)) { throw 'Disposable target did not stop.' }
     # Spring Session and the servlet error path may make separate 10-second pool acquisitions.
+    if (-not (Test-C6aOwnedListener $script:app ([int]$env:EXT_SERVER_PORT))) { throw 'C6A_LISTENER_MISSING' }
     $interrupted = Invoke-WebRequest -Uri "$base/api/v2/auth/csrf" -SkipHttpErrorCheck -TimeoutSec 75
     if ($interrupted.StatusCode -lt 500) { throw 'A database-backed CSRF initialization succeeded during the outage.' }
     if ($script:app.HasExited) { throw 'Java exited during the MySQL outage.' }
@@ -322,19 +376,21 @@ FROM fixture CROSS JOIN $db.organization o
 WHERE o.slug='c6a-fictional-operator';
 "@
     $oversizedBackup = Join-Path $temp 'oversized-backup.aesgcm'
-    Assert-Refused { & $backup -Mode Backup -Port $source -Schema $db -LoginPath 'c6-backup' -Archive $oversizedBackup } 'MySQL output exceeded the local recovery size limit'
+    Assert-Refused { Invoke-C6aBackup -Mode Backup -Port $source -Schema $db -LoginPath 'c6-backup' -Archive $oversizedBackup } 'MySQL output exceeded the local recovery size limit'
     if (Test-Path -LiteralPath $oversizedBackup) { throw 'An oversized backup was published.' }
     Write-Output 'Oversized MySQL output was refused before an archive was published.'
     Write-Output "Protected-login restore passed. Archive bytes: $($archive.Bytes), SHA-256 $($archive.Sha256). Evidence directory: $temp"
 } finally {
-    Stop-OperatorJar
-    foreach ($server in $servers) {
-        if (-not $server.Process.HasExited) {
-            & "$bin/mysqladmin.exe" --no-defaults --protocol=tcp --host=127.0.0.1 "--port=$($server.Port)" --user=root --skip-password shutdown *> $null
-            if (-not $server.Process.WaitForExit(15000)) { Stop-Process -Id $server.Process.Id -Force }
+    $cleanupFailed = $false
+    try {
+        try { Stop-OperatorJar } catch { $cleanupFailed = $true }
+        foreach ($server in $servers) {
+            try { Stop-C6aServer $server } catch { $cleanupFailed = $true }
         }
+        if ($cleanupFailed) { throw 'C6A_CLEANUP_INCOMPLETE: inspect retained fixture processes and protected login file privately.' }
+        $loginFile = Join-Path $temp '.mylogin.cnf'
+        if (Test-Path -LiteralPath $loginFile) { Remove-Item -LiteralPath $loginFile -Force }
+    } finally {
+        foreach ($name in $names) { [Environment]::SetEnvironmentVariable($name, $saved[$name], 'Process') }
     }
-    $loginFile = Join-Path $temp '.mylogin.cnf'
-    if (Test-Path -LiteralPath $loginFile) { Remove-Item -LiteralPath $loginFile -Force }
-    foreach ($name in $names) { [Environment]::SetEnvironmentVariable($name, $saved[$name], 'Process') }
 }

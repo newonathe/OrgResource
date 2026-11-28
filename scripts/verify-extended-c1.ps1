@@ -19,6 +19,7 @@ $java = if ($env:JAVA_HOME) { Join-Path $env:JAVA_HOME 'bin\java.exe' } else { '
 $dbProcess = $null
 $appProcess = $null
 $databasePort = 0
+$sourceDatabasePort = 0
 $appPort = 0
 $appLaunch = 0
 $dataDirectory = $null
@@ -30,7 +31,7 @@ $environmentNames = @(
     'EXT_BOOTSTRAP_DISPLAY_NAME', 'EXT_BOOTSTRAP_PASSWORD',
     'EXT_CONTACT_ENCRYPTION_KEY',
     'EXT_SMS_ENABLED', 'EXT_REMINDER_MODE', 'EXT_SCHEDULER_DELAY_MS', 'EXT_SERVER_PORT',
-    'SPRING_PROFILES_ACTIVE'
+    'SPRING_PROFILES_ACTIVE', 'MYSQL_TEST_LOGIN_FILE', 'MYSQL_PWD'
 )
 
 function Assert-ExitCode([string] $Label) {
@@ -59,27 +60,117 @@ function Stop-C1App {
     $script:appProcess = $null
 }
 
+# MySQL 8.0 reads .mylogin.cnf even with --no-defaults. Redirect to a
+# deliberately absent file inside the newly created disposable datadir.
+# Do not read, copy or modify the operator's actual login configuration.
+function Initialize-C1MysqlClientIsolation([string] $Directory) {
+    if (-not [IO.Path]::IsPathFullyQualified($Directory) -or
+        -not (Test-Path -LiteralPath $Directory -PathType Container)) { throw 'C1_MYSQL_ISOLATION_DIRECTORY' }
+    $item = Get-Item -LiteralPath $Directory -Force
+    if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'C1_MYSQL_ISOLATION_DIRECTORY' }
+    $login = Join-Path $item.FullName '.orgresource-no-login.cnf'
+    if (Test-Path -LiteralPath $login) { throw 'C1_MYSQL_ISOLATION_LOGIN_EXISTS' }
+    $env:MYSQL_TEST_LOGIN_FILE = $login
+    $env:MYSQL_PWD = $null
+}
+
+# Snapshot the Windows listener table without connecting to an unknown endpoint.
+# This is a point-in-time check, not a reservation or a race-free guarantee.
+function Test-C1OwnedListener([System.Diagnostics.Process] $Process, [int] $Port) {
+    if (-not $Process -or $Port -lt 1 -or $Port -gt 65535) { throw 'C1_LISTENER_INVALID' }
+    $Process.Refresh()
+    if ($Process.HasExited) { throw 'C1_LISTENER_PROCESS_EXITED' }
+    $listeners = @(Get-NetTCPConnection -State Listen -ErrorAction Stop | Where-Object { $_.LocalPort -eq $Port })
+    if ($listeners.Count -eq 0) { return $false }
+    if ($listeners.Count -ne 1 -or $listeners[0].LocalAddress -cne '127.0.0.1' -or
+        $listeners[0].OwningProcess -ne $Process.Id) { throw 'C1_LISTENER_NOT_OWNED' }
+    $Process.Refresh()
+    if ($Process.HasExited) { throw 'C1_LISTENER_PROCESS_EXITED' }
+    return $true
+}
+
+function Assert-C1OwnedListener([System.Diagnostics.Process] $Process, [int] $Port) {
+    if (-not (Test-C1OwnedListener -Process $Process -Port $Port)) { throw 'C1_LISTENER_MISSING' }
+}
+
+function Assert-C1DatabasePort([int] $Port) {
+    if ($Port -eq $sourceDatabasePort) {
+        Assert-C1OwnedListener -Process $dbProcess -Port $Port
+    } elseif ($Port -eq $recoveryPort -and $target) {
+        Assert-C1OwnedListener -Process $target -Port $Port
+    } else { throw 'C1_DATABASE_PORT_UNKNOWN' }
+}
+
+function Wait-C1DatabaseReady([System.Diagnostics.Process] $Process, [int] $Port) {
+    $clock = [Diagnostics.Stopwatch]::StartNew()
+    while ($clock.Elapsed.TotalSeconds -lt 45) {
+        if (Test-C1OwnedListener -Process $Process -Port $Port) {
+            # mysqladmin ping can return zero on Access denied. Require a real query.
+            $answer = @(& $mysql --no-defaults --protocol=tcp --host=127.0.0.1 "--port=$Port" --user=root --skip-password --connect-timeout=2 --batch --raw --skip-column-names '--execute=SELECT 1' 2>$null)
+            if ($LASTEXITCODE -eq 0 -and $answer.Count -eq 1 -and $answer[0] -ceq '1') {
+                Assert-C1OwnedListener -Process $Process -Port $Port
+                return
+            }
+        }
+        Start-Sleep -Milliseconds 500
+    }
+    throw 'C1_AUTHENTICATED_READINESS_TIMEOUT'
+}
+
+# The caller supplies the port bound to this specific process, never the
+# mutable active database port used during recovery.
+function Stop-C1Database([System.Diagnostics.Process] $Process, [int] $Port) {
+    if (-not $Process -or $Process.HasExited) { return }
+    if ($Port -lt 1 -or $Port -gt 65535) { throw 'C1_DB_CLEANUP_PORT_INVALID' }
+    Assert-C1OwnedListener -Process $Process -Port $Port
+    & $mysqladmin --no-defaults --protocol=tcp --host=127.0.0.1 "--port=$Port" --user=root --skip-password shutdown *> $null
+    if (-not $Process.WaitForExit(15000)) {
+        $Process.Kill()
+        if (-not $Process.WaitForExit(15000)) { throw 'C1_DB_CLEANUP_NOT_STOPPED' }
+    }
+}
+
+# Drain both redirected pipes concurrently; bootstrap does not consume row output.
+# Do not include SQL or raw client error text in a public verification log.
+function Invoke-C1BootstrapProcess([System.Diagnostics.ProcessStartInfo] $StartInfo, [string] $Sql, [int] $TimeoutMs = 20000) {
+    if ($TimeoutMs -lt 1) { throw 'C1_BOOTSTRAP_TIMEOUT_INVALID' }
+    $process = [System.Diagnostics.Process]::Start($StartInfo)
+    try {
+        $stdout = $process.StandardOutput.BaseStream.CopyToAsync([IO.Stream]::Null)
+        $stderr = $process.StandardError.BaseStream.CopyToAsync([IO.Stream]::Null)
+        $write = $process.StandardInput.WriteLineAsync($Sql)
+        if (-not $write.Wait($TimeoutMs)) { throw 'C1_BOOTSTRAP_INPUT_TIMEOUT' }
+        $process.StandardInput.Close()
+        if (-not $process.WaitForExit($TimeoutMs)) { throw 'C1_BOOTSTRAP_EXIT_TIMEOUT' }
+        if (-not [Threading.Tasks.Task]::WaitAll([Threading.Tasks.Task[]]@($stdout,$stderr),$TimeoutMs)) {
+            throw 'C1_BOOTSTRAP_DRAIN_TIMEOUT'
+        }
+        if ($process.ExitCode -ne 0) { throw "C1_BOOTSTRAP_FAILED: exit=$($process.ExitCode)" }
+    } finally {
+        try {
+            if (-not $process.HasExited) {
+                $process.Kill()
+                if (-not $process.WaitForExit(5000)) { throw 'C1_BOOTSTRAP_CLIENT_NOT_STOPPED' }
+            }
+        } finally { $process.Dispose() }
+    }
+}
+
 function Invoke-MysqlBootstrap([string] $Sql) {
+    Assert-C1DatabasePort -Port $databasePort
     $startInfo = [System.Diagnostics.ProcessStartInfo]::new()
     $startInfo.FileName = $mysql
-    $startInfo.Arguments = "--protocol=tcp --host=127.0.0.1 --port=$databasePort --user=root --batch --raw"
+    $startInfo.Arguments = "--no-defaults --protocol=tcp --host=127.0.0.1 --port=$databasePort --user=root --skip-password --batch --raw"
     $startInfo.UseShellExecute = $false
     $startInfo.CreateNoWindow = $true
     $startInfo.RedirectStandardInput = $true
     $startInfo.RedirectStandardOutput = $true
     $startInfo.RedirectStandardError = $true
-    $process = [System.Diagnostics.Process]::Start($startInfo)
-    $process.StandardInput.WriteLine($Sql)
-    $process.StandardInput.Close()
-    $output = $process.StandardOutput.ReadToEnd()
-    $errorOutput = $process.StandardError.ReadToEnd()
-    $process.WaitForExit()
-    if ($process.ExitCode -ne 0) {
-        throw "Isolated MySQL bootstrap SQL failed with exit code $($process.ExitCode): $errorOutput"
-    }
+    Invoke-C1BootstrapProcess -StartInfo $startInfo -Sql $Sql
 }
 
 function Start-C1PackagedApp([string] $Timezone = 'Asia/Manila') {
+    Assert-C1DatabasePort -Port $databasePort
     $jar = Join-Path $experiment 'target\extended-backend-0.1.0-SNAPSHOT.jar'
     if (-not (Test-Path -LiteralPath $jar)) { throw "Packaged C1 JAR is missing: $jar" }
     $script:appLaunch++
@@ -90,13 +181,19 @@ function Start-C1PackagedApp([string] $Timezone = 'Asia/Manila') {
     $base = "http://127.0.0.1:$appPort"
     for ($attempt = 0; $attempt -lt 90; $attempt++) {
         if ($script:appProcess.HasExited) { throw "Packaged JAR exited early; inspect the C1 app log in the temporary run directory." }
+        if (-not (Test-C1OwnedListener -Process $script:appProcess -Port $appPort)) {
+            Start-Sleep -Milliseconds 500
+            continue
+        }
         try {
             $response = Invoke-WebRequest -Uri "$base/" -TimeoutSec 2 -UseBasicParsing
         } catch { Start-Sleep -Milliseconds 500; continue }
         if ($response.StatusCode -eq 200) {
+            Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
             $assets = [regex]::Matches($response.Content, '(?:src|href)="([^"]*/assets/[^"]+\.(?:js|css))"')
             if ($assets.Count -lt 2) { throw 'Packaged React entry did not reference both JS and CSS assets.' }
             foreach ($asset in $assets) {
+                Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
                 $assetResponse = Invoke-WebRequest -Uri ($base + $asset.Groups[1].Value) -TimeoutSec 5 -UseBasicParsing
                 if ($assetResponse.StatusCode -ne 200 -or $assetResponse.Content.Length -lt 100) {
                     throw "Packaged React asset failed: $($asset.Groups[1].Value)"
@@ -104,12 +201,14 @@ function Start-C1PackagedApp([string] $Timezone = 'Asia/Manila') {
             }
             $probe = [System.Net.Http.HttpClient]::new()
             try {
+                Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
                 $api = $probe.GetAsync("$base/api/departments").GetAwaiter().GetResult()
                 $apiBody = $api.Content.ReadAsStringAsync().GetAwaiter().GetResult()
                 if ([int]$api.StatusCode -ne 401 -or $apiBody -notmatch 'AUTH_REQUIRED') {
                     throw 'Packaged JAR API did not return its expected unauthenticated JSON response.'
                 }
             } finally { $probe.Dispose() }
+            Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
             return
         }
         Start-Sleep -Milliseconds 500
@@ -124,6 +223,7 @@ function New-C1Client {
 }
 
 function Get-C1Csrf($Client, [string] $Base) {
+    Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
     $response = $Client.GetAsync("$Base/api/v2/auth/csrf").GetAwaiter().GetResult()
     $body = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult() | ConvertFrom-Json
     if (-not $response.IsSuccessStatusCode -or [string]::IsNullOrWhiteSpace([string]$body.data.csrfToken)) {
@@ -143,6 +243,7 @@ function Invoke-C1Post($Session, [string] $Path, [object] $Body, [string] $IfMat
         $json = ConvertTo-Json -InputObject $Body -Depth 8 -Compress
         $request.Content = [System.Net.Http.StringContent]::new($json, [System.Text.Encoding]::UTF8, 'application/json')
     }
+    Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
     $response = $Session.Client.SendAsync($request).GetAwaiter().GetResult()
     $raw = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
     $parsed = if ([string]::IsNullOrWhiteSpace($raw)) { $null } else { $raw | ConvertFrom-Json }
@@ -155,6 +256,7 @@ function Invoke-C1Post($Session, [string] $Path, [object] $Body, [string] $IfMat
 }
 
 function Invoke-C1Get($Session, [string] $Path) {
+    Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
     $response = $Session.Client.GetAsync("$($Session.Base)$Path").GetAwaiter().GetResult()
     $raw = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
     $parsed = if ([string]::IsNullOrWhiteSpace($raw)) { $null } else { $raw | ConvertFrom-Json }
@@ -212,6 +314,7 @@ function Add-PersistedDemoDepartment($Session, [string] $Name) {
     $request.Headers.Add('Origin', $Session.Base)
     $request.Headers.Add('X-CSRF-TOKEN', $Session.Token)
     $request.Content = $content
+    Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
     $response = $Session.Client.SendAsync($request).GetAwaiter().GetResult()
     $body = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
     $content.Dispose()
@@ -234,6 +337,9 @@ function Add-PersistedDemoProject($Session, [long] $DepartmentId) {
     return @{ Id = [long]$project.id; StartAt = $startAt; EndAt = $endAt }
 }
 
+foreach ($name in $environmentNames) {
+    $savedEnvironment[$name] = [Environment]::GetEnvironmentVariable($name, 'Process')
+}
 try {
     if (-not (Test-Path -LiteralPath $mvnw)) { throw 'Maven Wrapper is missing.' }
     foreach ($file in @($mysqld, $mysql, $mysqladmin)) {
@@ -243,15 +349,13 @@ try {
     if ($version -notmatch '21\.') { throw 'C1 requires the approved Java 21 runtime.' }
     if (-not (Test-Path -LiteralPath (Join-Path $frontend 'package-lock.json'))) { throw 'Frontend lockfile is missing.' }
 
-    foreach ($name in $environmentNames) {
-        $savedEnvironment[$name] = [Environment]::GetEnvironmentVariable($name, 'Process')
-    }
-
-    $databasePort = Get-FreeLoopbackPort
+    $sourceDatabasePort = Get-FreeLoopbackPort
+    $databasePort = $sourceDatabasePort
     $appPort = Get-FreeLoopbackPort
     while ($appPort -eq $databasePort) { $appPort = Get-FreeLoopbackPort }
     $dataDirectory = Join-Path ([System.IO.Path]::GetTempPath()) ('OrgResource-C1-' + [guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Path $dataDirectory | Out-Null
+    Initialize-C1MysqlClientIsolation $dataDirectory
 
     $initialize = Start-Process -FilePath $mysqld -ArgumentList @('--no-defaults', ('--basedir="' + $mysqlHome + '"'),
         ('--datadir="' + $dataDirectory + '"'), '--initialize-insecure', '--console') -Wait -PassThru -NoNewWindow
@@ -261,14 +365,7 @@ try {
         ('--datadir="' + $dataDirectory + '"'), "--port=$databasePort", '--bind-address=127.0.0.1', '--mysqlx=0',
         ('--pid-file="' + (Join-Path $dataDirectory 'c1.pid') + '"'),
         ('--log-error="' + (Join-Path $dataDirectory 'mysql.err.log') + '"')) -WindowStyle Hidden -PassThru
-    $ready = $false
-    for ($attempt = 0; $attempt -lt 90; $attempt++) {
-        if ($dbProcess.HasExited) { throw 'Isolated MySQL exited during startup; inspect its temporary error log.' }
-        & $mysqladmin --protocol=tcp --host=127.0.0.1 --port=$databasePort --user=root ping *> $null
-        if ($LASTEXITCODE -eq 0) { $ready = $true; break }
-        Start-Sleep -Milliseconds 500
-    }
-    if (-not $ready) { throw 'Isolated MySQL did not become ready within 45 seconds.' }
+    Wait-C1DatabaseReady -Process $dbProcess -Port $sourceDatabasePort
 
     $dbPassword = New-RandomHex
     $bootstrapPassword = New-RandomHex
@@ -336,10 +433,12 @@ FLUSH PRIVILEGES;
     } finally { Pop-Location }
 
     Start-C1PackagedApp
+    Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
     & (Join-Path $repoRoot 'scripts\run-extended-c3-newman.ps1') `
         -BaseUrl "http://127.0.0.1:$appPort" `
         -Username $env:EXT_BOOTSTRAP_USERNAME `
         -Password $env:EXT_BOOTSTRAP_PASSWORD
+    Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
     & (Join-Path $repoRoot 'scripts\run-extended-c3-newman.ps1') -Reporting `
         -BaseUrl "http://127.0.0.1:$appPort" -Username $env:EXT_BOOTSTRAP_USERNAME -Password $env:EXT_BOOTSTRAP_PASSWORD
     $ownerSession = New-C1OwnerSession
@@ -501,6 +600,7 @@ DELETE FROM idempotency_key WHERE operation_public_id=UUID_TO_BIN('$c4OperationI
     $imageRequest.Headers.Add('Origin', $persistedSession.Base)
     $imageRequest.Headers.Add('X-CSRF-TOKEN', $persistedSession.Token)
     $imageRequest.Content = $imageForm
+    Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
     $imageUploadResponse = $persistedSession.Client.SendAsync($imageRequest).GetAwaiter().GetResult()
     $imageUploadBody = $imageUploadResponse.Content.ReadAsStringAsync().GetAwaiter().GetResult()
     if ([int]$imageUploadResponse.StatusCode -ne 200) {
@@ -546,6 +646,7 @@ DELETE FROM idempotency_key WHERE operation_public_id=UUID_TO_BIN('$c4OperationI
     if ([string]$persistedState.Data.activeOrgId -ne [string]$persistedSession.OrgId) {
         throw 'Spring Session JDBC did not preserve the explicitly selected organization across the packaged JAR restart.'
     }
+    Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
     $response = $persistedSession.Client.GetAsync("$($persistedSession.Base)/api/departments").GetAwaiter().GetResult()
     $departments = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult() | ConvertFrom-Json
     if (-not $response.IsSuccessStatusCode -or -not ($departments | Where-Object { $_.id -eq $departmentId -and $_.name -eq $name })) {
@@ -565,6 +666,7 @@ DELETE FROM idempotency_key WHERE operation_public_id=UUID_TO_BIN('$c4OperationI
         $resourceStateAfterRestart.Data.availableQuantity -ne 12) {
         throw 'Packaged C2 physical quantity did not persist across restart.'
     }
+    Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
     $imageAfterRestartResponse = $persistedSession.Client.GetAsync(
         "$($persistedSession.Base)/api/resources/$imageResourceId/image").GetAwaiter().GetResult()
     $imageAfterRestart = $imageAfterRestartResponse.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult()
@@ -663,10 +765,12 @@ FROM user_account WHERE username_key='$adminUsername';
             $env:ORGRESOURCE_E2E_SCREENSHOT_DIR = Join-Path $dataDirectory 'screenshots'
             Push-Location $frontend
             try {
+                Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
                 & npm run e2e
                 Assert-ExitCode 'packaged Java/MySQL Playwright acceptance'
                 Remove-Item Env:EXT_E2E_BASE_URL
                 $env:EXT_VITE_BACKEND_PORT = [string] $appPort
+                Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
                 & npm run e2e -- --grep 'Allocation status filters'
                 Assert-ExitCode 'standalone Vite with Java/MySQL Playwright acceptance'
             } finally { Pop-Location }
@@ -689,13 +793,15 @@ FROM user_account WHERE username_key='$adminUsername';
     Write-Output "Extended C run evidence and stopped isolated datadir: $dataDirectory"
     Write-Output "Packaged JAR: $(Join-Path $experiment 'target\extended-backend-0.1.0-SNAPSHOT.jar')"
 } finally {
-    Stop-C1App
-    if ($dbProcess -and -not $dbProcess.HasExited) {
-        & $mysqladmin --protocol=tcp --host=127.0.0.1 --port=$databasePort --user=root shutdown *> $null
-        try { $null = $dbProcess.WaitForExit(15000) } catch { }
-        if (-not $dbProcess.HasExited) { Stop-Process -Id $dbProcess.Id -Force }
-    }
-    foreach ($name in $environmentNames) {
-        [Environment]::SetEnvironmentVariable($name, $savedEnvironment[$name], 'Process')
+    try {
+        try {
+            Stop-C1App
+        } finally {
+            Stop-C1Database -Process $dbProcess -Port $sourceDatabasePort
+        }
+    } finally {
+        foreach ($name in $environmentNames) {
+            [Environment]::SetEnvironmentVariable($name, $savedEnvironment[$name], 'Process')
+        }
     }
 }
