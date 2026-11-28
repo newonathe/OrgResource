@@ -703,13 +703,16 @@ FROM user_account WHERE username_key='$adminUsername';
     Write-Output "Extended C run evidence and stopped isolated datadir: $dataDirectory"
     Write-Output "Packaged JAR: $(Join-Path $experiment 'target\extended-backend-0.1.0-SNAPSHOT.jar')"
 } finally {
-    Stop-C1App
-    if ($dbProcess -and -not $dbProcess.HasExited) {
-        & $mysqladmin --no-defaults --protocol=tcp --host=127.0.0.1 --port=$databasePort --user=root --skip-password shutdown *> $null
-        try { $null = $dbProcess.WaitForExit(15000) } catch { }
-        if (-not $dbProcess.HasExited) { Stop-Process -Id $dbProcess.Id -Force }
-    }
-    foreach ($name in $environmentNames) {
-        [Environment]::SetEnvironmentVariable($name, $savedEnvironment[$name], 'Process')
+    try {
+        Stop-C1App
+        if ($dbProcess -and -not $dbProcess.HasExited) {
+            & $mysqladmin --no-defaults --protocol=tcp --host=127.0.0.1 --port=$databasePort --user=root --skip-password shutdown *> $null
+            try { $null = $dbProcess.WaitForExit(15000) } catch { }
+            if (-not $dbProcess.HasExited) { Stop-Process -Id $dbProcess.Id -Force }
+        }
+    } finally {
+        foreach ($name in $environmentNames) {
+            [Environment]::SetEnvironmentVariable($name, $savedEnvironment[$name], 'Process')
+        }
     }
 }

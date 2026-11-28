@@ -412,7 +412,7 @@ try {
         if (-not $source.Contains($literal,[StringComparison]::Ordinal)) { throw 'C1 native client source binding differs.' }
     }
     'PASS C1 isolation: bootstrap/readiness/shutdown argv and environment binding'
-    'C1_MYSQL_CLIENT_ISOLATION_GUARD_OK:5 fixture cases, 5 source bindings, no MySQL launched'
+    'C1_MYSQL_CLIENT_ISOLATION_GUARD_OK:4 fixture cases, 5 source bindings, no MySQL launched'
 } finally {
     [Environment]::SetEnvironmentVariable('MYSQL_TEST_LOGIN_FILE',$previousLogin,'Process')
     [Environment]::SetEnvironmentVariable('MYSQL_PWD',$previousPassword,'Process')
