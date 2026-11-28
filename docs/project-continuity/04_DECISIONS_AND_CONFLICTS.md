@@ -453,3 +453,7 @@ Report152: source and recovery stop must use captured process-specific ports, no
 ## Current - C1 listener ownership (2026-11-28 PHT)
 
 Report153: require owned numeric loopback listener plus authenticated SELECT 1 for source/recovery readiness; pre-operation ownership checks are not a reservation. No native proof, no operator rewrite, no network shutdown under missing/ambiguous listener. Approved isolated environment and independent gate remain.
+
+## Current - C6a operator fixture boundaries (2026-11-28 PHT)
+
+Report154: preserve named-login protocol, check captured live listeners before privileged fixture operations, remove inherited MYSQL_PWD and restore environment; attempt all server cleanups and retain fixture login on incomplete cleanup. No native or atomic listener guarantee. Keep private/native gates.

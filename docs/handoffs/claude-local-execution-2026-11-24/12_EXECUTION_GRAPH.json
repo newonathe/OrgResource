@@ -2826,7 +2826,7 @@
       "native_execution": "NOT_RUN",
       "private_l06_ready": false
     },
-    "pre_handoff_next": "Consume terminal actual logs for prior PR59 run46133266836 Extended140942914984 and successor run46133686909 CourseA140944191073, Extended140944190974, React140944190940; repair observed failures only. Successor focused Windows listener guard actual 1 real listener/4 fictional snapshots plus six retained cleanup cases; authenticated MySQL query and shutdown native effects NOT_RUN. Point-in-time check is not a port reservation; operator verifier separate unmodified, native package blocked until approved isolated environment. No valid ConPTY before independent outer/console-host acceptance; private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. Course A artifact bytes blocked per150. No merge/deploy/release.",
+    "pre_handoff_next": "Consume actual exact prior Extended job140944190974 and successor run46134475566 jobs140946596460/140946596661/140946596724; repair observed failures only. Operator listener/readiness and cleanup correction scoped to fixture drill; focused actual guard passed. Native MySQL authentication, shutdown, named-login/ConPTY custody, process lifecycle and full package NOT_RUN; no atomic port reservation. Approved isolated owner environment and independent gate remain; no valid ConPTY before independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. Course A artifact binary blocked per150. No merge/deploy/release.",
     "release_inventory_candidate": {
       "report": "docs/handoffs/claude-local-execution-2026-11-24/125_RELEASE_MIGRATION_INVENTORY_CORRECTION.md",
       "pr": 59,
@@ -3738,7 +3738,7 @@
     "sha": "610c66ece2bfb20b8a81191d356f78713294351e",
     "prior": "d398ebd115c7c6fa8dcdfdf84f3918fe2e60d0f8",
     "pr": 59,
-    "state": "CANDIDATE",
+    "state": "VERIFIED_BOUNDED",
     "native_state": "NOT_RUN",
     "receipts": [
       {
@@ -3764,15 +3764,19 @@
         "job": 140942915024,
         "oracle": "Exact standalone React regression",
         "actual": "Exact checkout, React15, terminal success."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "610c66ece2bfb20b8a81191d356f78713294351e",
+        "run": 46133266836,
+        "job": 140942914984,
+        "oracle": "Exact Extended C Linux regression",
+        "actual": "103 Maven including78 identity, zero failures/errors/skips, React38, Newman90+20 zero failure, Playwright19; fictional 8 org/960 allocations/3013 events; row dump, networkless distinct MySQL, C5 encrypted cross-server markers observed; terminal success. Private full96/hosted not run."
       }
     ],
-    "pending_runs": [
-      46133266836
-    ],
-    "pending_jobs": [
-      140942914984
-    ],
-    "next": "Consume actual Extended job140942914984; successor Report153 controls."
+    "pending_runs": [],
+    "pending_jobs": [],
+    "next": "Report154: all four prior jobs terminal actual success; native NOT_RUN."
   },
   "c1_listener_ownership_candidate": {
     "report": "docs/handoffs/claude-local-execution-2026-11-24/153_C1_LISTENER_OWNERSHIP_AND_AUTHENTICATED_READINESS.md",
@@ -3790,16 +3794,58 @@
         "job": 140944190773,
         "oracle": "Actual Windows listener guard with real current-process numeric loopback listener and four fictional snapshots",
         "actual": "Exact checkout; actual real positive and absent/foreign/wildcard/ambiguous fictional snapshot cases passed; six retained cleanup cases passed. No MySQL launched, no readiness query or shutdown actual."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "b29168315dbac9119deccc7565aa7e88e9ac2b24",
+        "run": 46133686909,
+        "job": 140944191073,
+        "oracle": "Exact Course A regression",
+        "actual": "61 Maven zero failures/errors/skips, React15, Newman160 zero failure, browser1, standalone18/75/120; terminal success."
+      },
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "b29168315dbac9119deccc7565aa7e88e9ac2b24",
+        "run": 46133686909,
+        "job": 140944190940,
+        "oracle": "Exact standalone React regression",
+        "actual": "React15, exact checkout, terminal success."
       }
     ],
     "pending_runs": [
       46133686909
     ],
     "pending_jobs": [
-      140944191073,
-      140944190974,
-      140944190940
+      140944190974
     ],
-    "next": "Consume terminal actual logs for prior PR59 run46133266836 Extended140942914984 and successor run46133686909 CourseA140944191073, Extended140944190974, React140944190940; repair observed failures only. Successor focused Windows listener guard actual 1 real listener/4 fictional snapshots plus six retained cleanup cases; authenticated MySQL query and shutdown native effects NOT_RUN. Point-in-time check is not a port reservation; operator verifier separate unmodified, native package blocked until approved isolated environment. No valid ConPTY before independent outer/console-host acceptance; private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. Course A artifact bytes blocked per150. No merge/deploy/release."
+    "next": "Consume exact prior Extended job140944190974; Report154 current."
+  },
+  "c6a_operator_listener_cleanup_candidate": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/154_C6A_OPERATOR_LISTENER_AND_CLEANUP_BOUNDARIES.md",
+    "blob": "9b6e6416426a303d4031ee7b0e699a4816b6f002",
+    "sha": "7b1d539577653a19e29a7fd312638f583f7f9718",
+    "prior": "b29168315dbac9119deccc7565aa7e88e9ac2b24",
+    "pr": 59,
+    "state": "CANDIDATE",
+    "native_state": "NOT_RUN",
+    "receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "7b1d539577653a19e29a7fd312638f583f7f9718",
+        "run": 46134475566,
+        "job": 140946596725,
+        "oracle": "Actual operator AST listener selection and outer cleanup control-flow",
+        "actual": "Actual Windows own TCP listener, two selection refusals, four fictional cleanup fault cases; terminal success, no MySQL launched."
+      }
+    ],
+    "pending_runs": [
+      46134475566
+    ],
+    "pending_jobs": [
+      140946596460,
+      140946596661,
+      140946596724
+    ],
+    "next": "Consume actual exact prior Extended job140944190974 and successor run46134475566 jobs140946596460/140946596661/140946596724; repair observed failures only. Operator listener/readiness and cleanup correction scoped to fixture drill; focused actual guard passed. Native MySQL authentication, shutdown, named-login/ConPTY custody, process lifecycle and full package NOT_RUN; no atomic port reservation. Approved isolated owner environment and independent gate remain; no valid ConPTY before independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. Course A artifact binary blocked per150. No merge/deploy/release."
   }
 }
