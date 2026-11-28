@@ -605,3 +605,64 @@ Assert-BootstrapTransport 'concurrent pipe drain' '[Console]::Error.Write(("e" *
 Assert-BootstrapTransport 'sanitized nonzero exit' '$null=[Console]::ReadLine(); [Console]::Error.Write("fictional-private-error-marker"); exit 7' 'C1_BOOTSTRAP_FAILED: exit=7'
 Assert-BootstrapTransport 'exit timeout' '$null=[Console]::ReadLine(); Start-Sleep -Seconds 30' 'C1_BOOTSTRAP_EXIT_TIMEOUT' 3000
 'C1_BOOTSTRAP_TRANSPORT_OK:3 actual harmless child processes, no MySQL launched'
+
+# Execute the actual startup functions against fictional listener snapshots.
+# No executable is launched and no HTTP request is sent. A foreign listener
+# must be refused before the first request, or before accepting readiness.
+foreach ($entry in @(@{Ast=$c1Ast;Name='Start-C1PackagedApp'},@{Ast=$opAst;Name='Start-OperatorJar'})) {
+    $name = $entry.Name
+    $defs = @($entry.Ast.FindAll({
+        param($node)
+        $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -ceq $name
+    },$false))
+    if ($defs.Count -ne 1) { throw 'Cannot locate exact application startup helper.' }
+    . ([scriptblock]::Create($defs[0].Extent.Text))
+}
+function Assert-AppStartupAttribution([string] $Lane,[bool] $AfterRoot) {
+    $self = [Diagnostics.Process]::GetCurrentProcess()
+    $spy = @{Http=0}
+    $appPort=14321; $applicationPort=14322; $experiment=$PSScriptRoot
+    $dataDirectory=$PSScriptRoot; $java='fictional-executable'; $jar='fictional.jar'; $base='http://127.0.0.1:14321'
+    $previousPort=$env:EXT_SERVER_PORT
+    $script:appLaunch=0
+    function Assert-C1DatabasePort { param($Port) }
+    function Assert-C6aPort { param($Port) }
+    function Test-Path { param($LiteralPath,$Path) return $true }
+    function Start-Process {
+        param($FilePath,$ArgumentList,$WorkingDirectory,$WindowStyle,[switch]$PassThru,$RedirectStandardOutput,$RedirectStandardError)
+        return $self
+    }
+    function Get-NetTCPConnection {
+        param($State,$ErrorAction)
+        $owner = if ($AfterRoot -and $spy.Http -eq 0) { $PID } else { $PID+1 }
+        [pscustomobject]@{LocalPort=$appPort;LocalAddress='127.0.0.1';OwningProcess=$owner}
+    }
+    function Invoke-WebRequest {
+        param($Uri,$TimeoutSec,[switch]$UseBasicParsing)
+        $spy.Http++
+        [pscustomobject]@{StatusCode=200;Content='fictional root'}
+    }
+    function Start-Sleep { param($Milliseconds) throw 'Unexpected readiness retry in attribution fixture.' }
+    try {
+        $env:EXT_SERVER_PORT=[string]$appPort
+        $failure=''
+        try {
+            if ($Lane -ceq 'C1') { Start-C1PackagedApp } else { Start-OperatorJar }
+        } catch { $failure=$_.Exception.Message }
+        $expected = if ($Lane -ceq 'C1') { 'C1_LISTENER_NOT_OWNED' } else { 'C6A_LISTENER_NOT_OWNED' }
+        $expectedHttp = if ($AfterRoot) { 1 } else { 0 }
+        if ($failure -cne $expected -or $spy.Http -ne $expectedHttp) {
+            throw "Application startup attribution differs: $Lane/$AfterRoot"
+        }
+        "PASS app startup attribution: $Lane/afterRoot=$AfterRoot/httpSpy=$($spy.Http)"
+    } finally {
+        $env:EXT_SERVER_PORT=$previousPort
+        $script:appProcess=$null; $script:app=$null
+        $self.Dispose()
+    }
+}
+foreach ($lane in @('C1','C6a')) {
+    Assert-AppStartupAttribution $lane $false
+    Assert-AppStartupAttribution $lane $true
+}
+'C1_C6A_APP_ATTRIBUTION_OK:4 fictional startup cases, no HTTP or process launch'

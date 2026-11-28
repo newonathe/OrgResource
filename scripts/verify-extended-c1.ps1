@@ -181,13 +181,19 @@ function Start-C1PackagedApp([string] $Timezone = 'Asia/Manila') {
     $base = "http://127.0.0.1:$appPort"
     for ($attempt = 0; $attempt -lt 90; $attempt++) {
         if ($script:appProcess.HasExited) { throw "Packaged JAR exited early; inspect the C1 app log in the temporary run directory." }
+        if (-not (Test-C1OwnedListener -Process $script:appProcess -Port $appPort)) {
+            Start-Sleep -Milliseconds 500
+            continue
+        }
         try {
             $response = Invoke-WebRequest -Uri "$base/" -TimeoutSec 2 -UseBasicParsing
         } catch { Start-Sleep -Milliseconds 500; continue }
         if ($response.StatusCode -eq 200) {
+            Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
             $assets = [regex]::Matches($response.Content, '(?:src|href)="([^"]*/assets/[^"]+\.(?:js|css))"')
             if ($assets.Count -lt 2) { throw 'Packaged React entry did not reference both JS and CSS assets.' }
             foreach ($asset in $assets) {
+                Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
                 $assetResponse = Invoke-WebRequest -Uri ($base + $asset.Groups[1].Value) -TimeoutSec 5 -UseBasicParsing
                 if ($assetResponse.StatusCode -ne 200 -or $assetResponse.Content.Length -lt 100) {
                     throw "Packaged React asset failed: $($asset.Groups[1].Value)"
@@ -195,12 +201,14 @@ function Start-C1PackagedApp([string] $Timezone = 'Asia/Manila') {
             }
             $probe = [System.Net.Http.HttpClient]::new()
             try {
+                Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
                 $api = $probe.GetAsync("$base/api/departments").GetAwaiter().GetResult()
                 $apiBody = $api.Content.ReadAsStringAsync().GetAwaiter().GetResult()
                 if ([int]$api.StatusCode -ne 401 -or $apiBody -notmatch 'AUTH_REQUIRED') {
                     throw 'Packaged JAR API did not return its expected unauthenticated JSON response.'
                 }
             } finally { $probe.Dispose() }
+            Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
             return
         }
         Start-Sleep -Milliseconds 500
@@ -215,6 +223,7 @@ function New-C1Client {
 }
 
 function Get-C1Csrf($Client, [string] $Base) {
+    Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
     $response = $Client.GetAsync("$Base/api/v2/auth/csrf").GetAwaiter().GetResult()
     $body = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult() | ConvertFrom-Json
     if (-not $response.IsSuccessStatusCode -or [string]::IsNullOrWhiteSpace([string]$body.data.csrfToken)) {
@@ -234,6 +243,7 @@ function Invoke-C1Post($Session, [string] $Path, [object] $Body, [string] $IfMat
         $json = ConvertTo-Json -InputObject $Body -Depth 8 -Compress
         $request.Content = [System.Net.Http.StringContent]::new($json, [System.Text.Encoding]::UTF8, 'application/json')
     }
+    Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
     $response = $Session.Client.SendAsync($request).GetAwaiter().GetResult()
     $raw = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
     $parsed = if ([string]::IsNullOrWhiteSpace($raw)) { $null } else { $raw | ConvertFrom-Json }
@@ -246,6 +256,7 @@ function Invoke-C1Post($Session, [string] $Path, [object] $Body, [string] $IfMat
 }
 
 function Invoke-C1Get($Session, [string] $Path) {
+    Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
     $response = $Session.Client.GetAsync("$($Session.Base)$Path").GetAwaiter().GetResult()
     $raw = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
     $parsed = if ([string]::IsNullOrWhiteSpace($raw)) { $null } else { $raw | ConvertFrom-Json }
@@ -303,6 +314,7 @@ function Add-PersistedDemoDepartment($Session, [string] $Name) {
     $request.Headers.Add('Origin', $Session.Base)
     $request.Headers.Add('X-CSRF-TOKEN', $Session.Token)
     $request.Content = $content
+    Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
     $response = $Session.Client.SendAsync($request).GetAwaiter().GetResult()
     $body = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
     $content.Dispose()
@@ -421,10 +433,12 @@ FLUSH PRIVILEGES;
     } finally { Pop-Location }
 
     Start-C1PackagedApp
+    Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
     & (Join-Path $repoRoot 'scripts\run-extended-c3-newman.ps1') `
         -BaseUrl "http://127.0.0.1:$appPort" `
         -Username $env:EXT_BOOTSTRAP_USERNAME `
         -Password $env:EXT_BOOTSTRAP_PASSWORD
+    Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
     & (Join-Path $repoRoot 'scripts\run-extended-c3-newman.ps1') -Reporting `
         -BaseUrl "http://127.0.0.1:$appPort" -Username $env:EXT_BOOTSTRAP_USERNAME -Password $env:EXT_BOOTSTRAP_PASSWORD
     $ownerSession = New-C1OwnerSession
@@ -586,6 +600,7 @@ DELETE FROM idempotency_key WHERE operation_public_id=UUID_TO_BIN('$c4OperationI
     $imageRequest.Headers.Add('Origin', $persistedSession.Base)
     $imageRequest.Headers.Add('X-CSRF-TOKEN', $persistedSession.Token)
     $imageRequest.Content = $imageForm
+    Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
     $imageUploadResponse = $persistedSession.Client.SendAsync($imageRequest).GetAwaiter().GetResult()
     $imageUploadBody = $imageUploadResponse.Content.ReadAsStringAsync().GetAwaiter().GetResult()
     if ([int]$imageUploadResponse.StatusCode -ne 200) {
@@ -631,6 +646,7 @@ DELETE FROM idempotency_key WHERE operation_public_id=UUID_TO_BIN('$c4OperationI
     if ([string]$persistedState.Data.activeOrgId -ne [string]$persistedSession.OrgId) {
         throw 'Spring Session JDBC did not preserve the explicitly selected organization across the packaged JAR restart.'
     }
+    Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
     $response = $persistedSession.Client.GetAsync("$($persistedSession.Base)/api/departments").GetAwaiter().GetResult()
     $departments = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult() | ConvertFrom-Json
     if (-not $response.IsSuccessStatusCode -or -not ($departments | Where-Object { $_.id -eq $departmentId -and $_.name -eq $name })) {
@@ -650,6 +666,7 @@ DELETE FROM idempotency_key WHERE operation_public_id=UUID_TO_BIN('$c4OperationI
         $resourceStateAfterRestart.Data.availableQuantity -ne 12) {
         throw 'Packaged C2 physical quantity did not persist across restart.'
     }
+    Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
     $imageAfterRestartResponse = $persistedSession.Client.GetAsync(
         "$($persistedSession.Base)/api/resources/$imageResourceId/image").GetAwaiter().GetResult()
     $imageAfterRestart = $imageAfterRestartResponse.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult()
@@ -748,10 +765,12 @@ FROM user_account WHERE username_key='$adminUsername';
             $env:ORGRESOURCE_E2E_SCREENSHOT_DIR = Join-Path $dataDirectory 'screenshots'
             Push-Location $frontend
             try {
+                Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
                 & npm run e2e
                 Assert-ExitCode 'packaged Java/MySQL Playwright acceptance'
                 Remove-Item Env:EXT_E2E_BASE_URL
                 $env:EXT_VITE_BACKEND_PORT = [string] $appPort
+                Assert-C1OwnedListener -Process $script:appProcess -Port $appPort
                 & npm run e2e -- --grep 'Allocation status filters'
                 Assert-ExitCode 'standalone Vite with Java/MySQL Playwright acceptance'
             } finally { Pop-Location }

@@ -205,9 +205,17 @@ function Start-OperatorJar {
     $script:app = Start-Process -FilePath $java -ArgumentList @('-jar', ('"' + $jar + '"')) -WindowStyle Hidden -PassThru
     for ($i=0; $i -lt 180; $i++) {
         if ($script:app.HasExited) { throw 'Operator JAR exited during startup.' }
+        if (-not (Test-C6aOwnedListener $script:app ([int]$env:EXT_SERVER_PORT))) {
+            Start-Sleep -Milliseconds 500
+            continue
+        }
         try {
-            if ((Invoke-WebRequest -Uri "$base/" -TimeoutSec 2).StatusCode -eq 200) { return }
-        } catch { }
+            $response = Invoke-WebRequest -Uri "$base/" -TimeoutSec 2
+        } catch { Start-Sleep -Milliseconds 500; continue }
+        if ($response.StatusCode -eq 200) {
+            if (-not (Test-C6aOwnedListener $script:app ([int]$env:EXT_SERVER_PORT))) { throw 'C6A_LISTENER_MISSING' }
+            return
+        }
         Start-Sleep -Milliseconds 500
     }
     throw 'Operator JAR did not serve its packaged root.'
@@ -217,6 +225,7 @@ function Stop-OperatorJar {
     $script:app = $null
 }
 function Assert-WebRead([switch] $Inventory) {
+    if (-not (Test-C6aOwnedListener $script:app ([int]$env:EXT_SERVER_PORT))) { throw 'C6A_LISTENER_MISSING' }
     $grep = if ($Inventory) { 'the packaged Java application serves|connected inventory UI recovers' } else { 'the packaged Java application serves' }
     Push-Location (Join-Path $root 'extended/frontend')
     try {
@@ -296,6 +305,7 @@ GRANT ALL ON $restored.* TO 'c6_migrate'@'127.0.0.1';
     $env:EXT_E2E_BASE_URL = $base
     $env:ORGRESOURCE_E2E_SCREENSHOT_DIR = Join-Path $temp 'screenshots'
     Start-OperatorJar
+    if (-not (Test-C6aOwnedListener $script:app ([int]$env:EXT_SERVER_PORT))) { throw 'C6A_LISTENER_MISSING' }
     & "$PSScriptRoot/run-extended-c3-newman.ps1" -BaseUrl $base -Username $env:EXT_E2E_USERNAME -Password $env:EXT_E2E_PASSWORD
     Assert-WebRead -Inventory
     Stop-OperatorJar
@@ -349,6 +359,7 @@ GRANT ALL ON $restored.* TO 'c6_migrate'@'127.0.0.1';
     Assert-Native 'Disposable target shutdown while Java is live'
     if (-not $originalTarget.Process.WaitForExit(15000)) { throw 'Disposable target did not stop.' }
     # Spring Session and the servlet error path may make separate 10-second pool acquisitions.
+    if (-not (Test-C6aOwnedListener $script:app ([int]$env:EXT_SERVER_PORT))) { throw 'C6A_LISTENER_MISSING' }
     $interrupted = Invoke-WebRequest -Uri "$base/api/v2/auth/csrf" -SkipHttpErrorCheck -TimeoutSec 75
     if ($interrupted.StatusCode -lt 500) { throw 'A database-backed CSRF initialization succeeded during the outage.' }
     if ($script:app.HasExited) { throw 'Java exited during the MySQL outage.' }
