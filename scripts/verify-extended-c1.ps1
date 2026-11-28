@@ -130,6 +130,32 @@ function Stop-C1Database([System.Diagnostics.Process] $Process, [int] $Port) {
     }
 }
 
+# Drain both redirected pipes concurrently; bootstrap does not consume row output.
+# Do not include SQL or raw client error text in a public verification log.
+function Invoke-C1BootstrapProcess([System.Diagnostics.ProcessStartInfo] $StartInfo, [string] $Sql, [int] $TimeoutMs = 20000) {
+    if ($TimeoutMs -lt 1) { throw 'C1_BOOTSTRAP_TIMEOUT_INVALID' }
+    $process = [System.Diagnostics.Process]::Start($StartInfo)
+    try {
+        $stdout = $process.StandardOutput.BaseStream.CopyToAsync([IO.Stream]::Null)
+        $stderr = $process.StandardError.BaseStream.CopyToAsync([IO.Stream]::Null)
+        $write = $process.StandardInput.WriteLineAsync($Sql)
+        if (-not $write.Wait($TimeoutMs)) { throw 'C1_BOOTSTRAP_INPUT_TIMEOUT' }
+        $process.StandardInput.Close()
+        if (-not $process.WaitForExit($TimeoutMs)) { throw 'C1_BOOTSTRAP_EXIT_TIMEOUT' }
+        if (-not [Threading.Tasks.Task]::WaitAll([Threading.Tasks.Task[]]@($stdout,$stderr),$TimeoutMs)) {
+            throw 'C1_BOOTSTRAP_DRAIN_TIMEOUT'
+        }
+        if ($process.ExitCode -ne 0) { throw "C1_BOOTSTRAP_FAILED: exit=$($process.ExitCode)" }
+    } finally {
+        try {
+            if (-not $process.HasExited) {
+                $process.Kill()
+                if (-not $process.WaitForExit(5000)) { throw 'C1_BOOTSTRAP_CLIENT_NOT_STOPPED' }
+            }
+        } finally { $process.Dispose() }
+    }
+}
+
 function Invoke-MysqlBootstrap([string] $Sql) {
     Assert-C1DatabasePort -Port $databasePort
     $startInfo = [System.Diagnostics.ProcessStartInfo]::new()
@@ -140,15 +166,7 @@ function Invoke-MysqlBootstrap([string] $Sql) {
     $startInfo.RedirectStandardInput = $true
     $startInfo.RedirectStandardOutput = $true
     $startInfo.RedirectStandardError = $true
-    $process = [System.Diagnostics.Process]::Start($startInfo)
-    $process.StandardInput.WriteLine($Sql)
-    $process.StandardInput.Close()
-    $output = $process.StandardOutput.ReadToEnd()
-    $errorOutput = $process.StandardError.ReadToEnd()
-    $process.WaitForExit()
-    if ($process.ExitCode -ne 0) {
-        throw "Isolated MySQL bootstrap SQL failed with exit code $($process.ExitCode): $errorOutput"
-    }
+    Invoke-C1BootstrapProcess -StartInfo $startInfo -Sql $Sql
 }
 
 function Start-C1PackagedApp([string] $Timezone = 'Asia/Manila') {

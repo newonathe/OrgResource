@@ -576,3 +576,32 @@ function Assert-OperatorCleanup([string] $Fault) {
 }
 foreach ($fault in @('none','app','source','target')) { Assert-OperatorCleanup $fault }
 'C6A_OPERATOR_GUARD_OK:1 real listener, 2 selection refusals, 4 fictional cleanup cases, no MySQL launched'
+
+# Actual harmless child-process I/O: no database, network, credentials or SQL execution.
+$defs = @($c1Ast.FindAll({
+    param($node)
+    $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -ceq 'Invoke-C1BootstrapProcess'
+},$false))
+if ($defs.Count -ne 1) { throw 'Cannot locate exact bootstrap transport helper.' }
+. ([scriptblock]::Create($defs[0].Extent.Text))
+$pwsh = (Get-Process -Id $PID).Path
+function Assert-BootstrapTransport([string] $Case,[string] $Command,[string] $Expected,[int] $TimeoutMs = 10000) {
+    $info = [Diagnostics.ProcessStartInfo]::new($pwsh)
+    $info.UseShellExecute = $false
+    $info.CreateNoWindow = $true
+    $info.RedirectStandardInput = $true
+    $info.RedirectStandardOutput = $true
+    $info.RedirectStandardError = $true
+    foreach ($arg in @('-NoLogo','-NoProfile','-NonInteractive','-Command',$Command)) { $info.ArgumentList.Add($arg) }
+    $failure = ''
+    $clock = [Diagnostics.Stopwatch]::StartNew()
+    try { Invoke-C1BootstrapProcess -StartInfo $info -Sql 'fictional-input-marker' -TimeoutMs $TimeoutMs }
+    catch { $failure = $_.Exception.Message }
+    if ($failure -cne $Expected) { throw "Bootstrap transport disposition differs: $Case" }
+    if ($Case -ceq 'exit timeout' -and $clock.Elapsed.TotalSeconds -gt 12) { throw 'Fixture timeout cleanup exceeded bound.' }
+    "PASS bootstrap transport: $Case"
+}
+Assert-BootstrapTransport 'concurrent pipe drain' '[Console]::Error.Write(("e" * 524288)); [Console]::Out.Write(("o" * 524288)); if ([Console]::ReadLine() -cne "fictional-input-marker") { exit 9 }; exit 0' ''
+Assert-BootstrapTransport 'sanitized nonzero exit' '$null=[Console]::ReadLine(); [Console]::Error.Write("fictional-private-error-marker"); exit 7' 'C1_BOOTSTRAP_FAILED: exit=7'
+Assert-BootstrapTransport 'exit timeout' '$null=[Console]::ReadLine(); Start-Sleep -Seconds 30' 'C1_BOOTSTRAP_EXIT_TIMEOUT' 3000
+'C1_BOOTSTRAP_TRANSPORT_OK:3 actual harmless child processes, no MySQL launched'
