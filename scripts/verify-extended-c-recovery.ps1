@@ -5,12 +5,14 @@ if (-not $VerifyRecovery -or -not $dbProcess -or $dbProcess.HasExited -or
 }
 
 function Get-RecoveryRows([int] $Port, [string] $Sql) {
+    Assert-C1DatabasePort -Port $Port
     $rows = & $mysql --no-defaults --protocol=tcp --host=127.0.0.1 "--port=$Port" --user=root --skip-password --database=orgresource_c1_acceptance --batch --raw --skip-column-names "--execute=$Sql"
     Assert-ExitCode 'disposable recovery read'
     return $rows
 }
 
 function Assert-RecoveryRefusal([string] $Path, [string] $ExpectedError) {
+    Assert-C1DatabasePort -Port $recoveryPort
     try {
         $null = & $backupScript -Mode Restore -Schema orgresource_c1_acceptance -Port $recoveryPort -Archive $Path -DisposableAcceptance
         throw 'An invalid backup unexpectedly restored.'
@@ -89,6 +91,7 @@ try {
     Stop-C1App
     $env:MYSQL_HOME = $mysqlHome
     $env:EXT_BACKUP_KEY = [Convert]::ToBase64String($backupKey)
+    Assert-C1DatabasePort -Port $sourcePort
     $backupRecord = & $backupScript -Mode Backup -Schema orgresource_c1_acceptance -Port $sourcePort -Archive $archive -DisposableAcceptance
     $null = New-Item -ItemType Directory -Path $recoveryDir
     $init = Start-Process -FilePath $mysqld -ArgumentList @('--no-defaults', ('--basedir="' + $mysqlHome + '"'),
@@ -97,14 +100,7 @@ try {
     $target = Start-Process -FilePath $mysqld -ArgumentList @('--no-defaults', ('--basedir="' + $mysqlHome + '"'),
         ('--datadir="' + $recoveryDir + '"'), "--port=$recoveryPort", '--bind-address=127.0.0.1', '--mysqlx=0',
         ('--log-error="' + (Join-Path $recoveryDir 'mysql.err.log') + '"')) -PassThru -WindowStyle Hidden
-    $ready = $false
-    for ($attempt = 0; $attempt -lt 90; $attempt++) {
-        if ($target.HasExited) { throw 'Restore MySQL exited during startup.' }
-        & $mysqladmin --no-defaults --protocol=tcp --host=127.0.0.1 "--port=$recoveryPort" --user=root --skip-password ping *> $null
-        if ($LASTEXITCODE -eq 0) { $ready = $true; break }
-        Start-Sleep -Milliseconds 500
-    }
-    if (-not $ready) { throw 'Restore instance did not become ready.' }
+    Wait-C1DatabaseReady -Process $target -Port $recoveryPort
     $databasePort = $recoveryPort
     Invoke-MysqlBootstrap 'CREATE DATABASE orgresource_c1_acceptance CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;'
 
@@ -117,6 +113,7 @@ try {
     $env:EXT_BACKUP_KEY = $null
     Assert-RecoveryRefusal $archive 'Protected backup key unavailable.'
     $env:EXT_BACKUP_KEY = [Convert]::ToBase64String($backupKey)
+    Assert-C1DatabasePort -Port $recoveryPort
     $restoreRecord = & $backupScript -Mode Restore -Schema orgresource_c1_acceptance -Port $recoveryPort -Archive $archive -DisposableAcceptance
     if ($restoreRecord.Sha256 -ne $backupRecord.Sha256) { throw 'Encrypted backup identity changed.' }
 

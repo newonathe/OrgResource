@@ -404,7 +404,7 @@ try {
     $source = [IO.File]::ReadAllText($c1Path)
     foreach ($literal in @(
         '$startInfo.Arguments = "--no-defaults --protocol=tcp --host=127.0.0.1 --port=$databasePort --user=root --skip-password --batch --raw"',
-        '& $mysqladmin --no-defaults --protocol=tcp --host=127.0.0.1 --port=$databasePort --user=root --skip-password ping',
+        'Wait-C1DatabaseReady -Process $dbProcess -Port $sourceDatabasePort',
         '& $mysqladmin --no-defaults --protocol=tcp --host=127.0.0.1 "--port=$Port" --user=root --skip-password shutdown',
         'Initialize-C1MysqlClientIsolation $dataDirectory',
         "'SPRING_PROFILES_ACTIVE', 'MYSQL_TEST_LOGIN_FILE', 'MYSQL_PWD'"
@@ -478,3 +478,40 @@ foreach ($lane in @('parent','recovery')) {
     foreach ($fault in @('none','app','db')) { Assert-C1CleanupCase $lane $fault }
 }
 'C1_CLEANUP_CONTROL_FLOW_OK:6 fictional cases, actual finally blocks, no MySQL or process termination'
+
+# Real Windows TCP listener attribution, plus fictional snapshots for refusals.
+# No MySQL executable, external endpoint or termination is invoked.
+foreach ($name in @('Test-C1OwnedListener','Assert-C1OwnedListener')) {
+    $defs = @($c1Ast.FindAll({
+        param($node)
+        $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -ceq $name
+    },$false))
+    if ($defs.Count -ne 1) { throw 'Cannot locate exact listener helper.' }
+    . ([scriptblock]::Create($defs[0].Extent.Text))
+}
+$ownProcess = [Diagnostics.Process]::GetCurrentProcess()
+$fixtureListener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0)
+$fixtureListener.Start()
+try {
+    $fixturePort = $fixtureListener.LocalEndpoint.Port
+    if (-not (Test-C1OwnedListener -Process $ownProcess -Port $fixturePort)) { throw 'Real listener not attributed.' }
+    'PASS C1 listener: actual numeric loopback listener owned by current process'
+} finally { $fixtureListener.Stop(); $ownProcess.Dispose() }
+function Assert-C1ListenerSnapshot([string] $Case,[object[]] $Rows,[string] $Expected) {
+    $self = [Diagnostics.Process]::GetCurrentProcess()
+    function Get-NetTCPConnection { param($State,$ErrorAction) $Rows }
+    try {
+        $failure = ''; $result = $null
+        try { $result = Test-C1OwnedListener -Process $self -Port 14321 } catch { $failure = $_.Exception.Message }
+        if ($Expected -ceq 'absent') {
+            if ($failure -or $result -ne $false) { throw 'Absent listener oracle differs.' }
+        } elseif ($failure -cne $Expected) { throw "Listener refusal differs: $Case" }
+        "PASS C1 listener: $Case"
+    } finally { $self.Dispose() }
+}
+Assert-C1ListenerSnapshot 'absent' @() 'absent'
+$right = [pscustomobject]@{LocalPort=14321;LocalAddress='127.0.0.1';OwningProcess=$PID}
+Assert-C1ListenerSnapshot 'foreign owner' @([pscustomobject]@{LocalPort=14321;LocalAddress='127.0.0.1';OwningProcess=($PID+1)}) 'C1_LISTENER_NOT_OWNED'
+Assert-C1ListenerSnapshot 'wildcard' @([pscustomobject]@{LocalPort=14321;LocalAddress='0.0.0.0';OwningProcess=$PID}) 'C1_LISTENER_NOT_OWNED'
+Assert-C1ListenerSnapshot 'ambiguous' @($right,$right) 'C1_LISTENER_NOT_OWNED'
+'C1_LISTENER_GUARD_OK:1 real loopback listener, 4 fictional snapshots, no MySQL launched'

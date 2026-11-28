@@ -74,11 +74,55 @@ function Initialize-C1MysqlClientIsolation([string] $Directory) {
     $env:MYSQL_PWD = $null
 }
 
+# Snapshot the Windows listener table without connecting to an unknown endpoint.
+# This is a point-in-time check, not a reservation or a race-free guarantee.
+function Test-C1OwnedListener([System.Diagnostics.Process] $Process, [int] $Port) {
+    if (-not $Process -or $Port -lt 1 -or $Port -gt 65535) { throw 'C1_LISTENER_INVALID' }
+    $Process.Refresh()
+    if ($Process.HasExited) { throw 'C1_LISTENER_PROCESS_EXITED' }
+    $listeners = @(Get-NetTCPConnection -State Listen -ErrorAction Stop | Where-Object { $_.LocalPort -eq $Port })
+    if ($listeners.Count -eq 0) { return $false }
+    if ($listeners.Count -ne 1 -or $listeners[0].LocalAddress -cne '127.0.0.1' -or
+        $listeners[0].OwningProcess -ne $Process.Id) { throw 'C1_LISTENER_NOT_OWNED' }
+    $Process.Refresh()
+    if ($Process.HasExited) { throw 'C1_LISTENER_PROCESS_EXITED' }
+    return $true
+}
+
+function Assert-C1OwnedListener([System.Diagnostics.Process] $Process, [int] $Port) {
+    if (-not (Test-C1OwnedListener -Process $Process -Port $Port)) { throw 'C1_LISTENER_MISSING' }
+}
+
+function Assert-C1DatabasePort([int] $Port) {
+    if ($Port -eq $sourceDatabasePort) {
+        Assert-C1OwnedListener -Process $dbProcess -Port $Port
+    } elseif ($Port -eq $recoveryPort -and $target) {
+        Assert-C1OwnedListener -Process $target -Port $Port
+    } else { throw 'C1_DATABASE_PORT_UNKNOWN' }
+}
+
+function Wait-C1DatabaseReady([System.Diagnostics.Process] $Process, [int] $Port) {
+    $clock = [Diagnostics.Stopwatch]::StartNew()
+    while ($clock.Elapsed.TotalSeconds -lt 45) {
+        if (Test-C1OwnedListener -Process $Process -Port $Port) {
+            # mysqladmin ping can return zero on Access denied. Require a real query.
+            $answer = @(& $mysql --no-defaults --protocol=tcp --host=127.0.0.1 "--port=$Port" --user=root --skip-password --connect-timeout=2 --batch --raw --skip-column-names '--execute=SELECT 1' 2>$null)
+            if ($LASTEXITCODE -eq 0 -and $answer.Count -eq 1 -and $answer[0] -ceq '1') {
+                Assert-C1OwnedListener -Process $Process -Port $Port
+                return
+            }
+        }
+        Start-Sleep -Milliseconds 500
+    }
+    throw 'C1_AUTHENTICATED_READINESS_TIMEOUT'
+}
+
 # The caller supplies the port bound to this specific process, never the
 # mutable active database port used during recovery.
 function Stop-C1Database([System.Diagnostics.Process] $Process, [int] $Port) {
     if (-not $Process -or $Process.HasExited) { return }
     if ($Port -lt 1 -or $Port -gt 65535) { throw 'C1_DB_CLEANUP_PORT_INVALID' }
+    Assert-C1OwnedListener -Process $Process -Port $Port
     & $mysqladmin --no-defaults --protocol=tcp --host=127.0.0.1 "--port=$Port" --user=root --skip-password shutdown *> $null
     if (-not $Process.WaitForExit(15000)) {
         $Process.Kill()
@@ -87,6 +131,7 @@ function Stop-C1Database([System.Diagnostics.Process] $Process, [int] $Port) {
 }
 
 function Invoke-MysqlBootstrap([string] $Sql) {
+    Assert-C1DatabasePort -Port $databasePort
     $startInfo = [System.Diagnostics.ProcessStartInfo]::new()
     $startInfo.FileName = $mysql
     $startInfo.Arguments = "--no-defaults --protocol=tcp --host=127.0.0.1 --port=$databasePort --user=root --skip-password --batch --raw"
@@ -107,6 +152,7 @@ function Invoke-MysqlBootstrap([string] $Sql) {
 }
 
 function Start-C1PackagedApp([string] $Timezone = 'Asia/Manila') {
+    Assert-C1DatabasePort -Port $databasePort
     $jar = Join-Path $experiment 'target\extended-backend-0.1.0-SNAPSHOT.jar'
     if (-not (Test-Path -LiteralPath $jar)) { throw "Packaged C1 JAR is missing: $jar" }
     $script:appLaunch++
@@ -289,14 +335,7 @@ try {
         ('--datadir="' + $dataDirectory + '"'), "--port=$databasePort", '--bind-address=127.0.0.1', '--mysqlx=0',
         ('--pid-file="' + (Join-Path $dataDirectory 'c1.pid') + '"'),
         ('--log-error="' + (Join-Path $dataDirectory 'mysql.err.log') + '"')) -WindowStyle Hidden -PassThru
-    $ready = $false
-    for ($attempt = 0; $attempt -lt 90; $attempt++) {
-        if ($dbProcess.HasExited) { throw 'Isolated MySQL exited during startup; inspect its temporary error log.' }
-        & $mysqladmin --no-defaults --protocol=tcp --host=127.0.0.1 --port=$databasePort --user=root --skip-password ping *> $null
-        if ($LASTEXITCODE -eq 0) { $ready = $true; break }
-        Start-Sleep -Milliseconds 500
-    }
-    if (-not $ready) { throw 'Isolated MySQL did not become ready within 45 seconds.' }
+    Wait-C1DatabaseReady -Process $dbProcess -Port $sourceDatabasePort
 
     $dbPassword = New-RandomHex
     $bootstrapPassword = New-RandomHex
