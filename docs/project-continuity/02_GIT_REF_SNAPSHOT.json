@@ -1928,5 +1928,18 @@
     "state": "VERIFIED_BOUNDED",
     "distribution": "BLOCKED",
     "next": "Report168: 74/96 initial upstream evidence (including dom4j metadata/text conflict), 22 unresolved. Prioritize exact ASM6.0_ALPHA terms/shaded version, MIMEPull/OSGi/ANTLR and remaining permissive families; dom4j actual packaged text and discrepancy rights review required; all96 binary correspondence NOT_RUN and distribution BLOCKED. Separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release."
+  },
+  "course_a_jackson_logging_byte_buddy_license_evidence": {
+    "date": "2026-11-28 PHT",
+    "ref": "bb39273bf584dd04e3d021ab3c730507b6ae574b",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr59": "c868c90320539d29963f8ee063c7eaa9d9562a07",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/169_COURSE_A_JACKSON_LOGGING_AND_SHADED_BYTE_BUDDY_LICENSE_EVIDENCE.md",
+    "report_blob": "80d5805457a1b377801303aa1f6fbed95e110a61",
+    "map": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-upstream-license-evidence.csv",
+    "map_blob": "f75e9481d384f526832808e427ab0e6329a80f36",
+    "state": "VERIFIED_BOUNDED",
+    "distribution": "BLOCKED",
+    "next": "Report169: 88/96 initial upstream evidence, 8 unresolved (ANTLR2.7.7, converter-gson2.1.0, MIMEPull1.9.10, OkHttp3.14.9, Okio1.17.2, OSGi locator1.0.1, Retrofit2.4.0, SnakeYAML1.23). Prioritize those exact releases, then original/shaded ASM (HK2 6.0_ALPHA vs manifest5.1, Byte Buddy7.0 separate) and actual notices, DOM4J conflict, binary correspondence and rights. All96 distribution BLOCKED and binary correspondence NOT_RUN. Separate Extended actual inventory open. No redundant CI; private L06 HOLD/no WSL; native/independent/off-host/student/rights gates unchanged; P0/V7 freeze; no merge/deploy/release."
   }
 }

@@ -241,7 +241,7 @@
         }
       ],
       "authority": "Parallel PR10 exact execution specs; not active source or completed tests.",
-      "next": "Report168: 74/96 initial upstream evidence (including dom4j metadata/text conflict), 22 unresolved. Prioritize exact ASM6.0_ALPHA terms/shaded version, MIMEPull/OSGi/ANTLR and remaining permissive families; dom4j actual packaged text and discrepancy rights review required; all96 binary correspondence NOT_RUN and distribution BLOCKED. Separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release.",
+      "next": "Report169: 88/96 initial upstream evidence, 8 unresolved (ANTLR2.7.7, converter-gson2.1.0, MIMEPull1.9.10, OkHttp3.14.9, Okio1.17.2, OSGi locator1.0.1, Retrofit2.4.0, SnakeYAML1.23). Prioritize those exact releases, then original/shaded ASM (HK2 6.0_ALPHA vs manifest5.1, Byte Buddy7.0 separate) and actual notices, DOM4J conflict, binary correspondence and rights. All96 distribution BLOCKED and binary correspondence NOT_RUN. Separate Extended actual inventory open. No redundant CI; private L06 HOLD/no WSL; native/independent/off-host/student/rights gates unchanged; P0/V7 freeze; no merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/122_ACADEMIC_FIRST_EXTENDED_C_OBJECTIVE.md",
@@ -434,6 +434,18 @@
           "blob": "b2a436b919978cbd253a53028369deeefef2ec86",
           "ref": "898a090ee5a1bd3c17cf6a001740e49077a47b55",
           "review": "FULL 96-row join, 74 initial mappings including conflict, 22 unresolved"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/169_COURSE_A_JACKSON_LOGGING_AND_SHADED_BYTE_BUDDY_LICENSE_EVIDENCE.md",
+          "blob": "80d5805457a1b377801303aa1f6fbed95e110a61",
+          "ref": "bb39273bf584dd04e3d021ab3c730507b6ae574b",
+          "review": "FULL report; exact source declarations; shaded Byte Buddy ASM separate"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-upstream-license-evidence.csv",
+          "blob": "f75e9481d384f526832808e427ab0e6329a80f36",
+          "ref": "bb39273bf584dd04e3d021ab3c730507b6ae574b",
+          "review": "FULL 96-row join, 88 initial mappings, 8 unresolved"
         }
       ]
     },
@@ -478,7 +490,7 @@
         }
       ],
       "authority": "Immutable A 7f8c0746; actual course code and evidence separate from Extended.",
-      "next": "Report168: 74/96 initial upstream evidence (including dom4j metadata/text conflict), 22 unresolved. Prioritize exact ASM6.0_ALPHA terms/shaded version, MIMEPull/OSGi/ANTLR and remaining permissive families; dom4j actual packaged text and discrepancy rights review required; all96 binary correspondence NOT_RUN and distribution BLOCKED. Separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release.",
+      "next": "Report169: 88/96 initial upstream evidence, 8 unresolved (ANTLR2.7.7, converter-gson2.1.0, MIMEPull1.9.10, OkHttp3.14.9, Okio1.17.2, OSGi locator1.0.1, Retrofit2.4.0, SnakeYAML1.23). Prioritize those exact releases, then original/shaded ASM (HK2 6.0_ALPHA vs manifest5.1, Byte Buddy7.0 separate) and actual notices, DOM4J conflict, binary correspondence and rights. All96 distribution BLOCKED and binary correspondence NOT_RUN. Separate Extended actual inventory open. No redundant CI; private L06 HOLD/no WSL; native/independent/off-host/student/rights gates unchanged; P0/V7 freeze; no merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
@@ -603,6 +615,18 @@
           "blob": "b2a436b919978cbd253a53028369deeefef2ec86",
           "ref": "898a090ee5a1bd3c17cf6a001740e49077a47b55",
           "review": "FULL 96-row join, 74 initial mappings including conflict, 22 unresolved"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/169_COURSE_A_JACKSON_LOGGING_AND_SHADED_BYTE_BUDDY_LICENSE_EVIDENCE.md",
+          "blob": "80d5805457a1b377801303aa1f6fbed95e110a61",
+          "ref": "bb39273bf584dd04e3d021ab3c730507b6ae574b",
+          "review": "FULL report; exact source declarations; shaded Byte Buddy ASM separate"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-upstream-license-evidence.csv",
+          "blob": "f75e9481d384f526832808e427ab0e6329a80f36",
+          "ref": "bb39273bf584dd04e3d021ab3c730507b6ae574b",
+          "review": "FULL 96-row join, 88 initial mappings, 8 unresolved"
         }
       ]
     },
@@ -824,7 +848,7 @@
         }
       ],
       "authority": "Parallel PR24 source inventory and publication vetoes; metadata != content inspection.",
-      "next": "Report168: 74/96 initial upstream evidence (including dom4j metadata/text conflict), 22 unresolved. Prioritize exact ASM6.0_ALPHA terms/shaded version, MIMEPull/OSGi/ANTLR and remaining permissive families; dom4j actual packaged text and discrepancy rights review required; all96 binary correspondence NOT_RUN and distribution BLOCKED. Separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release.",
+      "next": "Report169: 88/96 initial upstream evidence, 8 unresolved (ANTLR2.7.7, converter-gson2.1.0, MIMEPull1.9.10, OkHttp3.14.9, Okio1.17.2, OSGi locator1.0.1, Retrofit2.4.0, SnakeYAML1.23). Prioritize those exact releases, then original/shaded ASM (HK2 6.0_ALPHA vs manifest5.1, Byte Buddy7.0 separate) and actual notices, DOM4J conflict, binary correspondence and rights. All96 distribution BLOCKED and binary correspondence NOT_RUN. Separate Extended actual inventory open. No redundant CI; private L06 HOLD/no WSL; native/independent/off-host/student/rights gates unchanged; P0/V7 freeze; no merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
@@ -1121,6 +1145,18 @@
           "blob": "b2a436b919978cbd253a53028369deeefef2ec86",
           "ref": "898a090ee5a1bd3c17cf6a001740e49077a47b55",
           "review": "FULL 96-row join, 74 initial mappings including conflict, 22 unresolved"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/169_COURSE_A_JACKSON_LOGGING_AND_SHADED_BYTE_BUDDY_LICENSE_EVIDENCE.md",
+          "blob": "80d5805457a1b377801303aa1f6fbed95e110a61",
+          "ref": "bb39273bf584dd04e3d021ab3c730507b6ae574b",
+          "review": "FULL report; exact source declarations; shaded Byte Buddy ASM separate"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-upstream-license-evidence.csv",
+          "blob": "f75e9481d384f526832808e427ab0e6329a80f36",
+          "ref": "bb39273bf584dd04e3d021ab3c730507b6ae574b",
+          "review": "FULL 96-row join, 88 initial mappings, 8 unresolved"
         }
       ]
     },
@@ -2227,7 +2263,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "Report168: 74/96 initial upstream evidence (including dom4j metadata/text conflict), 22 unresolved. Prioritize exact ASM6.0_ALPHA terms/shaded version, MIMEPull/OSGi/ANTLR and remaining permissive families; dom4j actual packaged text and discrepancy rights review required; all96 binary correspondence NOT_RUN and distribution BLOCKED. Separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release.",
+      "next": "Report169: 88/96 initial upstream evidence, 8 unresolved (ANTLR2.7.7, converter-gson2.1.0, MIMEPull1.9.10, OkHttp3.14.9, Okio1.17.2, OSGi locator1.0.1, Retrofit2.4.0, SnakeYAML1.23). Prioritize those exact releases, then original/shaded ASM (HK2 6.0_ALPHA vs manifest5.1, Byte Buddy7.0 separate) and actual notices, DOM4J conflict, binary correspondence and rights. All96 distribution BLOCKED and binary correspondence NOT_RUN. Separate Extended actual inventory open. No redundant CI; private L06 HOLD/no WSL; native/independent/off-host/student/rights gates unchanged; P0/V7 freeze; no merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -3232,6 +3268,18 @@
           "blob": "b2a436b919978cbd253a53028369deeefef2ec86",
           "ref": "898a090ee5a1bd3c17cf6a001740e49077a47b55",
           "review": "FULL 96-row join, 74 initial mappings including conflict, 22 unresolved"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/169_COURSE_A_JACKSON_LOGGING_AND_SHADED_BYTE_BUDDY_LICENSE_EVIDENCE.md",
+          "blob": "80d5805457a1b377801303aa1f6fbed95e110a61",
+          "ref": "bb39273bf584dd04e3d021ab3c730507b6ae574b",
+          "review": "FULL report; exact source declarations; shaded Byte Buddy ASM separate"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-upstream-license-evidence.csv",
+          "blob": "f75e9481d384f526832808e427ab0e6329a80f36",
+          "ref": "bb39273bf584dd04e3d021ab3c730507b6ae574b",
+          "review": "FULL 96-row join, 88 initial mappings, 8 unresolved"
         }
       ]
     },
@@ -3378,7 +3426,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "Report168: 74/96 initial upstream evidence (including dom4j metadata/text conflict), 22 unresolved. Prioritize exact ASM6.0_ALPHA terms/shaded version, MIMEPull/OSGi/ANTLR and remaining permissive families; dom4j actual packaged text and discrepancy rights review required; all96 binary correspondence NOT_RUN and distribution BLOCKED. Separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release.",
+      "next": "Report169: 88/96 initial upstream evidence, 8 unresolved (ANTLR2.7.7, converter-gson2.1.0, MIMEPull1.9.10, OkHttp3.14.9, Okio1.17.2, OSGi locator1.0.1, Retrofit2.4.0, SnakeYAML1.23). Prioritize those exact releases, then original/shaded ASM (HK2 6.0_ALPHA vs manifest5.1, Byte Buddy7.0 separate) and actual notices, DOM4J conflict, binary correspondence and rights. All96 distribution BLOCKED and binary correspondence NOT_RUN. Separate Extended actual inventory open. No redundant CI; private L06 HOLD/no WSL; native/independent/off-host/student/rights gates unchanged; P0/V7 freeze; no merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -4151,6 +4199,18 @@
           "blob": "b2a436b919978cbd253a53028369deeefef2ec86",
           "ref": "898a090ee5a1bd3c17cf6a001740e49077a47b55",
           "review": "FULL 96-row join, 74 initial mappings including conflict, 22 unresolved"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/169_COURSE_A_JACKSON_LOGGING_AND_SHADED_BYTE_BUDDY_LICENSE_EVIDENCE.md",
+          "blob": "80d5805457a1b377801303aa1f6fbed95e110a61",
+          "ref": "bb39273bf584dd04e3d021ab3c730507b6ae574b",
+          "review": "FULL report; exact source declarations; shaded Byte Buddy ASM separate"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-upstream-license-evidence.csv",
+          "blob": "f75e9481d384f526832808e427ab0e6329a80f36",
+          "ref": "bb39273bf584dd04e3d021ab3c730507b6ae574b",
+          "review": "FULL 96-row join, 88 initial mappings, 8 unresolved"
         }
       ]
     }
