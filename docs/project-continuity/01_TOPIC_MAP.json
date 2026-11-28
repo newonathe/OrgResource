@@ -241,7 +241,7 @@
         }
       ],
       "authority": "Parallel PR10 exact execution specs; not active source or completed tests.",
-      "next": "Report167: 68/96 initial upstream evidence, 28 unresolved; seven new rows and two repackaged rows refined. Next exact ASM6.0_ALPHA terms/shaded version, Javax Transaction/JAX-RS/JAXB/validation/MIMEPull/OSGi, ANTLR/dom4j then permissive families. All96 binary correspondence NOT_RUN and distribution BLOCKED; separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release.",
+      "next": "Report168: 74/96 initial upstream evidence (including dom4j metadata/text conflict), 22 unresolved. Prioritize exact ASM6.0_ALPHA terms/shaded version, MIMEPull/OSGi/ANTLR and remaining permissive families; dom4j actual packaged text and discrepancy rights review required; all96 binary correspondence NOT_RUN and distribution BLOCKED. Separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/122_ACADEMIC_FIRST_EXTENDED_C_OBJECTIVE.md",
@@ -422,6 +422,18 @@
           "blob": "b363f884812835ae1d28a1eb3de184c70b4e3b3e",
           "ref": "52d0492eba7845b47446ddda4a354d5d9bed945a",
           "review": "FULL 96-row join, 68 initial mappings, 28 unresolved"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/168_COURSE_A_JAVAX_LICENSES_AND_DOM4J_METADATA_CONFLICT.md",
+          "blob": "e93b5a69390a2a746fdc467893739b3d38f5d207",
+          "ref": "898a090ee5a1bd3c17cf6a001740e49077a47b55",
+          "review": "FULL report; exact source/published declarations; DOM4J conflicting metadata and text"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-upstream-license-evidence.csv",
+          "blob": "b2a436b919978cbd253a53028369deeefef2ec86",
+          "ref": "898a090ee5a1bd3c17cf6a001740e49077a47b55",
+          "review": "FULL 96-row join, 74 initial mappings including conflict, 22 unresolved"
         }
       ]
     },
@@ -466,7 +478,7 @@
         }
       ],
       "authority": "Immutable A 7f8c0746; actual course code and evidence separate from Extended.",
-      "next": "Report167: 68/96 initial upstream evidence, 28 unresolved; seven new rows and two repackaged rows refined. Next exact ASM6.0_ALPHA terms/shaded version, Javax Transaction/JAX-RS/JAXB/validation/MIMEPull/OSGi, ANTLR/dom4j then permissive families. All96 binary correspondence NOT_RUN and distribution BLOCKED; separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release.",
+      "next": "Report168: 74/96 initial upstream evidence (including dom4j metadata/text conflict), 22 unresolved. Prioritize exact ASM6.0_ALPHA terms/shaded version, MIMEPull/OSGi/ANTLR and remaining permissive families; dom4j actual packaged text and discrepancy rights review required; all96 binary correspondence NOT_RUN and distribution BLOCKED. Separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
@@ -579,6 +591,18 @@
           "blob": "b363f884812835ae1d28a1eb3de184c70b4e3b3e",
           "ref": "52d0492eba7845b47446ddda4a354d5d9bed945a",
           "review": "FULL 96-row join, 68 initial mappings, 28 unresolved"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/168_COURSE_A_JAVAX_LICENSES_AND_DOM4J_METADATA_CONFLICT.md",
+          "blob": "e93b5a69390a2a746fdc467893739b3d38f5d207",
+          "ref": "898a090ee5a1bd3c17cf6a001740e49077a47b55",
+          "review": "FULL report; exact source/published declarations; DOM4J conflicting metadata and text"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-upstream-license-evidence.csv",
+          "blob": "b2a436b919978cbd253a53028369deeefef2ec86",
+          "ref": "898a090ee5a1bd3c17cf6a001740e49077a47b55",
+          "review": "FULL 96-row join, 74 initial mappings including conflict, 22 unresolved"
         }
       ]
     },
@@ -800,7 +824,7 @@
         }
       ],
       "authority": "Parallel PR24 source inventory and publication vetoes; metadata != content inspection.",
-      "next": "Report167: 68/96 initial upstream evidence, 28 unresolved; seven new rows and two repackaged rows refined. Next exact ASM6.0_ALPHA terms/shaded version, Javax Transaction/JAX-RS/JAXB/validation/MIMEPull/OSGi, ANTLR/dom4j then permissive families. All96 binary correspondence NOT_RUN and distribution BLOCKED; separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release.",
+      "next": "Report168: 74/96 initial upstream evidence (including dom4j metadata/text conflict), 22 unresolved. Prioritize exact ASM6.0_ALPHA terms/shaded version, MIMEPull/OSGi/ANTLR and remaining permissive families; dom4j actual packaged text and discrepancy rights review required; all96 binary correspondence NOT_RUN and distribution BLOCKED. Separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
@@ -1085,6 +1109,18 @@
           "blob": "b363f884812835ae1d28a1eb3de184c70b4e3b3e",
           "ref": "52d0492eba7845b47446ddda4a354d5d9bed945a",
           "review": "FULL 96-row join, 68 initial mappings, 28 unresolved"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/168_COURSE_A_JAVAX_LICENSES_AND_DOM4J_METADATA_CONFLICT.md",
+          "blob": "e93b5a69390a2a746fdc467893739b3d38f5d207",
+          "ref": "898a090ee5a1bd3c17cf6a001740e49077a47b55",
+          "review": "FULL report; exact source/published declarations; DOM4J conflicting metadata and text"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-upstream-license-evidence.csv",
+          "blob": "b2a436b919978cbd253a53028369deeefef2ec86",
+          "ref": "898a090ee5a1bd3c17cf6a001740e49077a47b55",
+          "review": "FULL 96-row join, 74 initial mappings including conflict, 22 unresolved"
         }
       ]
     },
@@ -2191,7 +2227,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "Report167: 68/96 initial upstream evidence, 28 unresolved; seven new rows and two repackaged rows refined. Next exact ASM6.0_ALPHA terms/shaded version, Javax Transaction/JAX-RS/JAXB/validation/MIMEPull/OSGi, ANTLR/dom4j then permissive families. All96 binary correspondence NOT_RUN and distribution BLOCKED; separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release.",
+      "next": "Report168: 74/96 initial upstream evidence (including dom4j metadata/text conflict), 22 unresolved. Prioritize exact ASM6.0_ALPHA terms/shaded version, MIMEPull/OSGi/ANTLR and remaining permissive families; dom4j actual packaged text and discrepancy rights review required; all96 binary correspondence NOT_RUN and distribution BLOCKED. Separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -3184,6 +3220,18 @@
           "blob": "b363f884812835ae1d28a1eb3de184c70b4e3b3e",
           "ref": "52d0492eba7845b47446ddda4a354d5d9bed945a",
           "review": "FULL 96-row join, 68 initial mappings, 28 unresolved"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/168_COURSE_A_JAVAX_LICENSES_AND_DOM4J_METADATA_CONFLICT.md",
+          "blob": "e93b5a69390a2a746fdc467893739b3d38f5d207",
+          "ref": "898a090ee5a1bd3c17cf6a001740e49077a47b55",
+          "review": "FULL report; exact source/published declarations; DOM4J conflicting metadata and text"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-upstream-license-evidence.csv",
+          "blob": "b2a436b919978cbd253a53028369deeefef2ec86",
+          "ref": "898a090ee5a1bd3c17cf6a001740e49077a47b55",
+          "review": "FULL 96-row join, 74 initial mappings including conflict, 22 unresolved"
         }
       ]
     },
@@ -3330,7 +3378,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "Report167: 68/96 initial upstream evidence, 28 unresolved; seven new rows and two repackaged rows refined. Next exact ASM6.0_ALPHA terms/shaded version, Javax Transaction/JAX-RS/JAXB/validation/MIMEPull/OSGi, ANTLR/dom4j then permissive families. All96 binary correspondence NOT_RUN and distribution BLOCKED; separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release.",
+      "next": "Report168: 74/96 initial upstream evidence (including dom4j metadata/text conflict), 22 unresolved. Prioritize exact ASM6.0_ALPHA terms/shaded version, MIMEPull/OSGi/ANTLR and remaining permissive families; dom4j actual packaged text and discrepancy rights review required; all96 binary correspondence NOT_RUN and distribution BLOCKED. Separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -4091,6 +4139,18 @@
           "blob": "b363f884812835ae1d28a1eb3de184c70b4e3b3e",
           "ref": "52d0492eba7845b47446ddda4a354d5d9bed945a",
           "review": "FULL 96-row join, 68 initial mappings, 28 unresolved"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/168_COURSE_A_JAVAX_LICENSES_AND_DOM4J_METADATA_CONFLICT.md",
+          "blob": "e93b5a69390a2a746fdc467893739b3d38f5d207",
+          "ref": "898a090ee5a1bd3c17cf6a001740e49077a47b55",
+          "review": "FULL report; exact source/published declarations; DOM4J conflicting metadata and text"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-upstream-license-evidence.csv",
+          "blob": "b2a436b919978cbd253a53028369deeefef2ec86",
+          "ref": "898a090ee5a1bd3c17cf6a001740e49077a47b55",
+          "review": "FULL 96-row join, 74 initial mappings including conflict, 22 unresolved"
         }
       ]
     }

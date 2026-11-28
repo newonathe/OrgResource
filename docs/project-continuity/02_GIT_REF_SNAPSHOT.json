@@ -1915,5 +1915,18 @@
     "state": "VERIFIED_BOUNDED",
     "distribution": "BLOCKED",
     "next": "Report167: 68/96 initial upstream evidence, 28 unresolved; seven new rows and two repackaged rows refined. Next exact ASM6.0_ALPHA terms/shaded version, Javax Transaction/JAX-RS/JAXB/validation/MIMEPull/OSGi, ANTLR/dom4j then permissive families. All96 binary correspondence NOT_RUN and distribution BLOCKED; separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release."
+  },
+  "course_a_javax_dom4j_license_evidence": {
+    "date": "2026-11-28 PHT",
+    "ref": "898a090ee5a1bd3c17cf6a001740e49077a47b55",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr59": "c868c90320539d29963f8ee063c7eaa9d9562a07",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/168_COURSE_A_JAVAX_LICENSES_AND_DOM4J_METADATA_CONFLICT.md",
+    "report_blob": "e93b5a69390a2a746fdc467893739b3d38f5d207",
+    "map": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-upstream-license-evidence.csv",
+    "map_blob": "b2a436b919978cbd253a53028369deeefef2ec86",
+    "state": "VERIFIED_BOUNDED",
+    "distribution": "BLOCKED",
+    "next": "Report168: 74/96 initial upstream evidence (including dom4j metadata/text conflict), 22 unresolved. Prioritize exact ASM6.0_ALPHA terms/shaded version, MIMEPull/OSGi/ANTLR and remaining permissive families; dom4j actual packaged text and discrepancy rights review required; all96 binary correspondence NOT_RUN and distribution BLOCKED. Separate Extended actual inventory open. No unnecessary repeat CI. Native/private/off-host/independent/student and rights gates unchanged; L06 HOLD/no WSL; P0/V7 freeze; no merge/deploy/release."
   }
 }
