@@ -515,3 +515,64 @@ Assert-C1ListenerSnapshot 'foreign owner' @([pscustomobject]@{LocalPort=14321;Lo
 Assert-C1ListenerSnapshot 'wildcard' @([pscustomobject]@{LocalPort=14321;LocalAddress='0.0.0.0';OwningProcess=$PID}) 'C1_LISTENER_NOT_OWNED'
 Assert-C1ListenerSnapshot 'ambiguous' @($right,$right) 'C1_LISTENER_NOT_OWNED'
 'C1_LISTENER_GUARD_OK:1 real loopback listener, 4 fictional snapshots, no MySQL launched'
+
+# Execute operator listener helper and actual outer cleanup, without MySQL.
+$operatorPath = Join-Path $PSScriptRoot 'verify-extended-c6a-operator.ps1'
+$opTokens = $null; $opErrors = $null
+$opAst = [System.Management.Automation.Language.Parser]::ParseFile($operatorPath,[ref]$opTokens,[ref]$opErrors)
+if ($opErrors.Count) { throw 'Operator parser errors.' }
+foreach ($name in @('Test-C6aOwnedListener','Assert-C6aPort')) {
+    $defs = @($opAst.FindAll({
+        param($node)
+        $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -ceq $name
+    },$false))
+    if ($defs.Count -ne 1) { throw 'Cannot locate operator guard.' }
+    . ([scriptblock]::Create($defs[0].Extent.Text))
+}
+$opSelf = [Diagnostics.Process]::GetCurrentProcess()
+$opListener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0)
+$opListener.Start()
+try {
+    $opPort = $opListener.LocalEndpoint.Port
+    $servers = @(@{Port=$opPort;Process=$opSelf})
+    Assert-C6aPort $opPort
+    'PASS operator: actual owned listener'
+    foreach ($variant in @('unknown','ambiguous')) {
+        $servers = if ($variant -ceq 'unknown') { @() } else { @(@{Port=$opPort;Process=$opSelf},@{Port=$opPort;Process=$opSelf}) }
+        $failure = ''
+        try { Assert-C6aPort $opPort } catch { $failure = $_.Exception.Message }
+        if ($failure -cne 'C6A_SERVER_IDENTITY_UNKNOWN') { throw 'Operator server selection refusal differs.' }
+        "PASS operator: $variant server selection"
+    }
+} finally { $opListener.Stop(); $opSelf.Dispose() }
+$opCleanup = Get-OuterCleanup $operatorPath
+function Assert-OperatorCleanup([string] $Fault) {
+    $temp = Join-Path ([IO.Path]::GetTempPath()) ('OrgResource-Fictional-Operator-' + [guid]::NewGuid().ToString('N'))
+    $null = New-Item -ItemType Directory -Path $temp
+    $login = Join-Path $temp '.mylogin.cnf'
+    [IO.File]::WriteAllText($login,'fictional sentinel')
+    $names = @('ORGRESOURCE_FICTIONAL_OPERATOR_SENTINEL')
+    $saved = @{ORGRESOURCE_FICTIONAL_OPERATOR_SENTINEL='prior'}
+    $servers = @('source','target')
+    $spy = [Collections.Generic.List[string]]::new()
+    function Stop-OperatorJar { $spy.Add('app'); if ($Fault -ceq 'app') { throw 'fictional fault' } }
+    function Stop-C6aServer($Server) { $spy.Add($Server); if ($Fault -ceq $Server) { throw 'fictional fault' } }
+    $previous = [Environment]::GetEnvironmentVariable($names[0],'Process')
+    try {
+        [Environment]::SetEnvironmentVariable($names[0],'temporary','Process')
+        $failure = ''
+        try { . $opCleanup } catch { $failure = $_.Exception.Message }
+        if (($spy -join ',') -cne 'app,source,target' -or
+            [Environment]::GetEnvironmentVariable($names[0],'Process') -cne 'prior') { throw 'Operator cleanup order/state differs.' }
+        if ($Fault -ceq 'none') {
+            if ($failure -or (Test-Path -LiteralPath $login)) { throw 'Operator normal cleanup differs.' }
+        } elseif (-not $failure.StartsWith('C6A_CLEANUP_INCOMPLETE:') -or
+                  [IO.File]::ReadAllText($login) -cne 'fictional sentinel') { throw 'Operator failed cleanup retention differs.' }
+        "PASS operator cleanup: $Fault"
+    } finally {
+        [Environment]::SetEnvironmentVariable($names[0],$previous,'Process')
+        Remove-Item -LiteralPath $temp -Recurse -Force
+    }
+}
+foreach ($fault in @('none','app','source','target')) { Assert-OperatorCleanup $fault }
+'C6A_OPERATOR_GUARD_OK:1 real listener, 2 selection refusals, 4 fictional cleanup cases, no MySQL launched'
