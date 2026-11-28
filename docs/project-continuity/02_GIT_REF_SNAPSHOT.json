@@ -1888,5 +1888,19 @@
     "state": "VERIFIED_BOUNDED",
     "inventory": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-library-inventory.csv",
     "report": "docs/handoffs/claude-local-execution-2026-11-24/164_COURSE_A_ACTUAL_EMBEDDED_LIBRARY_NOTICE_RECEIPT.md"
+  },
+  "course_a_hk2_jpa_license_evidence": {
+    "date": "2026-11-28 PHT",
+    "ref": "bbc5011cb34b1fbb427a5c68c8e5a72f8695cfb8",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr59": "c868c90320539d29963f8ee063c7eaa9d9562a07",
+    "run": 46136326796,
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/166_COURSE_A_HK2_REPACKAGING_AND_JPA_LICENSE_EVIDENCE.md",
+    "report_blob": "41e0eae2e062e575dd7a3f9a1118bd76bdab6bcf",
+    "map": "docs/handoffs/claude-local-execution-2026-11-24/distribution-notice-draft/course-a-artifact-15256323196-upstream-license-evidence.csv",
+    "map_blob": "26255306dff5185c8666de7e7b1c6017835e6d7f",
+    "state": "VERIFIED_BOUNDED",
+    "distribution": "BLOCKED",
+    "next": "Report166: 61/96 initial upstream evidence (three repackaged underlying terms still open; two prior source-header-only), 35 unresolved. Prioritize original AOP Alliance1.0, ASM asm-debug-all6.0_ALPHA vs manifest5.1, javax.inject1, remaining javax/AspectJ/JBoss then permissive families; all96 binary correspondence and distribution clearance open. Separate Extended actual inventory open. PR59 and Course A prior CI success; no rerun. Native full package/six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent acceptance. Final local DOCX/launcher/student/rights separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy gates unchanged. No merge/deploy/release."
   }
 }
