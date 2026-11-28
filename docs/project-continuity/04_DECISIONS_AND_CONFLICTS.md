@@ -457,3 +457,7 @@ Report153: require owned numeric loopback listener plus authenticated SELECT 1 f
 ## Current - C6a operator fixture boundaries (2026-11-28 PHT)
 
 Report154: preserve named-login protocol, check captured live listeners before privileged fixture operations, remove inherited MYSQL_PWD and restore environment; attempt all server cleanups and retain fixture login on incomplete cleanup. No native or atomic listener guarantee. Keep private/native gates.
+
+## Current - C1 bootstrap transport (2026-11-28 PHT)
+
+Report155: concurrent drain and per-phase waits with captured-client cleanup; sanitized nonzero exit. Actual three harmless child processes passed, not native MySQL. No server rollback or hard total timeout guarantee; avoid speculative wrappers and preserve native gates.

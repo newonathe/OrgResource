@@ -241,7 +241,7 @@
         }
       ],
       "authority": "Parallel PR10 exact execution specs; not active source or completed tests.",
-      "next": "Consume actual exact prior Extended job140944190974 and successor run46134475566 jobs140946596460/140946596661/140946596724; repair observed failures only. Operator listener/readiness and cleanup correction scoped to fixture drill; focused actual guard passed. Native MySQL authentication, shutdown, named-login/ConPTY custody, process lifecycle and full package NOT_RUN; no atomic port reservation. Approved isolated owner environment and independent gate remain; no valid ConPTY before independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. Course A artifact binary blocked per150. No merge/deploy/release.",
+      "next": "Consume actual terminal logs for PR59 prior run46134475566 Extended140946596661 and successor run46135176986 jobs140948747130/140948747156/140948747162; repair observed failures only. Bootstrap transport actual focused guard passed, not native MySQL. Do not proliferate wrappers without material defect/evidence; native full package/owner process and six H03/H06 fixtures still blocked by approved isolated environment and independent acceptance; no valid ConPTY before independent outer/console-host attribution. Course A artifact binary blocked per150. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/122_ACADEMIC_FIRST_EXTENDED_C_OBJECTIVE.md",
@@ -332,6 +332,12 @@
           "blob": "9b6e6416426a303d4031ee7b0e699a4816b6f002",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; exact source and actual prior receipts"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/155_C1_BOOTSTRAP_TRANSPORT_BOUNDS.md",
+          "blob": "ba85abc2e4786d21cec78e4d680926dd8b2f3418",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; exact three-path diff and actual child-process/prior receipts"
         }
       ]
     },
@@ -1423,7 +1429,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "Consume actual exact prior Extended job140944190974 and successor run46134475566 jobs140946596460/140946596661/140946596724; repair observed failures only. Operator listener/readiness and cleanup correction scoped to fixture drill; focused actual guard passed. Native MySQL authentication, shutdown, named-login/ConPTY custody, process lifecycle and full package NOT_RUN; no atomic port reservation. Approved isolated owner environment and independent gate remain; no valid ConPTY before independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. Course A artifact binary blocked per150. No merge/deploy/release.",
+      "next": "Consume actual terminal logs for PR59 prior run46134475566 Extended140946596661 and successor run46135176986 jobs140948747130/140948747156/140948747162; repair observed failures only. Bootstrap transport actual focused guard passed, not native MySQL. Do not proliferate wrappers without material defect/evidence; native full package/owner process and six H03/H06 fixtures still blocked by approved isolated environment and independent acceptance; no valid ConPTY before independent outer/console-host attribution. Course A artifact binary blocked per150. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -1874,6 +1880,12 @@
           "blob": "9b6e6416426a303d4031ee7b0e699a4816b6f002",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; exact source and actual prior receipts"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/155_C1_BOOTSTRAP_TRANSPORT_BOUNDS.md",
+          "blob": "ba85abc2e4786d21cec78e4d680926dd8b2f3418",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; exact three-path diff and actual child-process/prior receipts"
         }
       ]
     },
@@ -1897,7 +1909,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "Consume actual exact prior Extended job140944190974 and successor run46134475566 jobs140946596460/140946596661/140946596724; repair observed failures only. Operator listener/readiness and cleanup correction scoped to fixture drill; focused actual guard passed. Native MySQL authentication, shutdown, named-login/ConPTY custody, process lifecycle and full package NOT_RUN; no atomic port reservation. Approved isolated owner environment and independent gate remain; no valid ConPTY before independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. Course A artifact binary blocked per150. No merge/deploy/release.",
+      "next": "Consume actual terminal logs for PR59 prior run46134475566 Extended140946596661 and successor run46135176986 jobs140948747130/140948747156/140948747162; repair observed failures only. Bootstrap transport actual focused guard passed, not native MySQL. Do not proliferate wrappers without material defect/evidence; native full package/owner process and six H03/H06 fixtures still blocked by approved isolated environment and independent acceptance; no valid ConPTY before independent outer/console-host attribution. Course A artifact binary blocked per150. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -2800,6 +2812,12 @@
           "blob": "9b6e6416426a303d4031ee7b0e699a4816b6f002",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; exact source and actual prior receipts"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/155_C1_BOOTSTRAP_TRANSPORT_BOUNDS.md",
+          "blob": "ba85abc2e4786d21cec78e4d680926dd8b2f3418",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; exact three-path diff and actual child-process/prior receipts"
         }
       ]
     },
@@ -2946,7 +2964,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "Consume actual exact prior Extended job140944190974 and successor run46134475566 jobs140946596460/140946596661/140946596724; repair observed failures only. Operator listener/readiness and cleanup correction scoped to fixture drill; focused actual guard passed. Native MySQL authentication, shutdown, named-login/ConPTY custody, process lifecycle and full package NOT_RUN; no atomic port reservation. Approved isolated owner environment and independent gate remain; no valid ConPTY before independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. Course A artifact binary blocked per150. No merge/deploy/release.",
+      "next": "Consume actual terminal logs for PR59 prior run46134475566 Extended140946596661 and successor run46135176986 jobs140948747130/140948747156/140948747162; repair observed failures only. Bootstrap transport actual focused guard passed, not native MySQL. Do not proliferate wrappers without material defect/evidence; native full package/owner process and six H03/H06 fixtures still blocked by approved isolated environment and independent acceptance; no valid ConPTY before independent outer/console-host attribution. Course A artifact binary blocked per150. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -3617,6 +3635,12 @@
           "blob": "9b6e6416426a303d4031ee7b0e699a4816b6f002",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; exact source and actual prior receipts"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/155_C1_BOOTSTRAP_TRANSPORT_BOUNDS.md",
+          "blob": "ba85abc2e4786d21cec78e4d680926dd8b2f3418",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; exact three-path diff and actual child-process/prior receipts"
         }
       ]
     }
