@@ -1,5 +1,11 @@
 # 14 — Current cross-chat continuation protocol
 
+## Current - Course A existing artifact byte inspection (2026-11-28 PHT)
+
+[Report157](https://github.com/newonathe/OrgResource/blob/docs/claude-local-execution-handoff-2026-11-24/docs/handoffs/claude-local-execution-2026-11-24/157_COURSE_A_EXISTING_ARTIFACT_BYTE_INSPECTION.md): Existing artifact15256323196 actual outer/inner hashes, CRC, 74 Java8 classes,254 JAR entries,2 assets verified by dedicated read-only job46135887831/140950974827; no rebuild/runtime/release. Consume exact PR59 Extended job140948747130 (run46135176986) actual terminal log, repair observed failure only. Course A existing artifact15256323196 byte inspection VERIFIED_BOUNDED on dedicated branch, no need to repeat. Local downloaded copy, final DOCX/Windows launcher, student/Canvas and publication rights remain separate. Prioritize eligible material acceptance gaps under Report124; no redundant wrappers/CI. Native package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.
+
+
+
 ## Current - Continuity schema repair and regression receipts (2026-11-28 PHT)
 
 [Report156](https://github.com/newonathe/OrgResource/blob/docs/claude-local-execution-handoff-2026-11-24/docs/handoffs/claude-local-execution-2026-11-24/156_CONTINUITY_SCHEMA_REPAIR_AND_REGRESSION_RECEIPTS.md): 8 malformed historical events normalized, original exact Git blob retained, 178/178 active events pass schema/ID checks; three actual regression logs consumed. Consume remaining exact PR59 Extended job140948747130 (run46135176986), repair observed failures only. Active continuity event stream schema repaired; preserve original historical rows by pinned Git ref/blob and do not infer new historical receipts. Course A artifact independent byte inspection still blocked (container ClientError). Prioritize eligible material gaps under Report124, no redundant wrappers or CI. Native full package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host attribution. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.

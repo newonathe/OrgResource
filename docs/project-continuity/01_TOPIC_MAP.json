@@ -241,7 +241,7 @@
         }
       ],
       "authority": "Parallel PR10 exact execution specs; not active source or completed tests.",
-      "next": "Consume remaining exact PR59 Extended job140948747130 (run46135176986), repair observed failures only. Active continuity event stream schema repaired; preserve original historical rows by pinned Git ref/blob and do not infer new historical receipts. Course A artifact independent byte inspection still blocked (container ClientError). Prioritize eligible material gaps under Report124, no redundant wrappers or CI. Native full package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host attribution. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+      "next": "Consume exact PR59 Extended job140948747130 (run46135176986) actual terminal log, repair observed failure only. Course A existing artifact15256323196 byte inspection VERIFIED_BOUNDED on dedicated branch, no need to repeat. Local downloaded copy, final DOCX/Windows launcher, student/Canvas and publication rights remain separate. Prioritize eligible material acceptance gaps under Report124; no redundant wrappers/CI. Native package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/122_ACADEMIC_FIRST_EXTENDED_C_OBJECTIVE.md",
@@ -344,6 +344,12 @@
           "blob": "e106fab42df460a991f34b8727651b462a5eb92c",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; deterministic schema and ID validation, actual regression logs"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/157_COURSE_A_EXISTING_ARTIFACT_BYTE_INSPECTION.md",
+          "blob": "cbeac4deca0fa237ffec993fa3f2b9b7cd9a04af",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; actual downloaded existing artifact byte inspection"
         }
       ]
     },
@@ -388,7 +394,7 @@
         }
       ],
       "authority": "Immutable A 7f8c0746; actual course code and evidence separate from Extended.",
-      "next": "Inspect exact PR59 corrected-head CI (no run visible at first readback); run actual package guard/native clean extraction when available, without marking READY or merging. In parallel advance next material public application/security residual from Report99 or portable H02–H06 exact-hash unrun tests; do not repeat bounded checks. Privacy 13-path remediation needs private custody/rights decision; P0 and L06 remain HOLD. Production-ready academic objective unchanged.",
+      "next": "Consume exact PR59 Extended job140948747130 (run46135176986) actual terminal log, repair observed failure only. Course A existing artifact15256323196 byte inspection VERIFIED_BOUNDED on dedicated branch, no need to repeat. Local downloaded copy, final DOCX/Windows launcher, student/Canvas and publication rights remain separate. Prioritize eligible material acceptance gaps under Report124; no redundant wrappers/CI. Native package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
@@ -429,6 +435,12 @@
           "blob": "f0d95de4377b824177c905b3ca981898668600ef",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL bounded source correction; native NOT_RUN; exact blob"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/157_COURSE_A_EXISTING_ARTIFACT_BYTE_INSPECTION.md",
+          "blob": "cbeac4deca0fa237ffec993fa3f2b9b7cd9a04af",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; actual downloaded existing artifact byte inspection"
         }
       ]
     },
@@ -1921,7 +1933,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "Consume remaining exact PR59 Extended job140948747130 (run46135176986), repair observed failures only. Active continuity event stream schema repaired; preserve original historical rows by pinned Git ref/blob and do not infer new historical receipts. Course A artifact independent byte inspection still blocked (container ClientError). Prioritize eligible material gaps under Report124, no redundant wrappers or CI. Native full package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host attribution. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+      "next": "Consume exact PR59 Extended job140948747130 (run46135176986) actual terminal log, repair observed failure only. Course A existing artifact15256323196 byte inspection VERIFIED_BOUNDED on dedicated branch, no need to repeat. Local downloaded copy, final DOCX/Windows launcher, student/Canvas and publication rights remain separate. Prioritize eligible material acceptance gaps under Report124; no redundant wrappers/CI. Native package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -2836,6 +2848,12 @@
           "blob": "e106fab42df460a991f34b8727651b462a5eb92c",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; deterministic schema and ID validation, actual regression logs"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/157_COURSE_A_EXISTING_ARTIFACT_BYTE_INSPECTION.md",
+          "blob": "cbeac4deca0fa237ffec993fa3f2b9b7cd9a04af",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; actual downloaded existing artifact byte inspection"
         }
       ]
     },
@@ -2982,7 +3000,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "Consume remaining exact PR59 Extended job140948747130 (run46135176986), repair observed failures only. Active continuity event stream schema repaired; preserve original historical rows by pinned Git ref/blob and do not infer new historical receipts. Course A artifact independent byte inspection still blocked (container ClientError). Prioritize eligible material gaps under Report124, no redundant wrappers or CI. Native full package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host attribution. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+      "next": "Consume exact PR59 Extended job140948747130 (run46135176986) actual terminal log, repair observed failure only. Course A existing artifact15256323196 byte inspection VERIFIED_BOUNDED on dedicated branch, no need to repeat. Local downloaded copy, final DOCX/Windows launcher, student/Canvas and publication rights remain separate. Prioritize eligible material acceptance gaps under Report124; no redundant wrappers/CI. Native package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -3665,6 +3683,12 @@
           "blob": "e106fab42df460a991f34b8727651b462a5eb92c",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; deterministic schema and ID validation, actual regression logs"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/157_COURSE_A_EXISTING_ARTIFACT_BYTE_INSPECTION.md",
+          "blob": "cbeac4deca0fa237ffec993fa3f2b9b7cd9a04af",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; actual downloaded existing artifact byte inspection"
         }
       ]
     }

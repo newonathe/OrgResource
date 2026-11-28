@@ -2826,7 +2826,7 @@
       "native_execution": "NOT_RUN",
       "private_l06_ready": false
     },
-    "pre_handoff_next": "Consume remaining exact PR59 Extended job140948747130 (run46135176986), repair observed failures only. Active continuity event stream schema repaired; preserve original historical rows by pinned Git ref/blob and do not infer new historical receipts. Course A artifact independent byte inspection still blocked (container ClientError). Prioritize eligible material gaps under Report124, no redundant wrappers or CI. Native full package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host attribution. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+    "pre_handoff_next": "Consume exact PR59 Extended job140948747130 (run46135176986) actual terminal log, repair observed failure only. Course A existing artifact15256323196 byte inspection VERIFIED_BOUNDED on dedicated branch, no need to repeat. Local downloaded copy, final DOCX/Windows launcher, student/Canvas and publication rights remain separate. Prioritize eligible material acceptance gaps under Report124; no redundant wrappers/CI. Native package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
     "release_inventory_candidate": {
       "report": "docs/handoffs/claude-local-execution-2026-11-24/125_RELEASE_MIGRATION_INVENTORY_CORRECTION.md",
       "pr": 59,
@@ -3672,7 +3672,7 @@
     "recorded_zip_sha256": "37db61e0ff82954d88a7158f7f92b12f6a5dfd4f3c84dac5e900bc59ca6dffc9",
     "expires": "2027-02-26T08:53:17Z",
     "state": "VERIFIED_BOUNDED",
-    "binary_inspection": "BLOCKED",
+    "binary_inspection": "VERIFIED_BOUNDED",
     "receipt": {
       "status": "VERIFIED_BOUNDED",
       "sha": "d398ebd115c7c6fa8dcdfdf84f3918fe2e60d0f8",
@@ -3681,7 +3681,20 @@
       "oracle": "Existing Course A CI artifact identity and upload-log/API digest reconciliation; frozen build-tree equality",
       "actual": "Artifact15256323196 size37371675; upload log and API metadata SHA256 37db61e0ff82954d88a7158f7f92b12f6a5dfd4f3c84dac5e900bc59ca6dffc9 agree. Connector retrieval returned ZIP file reference; independent byte hash and inner JAR inspection BLOCKED by both local runtime ClientError. No final release package claim."
     },
-    "next": "For AC1/AC5, independently hash downloaded existing Course A CI artifact15256323196 against recorded ZIP digest, inspect inner JAR and exact class/assets inventory; owner verify final local DOCX, launcher, package and Canvas. No whole-HEAD archive or redistribution. No repeat unchanged CI. Advance materially distinct eligible work under Report124; native C1 package/operator and first six H03/H06 fixtures NOT_RUN, owner environment gated; no valid ConPTY before independent acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release."
+    "next": "Consume exact PR59 Extended job140948747130 (run46135176986) actual terminal log, repair observed failure only. Course A existing artifact15256323196 byte inspection VERIFIED_BOUNDED on dedicated branch, no need to repeat. Local downloaded copy, final DOCX/Windows launcher, student/Canvas and publication rights remain separate. Prioritize eligible material acceptance gaps under Report124; no redundant wrappers/CI. Native package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+    "byte_inspection_report": "docs/handoffs/claude-local-execution-2026-11-24/157_COURSE_A_EXISTING_ARTIFACT_BYTE_INSPECTION.md",
+    "byte_inspection_ref": "5174d2b0ca40d262e497bf4a6863b4a28daed75a",
+    "outer_sha256": "37db61e0ff82954d88a7158f7f92b12f6a5dfd4f3c84dac5e900bc59ca6dffc9",
+    "inner_jar_sha256": "773f3418d72ad066ace066c35bc359a4eeec1ec18c4b9a73d8b3adcdc8889d3e",
+    "byte_inspection_receipt": {
+      "status": "VERIFIED_BOUNDED",
+      "sha": "5174d2b0ca40d262e497bf4a6863b4a28daed75a",
+      "run": 46135887831,
+      "job": 140950974827,
+      "oracle": "Read-only dedicated CI downloads exact existing artifact15256323196 and independently hashes bytes, verifies outer and nested ZIP CRC/inventory, application class major52, start class and actual referenced JS/CSS",
+      "actual": "Terminal success at10:35:26.7274342 UTC. Outer SHA256 37db61e0ff82954d88a7158f7f92b12f6a5dfd4f3c84dac5e900bc59ca6dffc9, 37371675 bytes; inner JAR SHA256 773f3418d72ad066ace066c35bc359a4eeec1ec18c4b9a73d8b3adcdc8889d3e, 41656811 bytes,254 entries,74 application classes major52,2 referenced assets, both CRC verified. No rebuild, runtime, release or upload."
+    },
+    "owner_local_copy": "NOT_RUN"
   },
   "parallel_packaging_draft_reconciliation": {
     "report": "docs/handoffs/claude-local-execution-2026-11-24/151_PARALLEL_PACKAGING_DRAFT_RECONCILIATION.md",
@@ -3910,7 +3923,7 @@
     "pending_jobs": [
       140948747130
     ],
-    "next": "Consume remaining exact PR59 Extended job140948747130 (run46135176986), repair observed failures only. Active continuity event stream schema repaired; preserve original historical rows by pinned Git ref/blob and do not infer new historical receipts. Course A artifact independent byte inspection still blocked (container ClientError). Prioritize eligible material gaps under Report124, no redundant wrappers or CI. Native full package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host attribution. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release."
+    "next": "Consume exact PR59 Extended job140948747130 (run46135176986) actual terminal log, repair observed failure only. Course A existing artifact15256323196 byte inspection VERIFIED_BOUNDED on dedicated branch, no need to repeat. Local downloaded copy, final DOCX/Windows launcher, student/Canvas and publication rights remain separate. Prioritize eligible material acceptance gaps under Report124; no redundant wrappers/CI. Native package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release."
   },
   "continuity_schema_repair": {
     "report": "docs/handoffs/claude-local-execution-2026-11-24/156_CONTINUITY_SCHEMA_REPAIR_AND_REGRESSION_RECEIPTS.md",
@@ -3920,7 +3933,7 @@
     "original_rows": 177,
     "normalized_rows": 8,
     "unchanged_rows": 169,
-    "active_valid_rows": 178,
+    "active_valid_rows": 179,
     "duplicate_ids": 0,
     "unknown_ids": 0,
     "state": "VERIFIED_BOUNDED",

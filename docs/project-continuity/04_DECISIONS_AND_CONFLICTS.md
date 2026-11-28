@@ -465,3 +465,7 @@ Report155: concurrent drain and per-phase waits with captured-client cleanup; sa
 ## Current - Continuity schema repair (2026-11-28 PHT)
 
 Report156: eight invalid historical event rows normalized in active stream, original exact ref 707f6771e2ea5134df1c210150a417767ced2f11 blob c9b77ce319644185244a4da0ecaab72e52f04547 lines153-160 retained; 169 prior lines unchanged, 178 current valid. No new historical proof or inferred run/job pairings. Preserve original evidence and use schema before future writes.
+
+## Current - Existing Course A artifact bytes (2026-11-28 PHT)
+
+Report157: exact existing artifact15256323196 verified actual outer and inner hashes/CRC, application class major52 and referenced assets in separate read-only CI; supersedes Report150 byte-inspection blocker only. No local copy, new runtime, final submission or release inferred.
