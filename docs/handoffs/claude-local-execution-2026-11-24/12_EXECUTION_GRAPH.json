@@ -2826,7 +2826,7 @@
       "native_execution": "NOT_RUN",
       "private_l06_ready": false
     },
-    "pre_handoff_next": "Use PR59 corrected d398ebd as packaging candidate, PR58 directed-test candidate separately; PR60 historical overlapping draft retained, do not duplicate its migration guard or merge any draft. PR58/59 additive workflow blocks disjoint against exact main; integration still unrun, separate authorization for merge. Course A artifact15256323196 byte inspection BLOCKED (container retry ClientError); no redundant CI or speculative wrappers. Native C1 package/operator and six H03/H06 fixtures NOT_RUN, owner approved isolated environment required. Private L06 HOLD/no WSL; no valid ConPTY before independent acceptance; P0/V7 freeze/L07/93 independent/13 privacy/student gates unchanged. Advance materially distinct eligible tasks under Report124. No merge/deploy/release.",
+    "pre_handoff_next": "Consume actual exact-head PR59 Verify46133266836 remaining Course A140942914774, Extended140942914984 and React140942915024 terminal logs; repair observed failures only. New Windows focused guard passed six actual cleanup-block fictional cases, no MySQL or process termination. Native process stop, readiness/port ownership race, session-dispose fault and combined native package/operator NOT_RUN. First six H03/H06 native fixtures remain owner-environment gated; no valid ConPTY before independent acceptance. Course A artifact binary inspection remains blocked per Report150. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
     "release_inventory_candidate": {
       "report": "docs/handoffs/claude-local-execution-2026-11-24/125_RELEASE_MIGRATION_INVENTORY_CORRECTION.md",
       "pr": 59,
@@ -3731,5 +3731,33 @@
       }
     ],
     "next": "Use PR59 corrected d398ebd as packaging candidate, PR58 directed-test candidate separately; PR60 historical overlapping draft retained, do not duplicate its migration guard or merge any draft. PR58/59 additive workflow blocks disjoint against exact main; integration still unrun, separate authorization for merge. Course A artifact15256323196 byte inspection BLOCKED (container retry ClientError); no redundant CI or speculative wrappers. Native C1 package/operator and six H03/H06 fixtures NOT_RUN, owner approved isolated environment required. Private L06 HOLD/no WSL; no valid ConPTY before independent acceptance; P0/V7 freeze/L07/93 independent/13 privacy/student gates unchanged. Advance materially distinct eligible tasks under Report124. No merge/deploy/release."
+  },
+  "c1_recovery_cleanup_port_binding": {
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/152_C1_RECOVERY_CLEANUP_PORT_BINDING.md",
+    "blob": "bab3c7a06e91df5eee42f873dfa229438a1668da",
+    "sha": "610c66ece2bfb20b8a81191d356f78713294351e",
+    "prior": "d398ebd115c7c6fa8dcdfdf84f3918fe2e60d0f8",
+    "pr": 59,
+    "state": "CANDIDATE",
+    "native_state": "NOT_RUN",
+    "receipts": [
+      {
+        "status": "VERIFIED_BOUNDED",
+        "sha": "610c66ece2bfb20b8a81191d356f78713294351e",
+        "run": 46133266836,
+        "job": 140942915021,
+        "oracle": "Exact Windows PowerShell AST-extracted parent and recovery finally blocks with fictional fault spies",
+        "actual": "Terminal success; six actual cases parent/recovery each none/app/db fault; expected port and process spy, attempted cleanup after app fault, environment restoration, recovery active port and zeroed key arrays; no MySQL/process termination. Retained 21/21 listing, 196 source files, 16/16 full-source cases and C1 four fixture/five source bindings."
+      }
+    ],
+    "pending_runs": [
+      46133266836
+    ],
+    "pending_jobs": [
+      140942914774,
+      140942914984,
+      140942915024
+    ],
+    "next": "Consume actual exact-head PR59 Verify46133266836 remaining Course A140942914774, Extended140942914984 and React140942915024 terminal logs; repair observed failures only. New Windows focused guard passed six actual cleanup-block fictional cases, no MySQL or process termination. Native process stop, readiness/port ownership race, session-dispose fault and combined native package/operator NOT_RUN. First six H03/H06 native fixtures remain owner-environment gated; no valid ConPTY before independent acceptance. Course A artifact binary inspection remains blocked per Report150. Private L06 HOLD/no WSL; P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release."
   }
 }

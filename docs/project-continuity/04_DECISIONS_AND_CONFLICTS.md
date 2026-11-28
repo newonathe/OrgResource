@@ -445,3 +445,7 @@ Report148: choose MySQL 8.0-supported no-defaults plus absent alternate login fi
 ## Current - Parallel packaging drafts (2026-11-28 PHT)
 
 Report151: PR60 older overlapping migration fix has exact matching migration guard, pins and eight-case body in PR59. Prefer PR59 as current packaging candidate; retain PR60 history and leave all drafts unchanged. PR58/59 workflow additions disjoint; combined runtime unrun. No automatic merge or duplicate application of PR60.
+
+## Current - C1 cleanup binding (2026-11-28 PHT)
+
+Report152: source and recovery stop must use captured process-specific ports, not mutable active port; always attempt DB cleanup after app/session fault and restore state. Actual six fictional cleanup cases passed. No native process termination, port ownership or complete package acceptance inferred. PR59 successor 610c66ece2bfb20b8a81191d356f78713294351e; retain prior evidence.
