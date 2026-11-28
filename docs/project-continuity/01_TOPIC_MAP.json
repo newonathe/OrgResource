@@ -241,7 +241,7 @@
         }
       ],
       "authority": "Parallel PR10 exact execution specs; not active source or completed tests.",
-      "next": "Consume exact PR59 run46136326796 Extended job140952338269 actual terminal log; repair observed failures only. Report160 verifies zero intersection of 86 historical privacy paths with both source selections and identical 272 non-root npm lock records; no package content/rights clearance. Prepare separate distribution notices and exact actual bundled dependency/license inventory without modifying frozen A or publishing; owner confirms rights and any distribution. Native package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Course A existing artifact bytes verified bounded; final local DOCX/launcher/student/rights separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+      "next": "Consume the new dedicated existing Course A artifact notice inventory workflow at exact 6f94bb14675e44522f0e58b5ef4593f06943e206; inspect actual terminal log, repair actual failure only. All four PR59 Verify46136326796 jobs terminal actual success, no further rerun absent material drift. Prepare separate distribution notices using actual bundled inventory and authoritative exact-version license/notice sources, not filename heuristics; owner confirms rights/distribution. Native full package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Final Course A local copy/DOCX/launcher/student/rights separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/122_ACADEMIC_FIRST_EXTENDED_C_OBJECTIVE.md",
@@ -368,6 +368,12 @@
           "blob": "af9991c85ae3841432afb6f4789f598ba860a6a5",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; deterministic path and license metadata comparison, rights open"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/161_PR59_TERMINAL_REGRESSION_AND_EXISTING_ARTIFACT_NOTICE_CANDIDATE.md",
+          "blob": "7dbfce1e66c4e71275ce2f4655bf347d10ea5ab8",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; actual final regression and exact notice inventory source patch, new execution NOT_RUN"
         }
       ]
     },
@@ -412,7 +418,7 @@
         }
       ],
       "authority": "Immutable A 7f8c0746; actual course code and evidence separate from Extended.",
-      "next": "Consume exact PR59 run46136326796 Extended job140952338269 actual terminal log; repair observed failures only. Report160 verifies zero intersection of 86 historical privacy paths with both source selections and identical 272 non-root npm lock records; no package content/rights clearance. Prepare separate distribution notices and exact actual bundled dependency/license inventory without modifying frozen A or publishing; owner confirms rights and any distribution. Native package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Course A existing artifact bytes verified bounded; final local DOCX/launcher/student/rights separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+      "next": "Consume the new dedicated existing Course A artifact notice inventory workflow at exact 6f94bb14675e44522f0e58b5ef4593f06943e206; inspect actual terminal log, repair actual failure only. All four PR59 Verify46136326796 jobs terminal actual success, no further rerun absent material drift. Prepare separate distribution notices using actual bundled inventory and authoritative exact-version license/notice sources, not filename heuristics; owner confirms rights/distribution. Native full package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Final Course A local copy/DOCX/launcher/student/rights separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
@@ -471,6 +477,12 @@
           "blob": "af9991c85ae3841432afb6f4789f598ba860a6a5",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; deterministic path and license metadata comparison, rights open"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/161_PR59_TERMINAL_REGRESSION_AND_EXISTING_ARTIFACT_NOTICE_CANDIDATE.md",
+          "blob": "7dbfce1e66c4e71275ce2f4655bf347d10ea5ab8",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; actual final regression and exact notice inventory source patch, new execution NOT_RUN"
         }
       ]
     },
@@ -580,7 +592,7 @@
         }
       ],
       "authority": "Actual exact-main integration and historical phase receipts; exact head and bounded scope only.",
-      "next": "Consume exact PR59 run46136326796 Extended job140952338269 actual terminal log; repair observed failures only. Report160 verifies zero intersection of 86 historical privacy paths with both source selections and identical 272 non-root npm lock records; no package content/rights clearance. Prepare separate distribution notices and exact actual bundled dependency/license inventory without modifying frozen A or publishing; owner confirms rights and any distribution. Native package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Course A existing artifact bytes verified bounded; final local DOCX/launcher/student/rights separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+      "next": "Consume the new dedicated existing Course A artifact notice inventory workflow at exact 6f94bb14675e44522f0e58b5ef4593f06943e206; inspect actual terminal log, repair actual failure only. All four PR59 Verify46136326796 jobs terminal actual success, no further rerun absent material drift. Prepare separate distribution notices using actual bundled inventory and authoritative exact-version license/notice sources, not filename heuristics; owner confirms rights/distribution. Native full package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Final Course A local copy/DOCX/launcher/student/rights separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/129_PACKAGE_MIGRATION_BYTE_INTEGRITY_AND_OVERLAP.md",
@@ -623,6 +635,12 @@
           "blob": "af9991c85ae3841432afb6f4789f598ba860a6a5",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; deterministic path and license metadata comparison, rights open"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/161_PR59_TERMINAL_REGRESSION_AND_EXISTING_ARTIFACT_NOTICE_CANDIDATE.md",
+          "blob": "7dbfce1e66c4e71275ce2f4655bf347d10ea5ab8",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; actual final regression and exact notice inventory source patch, new execution NOT_RUN"
         }
       ]
     },
@@ -674,7 +692,7 @@
         }
       ],
       "authority": "Parallel PR24 source inventory and publication vetoes; metadata != content inspection.",
-      "next": "Consume exact PR59 run46136326796 Extended job140952338269 actual terminal log; repair observed failures only. Report160 verifies zero intersection of 86 historical privacy paths with both source selections and identical 272 non-root npm lock records; no package content/rights clearance. Prepare separate distribution notices and exact actual bundled dependency/license inventory without modifying frozen A or publishing; owner confirms rights and any distribution. Native package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Course A existing artifact bytes verified bounded; final local DOCX/launcher/student/rights separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+      "next": "Consume the new dedicated existing Course A artifact notice inventory workflow at exact 6f94bb14675e44522f0e58b5ef4593f06943e206; inspect actual terminal log, repair actual failure only. All four PR59 Verify46136326796 jobs terminal actual success, no further rerun absent material drift. Prepare separate distribution notices using actual bundled inventory and authoritative exact-version license/notice sources, not filename heuristics; owner confirms rights/distribution. Native full package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Final Course A local copy/DOCX/launcher/student/rights separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/62_WINDOWS_HARNESS_SOURCE_REVIEW.md",
@@ -905,6 +923,12 @@
           "blob": "af9991c85ae3841432afb6f4789f598ba860a6a5",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; deterministic path and license metadata comparison, rights open"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/161_PR59_TERMINAL_REGRESSION_AND_EXISTING_ARTIFACT_NOTICE_CANDIDATE.md",
+          "blob": "7dbfce1e66c4e71275ce2f4655bf347d10ea5ab8",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; actual final regression and exact notice inventory source patch, new execution NOT_RUN"
         }
       ]
     },
@@ -1495,7 +1519,7 @@
         }
       ],
       "authority": "Bounded actual C5 recovery receipts and staged R06B candidate; no local/full/independent conflation.",
-      "next": "Consume exact PR59 run46136326796 Extended job140952338269 actual terminal log; repair observed failures only. Report160 verifies zero intersection of 86 historical privacy paths with both source selections and identical 272 non-root npm lock records; no package content/rights clearance. Prepare separate distribution notices and exact actual bundled dependency/license inventory without modifying frozen A or publishing; owner confirms rights and any distribution. Native package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Course A existing artifact bytes verified bounded; final local DOCX/launcher/student/rights separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+      "next": "Consume the new dedicated existing Course A artifact notice inventory workflow at exact 6f94bb14675e44522f0e58b5ef4593f06943e206; inspect actual terminal log, repair actual failure only. All four PR59 Verify46136326796 jobs terminal actual success, no further rerun absent material drift. Prepare separate distribution notices using actual bundled inventory and authoritative exact-version license/notice sources, not filename heuristics; owner confirms rights/distribution. Native full package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Final Course A local copy/DOCX/launcher/student/rights separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "evidence/C9/R06B3A_MIXED_ENCRYPTED_RECOVERY_2026-11-25.md",
@@ -1976,6 +2000,12 @@
           "blob": "af9991c85ae3841432afb6f4789f598ba860a6a5",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; deterministic path and license metadata comparison, rights open"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/161_PR59_TERMINAL_REGRESSION_AND_EXISTING_ARTIFACT_NOTICE_CANDIDATE.md",
+          "blob": "7dbfce1e66c4e71275ce2f4655bf347d10ea5ab8",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; actual final regression and exact notice inventory source patch, new execution NOT_RUN"
         }
       ]
     },
@@ -1999,7 +2029,7 @@
         }
       ],
       "authority": "Live issue50 and handoff branch graph12/lock45/context04 HOLD; historical PR47/56 technical evidence only.",
-      "next": "Consume exact PR59 run46136326796 Extended job140952338269 actual terminal log; repair observed failures only. Report160 verifies zero intersection of 86 historical privacy paths with both source selections and identical 272 non-root npm lock records; no package content/rights clearance. Prepare separate distribution notices and exact actual bundled dependency/license inventory without modifying frozen A or publishing; owner confirms rights and any distribution. Native package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Course A existing artifact bytes verified bounded; final local DOCX/launcher/student/rights separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+      "next": "Consume the new dedicated existing Course A artifact notice inventory workflow at exact 6f94bb14675e44522f0e58b5ef4593f06943e206; inspect actual terminal log, repair actual failure only. All four PR59 Verify46136326796 jobs terminal actual success, no further rerun absent material drift. Prepare separate distribution notices using actual bundled inventory and authoritative exact-version license/notice sources, not filename heuristics; owner confirms rights/distribution. Native full package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Final Course A local copy/DOCX/launcher/student/rights separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/58_PRODUCT_COMPLETION_PROGRAM.md",
@@ -2938,6 +2968,12 @@
           "blob": "af9991c85ae3841432afb6f4789f598ba860a6a5",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; deterministic path and license metadata comparison, rights open"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/161_PR59_TERMINAL_REGRESSION_AND_EXISTING_ARTIFACT_NOTICE_CANDIDATE.md",
+          "blob": "7dbfce1e66c4e71275ce2f4655bf347d10ea5ab8",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; actual final regression and exact notice inventory source patch, new execution NOT_RUN"
         }
       ]
     },
@@ -3084,7 +3120,7 @@
         }
       ],
       "authority": "Read exact current policy, user's latest request; no merge/deploy/host/later-phase without consent.",
-      "next": "Consume exact PR59 run46136326796 Extended job140952338269 actual terminal log; repair observed failures only. Report160 verifies zero intersection of 86 historical privacy paths with both source selections and identical 272 non-root npm lock records; no package content/rights clearance. Prepare separate distribution notices and exact actual bundled dependency/license inventory without modifying frozen A or publishing; owner confirms rights and any distribution. Native package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Course A existing artifact bytes verified bounded; final local DOCX/launcher/student/rights separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
+      "next": "Consume the new dedicated existing Course A artifact notice inventory workflow at exact 6f94bb14675e44522f0e58b5ef4593f06943e206; inspect actual terminal log, repair actual failure only. All four PR59 Verify46136326796 jobs terminal actual success, no further rerun absent material drift. Prepare separate distribution notices using actual bundled inventory and authoritative exact-version license/notice sources, not filename heuristics; owner confirms rights/distribution. Native full package and six H03/H06 fixtures owner/independent gated; no valid ConPTY before independent outer/console-host acceptance. Final Course A local copy/DOCX/launcher/student/rights separate. Private L06 HOLD/no WSL, P0/V7 freeze, L07 off-host, 93 independent/13 privacy/student gates unchanged. No merge/deploy/release.",
       "latest_sources": [
         {
           "path": "docs/handoffs/claude-local-execution-2026-11-24/72_STRUCTURED_PRIVACY_AND_CONTINUITY_INTEGRITY.md",
@@ -3791,6 +3827,12 @@
           "blob": "af9991c85ae3841432afb6f4789f598ba860a6a5",
           "ref": "docs/claude-local-execution-handoff-2026-11-24",
           "review": "FULL report; deterministic path and license metadata comparison, rights open"
+        },
+        {
+          "path": "docs/handoffs/claude-local-execution-2026-11-24/161_PR59_TERMINAL_REGRESSION_AND_EXISTING_ARTIFACT_NOTICE_CANDIDATE.md",
+          "blob": "7dbfce1e66c4e71275ce2f4655bf347d10ea5ab8",
+          "ref": "docs/claude-local-execution-handoff-2026-11-24",
+          "review": "FULL report; actual final regression and exact notice inventory source patch, new execution NOT_RUN"
         }
       ]
     }

@@ -1859,5 +1859,23 @@
       140952338269
     ],
     "report": "docs/handoffs/claude-local-execution-2026-11-24/159_COURSE_A_TERMINAL_RECEIPT_AND_ACTIVE_POINTER_RECONCILIATION.md"
+  },
+  "pr59_terminal_and_notice_candidate": {
+    "date": "2026-11-28 PHT",
+    "handoff_parent": "e528ce10dea3340985eb89d5e21ebea3595be960",
+    "main": "96741bbd295a2d1e7b4bbf6a75cb558a793b09bd",
+    "pr59": "c868c90320539d29963f8ee063c7eaa9d9562a07",
+    "run": 46136326796,
+    "completed_jobs": [
+      140952338079,
+      140952338264,
+      140952338269,
+      140952338371
+    ],
+    "pending_jobs": [],
+    "notice_branch": "verify/course-a-existing-artifact-bytes-20261128",
+    "notice_sha": "6f94bb14675e44522f0e58b5ef4593f06943e206",
+    "notice_state": "NOT_RUN",
+    "report": "docs/handoffs/claude-local-execution-2026-11-24/161_PR59_TERMINAL_REGRESSION_AND_EXISTING_ARTIFACT_NOTICE_CANDIDATE.md"
   }
 }
